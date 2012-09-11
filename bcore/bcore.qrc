@@ -1,0 +1,47 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>res/ico/advanced.png</file>
+        <file>res/ico/blocks.png</file>
+        <file>res/ico/bookmark.png</file>
+        <file>res/ico/bookmark_add.png</file>
+        <file>res/ico/button_cancel.png</file>
+        <file>res/ico/button_ok.png</file>
+        <file>res/ico/close_all.png</file>
+        <file>res/ico/contexthelp.png</file>
+        <file>res/ico/decrypted.png</file>
+        <file>res/ico/edit.png</file>
+        <file>res/ico/edit_add.png</file>
+        <file>res/ico/editcopy.png</file>
+        <file>res/ico/editcut.png</file>
+        <file>res/ico/editdelete.png</file>
+        <file>res/ico/editpaste.png</file>
+        <file>res/ico/edit_remove.png</file>
+        <file>res/ico/exit.png</file>
+        <file>res/ico/fileclose.png</file>
+        <file>res/ico/filenew.png</file>
+        <file>res/ico/fileopen.png</file>
+        <file>res/ico/filesave.png</file>
+        <file>res/ico/filesaveas.png</file>
+        <file>res/ico/find_next.png</file>
+        <file>res/ico/has_main_document.png</file>
+        <file>res/ico/help.png</file>
+        <file>res/ico/info.png</file>
+        <file>res/ico/internet.png</file>
+        <file>res/ico/lines.png</file>
+        <file>res/ico/player_play.png</file>
+        <file>res/ico/player_stop.png</file>
+        <file>res/ico/qt-logo.png</file>
+        <file>res/ico/redo.png</file>
+        <file>res/ico/reload.png</file>
+        <file>res/ico/replace_next.png</file>
+        <file>res/ico/save_all.png</file>
+        <file>res/ico/search.png</file>
+        <file>res/ico/select_all.png</file>
+        <file>res/ico/start.png</file>
+        <file>res/ico/undo.png</file>
+        <file>res/translations/bgui_ru.qm</file>
+        <file>res/translations/bnetwork_ru.qm</file>
+        <file>res/translations/qt_ru.qm</file>
+        <file>res/ico/folder_documents.png</file>
+    </qresource>
+</RCC>

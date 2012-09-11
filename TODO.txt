@@ -1,0 +1,2 @@
+* Fix dragging from BPlainTextEdit
+* Add tooltips for elements of SwitchDocumentCmbox in BTextEditor
