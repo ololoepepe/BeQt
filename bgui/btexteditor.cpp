@@ -134,7 +134,7 @@ const int DefLineLength = 120;
 const int DefTabWidth = 4;
 const QString DefFileDialogDir = BCore::Home;
 const int MessageTimeout = 15 * BCore::Second;
-const QStringList AvailableEncodings = QStringList() << "UTF-8"; //TODO
+//const QStringList AvailableEncodings = QStringList() << "UTF-8" << "UTF-16"; //TODO
 const int _m_MaxRecentFiles = 15;
 //_m_GroupTextEditor
   const QString _m_KeyDir = "dir";
@@ -1136,22 +1136,37 @@ void BTextEditor::_m_initReopenMenu()
     if (!tbar)
         return;
     QMenu *mnu = new QMenu(this);
+      _m_mnuReopenUnicode = new QMenu(this);
+        _m_mnuReopenUnicode->addActions( _m_createReopenActions(QStringList() << "UTF-16" << "UTF-8") );
+      mnu->addMenu(_m_mnuReopenUnicode);
+      _m_mnuReopenEasternEurope = new QMenu(this);
+        _m_mnuReopenEasternEurope->addActions( _m_createReopenActions(QStringList() << "ISO 8859-13" << "ISO 8859-4"
+            << "Windows-1257" << "ISO 8859-6" << "KOI8-R" << "Windows-1251"
+            << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2" << "Windows-1250") );
+      mnu->addMenu(_m_mnuReopenEasternEurope);
+      _m_mnuReopenWesternEurope = new QMenu(this);
+        _m_mnuReopenWesternEurope->addActions( _m_createReopenActions(QStringList() << "ISO 8859-7" << "Windows-1253"
+            << "IBM 850" << "ISO 8859-1" << "ISO 8859-15" << "Apple Roman"
+            << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10" << "ISO 8859-3") );
+      mnu->addMenu(_m_mnuReopenWesternEurope);
+      _m_mnuReopenEastAsia = new QMenu(this);
+        _m_mnuReopenEastAsia->addActions( _m_createReopenActions(QStringList() << "Windows-1258" << "Big5"
+            << "Big5-HKSCS" << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS") );
+      mnu->addMenu(_m_mnuReopenEastAsia);
+      _m_mnuReopenSouthEastSouthWestAsia = new QMenu(this);
+        _m_mnuReopenSouthEastSouthWestAsia->addActions( _m_createReopenActions(QStringList() << "TIS-620"
+                                                                               << "ISO 8859-9" << "Windows-1254") );
+      mnu->addMenu(_m_mnuReopenSouthEastSouthWestAsia);
+      _m_mnuReopenMiddleEast = new QMenu(this);
+        _m_mnuReopenMiddleEast->addActions( _m_createReopenActions(QStringList() << "ISO 8859-6" << "Windows-1256"
+                                                                   << "Windows-1255" << "ISO 8859-8") );
+      mnu->addMenu(_m_mnuReopenMiddleEast);
     QAction *act = mnu->menuAction();
     act->setEnabled(false);
     act->setIcon( QIcon(BCore::IcoPath + "/reload.png") );
     tbar->addAction(act);
-    QToolButton *tbtn = qobject_cast<QToolButton *>( tbar->widgetForAction(act) );
-    if (tbtn)
-        tbtn->setPopupMode(QToolButton::InstantPopup);
-    _m_actionMap.insert(ReopenFileAction, act);
-    QList<BEncoding *> encl = _m_encodings.values();
-    for (int i = 0; i < encl.size(); ++i)
-    {
-        QAction *ract = new QAction(this);
-        _m_mapperReopen->setMapping( ract, encl.at(i)->codecName() );
-        connect( ract, SIGNAL( triggered() ), _m_mapperReopen, SLOT( map() ) );
-        mnu->addAction(ract);
-    }
+    qobject_cast<QToolButton *>( tbar->widgetForAction(act) )->setPopupMode(QToolButton::InstantPopup);
+    _m_actions.insert(ReopenFileAction, act);
 }
 
 void BTextEditor::_m_initRecentFilesMenu()
@@ -1234,6 +1249,21 @@ QAction *BTextEditor::_m_createAction(int id, const QString &iconFileName,
     if (tbar)
         tbar->addAction(act);
     return act;
+}
+
+QList<QAction *> BTextEditor::_m_createReopenActions(const QStringList &codecNames)
+{
+    QList<QAction *> acts;
+    for (int i = 0; i < codecNames.size(); ++i)
+    {
+        const QString &cn = codecNames.at(i);
+        if ( cn.isEmpty() || _m_reopenActions.contains(cn) )
+            continue;
+        QAction *act = new QAction(this);
+        _m_reopenActions.insert(cn, act);
+        acts << act;
+    }
+    return acts;
 }
 
 void BTextEditor::_m_retranslateUi()
@@ -1339,12 +1369,41 @@ void BTextEditor::_m_retranslateUi()
 
 void BTextEditor::_m_retranslateReopenMenu()
 {
+    //manu
     QMenu *mnu = editorAction(ReopenFileAction)->menu();
     mnu->setTitle( tr("Reopen", "mnu toolTip") );
-    QList<QAction *> al = mnu->actions();
-    QList<BEncoding *> encl = _m_encodings.values();
-    for (int i = 0; i < al.size() && i < encl.size(); ++i)
-        al.at(i)->setText( encl.at(i)->fullName() );
+    //submenus
+    _m_mnuReopenUnicode->setTitle( tr("Unicode", "mnu title") );
+    _m_mnuReopenEasternEurope->setTitle( tr("Eastern Europe", "mnu title") );
+    _m_mnuReopenWesternEurope->setTitle( tr("Western Europe", "mnu title") );
+    _m_mnuReopenEastAsia->setTitle( tr("East Asia", "mnu title") );
+    _m_mnuReopenSouthEastSouthWestAsia->setTitle( tr("South-East and South-West Asia", "mnu title") );
+    _m_mnuReopenMiddleEast->setTitle( tr("Middle East", "mnu title") );
+    //actions
+    _m_setReopenActionText( QStringList() << "UTF-16" << "UTF-8", tr("Unicode", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257",
+                            tr("Baltic", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-5" << "KOI8-R" << "Windows-1251", tr("Cyrillic", "act text") );
+    _m_setReopenActionText( QStringList() << "KOI8-U", tr("Cyrillic (Ukrainian)", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-16", tr("Romanic", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-2" << "Windows-1250", tr("Central European", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-7" << "Windows-1253", tr("Greek", "act text") );
+    _m_setReopenActionText( QStringList() << "IBM 850" << "ISO 8859-1" << "ISO 8859-15"
+                            << "Apple Roman" << "Windows-1252", tr("Western", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-14", tr("Celtic", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-10", tr("Nordic", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-3", tr("South European", "act text") );
+    _m_setReopenActionText( QStringList() << "Windows-1258", tr("Vietnamese", "act text") );
+    _m_setReopenActionText( QStringList() << "Big5" << "Big5-HKSCS", tr("Traditional Chinese", "act text") );
+    _m_setReopenActionText( QStringList() << "GB18030-0", tr("Simplified Chinese", "act text") );
+    _m_setReopenActionText( QStringList() << "EUC-KR" << "JOHAB", tr("Korean", "act text") );
+    _m_setReopenActionText( QStringList() << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS", tr("Japanese", "act text") );
+    _m_setReopenActionText( QStringList() << "TIS-620", tr("Thai", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-9" << "Windows-1254", tr("Turkish", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-6" << "Windows-1256", tr("Arabic", "act text") );
+    _m_setReopenActionText( QStringList() << "Windows-1255", tr("Hebrew", "act text") );
+    _m_setReopenActionText( QStringList() << "ISO 8859-8", tr("Hebrew (visual)", "act text") );
+
 }
 
 void BTextEditor::_m_retranslateAction(Action actId, const QString &text, const QString &toolTip,
@@ -1364,6 +1423,23 @@ void BTextEditor::_m_retranslateMenu(Menu mnuId, const QString &title)
     if (!mnu)
         return;
     mnu->setTitle(title);
+}
+
+void BTextEditor::_m_setReopenActionText(const QStringList &codecNames, const QString &description)
+{
+    for (int i = 0; i < codecNames.size(); ++i)
+    {
+        const QString &cn = codecNames.at(i);
+        if ( cn.isEmpty() )
+            continue;
+        QAction *act = _m_reopenActions.value(codecName);
+        if (!act)
+            continue;
+        QString text = cn;
+        if ( !description.isEmpty() )
+            text.prepend(description + " (").append(")");
+        act->setText(text);
+    }
 }
 
 void BTextEditor::_m_retranslateSwitchBlockModeAction()

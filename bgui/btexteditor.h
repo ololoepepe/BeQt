@@ -199,7 +199,7 @@ private:
     QMenu *_m_mnuReopenEastAsia;
     QMenu *_m_mnuReopenSouthEastSouthWestAsia;
     QMenu *_m_mnuReopenMiddleEast;
-    QMap<QString, QAction *> _m_ReopenActions;
+    QMap<QString, QAction *> _m_reopenActions;
     //gui:invisible:macros
     QPlainTextEdit *_m_recorderConsole;
     QComboBox *_m_cmboxTextMacros;
@@ -247,12 +247,14 @@ private:
     QMenu *_m_createMenu(Menu id, const QString &objectName);
     QAction *_m_createAction(Action id, const QString &iconFileName, const QString &shortcut = QString(),
                              QToolBar *tbar = 0, bool enabled = false);
+    QList<QAction *> _m_createReopenActions(const QStringList &codecNames);
     //retranslate
     void _m_retranslateUi();
     void _m_retranslateReopenMenu();
     void _m_retranslateAction( Action id, const QString &text, const QString &toolTip = QString(),
                                const QString &whatsThis = QString() );
     void _m_retranslateMenu(Menu id, const QString &title);
+    void _m_setReopenActionsText(const QStringList &codecNames, const QString &description);
     void _m_retranslateSwitchBlockModeAction();
     //loading/saving settings
     void _m_loadSettings();
