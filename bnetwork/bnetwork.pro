@@ -1,6 +1,6 @@
 TARGET = beqtnetwork
 TEMPLATE = lib
-VER_MAJ = 2
+VER_MAJ = 1
 VER_MIN = 0
 VER_PAT = 0
 
@@ -16,7 +16,7 @@ HEADERS += \
     bnetworkoperation.h \
     bnetworkserver.h \
     bnetworkserverworker.h \
-    bsocketshell.h \
+    bsocketwrapper.h \
     private/blocalserver.h \
     private/bnetworkserverthread.h \
     private/btcpserver.h
@@ -24,11 +24,11 @@ HEADERS += \
 SOURCES += \
     bgenericserver.cpp \
     bgenericsocket.cpp \
-    bsocketshell.cpp \
     bnetworkconnection.cpp \
     bnetworkoperation.cpp \
     bnetworkserver.cpp \
     bnetworkserverworker.cpp \
+    bsocketwrapper.cpp \
     private/blocalserver.cpp \
     private/bnetworkserverthread.cpp \
     private/btcpserver.cpp

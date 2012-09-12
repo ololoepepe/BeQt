@@ -1,12 +1,12 @@
 #include "bnetworkoperation.h"
-#include "bsocketshell.h"
+#include "bsocketwrapper.h"
 
 #include <QObject>
 #include <QString>
 #include <QUuid>
 #include <QByteArray>
 
-const BSocketShell::MetaData &BNetworkOperation::metaData() const
+const BSocketWrapper::MetaData &BNetworkOperation::metaData() const
 {
     return _m_CMetaData;
 }
@@ -53,7 +53,7 @@ bool BNetworkOperation::isFinished() const
 
 //
 
-BNetworkOperation::BNetworkOperation(const BSocketShell::MetaData &metaData, QObject *parent) :
+BNetworkOperation::BNetworkOperation(const BSocketWrapper::MetaData &metaData, QObject *parent) :
     QObject(parent), _m_CMetaData(metaData)
 {
     _m_isStarted = false;

@@ -1,5 +1,5 @@
-#ifndef BSOCKETSHELL_H
-#define BSOCKETSHELL_H
+#ifndef BSOCKETWRAPPER_H
+#define BSOCKETWRAPPER_H
 
 #include "bgenericsocket.h"
 
@@ -17,7 +17,7 @@
 #  define BNETWORKSHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-class BNETWORKSHARED_EXPORT BSocketShell : public QObject
+class BNETWORKSHARED_EXPORT BSocketWrapper : public QObject
 {
     Q_OBJECT
 public:
@@ -48,9 +48,9 @@ public:
     //
     static const QDataStream::Version DataStreamVersion;
     //
-    explicit BSocketShell(QObject *parent = 0);
-    explicit BSocketShell(BGenericSocket *socket, QObject *parent = 0);
-    explicit BSocketShell(BGenericSocket::SocketType type, QObject *parent = 0);
+    explicit BSocketWrapper(QObject *parent = 0);
+    explicit BSocketWrapper(BGenericSocket *socket, QObject *parent = 0);
+    explicit BSocketWrapper(BGenericSocket::SocketType type, QObject *parent = 0);
     //
     void setSocket(BGenericSocket *socket);
     void setCompressionLevel(int level);
@@ -83,11 +83,11 @@ private slots:
     void _m_error(QAbstractSocket::SocketError socketError);
     void _m_readyRead();
 signals:
-    void downloadProgress(const BSocketShell::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void uploadProgress(const BSocketShell::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void dataReceived(const QByteArray &data, const BSocketShell::MetaData &metaData);
-    void dataSent(const BSocketShell::MetaData &metaData);
+    void downloadProgress(const BSocketWrapper::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
+    void uploadProgress(const BSocketWrapper::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
+    void dataReceived(const QByteArray &data, const BSocketWrapper::MetaData &metaData);
+    void dataSent(const BSocketWrapper::MetaData &metaData);
     void criticalBufferSizeReached();
 };
 
-#endif // BSOCKETSHELL_H
+#endif // BSOCKETWRAPPER_H

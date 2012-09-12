@@ -1,5 +1,5 @@
 #include "bnetworkconnection.h"
-#include "bsocketshell.h"
+#include "bsocketwrapper.h"
 #include "bgenericsocket.h"
 #include "bnetworkoperation.h"
 
@@ -37,12 +37,12 @@ BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject 
 
 void BNetworkConnection::setCriticalBufferSize(qint64 size)
 {
-    _m_socketShell->setCriticalBufferSize(size);
+    _m_socketWrapper->setCriticalBufferSize(size);
 }
 
 void BNetworkConnection::setCloseOnCriticalBufferSize(bool close)
 {
-    _m_socketShell->setCloseOnCriticalBufferSize(close);
+    _m_socketWrapper->setCloseOnCriticalBufferSize(close);
 }
 
 void BNetworkConnection::setDetailedLogMode(bool enabled)
@@ -114,12 +114,12 @@ QString BNetworkConnection::errorString() const
 
 qint64 BNetworkConnection::criticalBufferSize() const
 {
-    return _m_socketShell->criticalBufferSize();
+    return _m_socketWrapper->criticalBufferSize();
 }
 
 bool BNetworkConnection::closeOnCriticalBufferSize() const
 {
-    return _m_socketShell->closeOnCriticalBufferSize();
+    return _m_socketWrapper->closeOnCriticalBufferSize();
 }
 
 bool BNetworkConnection::detailedLogMode() const
@@ -172,16 +172,16 @@ void BNetworkConnection::log(const QString &text)
 void BNetworkConnection::_m_init()
 {
     _m_detailedLog = false;
-    _m_socketShell = new BSocketShell(this);
-    connect(_m_socketShell, SIGNAL( downloadProgress(BSocketShell::MetaData, qint64, qint64) ),
-            this, SLOT( _m_downloadProgress(BSocketShell::MetaData, qint64, qint64) ), Qt::DirectConnection);
-    connect(_m_socketShell, SIGNAL( uploadProgress(BSocketShell::MetaData, qint64, qint64) ),
-            this, SLOT( _m_uploadProgress(BSocketShell::MetaData, qint64, qint64) ), Qt::DirectConnection);
-    connect(_m_socketShell, SIGNAL( dataReceived(QByteArray, BSocketShell::MetaData) ),
-            this, SLOT( _m_dataReceived(QByteArray, BSocketShell::MetaData) ), Qt::DirectConnection);
-    connect(_m_socketShell, SIGNAL( dataSent(BSocketShell::MetaData) ),
-            this, SLOT( _m_dataSent(BSocketShell::MetaData) ), Qt::DirectConnection);
-    connect(_m_socketShell, SIGNAL( criticalBufferSizeReached() ),
+    _m_socketWrapper = new BSocketWrapper(this);
+    connect(_m_socketWrapper, SIGNAL( downloadProgress(BSocketWrapper::MetaData, qint64, qint64) ),
+            this, SLOT( _m_downloadProgress(BSocketWrapper::MetaData, qint64, qint64) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( uploadProgress(BSocketWrapper::MetaData, qint64, qint64) ),
+            this, SLOT( _m_uploadProgress(BSocketWrapper::MetaData, qint64, qint64) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( dataReceived(QByteArray, BSocketWrapper::MetaData) ),
+            this, SLOT( _m_dataReceived(QByteArray, BSocketWrapper::MetaData) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( dataSent(BSocketWrapper::MetaData) ),
+            this, SLOT( _m_dataSent(BSocketWrapper::MetaData) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( criticalBufferSizeReached() ),
             this, SIGNAL( criticalBufferSizeReached() ), Qt::DirectConnection);
 }
 
@@ -190,7 +190,7 @@ void BNetworkConnection::_m_setSocket(BGenericSocket *socket)
     if (!socket)
         return;
     _m_socket = socket;
-    _m_socketShell->setSocket(socket);
+    _m_socketWrapper->setSocket(socket);
     socket->setParent(this);
     connect( socket, SIGNAL( disconnected() ), this, SLOT( _m_disconnected() ), Qt::DirectConnection);
     connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
@@ -199,12 +199,12 @@ void BNetworkConnection::_m_setSocket(BGenericSocket *socket)
 
 void BNetworkConnection::_m_sendNext()
 {
-    if ( !isConnected() || _m_socketShell->isBuisy() || _m_dataQueue.isEmpty() )
+    if ( !isConnected() || _m_socketWrapper->isBuisy() || _m_dataQueue.isEmpty() )
         return;
     _m_Data data = _m_dataQueue.dequeue();
     if ( !data.second.isValid() )
         return;
-    bool b = _m_socketShell->sendData(data.first, data.second);
+    bool b = _m_socketWrapper->sendData(data.first, data.second);
     BNetworkOperation *op = data.second.isRequest() ? _m_requests.value(data.second) : _m_replies.value(data.second);
     if (op)
         b ? op->_m_setStarted() : op->_m_setError();
@@ -229,12 +229,12 @@ void BNetworkConnection::_m_error(QAbstractSocket::SocketError socketError)
     emit error(socketError);
 }
 
-void BNetworkConnection::_m_downloadProgress(const BSocketShell::MetaData &metaData,
+void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &metaData,
                                              qint64 bytesReady, qint64 bytesTotal)
 {
     if ( metaData.isRequest() )
     {
-        BSocketShell::MetaData mdat = metaData;
+        BSocketWrapper::MetaData mdat = metaData;
         mdat.setIsRequest(false);
         BNetworkOperation *op = _m_replies.value(mdat);
         if (op)
@@ -251,7 +251,7 @@ void BNetworkConnection::_m_downloadProgress(const BSocketShell::MetaData &metaD
     }
     else
     {
-        BSocketShell::MetaData mdat = metaData;
+        BSocketWrapper::MetaData mdat = metaData;
         mdat.setIsRequest(true);
         BNetworkOperation *op = _m_requests.value(mdat);
         if (op)
@@ -259,7 +259,7 @@ void BNetworkConnection::_m_downloadProgress(const BSocketShell::MetaData &metaD
     }
 }
 
-void BNetworkConnection::_m_uploadProgress(const BSocketShell::MetaData &metaData,
+void BNetworkConnection::_m_uploadProgress(const BSocketWrapper::MetaData &metaData,
                                            qint64 bytesReady, qint64 bytesTotal)
 {
     BNetworkOperation *op = metaData.isRequest() ? _m_requests.value(metaData) : _m_replies.value(metaData);
@@ -267,11 +267,11 @@ void BNetworkConnection::_m_uploadProgress(const BSocketShell::MetaData &metaDat
         op->_m_setUploadProgress(bytesReady, bytesTotal);
 }
 
-void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketShell::MetaData &metaData)
+void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWrapper::MetaData &metaData)
 {
     if ( metaData.isRequest() )
     {
-        BSocketShell::MetaData mdat = metaData;
+        BSocketWrapper::MetaData mdat = metaData;
         mdat.setIsRequest(false);
         BNetworkOperation *op = _m_replies.value(mdat);
         if (!op)
@@ -282,7 +282,7 @@ void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketSh
     }
     else
     {
-        BSocketShell::MetaData mdat = metaData;
+        BSocketWrapper::MetaData mdat = metaData;
         mdat.setIsRequest(false);
         BNetworkOperation *op = _m_requests.value(mdat);
         if (!op)
@@ -294,7 +294,7 @@ void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketSh
     }
 }
 
-void BNetworkConnection::_m_dataSent(const BSocketShell::MetaData &metaData)
+void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
 {
     if ( metaData.isRequest() )
     {

@@ -3,7 +3,7 @@
 
 class BNetworkConnection;
 
-#include "bsocketshell.h"
+#include "bsocketwrapper.h"
 
 #include <QObject>
 #include <QString>
@@ -21,7 +21,7 @@ class BNETWORKSHARED_EXPORT BNetworkOperation : public QObject
     Q_OBJECT
 public:
     const QByteArray &data() const;
-    const BSocketShell::MetaData &metaData() const;
+    const BSocketWrapper::MetaData &metaData() const;
     bool isRequest() const;
     bool isValid() const;
     bool isStarted() const;
@@ -32,7 +32,7 @@ public:
 private:
     friend class BNetworkConnection;
     //
-    BSocketShell::MetaData _m_CMetaData;
+    BSocketWrapper::MetaData _m_CMetaData;
     bool _m_isStarted;
     bool _m_isError;
     qint64 _m_bytesInReady;
@@ -42,7 +42,7 @@ private:
     bool _m_isFinished;
     QByteArray _m_data;
     //
-    explicit BNetworkOperation(const BSocketShell::MetaData &metaData, QObject *parent = 0);
+    explicit BNetworkOperation(const BSocketWrapper::MetaData &metaData, QObject *parent = 0);
     //
     void _m_setStarted();
     void _m_setError();

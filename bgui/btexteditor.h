@@ -2,7 +2,6 @@
 #define BTEXTEDITOR_H
 
 class BTextEditorDocument;
-class BEncoding;
 class BFindDialog;
 class BOpenSaveDialog;
 class BAbstractSettingsTab;
@@ -17,11 +16,13 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QComboBox;
 class QMenu;
-class QStackedLayout;
 class QLabel;
 class QPlainTextEdit;
+class QTabWidget;
 
 #include "bsyntax.h"
+#include "babstractfiletype.h"
+#include "bkeyboardlayoutmap.h"
 
 #include <QWidget>
 #include <QStringList>
@@ -30,7 +31,6 @@ class QPlainTextEdit;
 #include <QMap>
 #include <QUrl>
 #include <QPointer>
-#include <QChar>
 #include <QVariantMap>
 
 #if defined(BGUI_LIBRARY)
@@ -43,49 +43,6 @@ class BGUISHARED_EXPORT BTextEditor : public QWidget
 {
     Q_OBJECT
 public:
-    enum ToolBar
-    {
-        SwitchDocumentToolBar,
-        NewOpenToolBar,
-        SaveToolBar,
-        CloseToolBar,
-        UndoRedoToolBar,
-        ClipboardToolBar,
-        DocumentToolBar,
-        SearchToolBar,
-        MacrosToolBar
-    };
-    enum Action
-    {
-        NewDocumentAction,
-        OpenFileAction,
-        ReopenFileAction,
-        RecentFilesAction,
-        SaveDocumentAction,
-        SaveDocumentAsAction,
-        SaveAllDocumentsAction,
-        CloseDocumentAction,
-        CloseAllDocumentsAction,
-        UndoAction,
-        RedoAction,
-        CutAction,
-        CopyAction,
-        PasteAction,
-        SwitchDocumentMain,
-        MakeBookmarkAction,
-        GotoNextBookmarkAction,
-        SwitchBlockModeAction,
-        SwitchSelectedTextLayoutAction,
-        FindAction,
-        FindNextAction,
-        ReplaceNextAction,
-        RecordMacroAction,
-        PlayMacroAction,
-        ShowHideMacros,
-        LoadMacroAction,
-        SaveMacroAction,
-        OpenMacrosDirAction
-    };
     enum Menu
     {
         FileMenu,
@@ -93,73 +50,118 @@ public:
         DocumentMenu,
         MacrosMenu
     };
-    //
-    struct FileTypeInfo
+    enum Action
     {
-        QString fileName;
-        QStringList suffixes;
-        QString description;
+        //FileMenu
+          NewDocumentAction,
+          OpenFileAction,
+          ReopenFileAction,
+          RecentFilesAction,
+          //separator
+          SaveDocumentAction,
+          SaveDocumentAsAction,
+          SaveAllDocumentsAction,
+          //separator
+          CloseDocumentAction,
+          CloseAllDocumentsAction,
+        //EditMenu
+          UndoAction,
+          RedoAction,
+          //separator
+          CutAction,
+          CopyAction,
+          PasteAction,
+          //separator
+          SwitchSelectedTextLayoutAction,
+          //separator
+          FindAction,
+          FindNextAction,
+          ReplaceNextAction,
+        //DocumentMenu
+          SwitchDocumentMain,
+          //separator
+          MakeBookmarkAction,
+          GotoNextBookmarkAction,
+          //separator
+          SwitchBlockModeAction,
+        //MacrosMenu
+          RecordMacroAction,
+          //separator
+          PlayMacroAction,
+          ShowHideMacros,
+          //separator
+          LoadMacroAction,
+          SaveMacroAction
     };
-    //
-    typedef QList<FileTypeInfo> FileTypeInfoList;
     //
     static bool isFileOpenedGlobal(const QString &fileName);
     static QStringList openedFilesGlobal( const QStringList &fileNames = QStringList() );
     static void applySettingsGlobal(const QVariantMap &settings);
     //
-    explicit BTextEditor( QWidget *parent = 0, const QString &id = QString() );
+    explicit BTextEditor( QWidget *parent = 0, const QString &settingsGroup = QString() );
     ~BTextEditor();
     //
     bool eventFilter(QObject *object, QEvent *event);
-    void setAcceptableFileTypes(const FileTypeInfoList &list);
-    void setMacrosDefaultDir(const QString &dir);
+    //settings:set
+    void setUserFileTypes(const QList<BAbstractFileType *> list);
+    void setMacrosDir(const QString &dir);
     void setDefaultEncoding(const QString &codecName);
     void setFontFamily(const QString &family);
     void setFontPointSize(int pointSize);
     void setLineLength(int length);
     void setTabWidth(int width);
-    void setMessageTimeout(int timeout);
-    void setSyntaxes(const QList<BSyntax> &list);
-    void loadSyntaxes(const QString &dir);
-    void loadTextMacros(const QString &dir, bool clear = false);
-    void loadKeyboardLayoutsMap( const QString &fileName, const QString &codecName = QString() );
+    void setKeyboardLayoutMap(const QString &description);
     void applySettings(const QVariantMap &settings);
-    void addUpperWidget(QWidget *widget);
-    void addLowerWidget(QWidget *widget);
-    bool askOnApplicationQuit();
-    const QString &id() const;
-    const FileTypeInfoList &acceptableFileTypes() const;
-    const QString &macrosDefaultDir() const;
+    //settings:get
+    const QString &settingsGroup() const;
+    const QList<BAbstractFileType *> &userFileTypes() const;
+    const QString &macrosDir() const;
     const QString &defaultEncoding() const;
     const QString &fontFamily() const;
     int fontPointSize() const;
     int lineLength() const;
     int tabWidth() const;
-    int messageTimeout() const;
-    const QString &keyboardLayoutsMap() const;
-    const QList<BSyntax> &syntaxes() const;
-    bool isFileOpened(const QString &fileName) const;
-    QStringList openedFiles( const QStringList &fileNames = QStringList() ) const;
-    BAbstractSettingsTab *settingsTab() const;
-    QToolBar *toolBar(ToolBar tbarId) const;
-    QList<QToolBar *> toolBars() const;
-    QAction *editorAction(Action actId) const;
-    QList<QAction *> editorActions(ToolBar tbarId) const;
-    QWidget *widgetForAction(Action actId) const;
+    const QString &keyboardLayoutMap() const;
+    BAbstractSettingsTab *createSettingsTab() const;
+    //gui:set
+    void addUpperWidget(QWidget *widget);
+    void insertUpperWidget(int index, QWidget *widget);
+    void addLowerWidget(QWidget *widget);
+    void insertLowerWidget(int index, QWidget *widget);
+    //gui:get
+    QToolBar *editorToolBar(Menu id) const;
+    QList<QToolBar *> editorToolBars() const;
+    QMenu *editorMenu(Menu id) const;
+    QList<QMenu *> editorMenus() const;
+    QAction *editorAction(Action id) const;
+    QList<QAction *> editorActions(Menu id, bool includeSeparators = true) const;
+    QList<QAction *> editorActions() const;
     QWidget *indicatorWidget() const;
-    QMenu *editorMenu(Menu mnuId) const;
+    QWidget *upperWidget(int index) const;
+    QWidget *lowerWidget(int index) const;
+    //loadable content
+    void loadTextMacros(const QString &dir);
+    void loadTextMacros(const QStringList &dirs);
+    void loadKeyboardLayoutMaps(const QString &dir);
+    void loadKeyboardLayoutMaps(const QStringList &dirs);
+    QStringList textMacrosDirs() const;
+    QStringList keyboardLayoutMapsDirs() const;
+    //document
     bool isDocumentAvailable() const;
+    bool hasMainDocument() const;
+    bool isCurrentDocumentMain() const;
     QString currentDocumentFileName() const;
     QString currentDocumentText() const;
     QString currentDocumentSelectedText() const;
-    bool isCurrentDocumentMain() const;
-    bool hasMainDocument() const;
     QString mainDocumentFileName() const;
     QString mainDocumentText() const;
     QString mainDocumentSelectedText() const;
+    bool isFileOpened(const QString &fileName) const;
+    QStringList openedFiles( const QStringList &fileNames = QStringList() ) const;
+    //other
+    bool askOnClose();
 public slots:
-    bool performAction(int actId);
-    void reopen(const QString &codecName);
+    bool performAction(int id);
     void newDocument(const QString &text);
     void openFile(const QString &fileName);
     void openFiles(const QStringList &fileNames);
@@ -171,87 +173,91 @@ protected:
     void changeEvent(QEvent *event);
     virtual void retranslateUi();
 private:
-    typedef QList<BTextEditorDocument *> _m_TextEditorDocumentList;
-    typedef QMap<int, QToolBar *> _m_ToolBarMap;
-    typedef QMap<int, QAction *> _m_ActionMap;
+    const QString _m_CSettingsGroup;
     //
-    enum _m_LockOperation
-    {
-        _m_Lock,
-        _m_Unlock
-    };
-    //
-    const QString _m_CId;
-    //
-    int _m_lineLength;
-    int _m_tabWidth;
-    int _m_messageTimeout;
-    FileTypeInfoList _m_fileTypes;
-    QString _m_codecName;
-    QMap<QString, BEncoding *> _m_encodings;
-    QString _m_fontFamily;
-    int _m_fontPointSize;
-    QString _m_dir;
-    QStringList _m_history;
-    QString _m_macrosDir;
-    QString _m_macrosDefDir;
-    _m_TextEditorDocumentList _m_documents;
-    BFindDialog *_m_findDlg;
-    BMacroRecorder *_m_recorder;
-    QPlainTextEdit *_m_recorderConsole;
-    QComboBox *_m_cmboxTextMacros;
-    bool _m_blockMode;
-    QList<BSyntax> _m_syntaxes;
-    QString _m_klmFileName;
-    QMap<QChar, QChar> _m_directMap;
-    QMap<QChar, QChar> _m_reverseMap;
-    QList<QChar> _m_directUnique;
-    QList<QChar> _m_reverseUnique;
-    BTextEditorDocument *_m_currentDocument;
-    _m_ToolBarMap _m_toolBarMap;
-    _m_ActionMap _m_actionMap;
-    QMap<int, QMenu *> _m_menuMap;
-    QSignalMapper *_m_mapperActions;
-    QSignalMapper *_m_mapperReopen;
-    QSignalMapper *_m_mapperRecent;
+    //gui:visible
+    QVBoxLayout *_m_vlt;
+      QTabWidget *_m_twgt;
+    //gui:invisible:indicator
     QPointer<QWidget> _m_wgtIndicator;
-      //syntax
       QComboBox *_m_cmboxSyntax;
-      //cursor position
+      //separator
       QLabel *_m_lblRowLabel;
       QLabel *_m_lblRowValue;
       QLabel *_m_lblColumnLabel;
       QLabel *_m_lblColumnValue;
-      //encoding
+      //separator
       QLabel *_m_lblEncodingLabel;
       QLabel *_m_lblEncodingValue;
+    //gui:invisible:toolbars, menus, actions
+    QMap<int, QToolBar *> _m_toolBars;
+    QMap<int, QMenu *> _m_menus;
+    QMap<int, QAction *> _m_actions;
+    QMenu *_m_mnuReopenUnicode;
+    QMenu *_m_mnuReopenEasternEurope;
+    QMenu *_m_mnuReopenWesternEurope;
+    QMenu *_m_mnuReopenEastAsia;
+    QMenu *_m_mnuReopenSouthEastSouthWestAsia;
+    QMenu *_m_mnuReopenMiddleEast;
+    QMap<QString, QAction *> _m_ReopenActions;
+    //gui:invisible:macros
+    QPlainTextEdit *_m_recorderConsole;
+    QComboBox *_m_cmboxTextMacros;
+    //gui:other
+    BFindDialog *_m_findDlg;
+    //settings
+    QList<BAbstractFileType *> _m_userFileTypes;
+    QString _m_macrosDir;
+    QString _m_defaultEncoding;
+    QString _m_fontFamily;
+    int _m_fontPointSize;
+    int _m_lineLength;
+    int _m_tabWidth;
+    QString _m_currentKeyboardLayoutMap;
+    bool _m_blockMode;
+    //main
+    QList<BTextEditorDocument *> _m_documents;
+    QPointer<BTextEditorDocument> _m_currentDocument;
+    QSignalMapper *_m_mapperActions;
+    QSignalMapper *_m_mapperReopen;
+    QSignalMapper *_m_mapperRecent;
+    BMacroRecorder *_m_recorder;
+    BAbstractFileType *_m_defaultFileType;
+    QStringList _m_textMacrosDirs;
+    QStringList _m_keyboardLayoutMapsDirs;
+    QList<BKeyboardLayoutMap> _m_keyboardLayoutMaps;
+    //additional
+    QString _m_fileDialogDir;
+    QStringList _m_fileDialogHistory;
     //
-    QComboBox *_m_cmbox;
-    //
-    QVBoxLayout *_m_vlt;
-      QStackedLayout *_m_slt;
-    //
-    void _m_loadSettings();
-    void _m_saveSettings();
-    void _m_initEncodings();
+    //init:main
+    void _m_init();
+    void _m_initSettings();
+    void _m_initOtherMembers();
     void _m_initGui();
     void _m_initIndicator();
-    void _m_initFindDialog();
     void _m_initToolBars();
     void _m_initMenus();
+    void _m_initReopenMenu();
+    void _m_initRecentFilesMenu();
     void _m_initRecorderConsole();
-    void _m_initReopenMenu(QToolBar *tbar = 0);
-    void _m_initRecentFilesMenu(QToolBar *tbar = 0);
-    QToolBar *_m_createToolBar(int id, const QString &objectName);
-    QMenu *_m_createMenu(int id, const QString &objectName);
-    QAction *_m_createAction(int id, const QString &iconFileName, const QString &shortcut = QString(),
+    void _m_initFindDialog();
+    //init:additional
+    QToolBar *_m_createToolBar(Menu id, const QString &objectName);
+    QMenu *_m_createMenu(Menu id, const QString &objectName);
+    QAction *_m_createAction(Action id, const QString &iconFileName, const QString &shortcut = QString(),
                              QToolBar *tbar = 0, bool enabled = false);
+    //retranslate
     void _m_retranslateUi();
     void _m_retranslateReopenMenu();
-    void _m_retranslateAction( Action actId, const QString &text, const QString &toolTip = QString(),
+    void _m_retranslateAction( Action id, const QString &text, const QString &toolTip = QString(),
                                const QString &whatsThis = QString() );
-    void _m_retranslateMenu(Menu mnuId, const QString &title);
+    void _m_retranslateMenu(Menu id, const QString &title);
     void _m_retranslateSwitchBlockModeAction();
+    //loading/saving settings
+    void _m_loadSettings();
+    void _m_saveSettings();
+    //actions:file
     void _m_newDocument( const QString &text = QString() );
     void _m_openFile( const QString &fileName = QString() );
     bool _m_saveDocument(BTextEditorDocument *document = 0);
@@ -259,16 +265,30 @@ private:
     bool _m_saveAllDocuments();
     bool _m_closeDocument(BTextEditorDocument *document = 0);
     bool _m_closeAllDocuments();
+    //actions:edit
+    void _m_undo();
+    void _m_redo();
+    void _m_cut();
+    void _m_copy();
+    void _m_paste();
+    void _m_switchSelectedTextLayout();
+    //find, find next, replace next
+    //actions:document
     void _m_switchDocumentMain();
+    void _m_makeBookmark();
+    void _m_gotoNextBookmark();
     void _m_switchBlockMode();
+    //actions:macros
     void _m_recordMacro();
     void _m_playMacro();
     void _m_showHideMacros();
     bool _m_loadMacro();
     bool _m_saveMacro();
+    //actions:additional
     void _m_resetSwitchDocumentMainAction();
     void _m_resetRecordMacroAction();
     void _m_resetShowHideMacrosAction();
+    void _m_reopen(const QString &codecName);
     BTextEditorDocument *_m_addDocument(const QString &fileName);
     void _m_addRecentFile( const QString &fileName, const QString &oldFileName = QString() );
     bool _m_reopenQuestion(const QString &fileName);
@@ -283,7 +303,6 @@ private:
     QString _m_fileDialogFilter() const;
     QStringList _m_filterAcceptableFiles(const QStringList &fileNames) const;
     void _m_handleUrls(const QList<QUrl> &urls);
-    QString _m_cmboxToolTip() const;
     BTextEditorDocument *_m_mainDocument() const;
     void _m_textReplaced(int count);
     void _m_setDocumentSyntax(BTextEditorDocument *document);
@@ -292,7 +311,7 @@ private slots:
     void _m_checkPasteAvailable();
     void _m_updateCursorPosition(int row, int column);
     void _m_updateEncoding(const QString &codecName);
-    void _m_cmboxCurrentIndexChanged(int index);
+    void _m_twgtCurrentChanged(int index);
     void _m_cmboxTextMacrosActivated(int index);
     void _m_cmboxSyntaxCurrentIndexChanged(int index);
     void _m_documentSwitchRequested();

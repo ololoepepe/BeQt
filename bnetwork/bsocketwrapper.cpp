@@ -1,4 +1,4 @@
-#include "bsocketshell.h"
+#include "bsocketwrapper.h"
 #include "bgenericsocket.h"
 
 #include <QDataStream>
@@ -10,17 +10,17 @@
 #include <QThread>
 #include <QUuid>
 
-BSocketShell::MetaData::MetaData()
+BSocketWrapper::MetaData::MetaData()
 {
     _m_request = true;
 }
 
-BSocketShell::MetaData::MetaData(const MetaData &other)
+BSocketWrapper::MetaData::MetaData(const MetaData &other)
 {
     *this = other;
 }
 
-BSocketShell::MetaData::MetaData(const QUuid &id, bool request, const QString &operation)
+BSocketWrapper::MetaData::MetaData(const QUuid &id, bool request, const QString &operation)
 {
     setId(id);
     setIsRequest(request);
@@ -29,51 +29,51 @@ BSocketShell::MetaData::MetaData(const QUuid &id, bool request, const QString &o
 
 //
 
-void BSocketShell::MetaData::setIsRequest(bool request)
+void BSocketWrapper::MetaData::setIsRequest(bool request)
 {
     _m_request = request;
 }
 
-void BSocketShell::MetaData::setId(const QUuid &id)
+void BSocketWrapper::MetaData::setId(const QUuid &id)
 {
     _m_id = id;
 }
 
-void BSocketShell::MetaData::setOperation(const QString &operation)
+void BSocketWrapper::MetaData::setOperation(const QString &operation)
 {
     _m_operation = operation;
 }
 
-void BSocketShell::MetaData::invalidate()
+void BSocketWrapper::MetaData::invalidate()
 {
     _m_id = QUuid();
     _m_request = true;
     _m_operation.clear();
 }
 
-bool BSocketShell::MetaData::isRequest() const
+bool BSocketWrapper::MetaData::isRequest() const
 {
     return _m_request;
 }
 
-const QUuid &BSocketShell::MetaData::id() const
+const QUuid &BSocketWrapper::MetaData::id() const
 {
     return _m_id;
 }
 
-const QString &BSocketShell::MetaData::operation() const
+const QString &BSocketWrapper::MetaData::operation() const
 {
     return _m_operation;
 }
 
-bool BSocketShell::MetaData::isValid() const
+bool BSocketWrapper::MetaData::isValid() const
 {
     return !_m_id.isNull() && !_m_operation.isEmpty();
 }
 
 //
 
-BSocketShell::MetaData &BSocketShell::MetaData::operator=(const BSocketShell::MetaData &other)
+BSocketWrapper::MetaData &BSocketWrapper::MetaData::operator=(const MetaData &other)
 {
     setId( other.id() );
     setIsRequest( other.isRequest() );
@@ -81,36 +81,36 @@ BSocketShell::MetaData &BSocketShell::MetaData::operator=(const BSocketShell::Me
     return *this;
 }
 
-bool BSocketShell::MetaData::operator==(const BSocketShell::MetaData &other) const
+bool BSocketWrapper::MetaData::operator==(const MetaData &other) const
 {
     return id() == other.id() && isRequest() == other.isRequest() && operation() == other.operation();
 }
 
-bool BSocketShell::MetaData::operator<(const BSocketShell::MetaData &other) const
+bool BSocketWrapper::MetaData::operator<(const MetaData &other) const
 {
     return id() < other.id();
 }
 
 ////
 
-const QDataStream::Version BSocketShell::DataStreamVersion = QDataStream::Qt_4_8;
+const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_4_8;
 
 //
 
-BSocketShell::BSocketShell(QObject *parent) :
+BSocketWrapper::BSocketWrapper(QObject *parent) :
     QObject(parent)
 {
     _m_init();
 }
 
-BSocketShell::BSocketShell(BGenericSocket *socket, QObject *parent) :
+BSocketWrapper::BSocketWrapper(BGenericSocket *socket, QObject *parent) :
     QObject(parent)
 {
     _m_init();
     setSocket(socket);
 }
 
-BSocketShell::BSocketShell(BGenericSocket::SocketType type, QObject *parent) :
+BSocketWrapper::BSocketWrapper(BGenericSocket::SocketType type, QObject *parent) :
     QObject(parent)
 {
     _m_init();
@@ -119,7 +119,7 @@ BSocketShell::BSocketShell(BGenericSocket::SocketType type, QObject *parent) :
 
 //
 
-void BSocketShell::setSocket(BGenericSocket *socket)
+void BSocketWrapper::setSocket(BGenericSocket *socket)
 {
     if ( !socket || socket->thread() != thread() || !socket->isSocketSet() || !unsetSocket() )
         return;
@@ -131,7 +131,7 @@ void BSocketShell::setSocket(BGenericSocket *socket)
     connect(_m_socket, SIGNAL( readyRead() ), this, SLOT( _m_readyRead() ), Qt::DirectConnection);
 }
 
-void BSocketShell::setCompressionLevel(int level)
+void BSocketWrapper::setCompressionLevel(int level)
 {
     if (level < 0)
         level = -1;
@@ -140,17 +140,17 @@ void BSocketShell::setCompressionLevel(int level)
     _m_comprLvl = level;
 }
 
-void BSocketShell::setCriticalBufferSize(qint64 size)
+void BSocketWrapper::setCriticalBufferSize(qint64 size)
 {
     _m_criticalBufferSize = size;
 }
 
-void BSocketShell::setCloseOnCriticalBufferSize(bool close)
+void BSocketWrapper::setCloseOnCriticalBufferSize(bool close)
 {
     _m_closeOnCriticalBufferSize = close;
 }
 
-bool BSocketShell::unsetSocket()
+bool BSocketWrapper::unsetSocket()
 {
     if (!_m_socket)
         return true;
@@ -167,32 +167,32 @@ bool BSocketShell::unsetSocket()
     return true;
 }
 
-BGenericSocket *BSocketShell::socket() const
+BGenericSocket *BSocketWrapper::socket() const
 {
     return _m_socket.data();
 }
 
-int BSocketShell::compressionLevel() const
+int BSocketWrapper::compressionLevel() const
 {
     return _m_comprLvl;
 }
 
-qint64 BSocketShell::criticalBufferSize() const
+qint64 BSocketWrapper::criticalBufferSize() const
 {
     return _m_criticalBufferSize;
 }
 
-bool BSocketShell::closeOnCriticalBufferSize() const
+bool BSocketWrapper::closeOnCriticalBufferSize() const
 {
     return _m_closeOnCriticalBufferSize;
 }
 
-bool BSocketShell::isBuisy() const
+bool BSocketWrapper::isBuisy() const
 {
     return _m_bytesOutTotal > 0;
 }
 
-bool BSocketShell::sendData(const QByteArray &data, const MetaData &metaData)
+bool BSocketWrapper::sendData(const QByteArray &data, const MetaData &metaData)
 {
     if ( _m_socket.isNull() || !_m_socket->isWritable() || isBuisy() )
         return false;
@@ -237,7 +237,7 @@ bool BSocketShell::sendData(const QByteArray &data, const MetaData &metaData)
 
 //
 
-void BSocketShell::_m_init()
+void BSocketWrapper::_m_init()
 {
     _m_resetIn();
     _m_resetOut();
@@ -246,13 +246,13 @@ void BSocketShell::_m_init()
     _m_closeOnCriticalBufferSize = false;
 }
 
-void BSocketShell::_m_resetIn()
+void BSocketWrapper::_m_resetIn()
 {
     _m_bytesInTotal = 0;
     _m_metaIn.invalidate();
 }
 
-void BSocketShell::_m_resetOut()
+void BSocketWrapper::_m_resetOut()
 {
     _m_bytesOutTotal = 0;
     _m_bytesOutReady = 0;
@@ -261,7 +261,7 @@ void BSocketShell::_m_resetOut()
 
 //
 
-void BSocketShell::_m_bytesWritten(qint64 bytes)
+void BSocketWrapper::_m_bytesWritten(qint64 bytes)
 {
     _m_bytesOutReady += bytes;
     if ( _m_metaOut.isValid() )
@@ -273,18 +273,18 @@ void BSocketShell::_m_bytesWritten(qint64 bytes)
     }
 }
 
-void BSocketShell::_m_disconnected()
+void BSocketWrapper::_m_disconnected()
 {
     _m_resetIn();
     _m_resetOut();
 }
 
-void BSocketShell::_m_error(QAbstractSocket::SocketError socketError)
+void BSocketWrapper::_m_error(QAbstractSocket::SocketError socketError)
 {
     //
 }
 
-void BSocketShell::_m_readyRead()
+void BSocketWrapper::_m_readyRead()
 {
     QDataStream in( _m_socket->ioDevice() );
     in.setVersion(DataStreamVersion);

@@ -61,13 +61,13 @@ BSyntax::BSyntax() : _m_d(new BSyntaxData)
     _m_d->type = "Text";
 }
 
+BSyntax::BSyntax(const BSyntax &other) : _m_d(other._m_d)
+{
+}
+
 BSyntax::BSyntax(const QString &fileName) : _m_d(new BSyntaxData)
 {
     loadSyntax(fileName);
-}
-
-BSyntax::BSyntax(const BSyntax &other) : _m_d(other._m_d)
-{
 }
 
 BSyntax::~BSyntax()
