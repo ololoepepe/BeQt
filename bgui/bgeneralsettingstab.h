@@ -26,6 +26,7 @@ public:
     //
     BGeneralSettingsTab();
     //
+    QString id() const;
     QVariantMap valueMap() const;
     QString title() const;
 protected:

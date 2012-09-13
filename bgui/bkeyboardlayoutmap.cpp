@@ -8,6 +8,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QStringList>
+#include <QFileInfo>
 
 BKeyboardLayoutMap::BKeyboardLayoutMap() :
     _m_d(new BKeyboardLayoutMapData)
@@ -29,6 +30,8 @@ BKeyboardLayoutMap::BKeyboardLayoutMap(const QString &fileName) :
 
 bool BKeyboardLayoutMap::load(const QString &fileName)
 {
+    if (fileName.isEmpty() || QFileInfo(fileName).suffix() != "klm")
+        return false;
     QFile f(fileName);
     if ( !f.open(QFile::ReadOnly) )
         return false;
@@ -94,11 +97,16 @@ bool BKeyboardLayoutMap::load(const QString &fileName)
 
 bool BKeyboardLayoutMap::isValid() const
 {
-    return !_m_d->directMap.isEmpty() && !_m_d->reverseMap.isEmpty() &&
+    return !_m_d->description.isEmpty() && !_m_d->directMap.isEmpty() && !_m_d->reverseMap.isEmpty() &&
             !_m_d->directUnique.isEmpty() && !_m_d->reverseUnique.isEmpty();
 }
 
-bool BKeyboardLayoutMap::switchLayout(const QString &sourceText, QString &newText) const
+const QString &BKeyboardLayoutMap::description() const
+{
+    return _m_d->description;
+}
+
+bool BKeyboardLayoutMap::switchLayout(QString &text) const
 {
     if ( text.isEmpty() || !isValid() )
         return false;
@@ -108,7 +116,7 @@ bool BKeyboardLayoutMap::switchLayout(const QString &sourceText, QString &newTex
     bool reverse = false;
     for (int i = 0; i < du.size(); ++i)
     {
-        if ( sourceText.contains( du.at(i) ) )
+        if ( text.contains( du.at(i) ) )
         {
             direct = true;
             break;
@@ -116,7 +124,7 @@ bool BKeyboardLayoutMap::switchLayout(const QString &sourceText, QString &newTex
     }
     for (int i = 0; i < ru.size(); ++i)
     {
-        if ( sourceText.contains( ru.at(i) ) )
+        if ( text.contains( ru.at(i) ) )
         {
             reverse = true;
             break;
@@ -126,12 +134,11 @@ bool BKeyboardLayoutMap::switchLayout(const QString &sourceText, QString &newTex
         return false;
     const QMap<QChar, QChar> &map = direct ? _m_d->directMap : _m_d->reverseMap;
     QList<QChar> keys = map.keys();
-    newText = sourceText;
-    for (int i = 0; i < newText.length(); ++i)
+    for (int i = 0; i < text.length(); ++i)
     {
-        const QChar &c = newText.at(i);
+        const QChar &c = text.at(i);
         if ( keys.contains(c) )
-            newText[i] = map.value(c);
+            text[i] = map.value(c);
     }
     return true;
 }

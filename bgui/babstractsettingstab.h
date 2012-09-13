@@ -17,6 +17,7 @@ class BGUISHARED_EXPORT BAbstractSettingsTab : public QWidget
 public:
     BAbstractSettingsTab();
     //
+    virtual QString id() const = 0;
     virtual QVariantMap valueMap() const = 0;
     virtual QString title() const = 0;
 };

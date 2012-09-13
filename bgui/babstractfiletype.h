@@ -13,12 +13,14 @@ class BAbstractFileType : public QObject
 public:
     explicit BAbstractFileType(QObject *parent = 0);
     explicit BAbstractFileType(const BSyntax &syntax, QObject *parent = 0);
+    explicit BAbstractFileType(const QString &syntaxFileName, QObject *parent = 0);
     //
     void setSyntax(const BSyntax &syntax);
     bool loadSyntax(const QString &fileName);
-    BSyntax &syntax() const;
+    const BSyntax &syntax() const;
     bool matchesFileName(const QString &fileName) const;
     bool isValid() const;
+    QString fileDialogFilter() const;
     virtual QString description() const = 0;
     virtual QStringList suffixes() const = 0;
     virtual BAbstractFileType *clone() const = 0;

@@ -48,6 +48,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+#include <QFontComboBox>
 
 #include <QDebug>
 
@@ -161,6 +162,69 @@ _m_ProcessLoadedTextResult processLoadedText(QString text, int lineLength, int t
 
 //
 
+const QStringList BTextEditorDocument::EncodingsValid = QStringList() << "UTF-16" << "UTF-8" << "ISO 8859-13"
+    << "ISO 8859-4" << "Windows-1257" << "ISO 8859-6" << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16"
+    << "ISO 8859-2" << "Windows-1250" << "ISO 8859-7" << "Windows-1253" << "IBM 850" << "ISO 8859-1" << "ISO 8859-15"
+    << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10" << "ISO 8859-3" << "Windows-1258" << "Big5"
+    << "Big5-HKSCS" << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS" << "TIS-620"
+    << "ISO 8859-9" << "Windows-1254" << "ISO 8859-6" << "Windows-1256" << "Windows-1255" << "ISO 8859-8";
+const QString BTextEditorDocument::EncodingDef = "UTF-8";
+const int BTextEditorDocument::FontPointSizeMin = 6;
+const int BTextEditorDocument::FontPointSizeDef = 10;
+const int BTextEditorDocument::FontPointSizeMax = 20;
+const int BTextEditorDocument::LineLengthMin = 80;
+const int BTextEditorDocument::LineLengthDef = 120;
+const int BTextEditorDocument::LineLengthMax = 500;
+const int BTextEditorDocument::TabWidthDef = 4;
+const QList<int> BTextEditorDocument::TabWidthsValid = QList<int>() << 2 << 4 << 8;
+const bool BTextEditorDocument::BlockModeDef = false;
+#if defined(Q_OS_MAC)
+const QString BTextEditorDocument::FontFamilyDef = "Monaco";
+#elif defined(Q_OS_UNIX)
+const QString BTextEditorDocument::FontFamilyDef = "Monospace";
+#elif defined(Q_OS_WIN)
+const QString BTextEditorDocument::FontFamilyDef = "Courier";
+#endif
+
+//
+
+bool BTextEditorDocument::checkEncoding(const QString &codecName)
+{
+    return !codecName.isEmpty() && EncodingsValid.contains(codecName);
+}
+
+bool BTextEditorDocument::checkFontFamily(const QString &family)
+{
+    if ( family.isEmpty() )
+        return false;
+    static QFontComboBox fntcmbox;
+    fntcmbox.setFontFilters(QFontComboBox::MonospacedFonts);
+    QFont fnt = fntcmbox.currentFont();
+    if (fnt.family() == family)
+        return true;
+    int ind = fntcmbox.currentIndex();
+    fnt.setFamily(family);
+    fntcmbox.setCurrentFont(fnt);
+    return fntcmbox.currentIndex() != ind;
+}
+
+bool BTextEditorDocument::checkFontPointSize(int pointSize)
+{
+    return pointSize >= FontPointSizeMin && pointSize <= FontPointSizeMax;
+}
+
+bool BTextEditorDocument::checkLineLength(int length)
+{
+    return length >= LineLengthMin && length <= LineLengthMax;
+}
+
+bool BTextEditorDocument::checkTabWidth(int width)
+{
+    return TabWidthsValid.contains(width);
+}
+
+//
+
 BTextEditorDocument::BTextEditorDocument(const QString &fileName, QObject *parent) :
     QObject(parent)
 {
@@ -168,7 +232,6 @@ BTextEditorDocument::BTextEditorDocument(const QString &fileName, QObject *paren
     _m_lineLength = 120;
     _m_tabWidth = 4;
     _m_codecName = "UTF-8";
-    connect( QApplication::clipboard(), SIGNAL( dataChanged() ), this, SLOT( _m_clipboardDataChanged() ) );
     _m_initWidget();
     _m_initMenu();
     _m_blockMode = false;
@@ -228,7 +291,7 @@ void BTextEditorDocument::setReadOnly(bool readOnly)
     _m_undoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isUndoAvailable() );
     _m_redoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isRedoAvailable() );
     _m_modificationChanged( !_m_edit->isReadOnly() && _m_edit->document()->isModified() );
-    _m_clipboardDataChanged();
+    setClipboardHasText(false);
 }
 
 void BTextEditorDocument::setFontFamily(const QString &family)
@@ -335,6 +398,11 @@ void BTextEditorDocument::setTabWidth(int width)
     _m_tabWidth = width;
 }
 
+void BTextEditorDocument::setClipboardHasText(bool b)
+{
+    _m_actPaste->setEnabled(!_m_edit->isReadOnly() && b);
+}
+
 const QString &BTextEditorDocument::fileName() const
 {
     return _m_fileName;
@@ -358,6 +426,11 @@ bool BTextEditorDocument::isCutAvailable() const
 bool BTextEditorDocument::isCopyAvailable() const
 {
     return _m_edit->textCursor().hasSelection();
+}
+
+bool BTextEditorDocument::isPasteAvailable() const
+{
+    return _m_actPaste->isEnabled();
 }
 
 bool BTextEditorDocument::isUndoAvailable() const
@@ -869,7 +942,7 @@ void BTextEditorDocument::setFocusToEdit()
 
 void BTextEditorDocument::_m_initWidget()
 {
-    _m_edit = new BPlainTextEdit;
+    _m_edit = new BPlainTextEdit(this);
     //_m_edit->setCenterOnScroll(true);
     _m_highlighter = new BSyntaxHighlighter( _m_edit->document() );
     _m_highlighter->setSyntax(_m_syntax);
@@ -1783,11 +1856,6 @@ void BTextEditorDocument::_m_redoAvailableChanged(bool available)
 void BTextEditorDocument::_m_modificationChanged(bool modified)
 {
     emit modificationChanged(!_m_edit->isReadOnly() && modified);
-}
-
-void BTextEditorDocument::_m_clipboardDataChanged()
-{
-    _m_actPaste->setEnabled( !_m_edit->isReadOnly() && !QApplication::clipboard()->text().isEmpty() );
 }
 
 void BTextEditorDocument::_m_documentBlockCountChanged(int count)

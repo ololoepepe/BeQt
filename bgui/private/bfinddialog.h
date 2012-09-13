@@ -3,7 +3,6 @@
 
 class QWidget;
 class QEvent;
-class QCloseEvent;
 class QVBoxLayout;
 class QHBoxLayout;
 class QLabel;
@@ -24,13 +23,25 @@ class BFindDialog : public QDialog
 {
     Q_OBJECT
 public:
-    explicit BFindDialog(const QString &id, QWidget *parent = 0);
+    struct Parameters
+    {
+        QStringList textHistory;
+        QStringList newTextHistory;
+        bool caseSensitive;
+        bool wholeWords;
+        bool backwardOrder;
+        bool cyclic;
+    };
+    //
+    explicit BFindDialog(QWidget *parent = 0);
     //
     void setDocumentAvailable(bool available);
     void setSelectionAvailable(bool available);
     void setText(const QString &text);
     void setReplaceAvailable(bool available);
     void setLineLength(int length);
+    void setParameters(const Parameters &param);
+    Parameters parameters() const;
     QString text() const;
     QString newText() const;
     Qt::CaseSensitivity caseSensitivity() const;
@@ -38,11 +49,8 @@ public:
     bool cyclic() const;
 protected:
     void changeEvent(QEvent *event);
-    void closeEvent(QCloseEvent *event);
     void showEvent(QShowEvent *event);
 private:
-    const QString _m_CId;
-    //
     bool _m_documentAvailable;
     bool _m_selectionAvailable;
     bool _m_replaceAvailable;
@@ -72,8 +80,6 @@ private:
         QPushButton *_m_btnFind;
     //
     void _m_retranslateUi();
-    void _m_loadSettings();
-    void _m_saveSettings();
     void _m_check();
     QStringList _m_textHistory() const;
     QStringList _m_newTextHistory() const;

@@ -54,6 +54,11 @@ BGeneralSettingsTab::BGeneralSettingsTab()
 
 //
 
+QString BGeneralSettingsTab::id() const
+{
+    return "beqt/bgui/general";
+}
+
 QVariantMap BGeneralSettingsTab::valueMap() const
 {
     QVariantMap m;

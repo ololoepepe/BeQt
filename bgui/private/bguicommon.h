@@ -3,7 +3,6 @@
 
 #include <QString>
 
-const QString GroupMainWindow = "beqt_main_window";
-const QString GroupTextEditor = "beqt_text_editor";
+const QString _m_GroupMainWindow = "beqt_main_window";
 
 #endif // BGUICOMMON_H

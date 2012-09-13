@@ -26,7 +26,8 @@ public:
     //
     bool load(const QString &fileName);
     bool isValid() const;
-    bool switchLayout(const QString &sourceText, QString &newText) const;
+    const QString &description() const;
+    bool switchLayout(QString &text) const;
 private:
     QSharedPointer<BKeyboardLayoutMapData> _m_d;
 };

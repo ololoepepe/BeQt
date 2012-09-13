@@ -2,11 +2,7 @@ class QWidget;
 
 #include "bselectfilesdialog.h"
 #include "btexteditordocument.h"
-#include "bguicommon.h"
 
-#include "../bcore/bcore.h"
-
-#include <QRect>
 #include <QString>
 #include <QDialog>
 #include <QList>
@@ -16,22 +12,12 @@ class QWidget;
 #include <QHBoxLayout>
 #include <QPushButton>
 #include <QVariant>
-#include <QSettings>
-#include <QApplication>
 #include <QListWidgetItem>
 #include <QFileInfo>
 #include <QFont>
 
-const QRect _m_DefGeometry = QRect(200, 200, 600, 400);
-//
-//_m_GroupTextEditor
-  const QString _m_GroupSelectFilesDialog = "select_files_dialog";
-    const QString _m_KeyGeometry = "geometry";
-
-//
-
-BSelectFilesDialog::BSelectFilesDialog(const QString &id, const QList<BTextEditorDocument *> &documents, QWidget *parent) :
-    QDialog(parent), _m_CId(id)
+BSelectFilesDialog::BSelectFilesDialog(const QList<BTextEditorDocument *> &documents, QWidget *parent) :
+    QDialog(parent)
 {
     _m_documents = documents;
     _m_decision = CancelDecision;
@@ -82,7 +68,6 @@ BSelectFilesDialog::BSelectFilesDialog(const QString &id, const QList<BTextEdito
           connect( _m_btnSave, SIGNAL( clicked() ), this, SLOT( _m_btnSaveClicked() ) );
         _m_hlt->addWidget(_m_btnSave);
       _m_vlt->addLayout(_m_hlt);
-    _m_loadSettings();
 }
 
 //
@@ -103,57 +88,20 @@ QList<BTextEditorDocument *> BSelectFilesDialog::selectedDocuments() const
 
 //
 
-void BSelectFilesDialog::_m_loadSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CId.isEmpty() )
-        s->beginGroup(_m_CId);
-    s->beginGroup(_m_GroupTextEditor);
-      s->beginGroup(_m_GroupSelectFilesDialog);
-        setGeometry( s->value(_m_KeyGeometry, _m_DefGeometry).toRect() );
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CId.isEmpty() )
-        s->endGroup();
-}
-
-void BSelectFilesDialog::_m_saveSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CId.isEmpty() )
-        s->beginGroup(_m_CId);
-    s->beginGroup(_m_GroupTextEditor);
-      s->beginGroup(_m_GroupSelectFilesDialog);
-        s->setValue( _m_KeyGeometry, geometry() );
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CId.isEmpty() )
-        s->endGroup();
-}
-
-//
-
 void BSelectFilesDialog::_m_btnDiscardClicked()
 {
     _m_decision = DiscardDecision;
-    _m_saveSettings();
     accept();
 }
 
 void BSelectFilesDialog::_m_btnCancelClicked()
 {
     _m_decision = CancelDecision;
-    _m_saveSettings();
     reject();
 }
 
 void BSelectFilesDialog::_m_btnSaveClicked()
 {
     _m_decision = SaveDecision;
-    _m_saveSettings();
     accept();
 }

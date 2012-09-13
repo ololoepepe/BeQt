@@ -37,6 +37,25 @@ public:
         int column;
     };
     //
+    static const QString EncodingDef;
+    static const QStringList EncodingsValid;
+    static const QString FontFamilyDef;
+    static const int FontPointSizeMin;
+    static const int FontPointSizeDef;
+    static const int FontPointSizeMax;
+    static const int LineLengthMin;
+    static const int LineLengthDef;
+    static const int LineLengthMax;
+    static const int TabWidthDef;
+    static const QList<int> TabWidthsValid;
+    static const bool BlockModeDef;
+    //
+    static bool checkEncoding(const QString &codecName);
+    static bool checkFontFamily(const QString &family);
+    static bool checkFontPointSize(int pointSize);
+    static bool checkLineLength(int length);
+    static bool checkTabWidth(int width);
+    //
     explicit BTextEditorDocument(const QString &fileName, QObject *parent = 0);
     ~BTextEditorDocument();
     //
@@ -50,11 +69,13 @@ public:
     void setMaxBookmarkCount(int count);
     void setLineLength(int length);
     void setTabWidth(int width);
+    void setClipboardHasText(bool b);
     const QString &fileName() const;
     const QString &codecName() const;
     bool isReadOnly() const;
     bool isCutAvailable() const;
     bool isCopyAvailable() const;
+    bool isPasteAvailable() const;
     bool isUndoAvailable() const;
     bool isRedoAvailable() const;
     bool isModified() const;
@@ -153,7 +174,6 @@ private slots:
     void _m_undoAvailableChanged(bool available);
     void _m_redoAvailableChanged(bool available);
     void _m_modificationChanged(bool modified);
-    void _m_clipboardDataChanged();
     void _m_documentBlockCountChanged(int count);
     void _m_editCursorPositionChanged();
     void _m_editSelectionChanged();

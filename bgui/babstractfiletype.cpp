@@ -2,12 +2,25 @@
 
 #include "bsyntax.h"
 
+#include <QObject>
 #include <QString>
 #include <QStringList>
 
-BAbstractFileType::BAbstractFileType(const BSyntax &syntax)
+BAbstractFileType::BAbstractFileType(QObject *parent) :
+    QObject(parent)
 {
-    _m_syntax = syntax;
+}
+
+BAbstractFileType::BAbstractFileType(const BSyntax &syntax, QObject *parent) :
+    QObject(parent)
+{
+    setSyntax(syntax);
+}
+
+BAbstractFileType::BAbstractFileType(const QString &syntaxFileName, QObject *parent) :
+    QObject(parent)
+{
+    loadSyntax(syntaxFileName);
 }
 
 //
@@ -29,5 +42,27 @@ bool BAbstractFileType::matchesFileName(const QString &fileName) const
 
 bool BAbstractFileType::isValid() const
 {
-    return description().length() <= 32;
+    QStringList sl = suffixes();
+    return description().length() <= 32 && ( sl.isEmpty() || ( !sl.contains("") && !sl.contains("*") ) );
+}
+
+QString BAbstractFileType::fileDialogFilter() const
+{
+    QString filter;
+    if ( !isValid() )
+        return filter;
+    filter += description() + " (";
+    QStringList sl = suffixes();
+    if ( !sl.isEmpty() )
+    {
+        sl.removeDuplicates();
+        for (int i = 0; i < sl.size(); ++i)
+            filter += "*." + sl.at(i) + (i < sl.size() - 1 ? " " : "");
+    }
+    else
+    {
+        filter += "*";
+    }
+    filter += ")";
+    return filter;
 }
