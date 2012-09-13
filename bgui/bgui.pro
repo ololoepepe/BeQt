@@ -19,7 +19,6 @@ SOURCES += \
     bterminal.cpp \
     btexteditor.cpp \
     private/baboutdialog.cpp \
-    private/bencoding.cpp \
     private/bfinddialog.cpp \
     private/bhelpwidget.cpp \
     private/bmacrorecorder.cpp \
@@ -48,7 +47,6 @@ HEADERS += \
     bterminal.h \
     btexteditor.h \
     private/baboutdialog.h \
-    private/bencoding.h \
     private/bfinddialog.h \
     private/bhelpwidget.h \
     private/bguicommon.h \
