@@ -87,7 +87,7 @@ public:
           RecordMacroAction,
           //separator
           PlayMacroAction,
-          ShowHideMacros,
+          ShowHideMacrosConsole,
           //separator
           LoadMacroAction,
           SaveMacroAction,
@@ -259,29 +259,30 @@ private:
     void _m_saveSettings();
     //actions:file
     void _m_newDocument( const QString &text = QString() );
-    void _m_openFile( const QString &fileName = QString() );
+    bool _m_openFile( const QString &fileName = QString() );
     bool _m_saveDocument(BTextEditorDocument *document = 0);
     bool _m_saveDocumentAs(BTextEditorDocument *document = 0);
     bool _m_saveAllDocuments();
     bool _m_closeDocument(BTextEditorDocument *document = 0);
     bool _m_closeAllDocuments();
     //actions:edit
-    void _m_undo();
-    void _m_redo();
-    void _m_cut();
-    void _m_copy();
-    void _m_paste();
-    void _m_switchSelectedTextLayout();
+    bool _m_undo();
+    bool _m_redo();
+    bool _m_cut();
+    bool _m_copy();
+    bool _m_paste();
+    bool _m_switchSelectedTextLayout();
+    bool _m_find();
     //find, find next, replace next
     //actions:document
-    void _m_switchDocumentMain();
-    void _m_makeBookmark();
-    void _m_gotoNextBookmark();
+    bool _m_switchDocumentMain();
+    bool _m_makeBookmark();
+    bool _m_gotoNextBookmark();
     void _m_switchBlockMode();
     //actions:macros
     void _m_recordMacro();
     void _m_playMacro();
-    void _m_showHideMacros();
+    void _m_showHideMacrosConsole();
     bool _m_loadMacro();
     bool _m_saveMacro();
     //actions:additional
@@ -291,6 +292,7 @@ private:
     void _m_reopen(const QString &codecName);
     //TODO
     BTextEditorDocument *_m_addDocument(const QString &fileName);
+    BTextEditorDocument *_m_document(int index) const;
     void _m_addRecentFile( const QString &fileName, const QString &oldFileName = QString() );
     bool _m_reopenQuestion(const QString &fileName);
     int _m_reopenReadonlyQuestion(const QString &fileName);
@@ -319,7 +321,7 @@ private slots:
     void _m_documentFileNameChanged(const QString &fileName);
     void _m_documentModificationChanged(bool modified);
     void _m_documentSelectionChanged(bool hasSelection);
-    void _m_findNext();
+    bool _m_findNext();
     void _m_replaceNext();
     void _m_replaceInSelection();
     void _m_replaceInDocument();

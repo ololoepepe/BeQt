@@ -5,12 +5,12 @@
 
 #include "private/bguicommon.h"
 #include "private/btexteditordocument.h"
-#include "private/bencoding.h"
 #include "private/bselectfilesdialog.h"
 #include "private/bfinddialog.h"
 #include "private/bopensavedialog.h"
 #include "private/btexteditorsettingstab.h"
 #include "private/bmacrorecorder.h"
+#include "private/bplaintextedit.h"
 
 #include "../bcore/bcore.h"
 
@@ -131,6 +131,12 @@ const int MaxRecentFiles = 15;
 QIcon icon(const QString &fileName)
 {
     return QIcon( BCore::IcoPath + "/" + (QFileInfo(fileName).suffix().isEmpty() ? fileName + ".png" : fileName) );
+}
+
+BTextEditorDocument *document(QWidget *widget)
+{
+    BPlainTextEdit *pted = qobject_cast<BPlainTextEdit *>(widget);
+    return pted ? pted->editorDocument() : 0;
 }
 
 bool checkReadOnly(const QString &fileName)
@@ -566,35 +572,32 @@ QWidget *BTextEditor::widget(int index) const
 
 bool BTextEditor::isDocumentAvailable() const
 {
-    return _m_currentDocument;
+    return !_m_currentDocument.isNull();
 }
 
 bool BTextEditor::hasMainDocument() const
 {
-    for (int i = 0; i < _m_documents.size(); ++i)
-        if ( _m_documents.at(i)->property("main").toBool() )
-            return true;
-    return false;
+    return _m_mainDocument();
 }
 
 bool BTextEditor::isCurrentDocumentMain() const
 {
-    return _m_currentDocument ? _m_currentDocument->property("main").toBool() : false;
+    return !_m_currentDocument.isNull() && _m_currentDocument->property("main").toBool();
 }
 
 QString BTextEditor::currentDocumentFileName() const
 {
-    return _m_currentDocument ? _m_currentDocument->fileName() : "";
+    return !_m_currentDocument.isNull() ? _m_currentDocument->fileName() : "";
 }
 
 QString BTextEditor::currentDocumentText() const
 {
-    return _m_currentDocument ? _m_currentDocument->text() : "";
+    return !_m_currentDocument.isNull() ? _m_currentDocument->text() : "";
 }
 
 QString BTextEditor::currentDocumentSelectedText() const
 {
-    return _m_currentDocument ? _m_currentDocument->selectedText() : "";
+    return !_m_currentDocument.isNull() ? _m_currentDocument->selectedText() : "";
 }
 
 QString BTextEditor::mainDocumentFileName() const
@@ -619,8 +622,10 @@ QString BTextEditor::mainDocumentSelectedText() const
 
 bool BTextEditor::askOnApplicationQuit()
 {
-    _m_saveSettings();
-    return _m_documents.isEmpty() ? true : _m_closeAllDocuments();
+    bool b = _m_documents.isEmpty() || _m_closeAllDocuments();
+    if (b)
+        _m_saveSettings();
+    return b;
 }
 
 bool BTextEditor::isFileOpened(const QString &fileName) const
@@ -648,158 +653,67 @@ QStringList BTextEditor::openedFiles(const QStringList &fileNames) const
 
 //
 
-bool BTextEditor::performAction(int actId)
+bool BTextEditor::performAction(int id)
 {
-    switch (actId)
+    switch (id)
     {
-    //NewOpenToolBar
+    //FileMenu
     case NewDocumentAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_N, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
         _m_newDocument();
         break;
-    }
     case OpenFileAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_O, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
-        _m_openFile();
-        break;
-    }
-    //SaveToolBar
+        return _m_openFile();
     case SaveDocumentAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_S, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
         return _m_saveDocument();
-    }
     case SaveDocumentAsAction:
         return _m_saveDocumentAs();
     case SaveAllDocumentsAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_S, Qt::ControlModifier | Qt::ShiftModifier);
-        _m_recorder->handleKeyPress(&ke);
         return _m_saveAllDocuments();
-    }
-    //CloseToolBar
     case CloseDocumentAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_W, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
         return _m_closeDocument();
-    }
     case CloseAllDocumentsAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_W, Qt::ControlModifier | Qt::ShiftModifier);
-        _m_recorder->handleKeyPress(&ke);
         return _m_closeAllDocuments();
-    }
-    //UndoRedoToolBar
+    //EditMenu
     case UndoAction:
-        if (_m_currentDocument)
-            _m_currentDocument->undo();
-        break;
+        return _m_undo();
     case RedoAction:
-        if (_m_currentDocument)
-            _m_currentDocument->redo();
-        break;
-    //ClipboardToolBar
+        return _m_redo();
     case CutAction:
-        if (_m_currentDocument)
-            _m_currentDocument->cut();
-        break;
+        return _m_cut();
     case CopyAction:
-        if (_m_currentDocument)
-            _m_currentDocument->copy();
-        break;
+        return _m_copy();
     case PasteAction:
-        if (_m_currentDocument)
-            _m_currentDocument->paste();
-        break;
-    //DocumentToolBar
+        return _m_paste();
+    case SwitchSelectedTextLayoutAction:
+        return _m_switchSelectedTextLayout();
+    case FindAction:
+        return _m_find();
+    case FindNextAction:
+        return _m_findNext();
+    //DocumentMenu
     case SwitchDocumentMain:
-        _m_switchDocumentMain();
-        break;
+        return _m_switchDocumentMain();
     case MakeBookmarkAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_F10, Qt::ControlModifier | Qt::ShiftModifier);
-        _m_recorder->handleKeyPress(&ke);
-        if (_m_currentDocument)
-            _m_currentDocument->makeBookmark();
-        break;
-    }
+        return _m_makeBookmark();
     case GotoNextBookmarkAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_F10, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
-        if (_m_currentDocument)
-            _m_currentDocument->gotoNextBookmark();
-        break;
-    }
+        return _m_gotoNextBookmark();
     case SwitchBlockModeAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_B, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
         _m_switchBlockMode();
         break;
-    }
-    case SwitchSelectedTextLayoutAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_L, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
-        if (_m_currentDocument)
-            _m_currentDocument->switchSelectedTextLayout(_m_directMap, _m_reverseMap,
-                                                         _m_directUnique, _m_reverseUnique);
-        break;
-    }
-    //SearchToolBar
-    case FindAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_F, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
-        if ( !_m_findDlg->isVisible() )
-        {
-            QString stext = _m_currentDocument ? _m_currentDocument->selectedText() : "";
-            stext.remove( QRegExp("\\n.*") );
-            if ( !stext.isEmpty() )
-                _m_findDlg->setText(stext);
-            _m_findDlg->show();
-        }
-        _m_findDlg->activateWindow();
-        break;
-    }
-    case FindNextAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_G, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
-        _m_findNext();
-        break;
-    }
-    case ReplaceNextAction:
-    {
-        QKeyEvent ke(QEvent::KeyPress, Qt::Key_H, Qt::ControlModifier);
-        _m_recorder->handleKeyPress(&ke);
-        _m_replaceNext();
-        break;
-    }
-    //MacrosToolbar
+    //MacrosMenu
     case RecordMacroAction:
         _m_recordMacro();
         break;
     case PlayMacroAction:
         _m_playMacro();
         break;
-    case ShowHideMacros:
-        _m_showHideMacros();
+    case ShowHideMacrosConsole:
+        _m_showHideMacrosConsole();
         break;
     case LoadMacroAction:
         return _m_loadMacro();
     case SaveMacroAction:
         return _m_saveMacro();
-    case OpenMacrosDirAction:
-        QDesktopServices::openUrl( QUrl::fromLocalFile( BCore::user("macros") ) );
-        break;
     default:
         break;
     }
@@ -1023,7 +937,7 @@ void BTextEditor::_m_initToolBars()
       _m_resetRecordMacroAction();
       tbar->addSeparator();
       _m_createAction(PlayMacroAction, "player_play.png", "", tbar, true);
-      _m_createAction(ShowHideMacros, ".png", "", tbar, true);
+      _m_createAction(ShowHideMacrosConsole, ".png", "", tbar, true); //TODO
       tbar->addSeparator();
       _m_createAction(LoadMacroAction, "fileopen.png", "", tbar, true);
       _m_createAction(SaveMacroAction, "filesaveas.png", "", tbar, true);
@@ -1439,7 +1353,7 @@ void BTextEditor::_m_newDocument(const QString &text)
     _m_setDocumentSyntax(doc);
 }
 
-void BTextEditor::_m_openFile(const QString &fileName)
+bool BTextEditor::_m_openFile(const QString &fileName)
 {
     QString fn = fileName;
 #if defined(Q_OS_WIN)
@@ -1450,17 +1364,17 @@ void BTextEditor::_m_openFile(const QString &fileName)
     {
         QScopedPointer<BOpenSaveDialog> osd( _m_createOpenSaveDialog(true) );
         if (!osd)
-            return;
+            return false;
         int r = osd->exec();
         _m_handleOpenSaveDialog( osd.data() );
         if (BOpenSaveDialog::Accepted != r)
-            return;
+            return false;
         QStringList sl = osd->selectedFiles();
         fn = sl.isEmpty() ? "" : sl.first();
         cn = osd->codecName();
     }
     if ( fn.isEmpty() )
-        return;
+        return false;
     fn = QFileInfo(fn).absoluteFilePath();
     for (int i = 0; i < _m_documents.size(); ++i)
     {
@@ -1482,7 +1396,7 @@ void BTextEditor::_m_openFile(const QString &fileName)
             {
                 _m_alreadyOpenedWarning(fn);
             }
-            return;
+            return true;
         }
     }
     bool ro = false;
@@ -1496,7 +1410,7 @@ void BTextEditor::_m_openFile(const QString &fileName)
             break;
         case 0:
         default:
-            return;
+            return false;
         }
     }
     BTextEditorDocument *ted = _m_addDocument(fn);
@@ -1509,6 +1423,7 @@ void BTextEditor::_m_openFile(const QString &fileName)
     _m_updateEncoding( ted->codecName() );
     window()->raise();
     window()->activateWindow();
+    return true;
 }
 
 bool BTextEditor::_m_saveDocument(BTextEditorDocument *document)
@@ -1694,39 +1609,57 @@ bool BTextEditor::_m_closeAllDocuments()
 
 //actions:edit
 
-void BTextEditor::_m_undo()
+bool BTextEditor::_m_undo()
+{
+    if (_m_currentDocument)
+        _m_currentDocument->undo();
+}
+
+bool BTextEditor::_m_redo()
+{
+    if (_m_currentDocument)
+        _m_currentDocument->redo();
+}
+
+bool BTextEditor::_m_cut()
+{
+    if (_m_currentDocument)
+        _m_currentDocument->cut();
+}
+
+bool BTextEditor::_m_copy()
+{
+    if (_m_currentDocument)
+        _m_currentDocument->copy();
+}
+
+bool BTextEditor::_m_paste()
+{
+    if (_m_currentDocument)
+        _m_currentDocument->paste();
+}
+
+bool BTextEditor::_m_switchSelectedTextLayout()
 {
     //
 }
 
-void BTextEditor::_m_redo()
+bool BTextEditor::_m_find()
 {
-    //
-}
-
-void BTextEditor::_m_cut()
-{
-    //
-}
-
-void BTextEditor::_m_copy()
-{
-    //
-}
-
-void BTextEditor::_m_paste()
-{
-    //
-}
-
-void BTextEditor::_m_switchSelectedTextLayout()
-{
-    //
+    if ( !_m_findDlg->isVisible() )
+    {
+        QString stext = _m_currentDocument ? _m_currentDocument->selectedText() : "";
+        stext.remove( QRegExp("\\n.*") );
+        if ( !stext.isEmpty() )
+            _m_findDlg->setText(stext);
+        _m_findDlg->show();
+    }
+    _m_findDlg->activateWindow();
 }
 
 //actions:document
 
-void BTextEditor::_m_switchDocumentMain()
+bool BTextEditor::_m_switchDocumentMain()
 {
     if (_m_documents.isEmpty() || !_m_currentDocument)
         return _m_resetSwitchDocumentMainAction();
@@ -1738,12 +1671,12 @@ void BTextEditor::_m_switchDocumentMain()
     _m_resetSwitchDocumentMainAction();
 }
 
-void BTextEditor::_m_makeBookmark()
+bool BTextEditor::_m_makeBookmark()
 {
     //
 }
 
-void BTextEditor::_m_gotoNextBookmark()
+bool BTextEditor::_m_gotoNextBookmark()
 {
     //
 }
@@ -1786,7 +1719,7 @@ void BTextEditor::_m_playMacro()
     _m_recorder->applyMacro();
 }
 
-void BTextEditor::_m_showHideMacros()
+void BTextEditor::_m_showHideMacrosConsole()
 {
     _m_recorderConsole->setVisible( !_m_recorderConsole->isVisible() );
     _m_resetShowHideMacrosAction();
@@ -1910,6 +1843,11 @@ BTextEditorDocument *BTextEditor::_m_addDocument(const QString &fileName)
     _m_cmbox->addItem(QFileInfo(fileName).fileName(), fileName);
     _m_cmbox->setCurrentIndex(index);
     return ted;
+}
+
+BTextEditorDocument *BTextEditor::_m_document(int index) const
+{
+    return document( _m_twgt->widget(index) );
 }
 
 void BTextEditor::_m_addRecentFile(const QString &fileName, const QString &oldFileName)
@@ -2222,41 +2160,37 @@ void BTextEditor::_m_updateEncoding(const QString &codecName)
 
 void BTextEditor::_m_twgtCurrentChanged(int index)
 {
-    if ( index < 0 || index > _m_documents.size() )
-        _m_currentDocument = 0;
-    else
-        _m_currentDocument = _m_documents.at(index);
-    _m_findDlg->setDocumentAvailable(_m_currentDocument);
-    if (_m_currentDocument)
+    _m_currentDocument = _m_document(index);
+    bool da = !_m_currentDocument.isNull();
+    _m_findDlg->setDocumentAvailable(da);
+    if (da)
         _m_findDlg->setReplaceAvailable( !_m_currentDocument->isReadOnly() );
-    QString stext = _m_currentDocument ? _m_currentDocument->selectedText() : "";
+    QString stext = da ? _m_currentDocument->selectedText() : "";
     _m_documentSelectionChanged( !stext.isEmpty() );
-    bool b = _m_currentDocument && QFileInfo( _m_currentDocument->fileName() ).isFile();
+    bool b = da && QFileInfo( _m_currentDocument->fileName() ).exists();
     editorAction(ReopenFileAction)->setEnabled(b);
-    editorAction(SaveDocumentAction)->setEnabled( _m_currentDocument && _m_currentDocument->isModified() );
-    editorAction(SaveDocumentAsAction)->setEnabled(_m_currentDocument);
-    editorAction(SaveAllDocumentsAction)->setEnabled(_m_currentDocument);
-    editorAction(CloseDocumentAction)->setEnabled(_m_currentDocument);
-    editorAction(CloseAllDocumentsAction)->setEnabled(_m_currentDocument);
-    editorAction(UndoAction)->setEnabled( _m_currentDocument && _m_currentDocument->isUndoAvailable() );
-    editorAction(RedoAction)->setEnabled( _m_currentDocument && _m_currentDocument->isRedoAvailable() );
-    editorAction(CutAction)->setEnabled( _m_currentDocument && _m_currentDocument->isCutAvailable() );
-    editorAction(CopyAction)->setEnabled( _m_currentDocument && _m_currentDocument->isCopyAvailable() );
+    editorAction(SaveDocumentAction)->setEnabled( da && _m_currentDocument->isModified() );
+    editorAction(SaveDocumentAsAction)->setEnabled(da);
+    editorAction(SaveAllDocumentsAction)->setEnabled(da);
+    editorAction(CloseDocumentAction)->setEnabled(da);
+    editorAction(CloseAllDocumentsAction)->setEnabled(da);
+    editorAction(UndoAction)->setEnabled( da && _m_currentDocument->isUndoAvailable() );
+    editorAction(RedoAction)->setEnabled( da && _m_currentDocument->isRedoAvailable() );
+    editorAction(CutAction)->setEnabled( da && _m_currentDocument->isCutAvailable() );
+    editorAction(CopyAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
     _m_checkPasteAvailable();
     _m_resetSwitchDocumentMainAction();
-    editorAction(MakeBookmarkAction)->setEnabled(_m_currentDocument);
-    editorAction(GotoNextBookmarkAction)->setEnabled(_m_currentDocument && _m_currentDocument->hasBookmarks() );
-    editorAction(SwitchBlockModeAction)->setEnabled(_m_currentDocument);
-    editorAction(SwitchSelectedTextLayoutAction)->setEnabled( _m_currentDocument &&
-                                                              _m_currentDocument->isCopyAvailable() );
-    editorAction(FindAction)->setEnabled(_m_currentDocument);
-    emit currentDocumentChanged(_m_currentDocument ? _m_currentDocument->fileName() : "");
-    emit documentAvailableChanged(_m_currentDocument);
-    _m_cmbox->setToolTip( _m_cmboxToolTip() );
-    if (_m_currentDocument)
+    editorAction(MakeBookmarkAction)->setEnabled(da);
+    editorAction(GotoNextBookmarkAction)->setEnabled(da && _m_currentDocument->hasBookmarks() );
+    editorAction(SwitchBlockModeAction)->setEnabled(da);
+    editorAction(SwitchSelectedTextLayoutAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
+    editorAction(FindAction)->setEnabled(da);
+    emit currentDocumentChanged(da ? _m_currentDocument->fileName() : "");
+    emit documentAvailableChanged(da);
+    if (da)
         _m_setCmboxSyntax( _m_currentDocument->syntax() );
-    _m_updateEncoding(_m_currentDocument ? _m_currentDocument->codecName() : _m_codecName);
-    if (!_m_currentDocument)
+    _m_updateEncoding(da ? _m_currentDocument->codecName() : _m_defaultEncoding);
+    if (!da)
     {
         _m_updateCursorPosition(-1, -1);
         return;
@@ -2313,7 +2247,7 @@ void BTextEditor::_m_documentSelectionChanged(bool hasSelection)
     _m_findDlg->setSelectionAvailable(hasSelection);
 }
 
-void BTextEditor::_m_findNext()
+bool BTextEditor::_m_findNext()
 {
     if (!_m_currentDocument)
         return;

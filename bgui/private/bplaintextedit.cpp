@@ -1,3 +1,5 @@
+class BTextEditorDocument;
+
 class QWidget;
 
 #include "bplaintextedit.h"
@@ -45,9 +47,16 @@ static void fillBackground( QPainter *painter, const QRectF &rect, QBrush brush,
 
 //
 
-BPlainTextEdit::BPlainTextEdit(QWidget *parent) :
-    QPlainTextEdit(parent)
+BPlainTextEdit::BPlainTextEdit(BTextEditorDocument *editorDocument, QWidget *parent) :
+    QPlainTextEdit(parent), _m_CDocument(editorDocument)
 {
+}
+
+//
+
+BTextEditorDocument *BPlainTextEdit::editorDocument() const
+{
+    return _m_CDocument;
 }
 
 //
