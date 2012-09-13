@@ -12,6 +12,7 @@ class QEvent;
 class QKeyEvent;
 class QMouseEvent;
 
+#include "../bkeyboardlayoutmap.h"
 #include "../bsyntax.h"
 
 #include <QObject>
@@ -98,8 +99,7 @@ public:
     void deselect();
     void makeBookmark();
     void gotoNextBookmark();
-    void switchSelectedTextLayout(const QMap<QChar, QChar> &directMap, const QMap<QChar, QChar> &reverseMap,
-                                  const QList<QChar> &directUnique, const QList<QChar> &reverseUnique);
+    void switchSelectedTextLayout(const BKeyboardLayoutMap &klm);
 public slots:
     void undo();
     void redo();

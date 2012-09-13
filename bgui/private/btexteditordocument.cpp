@@ -4,6 +4,7 @@
 #include "bsplittedlinesdialog.h"
 #include "bmacrorecorder.h"
 #include "../bsyntax.h"
+#include "../bkeyboardlayoutmap.h"
 
 #include "../../bcore/bcore.h"
 
@@ -810,59 +811,15 @@ void BTextEditorDocument::gotoNextBookmark()
     _m_bookmarks.append(bm);
 }
 
-void BTextEditorDocument::switchSelectedTextLayout(
-        const QMap<QChar, QChar> &directMap, const QMap<QChar, QChar> &reverseMap,
-        const QList<QChar> &directUnique, const QList<QChar> &reverseUnique)
+void BTextEditorDocument::switchSelectedTextLayout(const BKeyboardLayoutMap &klm)
 {
-    if ( _m_edit->isReadOnly() )
+    if ( _m_edit->isReadOnly() || !klm.isValid() )
         return;
     QString text = selectedText();
     if ( text.isEmpty() )
         return;
-    if ( directMap.isEmpty() || directUnique.isEmpty() || reverseMap.isEmpty() || reverseUnique.isEmpty() )
-        return;
-    bool direct = false;
-    bool reverse = false;
-    for (int i = 0; i < directUnique.size(); ++i)
-    {
-        if ( text.contains( directUnique.at(i) ) )
-        {
-            direct = true;
-            break;
-        }
-    }
-    for (int i = 0; i < reverseUnique.size(); ++i)
-    {
-        if ( text.contains( reverseUnique.at(i) ) )
-        {
-            reverse = true;
-            break;
-        }
-    }
-    if ( (direct && reverse) || (!direct && !reverse) )
-        return;
-    const QMap<QChar, QChar> &map = direct ? directMap : reverseMap;
-    QList<QChar> keys = map.keys();
-    QTextCursor tc = _m_edit->textCursor();
-    int start = tc.selectionStart();
-    int end = tc.selectionEnd();
-    _m_ExtraSelectionList esl = _m_edit->extraSelections();
-    for (int i = 0; i < esl.size(); ++i)
-    {
-        QTextCursor &tce = esl[i].cursor;
-        QString etext = tce.selectedText();
-        for (int j = 0; j < etext.length(); ++j)
-        {
-            const QChar &c = etext.at(j);
-            if ( keys.contains(c) )
-                etext[j] = map.value(c);
-        }
-        tce.insertText(etext);
-    }
-    tc.setPosition(start);
-    tc.setPosition(end, QTextCursor::KeepAnchor);
-    _m_edit->setTextCursor(tc);
-    _m_editSelectionChanged();
+    klm.switchLayout(text);
+    insertText(text);
 }
 
 //

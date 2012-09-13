@@ -91,6 +91,30 @@ public:
 
 //
 
+QIcon icon(const QString &fileName)
+{
+    return QIcon( BCore::IcoPath + "/" + (QFileInfo(fileName).suffix().isEmpty() ? fileName + ".png" : fileName) );
+}
+
+BTextEditorDocument *document(QWidget *widget)
+{
+    BPlainTextEdit *pted = qobject_cast<BPlainTextEdit *>(widget);
+    return pted ? pted->editorDocument() : 0;
+}
+
+bool checkReadOnly(const QString &fileName)
+{
+    if ( fileName.isEmpty() )
+        return false;
+    QFile f(fileName);
+    bool ro = !f.open(QFile::WriteOnly | QFile::Append);
+    f.close();
+    return ro;
+}
+
+//
+
+const QString SyntaxTypeDef = "Text";
 const QString MacrosDirDef = BCore::Home;
 //
 const QRect OpenSaveDlgGeometryDef = QRect(200, 200, 400, 400);
@@ -131,25 +155,12 @@ QList<BTextEditor *> instances;
 
 //
 
-QIcon icon(const QString &fileName)
+bool BTextEditor::isFileOpened(const QString &fileName, const QString &settingsGroup)
 {
-    return QIcon( BCore::IcoPath + "/" + (QFileInfo(fileName).suffix().isEmpty() ? fileName + ".png" : fileName) );
-}
-
-BTextEditorDocument *document(QWidget *widget)
-{
-    BPlainTextEdit *pted = qobject_cast<BPlainTextEdit *>(widget);
-    return pted ? pted->editorDocument() : 0;
-}
-
-bool checkReadOnly(const QString &fileName)
-{
-    if ( fileName.isEmpty() )
-        return false;
-    QFile f(fileName);
-    bool ro = !f.open(QFile::WriteOnly | QFile::Append);
-    f.close();
-    return ro;
+    for (int i = 0; i < instances.size(); ++i)
+        if ( instances.at(i)->settingsGroup() == settingsGroup && instances.at(i)->isFileOpened(fileName) )
+            return true;
+    return false;
 }
 
 //
@@ -168,6 +179,8 @@ BTextEditor::~BTextEditor()
     instances.removeAll(this);
     if (_m_wgtIndicator)
         _m_wgtIndicator->deleteLater();
+    for (int i = 0; i < _m_userFileTypes.size(); ++i)
+        _m_userFileTypes.at(i)->deleteLater();
 }
 
 //
@@ -207,6 +220,12 @@ void BTextEditor::setUserFileTypes(QList<BAbstractFileType *> list)
     for (int i = 0; i < _m_userFileTypes.size(); ++i)
         _m_userFileTypes.at(i)->deleteLater();
     _m_userFileTypes = list;
+    _m_cmboxSyntax->blockSignals(true);
+    _m_cmboxSyntax->clear();
+    _m_cmboxSyntax->addItem("Text");
+    for (int i = 0; i < list.size(); ++i)
+        _m_cmboxSyntax->addItem( list.at(i)->syntax().type() );
+    _m_cmboxSyntax->blockSignals(false);
 }
 
 void BTextEditor::setMacrosDir(const QString &dir)
@@ -218,7 +237,7 @@ void BTextEditor::setMacrosDir(const QString &dir)
 
 void BTextEditor::setDefaultEncoding(const QString &codecName)
 {
-    if ( codecName.isEmpty() || !_m_reopenActions.contains(codecName) )
+    if (!BTextEditorDocument::checkEncoding(codecName) || codecName == _m_defaultEncoding)
         return;
     _m_defaultEncoding = codecName;
     if ( _m_currentDocument.isNull() )
@@ -227,8 +246,7 @@ void BTextEditor::setDefaultEncoding(const QString &codecName)
 
 void BTextEditor::setFontFamily(const QString &family)
 {
-    //No check for font being monospace is provided by Qt. Sad but true
-    if (family == _m_fontFamily)
+    if (!BTextEditorDocument::checkFontFamily(family) || family == _m_fontFamily)
         return;
     _m_fontFamily = family;
     for (int i = 0; i < _m_twgt->count(); ++i)
@@ -267,7 +285,7 @@ void BTextEditor::setKeyboardLayoutMap(const QString &description)
 {
     if ( description.isEmpty() || !_m_keyboardLayoutMaps.contains(description) )
         return;
-    //TODO
+    _m_currentKeyboardLayoutMap = description;
 }
 
 void BTextEditor::setBlockMode(bool enabled)
@@ -659,28 +677,39 @@ bool BTextEditor::performAction(int id)
         return _m_closeAllDocuments();
     //EditMenu
     case UndoAction:
-        return _m_undo();
+        _m_undo();
+        break;
     case RedoAction:
-        return _m_redo();
+        _m_redo();
+        break;
     case CutAction:
-        return _m_cut();
+        _m_cut();
+        break;
     case CopyAction:
-        return _m_copy();
+        _m_copy();
+        break;
     case PasteAction:
-        return _m_paste();
+        _m_paste();
+        break;
     case SwitchSelectedTextLayoutAction:
-        return _m_switchSelectedTextLayout();
+        _m_switchSelectedTextLayout();
+        break;
     case FindAction:
-        return _m_find();
+        _m_find();
+        break;
     case FindNextAction:
-        return _m_findNext();
+        _m_findNext();
+        break;
     //DocumentMenu
     case SwitchDocumentMain:
-        return _m_switchDocumentMain();
+        _m_switchDocumentMain();
+        break;
     case MakeBookmarkAction:
-        return _m_makeBookmark();
+        _m_makeBookmark();
+        break;
     case GotoNextBookmarkAction:
-        return _m_gotoNextBookmark();
+        _m_gotoNextBookmark();
+        break;
     case SwitchBlockModeAction:
         _m_switchBlockMode();
         break;
@@ -726,7 +755,7 @@ void BTextEditor::openFiles(const QStringList &fileNames)
 
 void BTextEditor::insertText(const QString &text)
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
     {
         _m_currentDocument->insertText(text);
         _m_currentDocument->setFocusToEdit();
@@ -735,7 +764,7 @@ void BTextEditor::insertText(const QString &text)
 
 void BTextEditor::setText(const QString &text)
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
     {
         _m_currentDocument->setText(text);
         _m_currentDocument->setFocusToEdit();
@@ -744,7 +773,7 @@ void BTextEditor::setText(const QString &text)
 
 void BTextEditor::deselect()
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
     {
         _m_currentDocument->deselect();
         _m_currentDocument->setFocusToEdit();
@@ -784,7 +813,7 @@ void BTextEditor::_m_init()
     _m_initSettings();
     _m_initOtherMembers();
     _m_initGui();
-    installEventFilter(this); //?
+    installEventFilter(this);
     setAcceptDrops(true);
     connect( QApplication::clipboard(), SIGNAL( dataChanged() ), this, SLOT( _m_clipboardDataChanged() ) );
 }
@@ -844,6 +873,7 @@ void BTextEditor::_m_initIndicator()
     QFont fnt;
     fnt.setPointSize(10);
     QFont fntb = fnt;
+    fnt.setFamily(BTextEditorDocument::FontFamilyDef);
     fntb.setBold(true);
     Qt::Alignment a = Qt::AlignVCenter | Qt::AlignRight;
     //syntax
@@ -870,7 +900,7 @@ void BTextEditor::_m_initIndicator()
     _m_lblColumnValue = new QLabel(_m_wgtIndicator);
       _m_lblColumnValue->setFont(fnt);
       _m_lblColumnValue->setAlignment(a);
-      _m_lblColumnValue->setFixedWidth(25);
+      _m_lblColumnValue->setFixedWidth(35);
     hl->addWidget(_m_lblColumnValue);
     _m_updateCursorPosition(-1, -1);
     //encoding
@@ -1080,7 +1110,7 @@ void BTextEditor::_m_retranslateUi()
     _m_resetRecordMacroAction(); //TODO: whatsThis
     _m_retranslateAction( PlayMacroAction, tr("Play", "act text"), tr("Play macro", "act toolTip") ); //TODO
     _m_resetShowHideMacrosAction(); //TODO: whatsThis
-    _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") );//TODO
+    _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
     _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
     //menus
     _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
@@ -1090,8 +1120,6 @@ void BTextEditor::_m_retranslateUi()
     //menu reopen
     _m_retranslateReopenMenu();
     editorAction(RecentFilesAction)->menu()->setTitle( tr("Recent files", "mnu title") );
-    //cmbox
-    //_m_cmbox->setToolTip( _m_cmboxToolTip() );
     //toolBars
     _m_toolBars.value(FileMenu)->setWindowTitle( tr("File", "tbar windowTitle") );
     _m_toolBars.value(EditMenu)->setWindowTitle( tr("Edit", "tbar windowTitle") );
@@ -1179,13 +1207,13 @@ void BTextEditor::_m_retranslateSwitchBlockModeAction()
     QAction *act = editorAction(SwitchBlockModeAction);
     if (_m_blockMode)
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/blocks.png") );
+        act->setIcon( icon("blocks") );
         act->setText( tr("Mode: blocks", "act text") );
         act->setToolTip( tr("Switch to lines mode", "act toolTip") );
     }
     else
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/lines.png") );
+        act->setIcon( icon("lines") );
         act->setText( tr("Mode: lines", "act text") );
         act->setToolTip( tr("Switch to blocks mode", "act toolTip") );
     }
@@ -1278,9 +1306,9 @@ void BTextEditor::_m_saveSettings()
 
 void BTextEditor::_m_newDocument(const QString &text)
 {
-    BTextEditorDocument *doc = _m_addDocument( tr("New document", "document fileName") );
-    doc->setText(text);
-    //_m_setDocumentSyntax(doc); //TODO
+    BTextEditorDocument *ted = _m_addDocument( tr("New document", "document fileName") );
+    ted->setText(text);
+    _m_autoselectDocumentSyntax(ted);
 }
 
 bool BTextEditor::_m_openFile(const QString &fileName)
@@ -1300,55 +1328,59 @@ bool BTextEditor::_m_openFile(const QString &fileName)
         if (BOpenSaveDialog::Accepted != r)
             return false;
         QStringList sl = osd->selectedFiles();
-        fn = sl.isEmpty() ? "" : sl.first();
+        if ( sl.isEmpty() )
+            return false;
+        fn = sl.first();
         cn = osd->codecName();
     }
-    if ( fn.isEmpty() )
-        return false;
-    fn = QFileInfo(fn).absoluteFilePath();
+    else
+    {
+        fn = QFileInfo(fn).absoluteFilePath();
+    }
     for (int i = 0; i < _m_twgt->count(); ++i)
     {
         BTextEditorDocument *ted = _m_document(i);
         if (ted->fileName() == fn)
         {
-            /*_m_cmbox->setCurrentIndex(i);
+            _m_twgt->setCurrentIndex(i);
             window()->raise();
             window()->activateWindow();
             if ( ted->isModified() )
             {
-                if ( _m_reopenQuestion(fn) )
+                if ( _m_reloadModifiedQuestion(fn) )
                 {
-                    ted->reopen(cn);
+                    ted->reopen(cn); //TODO: handle possible error
                     _m_updateEncoding( ted->codecName() );
                 }
             }
             else
             {
-                _m_alreadyOpenedWarning(fn);
+                _m_alreadyOpenedInformation(fn);
             }
-            return true;*/ //TODO
+            return true;
         }
     }
     bool ro = false;
-    /*if ( isFileOpenedGlobal(fn) )
+    if ( isFileOpened( fn, settingsGroup() ) )
     {
-        switch ( _m_reopenReadonlyQuestion(fn) )
+        switch ( _m_openMultipleQuestion(fn) )
         {
-        case 2:
+        case _m_OpenReadonly:
             ro = true;
-        case 1:
             break;
-        case 0:
+        case _m_Open:
+            break;
+        case _m_CancelOpening:
         default:
             return false;
         }
-    }*/ //TODO
+    }
     BTextEditorDocument *ted = _m_addDocument(fn);
     ted->setReadOnly( ro || checkReadOnly(fn) );
-    //_m_checkPasteAvailable(); //for read only documents //TODO
+    //TODO: maybe checking paste action is needed
     _m_findDlg->setReplaceAvailable( !ted->isReadOnly() );
     ted->reopen(cn);
-    //_m_setDocumentSyntax(ted); //TODO
+    _m_autoselectDocumentSyntax(ted);
     _m_addRecentFile(fn);
     _m_updateEncoding( ted->codecName() );
     window()->raise();
@@ -1397,11 +1429,11 @@ bool BTextEditor::_m_saveDocumentAs(BTextEditorDocument *document)
         BTextEditorDocument *ted = _m_document(i);
         if (ted != _m_currentDocument && ted->fileName() == fn)
         {
-            /*_m_cmbox->setCurrentIndex(i);
+            _m_twgt->setCurrentIndex(i);
             window()->raise();
             window()->activateWindow();
             _m_alreadyOpenedInformation(fn);
-            return false;*/ //TODO
+            return false;
         }
     }
     QString codecName = osd->codecName();
@@ -1415,8 +1447,8 @@ bool BTextEditor::_m_saveDocumentAs(BTextEditorDocument *document)
         document->setReadOnly( checkReadOnly(fn) );
     _m_updateEncoding( document->codecName() );
     _m_addRecentFile(fn, ofn);
-    //if ( QFileInfo(fn).suffix() != QFileInfo(ofn).suffix() ) //TODO
-        //_m_setDocumentSyntax(document);
+    if ( QFileInfo(fn).suffix() != QFileInfo(ofn).suffix() )
+        _m_autoselectDocumentSyntax(document);
     return b;
 }
 
@@ -1449,29 +1481,24 @@ bool BTextEditor::_m_closeDocument(BTextEditorDocument *document)
         return true;
     if ( document->isModified() )
     {
-        /*switch ( _m_closeQuestion( document->fileName() ) )
+        switch ( _m_closeModifiedQuestion( document->fileName() ) )
         {
-        case QMessageBox::Save:
+        case _m_CloseSave:
             if ( !_m_saveDocument(document) )
                 return false;
             break;
-        case QMessageBox::Discard:
+        case _m_CloseDiscard:
             break;
-        case QMessageBox::Cancel:
+        case _m_CancelClosing:
             return false;
         default:
             break;
-        }*/ //TODO
+        }
     }
-    //_m_slt->removeWidget( document->editWidget() );
-    //int index = _m_documents.indexOf(document);
-    //if (index < 0)
-        //return true;
-    //_m_documents.removeAll(document);
+    _m_twgt->removeTab( _m_twgt->indexOf( document->editWidget() ) );
     if (document == _m_currentDocument)
         _m_currentDocument = 0;
     document->deleteLater();
-    //_m_cmbox->removeItem(index);
     return true;
 }
 
@@ -1492,45 +1519,27 @@ bool BTextEditor::_m_closeAllDocuments()
     }
     switch (decision)
     {
-    case BSelectFilesDialog::DiscardDecision:
-        /*_m_cmbox->blockSignals(true);
-        while ( !_m_documents.isEmpty() )
-        {
-            BTextEditorDocument *ted = _m_documents.takeLast();
-            ted->deleteLater();
-        }
-        _m_currentDocument = 0;
-        _m_cmbox->clear();
-        _m_cmbox->blockSignals(false);
-        _m_cmbox->setToolTip("");
-        _m_cmboxCurrentIndexChanged(-1);*/ //TODO
-        break;
     case BSelectFilesDialog::SaveDecision:
-        /*_m_cmbox->blockSignals(true);
         tedl = sfd->selectedDocuments();
-        while ( !_m_documents.isEmpty() )
+        for (int i = 0; i < tedl.size(); ++i)
         {
-            BTextEditorDocument *ted = _m_documents.last();
-            if ( tedl.contains(ted) )
-            {
-                if ( !_m_saveDocument(ted) )
-                {
-                    _m_cmbox->blockSignals(false);
-                    _m_cmboxCurrentIndexChanged( _m_cmbox->currentIndex() );
-                    return false;
-                }
-                int index = _m_documents.indexOf(ted);
-                tedl.removeAll(ted);
-                _m_cmbox->removeItem(index);
-                ted->deleteLater();
-                _m_documents.removeLast();
-            }
+            if ( !_m_saveDocument( tedl.at(i) ) )
+                return false;
         }
+    case BSelectFilesDialog::DiscardDecision:
+    {
+        _m_twgt->blockSignals(true);
+        QList<BTextEditorDocument *> documents;
+        for (int i = 0; i < _m_twgt->count(); ++i)
+            documents << _m_document(i);
+        for (int i = 0; i < documents.size(); ++i)
+            documents.at(i)->deleteLater();
+        _m_twgt->clear();
         _m_currentDocument = 0;
-        _m_cmbox->blockSignals(false);
-        _m_cmbox->setToolTip("");
-        _m_cmboxCurrentIndexChanged(-1);*/ //TODO
+        _m_twgt->blockSignals(false);
+        _m_twgtCurrentChanged(-1);
         break;
+    }
     case BSelectFilesDialog::CancelDecision:
         return false;
     default:
@@ -1541,48 +1550,44 @@ bool BTextEditor::_m_closeAllDocuments()
 
 //actions:edit
 
-bool BTextEditor::_m_undo()
+void BTextEditor::_m_undo()
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
         _m_currentDocument->undo();
-    return true; //TODO
 }
 
-bool BTextEditor::_m_redo()
+void BTextEditor::_m_redo()
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
         _m_currentDocument->redo();
-    return true; //TODO
 }
 
-bool BTextEditor::_m_cut()
+void BTextEditor::_m_cut()
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
         _m_currentDocument->cut();
-    return true; //TODO
 }
 
-bool BTextEditor::_m_copy()
+void BTextEditor::_m_copy()
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
         _m_currentDocument->copy();
-    return true; //TODO
 }
 
-bool BTextEditor::_m_paste()
+void BTextEditor::_m_paste()
 {
-    if (_m_currentDocument)
+    if ( !_m_currentDocument.isNull() )
         _m_currentDocument->paste();
-    return true; //TODO
 }
 
-bool BTextEditor::_m_switchSelectedTextLayout()
+void BTextEditor::_m_switchSelectedTextLayout()
 {
-    //
-    return true; //TODO
+    if ( _m_currentDocument.isNull() || !_m_keyboardLayoutMaps.contains(_m_currentKeyboardLayoutMap) )
+        return;
+    _m_currentDocument->switchSelectedTextLayout( _m_keyboardLayoutMaps.value(_m_currentKeyboardLayoutMap) );
 }
 
-bool BTextEditor::_m_find()
+void BTextEditor::_m_find()
 {
     if ( !_m_findDlg->isVisible() )
     {
@@ -1593,34 +1598,32 @@ bool BTextEditor::_m_find()
         _m_findDlg->show();
     }
     _m_findDlg->activateWindow();
-    return true; //TODO
 }
 
 //actions:document
 
-bool BTextEditor::_m_switchDocumentMain()
+void BTextEditor::_m_switchDocumentMain()
 {
-    //if ( _m_currentDocument.isNull() )  //TODO
-        //return _m_resetSwitchDocumentMainAction();
+    if ( _m_currentDocument.isNull() )
+        return _m_resetSwitchDocumentMainAction();
     bool b = _m_currentDocument->property("main").toBool();
     for (int i = 0; i < _m_twgt->count(); ++i)
         _m_document(i)->setProperty("main", false);
     if (!b)
         _m_currentDocument->setProperty("main", true);
     _m_resetSwitchDocumentMainAction();
-    return true; //TODO
 }
 
-bool BTextEditor::_m_makeBookmark()
+void BTextEditor::_m_makeBookmark()
 {
-    //
-    return true; //TODO
+    if ( !_m_currentDocument.isNull() )
+        _m_currentDocument->makeBookmark();
 }
 
-bool BTextEditor::_m_gotoNextBookmark()
+void BTextEditor::_m_gotoNextBookmark()
 {
-    //
-    return true; //TODO
+    if ( !_m_currentDocument.isNull() )
+        _m_currentDocument->gotoNextBookmark();
 }
 
 void BTextEditor::_m_switchBlockMode()
@@ -2011,13 +2014,13 @@ void BTextEditor::_m_resetSwitchDocumentMainAction()
     act->setEnabled(_m_currentDocument);
     if ( _m_currentDocument && _m_currentDocument->property("main").toBool() )
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/edit_add.png") );
+        act->setIcon( icon("edit_add") );
         act->setText( tr("Unset main", "act text") );
         act->setToolTip( tr("Unset main document", "act toolTip") );
     }
     else
     {
-        act->setIcon( QIcon( BCore::IcoPath + (hasMainDocument() ? "/has_main_document.png" : "/edit_remove.png") ) );
+        act->setIcon( hasMainDocument() ? icon("has_main_document") : icon("edit_remove") );
         act->setText( tr("Set main", "act text") );
         act->setToolTip( tr("Set current document as main", "act toolTip") );
     }
@@ -2028,13 +2031,13 @@ void BTextEditor::_m_resetRecordMacroAction()
     QAction *act = editorAction(RecordMacroAction);
     if ( act->property("performing").toBool() )
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/player_stop.png") );
+        act->setIcon( icon("player_stop") );
         act->setText( tr("Stop recording", "act text") );
         act->setToolTip( tr("Stop recording macro", "act toolTip") );
     }
     else
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/start.png") );
+        act->setIcon( icon("start") );
         act->setText( tr("Start recording", "act text") );
         act->setToolTip( tr("Start recording macro", "act toolTip") );
     }
@@ -2045,16 +2048,40 @@ void BTextEditor::_m_resetShowHideMacrosAction()
     QAction *act = editorAction(ShowHideMacrosConsole);
     if ( _m_recorderConsole->isVisible() )
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/button_cancel.png") );
+        act->setIcon( icon("button_cancel") );
         act->setText( tr("Hide", "act text") );
         act->setToolTip( tr("Hide macros console", "act toolTip") );
     }
     else
     {
-        act->setIcon( QIcon(BCore::IcoPath + "/button_ok.png") );
+        act->setIcon( icon("button_ok") );
         act->setText( tr("Show", "act text") );
         act->setToolTip( tr("Show macros console", "act toolTip") );
     }
+}
+
+void BTextEditor::_m_autoselectDocumentSyntax(BTextEditorDocument *document)
+{
+    if (!document)
+        return;
+    QString fn = document->fileName();
+    BAbstractFileType *ft = _m_defaultFileType;
+    for (int i = 0; i < _m_userFileTypes.size(); ++i)
+    {
+        if ( _m_userFileTypes.at(i)->matchesFileName(fn) )
+        {
+            ft = _m_userFileTypes.at(i);
+            break;
+        }
+    }
+    document->setSyntax( ft->syntax() );
+}
+
+void BTextEditor::_m_setCmboxSyntax(const QString &syntaxType)
+{
+    _m_cmboxSyntax->blockSignals(true);
+    _m_cmboxSyntax->setCurrentIndex( _m_cmboxSyntax->findText(syntaxType) );
+    _m_cmboxSyntax->blockSignals(false);
 }
 
 void BTextEditor::_m_textReplaced(int count)
@@ -2062,91 +2089,7 @@ void BTextEditor::_m_textReplaced(int count)
     emit showMessage(tr("Replaced:", "stbar message") + " " + QString::number(count), MessageTimeout);
 }
 
-/*void BTextEditor::_m_resetCmboxItem(BTextEditorDocument *document, bool nameChanged)
-{
-    if (!document)
-        return;
-    int index = _m_documents.indexOf(document);
-    if (index < 0)
-        return;
-    QString fn = document->fileName();
-    _m_cmbox->setItemText( index, QFileInfo(fn).fileName() + (document->isModified() ? "*" : "") );
-    if (nameChanged)
-    {
-        _m_cmbox->setItemData(index, fn);
-        if (document == _m_currentDocument)
-            _m_cmbox->setToolTip(fn);
-    }
-}*/
-
-/*QString BTextEditor::_m_fileDialogFilter() const
-{
-    FileTypeInfoList ftil = _m_fileTypes;
-    if ( ftil.isEmpty() )
-        ftil << _m_defFileType();
-    QString filter;
-    for (int i = 0; i < ftil.size(); ++i)
-    {
-        const FileTypeInfo &fti = ftil.at(i);
-        filter += (fti.description + " (");
-        const QStringList &sl = fti.suffixes;
-        if ( sl.contains("*") )
-        {
-            filter += "*";
-        }
-        else
-        {
-            for (int j = 0; j < sl.size(); ++j)
-            {
-                filter += ( "*." + sl.at(j) );
-                if (j < sl.size() - 1)
-                    filter += " ";
-            }
-        }
-        filter += ")";
-        if (i < ftil.size() - 1)
-            filter += ";;";
-    }
-    return filter;
-}*/
-
-//QString BTextEditor::_m_cmboxToolTip() const
-//{
-    //QString part = tr("Press <Ctrl+Tab> to switch between documents", "cmbox toolTip");
-    //if (_m_currentDocument)
-        //return _m_currentDocument->fileName() + " (" + part + ")";
-    //else
-        //return part;
-//}
-
-/*void BTextEditor::_m_setDocumentSyntax(BTextEditorDocument *document)
-{
-    if ( !document || _m_syntaxes.isEmpty() )
-        return;
-    QString fn = document->fileName();
-    bool b = false;
-    for (int i = 0; i < _m_syntaxes.size(); ++i)
-    {
-        if ( _m_syntaxes.at(i).matchesFileName(fn) )
-        {
-            document->setSyntax( _m_syntaxes.at(i) );
-            _m_setCmboxSyntax( _m_syntaxes.at(i) );
-            b = true;
-            break;
-        }
-    }
-    if (!b)
-        document->setSyntax( _m_syntaxes.first() );
-}*/
-
-/*void BTextEditor::_m_setCmboxSyntax(const BSyntax &syntax)
-{
-    _m_cmboxSyntax->blockSignals(true);
-    _m_cmboxSyntax->setCurrentIndex( _m_cmboxSyntax->findText( syntax.type() ) );
-    _m_cmboxSyntax->blockSignals(false);
-}*/
-
-//
+//clipboard
 
 void BTextEditor::_m_clipboardDataChanged()
 {
@@ -2155,104 +2098,29 @@ void BTextEditor::_m_clipboardDataChanged()
         _m_document(i)->setClipboardHasText(b);
 }
 
-void BTextEditor::_m_updateCursorPosition(int row, int column)
-{
-    if (row >= 0)
-        _m_lblRowValue->setText( QString::number(row + 1) );
-    else
-        _m_lblRowValue->setText("----");
-    if (column >= 0)
-        _m_lblColumnValue->setText( QString::number(column) );
-    else
-        _m_lblColumnValue->setText("---");
-}
-
-void BTextEditor::_m_updateEncoding(const QString &codecName)
-{
-    if ( codecName.isEmpty() )
-        _m_lblEncodingValue->setText(_m_defaultEncoding);
-    else
-        _m_lblEncodingValue->setText(codecName);
-}
-
-void BTextEditor::_m_twgtCurrentChanged(int index)
-{
-    _m_currentDocument = _m_document(index);
-    bool da = !_m_currentDocument.isNull();
-    _m_findDlg->setDocumentAvailable(da);
-    if (da)
-        _m_findDlg->setReplaceAvailable( !_m_currentDocument->isReadOnly() );
-    QString stext = da ? _m_currentDocument->selectedText() : "";
-    _m_documentSelectionChanged( !stext.isEmpty() );
-    bool b = da && QFileInfo( _m_currentDocument->fileName() ).exists();
-    editorAction(ReopenFileAction)->setEnabled(b);
-    editorAction(SaveDocumentAction)->setEnabled( da && _m_currentDocument->isModified() );
-    editorAction(SaveDocumentAsAction)->setEnabled(da);
-    editorAction(SaveAllDocumentsAction)->setEnabled(da);
-    editorAction(CloseDocumentAction)->setEnabled(da);
-    editorAction(CloseAllDocumentsAction)->setEnabled(da);
-    editorAction(UndoAction)->setEnabled( da && _m_currentDocument->isUndoAvailable() );
-    editorAction(RedoAction)->setEnabled( da && _m_currentDocument->isRedoAvailable() );
-    editorAction(CutAction)->setEnabled( da && _m_currentDocument->isCutAvailable() );
-    editorAction(CopyAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
-    editorAction(PasteAction)->setEnabled( da && _m_currentDocument->isPasteAvailable() );
-    _m_resetSwitchDocumentMainAction();
-    editorAction(MakeBookmarkAction)->setEnabled(da);
-    editorAction(GotoNextBookmarkAction)->setEnabled(da && _m_currentDocument->hasBookmarks() );
-    editorAction(SwitchBlockModeAction)->setEnabled(da);
-    editorAction(SwitchSelectedTextLayoutAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
-    editorAction(FindAction)->setEnabled(da);
-    emit currentDocumentChanged(da ? _m_currentDocument->fileName() : "");
-    emit documentAvailableChanged(da);
-    //if (da)
-        //_m_setCmboxSyntax( _m_currentDocument->syntax() ); //TODO
-    _m_updateEncoding(da ? _m_currentDocument->codecName() : _m_defaultEncoding);
-    if (!da)
-    {
-        _m_updateCursorPosition(-1, -1);
-        return;
-    }
-    BTextEditorDocument::CursorPosition cp = _m_currentDocument->cursorPosition();
-    _m_updateCursorPosition(cp.row, cp.column);
-    _m_currentDocument->setFocusToEdit();
-}
-
-/*void BTextEditor::_m_cmboxTextMacrosActivated(int index)
-{
-    if (index < 0)
-        return;
-    insertText( _m_cmboxTextMacros->itemData(index).toString() );
-}*/ //TODO
-
-void BTextEditor::_m_cmboxSyntaxCurrentIndexChanged(int index)
-{
-    if ( !_m_currentDocument || index < 0 /*|| index >= _m_syntaxes.size()*/ )
-        return;
-    //_m_currentDocument->setSyntax( _m_syntaxes.at(index) );
-    _m_currentDocument->setFocusToEdit();
-}
+//document
 
 void BTextEditor::_m_documentSwitchRequested()
 {
-    if (!_m_currentDocument || _m_twgt->count() < 2)
+    int count = _m_twgt->count();
+    if (!_m_currentDocument || count < 2)
         return;
-    //int ind = _m_documents.indexOf(_m_currentDocument);
-    //if (ind < 0)
-        //return;
-    //if (ind < _m_documents.size() - 1)
-        //_m_cmbox->setCurrentIndex(ind + 1);
-    //else
-        //_m_cmbox->setCurrentIndex(0);
+    int ind = _m_twgt->currentIndex();
+    _m_twgt->setCurrentIndex( (ind < count - 1) ? ind + 1 : 0 );
 }
 
 void BTextEditor::_m_documentFileNameChanged(const QString &fileName)
 {
-    //_m_resetCmboxItem(qobject_cast<BTextEditorDocument *>( sender() ), true);
+    int ind = _m_twgt->indexOf( qobject_cast<BTextEditorDocument *>( sender() )->editWidget() );
+    _m_twgt->setTabText( ind, QFileInfo(fileName).fileName() );
+    _m_twgt->setTabToolTip(ind, fileName);
 }
 
 void BTextEditor::_m_documentModificationChanged(bool modified)
 {
-    //_m_resetCmboxItem( qobject_cast<BTextEditorDocument *>( sender() ) );
+    BTextEditorDocument *ted = qobject_cast<BTextEditorDocument *>( sender() );
+    int ind = _m_twgt->indexOf( ted->editWidget() );
+    _m_twgt->setTabText( ind, (modified ? "*" : "") + QFileInfo( ted->fileName() ).fileName() );
     editorAction(SaveDocumentAction)->setEnabled(modified);
 }
 
@@ -2263,14 +2131,20 @@ void BTextEditor::_m_documentSelectionChanged(bool hasSelection)
     _m_findDlg->setSelectionAvailable(hasSelection);
 }
 
-bool BTextEditor::_m_findNext()
+void BTextEditor::_m_documentMaxLineLengthReached()
+{
+    emit showMessage(tr("Maximum line length reached!", "stbar message"), MessageTimeout);
+}
+
+//find dialog
+
+void BTextEditor::_m_findNext()
 {
     if ( _m_currentDocument.isNull() )
-        return false;
+        return;
     QString text = _m_findDlg->text();
     if ( !_m_currentDocument->find( text, _m_findDlg->findFlags(), _m_findDlg->cyclic() ) )
         emit showMessage(tr("Could not find", "stbar message") + " \"" + text + "\"", MessageTimeout);
-    return true;
 }
 
 void BTextEditor::_m_replaceNext()
@@ -2329,7 +2203,74 @@ void BTextEditor::_m_replaceInAllDocuments()
         _m_textReplaced(count);
 }
 
-void BTextEditor::_m_documentMaxLineLengthReached()
+//other
+
+void BTextEditor::_m_updateCursorPosition(int row, int column)
 {
-    emit showMessage(tr("Maximum line length reached!", "stbar message"), MessageTimeout);
+    if (row >= 0)
+        _m_lblRowValue->setText( QString::number(row + 1) );
+    else
+        _m_lblRowValue->setText("----");
+    if (column >= 0)
+        _m_lblColumnValue->setText( QString::number(column) );
+    else
+        _m_lblColumnValue->setText("---");
+}
+
+void BTextEditor::_m_updateEncoding(const QString &codecName)
+{
+    if ( codecName.isEmpty() )
+        _m_lblEncodingValue->setText(_m_defaultEncoding);
+    else
+        _m_lblEncodingValue->setText(codecName);
+}
+
+void BTextEditor::_m_twgtCurrentChanged(int index)
+{
+    _m_currentDocument = _m_document(index);
+    bool da = !_m_currentDocument.isNull();
+    _m_findDlg->setDocumentAvailable(da);
+    if (da)
+        _m_findDlg->setReplaceAvailable( !_m_currentDocument->isReadOnly() );
+    QString stext = da ? _m_currentDocument->selectedText() : "";
+    _m_documentSelectionChanged( !stext.isEmpty() );
+    bool b = da && QFileInfo( _m_currentDocument->fileName() ).exists();
+    editorAction(ReopenFileAction)->setEnabled(b);
+    editorAction(SaveDocumentAction)->setEnabled( da && _m_currentDocument->isModified() );
+    editorAction(SaveDocumentAsAction)->setEnabled(da);
+    editorAction(SaveAllDocumentsAction)->setEnabled(da);
+    editorAction(CloseDocumentAction)->setEnabled(da);
+    editorAction(CloseAllDocumentsAction)->setEnabled(da);
+    editorAction(UndoAction)->setEnabled( da && _m_currentDocument->isUndoAvailable() );
+    editorAction(RedoAction)->setEnabled( da && _m_currentDocument->isRedoAvailable() );
+    editorAction(CutAction)->setEnabled( da && _m_currentDocument->isCutAvailable() );
+    editorAction(CopyAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
+    editorAction(PasteAction)->setEnabled( da && _m_currentDocument->isPasteAvailable() );
+    _m_resetSwitchDocumentMainAction();
+    editorAction(MakeBookmarkAction)->setEnabled(da);
+    editorAction(GotoNextBookmarkAction)->setEnabled(da && _m_currentDocument->hasBookmarks() );
+    editorAction(SwitchBlockModeAction)->setEnabled(da);
+    editorAction(SwitchSelectedTextLayoutAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
+    editorAction(FindAction)->setEnabled(da);
+    emit currentDocumentChanged(da ? _m_currentDocument->fileName() : "");
+    emit documentAvailableChanged(da);
+    if (da)
+        _m_setCmboxSyntax( _m_currentDocument->syntax().type() );
+    _m_updateEncoding(da ? _m_currentDocument->codecName() : _m_defaultEncoding);
+    if (!da)
+    {
+        _m_updateCursorPosition(-1, -1);
+        return;
+    }
+    BTextEditorDocument::CursorPosition cp = _m_currentDocument->cursorPosition();
+    _m_updateCursorPosition(cp.row, cp.column);
+    _m_currentDocument->setFocusToEdit();
+}
+
+void BTextEditor::_m_cmboxSyntaxCurrentIndexChanged(int index)
+{
+    if ( _m_currentDocument.isNull() || index < 0 || index > _m_userFileTypes.size() )
+        return;
+    _m_currentDocument->setSyntax( index ? _m_userFileTypes.at(index - 1)->syntax() : _m_defaultFileType->syntax() );
+    _m_currentDocument->setFocusToEdit();
 }

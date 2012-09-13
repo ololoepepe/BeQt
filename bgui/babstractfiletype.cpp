@@ -35,6 +35,11 @@ const BSyntax &BAbstractFileType::syntax() const
     return _m_syntax;
 }
 
+const QString &BAbstractFileType::syntaxType() const
+{
+    return _m_syntax.type();
+}
+
 bool BAbstractFileType::matchesFileName(const QString &fileName) const
 {
     return _m_syntax.matchesFileName(fileName);

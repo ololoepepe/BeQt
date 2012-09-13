@@ -95,6 +95,8 @@ public:
           TextMacrosAction
     };
     //
+    static bool isFileOpened(const QString &fileName, const QString &settingsGroup);
+    //
     explicit BTextEditor( QWidget *parent = 0, const QString &settingsGroup = QString() );
     ~BTextEditor();
     //
@@ -158,7 +160,7 @@ public:
     QStringList openedFiles( const QStringList &fileNames = QStringList() ) const;
 public slots:
     bool performAction(int id);
-    void newDocument(const QString &text);
+    void newDocument( const QString &text = QString() );
     void openFile(const QString &fileName);
     void openFiles(const QStringList &fileNames);
     void insertText(const QString &text);
@@ -273,18 +275,18 @@ private:
     bool _m_closeDocument(BTextEditorDocument *document = 0);
     bool _m_closeAllDocuments();
     //actions:edit
-    bool _m_undo();
-    bool _m_redo();
-    bool _m_cut();
-    bool _m_copy();
-    bool _m_paste();
-    bool _m_switchSelectedTextLayout();
-    bool _m_find();
+    void _m_undo();
+    void _m_redo();
+    void _m_cut();
+    void _m_copy();
+    void _m_paste();
+    void _m_switchSelectedTextLayout();
+    void _m_find();
     //find, find next, replace next
     //actions:document
-    bool _m_switchDocumentMain();
-    bool _m_makeBookmark();
-    bool _m_gotoNextBookmark();
+    void _m_switchDocumentMain();
+    void _m_makeBookmark();
+    void _m_gotoNextBookmark();
     void _m_switchBlockMode();
     //actions:macros
     void _m_recordMacro();
@@ -320,9 +322,9 @@ private:
     void _m_resetSwitchDocumentMainAction();
     void _m_resetRecordMacroAction();
     void _m_resetShowHideMacrosAction();
+    void _m_autoselectDocumentSyntax(BTextEditorDocument *document);
+    void _m_setCmboxSyntax(const QString &syntaxType);
     void _m_textReplaced(int count);
-    //void _m_setDocumentSyntax(BTextEditorDocument *document);
-    //void _m_setCmboxSyntax(const BSyntax &syntax);
 private slots:
     //clipboard
     void _m_clipboardDataChanged();
@@ -333,7 +335,7 @@ private slots:
     void _m_documentSelectionChanged(bool hasSelection);
     void _m_documentMaxLineLengthReached();
     //find dialog
-    bool _m_findNext();
+    void _m_findNext();
     void _m_replaceNext();
     void _m_replaceInSelection();
     void _m_replaceInDocument();
@@ -342,7 +344,6 @@ private slots:
     void _m_updateCursorPosition(int row, int column);
     void _m_updateEncoding(const QString &codecName);
     void _m_twgtCurrentChanged(int index);
-    //void _m_cmboxTextMacrosActivated(int index);
     void _m_cmboxSyntaxCurrentIndexChanged(int index);
 signals:
     void currentDocumentChanged(const QString &fileName);

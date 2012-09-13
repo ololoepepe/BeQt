@@ -18,6 +18,7 @@ public:
     void setSyntax(const BSyntax &syntax);
     bool loadSyntax(const QString &fileName);
     const BSyntax &syntax() const;
+    const QString &syntaxType() const;
     bool matchesFileName(const QString &fileName) const;
     bool isValid() const;
     QString fileDialogFilter() const;
