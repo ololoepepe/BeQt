@@ -20,6 +20,7 @@ class BTextEditorSettingsTab : public BAbstractSettingsTab
 {
     Q_OBJECT
 public:
+    static const QString Id;
     static const QString IdMacrosDir;           //7
     static const QString IdDefaultEncoding;     //3
     static const QString IdFontFamily;          //1
@@ -31,7 +32,6 @@ public:
     BTextEditorSettingsTab(const QVariantMap &settings, const QMap<QString, QString> &encodings,
                            const QStringList &keyboardLayoutMaps);
     //
-    QString id() const;
     QVariantMap valueMap() const;
     QString title() const;
 private:

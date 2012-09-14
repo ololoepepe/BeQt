@@ -23,15 +23,14 @@ QString textFromLocale(const QLocale &locale)
 
 //
 
-const QString BGeneralSettingsTab::Id = "general";
+const QString BGeneralSettingsTab::Id = "beqt/bgui/general";
 const QString BGeneralSettingsTab::IdLocale = "locale";
 
 //
 
-BGeneralSettingsTab::BGeneralSettingsTab()
+BGeneralSettingsTab::BGeneralSettingsTab(const QVariantMap &settings)
 {
-    //
-    QLocale currentLocale = BCore::currentLocale();
+    QLocale currentLocale = settings.value(IdLocale).toLocale();
     QList<QLocale> availableLocales = BCore::availableLocales();
     _m_flt = new QFormLayout(this);
       _m_flt->setFieldGrowthPolicy(QFormLayout::FieldsStayAtSizeHint);
@@ -54,27 +53,14 @@ BGeneralSettingsTab::BGeneralSettingsTab()
 
 //
 
-QString BGeneralSettingsTab::id() const
-{
-    return "beqt/bgui/general";
-}
-
 QVariantMap BGeneralSettingsTab::valueMap() const
 {
     QVariantMap m;
     m.insert( IdLocale, _m_cmboxLanguage->itemData( _m_cmboxLanguage->currentIndex() ).toLocale() );
-    m.unite( extraValueMap() );
     return m;
 }
 
 QString BGeneralSettingsTab::title() const
 {
     return tr("General", "title");
-}
-
-//
-
-QVariantMap BGeneralSettingsTab::extraValueMap() const
-{
-    return QVariantMap();
 }

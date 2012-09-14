@@ -84,9 +84,8 @@ protected:
     void closeEvent(QCloseEvent *event);
     virtual void retranslateUi();
     virtual bool handleClosing();
-    virtual QMap<QString, BAbstractSettingsTab *> getSettingsTabMap() const;
-    virtual void handleSettings(const QMap<QString, QVariantMap> &settings);
-    virtual BAbstractSettingsTab *generalSettingsTab() const;
+    virtual QMap<QString, BAbstractSettingsTab *> userSettingsTabMap() const;
+    virtual void handleUserSettings(const QMap<QString, QVariantMap> &settings);
 private:
     const QString _m_CSettingsGroup;
     QRect _m_prevGeom;

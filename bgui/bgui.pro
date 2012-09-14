@@ -11,7 +11,7 @@ QT += xml
 SOURCES += \
     babstractsettingstab.cpp \
     bcontainerwidget.cpp \
-    bgeneralsettingstab.cpp \
+    private/bgeneralsettingstab.cpp \
     blogindialog.cpp \
     bmainwindow.cpp \
     bpasswordwidget.cpp \
@@ -38,7 +38,7 @@ SOURCES += \
 HEADERS += \
     babstractsettingstab.h \
     bcontainerwidget.h \
-    bgeneralsettingstab.h \
+    private/bgeneralsettingstab.h \
     bguiplugininterface.h \
     blogindialog.h \
     bmainwindow.h \

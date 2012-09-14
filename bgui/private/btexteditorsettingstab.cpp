@@ -15,6 +15,7 @@
 #include <QPushButton>
 #include <QFileDialog>
 
+const QString BTextEditorSettingsTab::Id = "beqt/bgui/text_editor";
 const QString BTextEditorSettingsTab::IdMacrosDir = "macros_dir";
 const QString BTextEditorSettingsTab::IdDefaultEncoding = "default_encoding";
 const QString BTextEditorSettingsTab::IdFontFamily = "font_family";
@@ -98,11 +99,6 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
 }
 
 //
-
-QString BTextEditorSettingsTab::id() const
-{
-    return "beqt/bgui/text_editor";
-}
 
 QVariantMap BTextEditorSettingsTab::valueMap() const
 {

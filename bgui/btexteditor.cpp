@@ -128,10 +128,10 @@ bool checkReadOnly(const QString &fileName)
 //
 
 const QString SyntaxTypeDef = "Text";
-const QString MacrosDirDef = QDir::home();
+const QString MacrosDirDef = QDir::homePath();
 //
 const QRect OpenSaveDlgGeometryDef = QRect(200, 200, 400, 400);
-const QString OpenSaveDlgDirDef = QDir::home();
+const QString OpenSaveDlgDirDef = QDir::homePath();
 //
 const QRect SelectFilesDlgGeometryDef = QRect(200, 200, 600, 400);
 //

@@ -1,12 +1,12 @@
 #include "bmainwindow.h"
 #include "babstractsettingstab.h"
-#include "bgeneralsettingstab.h"
 #include "bguiplugininterface.h"
 
 #include "private/bguicommon.h"
 #include "private/baboutdialog.h"
 #include "private/bhelpwidget.h"
 #include "private/bsettingsdialog.h"
+#include "private/bgeneralsettingstab.h"
 
 #include "../bcore/bcore.h"
 
@@ -346,19 +346,14 @@ bool BMainWindow::handleClosing()
     return true;
 }
 
-QMap<QString, BAbstractSettingsTab *> BMainWindow::getSettingsTabMap() const
+QMap<QString, BAbstractSettingsTab *> BMainWindow::userSettingsTabMap() const
 {
     return QMap<QString, BAbstractSettingsTab *>();
 }
 
-void BMainWindow::handleSettings(const QMap<QString, QVariantMap> &settings)
+void BMainWindow::handleUserSettings(const QMap<QString, QVariantMap> &settings)
 {
     //
-}
-
-BAbstractSettingsTab *BMainWindow::generalSettingsTab() const
-{
-    return new BGeneralSettingsTab;
 }
 
 //
@@ -488,30 +483,17 @@ void BMainWindow::_m_showHide()
 void BMainWindow::_m_actSettingsTriggered()
 {
     QMap<QString, BAbstractSettingsTab *> m;
-    m.insert( BCore::GeneralSettingsTabId, generalSettingsTab() );
-    QList<QObject *> plugins = BCore::plugins();
-    for (int i = 0; i < plugins.size(); ++i)
-    {
-        BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( plugins.at(i) );
-        if (gpi)
-            m.insert( gpi->settingsTabId(), gpi->settingsTab() );
-    }
-    m.unite( getSettingsTabMap() );
+    QVariantMap gstm;
+    gstm.insert( BGeneralSettingsTab::IdLocale, BCore::currentLocale() );
+    m.insert( BGeneralSettingsTab::Id, new BGeneralSettingsTab(gstm) );
+    m.unite( userSettingsTabMap() );
     QScopedPointer<BSettingsDialog> sd( new BSettingsDialog(m, this) );
     if (sd->exec() != BSettingsDialog::Accepted)
         return;
     QMap<QString, QVariantMap> s = sd->valueMapMap();
-    if ( s.contains(BCore::GeneralSettingsTabId) )
-        BCore::applySettings( s.value(BCore::GeneralSettingsTabId) );
-    plugins = BCore::plugins();
-    for (int i = 0; i < plugins.size(); ++i)
-    {
-        BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( plugins.at(i) );
-        if ( gpi && s.contains( gpi->settingsTabId() ) )
-            gpi->applySettings( s.take( gpi->settingsTabId() ) );
-    }
-    handleSettings(s);
-
+    QVariantMap gsts = s.take(BGeneralSettingsTab::Id);
+    BCore::setLocale( gsts.value(BGeneralSettingsTab::IdLocale).toLocale() );
+    handleUserSettings(s);
 }
 
 void BMainWindow::_m_actHomepageTriggered()

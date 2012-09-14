@@ -4,7 +4,7 @@
 class QFormLayout;
 class QComboBox;
 
-#include "babstractsettingstab.h"
+#include "../babstractsettingstab.h"
 
 #include <QLocale>
 #include <QList>
@@ -24,13 +24,10 @@ public:
     static const QString Id;
     static const QString IdLocale;
     //
-    BGeneralSettingsTab();
+    BGeneralSettingsTab(const QVariantMap &settings);
     //
-    QString id() const;
     QVariantMap valueMap() const;
     QString title() const;
-protected:
-    virtual QVariantMap extraValueMap() const;
 private:
     QFormLayout *_m_flt;
       QComboBox *_m_cmboxLanguage;
