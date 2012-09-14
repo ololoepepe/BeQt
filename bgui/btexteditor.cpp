@@ -91,6 +91,19 @@ public:
 
 //
 
+QList<BTextEditor *> instanceList;
+
+//
+
+QList<BTextEditor *> instances(const QString &groupId)
+{
+    QList<BTextEditor *> list;
+    for (int i = 0; i < instanceList.size(); ++i)
+        if (instanceList.at(i)->groupId() == groupId)
+            list << instanceList.at(i);
+    return list;
+}
+
 QIcon icon(const QString &fileName)
 {
     return QIcon( BCore::IcoPath + "/" + (QFileInfo(fileName).suffix().isEmpty() ? fileName + ".png" : fileName) );
@@ -151,32 +164,30 @@ const QString GroupTextEditor = "beqt_text_editor";
 
 //
 
-QList<BTextEditor *> instances;
-
-//
-
-bool BTextEditor::isFileOpened(const QString &fileName, const QString &settingsGroup)
+bool BTextEditor::isFileOpened(const QString &fileName, const QString &groupId)
 {
-    for (int i = 0; i < instances.size(); ++i)
-        if ( instances.at(i)->settingsGroup() == settingsGroup && instances.at(i)->isFileOpened(fileName) )
+    QList<BTextEditor *> list = instances(groupId);
+    for (int i = 0; i < list.size(); ++i)
+        if ( list.at(i)->isFileOpened(fileName) )
             return true;
     return false;
 }
 
 //
 
-BTextEditor::BTextEditor(QWidget *parent, const QString &settingsGroup) :
-    QWidget(parent), _m_CSettingsGroup(settingsGroup)
+BTextEditor::BTextEditor(QWidget *parent, bool registerGlobally, const QString &groupId) :
+    QWidget(parent), _m_CRegistered(registerGlobally), _m_CGroupId(groupId)
 {
-    instances << this;
+    if (registerGlobally)
+        instanceList << this;
     _m_init();
     _m_retranslateUi();
-    _m_loadSettings();
 }
 
 BTextEditor::~BTextEditor()
 {
-    instances.removeAll(this);
+    if (_m_CRegistered)
+        instanceList.removeAll(this);
     if (_m_wgtIndicator)
         _m_wgtIndicator->deleteLater();
     for (int i = 0; i < _m_userFileTypes.size(); ++i)
@@ -320,13 +331,26 @@ void BTextEditor::applySettings(const QVariantMap &settings)
     //keyboard layout map
     if ( settings.contains(BTextEditorSettingsTab::IdKeyboardLayoutMap) )
         setKeyboardLayoutMap( settings.value(BTextEditorSettingsTab::IdKeyboardLayoutMap).toString() );
+    //applying to other instances
+    if (_m_CRegistered)
+    {
+        QList<BTextEditor *> list = instances(_m_CGroupId);
+        list.removeAll(this);
+        for (int i = 0; i < list.size(); ++i)
+            list.at(i)->applySettings(settings);
+    }
 }
 
 //settings:get
 
-const QString &BTextEditor::settingsGroup() const
+bool BTextEditor::isRegisteredGlobally() const
 {
-    return _m_CSettingsGroup;
+    return _m_CRegistered;
+}
+
+const QString &BTextEditor::groupId() const
+{
+    return _m_CGroupId;
 }
 
 QList<BAbstractFileType *> BTextEditor::userFileTypes() const
@@ -390,7 +414,92 @@ BAbstractSettingsTab *BTextEditor::createSettingsTab() const
     return new BTextEditorSettingsTab( m, _m_encodingsMap(), _m_keyboardLayoutMaps.keys() );
 }
 
-//
+//settings:load/save
+
+//loading/saving settings
+
+void BTextEditor::loadSettings(const QString &settingsGroup)
+{
+    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
+    if (!s)
+        return;
+    if ( !settingsGroup.isEmpty() )
+        s->beginGroup(settingsGroup);
+    s->beginGroup(GroupTextEditor);
+      setMacrosDir( s->value(KeyMacrosDir, MacrosDirDef).toString() );
+      setDefaultEncoding( s->value(KeyDefaultEncoding, BTextEditorDocument::EncodingDef).toString() );
+      setFontFamily( s->value(KeyFontFamily, BTextEditorDocument::FontFamilyDef).toString() );
+      setFontPointSize( s->value(KeyFontPointSize, BTextEditorDocument::FontPointSizeDef).toInt() );
+      setLineLength( s->value(KeyLineLength, BTextEditorDocument::LineLengthDef).toInt() );
+      setTabWidth( s->value(KeyTabWidth, BTextEditorDocument::TabWidthDef).toInt() );
+      setKeyboardLayoutMap( s->value(KeyKeyboardLayoutMap).toString() );
+      setBlockMode( s->value(KeyBlockMode, BTextEditorDocument::BlockModeDef).toBool() );
+      _m_loadRecentFiles( s->value(KeyRecentFiles).toStringList() );
+      s->beginGroup(GroupFindDialog);
+        BFindDialog::Parameters param = _m_findDlg->parameters();
+        s->setValue(KeyTextHistory, param.textHistory);
+        s->setValue(KeyNewTextHistory, param.newTextHistory);
+        s->beginGroup(GroupOptions);
+          s->setValue(KeyCaseSensitive, param.caseSensitive);
+          s->setValue(KeyWholeWords, param.wholeWords);
+          s->setValue(KeyBackwardOrder, param.backwardOrder);
+          s->setValue(KeyCyclic, param.cyclic);
+        s->endGroup();
+      s->endGroup();
+      s->beginGroup(GroupOpenSaveDialog);
+        _m_openSaveDlgGeometry = s->value(KeyGeometry, OpenSaveDlgGeometryDef).toRect();
+        _m_openSaveDlgDir = s->value(KeyDir, OpenSaveDlgDirDef).toString();
+      s->endGroup();
+      s->beginGroup(GroupSelectFilesDialog);
+        _m_selectFilesDlgGeometry = s->value(KeyGeometry, SelectFilesDlgGeometryDef).toRect();
+      s->endGroup();
+    s->endGroup();
+    if ( !settingsGroup.isEmpty() )
+        s->endGroup();
+}
+
+void BTextEditor::saveSettings(const QString &settingsGroup)
+{
+    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
+    if (!s)
+        return;
+    if ( !settingsGroup.isEmpty() )
+        s->beginGroup(settingsGroup);
+    s->beginGroup(GroupTextEditor);
+      s->setValue(KeyMacrosDir, _m_macrosDir);
+      s->setValue( KeyDefaultEncoding, defaultEncoding() );
+      s->setValue( KeyFontFamily, fontFamily() );
+      s->setValue( KeyFontPointSize, fontPointSize() );
+      s->setValue( KeyLineLength, lineLength() );
+      s->setValue( KeyTabWidth, tabWidth() );
+      s->setValue( KeyKeyboardLayoutMap, keyboardLayoutMap() );
+      s->setValue( KeyBlockMode, blockMode() );
+      s->setValue( KeyRecentFiles, _m_saveRecentFiles() );
+      s->beginGroup(GroupFindDialog);
+        BFindDialog::Parameters param;
+        param.textHistory = s->value(KeyTextHistory).toStringList();
+        param.newTextHistory = s->value(KeyNewTextHistory).toStringList();
+        s->beginGroup(GroupOptions);
+          param.caseSensitive = s->value(KeyCaseSensitive).toBool();
+          param.wholeWords = s->value(KeyWholeWords).toBool();
+          param.backwardOrder = s->value(KeyBackwardOrder).toBool();
+          param.cyclic = s->value(KeyCyclic).toBool();
+        s->endGroup();
+        _m_findDlg->setParameters(param);
+      s->endGroup();
+      s->beginGroup(GroupOpenSaveDialog);
+        s->setValue(KeyGeometry, _m_openSaveDlgGeometry);
+        s->setValue(KeyDir, _m_openSaveDlgDir);
+      s->endGroup();
+      s->beginGroup(GroupSelectFilesDialog);
+        s->setValue(KeyGeometry, _m_selectFilesDlgGeometry);
+      s->endGroup();
+    s->endGroup();
+    if ( !settingsGroup.isEmpty() )
+        s->endGroup();
+}
+
+//loadable content
 
 void BTextEditor::loadTextMacros(const QString &dir)
 {
@@ -624,10 +733,7 @@ QString BTextEditor::mainDocumentSelectedText() const
 
 bool BTextEditor::askOnClose()
 {
-    bool b = _m_currentDocument.isNull() || _m_closeAllDocuments();
-    if (b)
-        _m_saveSettings();
-    return b;
+    return _m_currentDocument.isNull() || _m_closeAllDocuments();
 }
 
 bool BTextEditor::isFileOpened(const QString &fileName) const
@@ -778,11 +884,6 @@ void BTextEditor::deselect()
         _m_currentDocument->deselect();
         _m_currentDocument->setFocusToEdit();
     }
-}
-
-void BTextEditor::saveSettings()
-{
-    _m_saveSettings();
 }
 
 //
@@ -1219,89 +1320,6 @@ void BTextEditor::_m_retranslateSwitchBlockModeAction()
     }
 }
 
-//loading/saving settings
-
-void BTextEditor::_m_loadSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->beginGroup(_m_CSettingsGroup);
-    s->beginGroup(GroupTextEditor);
-      setMacrosDir( s->value(KeyMacrosDir, MacrosDirDef).toString() );
-      setDefaultEncoding( s->value(KeyDefaultEncoding, BTextEditorDocument::EncodingDef).toString() );
-      setFontFamily( s->value(KeyFontFamily, BTextEditorDocument::FontFamilyDef).toString() );
-      setFontPointSize( s->value(KeyFontPointSize, BTextEditorDocument::FontPointSizeDef).toInt() );
-      setLineLength( s->value(KeyLineLength, BTextEditorDocument::LineLengthDef).toInt() );
-      setTabWidth( s->value(KeyTabWidth, BTextEditorDocument::TabWidthDef).toInt() );
-      setKeyboardLayoutMap( s->value(KeyKeyboardLayoutMap).toString() );
-      setBlockMode( s->value(KeyBlockMode, BTextEditorDocument::BlockModeDef).toBool() );
-      _m_loadRecentFiles( s->value(KeyRecentFiles).toStringList() );
-      s->beginGroup(GroupFindDialog);
-        BFindDialog::Parameters param = _m_findDlg->parameters();
-        s->setValue(KeyTextHistory, param.textHistory);
-        s->setValue(KeyNewTextHistory, param.newTextHistory);
-        s->beginGroup(GroupOptions);
-          s->setValue(KeyCaseSensitive, param.caseSensitive);
-          s->setValue(KeyWholeWords, param.wholeWords);
-          s->setValue(KeyBackwardOrder, param.backwardOrder);
-          s->setValue(KeyCyclic, param.cyclic);
-        s->endGroup();
-      s->endGroup();
-      s->beginGroup(GroupOpenSaveDialog);
-        _m_openSaveDlgGeometry = s->value(KeyGeometry, OpenSaveDlgGeometryDef).toRect();
-        _m_openSaveDlgDir = s->value(KeyDir, OpenSaveDlgDirDef).toString();
-      s->endGroup();
-      s->beginGroup(GroupSelectFilesDialog);
-        _m_selectFilesDlgGeometry = s->value(KeyGeometry, SelectFilesDlgGeometryDef).toRect();
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->endGroup();
-}
-
-void BTextEditor::_m_saveSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->beginGroup(_m_CSettingsGroup);
-    s->beginGroup(GroupTextEditor);
-      s->setValue(KeyMacrosDir, _m_macrosDir);
-      s->setValue( KeyDefaultEncoding, defaultEncoding() );
-      s->setValue( KeyFontFamily, fontFamily() );
-      s->setValue( KeyFontPointSize, fontPointSize() );
-      s->setValue( KeyLineLength, lineLength() );
-      s->setValue( KeyTabWidth, tabWidth() );
-      s->setValue( KeyKeyboardLayoutMap, keyboardLayoutMap() );
-      s->setValue( KeyBlockMode, blockMode() );
-      s->setValue( KeyRecentFiles, _m_saveRecentFiles() );
-      s->beginGroup(GroupFindDialog);
-        BFindDialog::Parameters param;
-        param.textHistory = s->value(KeyTextHistory).toStringList();
-        param.newTextHistory = s->value(KeyNewTextHistory).toStringList();
-        s->beginGroup(GroupOptions);
-          param.caseSensitive = s->value(KeyCaseSensitive).toBool();
-          param.wholeWords = s->value(KeyWholeWords).toBool();
-          param.backwardOrder = s->value(KeyBackwardOrder).toBool();
-          param.cyclic = s->value(KeyCyclic).toBool();
-        s->endGroup();
-        _m_findDlg->setParameters(param);
-      s->endGroup();
-      s->beginGroup(GroupOpenSaveDialog);
-        s->setValue(KeyGeometry, _m_openSaveDlgGeometry);
-        s->setValue(KeyDir, _m_openSaveDlgDir);
-      s->endGroup();
-      s->beginGroup(GroupSelectFilesDialog);
-        s->setValue(KeyGeometry, _m_selectFilesDlgGeometry);
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->endGroup();
-}
-
 //actions:file
 
 void BTextEditor::_m_newDocument(const QString &text)
@@ -1361,7 +1379,7 @@ bool BTextEditor::_m_openFile(const QString &fileName)
         }
     }
     bool ro = false;
-    if ( isFileOpened( fn, settingsGroup() ) )
+    if ( _m_CRegistered && isFileOpened(fn, _m_CGroupId) )
     {
         switch ( _m_openMultipleQuestion(fn) )
         {

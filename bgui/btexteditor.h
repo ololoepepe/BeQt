@@ -95,9 +95,9 @@ public:
           TextMacrosAction
     };
     //
-    static bool isFileOpened(const QString &fileName, const QString &settingsGroup);
+    static bool isFileOpened(const QString &fileName, const QString &groupId);
     //
-    explicit BTextEditor( QWidget *parent = 0, const QString &settingsGroup = QString() );
+    explicit BTextEditor( QWidget *parent = 0, bool registerGlobally = false, const QString &groupId = QString() );
     ~BTextEditor();
     //
     bool eventFilter(QObject *object, QEvent *event);
@@ -113,7 +113,8 @@ public:
     void setBlockMode(bool enabled);
     void applySettings(const QVariantMap &settings);
     //settings:get
-    const QString &settingsGroup() const;
+    bool isRegisteredGlobally() const;
+    const QString &groupId() const;
     QList<BAbstractFileType *> userFileTypes() const;
     const QString &macrosDir() const;
     const QString &defaultEncoding() const;
@@ -124,6 +125,9 @@ public:
     const QString &keyboardLayoutMap() const;
     bool blockMode() const;
     BAbstractSettingsTab *createSettingsTab() const;
+    //settings:load/save
+    void loadSettings( const QString &settingsGroup = QString() );
+    void saveSettings( const QString &settingsGroup = QString() );
     //loadable content
     void loadTextMacros(const QString &dir);
     void loadTextMacros(const QStringList &dirs);
@@ -166,7 +170,6 @@ public slots:
     void insertText(const QString &text);
     void setText(const QString &text);
     void deselect();
-    void saveSettings();
 protected:
     void changeEvent(QEvent *event);
     virtual void retranslateUi();
@@ -184,7 +187,8 @@ private:
         _m_CloseSave
     };
     //
-    const QString _m_CSettingsGroup;
+    const bool _m_CRegistered;
+    const QString _m_CGroupId;
     //
     //gui:visible
     QVBoxLayout *_m_vlt;
@@ -263,9 +267,6 @@ private:
     void _m_retranslateMenu(Menu id, const QString &title);
     void _m_setReopenActionsText(const QStringList &codecNames, const QString &description);
     void _m_retranslateSwitchBlockModeAction();
-    //loading/saving settings
-    void _m_loadSettings();
-    void _m_saveSettings();
     //actions:file
     void _m_newDocument( const QString &text = QString() );
     bool _m_openFile( const QString &fileName = QString() );

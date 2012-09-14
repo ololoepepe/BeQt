@@ -56,7 +56,7 @@ const int Gigabyte = 1024 * Megabyte;
 const QString GeneralSettingsTabId = "general";
 const QString GeneralSettingsTabIdLocale = "locale";
 //
-const QString BeQtVersion = "0.1.0";
+const QString BeQtVersion = "1.0.0";
 
 //
 
