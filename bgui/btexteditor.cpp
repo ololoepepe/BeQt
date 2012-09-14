@@ -128,10 +128,10 @@ bool checkReadOnly(const QString &fileName)
 //
 
 const QString SyntaxTypeDef = "Text";
-const QString MacrosDirDef = BCore::Home;
+const QString MacrosDirDef = QDir::home();
 //
 const QRect OpenSaveDlgGeometryDef = QRect(200, 200, 400, 400);
-const QString OpenSaveDlgDirDef = BCore::Home;
+const QString OpenSaveDlgDirDef = QDir::home();
 //
 const QRect SelectFilesDlgGeometryDef = QRect(200, 200, 600, 400);
 //
@@ -164,7 +164,7 @@ const QString GroupTextEditor = "beqt_text_editor";
 
 //
 
-bool BTextEditor::isFileOpened(const QString &fileName, const QString &groupId)
+bool BTextEditor::isFileOpenedGlobal(const QString &fileName, const QString &groupId)
 {
     QList<BTextEditor *> list = instances(groupId);
     for (int i = 0; i < list.size(); ++i)
@@ -1379,7 +1379,7 @@ bool BTextEditor::_m_openFile(const QString &fileName)
         }
     }
     bool ro = false;
-    if ( _m_CRegistered && isFileOpened(fn, _m_CGroupId) )
+    if ( _m_CRegistered && isFileOpenedGlobal(fn, _m_CGroupId) )
     {
         switch ( _m_openMultipleQuestion(fn) )
         {

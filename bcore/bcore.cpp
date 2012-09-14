@@ -15,180 +15,154 @@
 #include <QPointer>
 #include <QFileInfo>
 #include <QScopedPointer>
+#include <QMutex>
+#include <QMutexLocker>
 
 #include <QDebug>
 
-const QLocale _m_DefLocale = QLocale(QLocale::English, QLocale::UnitedStates);
+const QLocale LocaleDef = QLocale(QLocale::English, QLocale::UnitedStates);
 //
-const QString _m_GroupCore = "beqt_core";
-  const QString _m_KeyLocale = "locale";
-
+#if defined(Q_OS_MAC)
+const QStringList PluginSuffixes = QStringList() << "*.dylib";
+#elif defined(Q_OS_UNIX)
+const QStringList PluginSuffixes = QStringList() << "*.so";
+#elif defined(Q_OS_WIN)
+const QStringList PluginSuffixes = QStringList() << "*.dll";
+#endif
 //
-
-QStringList _m_translatorPaths;
-QList<QTranslator *> _m_translators;
-QLocale _m_locale = _m_DefLocale;
-QString _m_sharedRoot;
-QString _m_userRoot;
-QMap<QString, QString> _m_pathsDir;
-QMap<QString, QString> _m_pathsFile;
-QVariantMap _m_data;
-QList< QPointer<QObject> > _m_pluginHandlingObjects;
-QMap<QString, QPluginLoader *> _m_pluginMap;
-bool (*_m_pluginValidityChecker)(QObject *) = 0;
+const QString GroupCore = "beqt_core";
+  const QString KeyLocale = "locale";
 
 //
 
-namespace BCore
+BCore *inst = 0;
+QMutex mutex;
+QStringList translatorPaths;
+QList<QTranslator *> translators;
+QLocale locale = LocaleDef;
+QString sharedRoot;
+QString userRoot;
+QMap<QString, QString> dirMap;
+QMap<QString, QString> fileMap;
+QVariantMap dataMap;
+QList< QPointer<QObject> > pluginHandlingObjects;
+QMap<QString, QPluginLoader *> pluginMap;
+bool (*pluginValidityChecker)(QObject *) = 0;
+
+//
+
+//beqt
+const QString BCore::BeQtVersion = "1.0.0";
+const QString BCore::ResourcesPath = ":/beqt/res";
+const QString BCore::IcoPath = BCore::ResourcesPath + "/ico";
+const QString BCore::TranslationsPath = BCore::ResourcesPath + "/translations";
+//other:time
+const int BCore::Second = 1000;
+const int BCore::Minute = 60 * BCore::Second;
+const int BCore::Hour = 60 * BCore::Minute;
+//other:data
+const int BCore::Kilobyte = 1024;
+const int BCore::Megabyte = 1024 * BCore::Kilobyte;
+const int BCore::Gigabyte = 1024 * BCore::Megabyte;
+
+//
+
+BCore *BCore::instance()
 {
+    if (inst)
+        return inst;
+    QMutexLocker locker(&mutex);
+    if (inst)
+        return inst;
+    inst = new BCore;
+    return inst;
+}
 
-QSettings *newSettingsInstance()
+//settings
+
+QSettings *BCore::newSettingsInstance()
 {
     QString fn = QCoreApplication::applicationDirPath() + "/settings.ini";
     return QFile(fn).exists() ? new QSettings(fn, QSettings::IniFormat) : new QSettings;
 }
 
-void saveSettings()
+void BCore::saveSettings()
 {
     QScopedPointer<QSettings> s( newSettingsInstance() );
     if (!s)
         return;
-    s->remove(_m_GroupCore);
-    s->beginGroup(_m_GroupCore);
-      s->setValue(_m_KeyLocale, _m_locale);
+    s->remove(GroupCore);
+    s->beginGroup(GroupCore);
+      s->setValue(KeyLocale, locale);
     s->endGroup();
     //
-    QList<QPluginLoader *> loaders = _m_pluginMap.values();
+    QList<QPluginLoader *> loaders = pluginMap.values();
     for (int i = 0; i < loaders.size(); ++i)
         qobject_cast<BPluginInterface *>( loaders.at(i)->instance() )->saveSettings();
 }
 
-void loadSettings()
+void BCore::loadSettings()
 {
     QScopedPointer<QSettings> s( newSettingsInstance() );
     if (!s)
         return;
-    s->beginGroup(_m_GroupCore);
-      QLocale l = s->value( _m_KeyLocale, QLocale::system() ).toLocale();
+    s->beginGroup(GroupCore);
+      QLocale l = s->value( KeyLocale, QLocale::system() ).toLocale();
       if ( QLocale::system() == l && !availableLocales().contains(l) )
           l = QLocale(QLocale::system().language(), QLocale::AnyCountry);
       setLocale(l);
     s->endGroup();
     //
-    QList<QPluginLoader *> loaders = _m_pluginMap.values();
+    QList<QPluginLoader *> loaders = pluginMap.values();
     for (int i = 0; i < loaders.size(); ++i)
         qobject_cast<BPluginInterface *>( loaders.at(i)->instance() )->loadSettings();
 }
 
-void applySettings(const QVariantMap &settings)
-{
-    if ( settings.contains(GeneralSettingsTabIdLocale) )
-        setLocale( settings.value(GeneralSettingsTabIdLocale).toLocale() );
-}
+//translation
 
-void addStandardTranslator(Translator translator)
+void BCore::addStandardTranslator(Translator translator)
 {
     addTranslator( standardTranslatorPath(translator) );
 }
 
-void setStandardTranslators(const QList<Translator> &translators)
+void BCore::setStandardTranslators(const QList<Translator> &translators)
 {
     for (int i = 0; i < translators.size(); ++i)
         addTranslator( standardTranslatorPath( translators.at(i) ) );
 }
 
-void addTranslator(const QString &path)
+void BCore::addTranslator(const QString &path)
 {
-    if ( path.isEmpty() || _m_translatorPaths.contains(path) )
+    if ( path.isEmpty() || translatorPaths.contains(path) )
         return;
-    _m_translatorPaths << path;
+    translatorPaths << path;
 }
 
-void setTranslators(const QStringList &paths)
+void BCore::setTranslators(const QStringList &paths)
 {
-    _m_translatorPaths = paths;
+    translatorPaths = paths;
 }
 
-void setSharedRoot(const QString &path)
+bool BCore::setLocale(const QLocale &l)
 {
-    _m_sharedRoot = path;
-}
-
-void setUserRoot(const QString &path)
-{
-    _m_userRoot = path;
-}
-
-void setPath(const QString &key, const QString &path, bool file)
-{
-    if ( key.isEmpty() )
-        return;
-    if (file)
-        _m_pathsFile[key] = path;
-    else
-        _m_pathsDir[key] = path;
-}
-
-void setData(const QString &key, const QVariant &data)
-{
-    _m_data[key] = data;
-}
-
-void createUserPath(const QString &key, bool file)
-{
-    if (file)
-    {
-        if ( !_m_pathsFile.contains(key) )
-            return;
-        QFile f( user(key, true) );
-        f.open(QFile::WriteOnly);
-        f.close();
-    }
-    else
-    {
-        if ( !_m_pathsDir.contains(key) )
-            return;
-        QString path = user(key);
-        QDir(path).mkpath(path);
-    }
-}
-
-bool copyResource(const QString &key)
-{
-    QString sfn = shared(key, true);
-    QString ufn = user(key, true);
-    if ( sfn.isEmpty() || ufn.isEmpty() )
+    if ( !availableLocales().contains(l) )
         return false;
-    QFile sf(sfn);
-    if ( !sf.exists() || QFile(ufn).exists() )
-        return false;
-    QString ufnd = QFileInfo(ufn).path();
-    QDir d(ufnd);
-    if ( !d.exists() && !d.mkpath(ufnd) )
-        return false;
-    return sf.copy(ufn);
-}
-
-bool setLocale(const QLocale &locale)
-{
-    if ( !availableLocales().contains(locale) )
-        return false;
-    if (locale == _m_locale)
+    if (l == locale)
         return true;
-    for (int i = 0; i < _m_translators.size(); ++i)
+    for (int i = 0; i < translators.size(); ++i)
     {
-        QTranslator *t = _m_translators.at(i);
+        QTranslator *t = translators.at(i);
         QCoreApplication::removeTranslator(t);
         t->deleteLater();
     }
-    _m_translators.clear();
-    _m_locale = locale;
-    if (_m_DefLocale == _m_locale)
+    translators.clear();
+    locale = l;
+    if (LocaleDef == locale)
         return true;
-    QString ln = _m_locale.name();
-    for (int i = 0; i < _m_translatorPaths.size(); ++i)
+    QString ln = locale.name();
+    for (int i = 0; i < translatorPaths.size(); ++i)
     {
-        const QString &path = _m_translatorPaths.at(i);
+        const QString &path = translatorPaths.at(i);
         QTranslator *t = new QTranslator;
         if ( !t->load(path + "_" + ln) && !t->load( path + "_" + ln.left(2) ) )
         {
@@ -197,24 +171,24 @@ bool setLocale(const QLocale &locale)
         else
         {
             QCoreApplication::installTranslator(t);
-            _m_translators << t;
+            translators << t;
         }
     }
     return true;
 }
 
-const QLocale &locale()
+const QLocale &BCore::currentLocale()
 {
-    return _m_locale;
+    return locale;
 }
 
-const QList<QLocale> availableLocales()
+QList<QLocale> BCore::availableLocales()
 {
-    QLocale::setDefault(_m_DefLocale);
+    QLocale::setDefault(LocaleDef);
     QMap<QString, QStringList> m;
-    for (int i = 0; i < _m_translatorPaths.size(); ++i)
+    for (int i = 0; i < translatorPaths.size(); ++i)
     {
-        QFileInfo fi( _m_translatorPaths.at(i) );
+        QFileInfo fi( translatorPaths.at(i) );
         QString name = fi.fileName();
         QStringList &sl = m[fi.path()];
         if ( !sl.contains(name) )
@@ -231,7 +205,7 @@ const QList<QLocale> availableLocales()
         files << QDir(key).entryList(sl, QDir::Files);
     }
     QList<QLocale> locales;
-    locales << _m_DefLocale;
+    locales << LocaleDef;
     for (int i = 0; i < files.size(); ++i)
     {
         QString &file = files[i];
@@ -250,7 +224,7 @@ const QList<QLocale> availableLocales()
     return locales;
 }
 
-QString standardTranslatorPath(Translator translator)
+QString BCore::standardTranslatorPath(Translator translator)
 {
     switch (translator)
     {
@@ -267,46 +241,75 @@ QString standardTranslatorPath(Translator translator)
     }
 }
 
-QString shared(const QString &key, bool file)
+//paths and data
+
+void BCore::setSharedRoot(const QString &path)
+{
+    sharedRoot = path;
+}
+
+void BCore::setUserRoot(const QString &path)
+{
+    userRoot = path;
+}
+
+void BCore::setPath(const QString &key, const QString &path, bool file)
 {
     if ( key.isEmpty() )
-        return _m_sharedRoot;
-    if ( file && _m_pathsFile.contains(key) )
-        return _m_sharedRoot + Sep + _m_pathsFile.value(key);
-    else if ( !file && _m_pathsDir.contains(key) )
-        return _m_sharedRoot + Sep + _m_pathsDir.value(key);
+        return;
+    if (file)
+        fileMap[key] = path;
+    else
+        dirMap[key] = path;
+}
+
+void BCore::setData(const QString &key, const QVariant &data)
+{
+    dataMap[key] = data;
+}
+
+QString BCore::shared(const QString &key, bool file)
+{
+    if ( key.isEmpty() )
+        return sharedRoot;
+    if ( file && fileMap.contains(key) )
+        return sharedRoot + "/" + fileMap.value(key);
+    else if ( !file && dirMap.contains(key) )
+        return sharedRoot + "/" + dirMap.value(key);
     else
         return "";
 }
 
-QString user(const QString &key, bool file)
+QString BCore::user(const QString &key, bool file)
 {
     if ( key.isEmpty() )
-        return _m_userRoot;
-    if ( file && _m_pathsFile.contains(key) )
-        return _m_userRoot + Sep + _m_pathsFile.value(key);
-    else if ( !file && _m_pathsDir.contains(key) )
-        return _m_userRoot + Sep + _m_pathsDir.value(key);
+        return userRoot;
+    if ( file && fileMap.contains(key) )
+        return userRoot + "/" + fileMap.value(key);
+    else if ( !file && dirMap.contains(key) )
+        return userRoot + "/" + dirMap.value(key);
     else
         return "";
 }
 
-QVariant data(const QString &key, const QVariant &def)
+QVariant BCore::data(const QString &key, const QVariant &def)
 {
-    return _m_data.value(key, def);
+    return dataMap.value(key, def);
 }
 
-QString dataS(const QString &key, const QString &def)
+QString BCore::dataS(const QString &key, const QString &def)
 {
     return data( key, QVariant(def) ).toString();
 }
 
-void loadPlugin(const QString &fileName)
+//plugins
+
+void BCore::loadPlugin(const QString &fileName)
 {
-    _m_pluginHandlingObjects.removeAll( QPointer<QObject>(0) );
+    pluginHandlingObjects.removeAll( QPointer<QObject>(0) );
     if ( fileName.isEmpty() || !PluginSuffixes.contains( "*." + QFileInfo(fileName).suffix() ) )
         return;
-    if ( _m_pluginMap.contains(fileName) )
+    if ( pluginMap.contains(fileName) )
         return;
     QPluginLoader *pl = new QPluginLoader(fileName);
     if ( !pl->load() )
@@ -319,7 +322,7 @@ void loadPlugin(const QString &fileName)
         return pl->deleteLater();
     }
     QString id = interface->uniqueId();
-    QList<QPluginLoader *> loaders = _m_pluginMap.values();
+    QList<QPluginLoader *> loaders = pluginMap.values();
     for (int i = 0; i < loaders.size(); ++i)
     {
         if (qobject_cast<BPluginInterface *>( loaders.at(i)->instance() )->uniqueId() == id)
@@ -328,18 +331,18 @@ void loadPlugin(const QString &fileName)
             return pl->deleteLater();
         }
     }
-    if ( _m_pluginValidityChecker && !_m_pluginValidityChecker(plugin) )
+    if ( pluginValidityChecker && !pluginValidityChecker(plugin) )
     {
         pl->unload();
         return pl->deleteLater();
     }
     addTranslator( interface->translatorPath() );
-    _m_pluginMap.insert(fileName, pl);
-    for (int i = 0; i < _m_pluginHandlingObjects.size(); ++i)
-        interface->handleLoad( _m_pluginHandlingObjects.at(i).data() );
+    pluginMap.insert(fileName, pl);
+    for (int i = 0; i < pluginHandlingObjects.size(); ++i)
+        interface->handleLoad( pluginHandlingObjects.at(i).data() );
 }
 
-void loadPlugins(const QString &dir)
+void BCore::loadPlugins(const QString &dir)
 {
     QDir d(dir);
     QStringList list = d.entryList(PluginSuffixes, QDir::Files);
@@ -347,23 +350,23 @@ void loadPlugins(const QString &dir)
         loadPlugin( d.absoluteFilePath( list.at(i) ) );
 }
 
-QList<QObject *> plugins()
+QList<QObject *> BCore::plugins()
 {
-    QList<QPluginLoader *> loaders = _m_pluginMap.values();
+    QList<QPluginLoader *> loaders = pluginMap.values();
     QList<QObject *> list;
     for (int i = 0; i < loaders.size(); ++i)
         list << loaders.at(i)->instance();
     return list;
 }
 
-void addPluginHandlingObject(QObject *object)
+void BCore::addPluginHandlingObject(QObject *object)
 {
-    _m_pluginHandlingObjects.removeAll( QPointer<QObject>(0) );
+    pluginHandlingObjects.removeAll( QPointer<QObject>(0) );
     QPointer<QObject> op(object);
-    if ( !op || _m_pluginHandlingObjects.contains(op) )
+    if ( !op || pluginHandlingObjects.contains(op) )
         return;
-    _m_pluginHandlingObjects << op;
-    QList<QPluginLoader *> values = _m_pluginMap.values();
+    pluginHandlingObjects << op;
+    QList<QPluginLoader *> values = pluginMap.values();
     for (int i = 0; i < values.size(); ++i)
     {
         BPluginInterface *interface = qobject_cast<BPluginInterface *>( values.at(i)->instance() );
@@ -372,14 +375,14 @@ void addPluginHandlingObject(QObject *object)
     }
 }
 
-void removePluginHandlingObject(QObject *object)
+void BCore::removePluginHandlingObject(QObject *object)
 {
-    _m_pluginHandlingObjects.removeAll( QPointer<QObject>(0) );
+    pluginHandlingObjects.removeAll( QPointer<QObject>(0) );
     QPointer<QObject> op(object);
-    if ( !op || !_m_pluginHandlingObjects.contains(op) )
+    if ( !op || !pluginHandlingObjects.contains(op) )
         return;
-    _m_pluginHandlingObjects.removeAll(op);
-    QList<QPluginLoader *> values = _m_pluginMap.values();
+    pluginHandlingObjects.removeAll(op);
+    QList<QPluginLoader *> values = pluginMap.values();
     for (int i = 0; i < values.size(); ++i)
     {
         BPluginInterface *interface = qobject_cast<BPluginInterface *>( values.at(i)->instance() );
@@ -388,12 +391,49 @@ void removePluginHandlingObject(QObject *object)
     }
 }
 
-void setPluginValidityChecker( bool (*function)(QObject *) )
+void BCore::setPluginValidityChecker( bool (*function)(QObject *) )
 {
-    _m_pluginValidityChecker = function;
+    pluginValidityChecker = function;
 }
 
-bool removeDir(const QString &path)
+//filesystem
+
+void BCore::createUserPath(const QString &key, bool file)
+{
+    if (file)
+    {
+        if ( !fileMap.contains(key) )
+            return;
+        QFile f( user(key, true) );
+        f.open(QFile::WriteOnly);
+        f.close();
+    }
+    else
+    {
+        if ( !dirMap.contains(key) )
+            return;
+        QString path = user(key);
+        QDir(path).mkpath(path);
+    }
+}
+
+bool BCore::copyResource(const QString &key)
+{
+    QString sfn = shared(key, true);
+    QString ufn = user(key, true);
+    if ( sfn.isEmpty() || ufn.isEmpty() )
+        return false;
+    QFile sf(sfn);
+    if ( !sf.exists() || QFile(ufn).exists() )
+        return false;
+    QString ufnd = QFileInfo(ufn).path();
+    QDir d(ufnd);
+    if ( !d.exists() && !d.mkpath(ufnd) )
+        return false;
+    return sf.copy(ufn);
+}
+
+bool BCore::removeDir(const QString &path)
 {
     QDir d(path);
     QStringList dirs = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -407,7 +447,7 @@ bool removeDir(const QString &path)
     return d.rmdir(path);
 }
 
-void copyDir(const QString &path, const QString &newPath, bool recursive)
+void BCore::copyDir(const QString &path, const QString &newPath, bool recursive)
 {
     QDir d(path);
     QDir nd(newPath);
@@ -428,6 +468,4 @@ void copyDir(const QString &path, const QString &newPath, bool recursive)
             copyDir(path + "/" + bdn, newPath + "/" + bdn);
         }
     }
-}
-
 }

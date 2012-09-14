@@ -31,7 +31,7 @@ const QString BGeneralSettingsTab::IdLocale = "locale";
 BGeneralSettingsTab::BGeneralSettingsTab()
 {
     //
-    QLocale currentLocale = BCore::locale();
+    QLocale currentLocale = BCore::currentLocale();
     QList<QLocale> availableLocales = BCore::availableLocales();
     _m_flt = new QFormLayout(this);
       _m_flt->setFieldGrowthPolicy(QFormLayout::FieldsStayAtSizeHint);

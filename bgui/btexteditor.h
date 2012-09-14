@@ -95,7 +95,7 @@ public:
           TextMacrosAction
     };
     //
-    static bool isFileOpened(const QString &fileName, const QString &groupId);
+    static bool isFileOpenedGlobal( const QString &fileName, const QString &groupId = QString() );
     //
     explicit BTextEditor( QWidget *parent = 0, bool registerGlobally = false, const QString &groupId = QString() );
     ~BTextEditor();

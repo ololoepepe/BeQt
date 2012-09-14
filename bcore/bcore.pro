@@ -18,8 +18,7 @@ HEADERS += bcore.h \
     bcryptor.h \
     bplugininterface.h \
     bsignalmapper.h \
-    bstdio.h \
-    bsingleton.h
+    bstdio.h
 
 RESOURCES += \
     bcore.qrc

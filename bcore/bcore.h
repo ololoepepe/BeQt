@@ -12,6 +12,7 @@ class QObject;
 #include <QLocale>
 #include <QDir>
 #include <QVariantMap>
+#include <QMutex>
 
 #if defined(BCORE_LIBRARY)
 #  define BCORESHARED_EXPORT Q_DECL_EXPORT
@@ -19,78 +20,71 @@ class QObject;
 #  define BCORESHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-namespace BCore
+class BCORESHARED_EXPORT BCore
 {
-
-enum Translator
-{
-    QtTranslator,
-    BCoreTranslator,
-    BGuiTranslator,
-    BNetworkTranslator
+public:
+    enum Translator
+    {
+        QtTranslator,
+        BCoreTranslator,
+        BGuiTranslator,
+        BNetworkTranslator
+    };
+    //beqt
+    static const QString BeQtVersion;
+    static const QString ResourcesPath;
+    static const QString IcoPath;
+    static const QString TranslationsPath;
+    //other:time
+    static const int Second;
+    static const int Minute;
+    static const int Hour;
+    //other:data
+    static const int Kilobyte;
+    static const int Megabyte;
+    static const int Gigabyte;
+    //
+    static BCore *instance();
+    //settings
+    static QSettings *newSettingsInstance();
+    static void saveSettings();
+    static void loadSettings();
+    //translation
+    static void addStandardTranslator(Translator translator);
+    static void setStandardTranslators( const QList<Translator> &translators = QList<Translator>() );
+    static void addTranslator(const QString &path);
+    static void setTranslators( const QStringList &paths = QStringList() );
+    static bool setLocale(const QLocale &l);
+    static const QLocale &currentLocale();
+    static QList<QLocale> availableLocales();
+    static QString standardTranslatorPath(Translator translator);
+    //paths and data
+    static void setSharedRoot(const QString &path);
+    static void setUserRoot(const QString &path);
+    static void setPath(const QString &key, const QString &path, bool file = false);
+    static void setData(const QString &key, const QVariant &data);
+    static QString shared(const QString &key = QString(), bool file = false);
+    static QString user(const QString &key = QString(), bool file = false);
+    static QVariant data( const QString &key, const QVariant &def = QVariant() );
+    static QString dataS( const QString &key, const QString &def = QString() );
+    //plugins
+    static void loadPlugin(const QString &fileName);
+    static void loadPlugins(const QString &dir);
+    static QList<QObject *> plugins();
+    static void addPluginHandlingObject(QObject *object);
+    static void removePluginHandlingObject(QObject *object);
+    static void setPluginValidityChecker( bool (*function)(QObject *) );
+    //filesystem
+    static void createUserPath(const QString &key, bool file = false);
+    static bool copyResource(const QString &key);
+    static bool removeDir(const QString &path);
+    static void copyDir(const QString &path, const QString &newPath, bool recursive = true);
+private:
+    BCore();
+    BCore(const BCore &other);
+    ~BCore();
+    //
+    BCore &operator=(const BCore &other);
 };
-
-//
-
-#if defined(Q_OS_MAC)
-const QStringList PluginSuffixes = QStringList() << "*.dylib";
-#elif defined(Q_OS_UNIX)
-const QStringList PluginSuffixes = QStringList() << "*.so";
-#elif defined(Q_OS_WIN)
-const QStringList PluginSuffixes = QStringList() << "*.dll";
-#endif
-const QString Sep = QDir::separator();
-const QString Home = QDir::homePath();
-const QString ResourcesPath = ":/beqt/res";
-const QString IcoPath = ResourcesPath + "/ico";
-const QString TranslationsPath = ResourcesPath + "/translations";
-//
-const int Second = 1000;
-const int Minute = 60 * Second;
-const int Hour = 60 * Minute;
-//
-const int Kilobyte = 1024;
-const int Megabyte = 1024 * Kilobyte;
-const int Gigabyte = 1024 * Megabyte;
-//
-const QString GeneralSettingsTabId = "general";
-const QString GeneralSettingsTabIdLocale = "locale";
-//
-const QString BeQtVersion = "1.0.0";
-
-//
-
-BCORESHARED_EXPORT QSettings *newSettingsInstance();
-BCORESHARED_EXPORT void saveSettings();
-BCORESHARED_EXPORT void loadSettings();
-BCORESHARED_EXPORT void applySettings(const QVariantMap &settings);
-BCORESHARED_EXPORT void addStandardTranslator(Translator translator);
-BCORESHARED_EXPORT void setStandardTranslators( const QList<Translator> &translators = QList<Translator>() );
-BCORESHARED_EXPORT void addTranslator(const QString &path);
-BCORESHARED_EXPORT void setTranslators( const QStringList &paths = QStringList() );
-BCORESHARED_EXPORT void setSharedRoot(const QString &path);
-BCORESHARED_EXPORT void setUserRoot(const QString &path);
-BCORESHARED_EXPORT void setPath(const QString &key, const QString &path, bool file = false);
-BCORESHARED_EXPORT void setData(const QString &key, const QVariant &data);
-BCORESHARED_EXPORT void createUserPath(const QString &key, bool file = false);
-BCORESHARED_EXPORT bool copyResource(const QString &key);
-BCORESHARED_EXPORT bool setLocale(const QLocale &locale);
-BCORESHARED_EXPORT const QLocale &locale();
-BCORESHARED_EXPORT const QList<QLocale> availableLocales();
-BCORESHARED_EXPORT QString standardTranslatorPath(Translator translator);
-BCORESHARED_EXPORT QString shared(const QString &key = QString(), bool file = false);
-BCORESHARED_EXPORT QString user(const QString &key = QString(), bool file = false);
-BCORESHARED_EXPORT QVariant data( const QString &key, const QVariant &def = QVariant() );
-BCORESHARED_EXPORT QString dataS( const QString &key, const QString &def = QString() );
-BCORESHARED_EXPORT void loadPlugin(const QString &fileName);
-BCORESHARED_EXPORT void loadPlugins(const QString &dir);
-BCORESHARED_EXPORT QList<QObject *> plugins();
-BCORESHARED_EXPORT void addPluginHandlingObject(QObject *object);
-BCORESHARED_EXPORT void removePluginHandlingObject(QObject *object);
-BCORESHARED_EXPORT void setPluginValidityChecker( bool (*function)(QObject *) );
-BCORESHARED_EXPORT bool removeDir(const QString &path);
-BCORESHARED_EXPORT void copyDir(const QString &path, const QString &newPath, bool recursive = true);
-
-}
 
 #endif // BCORE_H
