@@ -32,7 +32,7 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
     _m_flt = new QFormLayout(this);
       //_m_flt->setFieldGrowthPolicy(QFormLayout::FieldsStayAtSizeHint);
       //font family
-      _m_lblFontFamily = new QLabel;
+      _m_lblFontFamily = new QLabel(this);
       _m_fntcmboxFontFamily = new QFontComboBox(this);
         _m_fntcmboxFontFamily->setEditable(false);
         _m_fntcmboxFontFamily->setFontFilters(QFontComboBox::MonospacedFonts);
@@ -41,14 +41,14 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
         _m_fntcmboxFontFamily->setCurrentFont(fnt);
       _m_flt->addRow(_m_lblFontFamily, _m_fntcmboxFontFamily);
       //font point size
-      _m_lblFontPointSize = new QLabel;
+      _m_lblFontPointSize = new QLabel(this);
       _m_sboxFontPointSize = new QSpinBox(this);
         _m_sboxFontPointSize->setMinimum(BTextEditorDocument::FontPointSizeMin);
         _m_sboxFontPointSize->setMaximum(BTextEditorDocument::FontPointSizeMax);
         _m_sboxFontPointSize->setValue( settings.value(IdFontPointSize).toInt() );
       _m_flt->addRow(_m_lblFontPointSize, _m_sboxFontPointSize);
       //default encoding
-      _m_lblDefaultEncoding = new QLabel;
+      _m_lblDefaultEncoding = new QLabel(this);
       _m_cmboxDefaultEncoding = new QComboBox(this);
         QStringList sl = encodings.keys();
         for (int i = 0; i < sl.size(); ++i)
@@ -60,13 +60,13 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
                                                       settings.value(IdDefaultEncoding).toString() ) );
       _m_flt->addRow(_m_lblDefaultEncoding, _m_cmboxDefaultEncoding);
       //line length
-      _m_lblLineLength = new QLabel;
+      _m_lblLineLength = new QLabel(this);
       _m_sboxLineLength = new QSpinBox(this);
         _m_sboxLineLength->setMinimum(BTextEditorDocument::LineLengthMin);
         _m_sboxLineLength->setMaximum(BTextEditorDocument::LineLengthMax);
         _m_sboxLineLength->setValue( settings.value(IdLineLength).toInt() );
       _m_flt->addRow(_m_lblLineLength, _m_sboxLineLength);
-      _m_lblTabWidth = new QLabel;
+      _m_lblTabWidth = new QLabel(this);
       _m_cmboxTabWidth = new QComboBox(this);
         for (int i = 0; i < BTextEditorDocument::TabWidthsValid.size(); ++i)
         {

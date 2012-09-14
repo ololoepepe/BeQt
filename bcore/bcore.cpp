@@ -20,8 +20,6 @@
 
 #include <QDebug>
 
-const QLocale LocaleDef = QLocale(QLocale::English, QLocale::UnitedStates);
-//
 #if defined(Q_OS_MAC)
 const QStringList PluginSuffixes = QStringList() << "*.dylib";
 #elif defined(Q_OS_UNIX)
@@ -39,7 +37,7 @@ BCore *inst = 0;
 QMutex mutex;
 QStringList translatorPaths;
 QList<QTranslator *> translators;
-QLocale locale = LocaleDef;
+QLocale locale = BCore::DefaultLocale;
 QString sharedRoot;
 QString userRoot;
 QMap<QString, QString> dirMap;
@@ -47,7 +45,7 @@ QMap<QString, QString> fileMap;
 QVariantMap dataMap;
 QList< QPointer<QObject> > pluginHandlingObjects;
 QMap<QString, QPluginLoader *> pluginMap;
-bool (*pluginValidityChecker)(QObject *) = 0;
+bool (*pluginValidityChecker)(const QObject *) = 0;
 
 //
 
@@ -56,6 +54,7 @@ const QString BCore::BeQtVersion = "1.0.0";
 const QString BCore::ResourcesPath = ":/beqt/res";
 const QString BCore::IcoPath = BCore::ResourcesPath + "/ico";
 const QString BCore::TranslationsPath = BCore::ResourcesPath + "/translations";
+const QLocale BCore::DefaultLocale = QLocale(QLocale::English, QLocale::UnitedStates);
 //other:time
 const int BCore::Second = 1000;
 const int BCore::Minute = 60 * BCore::Second;
@@ -157,7 +156,7 @@ bool BCore::setLocale(const QLocale &l)
     }
     translators.clear();
     locale = l;
-    if (LocaleDef == locale)
+    if (DefaultLocale == locale)
         return true;
     QString ln = locale.name();
     for (int i = 0; i < translatorPaths.size(); ++i)
@@ -184,7 +183,7 @@ const QLocale &BCore::currentLocale()
 
 QList<QLocale> BCore::availableLocales()
 {
-    QLocale::setDefault(LocaleDef);
+    QLocale::setDefault(DefaultLocale);
     QMap<QString, QStringList> m;
     for (int i = 0; i < translatorPaths.size(); ++i)
     {
@@ -205,7 +204,7 @@ QList<QLocale> BCore::availableLocales()
         files << QDir(key).entryList(sl, QDir::Files);
     }
     QList<QLocale> locales;
-    locales << LocaleDef;
+    locales << DefaultLocale;
     for (int i = 0; i < files.size(); ++i)
     {
         QString &file = files[i];
@@ -391,7 +390,7 @@ void BCore::removePluginHandlingObject(QObject *object)
     }
 }
 
-void BCore::setPluginValidityChecker( bool (*function)(QObject *) )
+void BCore::setPluginValidityChecker( bool (*function)(const QObject *) )
 {
     pluginValidityChecker = function;
 }

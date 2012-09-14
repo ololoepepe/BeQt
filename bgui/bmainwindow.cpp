@@ -485,6 +485,7 @@ void BMainWindow::_m_actSettingsTriggered()
     QMap<QString, BAbstractSettingsTab *> m;
     QVariantMap gstm;
     gstm.insert( BGeneralSettingsTab::IdLocale, BCore::currentLocale() );
+    gstm.insert( BGeneralSettingsTab::IdPlugins, QVariant::fromValue< QList<QObject *> >( BCore::plugins() ) );
     m.insert( BGeneralSettingsTab::Id, new BGeneralSettingsTab(gstm) );
     m.unite( userSettingsTabMap() );
     QScopedPointer<BSettingsDialog> sd( new BSettingsDialog(m, this) );

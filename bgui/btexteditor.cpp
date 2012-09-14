@@ -104,9 +104,9 @@ QList<BTextEditor *> instances(const QString &groupId)
     return list;
 }
 
-QIcon icon(const QString &fileName)
+QIcon icon(const QString &iconName)
 {
-    return QIcon( BCore::IcoPath + "/" + (QFileInfo(fileName).suffix().isEmpty() ? fileName + ".png" : fileName) );
+    return QIcon( BCore::IcoPath + "/" + (QFileInfo(iconName).suffix().isEmpty() ? iconName + ".png" : iconName) );
 }
 
 BTextEditorDocument *document(QWidget *widget)

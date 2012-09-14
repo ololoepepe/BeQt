@@ -35,6 +35,7 @@ public:
     static const QString ResourcesPath;
     static const QString IcoPath;
     static const QString TranslationsPath;
+    static const QLocale DefaultLocale;
     //other:time
     static const int Second;
     static const int Minute;
@@ -73,7 +74,7 @@ public:
     static QList<QObject *> plugins();
     static void addPluginHandlingObject(QObject *object);
     static void removePluginHandlingObject(QObject *object);
-    static void setPluginValidityChecker( bool (*function)(QObject *) );
+    static void setPluginValidityChecker( bool (*function)(const QObject *) );
     //filesystem
     static void createUserPath(const QString &key, bool file = false);
     static bool copyResource(const QString &key);
@@ -86,5 +87,7 @@ private:
     //
     BCore &operator=(const BCore &other);
 };
+
+Q_DECLARE_METATYPE(QList<QObject *>)
 
 #endif // BCORE_H
