@@ -10,6 +10,7 @@
 #include "private/btexteditorsettingstab.h"
 #include "private/bmacrorecorder.h"
 #include "private/bplaintextedit.h"
+#include "private/ballfiles.h"
 
 #include "../bcore/bcore.h"
 
@@ -65,31 +66,6 @@
 #include <QRect>
 
 #include <QDebug>
-
-class AllFiles : public BAbstractFileType
-{
-    Q_OBJECT
-public:
-    AllFiles(QObject *parent = 0) :
-        BAbstractFileType(parent)
-    {
-    }
-    //
-    QString description() const
-    {
-        return tr("All files", "fileType description");
-    }
-    QStringList suffixes() const
-    {
-        return QStringList();
-    }
-    BAbstractFileType *clone() const
-    {
-        return new AllFiles( parent() );
-    }
-};
-
-//
 
 QList<BTextEditor *> instanceList;
 
@@ -175,6 +151,10 @@ bool BTextEditor::isFileOpenedGlobal(const QString &fileName, const QString &gro
 
 //
 
+const QString BTextEditor::SettingsTabId = "beqt/bgui/text_editor";
+
+//
+
 BTextEditor::BTextEditor(QWidget *parent, bool registerGlobally, const QString &groupId) :
     QWidget(parent), _m_CRegistered(registerGlobally), _m_CGroupId(groupId)
 {
@@ -239,6 +219,20 @@ void BTextEditor::setUserFileTypes(QList<BAbstractFileType *> list)
     _m_cmboxSyntax->blockSignals(false);
 }
 
+void BTextEditor::setDefaultFileName(const QString &fileName)
+{
+    if ( fileName.isEmpty() )
+        return;
+    _m_defaultFileName = fileName;
+}
+
+void BTextEditor::setDefaultMacrosDir(const QString &dir)
+{
+    if ( !QDir(dir).exists() )
+        return;
+    _m_defaultMacrosDir = dir;
+}
+
 void BTextEditor::setMacrosDir(const QString &dir)
 {
     if ( dir.isEmpty() )
@@ -294,9 +288,11 @@ void BTextEditor::setTabWidth(int width)
 
 void BTextEditor::setKeyboardLayoutMap(const QString &description)
 {
-    if ( description.isEmpty() || !_m_keyboardLayoutMaps.contains(description) )
+    if ( description.isEmpty() )
         return;
     _m_currentKeyboardLayoutMap = description;
+    _m_documentSelectionChanged( !_m_currentDocument.isNull() && _m_currentDocument->hasSelection() );
+
 }
 
 void BTextEditor::setBlockMode(bool enabled)
@@ -426,7 +422,7 @@ void BTextEditor::loadSettings(const QString &settingsGroup)
     if ( !settingsGroup.isEmpty() )
         s->beginGroup(settingsGroup);
     s->beginGroup(GroupTextEditor);
-      setMacrosDir( s->value(KeyMacrosDir, MacrosDirDef).toString() );
+      setMacrosDir( s->value(KeyMacrosDir, _m_defaultMacrosDir).toString() );
       setDefaultEncoding( s->value(KeyDefaultEncoding, BTextEditorDocument::EncodingDef).toString() );
       setFontFamily( s->value(KeyFontFamily, BTextEditorDocument::FontFamilyDef).toString() );
       setFontPointSize( s->value(KeyFontPointSize, BTextEditorDocument::FontPointSizeDef).toInt() );
@@ -509,7 +505,8 @@ void BTextEditor::loadTextMacros(const QString &dir)
 void BTextEditor::loadTextMacros(const QStringList &dirs)
 {
     _m_textMacrosDirs = dirs;
-    QMenu *mnu = editorAction(TextMacrosAction)->menu();
+    QAction *act = editorAction(TextMacrosAction);
+    QMenu *mnu = act->menu();
     mnu->clear();
     for (int i = 0; i < dirs.size(); ++i)
     {
@@ -517,7 +514,7 @@ void BTextEditor::loadTextMacros(const QStringList &dirs)
         QStringList files = QDir(dir).entryList(QStringList() << "*.txt", QDir::Files);
         for (int j = 0; j < files.size(); ++j)
         {
-            QFile f( dir + "/" + files.at(i) );
+            QFile f( dir + "/" + files.at(j) );
             if ( !f.open(QFile::ReadOnly) )
                 continue;
             QTextStream in(&f);
@@ -526,9 +523,9 @@ void BTextEditor::loadTextMacros(const QStringList &dirs)
             f.close();
             if ( text.isEmpty() )
                 continue;
-            QAction *act = editorAction(TextMacrosAction)->menu()->addAction( QFileInfo( files.at(i) ).baseName() );
-            _m_mapperTextMacros->setMapping(act, text);
-            connect( act, SIGNAL( triggered() ), _m_mapperTextMacros, SLOT( map() ) );
+            QAction *mact = mnu->addAction( QFileInfo( files.at(j) ).baseName() );
+            _m_mapperTextMacros->setMapping(mact, text);
+            connect( mact, SIGNAL( triggered() ), _m_mapperTextMacros, SLOT( map() ) );
         }
     }
 }
@@ -615,7 +612,7 @@ QList<QAction *> BTextEditor::editorActions(Menu id, bool includeSeparators) con
 {
     if (includeSeparators)
     {
-        return editorMenu(id)->actions();
+        return editorToolBar(id)->actions();
     }
     else
     {
@@ -922,7 +919,8 @@ void BTextEditor::_m_init()
 void BTextEditor::_m_initSettings()
 {
     //settings
-    _m_macrosDir = MacrosDirDef;
+    _m_defaultFileName = tr("New document", "document fileName");
+    _m_defaultMacrosDir = MacrosDirDef;
     _m_defaultEncoding = BTextEditorDocument::EncodingDef;
     _m_fontFamily = BTextEditorDocument::FontFamilyDef;
     _m_fontPointSize = BTextEditorDocument::FontPointSizeDef;
@@ -949,14 +947,18 @@ void BTextEditor::_m_initOtherMembers()
     //macro recorder
     _m_recorder = new BMacroRecorder(this);
     //default file type
-    _m_defaultFileType = new AllFiles(this);
+    _m_defaultFileType = new BAllFiles(this);
 }
 
 void BTextEditor::_m_initGui()
 {
     _m_vlt = new QVBoxLayout(this);
+      _m_vlt->setContentsMargins(0, 0, 0, 0);
       _m_twgt = new QTabWidget(this);
-        connect(_m_twgt, SIGNAL( currentChanged(int) ), this, SLOT( _m_twgtCurrentChanged(int) ) );
+        _m_twgt->setMovable(true);
+        _m_twgt->setTabsClosable(true);
+        connect( _m_twgt, SIGNAL( currentChanged(int) ), this, SLOT( _m_twgtCurrentChanged(int) ) );
+        connect( _m_twgt, SIGNAL( tabCloseRequested(int) ), this, SLOT( _m_twgtTabCloseRequested(int) ) );
       _m_vlt->addWidget(_m_twgt);
     //
     _m_initIndicator();
@@ -1324,9 +1326,10 @@ void BTextEditor::_m_retranslateSwitchBlockModeAction()
 
 void BTextEditor::_m_newDocument(const QString &text)
 {
-    BTextEditorDocument *ted = _m_addDocument( tr("New document", "document fileName") );
+    BTextEditorDocument *ted = _m_addDocument(_m_defaultFileName);
     ted->setText(text);
     _m_autoselectDocumentSyntax(ted);
+    _m_twgt->setCurrentWidget( ted->editWidget() );
 }
 
 bool BTextEditor::_m_openFile(const QString &fileName)
@@ -1403,6 +1406,7 @@ bool BTextEditor::_m_openFile(const QString &fileName)
     _m_updateEncoding( ted->codecName() );
     window()->raise();
     window()->activateWindow();
+    _m_twgt->setCurrentWidget( ted->editWidget() );
     return true;
 }
 
@@ -1693,7 +1697,7 @@ bool BTextEditor::_m_loadMacro()
     if ( _m_recorder->isStarted() )
         return false; //TODO
     QString fn = QFileDialog::getOpenFileName(this, tr("Select file", "getOpFN caption"),
-                                              _m_macrosDir,
+                                              !_m_macrosDir.isEmpty() ? _m_macrosDir : _m_defaultMacrosDir,
                                               tr("Macros", "getOpFN filter") + " (*.mcr)");
     if ( fn.isEmpty() )
         return false;
@@ -1705,7 +1709,7 @@ bool BTextEditor::_m_saveMacro()
     if ( _m_recorder->isEmpty() )
         return false;
     QString fn = QFileDialog::getSaveFileName(this, tr("Select file name", "getSvFN caption"),
-                                              _m_macrosDir,
+                                              !_m_macrosDir.isEmpty() ? _m_macrosDir : _m_defaultMacrosDir,
                                               tr("Macros", "getSvFN filter") + " (*.mcr)");
     if ( fn.isEmpty() )
         return false;
@@ -1820,15 +1824,6 @@ void BTextEditor::_m_addRecentFile(const QString &fileName, const QString &oldFi
     editorAction(RecentFilesAction)->setEnabled(true);
 }
 
-void BTextEditor::_m_reopen(const QString &codecName)
-{
-    if ( _m_currentDocument.isNull() || !BTextEditorDocument::checkEncoding(codecName) ||
-         ( _m_currentDocument->isModified() && !_m_reloadModifiedQuestion( _m_currentDocument->fileName() ) ) )
-        return;
-    if ( _m_currentDocument->reopen(codecName) )
-        _m_updateEncoding(codecName);
-}
-
 BOpenSaveDialog *BTextEditor::_m_createOpenSaveDialog(bool openMode, BTextEditorDocument *document)
 {
     if ( (document && openMode) || (!document && !openMode) )
@@ -1843,8 +1838,8 @@ BOpenSaveDialog *BTextEditor::_m_createOpenSaveDialog(bool openMode, BTextEditor
     dialog->setDirectory(dir);
     QString filter;
     for (int i = 0; i < _m_userFileTypes.size(); ++i)
-        filter += _m_userFileTypes.at(i)->description() + ";;";
-    filter += _m_defaultFileType->description();
+        filter += _m_userFileTypes.at(i)->fileDialogFilter() + ";;";
+    filter += _m_defaultFileType->fileDialogFilter();
     dialog->setFilter(filter);
     dialog->setGeometry(_m_openSaveDlgGeometry);
     dialog->setDefaultSuffix( fi.suffix() );
@@ -1855,13 +1850,15 @@ BOpenSaveDialog *BTextEditor::_m_createOpenSaveDialog(bool openMode, BTextEditor
 
 void BTextEditor::_m_handleOpenSaveDialog(BOpenSaveDialog *dialog)
 {
-    if (!dialog || dialog->result() != BOpenSaveDialog::Accepted)
+    if (!dialog)
+        return;
+    _m_openSaveDlgHistory = dialog->history();
+    _m_openSaveDlgGeometry = dialog->geometry();
+    if (dialog->result() != BOpenSaveDialog::Accepted)
         return;
     QStringList sl = dialog->selectedFiles();
     if ( !sl.isEmpty() )
         _m_openSaveDlgDir = QFileInfo( sl.first() ).path();
-    _m_openSaveDlgHistory = dialog->history();
-    _m_openSaveDlgGeometry = dialog->geometry();
 }
 
 //tools:messages
@@ -2008,6 +2005,8 @@ QList<QAction *> BTextEditor::_m_createReopenActions(const QStringList &codecNam
         QAction *act = new QAction(this);
         _m_reopenActions.insert(cn, act);
         acts << act;
+        _m_mapperReopen->setMapping(act, cn);
+        connect( act, SIGNAL( triggered() ), _m_mapperReopen, SLOT( map() ) );
     }
     return acts;
 }
@@ -2144,8 +2143,9 @@ void BTextEditor::_m_documentModificationChanged(bool modified)
 
 void BTextEditor::_m_documentSelectionChanged(bool hasSelection)
 {
-    editorAction(SwitchSelectedTextLayoutAction)->setEnabled(_m_currentDocument &&
-                                                             !_m_currentDocument->isReadOnly() && hasSelection);
+    editorAction(SwitchSelectedTextLayoutAction)->setEnabled(
+                _m_currentDocument && !_m_currentDocument->isReadOnly() && hasSelection &&
+                _m_keyboardLayoutMaps.contains(_m_currentKeyboardLayoutMap) );
     _m_findDlg->setSelectionAvailable(hasSelection);
 }
 
@@ -2223,6 +2223,15 @@ void BTextEditor::_m_replaceInAllDocuments()
 
 //other
 
+void BTextEditor::_m_reopen(const QString &codecName)
+{
+    if ( _m_currentDocument.isNull() || !BTextEditorDocument::checkEncoding(codecName) ||
+         ( _m_currentDocument->isModified() && !_m_reloadModifiedQuestion( _m_currentDocument->fileName() ) ) )
+        return;
+    if ( _m_currentDocument->reopen(codecName) )
+        _m_updateEncoding(codecName);
+}
+
 void BTextEditor::_m_updateCursorPosition(int row, int column)
 {
     if (row >= 0)
@@ -2283,6 +2292,14 @@ void BTextEditor::_m_twgtCurrentChanged(int index)
     BTextEditorDocument::CursorPosition cp = _m_currentDocument->cursorPosition();
     _m_updateCursorPosition(cp.row, cp.column);
     _m_currentDocument->setFocusToEdit();
+}
+
+void BTextEditor::_m_twgtTabCloseRequested(int index)
+{
+    BTextEditorDocument *ted = _m_document(index);
+    if (!ted)
+        return;
+    _m_closeDocument(ted);
 }
 
 void BTextEditor::_m_cmboxSyntaxCurrentIndexChanged(int index)

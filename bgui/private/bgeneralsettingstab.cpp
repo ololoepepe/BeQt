@@ -48,7 +48,6 @@ const QString BGeneralSettingsTab::IdPlugins = "plugins";
 BGeneralSettingsTab::BGeneralSettingsTab(const QVariantMap &settings)
 {
     _m_vlt = new QVBoxLayout(this);
-      _m_vlt->setContentsMargins(0, 0, 0, 0);
       _m_initGboxGeneral( settings.value(IdLocale).toLocale(), settings.value(IdMultipleInstances, false).toBool() );
       _m_initGboxPlugins( settings.value(IdPlugins).value< QList<QObject *> >() );
 }

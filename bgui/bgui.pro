@@ -33,7 +33,8 @@ SOURCES += \
     private/btexteditordocument.cpp \
     private/btexteditorsettingstab.cpp \
     babstractfiletype.cpp \
-    bkeyboardlayoutmap.cpp
+    bkeyboardlayoutmap.cpp \
+    private/ballfiles.cpp
 
 HEADERS += \
     babstractsettingstab.h \
@@ -62,7 +63,8 @@ HEADERS += \
     private/btexteditordocument.h \
     private/btexteditorsettingstab.h \
     babstractfiletype.h \
-    bkeyboardlayoutmap.h
+    bkeyboardlayoutmap.h \
+    private/ballfiles.h
 
 TRANSLATIONS += \
     ../bcore/res/translations/bgui_ru.ts

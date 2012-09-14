@@ -292,7 +292,7 @@ void BTextEditorDocument::setReadOnly(bool readOnly)
     _m_undoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isUndoAvailable() );
     _m_redoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isRedoAvailable() );
     _m_modificationChanged( !_m_edit->isReadOnly() && _m_edit->document()->isModified() );
-    setClipboardHasText(false);
+    setClipboardHasText( !QApplication::clipboard()->text().isEmpty() );
 }
 
 void BTextEditorDocument::setFontFamily(const QString &family)
@@ -452,6 +452,11 @@ bool BTextEditorDocument::isModified() const
 bool BTextEditorDocument::hasBookmarks() const
 {
     return !_m_bookmarks.isEmpty();
+}
+
+bool BTextEditorDocument::hasSelection() const
+{
+    return _m_edit->textCursor().hasSelection();
 }
 
 const BSyntax &BTextEditorDocument::syntax() const

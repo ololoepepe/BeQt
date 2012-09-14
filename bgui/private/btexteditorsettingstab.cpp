@@ -15,7 +15,10 @@
 #include <QPushButton>
 #include <QFileDialog>
 
-const QString BTextEditorSettingsTab::Id = "beqt/bgui/text_editor";
+const QString KeyboardLayoutMapDef = "---";
+
+//
+
 const QString BTextEditorSettingsTab::IdMacrosDir = "macros_dir";
 const QString BTextEditorSettingsTab::IdDefaultEncoding = "default_encoding";
 const QString BTextEditorSettingsTab::IdFontFamily = "font_family";
@@ -78,10 +81,11 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
       //keyboard layout map
       _m_lblKeyboardLayoutMap = new QLabel(this);
       _m_cmboxKeyboardLayoutMap = new QComboBox(this);
-        _m_cmboxKeyboardLayoutMap->addItem("---");
+        _m_cmboxKeyboardLayoutMap->addItem(KeyboardLayoutMapDef);
         _m_cmboxKeyboardLayoutMap->addItems(keyboardLayoutMaps);
-        _m_cmboxKeyboardLayoutMap->setCurrentIndex( _m_cmboxKeyboardLayoutMap->findText(
-                                                        settings.value(IdKeyboardLayoutMap).toString() ) );
+        int ind = _m_cmboxKeyboardLayoutMap->findText( settings.value(IdKeyboardLayoutMap).toString() );
+        _m_cmboxKeyboardLayoutMap->setCurrentIndex(
+                    ind >= 0 ? ind : _m_cmboxKeyboardLayoutMap->findText(KeyboardLayoutMapDef) );
       _m_flt->addRow(_m_lblKeyboardLayoutMap, _m_cmboxKeyboardLayoutMap);
       //macros dir
       _m_lblMacrosDir = new QLabel(this);

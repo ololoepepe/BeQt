@@ -12,11 +12,9 @@ class BAbstractFileType : public QObject
     Q_OBJECT
 public:
     explicit BAbstractFileType(QObject *parent = 0);
-    explicit BAbstractFileType(const BSyntax &syntax, QObject *parent = 0);
-    explicit BAbstractFileType(const QString &syntaxFileName, QObject *parent = 0);
     //
     void setSyntax(const BSyntax &syntax);
-    bool loadSyntax(const QString &fileName);
+    void loadSyntax(const QString &fileName);
     const BSyntax &syntax() const;
     const QString &syntaxType() const;
     bool matchesFileName(const QString &fileName) const;

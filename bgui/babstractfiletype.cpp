@@ -11,23 +11,16 @@ BAbstractFileType::BAbstractFileType(QObject *parent) :
 {
 }
 
-BAbstractFileType::BAbstractFileType(const BSyntax &syntax, QObject *parent) :
-    QObject(parent)
-{
-    setSyntax(syntax);
-}
-
-BAbstractFileType::BAbstractFileType(const QString &syntaxFileName, QObject *parent) :
-    QObject(parent)
-{
-    loadSyntax(syntaxFileName);
-}
-
 //
 
 void BAbstractFileType::setSyntax(const BSyntax &syntax)
 {
     _m_syntax = syntax;
+}
+
+void BAbstractFileType::loadSyntax(const QString &fileName)
+{
+    _m_syntax.loadSyntax(fileName);
 }
 
 const BSyntax &BAbstractFileType::syntax() const

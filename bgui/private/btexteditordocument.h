@@ -81,6 +81,7 @@ public:
     bool isRedoAvailable() const;
     bool isModified() const;
     bool hasBookmarks() const;
+    bool hasSelection() const;
     const BSyntax &syntax() const;
     CursorPosition cursorPosition() const;
     QPlainTextEdit *editWidget() const;

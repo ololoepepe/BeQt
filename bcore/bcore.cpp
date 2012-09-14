@@ -468,3 +468,10 @@ void BCore::copyDir(const QString &path, const QString &newPath, bool recursive)
         }
     }
 }
+
+//
+
+BCore::BCore()
+{
+    //
+}

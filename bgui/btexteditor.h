@@ -95,6 +95,8 @@ public:
           TextMacrosAction
     };
     //
+    static const QString SettingsTabId;
+    //
     static bool isFileOpenedGlobal( const QString &fileName, const QString &groupId = QString() );
     //
     explicit BTextEditor( QWidget *parent = 0, bool registerGlobally = false, const QString &groupId = QString() );
@@ -103,6 +105,8 @@ public:
     bool eventFilter(QObject *object, QEvent *event);
     //settings:set
     void setUserFileTypes(QList<BAbstractFileType *> list);
+    void setDefaultFileName(const QString &fileName);
+    void setDefaultMacrosDir(const QString &dir);
     void setMacrosDir(const QString &dir);
     void setDefaultEncoding(const QString &codecName);
     void setFontFamily(const QString &family);
@@ -220,6 +224,8 @@ private:
     BFindDialog *_m_findDlg;
     //settings
     QList<BAbstractFileType *> _m_userFileTypes;
+    QString _m_defaultFileName;
+    QString _m_defaultMacrosDir;
     QString _m_macrosDir;
     QString _m_defaultEncoding;
     QString _m_fontFamily;
@@ -302,7 +308,6 @@ private:
     void _m_loadRecentFiles(const QStringList &fileNames);
     QStringList _m_saveRecentFiles() const;
     void _m_addRecentFile( const QString &fileName, const QString &oldFileName = QString() );
-    void _m_reopen(const QString &codecName);
     BOpenSaveDialog *_m_createOpenSaveDialog(bool openMode, BTextEditorDocument *document = 0);
     void _m_handleOpenSaveDialog(BOpenSaveDialog *dialog);
     //tools:messages
@@ -342,9 +347,11 @@ private slots:
     void _m_replaceInDocument();
     void _m_replaceInAllDocuments();
     //other
+    void _m_reopen(const QString &codecName);
     void _m_updateCursorPosition(int row, int column);
     void _m_updateEncoding(const QString &codecName);
     void _m_twgtCurrentChanged(int index);
+    void _m_twgtTabCloseRequested(int index);
     void _m_cmboxSyntaxCurrentIndexChanged(int index);
 signals:
     void currentDocumentChanged(const QString &fileName);
