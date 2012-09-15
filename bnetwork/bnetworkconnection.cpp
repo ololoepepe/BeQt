@@ -50,6 +50,11 @@ void BNetworkConnection::setDetailedLogMode(bool enabled)
     _m_detailedLog = enabled;
 }
 
+void BNetworkConnection::setAutoDeleteSentReplies(bool enabled)
+{
+    _m_autoDelete = enabled;
+}
+
 void BNetworkConnection::connectToHost(const QString &hostName, quint16 port)
 {
     if ( isConnected() || hostName.isEmpty() )
@@ -127,6 +132,11 @@ bool BNetworkConnection::detailedLogMode() const
     return _m_detailedLog;
 }
 
+bool BNetworkConnection::autoDeleteSentReplies() const
+{
+    return _m_autoDelete;
+}
+
 QString BNetworkConnection::peerAddress() const
 {
     return isValid() ? _m_socket->peerAddress() : "";
@@ -173,6 +183,7 @@ void BNetworkConnection::log(const QString &text)
 void BNetworkConnection::_m_init()
 {
     _m_detailedLog = false;
+    _m_autoDelete = true;
     _m_socketWrapper = new BSocketWrapper(this);
     connect(_m_socketWrapper, SIGNAL( downloadProgress(BSocketWrapper::MetaData, qint64, qint64) ),
             this, SLOT( _m_downloadProgress(BSocketWrapper::MetaData, qint64, qint64) ), Qt::DirectConnection);
@@ -312,7 +323,10 @@ void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
             return;
         _m_replies.remove(metaData);
         op->_m_setFinished();
-        emit replySent(op);
+        if (_m_autoDelete)
+            op->deleteLater();
+        else
+            emit replySent(op);
     }
     _m_sendNext();
 }

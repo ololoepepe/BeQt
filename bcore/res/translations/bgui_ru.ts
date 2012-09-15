@@ -175,28 +175,40 @@
         <translation type="unfinished">Расширения</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="142"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="143"/>
         <source>Configure</source>
         <comment>btn text</comment>
         <translation type="unfinished">Настроить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="148"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="149"/>
         <source>Copyright</source>
         <comment>btn text</comment>
         <translation type="unfinished">Авторские права</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="154"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="155"/>
         <source>About</source>
         <comment>btn text</comment>
         <translation type="unfinished">О расширении</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="160"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="161"/>
         <source>Open homepage</source>
         <comment>btn text</comment>
         <translation type="unfinished">Домашняя страница</translation>
+    </message>
+    <message>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="183"/>
+        <source>Copyright</source>
+        <comment>msgbox windowTitle</comment>
+        <translation type="unfinished">Авторские права</translation>
+    </message>
+    <message>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="187"/>
+        <source>About</source>
+        <comment>msgbox windowTitle</comment>
+        <translation type="unfinished">О расширении</translation>
     </message>
 </context>
 <context>

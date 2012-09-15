@@ -31,6 +31,7 @@ public:
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
     void setDetailedLogMode(bool enabled);
+    void setAutoDeleteSentReplies(bool enabled);
     void connectToHost(const QString &hostName, quint16 port = 0);
     bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30000);
     void disconnectFromHost();
@@ -44,6 +45,7 @@ public:
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;
     bool detailedLogMode() const;
+    bool autoDeleteSentReplies() const;
     QString peerAddress() const;
     BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
 protected:
@@ -60,6 +62,7 @@ private:
     QMap<BSocketWrapper::MetaData, BNetworkOperation *> _m_replies;
     QQueue<_m_Data> _m_dataQueue;
     bool _m_detailedLog;
+    bool _m_autoDelete;
     //
     void _m_init();
     void _m_setSocket(BGenericSocket *socket);

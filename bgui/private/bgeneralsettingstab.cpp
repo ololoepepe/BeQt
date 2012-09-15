@@ -126,14 +126,15 @@ void BGeneralSettingsTab::_m_initGboxPlugins(const QList<QObject *> &plugins)
     _m_gboxPlugins = new QGroupBox(tr("Extensions", "gbox title"), this);
       _m_hltPlugins = new QHBoxLayout;
         _m_lstwgt = new QListWidget;
-        for (int i = 0; i < plugins.size(); ++i)
-        {
-            BPluginInterface *interface = qobject_cast<BPluginInterface *>( plugins.at(i) );
-            QListWidgetItem *lwi = new QListWidgetItem;
-            lwi->setText( interface->title() );
-            lwi->setData( Qt::UserRole, QVariant::fromValue<QObject *>( plugins.at(i) ) );
-            _m_lstwgt->addItem(lwi);
-        }
+          for (int i = 0; i < plugins.size(); ++i)
+          {
+              BPluginInterface *interface = qobject_cast<BPluginInterface *>( plugins.at(i) );
+              QListWidgetItem *lwi = new QListWidgetItem;
+              lwi->setText( interface->title() );
+              lwi->setData( Qt::UserRole, QVariant::fromValue<QObject *>( plugins.at(i) ) );
+              _m_lstwgt->addItem(lwi);
+          }
+          connect( _m_lstwgt, SIGNAL( currentRowChanged(int) ), this, SLOT( _m_lstwgtCurrentRowChanged(int) ) );
         _m_hltPlugins->addWidget(_m_lstwgt);
         _m_vltPluginActions = new QVBoxLayout;
           _m_btnSettings = new QPushButton;
@@ -179,11 +180,11 @@ void BGeneralSettingsTab::_m_showCurrentPluginInfo(_m_PluginInfo type)
     {
     case _m_CopyrightInfo:
         text = interface->copyright();
-        wt = tr("", "msgbox windowTitle");
+        wt = tr("Copyright", "msgbox windowTitle");
         break;
     case _m_AboutInfo:
         text = interface->about();
-        wt = tr("", "msgbox windowTitle");
+        wt = tr("About", "msgbox windowTitle");
         break;
     case _m_WwwInfo:
         text = interface->www();
