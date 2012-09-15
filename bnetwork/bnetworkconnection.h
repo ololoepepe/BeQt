@@ -72,6 +72,7 @@ private slots:
     void _m_uploadProgress(const BSocketWrapper::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void _m_dataReceived(const QByteArray &data, const BSocketWrapper::MetaData &metaData);
     void _m_dataSent(const BSocketWrapper::MetaData &metaData);
+    void _m_operationDestroyed(QObject *object);
 signals:
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);

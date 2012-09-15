@@ -15,8 +15,6 @@
 #include <QPointer>
 #include <QFileInfo>
 #include <QScopedPointer>
-#include <QMutex>
-#include <QMutexLocker>
 
 #include <QDebug>
 
@@ -35,8 +33,6 @@ const QString GroupCore = "beqt_core";
 
 //
 
-BCore *inst = 0;
-QMutex mutex;
 QStringList translatorPaths;
 QList<QTranslator *> translators;
 bool multipleInstances = MultipleInstancesDef;
@@ -68,17 +64,6 @@ const int BCore::Megabyte = 1024 * BCore::Kilobyte;
 const int BCore::Gigabyte = 1024 * BCore::Megabyte;
 
 //
-
-BCore *BCore::instance()
-{
-    if (inst)
-        return inst;
-    QMutexLocker locker(&mutex);
-    if (inst)
-        return inst;
-    inst = new BCore;
-    return inst;
-}
 
 //settings
 

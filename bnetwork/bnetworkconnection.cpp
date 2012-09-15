@@ -142,6 +142,7 @@ BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, con
     dat.second.setIsRequest(true);
     dat.second.setOperation(operation);
     BNetworkOperation *op = new BNetworkOperation(dat.second, this);
+    connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( _m_operationDestroyed(QObject *) ) );
     _m_requests.insert(dat.second, op);
     _m_dataQueue.enqueue(dat);
     _m_sendNext();
@@ -244,6 +245,7 @@ void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &met
         else
         {
             op = new BNetworkOperation(mdat, this);
+            connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( _m_operationDestroyed(QObject *) ) );
             _m_replies.insert(mdat, op);
             op->_m_setStarted();
             emit incomingRequest(op);
@@ -313,4 +315,15 @@ void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
         emit replySent(op);
     }
     _m_sendNext();
+}
+
+void BNetworkConnection::_m_operationDestroyed(QObject *object)
+{
+    BNetworkOperation *operation = qobject_cast<BNetworkOperation *>(object);
+    if (!operation)
+        return;
+    if ( operation->isRequest() )
+        _m_requests.remove( operation->metaData() );
+    else
+        _m_replies.remove( operation->metaData() );
 }

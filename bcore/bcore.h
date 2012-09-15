@@ -45,7 +45,6 @@ public:
     static const int Megabyte;
     static const int Gigabyte;
     //
-    static BCore *instance();
     //settings
     static QSettings *newSettingsInstance();
     static void saveSettings();
