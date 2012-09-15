@@ -130,7 +130,8 @@ void BGeneralSettingsTab::_m_initGboxPlugins(const QList<QObject *> &plugins)
           {
               BPluginInterface *interface = qobject_cast<BPluginInterface *>( plugins.at(i) );
               QListWidgetItem *lwi = new QListWidgetItem;
-              lwi->setText( interface->title() );
+              lwi->setText(interface->title() +
+                           " (" + tr("version", "lswtgti text") + " " + interface->version() + ")");
               lwi->setData( Qt::UserRole, QVariant::fromValue<QObject *>( plugins.at(i) ) );
               _m_lstwgt->addItem(lwi);
           }

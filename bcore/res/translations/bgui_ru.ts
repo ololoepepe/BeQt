@@ -175,37 +175,43 @@
         <translation type="unfinished">Расширения</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="143"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="134"/>
+        <source>version</source>
+        <comment>lswtgti text</comment>
+        <translation type="unfinished">версия</translation>
+    </message>
+    <message>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="144"/>
         <source>Configure</source>
         <comment>btn text</comment>
         <translation type="unfinished">Настроить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="149"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="150"/>
         <source>Copyright</source>
         <comment>btn text</comment>
         <translation type="unfinished">Авторские права</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="155"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="156"/>
         <source>About</source>
         <comment>btn text</comment>
         <translation type="unfinished">О расширении</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="161"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="162"/>
         <source>Open homepage</source>
         <comment>btn text</comment>
         <translation type="unfinished">Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="183"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="184"/>
         <source>Copyright</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">Авторские права</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="187"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="188"/>
         <source>About</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">О расширении</translation>
