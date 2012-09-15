@@ -42,6 +42,12 @@ public:
         MenuHelp = 0x04
     };
     //
+    struct SettingsOptions
+    {
+        bool language;
+        bool multipleInstances;
+        bool plugins;
+    };
     struct PersonInfo
     {
         QString name;
@@ -56,6 +62,7 @@ public:
             const QRect &defaultGeometry = QApplication::desktop()->availableGeometry().adjusted(25, 25, -50, -50),
             const QString &settingsGroup = QString() );
     //
+    void setSettingsOptions(const SettingsOptions &opt);
     void setHelpDir(const QString &dir);
     void setHelpIndex(const QString &fileName);
     void setMenuBarEnabled(bool enabled);
@@ -88,6 +95,7 @@ protected:
     virtual void handleUserSettings(const QMap<QString, QVariantMap> &settings);
 private:
     const QString _m_CSettingsGroup;
+    //
     QRect _m_prevGeom;
     QByteArray _m_prevState;
     bool _m_maximized;
@@ -95,6 +103,7 @@ private:
     QString _m_hlpIndex;
     bool _m_isInitialized;
     BAboutDialog *_m_aboutDlg;
+    SettingsOptions _m_settingsOptions;
     //
     QMenuBar *_m_mnuBar;
       QMenu *_m_mnuFile;

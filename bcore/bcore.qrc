@@ -44,5 +44,6 @@
         <file>res/ico/window_close.png</file>
         <file>res/ico/editdelete.png</file>
         <file>res/ico/gohome.png</file>
+        <file>res/ico/copyright.png</file>
     </qresource>
 </RCC>

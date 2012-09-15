@@ -98,7 +98,9 @@ bool checkReadOnly(const QString &fileName)
 
 //
 
-const BTextEditor::IconSize IconSizeDef = BTextEditor::IconSize22;
+const int IconSizeMin = 16;
+const int IconSizeDef = 22;
+const int IconSizeMax = 48;
 const QString SyntaxTypeDef = "Text";
 const QString MacrosDirDef = QDir::homePath();
 //
@@ -147,7 +149,7 @@ bool BTextEditor::isFileOpenedGlobal(const QString &fileName, const QString &gro
 
 //
 
-const QString BTextEditor::SettingsTabId = "beqt/bgui/text_editor";
+const QString BTextEditor::SettingsTabId = "beqt/text_editor";
 
 //
 
@@ -393,17 +395,24 @@ bool BTextEditor::blockMode() const
     return _m_blockMode;
 }
 
-BAbstractSettingsTab *BTextEditor::createSettingsTab() const
+BAbstractSettingsTab *BTextEditor::createSettingsTab(const SettingsOptions &opt) const
 {
     QVariantMap m;
-    m.insert( BTextEditorSettingsTab::IdMacrosDir, macrosDir() );
-    m.insert( BTextEditorSettingsTab::IdDefaultEncoding, defaultEncoding() );
-    m.insert( BTextEditorSettingsTab::IdFontFamily, fontFamily() );
-    m.insert( BTextEditorSettingsTab::IdFontPointSize, fontPointSize() );
-    m.insert( BTextEditorSettingsTab::IdLineLength, lineLength() );
-    m.insert( BTextEditorSettingsTab::IdTabWidth, tabWidth() );
-    m.insert( BTextEditorSettingsTab::IdKeyboardLayoutMap, keyboardLayoutMap() );
-    return new BTextEditorSettingsTab( m, _m_encodingsMap(), _m_keyboardLayoutMaps.keys() );
+    if (opt.macrosDir)
+        m.insert( BTextEditorSettingsTab::IdMacrosDir, macrosDir() );
+    if (opt.defaultEncoding)
+        m.insert( BTextEditorSettingsTab::IdDefaultEncoding, defaultEncoding() );
+    if (opt.fontFamily)
+        m.insert( BTextEditorSettingsTab::IdFontFamily, fontFamily() );
+    if (opt.fontPointSize)
+        m.insert( BTextEditorSettingsTab::IdFontPointSize, fontPointSize() );
+    if (opt.lineLength)
+        m.insert( BTextEditorSettingsTab::IdLineLength, lineLength() );
+    if (opt.tabWidth)
+        m.insert( BTextEditorSettingsTab::IdTabWidth, tabWidth() );
+    if (opt.keyboardLayoutMap)
+        m.insert( BTextEditorSettingsTab::IdKeyboardLayoutMap, keyboardLayoutMap() );
+    return !m.isEmpty() ? new BTextEditorSettingsTab( m, _m_encodingsMap(), _m_keyboardLayoutMaps.keys() ) : 0;
 }
 
 //settings:load/save
@@ -561,8 +570,10 @@ const QStringList &BTextEditor::keyboardLayoutMapsDirs() const
 
 //gui:set
 
-void BTextEditor::setToolBarIconSize(IconSize size)
+void BTextEditor::setToolBarIconSize(int size)
 {
+    if (size < IconSizeMin || size > IconSizeMax)
+        return;
     QList<QToolBar *> list = _m_toolBars.values();
     for (int i = 0; i < list.size(); ++i)
         list.at(i)->setIconSize( QSize(size, size) );

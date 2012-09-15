@@ -38,7 +38,7 @@ QString localeToString(const QLocale &locale)
 
 //
 
-const QString BGeneralSettingsTab::Id = "beqt/bgui/general";
+const QString BGeneralSettingsTab::Id = "beqt/general";
 const QString BGeneralSettingsTab::IdLocale = "locale";
 const QString BGeneralSettingsTab::IdMultipleInstances = "multiple_instances";
 const QString BGeneralSettingsTab::IdPlugins = "plugins";
@@ -48,7 +48,44 @@ const QString BGeneralSettingsTab::IdPlugins = "plugins";
 BGeneralSettingsTab::BGeneralSettingsTab(const QVariantMap &settings)
 {
     _m_vlt = new QVBoxLayout(this);
-      _m_initGboxGeneral( settings.value(IdLocale).toLocale(), settings.value(IdMultipleInstances, false).toBool() );
+      bool blocale = settings.contains(IdLocale);
+      bool bminst = settings.contains(IdMultipleInstances);
+      if (blocale || bminst)
+      {
+          _m_fltGeneral = new QFormLayout;
+            if (blocale)
+            {
+                _m_cmboxLanguage = new QComboBox(this);
+                  _m_cmboxLanguage->setEditable(false);
+                  QList<QLocale> availableLocales = BCore::availableLocales();
+                  for (int i = 0; i < availableLocales.size(); ++i)
+                  {
+                      const QLocale &l = availableLocales.at(i);
+                      _m_cmboxLanguage->addItem(localeToString(l), l);
+                  }
+                  _m_cmboxLanguage->setCurrentIndex( _m_cmboxLanguage->findData( settings.value(IdLocale).toLocale() ) );
+                _m_fltGeneral->addRow("Language:", _m_cmboxLanguage);
+            }
+            else
+            {
+                _m_cmboxLanguage = 0;
+            }
+            if (bminst)
+            {
+                _m_cboxMultipleInstances = new QCheckBox(this);
+                  _m_cboxMultipleInstances->setChecked( settings.value(IdMultipleInstances, false).toBool() );
+                _m_fltGeneral->addRow(tr("Enable multiple instances:", "lbl text"), _m_cboxMultipleInstances);
+            }
+            else
+            {
+                _m_cboxMultipleInstances = 0;
+            }
+          _m_vlt->addLayout(_m_fltGeneral);
+      }
+      else
+      {
+          _m_fltGeneral = 0;
+      }
       _m_initGboxPlugins( settings.value(IdPlugins).value< QList<QObject *> >() );
 }
 
@@ -57,8 +94,10 @@ BGeneralSettingsTab::BGeneralSettingsTab(const QVariantMap &settings)
 QVariantMap BGeneralSettingsTab::valueMap() const
 {
     QVariantMap m;
-    m.insert( IdLocale, _m_cmboxLanguage->itemData( _m_cmboxLanguage->currentIndex() ) );
-    m.insert( IdMultipleInstances, _m_cboxMultipleInstances->isChecked() );
+    if (_m_cmboxLanguage)
+        m.insert( IdLocale, _m_cmboxLanguage->itemData( _m_cmboxLanguage->currentIndex() ) );
+    if (_m_cboxMultipleInstances)
+        m.insert( IdMultipleInstances, _m_cboxMultipleInstances->isChecked() );
     return m;
 }
 
@@ -69,32 +108,21 @@ QString BGeneralSettingsTab::title() const
 
 //
 
-void BGeneralSettingsTab::_m_initGboxGeneral(const QLocale &currentLocale, bool multipleInstances)
-{
-    _m_gboxGeneral = new QGroupBox(tr("General", "gbox title"), this);
-      _m_fltGeneral = new QFormLayout;
-        //_m_fltGeneral->setFieldGrowthPolicy(QFormLayout::FieldsStayAtSizeHint);
-        //language
-        _m_cmboxLanguage = new QComboBox(this);
-          _m_cmboxLanguage->setEditable(false);
-          QList<QLocale> availableLocales = BCore::availableLocales();
-          for (int i = 0; i < availableLocales.size(); ++i)
-          {
-              const QLocale &l = availableLocales.at(i);
-              _m_cmboxLanguage->addItem(localeToString(l), l);
-          }
-          _m_cmboxLanguage->setCurrentIndex( _m_cmboxLanguage->findData(currentLocale) );
-        _m_fltGeneral->addRow("Language:", _m_cmboxLanguage);
-        //multiple instances
-        _m_cboxMultipleInstances = new QCheckBox(this);
-          _m_cboxMultipleInstances->setChecked(multipleInstances);
-        _m_fltGeneral->addRow(tr("Enable multiple instances:", "lbl text"), _m_cboxMultipleInstances);
-      _m_gboxGeneral->setLayout(_m_fltGeneral);
-    _m_vlt->addWidget(_m_gboxGeneral);
-}
-
 void BGeneralSettingsTab::_m_initGboxPlugins(const QList<QObject *> &plugins)
 {
+    if ( plugins.isEmpty() )
+    {
+        _m_gboxPlugins = 0;
+          _m_hltPlugins = 0;
+            _m_lstwgt = 0;
+            _m_vltPluginActions = 0;
+              _m_btnSettings = 0;
+              _m_btnCopyright = 0;
+              _m_btnAbout = 0;
+              _m_btnWww = 0;
+        //
+        return;
+    }
     _m_gboxPlugins = new QGroupBox(tr("Extensions", "gbox title"), this);
       _m_hltPlugins = new QHBoxLayout;
         _m_lstwgt = new QListWidget;
@@ -110,22 +138,26 @@ void BGeneralSettingsTab::_m_initGboxPlugins(const QList<QObject *> &plugins)
         _m_vltPluginActions = new QVBoxLayout;
           _m_btnSettings = new QPushButton;
             _m_btnSettings->setEnabled(false);
-            _m_btnSettings->setIcon( QIcon(BCore::IcoPath + "/.png") );
+            _m_btnSettings->setIcon( QIcon( BCore::beqtIcon("configure") ) );
+            _m_btnSettings->setText( tr("Configure", "btn text") );
             connect( _m_btnSettings, SIGNAL( clicked() ), this, SLOT( _m_btnSettingsClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnSettings);
           _m_btnCopyright = new QPushButton;
             _m_btnCopyright->setEnabled(false);
-            _m_btnCopyright->setIcon( QIcon(BCore::IcoPath + "/.png") );
+            _m_btnCopyright->setIcon( QIcon( BCore::beqtIcon("copyright") ) );
+            _m_btnCopyright->setText( tr("Copyright", "btn text") );
             connect( _m_btnCopyright, SIGNAL( clicked() ), this, SLOT( _m_btnCopyrightClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnCopyright);
           _m_btnAbout = new QPushButton;
             _m_btnAbout->setEnabled(false);
-            _m_btnAbout->setIcon( QIcon(BCore::IcoPath + "/.png") );
+            _m_btnAbout->setIcon( QIcon( BCore::beqtIcon("help_about") ) );
+            _m_btnAbout->setText( tr("About", "btn text") );
             connect( _m_btnAbout, SIGNAL( clicked() ), this, SLOT( _m_btnAboutClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnAbout);
           _m_btnWww = new QPushButton;
             _m_btnWww->setEnabled(false);
-            _m_btnWww->setIcon( QIcon(BCore::IcoPath + "/.png") );
+            _m_btnWww->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
+            _m_btnWww->setText( tr("Open homepage", "btn text") );
             connect( _m_btnWww, SIGNAL( clicked() ), this, SLOT( _m_btnWwwClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnWww);
           _m_vltPluginActions->addStretch();

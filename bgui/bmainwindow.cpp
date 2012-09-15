@@ -55,6 +55,9 @@ const int _m_StateVersion = 1;
     _m_aboutDlg = new BAboutDialog(this);
     _m_aboutDlg->setFixedWidth(680);
     _m_aboutDlg->resize(680, 340);
+    _m_settingsOptions.language = true;
+    _m_settingsOptions.multipleInstances = true;
+    _m_settingsOptions.plugins = true;
     //
     _m_mnuBar = menuBar();
     _m_mnuFile = new QMenu(this);
@@ -105,6 +108,11 @@ const int _m_StateVersion = 1;
 }
 
 //
+
+void BMainWindow::setSettingsOptions(const SettingsOptions &opt)
+{
+    _m_settingsOptions = opt;
+}
 
 void BMainWindow::setHelpDir(const QString &dir)
 {
@@ -405,7 +413,7 @@ void BMainWindow::_m_retranslateUi()
     _m_actSettings->setText(tr("Settings", "act text") + "...");
     //MenuHelp
     _m_mnuHelp->setTitle( tr("Help", "mnu title") );
-    _m_actHomepage->setText( tr("Open the homepage", "act text") );
+    _m_actHomepage->setText( tr("Open homepage", "act text") );
     _m_actHelpContents->setText( tr("Contents", "act text") );
     _m_actContextHelp->setText( tr("Context help", "act text") );
     QAction *wtact = QWhatsThis::createAction();
@@ -484,16 +492,27 @@ void BMainWindow::_m_actSettingsTriggered()
 {
     QMap<QString, BAbstractSettingsTab *> m;
     QVariantMap gstm;
-    gstm.insert( BGeneralSettingsTab::IdLocale, BCore::currentLocale() );
-    gstm.insert( BGeneralSettingsTab::IdPlugins, QVariant::fromValue< QList<QObject *> >( BCore::plugins() ) );
-    m.insert( BGeneralSettingsTab::Id, new BGeneralSettingsTab(gstm) );
+    if (_m_settingsOptions.language)
+        gstm.insert( BGeneralSettingsTab::IdLocale, BCore::currentLocale() );
+    if (_m_settingsOptions.multipleInstances)
+        gstm.insert( BGeneralSettingsTab::IdMultipleInstances, BCore::multipleInstancesEnabled() );
+    if (_m_settingsOptions.plugins)
+        gstm.insert( BGeneralSettingsTab::IdPlugins, QVariant::fromValue< QList<QObject *> >( BCore::plugins() ) );
+    if ( !gstm.isEmpty() )
+        m.insert( BGeneralSettingsTab::Id, new BGeneralSettingsTab(gstm) );
     m.unite( userSettingsTabMap() );
     QScopedPointer<BSettingsDialog> sd( new BSettingsDialog(m, this) );
     if (sd->exec() != BSettingsDialog::Accepted)
         return;
     QMap<QString, QVariantMap> s = sd->valueMapMap();
-    QVariantMap gsts = s.take(BGeneralSettingsTab::Id);
-    BCore::setLocale( gsts.value(BGeneralSettingsTab::IdLocale).toLocale() );
+    if ( s.contains(BGeneralSettingsTab::Id) )
+    {
+        QVariantMap gsts = s.take(BGeneralSettingsTab::Id);
+        if ( gsts.contains(BGeneralSettingsTab::IdLocale) )
+            BCore::setLocale( gsts.value(BGeneralSettingsTab::IdLocale).toLocale() );
+        if ( gsts.contains(BGeneralSettingsTab::IdMultipleInstances) )
+            BCore::setMultipleInstancesEnabled( gsts.value(BGeneralSettingsTab::IdMultipleInstances).toBool() );
+    }
     handleUserSettings(s);
 }
 

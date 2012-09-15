@@ -48,10 +48,9 @@ private:
     };
     //
     QVBoxLayout *_m_vlt;
-      QGroupBox *_m_gboxGeneral;
-        QFormLayout *_m_fltGeneral;
-          QComboBox *_m_cmboxLanguage;
-          QCheckBox *_m_cboxMultipleInstances;
+      QFormLayout *_m_fltGeneral;
+        QComboBox *_m_cmboxLanguage;
+        QCheckBox *_m_cboxMultipleInstances;
       QGroupBox *_m_gboxPlugins;
         QHBoxLayout *_m_hltPlugins;
           QListWidget *_m_lstwgt;
@@ -62,7 +61,6 @@ private:
             QPushButton *_m_btnWww;
             //stretch
     //
-    void _m_initGboxGeneral(const QLocale &currentLocale, bool multipleInstances);
     void _m_initGboxPlugins(const QList<QObject *> &plugins);
     void _m_showCurrentPluginInfo(_m_PluginInfo type);
 private slots:

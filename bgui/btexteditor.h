@@ -94,12 +94,15 @@ public:
           //separator
           TextMacrosAction
     };
-    enum IconSize
+    struct SettingsOptions
     {
-        IconSize16 = 16,
-        IconSize22 = 22,
-        IconSize32 = 32,
-        IconSize48 = 48
+        bool fontFamily;
+        bool fontPointSize;
+        bool defaultEncoding;
+        bool lineLength;
+        bool tabWidth;
+        bool keyboardLayoutMap;
+        bool macrosDir;
     };
     //
     static const QString SettingsTabId;
@@ -135,7 +138,7 @@ public:
     int tabWidth() const;
     const QString &keyboardLayoutMap() const;
     bool blockMode() const;
-    BAbstractSettingsTab *createSettingsTab() const;
+    BAbstractSettingsTab *createSettingsTab(const SettingsOptions &opt) const;
     //settings:load/save
     void loadSettings( const QString &settingsGroup = QString() );
     void saveSettings( const QString &settingsGroup = QString() );
@@ -147,7 +150,7 @@ public:
     const QStringList &textMacrosDirs() const;
     const QStringList &keyboardLayoutMapsDirs() const;
     //gui:set
-    void setToolBarIconSize(IconSize size);
+    void setToolBarIconSize(int size);
     void addWidget(QWidget *widget);
     void insertWidget(int index, QWidget *widget);
     //gui:get

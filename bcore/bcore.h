@@ -50,13 +50,15 @@ public:
     static QSettings *newSettingsInstance();
     static void saveSettings();
     static void loadSettings();
+    static void setMultipleInstancesEnabled(bool enabled);
+    static bool setLocale(const QLocale &l);
+    static bool multipleInstancesEnabled();
+    static const QLocale &currentLocale();
     //translation
     static void addStandardTranslator(Translator translator);
     static void setStandardTranslators( const QList<Translator> &translators = QList<Translator>() );
     static void addTranslator(const QString &path);
     static void setTranslators( const QStringList &paths = QStringList() );
-    static bool setLocale(const QLocale &l);
-    static const QLocale &currentLocale();
     static QList<QLocale> availableLocales();
     static QString standardTranslatorPath(Translator translator);
     //paths and data

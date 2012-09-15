@@ -20,6 +20,7 @@
 
 #include <QDebug>
 
+const bool MultipleInstancesDef = true;
 #if defined(Q_OS_MAC)
 const QStringList PluginSuffixes = QStringList() << "*.dylib";
 #elif defined(Q_OS_UNIX)
@@ -30,6 +31,7 @@ const QStringList PluginSuffixes = QStringList() << "*.dll";
 //
 const QString GroupCore = "beqt_core";
   const QString KeyLocale = "locale";
+  const QString KeyMultipleInstances = "multiple_instances";
 
 //
 
@@ -37,6 +39,7 @@ BCore *inst = 0;
 QMutex mutex;
 QStringList translatorPaths;
 QList<QTranslator *> translators;
+bool multipleInstances = MultipleInstancesDef;
 QLocale locale = BCore::DefaultLocale;
 QString sharedRoot;
 QString userRoot;
@@ -93,6 +96,7 @@ void BCore::saveSettings()
     s->remove(GroupCore);
     s->beginGroup(GroupCore);
       s->setValue(KeyLocale, locale);
+      s->setValue(KeyMultipleInstances, multipleInstances);
     s->endGroup();
     //
     QList<QPluginLoader *> loaders = pluginMap.values();
@@ -110,6 +114,7 @@ void BCore::loadSettings()
       if ( QLocale::system() == l && !availableLocales().contains(l) )
           l = QLocale(QLocale::system().language(), QLocale::AnyCountry);
       setLocale(l);
+      setMultipleInstancesEnabled( s->value(KeyMultipleInstances, MultipleInstancesDef).toBool() );
     s->endGroup();
     //
     QList<QPluginLoader *> loaders = pluginMap.values();
@@ -117,29 +122,9 @@ void BCore::loadSettings()
         qobject_cast<BPluginInterface *>( loaders.at(i)->instance() )->loadSettings();
 }
 
-//translation
-
-void BCore::addStandardTranslator(Translator translator)
+void BCore::setMultipleInstancesEnabled(bool enabled)
 {
-    addTranslator( standardTranslatorPath(translator) );
-}
-
-void BCore::setStandardTranslators(const QList<Translator> &translators)
-{
-    for (int i = 0; i < translators.size(); ++i)
-        addTranslator( standardTranslatorPath( translators.at(i) ) );
-}
-
-void BCore::addTranslator(const QString &path)
-{
-    if ( path.isEmpty() || translatorPaths.contains(path) )
-        return;
-    translatorPaths << path;
-}
-
-void BCore::setTranslators(const QStringList &paths)
-{
-    translatorPaths = paths;
+    multipleInstances = enabled;
 }
 
 bool BCore::setLocale(const QLocale &l)
@@ -176,9 +161,39 @@ bool BCore::setLocale(const QLocale &l)
     return true;
 }
 
+bool BCore::multipleInstancesEnabled()
+{
+    return multipleInstances;
+}
+
 const QLocale &BCore::currentLocale()
 {
     return locale;
+}
+
+//translation
+
+void BCore::addStandardTranslator(Translator translator)
+{
+    addTranslator( standardTranslatorPath(translator) );
+}
+
+void BCore::setStandardTranslators(const QList<Translator> &translators)
+{
+    for (int i = 0; i < translators.size(); ++i)
+        addTranslator( standardTranslatorPath( translators.at(i) ) );
+}
+
+void BCore::addTranslator(const QString &path)
+{
+    if ( path.isEmpty() || translatorPaths.contains(path) )
+        return;
+    translatorPaths << path;
+}
+
+void BCore::setTranslators(const QStringList &paths)
+{
+    translatorPaths = paths;
 }
 
 QList<QLocale> BCore::availableLocales()
