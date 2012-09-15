@@ -85,6 +85,7 @@ public:
           SwitchBlockModeAction,
         //MacrosMenu
           RecordMacroAction,
+          ClearMacroAction,
           //separator
           PlayMacroAction,
           ShowHideMacrosConsole,

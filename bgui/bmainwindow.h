@@ -114,7 +114,7 @@ private:
         QAction *_m_actHomepage;
         //separator
         QAction *_m_actHelpContents;
-        QAction *_m_actContextHelp;
+        QAction *_m_actContextualHelp;
         QAction *_m_actWhatsThis;
         //separator
         QAction *_m_actAbout;
@@ -132,7 +132,7 @@ private slots:
     void _m_actSettingsTriggered();
     void _m_actHomepageTriggered();
     void _m_actHelpContentsTriggered();
-    void _m_actContextHelpTriggered();
+    void _m_actContextualHelpTriggered();
     void _m_actAboutTriggered();
     void _m_actAboutQtTriggered();
 signals:

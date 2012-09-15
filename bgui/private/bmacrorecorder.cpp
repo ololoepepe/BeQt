@@ -57,6 +57,7 @@ void BMacroRecorder::handleKeyPress(QKeyEvent *event)
     QString t = event->text();
     _m_events << new QKeyEvent(QEvent::KeyPress, k, m, t);
     emit keyPressAdded( constructMessage(k, m, t) );
+    emit macroAvailableChanged(true);
 }
 
 void BMacroRecorder::stopRecording()
@@ -64,20 +65,11 @@ void BMacroRecorder::stopRecording()
     _m_started = false;
 }
 
-void BMacroRecorder::clear()
-{
-    if (_m_started)
-        return;
-    for (int i = 0; i < _m_events.size(); ++i)
-        delete _m_events.at(i);
-    _m_events.clear();
-    emit cleared();
-}
-
 bool BMacroRecorder::loadMacro(const QString &fileName)
 {
     if (_m_started)
         return false;
+    clear();
     QFile f(fileName);
     if ( !f.open(QFile::ReadOnly) )
         return false;
@@ -123,6 +115,7 @@ bool BMacroRecorder::loadMacro(const QString &fileName)
         emit keyPressAdded( constructMessage( key, modifiers, text) );
     }
     f.close();
+    emit macroAvailableChanged( !_m_events.isEmpty() );
     return true;
 }
 
@@ -172,4 +165,15 @@ bool BMacroRecorder::isStarted() const
 bool BMacroRecorder::isEmpty() const
 {
     return _m_events.isEmpty();
+}
+
+//
+
+void BMacroRecorder::clear()
+{
+    for (int i = 0; i < _m_events.size(); ++i)
+        delete _m_events.at(i);
+    _m_events.clear();
+    emit cleared();
+    emit macroAvailableChanged(false);
 }

@@ -1068,9 +1068,13 @@ void BTextEditor::_m_initToolBars()
     tbar = _m_createToolBar(MacrosMenu, "MacrosToolBar");
       _m_createAction(RecordMacroAction, tbar, "", "", true);
       _m_resetRecordMacroAction();
+      QAction *act = _m_createAction(ClearMacroAction, tbar, "editclear");
+      connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
+      connect( act, SIGNAL( triggered() ), _m_recorder, SLOT( clear() ) );
       tbar->addSeparator();
-      _m_createAction(PlayMacroAction, tbar, "player_play.png", "", true);
-      _m_createAction(ShowHideMacrosConsole, tbar, "console_invisible", "", true);
+      act = _m_createAction(PlayMacroAction, tbar, "player_play");
+      connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
+      _m_createAction(ShowHideMacrosConsole, tbar, "console_visible", "", true);
       tbar->addSeparator();
       _m_createAction(LoadMacroAction, tbar, "fileopen", "", true);
       _m_createAction(SaveMacroAction, tbar, "filesaveas", "", true);
@@ -1221,6 +1225,8 @@ void BTextEditor::_m_retranslateUi()
                           tr("Use this action to find next occurance of the text specified in the Find dialog",
                              "act WhatsThis") );
     _m_resetRecordMacroAction(); //TODO: whatsThis
+    _m_retranslateAction( ClearMacroAction, tr("Clear macro", "act text"),
+                          tr("Clear last recorded or loaded macro", "act toolTip") );
     _m_retranslateAction( PlayMacroAction, tr("Play", "act text"), tr("Play macro", "act toolTip") ); //TODO
     _m_resetShowHideMacrosAction(); //TODO: whatsThis
     _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
@@ -1335,7 +1341,6 @@ void BTextEditor::_m_newDocument(const QString &text)
 {
     BTextEditorDocument *ted = _m_addDocument(_m_defaultFileName);
     ted->setText(text);
-    _m_autoselectDocumentSyntax(ted);
     _m_twgt->setCurrentWidget( ted->editWidget() );
 }
 
@@ -1408,7 +1413,6 @@ bool BTextEditor::_m_openFile(const QString &fileName)
     //TODO: maybe checking paste action is needed
     _m_findDlg->setReplaceAvailable( !ted->isReadOnly() );
     ted->reopen(cn);
-    _m_autoselectDocumentSyntax(ted);
     _m_addRecentFile(fn);
     _m_updateEncoding( ted->codecName() );
     window()->raise();
@@ -1747,6 +1751,7 @@ BTextEditorDocument *BTextEditor::_m_addDocument(const QString &fileName)
     ted->setFontFamily(_m_fontFamily);
     ted->setFontPointSize(_m_fontPointSize);
     ted->setBlockMode(_m_blockMode);
+    _m_autoselectDocumentSyntax(ted);
     int ind = _m_twgt->addTab( ted->editWidget(), QFileInfo(fileName).fileName() );
     _m_twgt->setTabToolTip(ind, fileName);
     return ted;
@@ -2073,13 +2078,13 @@ void BTextEditor::_m_resetShowHideMacrosAction()
     QAction *act = editorAction(ShowHideMacrosConsole);
     if ( _m_recorderConsole->isVisible() )
     {
-        act->setIcon( QIcon( BCore::beqtIcon("console_visible") ) );
+        act->setIcon( QIcon( BCore::beqtIcon("console_invisible") ) );
         act->setText( tr("Hide", "act text") );
         act->setToolTip( tr("Hide macros console", "act toolTip") );
     }
     else
     {
-        act->setIcon( QIcon( BCore::beqtIcon("console_invisible") ) );
+        act->setIcon( QIcon( BCore::beqtIcon("console_visible") ) );
         act->setText( tr("Show", "act text") );
         act->setToolTip( tr("Show macros console", "act toolTip") );
     }

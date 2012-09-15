@@ -84,11 +84,11 @@ const int _m_StateVersion = 1;
         _m_actHelpContents->setIcon( QIcon( BCore::beqtIcon("help_contents") ) );
         connect( _m_actHelpContents, SIGNAL( triggered() ), this, SLOT( _m_actHelpContentsTriggered() ) );
       _m_mnuHelp->addAction(_m_actHelpContents);
-      _m_actContextHelp = new QAction(this);
-        _m_actContextHelp->setShortcut( QKeySequence(Qt::Key_F1) );
-        _m_actContextHelp->setIcon( QIcon( BCore::beqtIcon("help_contextual") ) );
-        connect( _m_actContextHelp, SIGNAL( triggered() ), this, SLOT( _m_actContextHelpTriggered() ) );
-      _m_mnuHelp->addAction(_m_actContextHelp);
+      _m_actContextualHelp = new QAction(this);
+        _m_actContextualHelp->setShortcut( QKeySequence(Qt::Key_F1) );
+        _m_actContextualHelp->setIcon( QIcon( BCore::beqtIcon("help_contextual") ) );
+        connect( _m_actContextualHelp, SIGNAL( triggered() ), this, SLOT( _m_actContextualHelpTriggered() ) );
+      _m_mnuHelp->addAction(_m_actContextualHelp);
       _m_actWhatsThis = QWhatsThis::createAction(this);
         _m_actWhatsThis->setCheckable(false);
       _m_mnuHelp->addAction(_m_actWhatsThis);
@@ -415,7 +415,7 @@ void BMainWindow::_m_retranslateUi()
     _m_mnuHelp->setTitle( tr("Help", "mnu title") );
     _m_actHomepage->setText( tr("Open homepage", "act text") );
     _m_actHelpContents->setText( tr("Contents", "act text") );
-    _m_actContextHelp->setText( tr("Context help", "act text") );
+    _m_actContextualHelp->setText( tr("Contextual help", "act text") );
     QAction *wtact = QWhatsThis::createAction();
     _m_actWhatsThis->setText( wtact->text() );
     _m_actWhatsThis->setToolTip( wtact->toolTip() );
@@ -529,7 +529,7 @@ void BMainWindow::_m_actHelpContentsTriggered()
     hw->show();
 }
 
-void BMainWindow::_m_actContextHelpTriggered()
+void BMainWindow::_m_actContextualHelpTriggered()
 {
     QString url;
     QWidget *fw = QApplication::focusWidget();

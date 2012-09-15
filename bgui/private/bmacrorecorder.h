@@ -16,18 +16,20 @@ public:
     void startRecording();
     void handleKeyPress(QKeyEvent *event);
     void stopRecording();
-    void clear();
     bool loadMacro(const QString &fileName);
     bool saveMacro(const QString &fileName);
     void applyMacro();
     bool isStarted() const;
     bool isEmpty() const;
+public slots:
+    void clear();
 private:
     bool _m_started;
     QList<QKeyEvent *> _m_events;
 signals:
     void keyPressAdded(const QString &message);
     void cleared();
+    void macroAvailableChanged(bool available);
 };
 
 #endif // BMACRORECORDER_H
