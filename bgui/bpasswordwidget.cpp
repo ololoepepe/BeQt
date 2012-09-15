@@ -21,12 +21,12 @@ BPasswordWidget::BPasswordWidget(QWidget *parent) :
         _m_ledt->setEchoMode(QLineEdit::Password);
       _m_hlt->addWidget(_m_ledt);
       _m_cboxShow = new QCheckBox(this);
-        _m_cboxShow->setIcon( QIcon(BCore::IcoPath + "/decrypted.png") );
+        _m_cboxShow->setIcon( QIcon( BCore::beqtIcon("encrypted") ) );
         _m_cboxShow->setIconSize( QSize(24, 24) );
         connect( _m_cboxShow, SIGNAL( toggled(bool) ), this, SLOT( _m_cboxShowToggled(bool) ) );
       _m_hlt->addWidget(_m_cboxShow);
       _m_cboxSave = new QCheckBox(this);
-        _m_cboxSave->setIcon( QIcon(BCore::IcoPath + "/filesave.png") );
+        _m_cboxSave->setIcon( QIcon( BCore::beqtIcon("filesave") ) );
         _m_cboxSave->setIconSize( QSize(24, 24) );
       _m_hlt->addWidget(_m_cboxSave);
     _m_retranslateUi();
@@ -95,5 +95,6 @@ void BPasswordWidget::_m_retranslateUi()
 
 void BPasswordWidget::_m_cboxShowToggled(bool b)
 {
+    _m_cboxShow->setIcon( QIcon( BCore::beqtIcon( b ? QString("decrypted") : QString("encrypted") ) ) );
     _m_ledt->setEchoMode(b ? QLineEdit::Normal : QLineEdit::Password);
 }

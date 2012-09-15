@@ -65,7 +65,7 @@ struct _m_ProcessLoadedTextResult
 typedef QFuture<_m_ProcessLoadedTextResult> _m_Future;
 typedef QFutureWatcher<_m_ProcessLoadedTextResult> _m_FutureWatcher;
 
-const int _m_DefMaxBookmarkCount = 10;
+const int BookmarkCountMax = 10;
 const QList<QChar> _m_UnprintedList = QList<QChar>() << QChar(1) << QChar(2) << QChar(3) << QChar(4) << QChar(5)
     << QChar(6) << QChar(7) << QChar(8) << QChar(9) << QChar(11) << QChar(12) << QChar(13) << QChar(14) << QChar(15)
     << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21) << QChar(22) << QChar(23)
@@ -230,24 +230,15 @@ BTextEditorDocument::BTextEditorDocument(const QString &fileName, QObject *paren
     QObject(parent)
 {
     _m_fileName = fileName;
-    _m_lineLength = 120;
-    _m_tabWidth = 4;
-    _m_codecName = "UTF-8";
+    _m_lineLength = LineLengthDef;
+    _m_tabWidth = TabWidthDef;
+    _m_codecName = EncodingDef;
     _m_initWidget();
     _m_initMenu();
-    _m_blockMode = false;
-    _m_maxBookmarkCount = _m_DefMaxBookmarkCount;
+    _m_blockMode = BlockModeDef;
     _m_recorder = 0;
-#if defined(Q_OS_LINUX)
-    setFontFamily("Monospace");
-#elif defined(Q_OS_WIN)
-    setFontFamily("Courier");
-#elif defined(Q_OS_MAC)
-    setFontFamily("Monaco");
-#elif defined(Q_OS_UNIX)
-    //
-#endif
-    setFontPointSize(10);
+    setFontFamily(FontFamilyDef);
+    setFontPointSize(FontPointSizeDef);
     _m_retranslateUi();
 }
 
@@ -297,7 +288,8 @@ void BTextEditorDocument::setReadOnly(bool readOnly)
 
 void BTextEditorDocument::setFontFamily(const QString &family)
 {
-    //no check for font being monospace is provided by Qt. sad but true
+    if ( !checkFontFamily(family) )
+        return;
     QFont fnt = _m_edit->font();
     fnt.setStyleHint(QFont::TypeWriter); //this ensures that the font will be monospace
     //but it does not guarantee that it's family will be equal to the one passed to this function
@@ -307,6 +299,8 @@ void BTextEditorDocument::setFontFamily(const QString &family)
 
 void BTextEditorDocument::setFontPointSize(int pointSize)
 {
+    if ( !checkFontPointSize(pointSize) )
+        return;
     QFont fnt = _m_edit->font();
     fnt.setPointSize(pointSize);
     _m_edit->setFont(fnt);
@@ -328,16 +322,9 @@ void BTextEditorDocument::setSyntax(const BSyntax &syntax)
     _m_highlightBrackets();
 }
 
-void BTextEditorDocument::setMaxBookmarkCount(int count)
-{
-    _m_maxBookmarkCount = count > 0 ? count : _m_DefMaxBookmarkCount;
-    while (_m_bookmarks.size() > _m_maxBookmarkCount)
-        _m_bookmarks.removeLast();
-}
-
 void BTextEditorDocument::setLineLength(int length)
 {
-    if (length < 10 || length == _m_lineLength)
+    if (!checkLineLength(length) || length == _m_lineLength)
         return;
     _m_lineLength = length;
     QString text = _m_edit->toPlainText();
@@ -394,7 +381,7 @@ void BTextEditorDocument::setLineLength(int length)
 
 void BTextEditorDocument::setTabWidth(int width)
 {
-    if (width < 2 || width == _m_tabWidth)
+    if (!checkTabWidth(width) || width == _m_tabWidth)
         return;
     _m_tabWidth = width;
 }
@@ -798,7 +785,7 @@ void BTextEditorDocument::makeBookmark()
     if ( _m_bookmarks.contains(bm) )
         _m_bookmarks.removeAll(bm);
     _m_bookmarks.prepend(bm);
-    while (_m_bookmarks.size() > _m_maxBookmarkCount)
+    while (_m_bookmarks.size() > BookmarkCountMax)
         _m_bookmarks.removeLast();
     emit hasBookmarkChanged( hasBookmarks() );
 }
@@ -824,7 +811,13 @@ void BTextEditorDocument::switchSelectedTextLayout(const BKeyboardLayoutMap &klm
     if ( text.isEmpty() )
         return;
     klm.switchLayout(text);
+    QTextCursor tc = _m_edit->textCursor();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
     insertText(text);
+    tc.setPosition(start);
+    tc.setPosition(end, QTextCursor::KeepAnchor);
+    _m_edit->setTextCursor(tc);
 }
 
 //
@@ -938,36 +931,36 @@ void BTextEditorDocument::_m_initWidget()
 void BTextEditorDocument::_m_initMenu()
 {
     _m_mnuContext = new QMenu(_m_edit);
-    _m_initAction(_m_actUndo, "undo.png", "Ctrl+Z");
+    _m_initAction(_m_actUndo, "edit_undo", "Ctrl+Z");
     connect( _m_actUndo, SIGNAL( triggered() ), this, SLOT( undo() ) );
     connect( this, SIGNAL( undoAvailableChanged(bool) ), _m_actUndo, SLOT( setEnabled(bool) ) );
-    _m_initAction(_m_actRedo, "redo.png", "Ctrl+Shift+Z");
+    _m_initAction(_m_actRedo, "edit_redo", "Ctrl+Shift+Z");
     connect( _m_actRedo, SIGNAL( triggered() ), this, SLOT( redo() ) );
     connect( this, SIGNAL( redoAvailableChanged(bool) ), _m_actRedo, SLOT( setEnabled(bool) ) );
     _m_mnuContext->addSeparator();
-    _m_initAction(_m_actCut, "editcut.png", "Ctrl+X");
+    _m_initAction(_m_actCut, "editcut", "Ctrl+X");
     connect( _m_actCut, SIGNAL( triggered() ), this, SLOT( cut() ) );
     connect( this, SIGNAL( cutAvailableChanged(bool) ), _m_actCut, SLOT( setEnabled(bool) ) );
-    _m_initAction(_m_actCopy, "editcopy.png", "Ctrl+C");
+    _m_initAction(_m_actCopy, "editcopy", "Ctrl+C");
     connect( _m_actCopy, SIGNAL( triggered() ), this, SLOT( copy() ) );
     connect( this, SIGNAL( copyAvailableChanged(bool) ), _m_actCopy, SLOT( setEnabled(bool) ) );
-    _m_initAction( _m_actPaste, "editpaste.png", "Ctrl+V",
+    _m_initAction( _m_actPaste, "editpaste", "Ctrl+V",
                    !_m_edit->isReadOnly() && !QApplication::clipboard()->text().isEmpty() );
     connect( _m_actPaste, SIGNAL( triggered() ), this, SLOT( paste() ) );
-    _m_initAction(_m_actDelete, "editdelete.png");
+    _m_initAction(_m_actDelete, "editdelete");
     connect( _m_actDelete, SIGNAL( triggered() ), this, SLOT( _m_deleteSelection() ) );
     _m_mnuContext->addSeparator();
-    _m_initAction(_m_actSelectAll, "select_all.png", "Ctrl+A", true);
+    _m_initAction(_m_actSelectAll, "edit_select_all", "Ctrl+A", true);
     connect( _m_actSelectAll, SIGNAL( triggered() ), this, SLOT( _m_selectAll() ) );
 }
 
-void BTextEditorDocument::_m_initAction(QAction *&action, const QString &iconFileName,
+void BTextEditorDocument::_m_initAction(QAction *&action, const QString &iconName,
                                         const QString &shortcut, bool enabled)
 {
     action = new QAction(this);
     action->setEnabled(enabled);
-    if ( !iconFileName.isEmpty() )
-        action->setIcon( QIcon(BCore::IcoPath + "/" + iconFileName) );
+    if ( !iconName.isEmpty() )
+        action->setIcon( QIcon( BCore::beqtIcon(iconName) ) );
     if ( !shortcut.isEmpty() )
         action->setShortcut( QKeySequence(shortcut) );
     _m_mnuContext->addAction(action);

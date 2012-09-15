@@ -80,11 +80,6 @@ QList<BTextEditor *> instances(const QString &groupId)
     return list;
 }
 
-QIcon icon(const QString &iconName)
-{
-    return QIcon( BCore::IcoPath + "/" + (QFileInfo(iconName).suffix().isEmpty() ? iconName + ".png" : iconName) );
-}
-
 BTextEditorDocument *document(QWidget *widget)
 {
     BPlainTextEdit *pted = qobject_cast<BPlainTextEdit *>(widget);
@@ -103,6 +98,7 @@ bool checkReadOnly(const QString &fileName)
 
 //
 
+const BTextEditor::IconSize IconSizeDef = BTextEditor::IconSize22;
 const QString SyntaxTypeDef = "Text";
 const QString MacrosDirDef = QDir::homePath();
 //
@@ -565,6 +561,13 @@ const QStringList &BTextEditor::keyboardLayoutMapsDirs() const
 
 //gui:set
 
+void BTextEditor::setToolBarIconSize(IconSize size)
+{
+    QList<QToolBar *> list = _m_toolBars.values();
+    for (int i = 0; i < list.size(); ++i)
+        list.at(i)->setIconSize( QSize(size, size) );
+}
+
 void BTextEditor::addWidget(QWidget *widget)
 {
     if (!widget)
@@ -1020,48 +1023,48 @@ void BTextEditor::_m_initIndicator()
 void BTextEditor::_m_initToolBars()
 {
     QToolBar *tbar = _m_createToolBar(FileMenu, "FileToolBar");
-      _m_createAction(NewDocumentAction, tbar, "filenew.png", "Ctrl+N", true);
-      _m_createAction(OpenFileAction, tbar, "fileopen.png", "Ctrl+O", true);
+      _m_createAction(NewDocumentAction, tbar, "filenew", "Ctrl+N", true);
+      _m_createAction(OpenFileAction, tbar, "fileopen", "Ctrl+O", true);
       _m_initReopenMenu();
-      _m_createMenuAction(RecentFilesAction, tbar, "fileopen", false); //TODO: choose another icon
+      _m_createMenuAction(RecentFilesAction, tbar, "history", false);
       tbar->addSeparator();
-      _m_createAction(SaveDocumentAction, tbar, "filesave.png", "Ctrl+S");
-      _m_createAction(SaveDocumentAsAction, tbar, "filesaveas.png");
-      _m_createAction(SaveAllDocumentsAction, tbar, "save_all.png", "Ctrl+Shift+S");
+      _m_createAction(SaveDocumentAction, tbar, "filesave", "Ctrl+S");
+      _m_createAction(SaveDocumentAsAction, tbar, "filesaveas");
+      _m_createAction(SaveAllDocumentsAction, tbar, "save_all", "Ctrl+Shift+S");
       tbar->addSeparator();
-      _m_createAction(CloseDocumentAction, tbar, "fileclose.png", "Ctrl+W");
-      _m_createAction(CloseAllDocumentsAction, tbar, "close_all.png", "Ctrl+Shift+W");
+      _m_createAction(CloseDocumentAction, tbar, "fileclose", "Ctrl+W");
+      _m_createAction(CloseAllDocumentsAction, tbar, "close_all", "Ctrl+Shift+W");
     tbar = _m_createToolBar(EditMenu, "EditToolBar");
-      _m_createAction(UndoAction, tbar, "undo.png", "Ctrl+Z");
-      _m_createAction(RedoAction, tbar, "redo.png", "Ctrl+Shift+Z");
+      _m_createAction(UndoAction, tbar, "edit_undo", "Ctrl+Z");
+      _m_createAction(RedoAction, tbar, "edit_redo", "Ctrl+Shift+Z");
       tbar->addSeparator();
-      _m_createAction(CutAction, tbar, "editcut.png", "Ctrl+X");
-      _m_createAction(CopyAction, tbar, "editcopy.png", "Ctrl+C");
-      _m_createAction(PasteAction, tbar, "editpaste.png", "Ctrl+V");
+      _m_createAction(CutAction, tbar, "editcut", "Ctrl+X");
+      _m_createAction(CopyAction, tbar, "editcopy", "Ctrl+C");
+      _m_createAction(PasteAction, tbar, "editpaste", "Ctrl+V");
       tbar->addSeparator();
-      _m_createAction(SwitchSelectedTextLayoutAction, tbar, "edit.png", "Ctrl+L");
+      _m_createAction(SwitchSelectedTextLayoutAction, tbar, "charset", "Ctrl+L");
       tbar->addSeparator();
-      _m_createAction(FindAction, tbar, "search.png", "Ctrl+F");
-      _m_createAction(FindNextAction, tbar, "find_next.png", "Ctrl+G");
+      _m_createAction(FindAction, tbar, "edit_find", "Ctrl+F");
+      _m_createAction(FindNextAction, tbar, "edit_find_next", "Ctrl+G");
     tbar = _m_createToolBar(DocumentMenu, "DocumentToolBar");
       _m_createAction(SwitchDocumentMain, tbar, "");
       _m_resetSwitchDocumentMainAction();
       tbar->addSeparator();
-      _m_createAction(MakeBookmarkAction, tbar, "bookmark_add.png", "Ctrl+Shift+F10");
-      _m_createAction(GotoNextBookmarkAction, tbar, "bookmark.png", "Ctrl+F10");
+      _m_createAction(MakeBookmarkAction, tbar, "bookmark_add", "Ctrl+Shift+F10");
+      _m_createAction(GotoNextBookmarkAction, tbar, "bookmark", "Ctrl+F10");
       tbar->addSeparator();
-      _m_createAction(SwitchBlockModeAction, tbar, "edit.png", "Ctrl+B");
+      _m_createAction(SwitchBlockModeAction, tbar, "text_left", "Ctrl+B");
     tbar = _m_createToolBar(MacrosMenu, "MacrosToolBar");
       _m_createAction(RecordMacroAction, tbar, "", "", true);
       _m_resetRecordMacroAction();
       tbar->addSeparator();
       _m_createAction(PlayMacroAction, tbar, "player_play.png", "", true);
-      _m_createAction(ShowHideMacrosConsole, tbar, ".png", "", true); //TODO
+      _m_createAction(ShowHideMacrosConsole, tbar, "console_invisible", "", true);
       tbar->addSeparator();
-      _m_createAction(LoadMacroAction, tbar, "fileopen.png", "", true);
-      _m_createAction(SaveMacroAction, tbar, "filesaveas.png", "", true);
+      _m_createAction(LoadMacroAction, tbar, "fileopen", "", true);
+      _m_createAction(SaveMacroAction, tbar, "filesaveas", "", true);
       tbar->addSeparator();
-      _m_initTextMacrosMenu();
+      _m_createMenuAction(TextMacrosAction, tbar, "editpaste");
 }
 
 void BTextEditor::_m_initMenus()
@@ -1108,12 +1111,6 @@ void BTextEditor::_m_initReopenMenu()
       mnu->addMenu(_m_mnuReopenMiddleEast);
 }
 
-void BTextEditor::_m_initTextMacrosMenu()
-{
-    QAction *act = _m_createMenuAction(TextMacrosAction, editorToolBar(MacrosMenu), "TODO"); //TODO: icon
-    connect( this, SIGNAL( documentAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
-}
-
 void BTextEditor::_m_initRecorderConsole()
 {
     _m_recorderConsole = new QPlainTextEdit;
@@ -1154,9 +1151,11 @@ void BTextEditor::_m_retranslateUi()
                           "act whatsThis") );
     _m_retranslateAction( OpenFileAction, tr("Open...", "act text"), tr("Open file", "act toolTip"),
                           tr("Use this action to open an existing file", "act WhatsThis") );
-    _m_retranslateAction( ReopenFileAction, "", tr("Reopen current document using encoding", "act toolTip"),
+    _m_retranslateAction( ReopenFileAction, tr("Reopen", "act text"),
+                          tr("Reopen current document using encoding", "act toolTip"),
                           tr("Use this action to reopen current document using another encoding", "act WhatsThis") );
-    _m_retranslateAction( RecentFilesAction, "", tr("Open recently opened files", "act toolTip"),
+    _m_retranslateAction( RecentFilesAction, tr("Recent files", "act text"),
+                          tr("Open recently opened files", "act toolTip"),
                           tr("Use this action to open one of the recently opened files again", "act WhatsThis") );
     _m_retranslateAction( SaveDocumentAction, tr("Save", "act text"), tr("Save current document", "act toolTip"),
                           tr("Use this action to save current document. If the corresponding file does not exist, "
@@ -1215,14 +1214,14 @@ void BTextEditor::_m_retranslateUi()
     _m_resetShowHideMacrosAction(); //TODO: whatsThis
     _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
     _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
+    _m_retranslateAction( TextMacrosAction, tr("Insert text macro", "act text"),
+                          tr("Insert text macro into current document", "act toolTip") );
     //menus
     _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
     _m_retranslateMenu( EditMenu, tr("Edit", "mnu title") );
     _m_retranslateMenu( DocumentMenu, tr("Document", "mnu title") );
     _m_retranslateMenu( MacrosMenu, tr("Macros", "mnu title") );
-    //menu reopen
     _m_retranslateReopenMenu();
-    editorAction(RecentFilesAction)->menu()->setTitle( tr("Recent files", "mnu title") );
     //toolBars
     _m_toolBars.value(FileMenu)->setWindowTitle( tr("File", "tbar windowTitle") );
     _m_toolBars.value(EditMenu)->setWindowTitle( tr("Edit", "tbar windowTitle") );
@@ -1232,9 +1231,6 @@ void BTextEditor::_m_retranslateUi()
 
 void BTextEditor::_m_retranslateReopenMenu()
 {
-    //menu
-    QMenu *mnu = editorAction(ReopenFileAction)->menu();
-    mnu->setTitle( tr("Reopen", "mnu toolTip") );
     //submenus
     _m_mnuReopenUnicode->setTitle( tr("Unicode", "mnu title") );
     _m_mnuReopenEasternEurope->setTitle( tr("Eastern Europe", "mnu title") );
@@ -1310,13 +1306,13 @@ void BTextEditor::_m_retranslateSwitchBlockModeAction()
     QAction *act = editorAction(SwitchBlockModeAction);
     if (_m_blockMode)
     {
-        act->setIcon( icon("blocks") );
+        act->setIcon( QIcon( BCore::beqtIcon("text_block") ) );
         act->setText( tr("Mode: blocks", "act text") );
         act->setToolTip( tr("Switch to lines mode", "act toolTip") );
     }
     else
     {
-        act->setIcon( icon("lines") );
+        act->setIcon( QIcon( BCore::beqtIcon("text_left") ) );
         act->setText( tr("Mode: lines", "act text") );
         act->setToolTip( tr("Switch to blocks mode", "act toolTip") );
     }
@@ -1947,7 +1943,7 @@ QToolBar *BTextEditor::_m_createToolBar(Menu id, const QString &objectName)
         return 0;
     QToolBar *tbar = new QToolBar;
     tbar->setFloatable(false);
-    tbar->setIconSize( QSize(22, 22) );
+    tbar->setIconSize( QSize(IconSizeDef, IconSizeDef) );
     tbar->setObjectName(objectName);
     _m_toolBars.insert(id, tbar);
     return tbar;
@@ -1970,7 +1966,7 @@ QAction *BTextEditor::_m_createAction(Action id, QToolBar *tbar, const QString &
         return 0;
     QAction *act = new QAction(this);
     act->setEnabled(enabled);
-    act->setIcon( icon(iconName) );
+    act->setIcon( QIcon( BCore::beqtIcon(iconName) ) );
     if ( !shortcut.isEmpty() )
         act->setShortcut( QKeySequence(shortcut) );
     _m_mapperActions->setMapping(act, id);
@@ -1987,7 +1983,7 @@ QAction *BTextEditor::_m_createMenuAction(Action id, QToolBar *tbar, const QStri
     QMenu *mnu = new QMenu(this);
     QAction *act = mnu->menuAction();
     act->setEnabled(enabled);
-    act->setIcon( icon(iconName) );
+    act->setIcon( QIcon( BCore::beqtIcon(iconName) ) );
     tbar->addAction(act);
     qobject_cast<QToolButton *>( tbar->widgetForAction(act) )->setPopupMode(QToolButton::InstantPopup);
     _m_actions.insert(id, act);
@@ -2031,13 +2027,14 @@ void BTextEditor::_m_resetSwitchDocumentMainAction()
     act->setEnabled(_m_currentDocument);
     if ( _m_currentDocument && _m_currentDocument->property("main").toBool() )
     {
-        act->setIcon( icon("edit_add") );
+        act->setIcon( QIcon( BCore::beqtIcon("list_add") ) );
         act->setText( tr("Unset main", "act text") );
         act->setToolTip( tr("Unset main document", "act toolTip") );
     }
     else
     {
-        act->setIcon( hasMainDocument() ? icon("has_main_document") : icon("edit_remove") );
+        act->setIcon( QIcon( BCore::beqtIcon( hasMainDocument() ? QString("has_main_document") :
+                                                                  QString("list_remove") ) ) );
         act->setText( tr("Set main", "act text") );
         act->setToolTip( tr("Set current document as main", "act toolTip") );
     }
@@ -2048,13 +2045,13 @@ void BTextEditor::_m_resetRecordMacroAction()
     QAction *act = editorAction(RecordMacroAction);
     if ( act->property("performing").toBool() )
     {
-        act->setIcon( icon("player_stop") );
+        act->setIcon( QIcon( BCore::beqtIcon("player_stop") ) );
         act->setText( tr("Stop recording", "act text") );
         act->setToolTip( tr("Stop recording macro", "act toolTip") );
     }
     else
     {
-        act->setIcon( icon("start") );
+        act->setIcon( QIcon( BCore::beqtIcon("player_record") ) );
         act->setText( tr("Start recording", "act text") );
         act->setToolTip( tr("Start recording macro", "act toolTip") );
     }
@@ -2065,13 +2062,13 @@ void BTextEditor::_m_resetShowHideMacrosAction()
     QAction *act = editorAction(ShowHideMacrosConsole);
     if ( _m_recorderConsole->isVisible() )
     {
-        act->setIcon( icon("button_cancel") );
+        act->setIcon( QIcon( BCore::beqtIcon("console_visible") ) );
         act->setText( tr("Hide", "act text") );
         act->setToolTip( tr("Hide macros console", "act toolTip") );
     }
     else
     {
-        act->setIcon( icon("button_ok") );
+        act->setIcon( QIcon( BCore::beqtIcon("console_invisible") ) );
         act->setText( tr("Show", "act text") );
         act->setToolTip( tr("Show macros console", "act toolTip") );
     }
@@ -2241,7 +2238,7 @@ void BTextEditor::_m_updateCursorPosition(int row, int column)
     if (column >= 0)
         _m_lblColumnValue->setText( QString::number(column) );
     else
-        _m_lblColumnValue->setText("---");
+        _m_lblColumnValue->setText("----");
 }
 
 void BTextEditor::_m_updateEncoding(const QString &codecName)
@@ -2279,6 +2276,7 @@ void BTextEditor::_m_twgtCurrentChanged(int index)
     editorAction(SwitchBlockModeAction)->setEnabled(da);
     editorAction(SwitchSelectedTextLayoutAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
     editorAction(FindAction)->setEnabled(da);
+    editorAction(TextMacrosAction)->setEnabled( da && !editorAction(TextMacrosAction)->menu()->isEmpty() );
     emit currentDocumentChanged(da ? _m_currentDocument->fileName() : "");
     emit documentAvailableChanged(da);
     if (da)

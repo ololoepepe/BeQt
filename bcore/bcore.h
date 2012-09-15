@@ -68,6 +68,7 @@ public:
     static QString user(const QString &key = QString(), bool file = false);
     static QVariant data( const QString &key, const QVariant &def = QVariant() );
     static QString dataS( const QString &key, const QString &def = QString() );
+    static QString beqtIcon(const QString &iconName);
     //plugins
     static void loadPlugin(const QString &fileName);
     static void loadPlugins(const QString &dir);

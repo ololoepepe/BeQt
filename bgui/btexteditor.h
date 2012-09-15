@@ -94,6 +94,13 @@ public:
           //separator
           TextMacrosAction
     };
+    enum IconSize
+    {
+        IconSize16 = 16,
+        IconSize22 = 22,
+        IconSize32 = 32,
+        IconSize48 = 48
+    };
     //
     static const QString SettingsTabId;
     //
@@ -140,6 +147,7 @@ public:
     const QStringList &textMacrosDirs() const;
     const QStringList &keyboardLayoutMapsDirs() const;
     //gui:set
+    void setToolBarIconSize(IconSize size);
     void addWidget(QWidget *widget);
     void insertWidget(int index, QWidget *widget);
     //gui:get
@@ -262,7 +270,6 @@ private:
     void _m_initMenus();
     void _m_initReopenMenu();
     void _m_initRecentFilesMenu();
-    void _m_initTextMacrosMenu();
     void _m_initRecorderConsole();
     void _m_initFindDialog();
     //retranslate

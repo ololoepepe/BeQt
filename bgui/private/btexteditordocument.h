@@ -67,7 +67,6 @@ public:
     void setFontPointSize(int pointSize);
     void setBlockMode(bool enabled);
     void setSyntax(const BSyntax &syntax);
-    void setMaxBookmarkCount(int count);
     void setLineLength(int length);
     void setTabWidth(int width);
     void setClipboardHasText(bool b);
@@ -140,12 +139,11 @@ private:
     QTextCharFormat _m_tcfHighlighted;
     bool _m_blockMode;
     QList<int> _m_highlightPosList;
-    int _m_maxBookmarkCount;
     QList<_m_Bookmark> _m_bookmarks;
     //
     void _m_initWidget();
     void _m_initMenu();
-    void _m_initAction(QAction *&action, const QString &iconFileName,
+    void _m_initAction(QAction *&action, const QString &iconName,
                        const QString &shortcut = QString(), bool enabled = false);
     void _m_retranslateUi();
     bool _m_setFileName(const QString &fileName);

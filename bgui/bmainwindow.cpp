@@ -60,30 +60,30 @@ const int _m_StateVersion = 1;
     _m_mnuFile = new QMenu(this);
       _m_actExit = new QAction(this);
         _m_actExit->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_Q) );
-        _m_actExit->setIcon( QIcon(BCore::IcoPath + "/exit.png") );
+        _m_actExit->setIcon( QIcon( BCore::beqtIcon("window_close") ) );
         connect( _m_actExit, SIGNAL( triggered() ), this, SLOT( close() ) );
       _m_mnuFile->addAction(_m_actExit);
     _m_mnuBar->addMenu(_m_mnuFile);
     _m_mnuEdit = new QMenu(this);
       _m_actSettings = new QAction(this);
         _m_actSettings->setShortcut( QKeySequence(Qt::CTRL + Qt::Key_P) );
-        _m_actSettings->setIcon( QIcon(BCore::IcoPath + "/advanced.png") );
+        _m_actSettings->setIcon( QIcon( BCore::beqtIcon("configure") ) );
         connect( _m_actSettings, SIGNAL( triggered() ), this, SLOT( _m_actSettingsTriggered() ) );
       _m_mnuEdit->addAction(_m_actSettings);
     _m_mnuBar->addMenu(_m_mnuEdit);
     _m_mnuHelp = new QMenu(this);
       _m_actHomepage = new QAction(this);
-        _m_actHomepage->setIcon( QIcon(BCore::IcoPath + "/internet.png") );
+        _m_actHomepage->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
         connect( _m_actHomepage, SIGNAL( triggered() ), this, SLOT( _m_actHomepageTriggered() ) );
       _m_mnuHelp->addAction(_m_actHomepage);
       _m_mnuHelp->addSeparator();
       _m_actHelpContents = new QAction(this);
-        _m_actHelpContents->setIcon( QIcon(BCore::IcoPath + "/help.png") );
+        _m_actHelpContents->setIcon( QIcon( BCore::beqtIcon("help_contents") ) );
         connect( _m_actHelpContents, SIGNAL( triggered() ), this, SLOT( _m_actHelpContentsTriggered() ) );
       _m_mnuHelp->addAction(_m_actHelpContents);
       _m_actContextHelp = new QAction(this);
         _m_actContextHelp->setShortcut( QKeySequence(Qt::Key_F1) );
-        _m_actContextHelp->setIcon( QIcon(BCore::IcoPath + "/contexthelp.png") );
+        _m_actContextHelp->setIcon( QIcon( BCore::beqtIcon("help_contextual") ) );
         connect( _m_actContextHelp, SIGNAL( triggered() ), this, SLOT( _m_actContextHelpTriggered() ) );
       _m_mnuHelp->addAction(_m_actContextHelp);
       _m_actWhatsThis = QWhatsThis::createAction(this);
@@ -91,11 +91,11 @@ const int _m_StateVersion = 1;
       _m_mnuHelp->addAction(_m_actWhatsThis);
       _m_mnuHelp->addSeparator();
       _m_actAbout = new QAction(this);
-        _m_actAbout->setIcon( QIcon(BCore::IcoPath + "/info.png") );
+        _m_actAbout->setIcon( QIcon( BCore::beqtIcon("help_about") ) );
         connect( _m_actAbout, SIGNAL( triggered() ), this, SLOT( _m_actAboutTriggered() ) );
       _m_mnuHelp->addAction(_m_actAbout);
       _m_actAboutQt = new QAction(this);
-        _m_actAboutQt->setIcon( QIcon(BCore::IcoPath + "/qt-logo.png") );
+        _m_actAboutQt->setIcon( QIcon( BCore::beqtIcon("qt-logo") ) );
         connect( _m_actAboutQt, SIGNAL( triggered() ), this, SLOT( _m_actAboutQtTriggered() ) );
       _m_mnuHelp->addAction(_m_actAboutQt);
     _m_mnuBar->addMenu(_m_mnuHelp);
@@ -182,10 +182,10 @@ void BMainWindow::setAboutThanksTo(const PersonInfoList &list, bool beqt, bool c
     }
     if (coelho)
     {
-        info.name = "Everaldo Coelho";
+        info.name = "Oxygen";
         info.mail = "";
-        info.site = "http://www.everaldo.com/";
-        info.role = tr("Icons are taken from his Crystal set", "aboutWgt infoRole");
+        info.site = "http://www.oxygen-icons.org/";
+        info.role = tr("BeQt uses Oxygen as an icon set", "aboutWgt infoRole");
         infos << info;
     }
     for (int i = 0; i < list.size(); ++i)

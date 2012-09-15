@@ -301,6 +301,11 @@ QString BCore::dataS(const QString &key, const QString &def)
     return data( key, QVariant(def) ).toString();
 }
 
+QString BCore::beqtIcon(const QString &iconName)
+{
+    return IcoPath + "/" + (QFileInfo(iconName).suffix().isEmpty() ? iconName + ".png" : iconName);
+}
+
 //plugins
 
 void BCore::loadPlugin(const QString &fileName)
