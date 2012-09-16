@@ -17,6 +17,7 @@ class BCORESHARED_EXPORT BTerminalIOHandler : public QThread
     Q_OBJECT
 public:
     static BTerminalIOHandler *instance();
+    static QString readLine(bool *ok = 0);
     static void write(const QString &text);
     static void writeLine(const QString &text);
     static void setStdinEchoEnabled(bool enabled = true);

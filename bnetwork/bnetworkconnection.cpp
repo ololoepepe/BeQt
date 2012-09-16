@@ -2,6 +2,7 @@
 #include "bsocketwrapper.h"
 #include "bgenericsocket.h"
 #include "bnetworkoperation.h"
+#include "bterminaliohandler.h"
 
 #include <QObject>
 #include <QDataStream>
@@ -18,6 +19,7 @@ BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) 
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
     _m_setSocket(socket);
+    log( tr("Incoming connection", "log text") );
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
@@ -175,7 +177,8 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
 
 void BNetworkConnection::log(const QString &text)
 {
-    "[" + QDateTime::currentDateTime().toString("dd/MMM/yyy hh:mm:ss") + "] " + text + "\n";
+    BTerminalIOHandler::writeLine("[" + QDateTime::currentDateTime().toString("dd/MMM/yyy hh:mm:ss") + "] [" +
+                                  peerAddress() + "] " + text);
 }
 
 //
@@ -204,7 +207,7 @@ void BNetworkConnection::_m_setSocket(BGenericSocket *socket)
     _m_socket = socket;
     _m_socketWrapper->setSocket(socket);
     socket->setParent(this);
-    connect(socket, SIGNAL( connected() ), this, SIGNAL( connected() ), Qt::DirectConnection);
+    connect(socket, SIGNAL( connected() ), this, SLOT( _m_connected() ), Qt::DirectConnection);
     connect(socket, SIGNAL( disconnected() ), this, SLOT( _m_disconnected() ), Qt::DirectConnection);
     connect(socket, SIGNAL( error(QAbstractSocket::SocketError) ),
             this, SLOT( _m_error(QAbstractSocket::SocketError) ), Qt::DirectConnection);
@@ -222,12 +225,13 @@ void BNetworkConnection::_m_sendNext()
         _m_socketWrapper->sendData(data.first, data.second) ? op->_m_setStarted() : op->_m_setError();
 }
 
-QString BNetworkConnection::_m_operation(bool request) const
-{
-    return request ? tr("Request", "log text") : tr("Reply", "log text");
-}
-
 //
+
+void BNetworkConnection::_m_connected()
+{
+    log( tr("Connected", "log text") );
+    emit connected();
+}
 
 void BNetworkConnection::_m_disconnected()
 {
@@ -259,6 +263,8 @@ void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &met
             connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( _m_operationDestroyed(QObject *) ) );
             _m_replies.insert(mdat, op);
             op->_m_setStarted();
+            if (_m_detailedLog)
+                log( tr("Incoming request:", "log text") + " " + metaData.operation() );
             emit incomingRequest(op);
         }
     }
@@ -291,6 +297,8 @@ void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWr
             return;
         op->_m_bytesInReady = op->_m_bytesInTotal;
         op->_m_data = data;
+        if (_m_detailedLog)
+            log( tr("Request received:", "log text") + " " + metaData.operation() );
         emit requestReceived(op);
     }
     else
@@ -303,6 +311,8 @@ void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWr
         _m_requests.remove(mdat);
         op->_m_bytesInReady = op->_m_bytesInTotal;
         op->_m_setFinished(data);
+        if (_m_detailedLog)
+            log( tr("Reply received:", "log text") + " " + metaData.operation() );
         emit replyReceived(op);
     }
 }
@@ -314,6 +324,8 @@ void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
         BNetworkOperation *op = _m_requests.value(metaData);
         if (!op)
             return;
+        if (_m_detailedLog)
+            log( tr("Request sent:", "log text") + " " + metaData.operation() );
         emit requestSent(op);
     }
     else
@@ -323,6 +335,8 @@ void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
             return;
         _m_replies.remove(metaData);
         op->_m_setFinished();
+        if (_m_detailedLog)
+            log( tr("Reply sent:", "log text") + " " + metaData.operation() );
         if (_m_autoDelete)
             op->deleteLater();
         else

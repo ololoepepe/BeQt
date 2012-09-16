@@ -67,8 +67,8 @@ private:
     void _m_init();
     void _m_setSocket(BGenericSocket *socket);
     void _m_sendNext();
-    QString _m_operation(bool request) const;
 private slots:
+    void _m_connected();
     void _m_disconnected();
     void _m_error(QAbstractSocket::SocketError socketError);
     void _m_downloadProgress(const BSocketWrapper::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);

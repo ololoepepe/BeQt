@@ -180,8 +180,8 @@ QIODevice::OpenMode BGenericSocket::openMode() const
 QString BGenericSocket::peerAddress() const
 {
     if ( !isSocketSet() )
-        return 0;
-    return !_m_asocket.isNull() ? _m_asocket->peerName() : _m_lsocket->serverName();
+        return "";
+    return !_m_asocket.isNull() ? _m_asocket->peerAddress().toString() : _m_lsocket->serverName();
 }
 
 QByteArray BGenericSocket::read(qint64 maxSize)

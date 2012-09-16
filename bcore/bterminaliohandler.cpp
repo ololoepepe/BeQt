@@ -8,6 +8,7 @@
 #include <QStringList>
 #include <QChar>
 #include <QMutex>
+#include <QMutexLocker>
 
 #include <cstdio>
 
@@ -18,7 +19,9 @@
 #endif
 
 BTerminalIOHandler *inst = 0;
-QMutex mutex;
+QMutex instMutex;
+QMutex stdinMutex;
+QMutex stdoutMutex;
 
 //
 
@@ -63,20 +66,36 @@ BTerminalIOHandler *BTerminalIOHandler::instance()
 {
     if (!inst)
     {
-        mutex.lock();
+        instMutex.lock();
         if (!inst)
         {
             inst = new BTerminalIOHandler;
             inst->start();
         }
-        mutex.unlock();
+        instMutex.unlock();
     }
     return inst;
+}
+
+QString BTerminalIOHandler::readLine(bool *ok)
+{
+    QString line;
+    if (ok)
+        *ok = false;
+    if ( !stdinMutex.tryLock() )
+        return line;
+    static QTextStream in(stdin, QIODevice::ReadOnly);
+    line = in.readLine();
+    stdinMutex.unlock();
+    if (ok)
+        *ok = true;
+    return line;
 }
 
 void BTerminalIOHandler::write(const QString &text)
 {
     static QTextStream out(stdout, QIODevice::WriteOnly);
+    QMutexLocker locker(&stdoutMutex);
     out << text;
     out.flush();
 }
@@ -115,7 +134,10 @@ void BTerminalIOHandler::run()
     QTextStream in(stdin, QIODevice::ReadOnly);
     forever
     {
-        QStringList args = splitCommand( in.readLine() );
+        stdinMutex.lock();
+        QString line = in.readLine();
+        stdoutMutex.unlock();
+        QStringList args = splitCommand(line);
         QString command = args.takeFirst();
         QMetaObject::invokeMethod( inst, "commandEntered", Qt::QueuedConnection,
                                    Q_ARG(QString, command), Q_ARG(QStringList, args) );
