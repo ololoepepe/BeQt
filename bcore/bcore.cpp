@@ -49,7 +49,7 @@ bool (*pluginValidityChecker)(const QObject *) = 0;
 //
 
 //beqt
-const QString BCore::BeQtVersion = "1.0.0";
+const QString BCore::BeQtVersion = "1.0.0pa1";
 const QString BCore::ResourcesPath = ":/beqt/res";
 const QString BCore::IcoPath = BCore::ResourcesPath + "/ico";
 const QString BCore::TranslationsPath = BCore::ResourcesPath + "/translations";

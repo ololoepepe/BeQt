@@ -76,7 +76,7 @@ const int _m_StateVersion = 1;
     _m_mnuBar->addMenu(_m_mnuEdit);
     _m_mnuHelp = new QMenu(this);
       _m_actHomepage = new QAction(this);
-        _m_actHomepage->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
+        _m_actHomepage->setIcon( QIcon( BCore::beqtIcon("network") ) );
         connect( _m_actHomepage, SIGNAL( triggered() ), this, SLOT( _m_actHomepageTriggered() ) );
       _m_mnuHelp->addAction(_m_actHomepage);
       _m_mnuHelp->addSeparator();

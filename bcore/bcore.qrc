@@ -43,8 +43,8 @@
         <file>res/ico/text_left.png</file>
         <file>res/ico/window_close.png</file>
         <file>res/ico/editdelete.png</file>
-        <file>res/ico/gohome.png</file>
         <file>res/ico/copyright.png</file>
         <file>res/ico/editclear.png</file>
+        <file>res/ico/network.png</file>
     </qresource>
 </RCC>

@@ -56,8 +56,8 @@ private:
           QListWidget *_m_lstwgt;
           QVBoxLayout *_m_vltPluginActions;
             QPushButton *_m_btnSettings;
-            QPushButton *_m_btnCopyright;
             QPushButton *_m_btnAbout;
+            QPushButton *_m_btnCopyright;
             QPushButton *_m_btnWww;
             //stretch
     //
@@ -66,8 +66,8 @@ private:
 private slots:
     void _m_lstwgtCurrentRowChanged(int currentRow);
     void _m_btnSettingsClicked();
-    void _m_btnCopyrightClicked();
     void _m_btnAboutClicked();
+    void _m_btnCopyrightClicked();
     void _m_btnWwwClicked();
 };
 

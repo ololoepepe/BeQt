@@ -144,21 +144,21 @@ void BGeneralSettingsTab::_m_initGboxPlugins(const QList<QObject *> &plugins)
             _m_btnSettings->setText( tr("Configure", "btn text") );
             connect( _m_btnSettings, SIGNAL( clicked() ), this, SLOT( _m_btnSettingsClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnSettings);
-          _m_btnCopyright = new QPushButton;
-            _m_btnCopyright->setEnabled(false);
-            _m_btnCopyright->setIcon( QIcon( BCore::beqtIcon("copyright") ) );
-            _m_btnCopyright->setText( tr("Copyright", "btn text") );
-            connect( _m_btnCopyright, SIGNAL( clicked() ), this, SLOT( _m_btnCopyrightClicked() ) );
-          _m_vltPluginActions->addWidget(_m_btnCopyright);
           _m_btnAbout = new QPushButton;
             _m_btnAbout->setEnabled(false);
             _m_btnAbout->setIcon( QIcon( BCore::beqtIcon("help_about") ) );
             _m_btnAbout->setText( tr("About", "btn text") );
             connect( _m_btnAbout, SIGNAL( clicked() ), this, SLOT( _m_btnAboutClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnAbout);
+          _m_btnCopyright = new QPushButton;
+            _m_btnCopyright->setEnabled(false);
+            _m_btnCopyright->setIcon( QIcon( BCore::beqtIcon("copyright") ) );
+            _m_btnCopyright->setText( tr("Copyright", "btn text") );
+            connect( _m_btnCopyright, SIGNAL( clicked() ), this, SLOT( _m_btnCopyrightClicked() ) );
+          _m_vltPluginActions->addWidget(_m_btnCopyright);
           _m_btnWww = new QPushButton;
             _m_btnWww->setEnabled(false);
-            _m_btnWww->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
+            _m_btnWww->setIcon( QIcon( BCore::beqtIcon("network") ) );
             _m_btnWww->setText( tr("Open homepage", "btn text") );
             connect( _m_btnWww, SIGNAL( clicked() ), this, SLOT( _m_btnWwwClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnWww);
@@ -236,14 +236,14 @@ void BGeneralSettingsTab::_m_btnSettingsClicked()
     interface->applySettings( sd.valueMap() );
 }
 
-void BGeneralSettingsTab::_m_btnCopyrightClicked()
-{
-    _m_showCurrentPluginInfo(_m_CopyrightInfo);
-}
-
 void BGeneralSettingsTab::_m_btnAboutClicked()
 {
     _m_showCurrentPluginInfo(_m_AboutInfo);
+}
+
+void BGeneralSettingsTab::_m_btnCopyrightClicked()
+{
+    _m_showCurrentPluginInfo(_m_CopyrightInfo);
 }
 
 void BGeneralSettingsTab::_m_btnWwwClicked()
