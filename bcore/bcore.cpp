@@ -480,3 +480,8 @@ BCore::BCore()
 {
     //
 }
+
+BCore::~BCore()
+{
+    //
+}

@@ -48,8 +48,8 @@ public:
     bool autoDeleteSentReplies() const;
     QString peerAddress() const;
     BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
-protected:
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
+protected:
     virtual void log(const QString &text);
 private:
     typedef QPair<QByteArray, BSocketWrapper::MetaData> _m_Data;
@@ -77,6 +77,7 @@ private slots:
     void _m_dataSent(const BSocketWrapper::MetaData &metaData);
     void _m_operationDestroyed(QObject *object);
 signals:
+    void connected();
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);
     void requestSent(BNetworkOperation *operation);

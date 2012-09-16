@@ -159,8 +159,6 @@ BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, con
     return op;
 }
 
-//
-
 bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArray &data)
 {
     if ( !isConnected() || !operation || !operation->isValid() || operation->isRequest() )
@@ -172,6 +170,8 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
     _m_sendNext();
     return true;
 }
+
+//
 
 void BNetworkConnection::log(const QString &text)
 {
@@ -204,9 +204,10 @@ void BNetworkConnection::_m_setSocket(BGenericSocket *socket)
     _m_socket = socket;
     _m_socketWrapper->setSocket(socket);
     socket->setParent(this);
-    connect( socket, SIGNAL( disconnected() ), this, SLOT( _m_disconnected() ), Qt::DirectConnection);
-    connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-             this, SLOT( _m_error(QAbstractSocket::SocketError) ), Qt::DirectConnection);
+    connect(socket, SIGNAL( connected() ), this, SIGNAL( connected() ), Qt::DirectConnection);
+    connect(socket, SIGNAL( disconnected() ), this, SLOT( _m_disconnected() ), Qt::DirectConnection);
+    connect(socket, SIGNAL( error(QAbstractSocket::SocketError) ),
+            this, SLOT( _m_error(QAbstractSocket::SocketError) ), Qt::DirectConnection);
 }
 
 void BNetworkConnection::_m_sendNext()
@@ -216,10 +217,9 @@ void BNetworkConnection::_m_sendNext()
     _m_Data data = _m_dataQueue.dequeue();
     if ( !data.second.isValid() )
         return;
-    bool b = _m_socketWrapper->sendData(data.first, data.second);
     BNetworkOperation *op = data.second.isRequest() ? _m_requests.value(data.second) : _m_replies.value(data.second);
     if (op)
-        b ? op->_m_setStarted() : op->_m_setError();
+        _m_socketWrapper->sendData(data.first, data.second) ? op->_m_setStarted() : op->_m_setError();
 }
 
 QString BNetworkConnection::_m_operation(bool request) const

@@ -1,4 +1,4 @@
-#include "bstdio.h"
+#include "bterminaliohandler.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -7,6 +7,7 @@
 #include <QMetaObject>
 #include <QStringList>
 #include <QChar>
+#include <QMutex>
 
 #include <cstdio>
 
@@ -16,39 +17,12 @@
 #include "termios.h"
 #endif
 
-BStdIO *BStdIO::_m_instance = 0;
+BTerminalIOHandler *inst = 0;
+QMutex mutex;
 
 //
 
-BStdIO *BStdIO::instance()
-{
-    if (!_m_instance)
-    {
-        _m_instance = new BStdIO;
-        _m_instance->start();
-    }
-    return _m_instance;
-}
-
-QString BStdIO::readLine()
-{
-    static QTextStream in(stdin, QIODevice::ReadOnly);
-    return in.readLine();
-}
-
-void BStdIO::write(const QString &text)
-{
-    static QTextStream out(stdout, QIODevice::WriteOnly);
-    out << text;
-    out.flush();
-}
-
-void BStdIO::writeLine(const QString &text)
-{
-    write(text + "\n");
-}
-
-QStringList BStdIO::splitCommand(const QString &command)
+QStringList splitCommand(const QString &command)
 {
     QStringList args;
     QString arg;
@@ -83,7 +57,36 @@ QStringList BStdIO::splitCommand(const QString &command)
     return args;
 }
 
-void BStdIO::setStdinEchoEnabled(bool enabled)
+//
+
+BTerminalIOHandler *BTerminalIOHandler::instance()
+{
+    if (!inst)
+    {
+        mutex.lock();
+        if (!inst)
+        {
+            inst = new BTerminalIOHandler;
+            inst->start();
+        }
+        mutex.unlock();
+    }
+    return inst;
+}
+
+void BTerminalIOHandler::write(const QString &text)
+{
+    static QTextStream out(stdout, QIODevice::WriteOnly);
+    out << text;
+    out.flush();
+}
+
+void BTerminalIOHandler::writeLine(const QString &text)
+{
+    write(text + "\n");
+}
+
+void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 {
 #if defined(Q_OS_WIN)
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
@@ -94,7 +97,7 @@ void BStdIO::setStdinEchoEnabled(bool enabled)
     else
         mode &= ~ENABLE_ECHO_INPUT;
     SetConsoleMode(hStdin, mode);
-#else
+#elif defined(Q_OS_UNIX)
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
     if(enabled)
@@ -107,23 +110,27 @@ void BStdIO::setStdinEchoEnabled(bool enabled)
 
 //
 
-void BStdIO::writeSlot(const QString &text)
-{
-    write(text);
-}
-
-//
-
-BStdIO::BStdIO() :
-    QThread(0)
-{
-}
-
-//
-
-void BStdIO::run()
+void BTerminalIOHandler::run()
 {
     QTextStream in(stdin, QIODevice::ReadOnly);
     forever
-        QMetaObject::invokeMethod( instance(), "read", Qt::QueuedConnection, Q_ARG( QString, in.readLine() ) );
+    {
+        QStringList args = splitCommand( in.readLine() );
+        QString command = args.takeFirst();
+        QMetaObject::invokeMethod( inst, "commandEntered", Qt::QueuedConnection,
+                                   Q_ARG(QString, command), Q_ARG(QStringList, args) );
+    }
+}
+
+//
+
+BTerminalIOHandler::BTerminalIOHandler() :
+    QThread(0)
+{
+    //
+}
+
+BTerminalIOHandler::~BTerminalIOHandler()
+{
+    //
 }

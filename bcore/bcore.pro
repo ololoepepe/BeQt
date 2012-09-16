@@ -12,13 +12,13 @@ SOURCES += \
     bcore.cpp \
     bcryptor.cpp \
     bsignalmapper.cpp \
-    bstdio.cpp
+    bterminaliohandler.cpp
 
 HEADERS += bcore.h \
     bcryptor.h \
     bplugininterface.h \
     bsignalmapper.h \
-    bstdio.h
+    bterminaliohandler.h
 
 RESOURCES += \
     bcore.qrc
