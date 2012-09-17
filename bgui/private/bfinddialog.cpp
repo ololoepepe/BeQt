@@ -1,8 +1,9 @@
 class QWidget;
 
 #include "bfinddialog.h"
-#include "bguicommon.h"
 #include "btexteditordocument.h"
+
+#include "../../bcore/bcore.h"
 
 #include <QString>
 #include <QDialog>
@@ -17,7 +18,6 @@ class QWidget;
 #include <QKeySequence>
 #include <QMenu>
 #include <QAction>
-#include <QEvent>
 #include <QVariant>
 #include <QStringList>
 #include <QTextDocument>
@@ -26,7 +26,7 @@ class QWidget;
 
 #include <QDebug>
 
-const int HistorySizeMax = 20;
+const int BFindDialog::_m_HistorySizeMax = 20;
 
 //
 
@@ -44,7 +44,7 @@ BFindDialog::BFindDialog(QWidget *parent) :
         _m_hltText->addWidget(_m_lblText);
         _m_cmboxText = new QComboBox(this);
           _m_cmboxText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-          _m_cmboxText->setMaxCount(HistorySizeMax);
+          _m_cmboxText->setMaxCount(_m_HistorySizeMax);
           _m_cmboxText->setInsertPolicy(QComboBox::InsertAtTop);
           _m_cmboxText->setEditable(true);
           _m_cmboxText->lineEdit()->setMaxLength(BTextEditorDocument::LineLengthDef);
@@ -57,7 +57,7 @@ BFindDialog::BFindDialog(QWidget *parent) :
         _m_hltNewText->addWidget(_m_lblNewText);
         _m_cmboxNewText = new QComboBox(this);
           _m_cmboxNewText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-          _m_cmboxNewText->setMaxCount(HistorySizeMax);
+          _m_cmboxNewText->setMaxCount(_m_HistorySizeMax);
           _m_cmboxNewText->setInsertPolicy(QComboBox::InsertAtTop);
           _m_cmboxNewText->setEditable(true);
           _m_cmboxNewText->lineEdit()->setMaxLength(BTextEditorDocument::LineLengthDef);
@@ -116,6 +116,7 @@ BFindDialog::BFindDialog(QWidget *parent) :
         _m_hltActions->addWidget(_m_btnFind);
       _m_vlt->addLayout(_m_hltActions);
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 //
@@ -207,13 +208,6 @@ bool BFindDialog::cyclic() const
 
 //
 
-void BFindDialog::changeEvent(QEvent *event)
-{
-    if (!event || event->type() != QEvent::LanguageChange)
-        return QDialog::changeEvent(event);
-    _m_retranslateUi();
-}
-
 void BFindDialog::showEvent(QShowEvent *event)
 {
     QLineEdit *le = _m_cmboxText->lineEdit();
@@ -224,25 +218,6 @@ void BFindDialog::showEvent(QShowEvent *event)
 }
 
 //
-
-void BFindDialog::_m_retranslateUi()
-{
-    setWindowTitle( tr("Find and replace", "windowTitle") );
-    _m_lblText->setText( tr("Find:", "lbl text") );
-    _m_lblNewText->setText( tr("Replace with:", "lbl text") );
-    _m_gboxOptions->setTitle( tr("Options", "gbox title") );
-    _m_cboxCaseSensitive->setText( tr("Case sensitive", "cbox text") );
-    _m_cboxWholeWords->setText( tr("Whole words only", "cbox text") );
-    _m_cboxBackwardOrder->setText( tr("Reverse search", "cbox text") );
-    _m_cboxCyclic->setText( tr("Cyclic search", "cbox text") );
-    _m_btnClose->setText( tr("Close", "btn text") );
-    _m_btnReplaceAll->setText( tr("Replace all", "btn text") );
-    _m_actSelection->setText( tr("in selection", "act text") );
-    _m_actDocument->setText( tr("in document", "act text") );
-    _m_actAllDocuments->setText( tr("in all documents", "act text") );
-    _m_btnReplace->setText( tr("Replace", "btn text") );
-    _m_btnFind->setText( tr("Find", "btn text") );
-}
 
 void BFindDialog::_m_check()
 {
@@ -275,6 +250,25 @@ QStringList BFindDialog::_m_newTextHistory() const
 
 //
 
+void BFindDialog::_m_retranslateUi()
+{
+    setWindowTitle( tr("Find and replace", "windowTitle") );
+    _m_lblText->setText( tr("Find:", "lbl text") );
+    _m_lblNewText->setText( tr("Replace with:", "lbl text") );
+    _m_gboxOptions->setTitle( tr("Options", "gbox title") );
+    _m_cboxCaseSensitive->setText( tr("Case sensitive", "cbox text") );
+    _m_cboxWholeWords->setText( tr("Whole words only", "cbox text") );
+    _m_cboxBackwardOrder->setText( tr("Reverse search", "cbox text") );
+    _m_cboxCyclic->setText( tr("Cyclic search", "cbox text") );
+    _m_btnClose->setText( tr("Close", "btn text") );
+    _m_btnReplaceAll->setText( tr("Replace all", "btn text") );
+    _m_actSelection->setText( tr("in selection", "act text") );
+    _m_actDocument->setText( tr("in document", "act text") );
+    _m_actAllDocuments->setText( tr("in all documents", "act text") );
+    _m_btnReplace->setText( tr("Replace", "btn text") );
+    _m_btnFind->setText( tr("Find", "btn text") );
+}
+
 void BFindDialog::_m_cmboxTextEditTextChanged(const QString &text)
 {
     _m_check();
@@ -288,8 +282,8 @@ void BFindDialog::_m_appendTextHistory()
     int index = _m_cmboxText->findText(text);
     if (index >= 0)
         _m_cmboxText->removeItem(index);
-    else if (_m_cmboxText->count() >= HistorySizeMax)
-        _m_cmboxText->removeItem(HistorySizeMax - 1);
+    else if (_m_cmboxText->count() >= _m_HistorySizeMax)
+        _m_cmboxText->removeItem(_m_HistorySizeMax - 1);
     _m_cmboxText->insertItem(0, text);
     _m_cmboxText->setCurrentIndex(0);
 }
@@ -302,8 +296,8 @@ void BFindDialog::_m_appendNewTextHistory()
     int index = _m_cmboxNewText->findText(text);
     if (index >= 0)
         _m_cmboxNewText->removeItem(index);
-    else if (_m_cmboxNewText->count() >= HistorySizeMax)
-        _m_cmboxNewText->removeItem(HistorySizeMax - 1);
+    else if (_m_cmboxNewText->count() >= _m_HistorySizeMax)
+        _m_cmboxNewText->removeItem(_m_HistorySizeMax - 1);
     _m_cmboxNewText->insertItem(0, text);
     _m_cmboxNewText->setCurrentIndex(0);
 }

@@ -145,7 +145,6 @@ private:
     void _m_initMenu();
     void _m_initAction(QAction *&action, const QString &iconName,
                        const QString &shortcut = QString(), bool enabled = false);
-    void _m_retranslateUi();
     bool _m_setFileName(const QString &fileName);
     void _m_processSavedText(QString &text);
     void _m_addSpaces(QString &text) const;
@@ -169,6 +168,7 @@ private:
     void _m_highlightBrackets();
     void _m_highlightBracket(int pos, bool highlight, bool error);
 private slots:
+    void _m_retranslateUi();
     void _m_cutAvailableChanged(bool available);
     void _m_undoAvailableChanged(bool available);
     void _m_redoAvailableChanged(bool available);

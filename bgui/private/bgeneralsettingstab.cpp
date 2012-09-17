@@ -28,20 +28,20 @@ Q_DECLARE_METATYPE(QObject *)
 
 //
 
-QString localeToString(const QLocale &locale)
+const QString BGeneralSettingsTab::Id = "beqt/general";
+const QString BGeneralSettingsTab::IdLocale = "locale";
+const QString BGeneralSettingsTab::IdMultipleInstances = "multiple_instances";
+const QString BGeneralSettingsTab::IdPlugins = "plugins";
+
+//
+
+QString BGeneralSettingsTab::_m_localeToString(const QLocale &locale)
 {
     QString language = QLocale::languageToString( locale.language() );
     QString country = (locale.country() != QLocale::AnyCountry) ? QLocale::countryToString( locale.country() ) : "";
     QString name = locale.name();
     return language + (!country.isEmpty() ? " (" + country + ")" : "") + " [" + name + "]";
 }
-
-//
-
-const QString BGeneralSettingsTab::Id = "beqt/general";
-const QString BGeneralSettingsTab::IdLocale = "locale";
-const QString BGeneralSettingsTab::IdMultipleInstances = "multiple_instances";
-const QString BGeneralSettingsTab::IdPlugins = "plugins";
 
 //
 
@@ -61,7 +61,7 @@ BGeneralSettingsTab::BGeneralSettingsTab(const QVariantMap &settings)
                   for (int i = 0; i < availableLocales.size(); ++i)
                   {
                       const QLocale &l = availableLocales.at(i);
-                      _m_cmboxLanguage->addItem(localeToString(l), l);
+                      _m_cmboxLanguage->addItem(_m_localeToString(l), l);
                   }
                   _m_cmboxLanguage->setCurrentIndex( _m_cmboxLanguage->findData( settings.value(IdLocale).toLocale() ) );
                 _m_fltGeneral->addRow("Language:", _m_cmboxLanguage);

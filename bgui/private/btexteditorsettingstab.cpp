@@ -15,10 +15,6 @@
 #include <QPushButton>
 #include <QFileDialog>
 
-const QString KeyboardLayoutMapDef = "---";
-
-//
-
 const QString BTextEditorSettingsTab::IdMacrosDir = "macros_dir";
 const QString BTextEditorSettingsTab::IdDefaultEncoding = "default_encoding";
 const QString BTextEditorSettingsTab::IdFontFamily = "font_family";
@@ -26,6 +22,10 @@ const QString BTextEditorSettingsTab::IdFontPointSize = "font_point_size";
 const QString BTextEditorSettingsTab::IdLineLength = "line_length";
 const QString BTextEditorSettingsTab::IdTabWidth = "tab_width";
 const QString BTextEditorSettingsTab::IdKeyboardLayoutMap = "keyboard_layout_map";
+
+//
+
+const QString BTextEditorSettingsTab::_m_KeyboardLayoutMapDef = "---";
 
 //
 
@@ -123,11 +123,11 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
       {
           _m_lblKeyboardLayoutMap = new QLabel(this);
           _m_cmboxKeyboardLayoutMap = new QComboBox(this);
-            _m_cmboxKeyboardLayoutMap->addItem(KeyboardLayoutMapDef);
+            _m_cmboxKeyboardLayoutMap->addItem(_m_KeyboardLayoutMapDef);
             _m_cmboxKeyboardLayoutMap->addItems(keyboardLayoutMaps);
             int ind = _m_cmboxKeyboardLayoutMap->findText( settings.value(IdKeyboardLayoutMap).toString() );
             _m_cmboxKeyboardLayoutMap->setCurrentIndex(
-                        ind >= 0 ? ind : _m_cmboxKeyboardLayoutMap->findText(KeyboardLayoutMapDef) );
+                        ind >= 0 ? ind : _m_cmboxKeyboardLayoutMap->findText(_m_KeyboardLayoutMapDef) );
           _m_flt->addRow(_m_lblKeyboardLayoutMap, _m_cmboxKeyboardLayoutMap);
       }
       else

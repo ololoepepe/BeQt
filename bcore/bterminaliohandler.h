@@ -5,6 +5,7 @@
 #include <QString>
 #include <QTextStream>
 #include <QStringList>
+#include <QMutex>
 
 #if defined(BCORE_LIBRARY)
 #  define BCORESHARED_EXPORT Q_DECL_EXPORT
@@ -24,6 +25,13 @@ public:
 protected:
     void run();
 private:
+    static BTerminalIOHandler *_m_inst;
+    static QMutex _m_instMutex;
+    static QMutex _m_stdinMutex;
+    static QMutex _m_stdoutMutex;
+    //
+    static QStringList _m_splitCommand(const QString &command);
+    //
     BTerminalIOHandler();
     BTerminalIOHandler(const BTerminalIOHandler &other);
     ~BTerminalIOHandler();

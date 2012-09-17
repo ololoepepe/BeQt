@@ -24,6 +24,8 @@ public:
     QMap<QString, QVariantMap> valueMapMap() const;
     QVariantMap valueMap() const;
 private:
+    static const QString _m_IdSingle;
+    //
     QMap<QString, BAbstractSettingsTab *> _m_tabMap;
     QLabel *_m_lbl;
     QVBoxLayout *_m_vlt;

@@ -23,7 +23,7 @@ class QWidget;
 #include <QScrollBar>
 #include <QMimeData>
 
-static void fillBackground( QPainter *painter, const QRectF &rect, QBrush brush, QRectF gradientRect = QRectF() )
+void BPlainTextEdit::_m_fillBackground(QPainter *painter, const QRectF &rect, QBrush brush, QRectF gradientRect)
 {
     painter->save();
     Qt::BrushStyle bs = brush.style();
@@ -94,7 +94,7 @@ void BPlainTextEdit::paintEvent(QPaintEvent *event)
             {
                 QRectF contentsRect = r;
                 contentsRect.setWidth( qMax(r.width(), maximumWidth) );
-                fillBackground(&painter, contentsRect, bg);
+                _m_fillBackground(&painter, contentsRect, bg);
             }
             QVector<QTextLayout::FormatRange> selections;
             int blpos = block.position();

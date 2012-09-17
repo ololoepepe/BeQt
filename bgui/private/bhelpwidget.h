@@ -6,8 +6,6 @@ class QVBoxLayout;
 class QHBoxLayout;
 class QPushButton;
 class QTextBrowser;
-class QEvent;
-class QCloseEvent;
 
 #include <QWidget>
 
@@ -16,9 +14,6 @@ class BHelpWidget : public QWidget
     Q_OBJECT
 public:
     BHelpWidget(const QString &settingsGroup, const QString &home, const QString &url, QWidget *parent = 0);
-protected:
-    void changeEvent(QEvent *event);
-    void closeEvent(QCloseEvent *event);
 private:
     const QString _m_CSettingsGroup;
     //
@@ -30,11 +25,8 @@ private:
         //stretch
         QPushButton *_m_btnClose;
       QTextBrowser *_m_tbsr;
-    //
-    void _m_retranslateUi();
-    void _m_loadSettings();
-    void _m_saveSettings();
 private slots:
+    void _m_retranslateUi();
     void _m_updateCaption();
 };
 

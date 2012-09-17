@@ -4,7 +4,6 @@
 class QHBoxLayout;
 class QLineEdit;
 class QCheckBox;
-class QEvent;
 
 #include <QWidget>
 #include <QString>
@@ -30,16 +29,13 @@ public:
     QByteArray encryptedPassword(const QByteArray &key) const;
     bool showPassword() const;
     bool savePassword() const;
-protected:
-    void changeEvent(QEvent *event);
 private:
     QHBoxLayout *_m_hlt;
       QLineEdit *_m_ledt;
       QCheckBox *_m_cboxShow;
       QCheckBox *_m_cboxSave;
-    //
-    void _m_retranslateUi();
 private slots:
+    void _m_retranslateUi();
     void _m_cboxShowToggled(bool b);
 };
 

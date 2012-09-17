@@ -1,6 +1,8 @@
+class QWidget;
+
 #include "baboutdialog.h"
 
-class QWidget;
+#include "../../bcore/bcore.h"
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -21,7 +23,6 @@ class QWidget;
 #include <QTextStream>
 #include <QIcon>
 #include <QUrl>
-#include <QEvent>
 
 const QString BAboutDialog::_m_HtmlSpace = "&nbsp;";
 const QString BAboutDialog::_m_HtmlSpaceDouble = BAboutDialog::_m_HtmlSpace + BAboutDialog::_m_HtmlSpace;
@@ -61,6 +62,7 @@ BAboutDialog::BAboutDialog(QWidget *parent) :
         _m_hltActions->addWidget(_m_btnClose);
       _m_vlt->addLayout(_m_hltActions);
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 //
@@ -213,33 +215,6 @@ void BAboutDialog::resetTabs()
 
 //
 
-void BAboutDialog::changeEvent(QEvent *event)
-{
-    if (!event || event->type() != QEvent::LanguageChange)
-        return QDialog::changeEvent(event);
-    _m_retranslateUi();
-}
-
-//
-
-void BAboutDialog::_m_retranslateUi()
-{
-    setWindowTitle( tr("About", "windowTitle") );
-    _m_btnClose->setText( tr("Close", "btn text") );
-    if (_m_tbsrAbout)
-        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrAbout), _m_aboutTitle() );
-    if (_m_tbsrChangeLog)
-        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrChangeLog), _m_changeLogTitle() );
-    if (_m_tbsrAuthors)
-        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrAuthors), _m_authorsTitle() );
-    if (_m_tbsrTranslators)
-        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrTranslators), _m_translatorsTitle() );
-    if (_m_tbsrThanksTo)
-        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrThanksTo), _m_thanksToTitle() );
-    if (_m_tbsrLicense)
-        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrLicense), _m_licenseTitle() );
-}
-
 QString BAboutDialog::_m_aboutTitle() const
 {
     return tr("About", "twgt tabText");
@@ -327,4 +302,24 @@ void BAboutDialog::_m_fillTbsr(QTextBrowser *&browser, int index, const QString 
             s += "<br>";
     }
     _m_fillTbsr(browser, index, title, s, true);
+}
+
+//
+
+void BAboutDialog::_m_retranslateUi()
+{
+    setWindowTitle( tr("About", "windowTitle") );
+    _m_btnClose->setText( tr("Close", "btn text") );
+    if (_m_tbsrAbout)
+        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrAbout), _m_aboutTitle() );
+    if (_m_tbsrChangeLog)
+        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrChangeLog), _m_changeLogTitle() );
+    if (_m_tbsrAuthors)
+        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrAuthors), _m_authorsTitle() );
+    if (_m_tbsrTranslators)
+        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrTranslators), _m_translatorsTitle() );
+    if (_m_tbsrThanksTo)
+        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrThanksTo), _m_thanksToTitle() );
+    if (_m_tbsrLicense)
+        _m_tabWgt->setTabText( _m_tabWgt->indexOf(_m_tbsrLicense), _m_licenseTitle() );
 }

@@ -2,7 +2,6 @@
 #define BFINDDIALOG_H
 
 class QWidget;
-class QEvent;
 class QVBoxLayout;
 class QHBoxLayout;
 class QLabel;
@@ -48,9 +47,10 @@ public:
     QTextDocument::FindFlags findFlags() const;
     bool cyclic() const;
 protected:
-    void changeEvent(QEvent *event);
     void showEvent(QShowEvent *event);
 private:
+    static const int _m_HistorySizeMax;
+    //
     bool _m_documentAvailable;
     bool _m_selectionAvailable;
     bool _m_replaceAvailable;
@@ -79,11 +79,11 @@ private:
         QPushButton *_m_btnReplace;
         QPushButton *_m_btnFind;
     //
-    void _m_retranslateUi();
     void _m_check();
     QStringList _m_textHistory() const;
     QStringList _m_newTextHistory() const;
 private slots:
+    void _m_retranslateUi();
     void _m_cmboxTextEditTextChanged(const QString &text);
     void _m_appendTextHistory();
     void _m_appendNewTextHistory();

@@ -9,7 +9,6 @@ class QLabel;
 class QTabWidget;
 class QTextBrowser;
 class QPushButton;
-class QEvent;
 
 #include <QDialog>
 #include <QList>
@@ -40,8 +39,6 @@ public:
     void setLicense( const QString &text, const QString &iconFileName = QString() );
     void setLicense( const QString &fileName, const char *codecName, const QString &iconFileName = QString() );
     void resetTabs();
-protected:
-    void changeEvent(QEvent *event);
 private:
     static const QString _m_HtmlSpace;
     static const QString _m_HtmlSpaceDouble;
@@ -63,7 +60,6 @@ private:
         //stretch
         QPushButton *_m_btnClose;
     //
-    void _m_retranslateUi();
     QString _m_aboutTitle() const;
     QString _m_changeLogTitle() const;
     QString _m_authorsTitle() const;
@@ -74,6 +70,8 @@ private:
     QString _m_readFile(const QString &fileName, const char *codecName) const;
     void _m_fillTbsr(QTextBrowser *&browser, int index, const QString &title, const QString &text, bool html);
     void _m_fillTbsr(QTextBrowser *&browser, int index, const QString &title, const PersonInfoList &infos);
+private slots:
+    void _m_retranslateUi();
 };
 
 #endif // BABOUTDIALOG_H

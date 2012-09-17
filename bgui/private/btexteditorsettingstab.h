@@ -34,6 +34,8 @@ public:
     QVariantMap valueMap() const;
     QString title() const;
 private:
+    static const QString _m_KeyboardLayoutMapDef;
+    //
     QFormLayout *_m_flt;
       QLabel *_m_lblFontFamily;
       QFontComboBox *_m_fntcmboxFontFamily;

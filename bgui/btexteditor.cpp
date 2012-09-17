@@ -67,26 +67,66 @@
 
 #include <QDebug>
 
-QList<BTextEditor *> instanceList;
+const int BTextEditor::_m_IconSizeMin = 16;
+const int BTextEditor::_m_IconSizeDef = 22;
+const int BTextEditor::_m_IconSizeMax = 48;
+const QString BTextEditor::_m_SyntaxTypeDef = "Text";
+const QString BTextEditor::_m_MacrosDirDef = QDir::homePath();
+//
+const QRect BTextEditor::_m_OpenSaveDlgGeometryDef = QRect(200, 200, 400, 400);
+const QString BTextEditor::_m_OpenSaveDlgDirDef = QDir::homePath();
+//
+const QRect BTextEditor::_m_SelectFilesDlgGeometryDef = QRect(200, 200, 600, 400);
+//
+const int BTextEditor::_m_MessageTimeout = 15 * BCore::Second;
+const int BTextEditor::_m_RecentFilesMax = 15;
+//
+const QString BTextEditor::_m_GroupTextEditor = "beqt_text_editor";
+  const QString BTextEditor::_m_KeyMacrosDir = "macros_dir";
+  const QString BTextEditor::_m_KeyDefaultEncoding = "default_encoding";
+  const QString BTextEditor::_m_KeyFontFamily = "font_family";
+  const QString BTextEditor::_m_KeyFontPointSize = "font_point_size";
+  const QString BTextEditor::_m_KeyLineLength = "line_length";
+  const QString BTextEditor::_m_KeyTabWidth = "tab_width";
+  const QString BTextEditor::_m_KeyKeyboardLayoutMap = "keyboard_layout_map";
+  const QString BTextEditor::_m_KeyBlockMode = "block_mode";
+  const QString BTextEditor::_m_KeyRecentFiles = "recent_files";
+  const QString BTextEditor::_m_GroupFindDialog = "find_dialog";
+    const QString BTextEditor::_m_KeyTextHistory = "text_history";
+    const QString BTextEditor::_m_KeyNewTextHistory = "new_text_history";
+    const QString BTextEditor::_m_GroupOptions = "options";
+      const QString BTextEditor::_m_KeyCaseSensitive = "case_sensitive";
+      const QString BTextEditor::_m_KeyWholeWords = "whole_words";
+      const QString BTextEditor::_m_KeyBackwardOrder = "backward_order";
+      const QString BTextEditor::_m_KeyCyclic = "cyclic";
+  const QString BTextEditor::_m_GroupOpenSaveDialog = "open_save_dialog";
+    const QString BTextEditor::_m_KeyGeometry = "geometry";
+    const QString BTextEditor::_m_KeyDir = "dir";
+  const QString BTextEditor::_m_GroupSelectFilesDialog = "select_files_dialog";
+    //_m_KeyDir
 
 //
 
-QList<BTextEditor *> instances(const QString &groupId)
+QList<BTextEditor *> BTextEditor::_m_instanceList;
+
+//
+
+QList<BTextEditor *> BTextEditor::_m_instances(const QString &groupId)
 {
     QList<BTextEditor *> list;
-    for (int i = 0; i < instanceList.size(); ++i)
-        if (instanceList.at(i)->groupId() == groupId)
-            list << instanceList.at(i);
+    for (int i = 0; i < _m_instanceList.size(); ++i)
+        if (_m_instanceList.at(i)->groupId() == groupId)
+            list << _m_instanceList.at(i);
     return list;
 }
 
-BTextEditorDocument *document(QWidget *widget)
+BTextEditorDocument *BTextEditor::_m_document(QWidget *widget)
 {
     BPlainTextEdit *pted = qobject_cast<BPlainTextEdit *>(widget);
     return pted ? pted->editorDocument() : 0;
 }
 
-bool checkReadOnly(const QString &fileName)
+bool BTextEditor::_m_checkReadOnly(const QString &fileName)
 {
     if ( fileName.isEmpty() )
         return false;
@@ -96,51 +136,18 @@ bool checkReadOnly(const QString &fileName)
     return ro;
 }
 
-//
-
-const int IconSizeMin = 16;
-const int IconSizeDef = 22;
-const int IconSizeMax = 48;
-const QString SyntaxTypeDef = "Text";
-const QString MacrosDirDef = QDir::homePath();
-//
-const QRect OpenSaveDlgGeometryDef = QRect(200, 200, 400, 400);
-const QString OpenSaveDlgDirDef = QDir::homePath();
-//
-const QRect SelectFilesDlgGeometryDef = QRect(200, 200, 600, 400);
-//
-const int MessageTimeout = 15 * BCore::Second;
-const int RecentFilesMax = 15;
-//
-const QString GroupTextEditor = "beqt_text_editor";
-  const QString KeyMacrosDir = "macros_dir";
-  const QString KeyDefaultEncoding = "default_encoding";
-  const QString KeyFontFamily = "font_family";
-  const QString KeyFontPointSize = "font_point_size";
-  const QString KeyLineLength = "line_length";
-  const QString KeyTabWidth = "tab_width";
-  const QString KeyKeyboardLayoutMap = "keyboard_layout_map";
-  const QString KeyBlockMode = "block_mode";
-  const QString KeyRecentFiles = "recent_files";
-  const QString GroupFindDialog = "find_dialog";
-    const QString KeyTextHistory = "text_history";
-    const QString KeyNewTextHistory = "new_text_history";
-    const QString GroupOptions = "options";
-      const QString KeyCaseSensitive = "case_sensitive";
-      const QString KeyWholeWords = "whole_words";
-      const QString KeyBackwardOrder = "backward_order";
-      const QString KeyCyclic = "cyclic";
-  const QString GroupOpenSaveDialog = "open_save_dialog";
-    const QString KeyGeometry = "geometry";
-    const QString KeyDir = "dir";
-  const QString GroupSelectFilesDialog = "select_files_dialog";
-    //KeyDir
+QAction *BTextEditor::_m_createSeparator()
+{
+    QAction *act = new QAction(0);
+    act->setSeparator(true);
+    return act;
+}
 
 //
 
 bool BTextEditor::isFileOpenedGlobal(const QString &fileName, const QString &groupId)
 {
-    QList<BTextEditor *> list = instances(groupId);
+    QList<BTextEditor *> list = _m_instances(groupId);
     for (int i = 0; i < list.size(); ++i)
         if ( list.at(i)->isFileOpened(fileName) )
             return true;
@@ -157,15 +164,16 @@ BTextEditor::BTextEditor(QWidget *parent, bool registerGlobally, const QString &
     QWidget(parent), _m_CRegistered(registerGlobally), _m_CGroupId(groupId)
 {
     if (registerGlobally)
-        instanceList << this;
+        _m_instanceList << this;
     _m_init();
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 BTextEditor::~BTextEditor()
 {
     if (_m_CRegistered)
-        instanceList.removeAll(this);
+        _m_instanceList.removeAll(this);
     if (_m_wgtIndicator)
         _m_wgtIndicator->deleteLater();
     for (int i = 0; i < _m_userFileTypes.size(); ++i)
@@ -328,7 +336,7 @@ void BTextEditor::applySettings(const QVariantMap &settings)
     //applying to other instances
     if (_m_CRegistered)
     {
-        QList<BTextEditor *> list = instances(_m_CGroupId);
+        QList<BTextEditor *> list = _m_instances(_m_CGroupId);
         list.removeAll(this);
         for (int i = 0; i < list.size(); ++i)
             list.at(i)->applySettings(settings);
@@ -426,33 +434,33 @@ void BTextEditor::loadSettings(const QString &settingsGroup)
         return;
     if ( !settingsGroup.isEmpty() )
         s->beginGroup(settingsGroup);
-    s->beginGroup(GroupTextEditor);
-      setMacrosDir( s->value(KeyMacrosDir, _m_defaultMacrosDir).toString() );
-      setDefaultEncoding( s->value(KeyDefaultEncoding, BTextEditorDocument::EncodingDef).toString() );
-      setFontFamily( s->value(KeyFontFamily, BTextEditorDocument::FontFamilyDef).toString() );
-      setFontPointSize( s->value(KeyFontPointSize, BTextEditorDocument::FontPointSizeDef).toInt() );
-      setLineLength( s->value(KeyLineLength, BTextEditorDocument::LineLengthDef).toInt() );
-      setTabWidth( s->value(KeyTabWidth, BTextEditorDocument::TabWidthDef).toInt() );
-      setKeyboardLayoutMap( s->value(KeyKeyboardLayoutMap).toString() );
-      setBlockMode( s->value(KeyBlockMode, BTextEditorDocument::BlockModeDef).toBool() );
-      _m_loadRecentFiles( s->value(KeyRecentFiles).toStringList() );
-      s->beginGroup(GroupFindDialog);
+    s->beginGroup(_m_GroupTextEditor);
+      setMacrosDir( s->value(_m_KeyMacrosDir, _m_defaultMacrosDir).toString() );
+      setDefaultEncoding( s->value(_m_KeyDefaultEncoding, BTextEditorDocument::EncodingDef).toString() );
+      setFontFamily( s->value(_m_KeyFontFamily, BTextEditorDocument::FontFamilyDef).toString() );
+      setFontPointSize( s->value(_m_KeyFontPointSize, BTextEditorDocument::FontPointSizeDef).toInt() );
+      setLineLength( s->value(_m_KeyLineLength, BTextEditorDocument::LineLengthDef).toInt() );
+      setTabWidth( s->value(_m_KeyTabWidth, BTextEditorDocument::TabWidthDef).toInt() );
+      setKeyboardLayoutMap( s->value(_m_KeyKeyboardLayoutMap).toString() );
+      setBlockMode( s->value(_m_KeyBlockMode, BTextEditorDocument::BlockModeDef).toBool() );
+      _m_loadRecentFiles( s->value(_m_KeyRecentFiles).toStringList() );
+      s->beginGroup(_m_GroupFindDialog);
         BFindDialog::Parameters param = _m_findDlg->parameters();
-        s->setValue(KeyTextHistory, param.textHistory);
-        s->setValue(KeyNewTextHistory, param.newTextHistory);
-        s->beginGroup(GroupOptions);
-          s->setValue(KeyCaseSensitive, param.caseSensitive);
-          s->setValue(KeyWholeWords, param.wholeWords);
-          s->setValue(KeyBackwardOrder, param.backwardOrder);
-          s->setValue(KeyCyclic, param.cyclic);
+        s->setValue(_m_KeyTextHistory, param.textHistory);
+        s->setValue(_m_KeyNewTextHistory, param.newTextHistory);
+        s->beginGroup(_m_GroupOptions);
+          s->setValue(_m_KeyCaseSensitive, param.caseSensitive);
+          s->setValue(_m_KeyWholeWords, param.wholeWords);
+          s->setValue(_m_KeyBackwardOrder, param.backwardOrder);
+          s->setValue(_m_KeyCyclic, param.cyclic);
         s->endGroup();
       s->endGroup();
-      s->beginGroup(GroupOpenSaveDialog);
-        _m_openSaveDlgGeometry = s->value(KeyGeometry, OpenSaveDlgGeometryDef).toRect();
-        _m_openSaveDlgDir = s->value(KeyDir, OpenSaveDlgDirDef).toString();
+      s->beginGroup(_m_GroupOpenSaveDialog);
+        _m_openSaveDlgGeometry = s->value(_m_KeyGeometry, _m_OpenSaveDlgGeometryDef).toRect();
+        _m_openSaveDlgDir = s->value(_m_KeyDir, _m_OpenSaveDlgDirDef).toString();
       s->endGroup();
-      s->beginGroup(GroupSelectFilesDialog);
-        _m_selectFilesDlgGeometry = s->value(KeyGeometry, SelectFilesDlgGeometryDef).toRect();
+      s->beginGroup(_m_GroupSelectFilesDialog);
+        _m_selectFilesDlgGeometry = s->value(_m_KeyGeometry, _m_SelectFilesDlgGeometryDef).toRect();
       s->endGroup();
     s->endGroup();
     if ( !settingsGroup.isEmpty() )
@@ -466,34 +474,34 @@ void BTextEditor::saveSettings(const QString &settingsGroup)
         return;
     if ( !settingsGroup.isEmpty() )
         s->beginGroup(settingsGroup);
-    s->beginGroup(GroupTextEditor);
-      s->setValue(KeyMacrosDir, _m_macrosDir);
-      s->setValue( KeyDefaultEncoding, defaultEncoding() );
-      s->setValue( KeyFontFamily, fontFamily() );
-      s->setValue( KeyFontPointSize, fontPointSize() );
-      s->setValue( KeyLineLength, lineLength() );
-      s->setValue( KeyTabWidth, tabWidth() );
-      s->setValue( KeyKeyboardLayoutMap, keyboardLayoutMap() );
-      s->setValue( KeyBlockMode, blockMode() );
-      s->setValue( KeyRecentFiles, _m_saveRecentFiles() );
-      s->beginGroup(GroupFindDialog);
+    s->beginGroup(_m_GroupTextEditor);
+      s->setValue(_m_KeyMacrosDir, _m_macrosDir);
+      s->setValue( _m_KeyDefaultEncoding, defaultEncoding() );
+      s->setValue( _m_KeyFontFamily, fontFamily() );
+      s->setValue( _m_KeyFontPointSize, fontPointSize() );
+      s->setValue( _m_KeyLineLength, lineLength() );
+      s->setValue( _m_KeyTabWidth, tabWidth() );
+      s->setValue( _m_KeyKeyboardLayoutMap, keyboardLayoutMap() );
+      s->setValue( _m_KeyBlockMode, blockMode() );
+      s->setValue( _m_KeyRecentFiles, _m_saveRecentFiles() );
+      s->beginGroup(_m_GroupFindDialog);
         BFindDialog::Parameters param;
-        param.textHistory = s->value(KeyTextHistory).toStringList();
-        param.newTextHistory = s->value(KeyNewTextHistory).toStringList();
-        s->beginGroup(GroupOptions);
-          param.caseSensitive = s->value(KeyCaseSensitive).toBool();
-          param.wholeWords = s->value(KeyWholeWords).toBool();
-          param.backwardOrder = s->value(KeyBackwardOrder).toBool();
-          param.cyclic = s->value(KeyCyclic).toBool();
+        param.textHistory = s->value(_m_KeyTextHistory).toStringList();
+        param.newTextHistory = s->value(_m_KeyNewTextHistory).toStringList();
+        s->beginGroup(_m_GroupOptions);
+          param.caseSensitive = s->value(_m_KeyCaseSensitive).toBool();
+          param.wholeWords = s->value(_m_KeyWholeWords).toBool();
+          param.backwardOrder = s->value(_m_KeyBackwardOrder).toBool();
+          param.cyclic = s->value(_m_KeyCyclic).toBool();
         s->endGroup();
         _m_findDlg->setParameters(param);
       s->endGroup();
-      s->beginGroup(GroupOpenSaveDialog);
-        s->setValue(KeyGeometry, _m_openSaveDlgGeometry);
-        s->setValue(KeyDir, _m_openSaveDlgDir);
+      s->beginGroup(_m_GroupOpenSaveDialog);
+        s->setValue(_m_KeyGeometry, _m_openSaveDlgGeometry);
+        s->setValue(_m_KeyDir, _m_openSaveDlgDir);
       s->endGroup();
-      s->beginGroup(GroupSelectFilesDialog);
-        s->setValue(KeyGeometry, _m_selectFilesDlgGeometry);
+      s->beginGroup(_m_GroupSelectFilesDialog);
+        s->setValue(_m_KeyGeometry, _m_selectFilesDlgGeometry);
       s->endGroup();
     s->endGroup();
     if ( !settingsGroup.isEmpty() )
@@ -572,7 +580,7 @@ const QStringList &BTextEditor::keyboardLayoutMapsDirs() const
 
 void BTextEditor::setToolBarIconSize(int size)
 {
-    if (size < IconSizeMin || size > IconSizeMax)
+    if (size < _m_IconSizeMin || size > _m_IconSizeMax)
         return;
     QList<QToolBar *> list = _m_toolBars.values();
     for (int i = 0; i < list.size(); ++i)
@@ -624,55 +632,69 @@ QAction *BTextEditor::editorAction(Action id) const
 
 QList<QAction *> BTextEditor::editorActions(Menu id, bool includeSeparators) const
 {
-    if (includeSeparators)
+    QList<QAction *> list;
+    switch (id)
     {
-        return editorToolBar(id)->actions();
+    case FileMenu:
+        list << _m_actions.value(NewDocumentAction);
+        list << _m_actions.value(OpenFileAction);
+        list << _m_actions.value(ReopenFileAction);
+        list << _m_actions.value(RecentFilesAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(SaveDocumentAction);
+        list << _m_actions.value(SaveDocumentAsAction);
+        list << _m_actions.value(SaveAllDocumentsAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(CloseDocumentAction);
+        list << _m_actions.value(CloseAllDocumentsAction);
+        break;
+    case EditMenu:
+        list << _m_actions.value(UndoAction);
+        list << _m_actions.value(RedoAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(CutAction);
+        list << _m_actions.value(CopyAction);
+        list << _m_actions.value(PasteAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(SwitchSelectedTextLayoutAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(FindAction);
+        list << _m_actions.value(FindNextAction);
+        break;
+    case DocumentMenu:
+        list << _m_actions.value(SwitchDocumentMain);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(MakeBookmarkAction);
+        list << _m_actions.value(GotoNextBookmarkAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(SwitchBlockModeAction);
+        break;
+    case MacrosMenu:
+        list << _m_actions.value(RecordMacroAction);
+        list << _m_actions.value(ClearMacroAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(PlayMacroAction);
+        list << _m_actions.value(ShowHideMacrosConsole);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(LoadMacroAction);
+        list << _m_actions.value(SaveMacroAction);
+        if (includeSeparators)
+            list << _m_createSeparator();
+        list << _m_actions.value(TextMacrosAction);
+        break;
+    default:
+        break;
     }
-    else
-    {
-        QList<QAction *> list;
-        switch (id)
-        {
-        case FileMenu:
-            list << _m_actions.value(NewDocumentAction);
-            list << _m_actions.value(OpenFileAction);
-            list << _m_actions.value(ReopenFileAction);
-            list << _m_actions.value(RecentFilesAction);
-            list << _m_actions.value(SaveDocumentAction);
-            list << _m_actions.value(SaveDocumentAsAction);
-            list << _m_actions.value(SaveAllDocumentsAction);
-            list << _m_actions.value(CloseDocumentAction);
-            list << _m_actions.value(CloseAllDocumentsAction);
-            break;
-        case EditMenu:
-            list << _m_actions.value(UndoAction);
-            list << _m_actions.value(RedoAction);
-            list << _m_actions.value(CutAction);
-            list << _m_actions.value(CopyAction);
-            list << _m_actions.value(PasteAction);
-            list << _m_actions.value(SwitchSelectedTextLayoutAction);
-            list << _m_actions.value(FindAction);
-            list << _m_actions.value(FindNextAction);
-            break;
-        case DocumentMenu:
-            list << _m_actions.value(SwitchDocumentMain);
-            list << _m_actions.value(MakeBookmarkAction);
-            list << _m_actions.value(GotoNextBookmarkAction);
-            list << _m_actions.value(SwitchBlockModeAction);
-            break;
-        case MacrosMenu:
-            list << _m_actions.value(RecordMacroAction);
-            list << _m_actions.value(PlayMacroAction);
-            list << _m_actions.value(ShowHideMacrosConsole);
-            list << _m_actions.value(LoadMacroAction);
-            list << _m_actions.value(SaveMacroAction);
-            list << _m_actions.value(TextMacrosAction);
-            break;
-        default:
-            break;
-        }
-        return list;
-    }
+    return list;
 }
 
 QList<QAction *> BTextEditor::editorActions() const
@@ -897,27 +919,6 @@ void BTextEditor::deselect()
     }
 }
 
-//
-
-void BTextEditor::changeEvent(QEvent *event)
-{
-    if (!event || event->type() != QEvent::LanguageChange)
-        return QWidget::changeEvent(event);
-    if ( !parentWidget() )
-    {
-        QList<QWidget *> wl = findChildren<QWidget *>();
-        for (int i = 0; i < wl.size(); ++i)
-            QApplication::sendEvent(wl.at(i), event);
-    }
-    _m_retranslateUi();
-    retranslateUi();
-}
-
-void BTextEditor::retranslateUi()
-{
-    //
-}
-
 //init:main
 
 void BTextEditor::_m_init()
@@ -934,7 +935,7 @@ void BTextEditor::_m_initSettings()
 {
     //settings
     _m_defaultFileName = tr("New document", "document fileName");
-    _m_defaultMacrosDir = MacrosDirDef;
+    _m_defaultMacrosDir = _m_MacrosDirDef;
     _m_defaultEncoding = BTextEditorDocument::EncodingDef;
     _m_fontFamily = BTextEditorDocument::FontFamilyDef;
     _m_fontPointSize = BTextEditorDocument::FontPointSizeDef;
@@ -942,9 +943,9 @@ void BTextEditor::_m_initSettings()
     _m_tabWidth = BTextEditorDocument::TabWidthDef;
     _m_blockMode = BTextEditorDocument::BlockModeDef;
     //additional
-    _m_openSaveDlgGeometry = OpenSaveDlgGeometryDef;
-    _m_openSaveDlgDir = OpenSaveDlgDirDef;
-    _m_selectFilesDlgGeometry = SelectFilesDlgGeometryDef;
+    _m_openSaveDlgGeometry = _m_OpenSaveDlgGeometryDef;
+    _m_openSaveDlgDir = _m_OpenSaveDlgDirDef;
+    _m_selectFilesDlgGeometry = _m_SelectFilesDlgGeometryDef;
 }
 
 void BTextEditor::_m_initOtherMembers()
@@ -1037,14 +1038,14 @@ void BTextEditor::_m_initToolBars()
       _m_createAction(NewDocumentAction, tbar, "filenew", "Ctrl+N", true);
       _m_createAction(OpenFileAction, tbar, "fileopen", "Ctrl+O", true);
       _m_initReopenMenu();
-      _m_createMenuAction(RecentFilesAction, tbar, "history", false);
+      _m_createMenuAction(RecentFilesAction, 0, "history", false);
       tbar->addSeparator();
       _m_createAction(SaveDocumentAction, tbar, "filesave", "Ctrl+S");
       _m_createAction(SaveDocumentAsAction, tbar, "filesaveas");
-      _m_createAction(SaveAllDocumentsAction, tbar, "save_all", "Ctrl+Shift+S");
+      _m_createAction(SaveAllDocumentsAction, 0, "save_all", "Ctrl+Shift+S");
       tbar->addSeparator();
       _m_createAction(CloseDocumentAction, tbar, "fileclose", "Ctrl+W");
-      _m_createAction(CloseAllDocumentsAction, tbar, "close_all", "Ctrl+Shift+W");
+      _m_createAction(CloseAllDocumentsAction, 0, "close_all", "Ctrl+Shift+W");
     tbar = _m_createToolBar(EditMenu, "EditToolBar");
       _m_createAction(UndoAction, tbar, "edit_undo", "Ctrl+Z");
       _m_createAction(RedoAction, tbar, "edit_redo", "Ctrl+Shift+Z");
@@ -1053,8 +1054,7 @@ void BTextEditor::_m_initToolBars()
       _m_createAction(CopyAction, tbar, "editcopy", "Ctrl+C");
       _m_createAction(PasteAction, tbar, "editpaste", "Ctrl+V");
       tbar->addSeparator();
-      _m_createAction(SwitchSelectedTextLayoutAction, tbar, "charset", "Ctrl+L");
-      tbar->addSeparator();
+      _m_createAction(SwitchSelectedTextLayoutAction, 0, "charset", "Ctrl+L");
       _m_createAction(FindAction, tbar, "edit_find", "Ctrl+F");
       _m_createAction(FindNextAction, tbar, "edit_find_next", "Ctrl+G");
     tbar = _m_createToolBar(DocumentMenu, "DocumentToolBar");
@@ -1068,16 +1068,15 @@ void BTextEditor::_m_initToolBars()
     tbar = _m_createToolBar(MacrosMenu, "MacrosToolBar");
       _m_createAction(RecordMacroAction, tbar, "", "", true);
       _m_resetRecordMacroAction();
-      QAction *act = _m_createAction(ClearMacroAction, tbar, "editclear");
+      QAction *act = _m_createAction(ClearMacroAction, 0, "editclear");
       connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
       connect( act, SIGNAL( triggered() ), _m_recorder, SLOT( clear() ) );
       tbar->addSeparator();
       act = _m_createAction(PlayMacroAction, tbar, "player_play");
       connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
       _m_createAction(ShowHideMacrosConsole, tbar, "console_visible", "", true);
-      tbar->addSeparator();
-      _m_createAction(LoadMacroAction, tbar, "fileopen", "", true);
-      _m_createAction(SaveMacroAction, tbar, "filesaveas", "", true);
+      _m_createAction(LoadMacroAction, 0, "fileopen", "", true);
+      _m_createAction(SaveMacroAction, 0, "filesaveas", "", true);
       tbar->addSeparator();
       _m_createMenuAction(TextMacrosAction, tbar, "editpaste");
 }
@@ -1098,7 +1097,7 @@ void BTextEditor::_m_initMenus()
 
 void BTextEditor::_m_initReopenMenu()
 {
-    QMenu *mnu = _m_createMenuAction(ReopenFileAction, editorToolBar(FileMenu), "reload")->menu();
+    QMenu *mnu = _m_createMenuAction(ReopenFileAction, 0, "reload")->menu();
       _m_mnuReopenUnicode = new QMenu(this);
         _m_mnuReopenUnicode->addActions( _m_createReopenActions(QStringList() << "UTF-16" << "UTF-8") );
       mnu->addMenu(_m_mnuReopenUnicode);
@@ -1152,99 +1151,6 @@ void BTextEditor::_m_initFindDialog()
 }
 
 //retranslate
-
-void BTextEditor::_m_retranslateUi()
-{
-    //widgets
-    _m_lblRowLabel->setText( tr("Row:", "lbl text") );
-    _m_lblColumnLabel->setText( tr("Column:", "lbl text") );
-    _m_lblEncodingLabel->setText( tr("Encoding:", "lbl text") );
-    //editor actions
-    //tr("", "act WhatsThis")
-    _m_retranslateAction( NewDocumentAction, tr("Create", "act text"), tr("Create new document", "act toolTip"),
-                          tr("Use this action to create a new empty document with the default name",
-                          "act whatsThis") );
-    _m_retranslateAction( OpenFileAction, tr("Open...", "act text"), tr("Open file", "act toolTip"),
-                          tr("Use this action to open an existing file", "act WhatsThis") );
-    _m_retranslateAction( ReopenFileAction, tr("Reopen", "act text"),
-                          tr("Reopen current document using encoding", "act toolTip"),
-                          tr("Use this action to reopen current document using another encoding", "act WhatsThis") );
-    _m_retranslateAction( RecentFilesAction, tr("Recent files", "act text"),
-                          tr("Open recently opened files", "act toolTip"),
-                          tr("Use this action to open one of the recently opened files again", "act WhatsThis") );
-    _m_retranslateAction( SaveDocumentAction, tr("Save", "act text"), tr("Save current document", "act toolTip"),
-                          tr("Use this action to save current document. If the corresponding file does not exist, "
-                             "you will be asked to specify it\'s name", "act WhatsThis") );
-    _m_retranslateAction( SaveDocumentAsAction, tr("Save as...", "act text"),
-                          tr("Save current document as...", "act toolTip"),
-                          tr("Use this action to save current document specifying it\'s name and encoding",
-                             "act WhatsThis") );
-    _m_retranslateAction( SaveAllDocumentsAction, tr("Save all", "act text"),
-                          tr("Save all opened documents", "act toolTip"),
-                          tr("Use this action to save all opened documents "
-                             "(equivalent to using the Save action at every opened document)", "act WhatsThis") );
-    _m_retranslateAction( CloseDocumentAction, tr("Close", "act text"), tr("Close current document", "act toolTip"),
-                          tr("Use this action to close current document. If the document is modified, "
-                             "you will be asked to save the changes", "act WhatsThis") );
-    _m_retranslateAction( CloseAllDocumentsAction, tr("Close all", "act text"),
-                          tr("Close all opened documents", "act toolTip"),
-                          tr("Use this action to close all opened documents "
-                             "(equivalent to using the Close action at every opened document)", "act WhatsThis") );
-    _m_retranslateAction( UndoAction, tr("Undo", "act text"),
-                          tr("Undo last action", "act toolTip") ); //TODO: whatsThis
-    _m_retranslateAction( RedoAction, tr("Redo", "act text"),
-                          tr("Redo undone action", "act toolTip") ); //TODO: whatsThis
-    _m_retranslateAction( CutAction, tr("Cut", "act text"), tr("Cut selected text", "act toolTip"),
-                          tr("Use this action to copy the text selected in current document to the clipboard, "
-                             "and remove that text form the document", "act WhatsThis") );
-    _m_retranslateAction( CopyAction, tr("Copy", "act text"), tr("Copy selected text", "act toolTip"),
-                          tr("Use this action to copy the text selected in current document to the clipboard",
-                             "act WhatsThis") );
-    _m_retranslateAction( PasteAction, tr("Paste", "act text"), tr("Paste from clipboard", "act toolTip"),
-                          tr("Use this action to insert the text from the clipboard into current document at "
-                             "cursor position", "act WhatsThis") );
-    _m_resetSwitchDocumentMainAction(); //TODO: whatsThis
-    _m_retranslateAction( MakeBookmarkAction, tr("Make bookmark", "act text"),
-                          tr("Make bookmark at current cursor position", "act toolTip"),
-                          tr("Use this action to make a \"bookmarc\" in current document at the cursor position. "
-                             "You will be able to quickly go to that bookmark later", "act WhatsThis") );
-    _m_retranslateAction( GotoNextBookmarkAction, tr("Next bookmark", "act text"),
-                          tr("Go to next bookmark", "act toolTip"),
-                          tr("Use this action to go to one of the bookmarks made in this document "
-                             "(the operation is cyclic: after you have gone to every bookmark, you will go to "
-                             "the first one again)", "act WhatsThis") );
-    _m_retranslateSwitchBlockModeAction(); //TODO: whatsThis
-    _m_retranslateAction( SwitchSelectedTextLayoutAction, tr("Switch layout", "act text"),
-                          tr("Switch selected text layout", "act toolTip"),
-                          tr("This action is useful if you have entered some text in a wrong locale. "
-                             "Select that text and then use this action", "act WhatsThis") );
-    _m_retranslateAction( FindAction, tr("Find...", "act text"), tr("Find text...", "act toolTip"),
-                          tr("Use this action to open the Find dialog. The Find dialog is used to search for "
-                             "specified text or to replace one piece of text with another", "act WhatsThis") );
-    _m_retranslateAction( FindNextAction, tr("Find next", "act text"), tr("Find next", "act toolTip"),
-                          tr("Use this action to find next occurance of the text specified in the Find dialog",
-                             "act WhatsThis") );
-    _m_resetRecordMacroAction(); //TODO: whatsThis
-    _m_retranslateAction( ClearMacroAction, tr("Clear macro", "act text"),
-                          tr("Clear last recorded or loaded macro", "act toolTip") );
-    _m_retranslateAction( PlayMacroAction, tr("Play", "act text"), tr("Play macro", "act toolTip") ); //TODO
-    _m_resetShowHideMacrosAction(); //TODO: whatsThis
-    _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
-    _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
-    _m_retranslateAction( TextMacrosAction, tr("Insert text macro", "act text"),
-                          tr("Insert text macro into current document", "act toolTip") );
-    //menus
-    _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
-    _m_retranslateMenu( EditMenu, tr("Edit", "mnu title") );
-    _m_retranslateMenu( DocumentMenu, tr("Document", "mnu title") );
-    _m_retranslateMenu( MacrosMenu, tr("Macros", "mnu title") );
-    _m_retranslateReopenMenu();
-    //toolBars
-    _m_toolBars.value(FileMenu)->setWindowTitle( tr("File", "tbar windowTitle") );
-    _m_toolBars.value(EditMenu)->setWindowTitle( tr("Edit", "tbar windowTitle") );
-    _m_toolBars.value(DocumentMenu)->setWindowTitle( tr("Document", "tbar windowTitle") );
-    _m_toolBars.value(MacrosMenu)->setWindowTitle( tr("Macros", "tbar windowTitle") );
-}
 
 void BTextEditor::_m_retranslateReopenMenu()
 {
@@ -1409,7 +1315,7 @@ bool BTextEditor::_m_openFile(const QString &fileName)
         }
     }
     BTextEditorDocument *ted = _m_addDocument(fn);
-    ted->setReadOnly( ro || checkReadOnly(fn) );
+    ted->setReadOnly( ro || _m_checkReadOnly(fn) );
     //TODO: maybe checking paste action is needed
     _m_findDlg->setReplaceAvailable( !ted->isReadOnly() );
     ted->reopen(cn);
@@ -1477,7 +1383,7 @@ bool BTextEditor::_m_saveDocumentAs(BTextEditorDocument *document)
     if (document == _m_currentDocument && b)
         editorAction(ReopenFileAction)->setEnabled(true);
     if (b && ofn != fn)
-        document->setReadOnly( checkReadOnly(fn) );
+        document->setReadOnly( _m_checkReadOnly(fn) );
     _m_updateEncoding( document->codecName() );
     _m_addRecentFile(fn, ofn);
     if ( QFileInfo(fn).suffix() != QFileInfo(ofn).suffix() )
@@ -1759,7 +1665,7 @@ BTextEditorDocument *BTextEditor::_m_addDocument(const QString &fileName)
 
 BTextEditorDocument *BTextEditor::_m_document(int index) const
 {
-    return document( _m_twgt->widget(index) );
+    return _m_document( _m_twgt->widget(index) );
 }
 
 BTextEditorDocument *BTextEditor::_m_mainDocument() const
@@ -1820,7 +1726,7 @@ void BTextEditor::_m_addRecentFile(const QString &fileName, const QString &oldFi
             break;
         }
     }
-    if (al.size() == RecentFilesMax)
+    if (al.size() == _m_RecentFilesMax)
     {
         QAction *oact = al.last();
         mnu->removeAction(oact);
@@ -1959,7 +1865,7 @@ QToolBar *BTextEditor::_m_createToolBar(Menu id, const QString &objectName)
         return 0;
     QToolBar *tbar = new QToolBar;
     tbar->setFloatable(false);
-    tbar->setIconSize( QSize(IconSizeDef, IconSizeDef) );
+    tbar->setIconSize( QSize(_m_IconSizeDef, _m_IconSizeDef) );
     tbar->setObjectName(objectName);
     _m_toolBars.insert(id, tbar);
     return tbar;
@@ -1978,7 +1884,7 @@ QMenu *BTextEditor::_m_createMenu(Menu id, const QString &objectName)
 QAction *BTextEditor::_m_createAction(Action id, QToolBar *tbar, const QString &iconName,
                                       const QString &shortcut, bool enabled)
 {
-    if ( !tbar || _m_actions.contains(id) )
+    if ( _m_actions.contains(id) )
         return 0;
     QAction *act = new QAction(this);
     act->setEnabled(enabled);
@@ -1988,20 +1894,24 @@ QAction *BTextEditor::_m_createAction(Action id, QToolBar *tbar, const QString &
     _m_mapperActions->setMapping(act, id);
     connect( act, SIGNAL( triggered() ), _m_mapperActions, SLOT( map() ) );
     _m_actions.insert(id, act);
-    tbar->addAction(act);
+    if (tbar)
+        tbar->addAction(act);
     return act;
 }
 
 QAction *BTextEditor::_m_createMenuAction(Action id, QToolBar *tbar, const QString &iconName, bool enabled)
 {
-    if ( !tbar || _m_actions.contains(id) )
+    if ( _m_actions.contains(id) )
         return 0;
     QMenu *mnu = new QMenu(this);
     QAction *act = mnu->menuAction();
     act->setEnabled(enabled);
     act->setIcon( QIcon( BCore::beqtIcon(iconName) ) );
-    tbar->addAction(act);
-    qobject_cast<QToolButton *>( tbar->widgetForAction(act) )->setPopupMode(QToolButton::InstantPopup);
+    if (tbar)
+    {
+        tbar->addAction(act);
+        qobject_cast<QToolButton *>( tbar->widgetForAction(act) )->setPopupMode(QToolButton::InstantPopup);
+    }
     _m_actions.insert(id, act);
     return act;
 }
@@ -2116,10 +2026,103 @@ void BTextEditor::_m_setCmboxSyntax(const QString &syntaxType)
 
 void BTextEditor::_m_textReplaced(int count)
 {
-    emit showMessage(tr("Replaced:", "stbar message") + " " + QString::number(count), MessageTimeout);
+    emit showMessage(tr("Replaced:", "stbar message") + " " + QString::number(count), _m_MessageTimeout);
 }
 
 //clipboard
+
+void BTextEditor::_m_retranslateUi()
+{
+    //widgets
+    _m_lblRowLabel->setText( tr("Row:", "lbl text") );
+    _m_lblColumnLabel->setText( tr("Column:", "lbl text") );
+    _m_lblEncodingLabel->setText( tr("Encoding:", "lbl text") );
+    //editor actions
+    //tr("", "act WhatsThis")
+    _m_retranslateAction( NewDocumentAction, tr("Create", "act text"), tr("Create new document", "act toolTip"),
+                          tr("Use this action to create a new empty document with the default name",
+                          "act whatsThis") );
+    _m_retranslateAction( OpenFileAction, tr("Open...", "act text"), tr("Open file", "act toolTip"),
+                          tr("Use this action to open an existing file", "act WhatsThis") );
+    _m_retranslateAction( ReopenFileAction, tr("Reopen", "act text"),
+                          tr("Reopen current document using encoding", "act toolTip"),
+                          tr("Use this action to reopen current document using another encoding", "act WhatsThis") );
+    _m_retranslateAction( RecentFilesAction, tr("Recent files", "act text"),
+                          tr("Open recently opened files", "act toolTip"),
+                          tr("Use this action to open one of the recently opened files again", "act WhatsThis") );
+    _m_retranslateAction( SaveDocumentAction, tr("Save", "act text"), tr("Save current document", "act toolTip"),
+                          tr("Use this action to save current document. If the corresponding file does not exist, "
+                             "you will be asked to specify it\'s name", "act WhatsThis") );
+    _m_retranslateAction( SaveDocumentAsAction, tr("Save as...", "act text"),
+                          tr("Save current document as...", "act toolTip"),
+                          tr("Use this action to save current document specifying it\'s name and encoding",
+                             "act WhatsThis") );
+    _m_retranslateAction( SaveAllDocumentsAction, tr("Save all", "act text"),
+                          tr("Save all opened documents", "act toolTip"),
+                          tr("Use this action to save all opened documents "
+                             "(equivalent to using the Save action at every opened document)", "act WhatsThis") );
+    _m_retranslateAction( CloseDocumentAction, tr("Close", "act text"), tr("Close current document", "act toolTip"),
+                          tr("Use this action to close current document. If the document is modified, "
+                             "you will be asked to save the changes", "act WhatsThis") );
+    _m_retranslateAction( CloseAllDocumentsAction, tr("Close all", "act text"),
+                          tr("Close all opened documents", "act toolTip"),
+                          tr("Use this action to close all opened documents "
+                             "(equivalent to using the Close action at every opened document)", "act WhatsThis") );
+    _m_retranslateAction( UndoAction, tr("Undo", "act text"),
+                          tr("Undo last action", "act toolTip") ); //TODO: whatsThis
+    _m_retranslateAction( RedoAction, tr("Redo", "act text"),
+                          tr("Redo undone action", "act toolTip") ); //TODO: whatsThis
+    _m_retranslateAction( CutAction, tr("Cut", "act text"), tr("Cut selected text", "act toolTip"),
+                          tr("Use this action to copy the text selected in current document to the clipboard, "
+                             "and remove that text form the document", "act WhatsThis") );
+    _m_retranslateAction( CopyAction, tr("Copy", "act text"), tr("Copy selected text", "act toolTip"),
+                          tr("Use this action to copy the text selected in current document to the clipboard",
+                             "act WhatsThis") );
+    _m_retranslateAction( PasteAction, tr("Paste", "act text"), tr("Paste from clipboard", "act toolTip"),
+                          tr("Use this action to insert the text from the clipboard into current document at "
+                             "cursor position", "act WhatsThis") );
+    _m_resetSwitchDocumentMainAction(); //TODO: whatsThis
+    _m_retranslateAction( MakeBookmarkAction, tr("Make bookmark", "act text"),
+                          tr("Make bookmark at current cursor position", "act toolTip"),
+                          tr("Use this action to make a \"bookmarc\" in current document at the cursor position. "
+                             "You will be able to quickly go to that bookmark later", "act WhatsThis") );
+    _m_retranslateAction( GotoNextBookmarkAction, tr("Next bookmark", "act text"),
+                          tr("Go to next bookmark", "act toolTip"),
+                          tr("Use this action to go to one of the bookmarks made in this document "
+                             "(the operation is cyclic: after you have gone to every bookmark, you will go to "
+                             "the first one again)", "act WhatsThis") );
+    _m_retranslateSwitchBlockModeAction(); //TODO: whatsThis
+    _m_retranslateAction( SwitchSelectedTextLayoutAction, tr("Switch layout", "act text"),
+                          tr("Switch selected text layout", "act toolTip"),
+                          tr("This action is useful if you have entered some text in a wrong locale. "
+                             "Select that text and then use this action", "act WhatsThis") );
+    _m_retranslateAction( FindAction, tr("Find...", "act text"), tr("Find text...", "act toolTip"),
+                          tr("Use this action to open the Find dialog. The Find dialog is used to search for "
+                             "specified text or to replace one piece of text with another", "act WhatsThis") );
+    _m_retranslateAction( FindNextAction, tr("Find next", "act text"), tr("Find next", "act toolTip"),
+                          tr("Use this action to find next occurance of the text specified in the Find dialog",
+                             "act WhatsThis") );
+    _m_resetRecordMacroAction(); //TODO: whatsThis
+    _m_retranslateAction( ClearMacroAction, tr("Clear macro", "act text"),
+                          tr("Clear last recorded or loaded macro", "act toolTip") );
+    _m_retranslateAction( PlayMacroAction, tr("Play", "act text"), tr("Play macro", "act toolTip") ); //TODO
+    _m_resetShowHideMacrosAction(); //TODO: whatsThis
+    _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
+    _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
+    _m_retranslateAction( TextMacrosAction, tr("Insert text macro", "act text"),
+                          tr("Insert text macro into current document", "act toolTip") );
+    //menus
+    _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
+    _m_retranslateMenu( EditMenu, tr("Edit", "mnu title") );
+    _m_retranslateMenu( DocumentMenu, tr("Document", "mnu title") );
+    _m_retranslateMenu( MacrosMenu, tr("Macros", "mnu title") );
+    _m_retranslateReopenMenu();
+    //toolBars
+    _m_toolBars.value(FileMenu)->setWindowTitle( tr("File", "tbar windowTitle") );
+    _m_toolBars.value(EditMenu)->setWindowTitle( tr("Edit", "tbar windowTitle") );
+    _m_toolBars.value(DocumentMenu)->setWindowTitle( tr("Document", "tbar windowTitle") );
+    _m_toolBars.value(MacrosMenu)->setWindowTitle( tr("Macros", "tbar windowTitle") );
+}
 
 void BTextEditor::_m_clipboardDataChanged()
 {
@@ -2164,7 +2167,7 @@ void BTextEditor::_m_documentSelectionChanged(bool hasSelection)
 
 void BTextEditor::_m_documentMaxLineLengthReached()
 {
-    emit showMessage(tr("Maximum line length reached!", "stbar message"), MessageTimeout);
+    emit showMessage(tr("Maximum line length reached!", "stbar message"), _m_MessageTimeout);
 }
 
 //find dialog
@@ -2175,7 +2178,7 @@ void BTextEditor::_m_findNext()
         return;
     QString text = _m_findDlg->text();
     if ( !_m_currentDocument->find( text, _m_findDlg->findFlags(), _m_findDlg->cyclic() ) )
-        emit showMessage(tr("Could not find", "stbar message") + " \"" + text + "\"", MessageTimeout);
+        emit showMessage(tr("Could not find", "stbar message") + " \"" + text + "\"", _m_MessageTimeout);
 }
 
 void BTextEditor::_m_replaceNext()

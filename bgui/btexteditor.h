@@ -186,9 +186,6 @@ public slots:
     void insertText(const QString &text);
     void setText(const QString &text);
     void deselect();
-protected:
-    void changeEvent(QEvent *event);
-    virtual void retranslateUi();
 private:
     enum _m_OpenMultipleQuestionResult
     {
@@ -202,6 +199,51 @@ private:
         _m_CloseDiscard,
         _m_CloseSave
     };
+    //
+    static const int _m_IconSizeMin;
+    static const int _m_IconSizeDef;
+    static const int _m_IconSizeMax;
+    static const QString _m_SyntaxTypeDef;
+    static const QString _m_MacrosDirDef;
+    //
+    static const QRect _m_OpenSaveDlgGeometryDef;
+    static const QString _m_OpenSaveDlgDirDef;
+    //
+    static const QRect _m_SelectFilesDlgGeometryDef;
+    //
+    static const int _m_MessageTimeout;
+    static const int _m_RecentFilesMax;
+    //
+    static const QString _m_GroupTextEditor;
+      static const QString _m_KeyMacrosDir;
+      static const QString _m_KeyDefaultEncoding;
+      static const QString _m_KeyFontFamily;
+      static const QString _m_KeyFontPointSize;
+      static const QString _m_KeyLineLength;
+      static const QString _m_KeyTabWidth;
+      static const QString _m_KeyKeyboardLayoutMap;
+      static const QString _m_KeyBlockMode;
+      static const QString _m_KeyRecentFiles;
+      static const QString _m_GroupFindDialog;
+        static const QString _m_KeyTextHistory;
+        static const QString _m_KeyNewTextHistory;
+        static const QString _m_GroupOptions;
+          static const QString _m_KeyCaseSensitive;
+          static const QString _m_KeyWholeWords;
+          static const QString _m_KeyBackwardOrder;
+          static const QString _m_KeyCyclic;
+      static const QString _m_GroupOpenSaveDialog;
+        static const QString _m_KeyGeometry;
+        static const QString _m_KeyDir;
+      static const QString _m_GroupSelectFilesDialog;
+        //_m_KeyDir
+    //
+    static QList<BTextEditor *> _m_instanceList;
+    //
+    static QList<BTextEditor *> _m_instances(const QString &groupId);
+    static BTextEditorDocument *_m_document(QWidget *widget);
+    static bool _m_checkReadOnly(const QString &fileName);
+    static QAction *_m_createSeparator();
     //
     const bool _m_CRegistered;
     const QString _m_CGroupId;
@@ -277,7 +319,6 @@ private:
     void _m_initRecorderConsole();
     void _m_initFindDialog();
     //retranslate
-    void _m_retranslateUi();
     void _m_retranslateReopenMenu();
     void _m_retranslateAction( Action id, const QString &text, const QString &toolTip = QString(),
                                const QString &whatsThis = QString() );
@@ -343,7 +384,8 @@ private:
     void _m_setCmboxSyntax(const QString &syntaxType);
     void _m_textReplaced(int count);
 private slots:
-    //clipboard
+    //global
+    void _m_retranslateUi();
     void _m_clipboardDataChanged();
     //document
     void _m_documentSwitchRequested();

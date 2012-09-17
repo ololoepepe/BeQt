@@ -240,6 +240,7 @@ BTextEditorDocument::BTextEditorDocument(const QString &fileName, QObject *paren
     setFontFamily(FontFamilyDef);
     setFontPointSize(FontPointSizeDef);
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 BTextEditorDocument::~BTextEditorDocument()
@@ -256,9 +257,6 @@ bool BTextEditorDocument::eventFilter(QObject *object, QEvent *event)
         return QObject::eventFilter(object, event);
     switch ( event->type() )
     {
-    case QEvent::LanguageChange:
-        _m_retranslateUi();
-        return true;
     case QEvent::KeyPress:
         return _m_handleKeyPressEvent( object, static_cast<QKeyEvent *>(event) );
     case QEvent::MouseButtonPress:
@@ -964,17 +962,6 @@ void BTextEditorDocument::_m_initAction(QAction *&action, const QString &iconNam
     if ( !shortcut.isEmpty() )
         action->setShortcut( QKeySequence(shortcut) );
     _m_mnuContext->addAction(action);
-}
-
-void BTextEditorDocument::_m_retranslateUi()
-{
-    _m_actUndo->setText( tr("Undo action", "act text") );
-    _m_actRedo->setText( tr("Redo action", "act text") );
-    _m_actCut->setText( tr("Cut", "act text") );
-    _m_actCopy->setText( tr("Copy", "act text") );
-    _m_actPaste->setText( tr("Paste", "act text") );
-    _m_actDelete->setText( tr("Delete", "act text") );
-    _m_actSelectAll->setText( tr("Select all", "act text") );
 }
 
 bool BTextEditorDocument::_m_setFileName(const QString &fileName)
@@ -1792,6 +1779,17 @@ void BTextEditorDocument::_m_highlightBracket(int pos, bool highlight, bool erro
 }
 
 //
+
+void BTextEditorDocument::_m_retranslateUi()
+{
+    _m_actUndo->setText( tr("Undo action", "act text") );
+    _m_actRedo->setText( tr("Redo action", "act text") );
+    _m_actCut->setText( tr("Cut", "act text") );
+    _m_actCopy->setText( tr("Copy", "act text") );
+    _m_actPaste->setText( tr("Paste", "act text") );
+    _m_actDelete->setText( tr("Delete", "act text") );
+    _m_actSelectAll->setText( tr("Select all", "act text") );
+}
 
 void BTextEditorDocument::_m_cutAvailableChanged(bool available)
 {

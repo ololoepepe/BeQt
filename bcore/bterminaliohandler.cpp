@@ -18,14 +18,14 @@
 #include "termios.h"
 #endif
 
-BTerminalIOHandler *inst = 0;
-QMutex instMutex;
-QMutex stdinMutex;
-QMutex stdoutMutex;
+BTerminalIOHandler *BTerminalIOHandler::_m_inst = 0;
+QMutex BTerminalIOHandler::_m_instMutex;
+QMutex BTerminalIOHandler::_m_stdinMutex;
+QMutex BTerminalIOHandler::_m_stdoutMutex;
 
 //
 
-QStringList splitCommand(const QString &command)
+QStringList BTerminalIOHandler::_m_splitCommand(const QString &command)
 {
     QStringList args;
     QString arg;
@@ -64,17 +64,17 @@ QStringList splitCommand(const QString &command)
 
 BTerminalIOHandler *BTerminalIOHandler::instance()
 {
-    if (!inst)
+    if (!_m_inst)
     {
-        instMutex.lock();
-        if (!inst)
+        _m_instMutex.lock();
+        if (!_m_inst)
         {
-            inst = new BTerminalIOHandler;
-            inst->start();
+            _m_inst = new BTerminalIOHandler;
+            _m_inst->start();
         }
-        instMutex.unlock();
+        _m_instMutex.unlock();
     }
-    return inst;
+    return _m_inst;
 }
 
 QString BTerminalIOHandler::readLine(bool *ok)
@@ -82,11 +82,11 @@ QString BTerminalIOHandler::readLine(bool *ok)
     QString line;
     if (ok)
         *ok = false;
-    if ( !stdinMutex.tryLock() )
+    if ( !_m_stdinMutex.tryLock() )
         return line;
     static QTextStream in(stdin, QIODevice::ReadOnly);
     line = in.readLine();
-    stdinMutex.unlock();
+    _m_stdinMutex.unlock();
     if (ok)
         *ok = true;
     return line;
@@ -95,7 +95,7 @@ QString BTerminalIOHandler::readLine(bool *ok)
 void BTerminalIOHandler::write(const QString &text)
 {
     static QTextStream out(stdout, QIODevice::WriteOnly);
-    QMutexLocker locker(&stdoutMutex);
+    QMutexLocker locker(&_m_stdoutMutex);
     out << text;
     out.flush();
 }
@@ -134,12 +134,12 @@ void BTerminalIOHandler::run()
     QTextStream in(stdin, QIODevice::ReadOnly);
     forever
     {
-        stdinMutex.lock();
+        _m_stdinMutex.lock();
         QString line = in.readLine();
-        stdoutMutex.unlock();
-        QStringList args = splitCommand(line);
+        _m_stdoutMutex.unlock();
+        QStringList args = _m_splitCommand(line);
         QString command = args.takeFirst();
-        QMetaObject::invokeMethod( inst, "commandEntered", Qt::QueuedConnection,
+        QMetaObject::invokeMethod( _m_inst, "commandEntered", Qt::QueuedConnection,
                                    Q_ARG(QString, command), Q_ARG(QStringList, args) );
     }
 }

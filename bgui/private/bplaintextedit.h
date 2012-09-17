@@ -6,8 +6,10 @@ class BTextEditorDocument;
 class QWidget;
 class QPaintEvent;
 class QMimeData;
+class QPainter;
 
 #include <QPlainTextEdit>
+#include <QRectF>
 
 class BPlainTextEdit : public QPlainTextEdit
 {
@@ -20,6 +22,9 @@ protected:
     void paintEvent(QPaintEvent *event);
     QMimeData *createMimeDataFromSelection() const;
 private:
+    static void _m_fillBackground( QPainter *painter, const QRectF &rect,
+                                   QBrush brush, QRectF gradientRect = QRectF() );
+    //
     BTextEditorDocument *const _m_CDocument;
 };
 

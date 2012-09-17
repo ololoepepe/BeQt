@@ -12,7 +12,7 @@
 #include <QTabWidget>
 #include <QLabel>
 
-const QString IdSingle = "single";
+const QString BSettingsDialog::_m_IdSingle = "single";
 
 //
 
@@ -39,7 +39,7 @@ BSettingsDialog::BSettingsDialog(const QMap<QString, BAbstractSettingsTab *> &ta
 BSettingsDialog::BSettingsDialog(BAbstractSettingsTab *tab, QWidget *parent) :
     QDialog(parent)
 {
-    _m_tabMap.insert(IdSingle, tab);
+    _m_tabMap.insert(_m_IdSingle, tab);
     //
     _m_vlt = new QVBoxLayout(this);
       _m_tabWgt = 0;
@@ -71,7 +71,7 @@ QVariantMap BSettingsDialog::valueMap() const
 {
     if (_m_tabWgt || !_m_lbl)
         return QVariantMap();
-    BAbstractSettingsTab *tab = _m_tabMap.value(IdSingle);
+    BAbstractSettingsTab *tab = _m_tabMap.value(_m_IdSingle);
     return tab ? tab->valueMap() : QVariantMap();
 }
 

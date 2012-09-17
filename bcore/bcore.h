@@ -4,6 +4,7 @@
 class QSettings;
 class QTranslator;
 class QObject;
+class QPluginLoader;
 
 #include <QString>
 #include <QStringList>
@@ -13,6 +14,7 @@ class QObject;
 #include <QDir>
 #include <QVariantMap>
 #include <QMutex>
+#include <QPointer>
 
 #if defined(BCORE_LIBRARY)
 #  define BCORESHARED_EXPORT Q_DECL_EXPORT
@@ -20,21 +22,14 @@ class QObject;
 #  define BCORESHARED_EXPORT Q_DECL_IMPORT
 #endif
 
-class BCORESHARED_EXPORT BCore
+class BCORESHARED_EXPORT BCore : public QObject
 {
+    Q_OBJECT
 public:
-    enum Translator
-    {
-        QtTranslator,
-        BCoreTranslator,
-        BGuiTranslator,
-        BNetworkTranslator
-    };
     //beqt
     static const QString BeQtVersion;
     static const QString ResourcesPath;
     static const QString IcoPath;
-    static const QString TranslationsPath;
     static const QLocale DefaultLocale;
     //other:time
     static const int Second;
@@ -45,6 +40,9 @@ public:
     static const int Megabyte;
     static const int Gigabyte;
     //
+    //main
+    static BCore *instance();
+    static void init(bool noUserDir = false);
     //settings
     static QSettings *newSettingsInstance();
     static void saveSettings();
@@ -54,40 +52,58 @@ public:
     static bool multipleInstancesEnabled();
     static const QLocale &currentLocale();
     //translation
-    static void addStandardTranslator(Translator translator);
-    static void setStandardTranslators( const QList<Translator> &translators = QList<Translator>() );
     static void addTranslator(const QString &path);
-    static void setTranslators( const QStringList &paths = QStringList() );
     static QList<QLocale> availableLocales();
-    static QString standardTranslatorPath(Translator translator);
     //paths and data
-    static void setSharedRoot(const QString &path);
-    static void setUserRoot(const QString &path);
     static void setPath(const QString &key, const QString &path, bool file = false);
-    static void setData(const QString &key, const QVariant &data);
     static QString shared(const QString &key = QString(), bool file = false);
     static QString user(const QString &key = QString(), bool file = false);
-    static QVariant data( const QString &key, const QVariant &def = QVariant() );
-    static QString dataS( const QString &key, const QString &def = QString() );
     static QString beqtIcon(const QString &iconName);
     //plugins
-    static void loadPlugin(const QString &fileName);
-    static void loadPlugins(const QString &dir);
-    static QList<QObject *> plugins();
     static void addPluginHandlingObject(QObject *object);
     static void removePluginHandlingObject(QObject *object);
     static void setPluginValidityChecker( bool (*function)(const QObject *) );
+    static QList<QObject *> plugins();
     //filesystem
     static void createUserPath(const QString &key, bool file = false);
     static bool copyResource(const QString &key);
     static bool removeDir(const QString &path);
     static void copyDir(const QString &path, const QString &newPath, bool recursive = true);
 private:
+    static const bool _m_MultipleInstancesDef;
+    static const QStringList _m_PluginSuffixes;
+    //
+    static const QString _m_GroupCore;
+      static const QString _m_KeyLocale;
+      static const QString _m_KeyMultipleInstances;
+    //
+    static BCore *_m_inst;
+    static QMutex _m_instMutex;
+    static bool _m_initialized;
+    static QStringList _m_translatorPaths;
+    static QList<QTranslator *> _m_translators;
+    static bool _m_multipleInstances;
+    static QLocale _m_locale;
+    static QString _m_sharedRoot;
+    static QString _m_userRoot;
+    static QMap<QString, QString> _m_dirMap;
+    static QMap<QString, QString> _m_fileMap;
+    static QList< QPointer<QObject> > _m_pluginHandlingObjects;
+    static QMap<QString, QPluginLoader *> _m_pluginMap;
+    static bool (*_m_pluginValidityChecker)(const QObject *);
+    //
+    static void _m_loadPlugin(const QString &fileName);
+    static void _m_loadPlugins(const QString &dir);
+    //
     BCore();
     BCore(const BCore &other);
     ~BCore();
     //
     BCore &operator=(const BCore &other);
+    //
+    void emitLocaleChanged();
+signals:
+    void localeChanged();
 };
 
 Q_DECLARE_METATYPE(QList<QObject *>)

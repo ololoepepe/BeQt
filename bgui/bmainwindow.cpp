@@ -2,7 +2,6 @@
 #include "babstractsettingstab.h"
 #include "bguiplugininterface.h"
 
-#include "private/bguicommon.h"
 #include "private/baboutdialog.h"
 #include "private/bhelpwidget.h"
 #include "private/bsettingsdialog.h"
@@ -21,7 +20,6 @@
 #include <QMenu>
 #include <QKeySequence>
 #include <QTimer>
-#include <QEvent>
 #include <QCloseEvent>
 #include <QStringList>
 #include <QSettings>
@@ -36,14 +34,16 @@
 #include <QIcon>
 #include <QScopedPointer>
 #include <QWhatsThis>
+#include <QSize>
 
 #include <QDebug>
 
-const int _m_StateVersion = 1;
-//_m_GroupMainWindow
-  const QString _m_KeyGeometry = "geometry";
-  const QString _m_KeyState = "state";
-  const QString _m_KeyIsMaximized = "is_maximized";
+const QSize BMainWindow::_m_HelpWgtSizeDef = QSize(640, 640);
+const int BMainWindow::_m_StateVersion = 1;
+const QString BMainWindow::_m_GroupMainWindow = "beqt_main_window";
+  const QString BMainWindow::_m_KeyGeometry = "geometry";
+  const QString BMainWindow::_m_KeyState = "state";
+  const QString BMainWindow::_m_KeyIsMaximized = "is_maximized";
 
 //
 
@@ -105,6 +105,7 @@ const int _m_StateVersion = 1;
     //
     _m_loadSettings();
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 //
@@ -279,13 +280,6 @@ QAction *BMainWindow::whatsThisAction() const
     return _m_actWhatsThis;
 }
 
-void BMainWindow::forceRetranslate()
-{
-    _m_retranslateUi();
-    retranslateUi();
-    emit uiRetranslated();
-}
-
 const QString &BMainWindow::settingsGroup() const
 {
     return _m_CSettingsGroup;
@@ -310,27 +304,6 @@ void BMainWindow::saveGuiSettings()
 
 //
 
-void BMainWindow::changeEvent(QEvent *event)
-{
-    switch ( event->type() )
-    {
-    case QEvent::LanguageChange:
-        if ( !parentWidget() )
-        {
-            QList<QWidget *> wl = findChildren<QWidget *>();
-            for (int i = 0; i < wl.size(); ++i)
-                QApplication::sendEvent(wl.at(i), event);
-        }
-        _m_retranslateUi();
-        retranslateUi();
-        emit uiRetranslated();
-        return;
-    default:
-        break;
-    }
-    return QMainWindow::changeEvent(event);
-}
-
 void BMainWindow::closeEvent(QCloseEvent *e)
 {
     if ( handleClosing() )
@@ -342,11 +315,6 @@ void BMainWindow::closeEvent(QCloseEvent *e)
     {
         e->ignore();
     }
-}
-
-void BMainWindow::retranslateUi()
-{
-    //
 }
 
 bool BMainWindow::handleClosing()
@@ -403,29 +371,6 @@ void BMainWindow::_m_loadSettings()
     QTimer::singleShot( 0, this, SLOT( _m_restoreState() ) );
 }
 
-void BMainWindow::_m_retranslateUi()
-{
-    //MenuFile
-    _m_mnuFile->setTitle( tr("File", "mnu title") );
-    _m_actExit->setText( tr("Exit", "act text") );
-    //MenuEdit
-    _m_mnuEdit->setTitle( tr("Edit", "mnu title") );
-    _m_actSettings->setText(tr("Settings", "act text") + "...");
-    //MenuHelp
-    _m_mnuHelp->setTitle( tr("Help", "mnu title") );
-    _m_actHomepage->setText( tr("Open homepage", "act text") );
-    _m_actHelpContents->setText( tr("Contents", "act text") );
-    _m_actContextualHelp->setText( tr("Contextual help", "act text") );
-    QAction *wtact = QWhatsThis::createAction();
-    _m_actWhatsThis->setText( wtact->text() );
-    _m_actWhatsThis->setToolTip( wtact->toolTip() );
-    wtact->deleteLater();
-    _m_actAbout->setText(tr("About", "act text") + "...");
-    _m_actAboutQt->setText(tr("About the Qt framework", "act text") + "...");
-    //AboutDialog
-    setAboutThanksTo( PersonInfoList() );
-}
-
 QString BMainWindow::_m_hlpFileName(QWidget *widget)
 {
     if (!widget)
@@ -467,6 +412,29 @@ QAction *BMainWindow::_m_menuDefAction(StandardMenu menu) const
 }
 
 //
+
+void BMainWindow::_m_retranslateUi()
+{
+    //MenuFile
+    _m_mnuFile->setTitle( tr("File", "mnu title") );
+    _m_actExit->setText( tr("Exit", "act text") );
+    //MenuEdit
+    _m_mnuEdit->setTitle( tr("Edit", "mnu title") );
+    _m_actSettings->setText(tr("Settings", "act text") + "...");
+    //MenuHelp
+    _m_mnuHelp->setTitle( tr("Help", "mnu title") );
+    _m_actHomepage->setText( tr("Open homepage", "act text") );
+    _m_actHelpContents->setText( tr("Contents", "act text") );
+    _m_actContextualHelp->setText( tr("Contextual help", "act text") );
+    QAction *wtact = QWhatsThis::createAction();
+    _m_actWhatsThis->setText( wtact->text() );
+    _m_actWhatsThis->setToolTip( wtact->toolTip() );
+    wtact->deleteLater();
+    _m_actAbout->setText(tr("About", "act text") + "...");
+    _m_actAboutQt->setText(tr("About the Qt framework", "act text") + "...");
+    //AboutDialog
+    setAboutThanksTo( PersonInfoList() );
+}
 
 void BMainWindow::_m_restoreState()
 {
@@ -525,6 +493,7 @@ void BMainWindow::_m_actHelpContentsTriggered()
 {
     QString url = QUrl::fromLocalFile(_m_hlpDir + "/" + _m_hlpIndex).toString();
     BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, url, url);
+    hw->resize(_m_HelpWgtSizeDef);
     hw->setAttribute(Qt::WA_DeleteOnClose, true);
     hw->show();
 }
@@ -538,6 +507,7 @@ void BMainWindow::_m_actContextualHelpTriggered()
         url = _m_hlpIndex;
     QString burl = QUrl::fromLocalFile(_m_hlpDir).toString();
     BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, burl + "/" + _m_hlpIndex, burl + "/" + url);
+    hw->resize(_m_HelpWgtSizeDef);
     hw->setAttribute(Qt::WA_DeleteOnClose, true);
     hw->show();
 }

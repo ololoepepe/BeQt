@@ -24,6 +24,8 @@ public:
 public slots:
     void clear();
 private:
+    static QString _m_constructMessage(int key, Qt::KeyboardModifiers modifiers, const QString &text);
+    //
     bool _m_started;
     QList<QKeyEvent *> _m_events;
 signals:

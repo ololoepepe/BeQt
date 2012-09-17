@@ -9,7 +9,6 @@
 #include <QCheckBox>
 #include <QIcon>
 #include <QString>
-#include <QEvent>
 #include <QByteArray>
 
 BPasswordWidget::BPasswordWidget(QWidget *parent) :
@@ -30,6 +29,7 @@ BPasswordWidget::BPasswordWidget(QWidget *parent) :
         _m_cboxSave->setIconSize( QSize(24, 24) );
       _m_hlt->addWidget(_m_cboxSave);
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 //
@@ -76,22 +76,11 @@ bool BPasswordWidget::savePassword() const
 
 //
 
-void BPasswordWidget::changeEvent(QEvent *event)
-{
-    if (!event || event->type() != QEvent::LanguageChange)
-        return QWidget::changeEvent(event);
-    _m_retranslateUi();
-}
-
-//
-
 void BPasswordWidget::_m_retranslateUi()
 {
     _m_cboxShow->setToolTip( tr("Show password", "cbox toolTip") );
     _m_cboxSave->setToolTip( tr("Save password", "cbox toolTip") );
 }
-
-//
 
 void BPasswordWidget::_m_cboxShowToggled(bool b)
 {

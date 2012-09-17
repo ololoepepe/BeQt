@@ -19,6 +19,7 @@ class QObject;
 #include <QList>
 #include <QVariantMap>
 #include <QString>
+#include <QLocale>
 
 #if defined(BGUI_LIBRARY)
 #  define BGUISHARED_EXPORT Q_DECL_EXPORT
@@ -46,6 +47,8 @@ private:
         _m_AboutInfo,
         _m_WwwInfo
     };
+    //
+    static QString _m_localeToString(const QLocale &locale);
     //
     QVBoxLayout *_m_vlt;
       QFormLayout *_m_fltGeneral;
