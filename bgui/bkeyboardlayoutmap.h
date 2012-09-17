@@ -7,7 +7,13 @@
 #include <QChar>
 #include <QList>
 
-class BKeyboardLayoutMapData : public QSharedData
+#if defined(BGUI_LIBRARY)
+#  define BGUISHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define BGUISHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+class BGUISHARED_EXPORT BKeyboardLayoutMapData : public QSharedData
 {
 public:
     QString description;

@@ -98,7 +98,7 @@ const QString BMainWindow::_m_GroupMainWindow = "beqt_main_window";
         connect( _m_actAbout, SIGNAL( triggered() ), this, SLOT( _m_actAboutTriggered() ) );
       _m_mnuHelp->addAction(_m_actAbout);
       _m_actAboutQt = new QAction(this);
-        _m_actAboutQt->setIcon( QIcon( BCore::beqtIcon("qt-logo") ) );
+        _m_actAboutQt->setIcon( QIcon( BCore::beqtIcon("qt_logo") ) );
         connect( _m_actAboutQt, SIGNAL( triggered() ), this, SLOT( _m_actAboutQtTriggered() ) );
       _m_mnuHelp->addAction(_m_actAboutQt);
     _m_mnuBar->addMenu(_m_mnuHelp);
@@ -181,6 +181,15 @@ void BMainWindow::setAboutThanksTo(const PersonInfoList &list, bool beqt, bool c
 {
     BAboutDialog::PersonInfoList infos;
     BAboutDialog::PersonInfo info;
+    for (int i = 0; i < list.size(); ++i)
+    {
+        const PersonInfo &pi = list.at(i);
+        info.name = pi.name;
+        info.mail = pi.mail;
+        info.site = pi.site;
+        info.role = pi.role;
+        infos << info;
+    }
     if (beqt)
     {
         info.name = tr("BeQt project", "aboutWgt infoName");
@@ -195,15 +204,6 @@ void BMainWindow::setAboutThanksTo(const PersonInfoList &list, bool beqt, bool c
         info.mail = "";
         info.site = "http://www.oxygen-icons.org/";
         info.role = tr("BeQt uses Oxygen as an icon set", "aboutWgt infoRole");
-        infos << info;
-    }
-    for (int i = 0; i < list.size(); ++i)
-    {
-        const PersonInfo &pi = list.at(i);
-        info.name = pi.name;
-        info.mail = pi.mail;
-        info.site = pi.site;
-        info.role = pi.role;
         infos << info;
     }
     _m_aboutDlg->setThanksToInfos(infos);

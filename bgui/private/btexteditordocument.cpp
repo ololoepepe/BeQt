@@ -196,6 +196,7 @@ bool BTextEditorDocument::checkEncoding(const QString &codecName)
 
 bool BTextEditorDocument::checkFontFamily(const QString &family)
 {
+    return true; //TODO: must be improved
     if ( family.isEmpty() )
         return false;
     static QFontComboBox fntcmbox;

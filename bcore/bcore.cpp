@@ -102,6 +102,13 @@ void BCore::init(bool noUserDir)
         qDebug() << tr("Failed to get application directory path", "debug");
         return;
     }
+#if defined(Q_OS_WIN)
+    if ( !QCoreApplication::instance() )
+    {
+        qDebug() << tr("Error: no QCoreApplication instance", "debug");
+        return;
+    }
+#endif
     //TODO: add native paths for Mac OS
     //Setting directories
     QString appnameUnix = appname.toLower().replace(' ', '-');

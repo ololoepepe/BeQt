@@ -7,7 +7,13 @@
 #include <QString>
 #include <QStringList>
 
-class BAbstractFileType : public QObject
+#if defined(BGUI_LIBRARY)
+#  define BGUISHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define BGUISHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+class BGUISHARED_EXPORT BAbstractFileType : public QObject
 {
     Q_OBJECT
 public:
