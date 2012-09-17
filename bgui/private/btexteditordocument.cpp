@@ -49,7 +49,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
-#include <QFontComboBox>
+#include <QFontInfo>
 
 #include <QDebug>
 
@@ -196,18 +196,9 @@ bool BTextEditorDocument::checkEncoding(const QString &codecName)
 
 bool BTextEditorDocument::checkFontFamily(const QString &family)
 {
-    return true; //TODO: must be improved
-    if ( family.isEmpty() )
-        return false;
-    static QFontComboBox fntcmbox;
-    fntcmbox.setFontFilters(QFontComboBox::MonospacedFonts);
-    QFont fnt = fntcmbox.currentFont();
-    if (fnt.family() == family)
-        return true;
-    int ind = fntcmbox.currentIndex();
-    fnt.setFamily(family);
-    fntcmbox.setCurrentFont(fnt);
-    return fntcmbox.currentIndex() != ind;
+    QFont fnt(family);
+    QFontInfo fnti(fnt);
+    return fnti.family() == family && fnti.fixedPitch();
 }
 
 bool BTextEditorDocument::checkFontPointSize(int pointSize)
@@ -290,8 +281,7 @@ void BTextEditorDocument::setFontFamily(const QString &family)
     if ( !checkFontFamily(family) )
         return;
     QFont fnt = _m_edit->font();
-    fnt.setStyleHint(QFont::TypeWriter); //this ensures that the font will be monospace
-    //but it does not guarantee that it's family will be equal to the one passed to this function
+    //fnt.setStyleHint(QFont::TypeWriter);
     fnt.setFamily(family);
     _m_edit->setFont(fnt);
 }
