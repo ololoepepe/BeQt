@@ -333,6 +333,18 @@ void BTextEditor::setBlockMode(bool enabled)
         _m_document(i)->setBlockMode(enabled);
 }
 
+void BTextEditor::setFindDialogSettings(const FindDialogSettings &settings)
+{
+    BFindDialog::Parameters param;
+    param.backwardOrder = settings.backwardOrder;
+    param.caseSensitive = settings.caseSensitive;
+    param.cyclic = settings.cyclic;
+    param.newTextHistory = settings.newTextHistory;
+    param.textHistory = settings.textHistory;
+    param.wholeWords = settings.wholeWords;
+    _m_findDlg->setParameters(param);
+}
+
 void BTextEditor::applySettings(const QVariantMap &settings)
 {
     //macros dir
@@ -438,6 +450,19 @@ bool BTextEditor::blockMode() const
     return _m_blockMode;
 }
 
+BTextEditor::FindDialogSettings BTextEditor::findDialogSettings() const
+{
+    BFindDialog::Parameters param = _m_findDlg->parameters();
+    FindDialogSettings s;
+    s.backwardOrder = param.backwardOrder;
+    s.caseSensitive = param.caseSensitive;
+    s.cyclic = param.cyclic;
+    s.newTextHistory = param.newTextHistory;
+    s.textHistory = param.textHistory;
+    s.wholeWords = param.wholeWords;
+    return s;
+}
+
 BAbstractSettingsTab *BTextEditor::createSettingsTab(const SettingsOptions &opt) const
 {
     QVariantMap m;
@@ -483,15 +508,16 @@ void BTextEditor::loadSettings(const QString &settingsGroup)
       setBlockMode( s->value(_m_KeyBlockMode, BTextEditorDocument::BlockModeDef).toBool() );
       _m_loadRecentFiles( s->value(_m_KeyRecentFiles).toStringList() );
       s->beginGroup(_m_GroupFindDialog);
-        BFindDialog::Parameters param = _m_findDlg->parameters();
-        s->setValue(_m_KeyTextHistory, param.textHistory);
-        s->setValue(_m_KeyNewTextHistory, param.newTextHistory);
+        BFindDialog::Parameters param;
+        param.textHistory = s->value(_m_KeyTextHistory).toStringList();
+        param.newTextHistory = s->value(_m_KeyNewTextHistory).toStringList();
         s->beginGroup(_m_GroupOptions);
-          s->setValue(_m_KeyCaseSensitive, param.caseSensitive);
-          s->setValue(_m_KeyWholeWords, param.wholeWords);
-          s->setValue(_m_KeyBackwardOrder, param.backwardOrder);
-          s->setValue(_m_KeyCyclic, param.cyclic);
+          param.caseSensitive = s->value(_m_KeyCaseSensitive).toBool();
+          param.wholeWords = s->value(_m_KeyWholeWords).toBool();
+          param.backwardOrder = s->value(_m_KeyBackwardOrder).toBool();
+          param.cyclic = s->value(_m_KeyCyclic, true).toBool();
         s->endGroup();
+        _m_findDlg->setParameters(param);
       s->endGroup();
       s->beginGroup(_m_GroupOpenSaveDialog);
         _m_openSaveDlgGeometry = s->value(_m_KeyGeometry, _m_OpenSaveDlgGeometryDef).toRect();
@@ -524,16 +550,15 @@ void BTextEditor::saveSettings(const QString &settingsGroup)
       s->setValue( _m_KeyBlockMode, blockMode() );
       s->setValue( _m_KeyRecentFiles, _m_saveRecentFiles() );
       s->beginGroup(_m_GroupFindDialog);
-        BFindDialog::Parameters param;
-        param.textHistory = s->value(_m_KeyTextHistory).toStringList();
-        param.newTextHistory = s->value(_m_KeyNewTextHistory).toStringList();
+        BFindDialog::Parameters param = _m_findDlg->parameters();
+        s->setValue(_m_KeyTextHistory, param.textHistory);
+        s->setValue(_m_KeyNewTextHistory, param.newTextHistory);
         s->beginGroup(_m_GroupOptions);
-          param.caseSensitive = s->value(_m_KeyCaseSensitive).toBool();
-          param.wholeWords = s->value(_m_KeyWholeWords).toBool();
-          param.backwardOrder = s->value(_m_KeyBackwardOrder).toBool();
-          param.cyclic = s->value(_m_KeyCyclic).toBool();
+          s->setValue(_m_KeyCaseSensitive, param.caseSensitive);
+          s->setValue(_m_KeyWholeWords, param.wholeWords);
+          s->setValue(_m_KeyBackwardOrder, param.backwardOrder);
+          s->setValue(_m_KeyCyclic, param.cyclic);
         s->endGroup();
-        _m_findDlg->setParameters(param);
       s->endGroup();
       s->beginGroup(_m_GroupOpenSaveDialog);
         s->setValue(_m_KeyGeometry, _m_openSaveDlgGeometry);

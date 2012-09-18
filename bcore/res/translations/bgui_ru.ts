@@ -97,7 +97,7 @@
         <location filename="../../../bgui/private/bfinddialog.cpp" line="235"/>
         <source>Whole words only</source>
         <comment>cbox text</comment>
-        <translation type="unfinished">С учётом регистра</translation>
+        <translation type="unfinished">Только слова целиком</translation>
     </message>
     <message>
         <location filename="../../../bgui/private/bfinddialog.cpp" line="236"/>

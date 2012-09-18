@@ -95,6 +95,7 @@ public:
           //separator
           TextMacrosAction
     };
+    //
     class SettingsOptions
     {
     public:
@@ -108,6 +109,16 @@ public:
         bool macrosDir;
         //
         SettingsOptions();
+    };
+    //
+    struct FindDialogSettings
+    {
+        QStringList textHistory;
+        QStringList newTextHistory;
+        bool caseSensitive;
+        bool wholeWords;
+        bool backwardOrder;
+        bool cyclic;
     };
     //
     static const QString SettingsTabId;
@@ -131,6 +142,7 @@ public:
     void setTabWidth(int width);
     void setKeyboardLayoutMap(const QString &description);
     void setBlockMode(bool enabled);
+    void setFindDialogSettings(const FindDialogSettings &settings);
     void applySettings(const QVariantMap &settings);
     //settings:get
     bool isRegisteredGlobally() const;
@@ -146,6 +158,7 @@ public:
     int tabWidth() const;
     const QString &keyboardLayoutMap() const;
     bool blockMode() const;
+    FindDialogSettings findDialogSettings() const;
     BAbstractSettingsTab *createSettingsTab(const SettingsOptions &opt) const;
     //settings:load/save
     void loadSettings( const QString &settingsGroup = QString() );
