@@ -21,7 +21,7 @@ class BNETWORKSHARED_EXPORT BSocketWrapper : public QObject
 {
     Q_OBJECT
 public:
-    class MetaData
+    class BNETWORKSHARED_EXPORT MetaData
     {
     public:
         MetaData();

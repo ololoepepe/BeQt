@@ -225,6 +225,7 @@ bool BCore::setLocale(const QLocale &l)
             _m_translators << t;
         }
     }
+    instance()->emitLocaleChanged();
     return true;
 }
 

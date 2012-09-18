@@ -96,7 +96,7 @@ public:
           TextMacrosAction
     };
     //
-    class SettingsOptions
+    class BGUISHARED_EXPORT SettingsOptions
     {
     public:
         bool toolBarIconSize;
@@ -241,7 +241,6 @@ private:
       static const QString _m_KeyLineLength;
       static const QString _m_KeyTabWidth;
       static const QString _m_KeyKeyboardLayoutMap;
-      static const QString _m_KeyBlockMode;
       static const QString _m_KeyRecentFiles;
       static const QString _m_GroupFindDialog;
         static const QString _m_KeyTextHistory;

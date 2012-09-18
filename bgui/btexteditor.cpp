@@ -101,7 +101,6 @@ const QString BTextEditor::_m_GroupTextEditor = "beqt_text_editor";
   const QString BTextEditor::_m_KeyLineLength = "line_length";
   const QString BTextEditor::_m_KeyTabWidth = "tab_width";
   const QString BTextEditor::_m_KeyKeyboardLayoutMap = "keyboard_layout_map";
-  const QString BTextEditor::_m_KeyBlockMode = "block_mode";
   const QString BTextEditor::_m_KeyRecentFiles = "recent_files";
   const QString BTextEditor::_m_GroupFindDialog = "find_dialog";
     const QString BTextEditor::_m_KeyTextHistory = "text_history";
@@ -328,9 +327,7 @@ void BTextEditor::setBlockMode(bool enabled)
 {
     if (enabled == _m_blockMode)
         return;
-    _m_blockMode = enabled;
-    for (int i = 0; i < _m_twgt->count(); ++i)
-        _m_document(i)->setBlockMode(enabled);
+    _m_switchBlockMode();
 }
 
 void BTextEditor::setFindDialogSettings(const FindDialogSettings &settings)
@@ -505,7 +502,6 @@ void BTextEditor::loadSettings(const QString &settingsGroup)
       setLineLength( s->value(_m_KeyLineLength, BTextEditorDocument::LineLengthDef).toInt() );
       setTabWidth( s->value(_m_KeyTabWidth, BTextEditorDocument::TabWidthDef).toInt() );
       setKeyboardLayoutMap( s->value(_m_KeyKeyboardLayoutMap).toString() );
-      setBlockMode( s->value(_m_KeyBlockMode, BTextEditorDocument::BlockModeDef).toBool() );
       _m_loadRecentFiles( s->value(_m_KeyRecentFiles).toStringList() );
       s->beginGroup(_m_GroupFindDialog);
         BFindDialog::Parameters param;
@@ -547,7 +543,6 @@ void BTextEditor::saveSettings(const QString &settingsGroup)
       s->setValue( _m_KeyLineLength, lineLength() );
       s->setValue( _m_KeyTabWidth, tabWidth() );
       s->setValue( _m_KeyKeyboardLayoutMap, keyboardLayoutMap() );
-      s->setValue( _m_KeyBlockMode, blockMode() );
       s->setValue( _m_KeyRecentFiles, _m_saveRecentFiles() );
       s->beginGroup(_m_GroupFindDialog);
         BFindDialog::Parameters param = _m_findDlg->parameters();

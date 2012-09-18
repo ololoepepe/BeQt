@@ -23,7 +23,7 @@ public:
     QList<QChar> reverseUnique;
 };
 
-class BKeyboardLayoutMap
+class BGUISHARED_EXPORT BKeyboardLayoutMap
 {
 public:
     BKeyboardLayoutMap();
