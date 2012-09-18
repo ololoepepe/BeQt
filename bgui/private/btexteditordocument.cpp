@@ -797,9 +797,8 @@ void BTextEditorDocument::switchSelectedTextLayout(const BKeyboardLayoutMap &klm
     if ( _m_edit->isReadOnly() || !klm.isValid() )
         return;
     QString text = selectedText();
-    if ( text.isEmpty() )
+    if ( !klm.switchLayout(text) )
         return;
-    klm.switchLayout(text);
     QTextCursor tc = _m_edit->textCursor();
     int start = tc.selectionStart();
     int end = tc.selectionEnd();

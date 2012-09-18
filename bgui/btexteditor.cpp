@@ -388,6 +388,11 @@ QList<BAbstractFileType *> BTextEditor::userFileTypes() const
     return list;
 }
 
+const QString &BTextEditor::defaultFileName() const
+{
+    return _m_defaultFileName;
+}
+
 const QString &BTextEditor::macrosDir() const
 {
     return _m_macrosDir;
@@ -615,6 +620,16 @@ const QStringList &BTextEditor::keyboardLayoutMapsDirs() const
 }
 
 //gui:set
+
+void BTextEditor::setTabsClosable(bool closable)
+{
+    _m_twgt->setTabsClosable(closable);
+}
+
+void BTextEditor::setTabsMovable(bool movable)
+{
+    _m_twgt->setMovable(movable);
+}
 
 void BTextEditor::addWidget(QWidget *widget)
 {
@@ -1106,7 +1121,8 @@ void BTextEditor::_m_initToolBars()
       connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
       _m_createAction(ShowHideMacrosConsole, tbar, "console_visible", "", true);
       _m_createAction(LoadMacroAction, 0, "fileopen", "", true);
-      _m_createAction(SaveMacroAction, 0, "filesaveas", "", true);
+      act = _m_createAction(SaveMacroAction, 0, "filesaveas");
+      connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
       tbar->addSeparator();
       _m_createMenuAction(TextMacrosAction, tbar, "editpaste");
 }
@@ -1623,6 +1639,7 @@ void BTextEditor::_m_recordMacro()
         }
     }
     act->setProperty("performing", !b);
+    editorAction(LoadMacroAction)->setEnabled(b);
     _m_resetRecordMacroAction();
 }
 

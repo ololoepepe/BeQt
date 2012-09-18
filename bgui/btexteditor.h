@@ -136,6 +136,7 @@ public:
     bool isRegisteredGlobally() const;
     const QString &groupId() const;
     QList<BAbstractFileType *> userFileTypes() const;
+    const QString &defaultFileName() const;
     const QString &macrosDir() const;
     int toolBarIconSize() const;
     const QString &defaultEncoding() const;
@@ -157,6 +158,8 @@ public:
     const QStringList &textMacrosDirs() const;
     const QStringList &keyboardLayoutMapsDirs() const;
     //gui:set
+    void setTabsClosable(bool closable);
+    void setTabsMovable(bool movable);
     void addWidget(QWidget *widget);
     void insertWidget(int index, QWidget *widget);
     //gui:get
