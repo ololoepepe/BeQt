@@ -20,13 +20,20 @@ class BTextEditorSettingsTab : public BAbstractSettingsTab
 {
     Q_OBJECT
 public:
-    static const QString IdMacrosDir;           //7
-    static const QString IdDefaultEncoding;     //3
+    static const QString IdToolBarIconSize;     //0
     static const QString IdFontFamily;          //1
     static const QString IdFontPointSize;       //2
+    static const QString IdDefaultEncoding;     //3
     static const QString IdLineLength;          //4
     static const QString IdTabWidth;            //5
     static const QString IdKeyboardLayoutMap;   //6
+    static const QString IdMacrosDir;           //7
+    //
+    static const int ToolBarIconSizeMin;
+    static const int ToolBarIconSizeDef;
+    static const int ToolBarIconSizeMax;
+    //
+    static bool checkToolBarIconSize(int size);
     //
     BTextEditorSettingsTab(const QVariantMap &settings, const QMap<QString, QString> &encodings,
                            const QStringList &keyboardLayoutMaps);
@@ -37,6 +44,9 @@ private:
     static const QString _m_KeyboardLayoutMapDef;
     //
     QFormLayout *_m_flt;
+      QLabel *_m_lblToolBarIconSize;
+      QSpinBox *_m_sboxToolBarIconSize;
+      //
       QLabel *_m_lblFontFamily;
       QFontComboBox *_m_fntcmboxFontFamily;
       //

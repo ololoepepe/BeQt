@@ -38,8 +38,8 @@ public:
         int column;
     };
     //
-    static const QString EncodingDef;
     static const QStringList EncodingsValid;
+    static const QString EncodingDef;
     static const QString FontFamilyDef;
     static const int FontPointSizeMin;
     static const int FontPointSizeDef;
@@ -57,7 +57,7 @@ public:
     static bool checkLineLength(int length);
     static bool checkTabWidth(int width);
     //
-    explicit BTextEditorDocument(const QString &fileName, QObject *parent = 0);
+    explicit BTextEditorDocument(const QString &fileName, const QString &codecName, QObject *parent = 0);
     ~BTextEditorDocument();
     //
     bool eventFilter(QObject *object, QEvent *event);

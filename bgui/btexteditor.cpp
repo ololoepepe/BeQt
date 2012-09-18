@@ -67,9 +67,20 @@
 
 #include <QDebug>
 
-const int BTextEditor::_m_IconSizeMin = 16;
-const int BTextEditor::_m_IconSizeDef = 22;
-const int BTextEditor::_m_IconSizeMax = 48;
+BTextEditor::SettingsOptions::SettingsOptions()
+{
+    toolBarIconSize = true;
+    fontFamily = true;
+    fontPointSize = true;
+    defaultEncoding = true;
+    lineLength = true;
+    tabWidth = true;
+    keyboardLayoutMap = true;
+    macrosDir = true;
+}
+
+////
+
 const QString BTextEditor::_m_SyntaxTypeDef = "Text";
 const QString BTextEditor::_m_MacrosDirDef = QDir::homePath();
 //
@@ -83,6 +94,7 @@ const int BTextEditor::_m_RecentFilesMax = 15;
 //
 const QString BTextEditor::_m_GroupTextEditor = "beqt_text_editor";
   const QString BTextEditor::_m_KeyMacrosDir = "macros_dir";
+  const QString BTextEditor::_m_KeyToolBarIconSize = "toolbar_icon_size";
   const QString BTextEditor::_m_KeyDefaultEncoding = "default_encoding";
   const QString BTextEditor::_m_KeyFontFamily = "font_family";
   const QString BTextEditor::_m_KeyFontPointSize = "font_point_size";
@@ -239,6 +251,16 @@ void BTextEditor::setDefaultMacrosDir(const QString &dir)
     _m_defaultMacrosDir = dir;
 }
 
+void BTextEditor::setToolBarIconSize(int size)
+{
+    if (!BTextEditorSettingsTab::checkToolBarIconSize(size) || size == _m_toolBarIconSize)
+        return;
+    _m_toolBarIconSize = size;
+    QList<QToolBar *> list = _m_toolBars.values();
+    for (int i = 0; i < list.size(); ++i)
+        list.at(i)->setIconSize( QSize(size, size) );
+}
+
 void BTextEditor::setMacrosDir(const QString &dir)
 {
     if ( dir.isEmpty() )
@@ -251,6 +273,7 @@ void BTextEditor::setDefaultEncoding(const QString &codecName)
     if (!BTextEditorDocument::checkEncoding(codecName) || codecName == _m_defaultEncoding)
         return;
     _m_defaultEncoding = codecName;
+    loadTextMacros( textMacrosDirs() );
     if ( _m_currentDocument.isNull() )
         _m_updateEncoding(_m_defaultEncoding);
 }
@@ -315,6 +338,8 @@ void BTextEditor::applySettings(const QVariantMap &settings)
     //macros dir
     if ( settings.contains(BTextEditorSettingsTab::IdMacrosDir) )
         setMacrosDir( settings.value(BTextEditorSettingsTab::IdMacrosDir).toString() );
+    if ( settings.contains(BTextEditorSettingsTab::IdToolBarIconSize) )
+        setToolBarIconSize( settings.value(BTextEditorSettingsTab::IdToolBarIconSize).toInt() );
     //default encoding
     if ( settings.contains(BTextEditorSettingsTab::IdDefaultEncoding) )
         setDefaultEncoding( settings.value(BTextEditorSettingsTab::IdDefaultEncoding).toString() );
@@ -368,6 +393,11 @@ const QString &BTextEditor::macrosDir() const
     return _m_macrosDir;
 }
 
+int BTextEditor::toolBarIconSize() const
+{
+    return _m_toolBarIconSize;
+}
+
 const QString &BTextEditor::defaultEncoding() const
 {
     return _m_defaultEncoding;
@@ -408,6 +438,8 @@ BAbstractSettingsTab *BTextEditor::createSettingsTab(const SettingsOptions &opt)
     QVariantMap m;
     if (opt.macrosDir)
         m.insert( BTextEditorSettingsTab::IdMacrosDir, macrosDir() );
+    if (opt.toolBarIconSize)
+        m.insert( BTextEditorSettingsTab::IdToolBarIconSize, toolBarIconSize() );
     if (opt.defaultEncoding)
         m.insert( BTextEditorSettingsTab::IdDefaultEncoding, defaultEncoding() );
     if (opt.fontFamily)
@@ -436,6 +468,7 @@ void BTextEditor::loadSettings(const QString &settingsGroup)
         s->beginGroup(settingsGroup);
     s->beginGroup(_m_GroupTextEditor);
       setMacrosDir( s->value(_m_KeyMacrosDir, _m_defaultMacrosDir).toString() );
+      setToolBarIconSize( s->value(_m_KeyToolBarIconSize, BTextEditorSettingsTab::ToolBarIconSizeDef).toInt() );
       setDefaultEncoding( s->value(_m_KeyDefaultEncoding, BTextEditorDocument::EncodingDef).toString() );
       setFontFamily( s->value(_m_KeyFontFamily, BTextEditorDocument::FontFamilyDef).toString() );
       setFontPointSize( s->value(_m_KeyFontPointSize, BTextEditorDocument::FontPointSizeDef).toInt() );
@@ -476,6 +509,7 @@ void BTextEditor::saveSettings(const QString &settingsGroup)
         s->beginGroup(settingsGroup);
     s->beginGroup(_m_GroupTextEditor);
       s->setValue(_m_KeyMacrosDir, _m_macrosDir);
+      s->setValue(_m_KeyToolBarIconSize, _m_toolBarIconSize);
       s->setValue( _m_KeyDefaultEncoding, defaultEncoding() );
       s->setValue( _m_KeyFontFamily, fontFamily() );
       s->setValue( _m_KeyFontPointSize, fontPointSize() );
@@ -521,6 +555,7 @@ void BTextEditor::loadTextMacros(const QStringList &dirs)
     QAction *act = editorAction(TextMacrosAction);
     QMenu *mnu = act->menu();
     mnu->clear();
+    QStringList sl;
     for (int i = 0; i < dirs.size(); ++i)
     {
         const QString &dir = dirs.at(i);
@@ -528,14 +563,17 @@ void BTextEditor::loadTextMacros(const QStringList &dirs)
         for (int j = 0; j < files.size(); ++j)
         {
             QFile f( dir + "/" + files.at(j) );
+            if ( sl.contains( f.fileName() ) )
+                continue;
             if ( !f.open(QFile::ReadOnly) )
                 continue;
             QTextStream in(&f);
-            in.setCodec("UTF-8");
+            in.setCodec( _m_defaultEncoding.toAscii() );
             QString text = in.readAll();
             f.close();
             if ( text.isEmpty() )
                 continue;
+            sl << f.fileName();
             QAction *mact = mnu->addAction( QFileInfo( files.at(j) ).baseName() );
             _m_mapperTextMacros->setMapping(mact, text);
             connect( mact, SIGNAL( triggered() ), _m_mapperTextMacros, SLOT( map() ) );
@@ -577,15 +615,6 @@ const QStringList &BTextEditor::keyboardLayoutMapsDirs() const
 }
 
 //gui:set
-
-void BTextEditor::setToolBarIconSize(int size)
-{
-    if (size < _m_IconSizeMin || size > _m_IconSizeMax)
-        return;
-    QList<QToolBar *> list = _m_toolBars.values();
-    for (int i = 0; i < list.size(); ++i)
-        list.at(i)->setIconSize( QSize(size, size) );
-}
 
 void BTextEditor::addWidget(QWidget *widget)
 {
@@ -936,6 +965,7 @@ void BTextEditor::_m_initSettings()
     //settings
     _m_defaultFileName = tr("New document", "document fileName");
     _m_defaultMacrosDir = _m_MacrosDirDef;
+    _m_toolBarIconSize = BTextEditorSettingsTab::ToolBarIconSizeDef;
     _m_defaultEncoding = BTextEditorDocument::EncodingDef;
     _m_fontFamily = BTextEditorDocument::FontFamilyDef;
     _m_fontPointSize = BTextEditorDocument::FontPointSizeDef;
@@ -1229,13 +1259,13 @@ void BTextEditor::_m_retranslateSwitchBlockModeAction()
     QAction *act = editorAction(SwitchBlockModeAction);
     if (_m_blockMode)
     {
-        act->setIcon( QIcon( BCore::beqtIcon("text_block") ) );
+        act->setIcon( QIcon( BCore::beqtIcon("mode_blocks") ) );
         act->setText( tr("Mode: blocks", "act text") );
         act->setToolTip( tr("Switch to lines mode", "act toolTip") );
     }
     else
     {
-        act->setIcon( QIcon( BCore::beqtIcon("text_left") ) );
+        act->setIcon( QIcon( BCore::beqtIcon("mode_lines") ) );
         act->setText( tr("Mode: lines", "act text") );
         act->setToolTip( tr("Switch to blocks mode", "act toolTip") );
     }
@@ -1639,7 +1669,7 @@ bool BTextEditor::_m_saveMacro()
 
 BTextEditorDocument *BTextEditor::_m_addDocument(const QString &fileName)
 {
-    BTextEditorDocument *ted = new BTextEditorDocument(fileName, this);
+    BTextEditorDocument *ted = new BTextEditorDocument(fileName, _m_defaultEncoding, this);
     ted->setMacroRecorder(_m_recorder);
     ted->setLineLength(_m_lineLength);
     ted->setTabWidth(_m_tabWidth);
@@ -1865,7 +1895,7 @@ QToolBar *BTextEditor::_m_createToolBar(Menu id, const QString &objectName)
         return 0;
     QToolBar *tbar = new QToolBar;
     tbar->setFloatable(false);
-    tbar->setIconSize( QSize(_m_IconSizeDef, _m_IconSizeDef) );
+    tbar->setIconSize( QSize(_m_toolBarIconSize, _m_toolBarIconSize) );
     tbar->setObjectName(objectName);
     _m_toolBars.insert(id, tbar);
     return tbar;

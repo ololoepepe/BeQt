@@ -218,13 +218,13 @@ bool BTextEditorDocument::checkTabWidth(int width)
 
 //
 
-BTextEditorDocument::BTextEditorDocument(const QString &fileName, QObject *parent) :
+BTextEditorDocument::BTextEditorDocument(const QString &fileName, const QString &codecName, QObject *parent) :
     QObject(parent)
 {
     _m_fileName = fileName;
     _m_lineLength = LineLengthDef;
     _m_tabWidth = TabWidthDef;
-    _m_codecName = EncodingDef;
+    _m_codecName = checkEncoding(codecName) ? codecName : EncodingDef;
     _m_initWidget();
     _m_initMenu();
     _m_blockMode = BlockModeDef;

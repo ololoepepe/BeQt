@@ -15,13 +15,25 @@
 #include <QPushButton>
 #include <QFileDialog>
 
-const QString BTextEditorSettingsTab::IdMacrosDir = "macros_dir";
-const QString BTextEditorSettingsTab::IdDefaultEncoding = "default_encoding";
+const QString BTextEditorSettingsTab::IdToolBarIconSize = "toolbar_icon_size";
 const QString BTextEditorSettingsTab::IdFontFamily = "font_family";
 const QString BTextEditorSettingsTab::IdFontPointSize = "font_point_size";
+const QString BTextEditorSettingsTab::IdDefaultEncoding = "default_encoding";
 const QString BTextEditorSettingsTab::IdLineLength = "line_length";
 const QString BTextEditorSettingsTab::IdTabWidth = "tab_width";
 const QString BTextEditorSettingsTab::IdKeyboardLayoutMap = "keyboard_layout_map";
+const QString BTextEditorSettingsTab::IdMacrosDir = "macros_dir";
+//
+const int BTextEditorSettingsTab::ToolBarIconSizeMin = 16;
+const int BTextEditorSettingsTab::ToolBarIconSizeDef = 22;
+const int BTextEditorSettingsTab::ToolBarIconSizeMax = 48;
+
+//
+
+bool BTextEditorSettingsTab::checkToolBarIconSize(int size)
+{
+    return size >= ToolBarIconSizeMin && size <= ToolBarIconSizeMax;
+}
 
 //
 
@@ -33,6 +45,21 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
                                                const QStringList &keyboardLayoutMaps)
 {
     _m_flt = new QFormLayout(this);
+      //toolbar icon size
+      if ( settings.contains(IdToolBarIconSize) )
+      {
+          _m_lblToolBarIconSize = new QLabel(this);
+          _m_sboxToolBarIconSize = new QSpinBox(this);
+            _m_sboxToolBarIconSize->setMinimum(ToolBarIconSizeMin);
+            _m_sboxToolBarIconSize->setMaximum(ToolBarIconSizeMax);
+            _m_sboxToolBarIconSize->setValue( settings.value(IdToolBarIconSize).toInt() );
+          _m_flt->addRow(_m_lblToolBarIconSize, _m_sboxToolBarIconSize);
+      }
+      else
+      {
+          _m_lblToolBarIconSize = 0;
+          _m_sboxToolBarIconSize = 0;
+      }
       //font family
       if ( settings.contains(IdFontFamily) )
       {
@@ -165,6 +192,8 @@ BTextEditorSettingsTab::BTextEditorSettingsTab(const QVariantMap &settings, cons
 QVariantMap BTextEditorSettingsTab::valueMap() const
 {
     QVariantMap m;
+    if (_m_sboxToolBarIconSize)
+        m.insert( IdToolBarIconSize, _m_sboxToolBarIconSize->value() );
     if (_m_ledtMacrosDir)
         m.insert( IdMacrosDir, _m_ledtMacrosDir->text() );
     if (_m_cmboxDefaultEncoding)
@@ -191,6 +220,8 @@ QString BTextEditorSettingsTab::title() const
 
 void BTextEditorSettingsTab::_m_retranslateUi()
 {
+    if (_m_lblToolBarIconSize)
+        _m_lblToolBarIconSize->setText( tr("Toolbar icon size:", "lbl text") );
     if (_m_lblFontFamily)
         _m_lblFontFamily->setText( tr("Font:", "lbl text") );
     if (_m_lblFontPointSize)

@@ -95,8 +95,10 @@ public:
           //separator
           TextMacrosAction
     };
-    struct SettingsOptions
+    class SettingsOptions
     {
+    public:
+        bool toolBarIconSize;
         bool fontFamily;
         bool fontPointSize;
         bool defaultEncoding;
@@ -104,6 +106,8 @@ public:
         bool tabWidth;
         bool keyboardLayoutMap;
         bool macrosDir;
+        //
+        SettingsOptions();
     };
     //
     static const QString SettingsTabId;
@@ -118,6 +122,7 @@ public:
     void setUserFileTypes(QList<BAbstractFileType *> list);
     void setDefaultFileName(const QString &fileName);
     void setDefaultMacrosDir(const QString &dir);
+    void setToolBarIconSize(int size);
     void setMacrosDir(const QString &dir);
     void setDefaultEncoding(const QString &codecName);
     void setFontFamily(const QString &family);
@@ -132,6 +137,7 @@ public:
     const QString &groupId() const;
     QList<BAbstractFileType *> userFileTypes() const;
     const QString &macrosDir() const;
+    int toolBarIconSize() const;
     const QString &defaultEncoding() const;
     const QString &fontFamily() const;
     int fontPointSize() const;
@@ -151,7 +157,6 @@ public:
     const QStringList &textMacrosDirs() const;
     const QStringList &keyboardLayoutMapsDirs() const;
     //gui:set
-    void setToolBarIconSize(int size);
     void addWidget(QWidget *widget);
     void insertWidget(int index, QWidget *widget);
     //gui:get
@@ -200,9 +205,6 @@ private:
         _m_CloseSave
     };
     //
-    static const int _m_IconSizeMin;
-    static const int _m_IconSizeDef;
-    static const int _m_IconSizeMax;
     static const QString _m_SyntaxTypeDef;
     static const QString _m_MacrosDirDef;
     //
@@ -216,6 +218,7 @@ private:
     //
     static const QString _m_GroupTextEditor;
       static const QString _m_KeyMacrosDir;
+      static const QString _m_KeyToolBarIconSize;
       static const QString _m_KeyDefaultEncoding;
       static const QString _m_KeyFontFamily;
       static const QString _m_KeyFontPointSize;
@@ -281,6 +284,7 @@ private:
     QString _m_defaultFileName;
     QString _m_defaultMacrosDir;
     QString _m_macrosDir;
+    int _m_toolBarIconSize;
     QString _m_defaultEncoding;
     QString _m_fontFamily;
     int _m_fontPointSize;
