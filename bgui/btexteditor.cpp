@@ -1400,12 +1400,16 @@ bool BTextEditor::_m_saveDocument(BTextEditorDocument *document)
     if (!document)
         return true;
     bool b = false;
-    if ( !QFileInfo( document->fileName() ).isFile() )
+    if ( !QFileInfo( document->fileName() ).exists() )
+    {
         b = _m_saveDocumentAs(document);
+    }
     else
+    {
         b = document->save();
-    if (!b)
-        _m_saveFailureError( document->fileName() );
+        if (!b)
+            _m_saveFailureError( document->fileName() );
+    }
     if (document == _m_currentDocument && b)
         editorAction(ReopenFileAction)->setEnabled(true);
     return b;
