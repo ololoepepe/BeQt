@@ -136,7 +136,7 @@ void BTerminalIOHandler::run()
     {
         _m_stdinMutex.lock();
         QString line = in.readLine();
-        _m_stdoutMutex.unlock();
+        _m_stdinMutex.unlock();
         QStringList args = _m_splitCommand(line);
         QString command = args.takeFirst();
         QMetaObject::invokeMethod( _m_inst, "commandEntered", Qt::QueuedConnection,
