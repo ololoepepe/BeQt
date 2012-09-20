@@ -38,12 +38,12 @@ bool BNetworkOperation::isError() const
 
 int BNetworkOperation::downloadProgress() const
 {
-    return _m_bytesInTotal > 0 ? ( (qreal) _m_bytesInReady / (qreal) _m_bytesInTotal ) * 100 : 100;
+    return _m_bytesInTotal != 0 ? ( (qreal) _m_bytesInReady / (qreal) _m_bytesInTotal ) * 100 : 100;
 }
 
 int BNetworkOperation::uploadProgress() const
 {
-    return _m_bytesOutTotal > 0 ? ( (qreal) _m_bytesOutReady / (qreal) _m_bytesOutTotal ) * 100 : 100;
+    return _m_bytesOutTotal != 0 ? ( (qreal) _m_bytesOutReady / (qreal) _m_bytesOutTotal ) * 100 : 100;
 }
 
 bool BNetworkOperation::isFinished() const
