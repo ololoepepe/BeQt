@@ -460,6 +460,11 @@ BTextEditor::FindDialogSettings BTextEditor::findDialogSettings() const
     return s;
 }
 
+const QString &BTextEditor::lastOpenSaveDialogDir() const
+{
+    return _m_openSaveDlgDir;
+}
+
 BAbstractSettingsTab *BTextEditor::createSettingsTab(const SettingsOptions &opt) const
 {
     QVariantMap m;

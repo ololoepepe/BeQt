@@ -159,6 +159,7 @@ public:
     const QString &keyboardLayoutMap() const;
     bool blockMode() const;
     FindDialogSettings findDialogSettings() const;
+    const QString &lastOpenSaveDialogDir() const;
     BAbstractSettingsTab *createSettingsTab(const SettingsOptions &opt) const;
     //settings:load/save
     void loadSettings( const QString &settingsGroup = QString() );

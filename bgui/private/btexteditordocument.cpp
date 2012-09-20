@@ -533,7 +533,7 @@ bool BTextEditorDocument::saveAs(const QString &fileName, const QString &codecNa
     return _m_setFileName(fileName) ? save(codecName) : false;
 }
 
-bool BTextEditorDocument::find( const QString &text, QTextDocument::FindFlags flags, bool cyclic)
+bool BTextEditorDocument::find(const QString &text, QTextDocument::FindFlags flags, bool cyclic)
 {
     if ( text.isEmpty() )
         return false;
