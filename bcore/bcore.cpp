@@ -454,6 +454,44 @@ void BCore::copyDir(const QString &path, const QString &newPath, bool recursive)
     }
 }
 
+QString BCore::localeBasedFileName(const QString &fileName, const QString &defaultFileName,
+                                   const QString &possibleSuffix)
+{
+    if ( fileName.isEmpty() )
+        return "";
+    QFileInfo fi(fileName);
+    QString bfn = fi.path() + "/" + fi.baseName();
+    QString suff = fi.suffix();
+    suff = suff.isEmpty() ? possibleSuffix : "";
+    if ( !suff.isEmpty() )
+        suff.prepend('.');
+    QString lang = _m_locale.name().left(2);
+    QFile f(bfn + "_" + lang);
+    if ( !f.exists() )
+        f.setFileName(bfn + "_" + lang + suff);
+    if ( !f.exists() )
+        f.setFileName(defaultFileName);
+    if ( !f.exists() )
+        f.setFileName(defaultFileName + suff);
+    if ( !f.exists() )
+        return "";
+    return f.fileName();
+}
+
+QString BCore::localeBasedDirName(const QString &dir)
+{
+    if ( dir.isEmpty() )
+        return "";
+    QDir d( dir + "/" + _m_locale.name().left(2) );
+    if ( !d.exists() )
+        d.setPath(dir + "/" + "en");
+    if ( !d.exists() )
+        d.setPath(dir);
+    if ( !d.exists() )
+        return "";
+    return d.path();
+}
+
 //
 
 void BCore::_m_loadPlugin(const QString &fileName)

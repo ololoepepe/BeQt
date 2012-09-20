@@ -69,6 +69,9 @@ public:
     static bool copyResource(const QString &key);
     static bool removeDir(const QString &path);
     static void copyDir(const QString &path, const QString &newPath, bool recursive = true);
+    static QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
+                                        const QString &possibleSuffix = QString() );
+    static QString localeBasedDirName(const QString &dir);
 private:
     static const bool _m_MultipleInstancesDef;
     static const QStringList _m_PluginSuffixes;
