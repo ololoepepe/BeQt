@@ -208,6 +208,7 @@ public slots:
     void insertText(const QString &text);
     void setText(const QString &text);
     void deselect();
+    void setFocusToEdit();
 private:
     enum _m_OpenMultipleQuestionResult
     {

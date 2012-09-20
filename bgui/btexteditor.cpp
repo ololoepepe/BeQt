@@ -988,6 +988,13 @@ void BTextEditor::deselect()
     }
 }
 
+void BTextEditor::setFocusToEdit()
+{
+    if ( _m_currentDocument.isNull() )
+        return;
+    _m_currentDocument->setFocusToEdit();
+}
+
 //init:main
 
 void BTextEditor::_m_init()
