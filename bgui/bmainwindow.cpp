@@ -214,13 +214,6 @@ void BMainWindow::setAboutLicense(const QString &fileName, const char *codecName
     _m_aboutDlg->setLicense(fileName, codecName, iconFileName);
 }
 
-void BMainWindow::addMenu(QMenu *menu)
-{
-    if (!menu)
-        return;
-    _m_mnuBar->addMenu(menu);
-}
-
 void BMainWindow::insertMenu(QMenu *menu, StandardMenu beforeMenu)
 {
     if (!menu)
@@ -229,6 +222,16 @@ void BMainWindow::insertMenu(QMenu *menu, StandardMenu beforeMenu)
     if (!before)
         return;
     _m_mnuBar->insertMenu(before->menuAction(), menu);
+}
+
+void BMainWindow::insertAction(QAction *action, StandardMenu beforeMenu)
+{
+    if (!action)
+        return;
+    QMenu *before = _m_menu(beforeMenu);
+    if (!before)
+        return;
+    _m_mnuBar->insertAction(before->menuAction(), action);
 }
 
 void BMainWindow::addToMenu(StandardMenu standardMenu, QAction *action)

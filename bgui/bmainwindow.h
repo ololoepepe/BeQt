@@ -73,8 +73,8 @@ public:
     void setAboutTranslators(const PersonInfoList &list);
     void setAboutThanksTo(const PersonInfoList &list, bool beqt = true, bool coelho = true);
     void setAboutLicense( const QString &fileName, const char *codecName, const QString &iconFileName = QString() );
-    void addMenu(QMenu *menu);
     void insertMenu(QMenu *menu, StandardMenu beforeMenu = MenuHelp);
+    void insertAction(QAction *action, StandardMenu beforeMenu = MenuHelp);
     void addToMenu(StandardMenu standardMenu, QAction *action);
     void addToMenu(StandardMenu standardMenu, const QList<QAction *> &actions);
     void addToMenu(StandardMenu standardMenu, QMenu *menu);
