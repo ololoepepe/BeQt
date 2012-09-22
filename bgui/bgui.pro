@@ -50,7 +50,6 @@ HEADERS += \
     private/baboutdialog.h \
     private/bfinddialog.h \
     private/bhelpwidget.h \
-    private/bguicommon.h \
     private/bmacrorecorder.h \
     private/bmultilinesyntaxelement.h \
     private/bopensavedialog.h \

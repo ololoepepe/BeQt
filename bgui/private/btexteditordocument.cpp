@@ -182,7 +182,7 @@ const bool BTextEditorDocument::BlockModeDef = false;
 #if defined(Q_OS_MAC)
 const QString BTextEditorDocument::FontFamilyDef = "Monaco";
 #elif defined(Q_OS_UNIX)
-const QString BTextEditorDocument::FontFamilyDef = "Monospace";
+const QString BTextEditorDocument::FontFamilyDef = "DejaVu Sans Mono";
 #elif defined(Q_OS_WIN)
 const QString BTextEditorDocument::FontFamilyDef = "Courier";
 #endif
@@ -198,7 +198,7 @@ bool BTextEditorDocument::checkFontFamily(const QString &family)
 {
     QFont fnt(family);
     QFontInfo fnti(fnt);
-    return fnti.family() == family && fnti.fixedPitch();
+    return fnti.fixedPitch();
 }
 
 bool BTextEditorDocument::checkFontPointSize(int pointSize)
