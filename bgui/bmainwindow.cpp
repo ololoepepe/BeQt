@@ -90,7 +90,7 @@ const QString BMainWindow::_m_GroupMainWindow = "beqt_main_window";
         connect( _m_actContextualHelp, SIGNAL( triggered() ), this, SLOT( _m_actContextualHelpTriggered() ) );
       _m_mnuHelp->addAction(_m_actContextualHelp);
       _m_actWhatsThis = QWhatsThis::createAction(this);
-        _m_actWhatsThis->setCheckable(false);
+        //_m_actWhatsThis->setCheckable(false); //TODO: maybe a Qt bug? Yhis action should not be checkable
       _m_mnuHelp->addAction(_m_actWhatsThis);
       _m_mnuHelp->addSeparator();
       _m_actAbout = new QAction(this);
@@ -377,10 +377,12 @@ void BMainWindow::_m_loadSettings()
 QString BMainWindow::_m_hlpFileName(QWidget *widget)
 {
     if (!widget)
-        return QString();
+        return _m_hlpIndex;
     QString fn = widget->property("help").toString();
     if ( fn.isEmpty() )
         fn = _m_hlpFileName( widget->parentWidget() );
+    if ( fn.isEmpty() )
+        fn = _m_hlpIndex;
     return fn;
 }
 
