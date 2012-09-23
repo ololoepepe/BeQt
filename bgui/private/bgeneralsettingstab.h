@@ -20,6 +20,7 @@ class QObject;
 #include <QVariantMap>
 #include <QString>
 #include <QLocale>
+#include <QSize>
 
 #if defined(BGUI_LIBRARY)
 #  define BGUISHARED_EXPORT Q_DECL_EXPORT
@@ -47,6 +48,8 @@ private:
         _m_AboutInfo,
         _m_WwwInfo
     };
+    //
+    static const QSize BtnIconSize;
     //
     static QString _m_localeToString(const QLocale &locale);
     //

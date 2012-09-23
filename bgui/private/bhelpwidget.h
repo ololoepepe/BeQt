@@ -8,6 +8,7 @@ class QPushButton;
 class QTextBrowser;
 
 #include <QWidget>
+#include <QSize>
 
 class BHelpWidget : public QWidget
 {
@@ -15,6 +16,8 @@ class BHelpWidget : public QWidget
 public:
     BHelpWidget(const QString &settingsGroup, const QString &home, const QString &url, QWidget *parent = 0);
 private:
+    static const QSize BtnIconSize;
+    //
     const QString _m_CSettingsGroup;
     //
     QVBoxLayout *_m_vlt;

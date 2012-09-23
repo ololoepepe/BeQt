@@ -11,6 +11,12 @@
 #include <QUrl>
 #include <QSettings>
 #include <QRect>
+#include <QSize>
+#include <QIcon>
+
+const QSize BHelpWidget::BtnIconSize = QSize(24, 24);
+
+//
 
 BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, const QString &url, QWidget *parent) :
     QWidget(parent), _m_CSettingsGroup(settingsGroup)
@@ -18,13 +24,21 @@ BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, cons
     _m_vlt = new QVBoxLayout(this);
       _m_hltActions = new QHBoxLayout;
         _m_btnHome = new QPushButton(this);
+          _m_btnHome->setIconSize(BtnIconSize);
+          _m_btnHome->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
         _m_hltActions->addWidget(_m_btnHome);
         _m_btnBack = new QPushButton(this);
+          _m_btnHome->setIconSize(BtnIconSize);
+          _m_btnHome->setIcon( QIcon( BCore::beqtIcon("back") ) );
         _m_hltActions->addWidget(_m_btnBack);
         _m_btnForward = new QPushButton(this);
+          _m_btnForward->setIconSize(BtnIconSize);
+          _m_btnForward->setIcon( QIcon( BCore::beqtIcon("forward") ) );
         _m_hltActions->addWidget(_m_btnForward);
         _m_hltActions->addStretch();
         _m_btnClose = new QPushButton(this);
+          _m_btnClose->setIconSize(BtnIconSize);
+          _m_btnClose->setIcon( QIcon( BCore::beqtIcon("window_close") ) );
           connect( _m_btnClose, SIGNAL( clicked() ), this, SLOT( close() ) );
         _m_hltActions->addWidget(_m_btnClose);
       _m_vlt->addLayout(_m_hltActions);

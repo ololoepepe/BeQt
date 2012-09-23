@@ -23,6 +23,7 @@
 #include <QMessageBox>
 #include <QDesktopServices>
 #include <QUrl>
+#include <QSize>
 
 Q_DECLARE_METATYPE(QObject *)
 
@@ -32,6 +33,10 @@ const QString BGeneralSettingsTab::Id = "beqt/general";
 const QString BGeneralSettingsTab::IdLocale = "locale";
 const QString BGeneralSettingsTab::IdMultipleInstances = "multiple_instances";
 const QString BGeneralSettingsTab::IdPlugins = "plugins";
+
+//
+
+const QSize BGeneralSettingsTab::BtnIconSize = QSize(24, 24);
 
 //
 
@@ -140,24 +145,28 @@ void BGeneralSettingsTab::_m_initGboxPlugins(const QList<QObject *> &plugins)
         _m_vltPluginActions = new QVBoxLayout;
           _m_btnSettings = new QPushButton;
             _m_btnSettings->setEnabled(false);
+            _m_btnSettings->setIconSize(BtnIconSize);
             _m_btnSettings->setIcon( QIcon( BCore::beqtIcon("configure") ) );
             _m_btnSettings->setText( tr("Configure", "btn text") );
             connect( _m_btnSettings, SIGNAL( clicked() ), this, SLOT( _m_btnSettingsClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnSettings);
           _m_btnAbout = new QPushButton;
             _m_btnAbout->setEnabled(false);
+            _m_btnAbout->setIconSize(BtnIconSize);
             _m_btnAbout->setIcon( QIcon( BCore::beqtIcon("help_about") ) );
             _m_btnAbout->setText( tr("About", "btn text") );
             connect( _m_btnAbout, SIGNAL( clicked() ), this, SLOT( _m_btnAboutClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnAbout);
           _m_btnCopyright = new QPushButton;
             _m_btnCopyright->setEnabled(false);
+            _m_btnCopyright->setIconSize(BtnIconSize);
             _m_btnCopyright->setIcon( QIcon( BCore::beqtIcon("copyright") ) );
             _m_btnCopyright->setText( tr("Copyright", "btn text") );
             connect( _m_btnCopyright, SIGNAL( clicked() ), this, SLOT( _m_btnCopyrightClicked() ) );
           _m_vltPluginActions->addWidget(_m_btnCopyright);
           _m_btnWww = new QPushButton;
             _m_btnWww->setEnabled(false);
+            _m_btnWww->setIconSize(BtnIconSize);
             _m_btnWww->setIcon( QIcon( BCore::beqtIcon("network") ) );
             _m_btnWww->setText( tr("Open homepage", "btn text") );
             connect( _m_btnWww, SIGNAL( clicked() ), this, SLOT( _m_btnWwwClicked() ) );
