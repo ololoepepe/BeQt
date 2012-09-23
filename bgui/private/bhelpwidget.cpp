@@ -28,8 +28,8 @@ BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, cons
           _m_btnHome->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
         _m_hltActions->addWidget(_m_btnHome);
         _m_btnBack = new QPushButton(this);
-          _m_btnHome->setIconSize(BtnIconSize);
-          _m_btnHome->setIcon( QIcon( BCore::beqtIcon("back") ) );
+          _m_btnBack->setIconSize(BtnIconSize);
+          _m_btnBack->setIcon( QIcon( BCore::beqtIcon("back") ) );
         _m_hltActions->addWidget(_m_btnBack);
         _m_btnForward = new QPushButton(this);
           _m_btnForward->setIconSize(BtnIconSize);
