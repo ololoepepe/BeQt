@@ -34,7 +34,8 @@ SOURCES += \
     private/btexteditorsettingstab.cpp \
     babstractfiletype.cpp \
     bkeyboardlayoutmap.cpp \
-    private/ballfiles.cpp
+    private/ballfiles.cpp \
+    bflowlayout.cpp
 
 HEADERS += \
     babstractsettingstab.h \
@@ -63,7 +64,8 @@ HEADERS += \
     private/btexteditorsettingstab.h \
     babstractfiletype.h \
     bkeyboardlayoutmap.h \
-    private/ballfiles.h
+    private/ballfiles.h \
+    bflowlayout.h
 
 TRANSLATIONS += \
     ../bcore/res/translations/bgui_ru.ts
