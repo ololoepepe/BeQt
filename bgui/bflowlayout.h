@@ -10,7 +10,13 @@ class QWidget;
 #include <QStyle>
 #include <QSize>
 
-class BFlowLayout : public QLayout
+#if defined(BGUI_LIBRARY)
+#  define BGUISHARED_EXPORT Q_DECL_EXPORT
+#else
+#  define BGUISHARED_EXPORT Q_DECL_IMPORT
+#endif
+
+class BGUISHARED_EXPORT BFlowLayout : public QLayout
 {
     Q_OBJECT
 public:
