@@ -25,7 +25,7 @@ const QString BTextEditorSettingsTab::IdKeyboardLayoutMap = "keyboard_layout_map
 const QString BTextEditorSettingsTab::IdMacrosDir = "macros_dir";
 //
 const int BTextEditorSettingsTab::ToolBarIconSizeMin = 16;
-const int BTextEditorSettingsTab::ToolBarIconSizeDef = 22;
+const int BTextEditorSettingsTab::ToolBarIconSizeDef = 24;
 const int BTextEditorSettingsTab::ToolBarIconSizeMax = 48;
 
 //

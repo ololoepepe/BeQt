@@ -598,7 +598,7 @@ void BTextEditor::loadTextMacros(const QStringList &dirs)
             if ( !f.open(QFile::ReadOnly) )
                 continue;
             QTextStream in(&f);
-            in.setCodec( _m_defaultEncoding.toAscii() );
+            in.setCodec("UTF-8");
             QString text = in.readAll();
             f.close();
             if ( text.isEmpty() )
