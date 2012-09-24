@@ -65,6 +65,7 @@ public:
     void setSettingsOptions(const SettingsOptions &opt);
     void setHelpDir(const QString &dir);
     void setHelpIndex(const QString &fileName);
+    void setContextualHelpEnabled(bool enabled);
     void setMenuBarEnabled(bool enabled);
     void setAboutIcon(const QString &fileName);
     void setAboutText(const QString &text, bool html = false);

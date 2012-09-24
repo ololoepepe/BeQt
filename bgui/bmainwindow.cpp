@@ -125,6 +125,11 @@ void BMainWindow::setHelpIndex(const QString &fileName)
     _m_hlpIndex = fileName;
 }
 
+void BMainWindow::setContextualHelpEnabled(bool enabled)
+{
+    _m_actContextualHelp->setVisible(enabled);
+}
+
 void BMainWindow::setMenuBarEnabled(bool enabled)
 {
     _m_mnuBar->setVisible(enabled);
