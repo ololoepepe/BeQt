@@ -128,6 +128,16 @@ void BMainWindow::setHelpIndex(const QString &fileName)
 void BMainWindow::setContextualHelpEnabled(bool enabled)
 {
     _m_actContextualHelp->setVisible(enabled);
+    if (enabled)
+    {
+        _m_actHelpContents->setShortcut( QKeySequence() );
+        _m_actContextualHelp->setShortcut( QKeySequence("F1") );
+    }
+    else
+    {
+        _m_actHelpContents->setShortcut( QKeySequence("F1") );
+        _m_actContextualHelp->setShortcut( QKeySequence() );
+    }
 }
 
 void BMainWindow::setMenuBarEnabled(bool enabled)
