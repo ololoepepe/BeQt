@@ -133,10 +133,10 @@ void BCore::init(bool noUserDir)
     addTranslator(ResourcesPath + "/translations/bcore");
     addTranslator(ResourcesPath + "/translations/bgui");
     addTranslator(ResourcesPath + "/translations/bnetwork");
-    addTranslator(_m_sharedRoot + "/translators/" + appnameUnix);
+    addTranslator(_m_sharedRoot + "/translations/" + appnameUnix);
     addTranslator(":/res/translations/" + appnameUnix);
     if (!noUserDir)
-        addTranslator(_m_userRoot + "/translators/" +  appnameUnix);
+        addTranslator(_m_userRoot + "/translations/" +  appnameUnix);
     //Loading plugins
     _m_loadPlugins(userPluginsDir);
     _m_loadPlugins(sharedPluginsDir);
