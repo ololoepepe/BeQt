@@ -157,61 +157,61 @@
 <context>
     <name>BGeneralSettingsTab</name>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="77"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="82"/>
         <source>Enable multiple instances:</source>
         <comment>lbl text</comment>
         <translation type="unfinished">Разрешить несоклько копий:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="106"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="111"/>
         <source>General</source>
         <comment>title</comment>
         <translation type="unfinished">Общие</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="126"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="131"/>
         <source>Extensions</source>
         <comment>gbox title</comment>
         <translation type="unfinished">Расширения</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="134"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="139"/>
         <source>version</source>
         <comment>lswtgti text</comment>
         <translation type="unfinished">версия</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="144"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="150"/>
         <source>Configure</source>
         <comment>btn text</comment>
         <translation type="unfinished">Настроить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="156"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="164"/>
         <source>Copyright</source>
         <comment>btn text</comment>
         <translation type="unfinished">Авторские права</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="150"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="157"/>
         <source>About</source>
         <comment>btn text</comment>
         <translation type="unfinished">О расширении</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="162"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="171"/>
         <source>Open homepage</source>
         <comment>btn text</comment>
         <translation type="unfinished">Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="184"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="193"/>
         <source>Copyright</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">Авторские права</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="188"/>
+        <location filename="../../../bgui/private/bgeneralsettingstab.cpp" line="197"/>
         <source>About</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">О расширении</translation>
@@ -220,31 +220,31 @@
 <context>
     <name>BHelpWidget</name>
     <message>
-        <location filename="../../../bgui/private/bhelpwidget.cpp" line="50"/>
+        <location filename="../../../bgui/private/bhelpwidget.cpp" line="64"/>
         <source>Home</source>
         <comment>btn text</comment>
         <translation type="unfinished">Домой</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bhelpwidget.cpp" line="51"/>
+        <location filename="../../../bgui/private/bhelpwidget.cpp" line="65"/>
         <source>Back</source>
         <comment>btn text</comment>
         <translation type="unfinished">Назад</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bhelpwidget.cpp" line="52"/>
+        <location filename="../../../bgui/private/bhelpwidget.cpp" line="66"/>
         <source>Forward</source>
         <comment>btn text</comment>
         <translation type="unfinished">Вперёд</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bhelpwidget.cpp" line="53"/>
+        <location filename="../../../bgui/private/bhelpwidget.cpp" line="67"/>
         <source>Close</source>
         <comment>btn text</comment>
         <translation type="unfinished">Закрыть</translation>
     </message>
     <message>
-        <location filename="../../../bgui/private/bhelpwidget.cpp" line="59"/>
+        <location filename="../../../bgui/private/bhelpwidget.cpp" line="73"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation type="unfinished">Справка</translation>
@@ -280,79 +280,79 @@
 <context>
     <name>BMainWindow</name>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="195"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="210"/>
         <source>BeQt project</source>
         <comment>aboutWgt infoName</comment>
         <translation type="unfinished">Проект BeQt</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="198"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="213"/>
         <source>This application is created using the BeQt libraries</source>
         <comment>aboutWgt infoRole</comment>
         <translation type="unfinished">Это приложение создано с использованием библиотек BeQt</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="206"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="221"/>
         <source>BeQt uses Oxygen as an icon set</source>
         <comment>aboutWgt infoRole</comment>
         <translation type="unfinished">BeQt использует Oxygen как набор иконок</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="419"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="439"/>
         <source>File</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Файл</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="420"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="440"/>
         <source>Exit</source>
         <comment>act text</comment>
         <translation type="unfinished">Выход</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="422"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="442"/>
         <source>Edit</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Правка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="423"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="443"/>
         <source>Settings</source>
         <comment>act text</comment>
         <translation type="unfinished">Настройки</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="425"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="445"/>
         <source>Help</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Справка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="426"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="446"/>
         <source>Open homepage</source>
         <comment>act text</comment>
         <translation type="unfinished">Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="428"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="448"/>
         <source>Contextual help</source>
         <comment>act text</comment>
         <translation type="unfinished">Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="427"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="447"/>
         <source>Contents</source>
         <comment>act text</comment>
         <translation type="unfinished">Содержание</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="433"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="453"/>
         <source>About</source>
         <comment>act text</comment>
         <translation type="unfinished">О программе</translation>
     </message>
     <message>
-        <location filename="../../../bgui/bmainwindow.cpp" line="434"/>
+        <location filename="../../../bgui/bmainwindow.cpp" line="454"/>
         <source>About the Qt framework</source>
         <comment>act text</comment>
         <translation type="unfinished">О фреймворке Qt</translation>
@@ -502,827 +502,827 @@
 <context>
     <name>BTextEditor</name>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2110"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2133"/>
         <source>Use this action to create a new empty document with the default name</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы создать новый пустой документ с именем по умолчанию</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2113"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2136"/>
         <source>Use this action to open an existing file</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы открыть существующий файл</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2116"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2139"/>
         <source>Use this action to reopen current document using another encoding</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы заново открыть текущий документ с использованием другой кодировки</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2119"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2142"/>
         <source>Use this action to open one of the recently opened files again</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы повторно открыть один из недавно открытых файлов</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2121"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2144"/>
         <source>Use this action to save current document. If the corresponding file does not exist, you will be asked to specify it&apos;s name</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы сохранить текущий документ. Если соответствующий файл не существует, будет запрошено имя для этого файла</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2125"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2148"/>
         <source>Use this action to save current document specifying it&apos;s name and encoding</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы сохранить текущий документ, задав его имя и кодировку</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2129"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2152"/>
         <source>Use this action to save all opened documents (equivalent to using the Save action at every opened document)</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы сохранить все открытые документы (эквивалентно использованию действия &quot;Сохранить&quot; для каждого открытого документа)</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2132"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2155"/>
         <source>Use this action to close current document. If the document is modified, you will be asked to save the changes</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы закрыть текущий документ. Если документ был изменен, будет предложено сохранить изменения</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2136"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2159"/>
         <source>Use this action to close all opened documents (equivalent to using the Close action at every opened document)</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы закрыть все открытые документы (эквивалентно использованию действия &quot;Закрыть&quot; для каждого открытого документа)</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2143"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2166"/>
         <source>Use this action to copy the text selected in current document to the clipboard, and remove that text form the document</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы копировать текст, выделенный в текущем документе, в буфер обмена и удалить этот текст из документа</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2146"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2169"/>
         <source>Use this action to copy the text selected in current document to the clipboard</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы копировать текст, выделенный в текущем документе, в буфер обмена</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2149"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2172"/>
         <source>Use this action to insert the text from the clipboard into current document at cursor position</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы вставить текст из буфера обмена в текущий документ рядом с местоположением курсора</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2154"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2177"/>
         <source>Use this action to make a &quot;bookmarc&quot; in current document at the cursor position. You will be able to quickly go to that bookmark later</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы сделать &quot;закладку&quot; в текущем докменте в местоположении курсора. Вы сможете быстро перейти к этому месту в дальнейшем</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2158"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2181"/>
         <source>Use this action to go to one of the bookmarks made in this document (the operation is cyclic: after you have gone to every bookmark, you will go to the first one again)</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы перейти к одной из закладок, сделанных в этом документе (эта операция циклическая: после того, как вы перейдете к каждой из закладок, вы вновь вернетесь к первой)</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2164"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2187"/>
         <source>This action is useful if you have entered some text in a wrong locale. Select that text and then use this action</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Это действие полезно в случае если вы ввели текст с неправильной раскладкой. Выберите этот текст и используйте данное действие</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2167"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2190"/>
         <source>Use this action to open the Find dialog. The Find dialog is used to search for specified text or to replace one piece of text with another</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы открыть диалог поиска. Диалог поиска используется для отыскания заданного текста и замены одного текста другим</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2170"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2193"/>
         <source>Use this action to find next occurance of the text specified in the Find dialog</source>
         <comment>act WhatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы найти следующее вхождение текста, заданного в диалоге поиска</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1001"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1021"/>
         <source>New document</source>
         <comment>document fileName</comment>
         <translation type="unfinished">Новый документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2104"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2127"/>
         <source>Row:</source>
         <comment>lbl text</comment>
         <translation type="unfinished">Строка:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2105"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2128"/>
         <source>Column:</source>
         <comment>lbl text</comment>
         <translation type="unfinished">Столбец:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2106"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2129"/>
         <source>Encoding:</source>
         <comment>lbl text</comment>
         <translation type="unfinished">Кодировка:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2109"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2132"/>
         <source>Create</source>
         <comment>act text</comment>
         <translation type="unfinished">Создать</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2109"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2132"/>
         <source>Create new document</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Создать новый документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2112"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2135"/>
         <source>Open...</source>
         <comment>act text</comment>
         <translation type="unfinished">Открыть...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2112"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2135"/>
         <source>Open file</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Открыть файл</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2114"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2137"/>
         <source>Reopen</source>
         <comment>act text</comment>
         <translation type="unfinished">Открыть заново</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2115"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2138"/>
         <source>Reopen current document using encoding</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Открыть текущий документ заново, используя кодировку</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2117"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2140"/>
         <source>Recent files</source>
         <comment>act text</comment>
         <translation type="unfinished">Недавние файлы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2118"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2141"/>
         <source>Open recently opened files</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Открыть недавно открытые файлы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2120"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2143"/>
         <source>Save</source>
         <comment>act text</comment>
         <translation type="unfinished">Сохранить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2120"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2143"/>
         <source>Save current document</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сохранить текущий документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2123"/>
-        <location filename="../../../bgui/btexteditor.cpp" line="2178"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2146"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2201"/>
         <source>Save as...</source>
         <comment>act text</comment>
         <translation type="unfinished">Сохранить как...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2124"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2147"/>
         <source>Save current document as...</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сохранить текущий документ как...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2127"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2150"/>
         <source>Save all</source>
         <comment>act text</comment>
         <translation type="unfinished">Сохранить всё</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2128"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2151"/>
         <source>Save all opened documents</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сохранить все открытые документы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2131"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2154"/>
         <source>Close</source>
         <comment>act text</comment>
         <translation type="unfinished">Закрыть</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2131"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2154"/>
         <source>Close current document</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Закрыть текущий документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2134"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2157"/>
         <source>Close all</source>
         <comment>act text</comment>
         <translation type="unfinished">Закрыть всё</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2135"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2158"/>
         <source>Close all opened documents</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Закрыть все открытые документы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2138"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2161"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation type="unfinished">Отменить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2139"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2162"/>
         <source>Undo last action</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Отменить последнее действие</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2140"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2163"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation type="unfinished">Вернуть</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2141"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2164"/>
         <source>Redo undone action</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Вернуть отмененное действие</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2142"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2165"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation type="unfinished">Вырезать</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2142"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2165"/>
         <source>Cut selected text</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Вырезать выделенный текст</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2145"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2168"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation type="unfinished">Копировать</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2145"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2168"/>
         <source>Copy selected text</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Копировать выделенный текст</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2148"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2171"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation type="unfinished">Вставить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2148"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2171"/>
         <source>Paste from clipboard</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Вставить из буфера обмена</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2152"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2175"/>
         <source>Make bookmark</source>
         <comment>act text</comment>
         <translation type="unfinished">Сделать закладку</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2153"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2176"/>
         <source>Make bookmark at current cursor position</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сделать закладку на текущей позиции курсора</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2156"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2179"/>
         <source>Next bookmark</source>
         <comment>act text</comment>
         <translation type="unfinished">Следующая закладка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2157"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2180"/>
         <source>Go to next bookmark</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Перейти к следующей закладке</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2162"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2185"/>
         <source>Switch layout</source>
         <comment>act text</comment>
         <translation type="unfinished">Переключить раскладку</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2163"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2186"/>
         <source>Switch selected text layout</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Переключить раскладку выделенного текста</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2166"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2189"/>
         <source>Find...</source>
         <comment>act text</comment>
         <translation type="unfinished">Найти...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2166"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2189"/>
         <source>Find text...</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Найти текст...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2169"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2192"/>
         <source>Find next</source>
         <comment>act text</comment>
         <translation type="unfinished">Найти следующее</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2169"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2192"/>
         <source>Find next</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Найти следующее</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2173"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2196"/>
         <source>Clear macro</source>
         <comment>act text</comment>
         <translation type="unfinished">Сбросить макрос</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2174"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2197"/>
         <source>Clear last recorded or loaded macro</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сбросить последний записанный или загруженный макрос</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2179"/>
-        <source>Insert text macro</source>
-        <comment>act text</comment>
-        <translation type="unfinished">Втсавить текстовый макрос</translation>
-    </message>
-    <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2180"/>
-        <source>Insert text macro into current document</source>
-        <comment>act toolTip</comment>
-        <translation type="unfinished">Вставить текстовый макрос в текущий документ</translation>
-    </message>
-    <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2188"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2211"/>
         <source>File</source>
         <comment>tbar windowTitle</comment>
         <translation type="unfinished">Файл</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2189"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2212"/>
         <source>Edit</source>
         <comment>tbar windowTitle</comment>
         <translation type="unfinished">Правка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1224"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1243"/>
         <source>Unicode</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Юникод</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1225"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1244"/>
         <source>Eastern Europe</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1226"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1245"/>
         <source>Western Europe</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Западная Европа</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1227"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1246"/>
         <source>East Asia</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1228"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1247"/>
         <source>South-East and South-West Asia</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Юго-восточная и Юго-западная Азия</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1229"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1248"/>
         <source>Middle East</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Центральный восток</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1231"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1250"/>
         <source>Unicode</source>
         <comment>act text</comment>
         <translation type="unfinished">Юникод</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1233"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1252"/>
         <source>Baltic</source>
         <comment>act text</comment>
         <translation type="unfinished">Балтийская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1234"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1253"/>
         <source>Cyrillic</source>
         <comment>act text</comment>
         <translation type="unfinished">Кириллица</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1235"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1254"/>
         <source>Cyrillic (Ukrainian)</source>
         <comment>act text</comment>
         <translation type="unfinished">Кириллица (украинская)</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1236"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1255"/>
         <source>Romanic</source>
         <comment>act text</comment>
         <translation type="unfinished">Романская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1237"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1256"/>
         <source>Central European</source>
         <comment>act text</comment>
         <translation type="unfinished">Центральноевропейская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1238"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1257"/>
         <source>Greek</source>
         <comment>act text</comment>
         <translation type="unfinished">Греческая</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1240"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1259"/>
         <source>Western</source>
         <comment>act text</comment>
         <translation type="unfinished">Западная</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1241"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1260"/>
         <source>Celtic</source>
         <comment>act text</comment>
         <translation type="unfinished">Кельтская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1242"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1261"/>
         <source>Nordic</source>
         <comment>act text</comment>
         <translation type="unfinished">Северная</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1243"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1262"/>
         <source>South European</source>
         <comment>act text</comment>
         <translation type="unfinished">Южноевропейская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1244"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1263"/>
         <source>Vietnamese</source>
         <comment>act text</comment>
         <translation type="unfinished">Вьетнамская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1245"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1264"/>
         <source>Traditional Chinese</source>
         <comment>act text</comment>
         <translation type="unfinished">Китайская традиционная</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1246"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1265"/>
         <source>Simplified Chinese</source>
         <comment>act text</comment>
         <translation type="unfinished">Китайская упрощенная</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1247"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1266"/>
         <source>Korean</source>
         <comment>act text</comment>
         <translation type="unfinished">Корейская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1248"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1267"/>
         <source>Japanese</source>
         <comment>act text</comment>
         <translation type="unfinished">Японская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1249"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1268"/>
         <source>Thai</source>
         <comment>act text</comment>
         <translation type="unfinished">Тайская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1250"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1269"/>
         <source>Turkish</source>
         <comment>act text</comment>
         <translation type="unfinished">Турецкая</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1251"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1270"/>
         <source>Arabic</source>
         <comment>act text</comment>
         <translation type="unfinished">Арабская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1252"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1271"/>
         <source>Hebrew</source>
         <comment>act text</comment>
         <translation type="unfinished">Еврейская</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1253"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1272"/>
         <source>Hebrew (visual)</source>
         <comment>act text</comment>
         <translation type="unfinished">Еврейская (видимая)</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2175"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2198"/>
         <source>Play</source>
         <comment>act text</comment>
         <translation type="unfinished">Запустить</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2175"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2198"/>
         <source>Play macro</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Запустить макрос</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2177"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2200"/>
         <source>Load...</source>
         <comment>act text</comment>
         <translation type="unfinished">Загрузить...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2177"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2200"/>
         <source>Load macro...</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Загрузить макрос...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2178"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2201"/>
         <source>Save macro as...</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сохранить макрос как...</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2182"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2202"/>
+        <source>Insert autotext</source>
+        <comment>act text</comment>
+        <translation type="unfinished">Вставить автотекст</translation>
+    </message>
+    <message>
+        <location filename="../../../bgui/btexteditor.cpp" line="2203"/>
+        <source>Insert autotext into current document</source>
+        <comment>act toolTip</comment>
+        <translation type="unfinished">Вставить автотекст в текущий документ</translation>
+    </message>
+    <message>
+        <location filename="../../../bgui/btexteditor.cpp" line="2205"/>
         <source>File</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Файл</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2183"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2206"/>
         <source>Edit</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Правка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2184"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2207"/>
         <source>Document</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2185"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2208"/>
         <source>Macros</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Макросы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2190"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2213"/>
         <source>Document</source>
         <comment>tbar windowTitle</comment>
         <translation type="unfinished">Документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2191"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2214"/>
         <source>Macros</source>
         <comment>tbar windowTitle</comment>
         <translation type="unfinished">Макросы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1299"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1318"/>
         <source>Mode: blocks</source>
         <comment>act text</comment>
         <translation type="unfinished">Режим: блоки</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1300"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1319"/>
         <source>Switch to lines mode</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Переключиться в режим строк</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1305"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1324"/>
         <source>Mode: lines</source>
         <comment>act text</comment>
         <translation type="unfinished">Режим: строки</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1306"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1325"/>
         <source>Switch to blocks mode</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Переключиться в режим блоков</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1683"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1706"/>
         <source>Select file</source>
         <comment>getOpFN caption</comment>
         <translation type="unfinished">Выберите файл</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1685"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1708"/>
         <source>Macros</source>
         <comment>getOpFN filter</comment>
         <translation type="unfinished">Макросы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1695"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1718"/>
         <source>Select file name</source>
         <comment>getSvFN caption</comment>
         <translation type="unfinished">Выберите имя файла</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1697"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1720"/>
         <source>Macros</source>
         <comment>getSvFN filter</comment>
         <translation type="unfinished">Макросы</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1855"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1878"/>
         <source>Information</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">Информация</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1866"/>
-        <location filename="../../../bgui/btexteditor.cpp" line="1879"/>
-        <location filename="../../../bgui/btexteditor.cpp" line="1899"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1889"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1902"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1922"/>
         <source>Question</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">Вопрос</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1920"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1943"/>
         <source>Error</source>
         <comment>msgbox windowTitle</comment>
         <translation type="unfinished">Ошибка</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2024"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2047"/>
         <source>Unset main</source>
         <comment>act text</comment>
         <translation type="unfinished">Убрать основной</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2025"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2048"/>
         <source>Unset main document</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Убрать основной документ</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2031"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2054"/>
         <source>Set main</source>
         <comment>act text</comment>
         <translation type="unfinished">Сделать основным</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2032"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2055"/>
         <source>Set current document as main</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сделать текущий документ основным</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2042"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2065"/>
         <source>Stop recording</source>
         <comment>act text</comment>
         <translation type="unfinished">Остановить запись</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2043"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2066"/>
         <source>Stop recording macro</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Остановить запись макроса</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2048"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2071"/>
         <source>Start recording</source>
         <comment>act text</comment>
         <translation type="unfinished">Начать запись</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2049"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2072"/>
         <source>Start recording macro</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Начать запись макроса</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2059"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2082"/>
         <source>Hide</source>
         <comment>act text</comment>
         <translation type="unfinished">Спрятать</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2060"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2083"/>
         <source>Hide macros console</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Спрятать консоль макросов</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2065"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2088"/>
         <source>Show</source>
         <comment>act text</comment>
         <translation type="unfinished">Показать</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2066"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2089"/>
         <source>Show macros console</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Показать консоль макросов</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1867"/>
-        <location filename="../../../bgui/btexteditor.cpp" line="1880"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1890"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1903"/>
         <source>Document has been modified:</source>
         <comment>msgbox text</comment>
         <translation type="unfinished">Документ был изменён:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1868"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1891"/>
         <source>Do you want to reload it? All changes will be discarded.</source>
         <comment>msgbox informativeText</comment>
         <translation type="unfinished">Хотите открыть его заново? Все изменения будут отброшены.</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1900"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1923"/>
         <source>Document is already opened in other editor window:</source>
         <comment>msgbox text</comment>
         <translation type="unfinished">Документ уже открыт в другом окне редактора:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1901"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1924"/>
         <source>Do you want to open it in this window anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation type="unfinished">Хотите открыть его в этом окне?</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1856"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1879"/>
         <source>File is already opened:</source>
         <comment>msgbox text</comment>
         <translation type="unfinished">Файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1881"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1904"/>
         <source>Do you want to save the changes?</source>
         <comment>msgbox informativeText</comment>
         <translation type="unfinished">Хотите сохранить изменения?</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1921"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1944"/>
         <source>Failed to save file:</source>
         <comment>msgbox text</comment>
         <translation type="unfinished">Не удалось сохранить файл:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2237"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2260"/>
         <source>Maximum line length reached!</source>
         <comment>stbar message</comment>
         <translation type="unfinished">Достигнута максимальная длина строки!</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="1903"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="1926"/>
         <source>Read only mode</source>
         <comment>btn text</comment>
         <translation type="unfinished">Режим &quot;только чтение&quot;</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2096"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2119"/>
         <source>Replaced:</source>
         <comment>stbar message</comment>
         <translation type="unfinished">Заменено:</translation>
     </message>
     <message>
-        <location filename="../../../bgui/btexteditor.cpp" line="2248"/>
+        <location filename="../../../bgui/btexteditor.cpp" line="2271"/>
         <source>Could not find</source>
         <comment>stbar message</comment>
         <translation type="unfinished">Не удалось найти</translation>

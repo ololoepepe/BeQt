@@ -78,7 +78,6 @@ public:
           FindNextAction,
         //DocumentMenu
           SwitchDocumentMain,
-          //separator
           MakeBookmarkAction,
           GotoNextBookmarkAction,
           //separator
@@ -93,7 +92,7 @@ public:
           LoadMacroAction,
           SaveMacroAction,
           //separator
-          TextMacrosAction
+          AutoTextAction
     };
     //
     class BGUISHARED_EXPORT SettingsOptions
@@ -143,6 +142,7 @@ public:
     void setKeyboardLayoutMap(const QString &description);
     void setBlockMode(bool enabled);
     void setFindDialogSettings(const FindDialogSettings &settings);
+    void setMainDocumentActionVisible(bool visible);
     void applySettings(const QVariantMap &settings);
     //settings:get
     bool isRegisteredGlobally() const;
@@ -160,16 +160,17 @@ public:
     bool blockMode() const;
     FindDialogSettings findDialogSettings() const;
     const QString &lastOpenSaveDialogDir() const;
+    bool mainDocumentActionVisible() const;
     BAbstractSettingsTab *createSettingsTab(const SettingsOptions &opt) const;
     //settings:load/save
     void loadSettings( const QString &settingsGroup = QString() );
     void saveSettings( const QString &settingsGroup = QString() );
     //loadable content
-    void loadTextMacros(const QString &dir);
-    void loadTextMacros(const QStringList &dirs);
+    void loadAutoText(const QString &dir);
+    void loadAutoText(const QStringList &dirs);
     void loadKeyboardLayoutMaps(const QString &dir);
     void loadKeyboardLayoutMaps(const QStringList &dirs);
-    const QStringList &textMacrosDirs() const;
+    const QStringList &autoTextDirs() const;
     const QStringList &keyboardLayoutMapsDirs() const;
     //gui:set
     void setTabsClosable(bool closable);
@@ -323,7 +324,7 @@ private:
     BAbstractFileType *_m_defaultFileType;
     QMap<QString, BKeyboardLayoutMap> _m_keyboardLayoutMaps;
     //additional
-    QStringList _m_textMacrosDirs;
+    QStringList _m_autoTextDirs;
     QStringList _m_keyboardLayoutMapsDirs;
     QStringList _m_openSaveDlgHistory;
     //
@@ -430,6 +431,7 @@ private slots:
 signals:
     void currentDocumentChanged(const QString &fileName);
     void documentAvailableChanged(bool available);
+    void syntaxChanged(const QString &type);
     void showMessage(const QString &message, int timeout);
 };
 

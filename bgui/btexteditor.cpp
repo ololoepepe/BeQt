@@ -272,7 +272,7 @@ void BTextEditor::setDefaultEncoding(const QString &codecName)
     if (!BTextEditorDocument::checkEncoding(codecName) || codecName == _m_defaultEncoding)
         return;
     _m_defaultEncoding = codecName;
-    loadTextMacros( textMacrosDirs() );
+    loadAutoText( autoTextDirs() );
     if ( _m_currentDocument.isNull() )
         _m_updateEncoding(_m_defaultEncoding);
 }
@@ -340,6 +340,11 @@ void BTextEditor::setFindDialogSettings(const FindDialogSettings &settings)
     param.textHistory = settings.textHistory;
     param.wholeWords = settings.wholeWords;
     _m_findDlg->setParameters(param);
+}
+
+void BTextEditor::setMainDocumentActionVisible(bool visible)
+{
+    _m_actions.value(SwitchDocumentMain)->setVisible(visible);
 }
 
 void BTextEditor::applySettings(const QVariantMap &settings)
@@ -465,6 +470,11 @@ const QString &BTextEditor::lastOpenSaveDialogDir() const
     return _m_openSaveDlgDir;
 }
 
+bool BTextEditor::mainDocumentActionVisible() const
+{
+    return _m_actions.value(SwitchDocumentMain)->isVisible();
+}
+
 BAbstractSettingsTab *BTextEditor::createSettingsTab(const SettingsOptions &opt) const
 {
     QVariantMap m;
@@ -574,15 +584,15 @@ void BTextEditor::saveSettings(const QString &settingsGroup)
 
 //loadable content
 
-void BTextEditor::loadTextMacros(const QString &dir)
+void BTextEditor::loadAutoText(const QString &dir)
 {
-    loadTextMacros(QStringList() << dir);
+    loadAutoText(QStringList() << dir);
 }
 
-void BTextEditor::loadTextMacros(const QStringList &dirs)
+void BTextEditor::loadAutoText(const QStringList &dirs)
 {
-    _m_textMacrosDirs = dirs;
-    QAction *act = editorAction(TextMacrosAction);
+    _m_autoTextDirs = dirs;
+    QAction *act = editorAction(AutoTextAction);
     QMenu *mnu = act->menu();
     mnu->clear();
     QStringList sl;
@@ -634,9 +644,9 @@ void BTextEditor::loadKeyboardLayoutMaps(const QStringList &dirs)
     }
 }
 
-const QStringList &BTextEditor::textMacrosDirs() const
+const QStringList &BTextEditor::autoTextDirs() const
 {
-    return _m_textMacrosDirs;
+    return _m_autoTextDirs;
 }
 
 const QStringList &BTextEditor::keyboardLayoutMapsDirs() const
@@ -737,8 +747,6 @@ QList<QAction *> BTextEditor::editorActions(Menu id, bool includeSeparators) con
         break;
     case DocumentMenu:
         list << _m_actions.value(SwitchDocumentMain);
-        if (includeSeparators)
-            list << _m_createSeparator();
         list << _m_actions.value(MakeBookmarkAction);
         list << _m_actions.value(GotoNextBookmarkAction);
         if (includeSeparators)
@@ -758,7 +766,7 @@ QList<QAction *> BTextEditor::editorActions(Menu id, bool includeSeparators) con
         list << _m_actions.value(SaveMacroAction);
         if (includeSeparators)
             list << _m_createSeparator();
-        list << _m_actions.value(TextMacrosAction);
+        list << _m_actions.value(AutoTextAction);
         break;
     default:
         break;
@@ -1135,9 +1143,8 @@ void BTextEditor::_m_initToolBars()
       _m_createAction(FindAction, tbar, "edit_find", "Ctrl+F");
       _m_createAction(FindNextAction, tbar, "edit_find_next", "Ctrl+G");
     tbar = _m_createToolBar(DocumentMenu, "DocumentToolBar");
-      _m_createAction(SwitchDocumentMain, tbar, "");
+      _m_createAction(SwitchDocumentMain, tbar, "")->setVisible(false);
       _m_resetSwitchDocumentMainAction();
-      tbar->addSeparator();
       _m_createAction(MakeBookmarkAction, tbar, "bookmark_add", "Ctrl+Shift+F10");
       _m_createAction(GotoNextBookmarkAction, tbar, "bookmark", "Ctrl+F10");
       tbar->addSeparator();
@@ -1156,7 +1163,7 @@ void BTextEditor::_m_initToolBars()
       act = _m_createAction(SaveMacroAction, 0, "filesaveas");
       connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
       tbar->addSeparator();
-      _m_createMenuAction(TextMacrosAction, tbar, "editpaste");
+      _m_createMenuAction(AutoTextAction, tbar, "editpaste");
 }
 
 void BTextEditor::_m_initMenus()
@@ -2192,8 +2199,8 @@ void BTextEditor::_m_retranslateUi()
     _m_resetShowHideMacrosAction(); //TODO: whatsThis
     _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
     _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
-    _m_retranslateAction( TextMacrosAction, tr("Insert text macro", "act text"),
-                          tr("Insert text macro into current document", "act toolTip") );
+    _m_retranslateAction( AutoTextAction, tr("Insert autotext", "act text"),
+                          tr("Insert autotext into current document", "act toolTip") );
     //menus
     _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
     _m_retranslateMenu( EditMenu, tr("Edit", "mnu title") );
@@ -2378,7 +2385,7 @@ void BTextEditor::_m_twgtCurrentChanged(int index)
     editorAction(SwitchBlockModeAction)->setEnabled(da);
     editorAction(SwitchSelectedTextLayoutAction)->setEnabled( da && _m_currentDocument->isCopyAvailable() );
     editorAction(FindAction)->setEnabled(da);
-    editorAction(TextMacrosAction)->setEnabled( da && !editorAction(TextMacrosAction)->menu()->isEmpty() );
+    editorAction(AutoTextAction)->setEnabled( da && !editorAction(AutoTextAction)->menu()->isEmpty() );
     emit currentDocumentChanged(da ? _m_currentDocument->fileName() : "");
     emit documentAvailableChanged(da);
     if (da)
