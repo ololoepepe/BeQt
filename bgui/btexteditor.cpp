@@ -2415,4 +2415,5 @@ void BTextEditor::_m_cmboxSyntaxCurrentIndexChanged(int index)
         return;
     _m_currentDocument->setSyntax( index ? _m_userFileTypes.at(index - 1)->syntax() : _m_defaultFileType->syntax() );
     _m_currentDocument->setFocusToEdit();
+    emit syntaxChanged( _m_currentDocument->syntax().type() );
 }
