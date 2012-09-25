@@ -51,9 +51,11 @@ public:
     static bool setLocale(const QLocale &l);
     static bool multipleInstancesEnabled();
     static const QLocale &currentLocale();
-    //translation
-    static void addTranslator(const QString &path);
+    //translations
+    static void addTranslatorPath(const QString &path);
+    static void addTranslatorPrefix(const QString &prefix);
     static QList<QLocale> availableLocales();
+    static QString translationsDir(bool user = true);
     //paths and data
     static void setPath(const QString &key, const QString &path, bool file = false);
     static QString shared(const QString &key = QString(), bool file = false);
@@ -64,6 +66,7 @@ public:
     static void removePluginHandlingObject(QObject *object);
     static void setPluginValidityChecker( bool (*function)(const QObject *) );
     static QList<QObject *> plugins();
+    static QString pluginsDir(bool user = true);
     //filesystem
     static void createUserPath(const QString &key, bool file = false);
     static bool copyResource(const QString &key);
@@ -84,13 +87,18 @@ private:
     static QMutex _m_instMutex;
     static bool _m_initialized;
     static QStringList _m_translatorPaths;
+    static QStringList _m_translatorPrefixes;
     static QList<QTranslator *> _m_translators;
     static bool _m_multipleInstances;
     static QLocale _m_locale;
+    static QString _m_sharedTranslationsDir;
+    static QString _m_userTranslationsDir;
     static QString _m_sharedRoot;
     static QString _m_userRoot;
     static QMap<QString, QString> _m_dirMap;
     static QMap<QString, QString> _m_fileMap;
+    static QString _m_sharedPluginsDir;
+    static QString _m_userPluginsDir;
     static QList< QPointer<QObject> > _m_pluginHandlingObjects;
     static QMap<QString, QPluginLoader *> _m_pluginMap;
     static bool (*_m_pluginValidityChecker)(const QObject *);
