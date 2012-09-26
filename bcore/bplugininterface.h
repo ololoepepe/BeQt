@@ -16,6 +16,7 @@ public:
     virtual QString copyright() const = 0;
     virtual QString about() const = 0;
     virtual QString www() const = 0;
+    virtual QString translationPrefix() const = 0;
     virtual void loadSettings() = 0;
     virtual void saveSettings() = 0;
     virtual void handleLoad(QObject *object) = 0;

@@ -555,6 +555,7 @@ void BCore::_m_loadPlugin(const QString &fileName)
         pl->unload();
         return pl->deleteLater();
     }
+    addTranslatorPrefix( interface->translationPrefix() );
     _m_pluginMap.insert(fileName, pl);
     for (int i = 0; i < _m_pluginHandlingObjects.size(); ++i)
         interface->handleLoad( _m_pluginHandlingObjects.at(i).data() );
