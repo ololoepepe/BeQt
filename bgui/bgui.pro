@@ -67,9 +67,6 @@ HEADERS += \
     private/ballfiles.h \
     bflowlayout.h
 
-TRANSLATIONS += \
-    ../bcore/res/translations/bgui_ru.ts
-
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../bcore/release/ -lbeqtcore1
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../bcore/debug/ -lbeqtcore1
 else:unix:!symbian: LIBS += -L$$OUT_PWD/../bcore/ -lbeqtcore

@@ -1,8 +1,5 @@
 <RCC>
     <qresource prefix="/beqt">
-        <file>res/translations/bgui_ru.qm</file>
-        <file>res/translations/bnetwork_ru.qm</file>
-        <file>res/translations/qt_ru.qm</file>
         <file>res/ico/bookmark.png</file>
         <file>res/ico/bookmark_add.png</file>
         <file>res/ico/charset.png</file>
@@ -49,5 +46,7 @@
         <file>res/ico/back.png</file>
         <file>res/ico/forward.png</file>
         <file>res/ico/gohome.png</file>
+        <file>res/translations/beqt_ru.qm</file>
+        <file>res/translations/qt_ru.qm</file>
     </qresource>
 </RCC>

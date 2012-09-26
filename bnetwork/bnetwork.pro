@@ -33,9 +33,6 @@ SOURCES += \
     private/bnetworkserverthread.cpp \
     private/btcpserver.cpp
 
-TRANSLATIONS += \
-    ../bcore/res/translations/bnetwork_ru.ts
-
 win32:CONFIG(release, debug|release): LIBS += -L$$OUT_PWD/../bcore/release/ -lbeqtcore1
 else:win32:CONFIG(debug, debug|release): LIBS += -L$$OUT_PWD/../bcore/debug/ -lbeqtcore1
 else:unix:!symbian: LIBS += -L$$OUT_PWD/../bcore/ -lbeqtcore

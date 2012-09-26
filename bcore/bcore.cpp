@@ -136,9 +136,7 @@ void BCore::init(bool noUserDir)
     }
     //Adding translator prefixes and paths
     addTranslatorPrefix("qt");
-    addTranslatorPrefix("bcore");
-    addTranslatorPrefix("bgui");
-    addTranslatorPrefix("bnetwork");
+    addTranslatorPrefix("beqt");
     addTranslatorPrefix(appnameUnix);
     addTranslatorPath(ResourcesPath + "/translations");
     addTranslatorPath(":/res/translations");
