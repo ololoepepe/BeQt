@@ -2227,9 +2227,13 @@ void BTextEditor::_m_retranslateUi()
     _m_retranslateReopenMenu();
     //toolBars
     _m_toolBars.value(FileMenu)->setWindowTitle( tr("File", "tbar windowTitle") );
+    //_m_toolBars.value(FileMenu)->setWhatsThis( tr("This toolbar contains actions", "tbar whatsThis") );
     _m_toolBars.value(EditMenu)->setWindowTitle( tr("Edit", "tbar windowTitle") );
+    //_m_toolBars.value(EditMenu)->setWhatsThis( tr("", "tbar whatsThis") );
     _m_toolBars.value(DocumentMenu)->setWindowTitle( tr("Document", "tbar windowTitle") );
+    //_m_toolBars.value(DocumentMenu)->setWhatsThis( tr("", "tbar whatsThis") );
     _m_toolBars.value(MacrosMenu)->setWindowTitle( tr("Macros", "tbar windowTitle") );
+    //_m_toolBars.value(MacrosMenu)->setWhatsThis( tr("", "tbar whatsThis") );
 }
 
 void BTextEditor::_m_clipboardDataChanged()
