@@ -1314,12 +1314,15 @@ void BTextEditor::_m_retranslateSwitchBlockModeAction()
         act->setIcon( QIcon( BCore::beqtIcon("mode_blocks") ) );
         act->setText( tr("Mode: blocks", "act text") );
         act->setToolTip( tr("Switch to lines mode", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to switch to lines mode (that is a classic mode)", "act whatsThis") );
     }
     else
     {
         act->setIcon( QIcon( BCore::beqtIcon("mode_lines") ) );
         act->setText( tr("Mode: lines", "act text") );
         act->setToolTip( tr("Switch to blocks mode", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to switch to blocks mode "
+                              "(you can select rectangular blocks of text in that mode)", "act whatsThis") );
     }
 }
 
@@ -2043,6 +2046,7 @@ void BTextEditor::_m_resetSwitchDocumentMainAction()
         act->setIcon( QIcon( BCore::beqtIcon("list_add") ) );
         act->setText( tr("Unset main", "act text") );
         act->setToolTip( tr("Unset main document", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to remove the \"Main\" flag from the main document", "act whatsThis") );
     }
     else
     {
@@ -2050,6 +2054,7 @@ void BTextEditor::_m_resetSwitchDocumentMainAction()
                                                                   QString("list_remove") ) ) );
         act->setText( tr("Set main", "act text") );
         act->setToolTip( tr("Set current document as main", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to mark current document as \"Main\"", "act whatsThis") );
     }
 }
 
@@ -2061,12 +2066,16 @@ void BTextEditor::_m_resetRecordMacroAction()
         act->setIcon( QIcon( BCore::beqtIcon("player_stop") ) );
         act->setText( tr("Stop recording", "act text") );
         act->setToolTip( tr("Stop recording macro", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to finish recording macro (the macro will become available for usage)",
+                              "act whatsThis") );
     }
     else
     {
         act->setIcon( QIcon( BCore::beqtIcon("player_record") ) );
         act->setText( tr("Start recording", "act text") );
         act->setToolTip( tr("Start recording macro", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to start recording a macro. "
+                              "Warning: current macro (if present) will be discarded", "act whatsThis") );
     }
 }
 
@@ -2078,12 +2087,16 @@ void BTextEditor::_m_resetShowHideMacrosAction()
         act->setIcon( QIcon( BCore::beqtIcon("console_invisible") ) );
         act->setText( tr("Hide", "act text") );
         act->setToolTip( tr("Hide macros console", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to hide macros console. Current macro (if present) is not discarded",
+                              "act whatsThis") );
     }
     else
     {
         act->setIcon( QIcon( BCore::beqtIcon("console_visible") ) );
         act->setText( tr("Show", "act text") );
         act->setToolTip( tr("Show macros console", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show macros console. The console is useful for browsing long macros",
+                              "act whatsThis") );
     }
 }
 
@@ -2125,7 +2138,6 @@ void BTextEditor::_m_retranslateUi()
     _m_lblColumnLabel->setText( tr("Column:", "lbl text") );
     _m_lblEncodingLabel->setText( tr("Encoding:", "lbl text") );
     //editor actions
-    //tr("", "act WhatsThis")
     _m_retranslateAction( NewDocumentAction, tr("Create", "act text"), tr("Create new document", "act toolTip"),
                           tr("Use this action to create a new empty document with the default name",
                           "act whatsThis") );
@@ -2155,10 +2167,11 @@ void BTextEditor::_m_retranslateUi()
                           tr("Close all opened documents", "act toolTip"),
                           tr("Use this action to close all opened documents "
                              "(equivalent to using the Close action at every opened document)", "act WhatsThis") );
-    _m_retranslateAction( UndoAction, tr("Undo", "act text"),
-                          tr("Undo last action", "act toolTip") ); //TODO: whatsThis
-    _m_retranslateAction( RedoAction, tr("Redo", "act text"),
-                          tr("Redo undone action", "act toolTip") ); //TODO: whatsThis
+    _m_retranslateAction( UndoAction, tr("Undo", "act text"), tr("Undo last action", "act toolTip"),
+                          tr("Use this action to undo last document modification (symbol input, text pasting, etc.)",
+                             "act whatsThis") );
+    _m_retranslateAction( RedoAction, tr("Redo", "act text"), tr("Redo undone action", "act toolTip"),
+                          tr("Use this to repeat the last action, reverted with \"Undo\"", "act whatsThis") );
     _m_retranslateAction( CutAction, tr("Cut", "act text"), tr("Cut selected text", "act toolTip"),
                           tr("Use this action to copy the text selected in current document to the clipboard, "
                              "and remove that text form the document", "act WhatsThis") );
@@ -2169,8 +2182,10 @@ void BTextEditor::_m_retranslateUi()
                           tr("Use this action to insert the text from the clipboard into current document at "
                              "cursor position", "act WhatsThis") );
     _m_retranslateAction( AutoTextAction, tr("Insert autotext", "act text"),
-                          tr("Insert autotext into current document", "act toolTip") );
-    _m_resetSwitchDocumentMainAction(); //TODO: whatsThis
+                          tr("Insert autotext into current document", "act toolTip"),
+                          tr("Use this action to insert a piece of text into current document at cursor position",
+                             "act whatsThis") );
+    _m_resetSwitchDocumentMainAction();
     _m_retranslateAction( MakeBookmarkAction, tr("Make bookmark", "act text"),
                           tr("Make bookmark at current cursor position", "act toolTip"),
                           tr("Use this action to make a \"bookmarc\" in current document at the cursor position. "
@@ -2180,7 +2195,7 @@ void BTextEditor::_m_retranslateUi()
                           tr("Use this action to go to one of the bookmarks made in this document "
                              "(the operation is cyclic: after you have gone to every bookmark, you will go to "
                              "the first one again)", "act WhatsThis") );
-    _m_retranslateSwitchBlockModeAction(); //TODO: whatsThis
+    _m_retranslateSwitchBlockModeAction();
     _m_retranslateAction( SwitchSelectedTextLayoutAction, tr("Switch layout", "act text"),
                           tr("Switch selected text layout", "act toolTip"),
                           tr("This action is useful if you have entered some text in a wrong locale. "
@@ -2191,13 +2206,19 @@ void BTextEditor::_m_retranslateUi()
     _m_retranslateAction( FindNextAction, tr("Find next", "act text"), tr("Find next", "act toolTip"),
                           tr("Use this action to find next occurance of the text specified in the Find dialog",
                              "act WhatsThis") );
-    _m_resetRecordMacroAction(); //TODO: whatsThis
+    _m_resetRecordMacroAction();
     _m_retranslateAction( ClearMacroAction, tr("Clear macro", "act text"),
-                          tr("Clear last recorded or loaded macro", "act toolTip") );
-    _m_retranslateAction( PlayMacroAction, tr("Play", "act text"), tr("Play macro", "act toolTip") ); //TODO
-    _m_resetShowHideMacrosAction(); //TODO: whatsThis
-    _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
-    _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
+                          tr("Clear last recorded or loaded macro", "act toolTip"),
+                          tr("Use this action to discard current macro. Corresponding file (if present) is not deleted",
+                             "act whatsThis") );
+    _m_retranslateAction( PlayMacroAction, tr("Play", "act text"), tr("Play macro", "act toolTip"),
+                          tr("Use this action to apply last recorded macro. "
+                             "Warning: execution of macro can't be interrupted", "act whatsThis") );
+    _m_resetShowHideMacrosAction();
+    _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip"),
+                          tr("Use this action to load a previously saved macro from a file", "act whatsThis") );
+    _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip"),
+                          tr("Use this action to save current macro to a file for future use", "act whatsThis") );
     //menus
     _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
     _m_retranslateMenu( EditMenu, tr("Edit", "mnu title") );
