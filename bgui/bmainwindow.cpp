@@ -441,17 +441,28 @@ void BMainWindow::_m_retranslateUi()
     //MenuEdit
     _m_mnuEdit->setTitle( tr("Edit", "mnu title") );
     _m_actSettings->setText(tr("Settings", "act text") + "...");
+    _m_actSettings->setWhatsThis( tr("Use this action to configure the application and it's plugins (if any)",
+                                     "act whatsThis") );
     //MenuHelp
     _m_mnuHelp->setTitle( tr("Help", "mnu title") );
     _m_actHomepage->setText( tr("Open homepage", "act text") );
+    _m_actHomepage->setWhatsThis( tr("Use this action to open the application's home page with your web browser",
+                                     "act whatsThis") );
     _m_actHelpContents->setText( tr("Contents", "act text") );
+    _m_actHelpContents->setWhatsThis( tr("Use this action to show the application's Help contents", "act whatsThis") );
     _m_actContextualHelp->setText( tr("Contextual help", "act text") );
+    _m_actContextualHelp->setWhatsThis( tr("Use this action to show Help for the currently active part "
+                                           "of the application", "act whatsThis") );
     QAction *wtact = QWhatsThis::createAction();
     _m_actWhatsThis->setText( wtact->text() );
     _m_actWhatsThis->setToolTip( wtact->toolTip() );
     wtact->deleteLater();
     _m_actAbout->setText(tr("About", "act text") + "...");
+    _m_actAbout->setWhatsThis( tr("Use this action to show information about the application, "
+                                  "it's version, authors, license, etc.", "act whatsThis") );
     _m_actAboutQt->setText(tr("About the Qt framework", "act text") + "...");
+    _m_actAboutQt->setWhatsThis( tr("Use this action to show information about the libraries "
+                                    "with which this application is built", "act whatsThis") );
     //AboutDialog
     setAboutThanksTo( PersonInfoList() );
 }

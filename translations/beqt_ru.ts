@@ -349,37 +349,73 @@
         <translation type="unfinished">Настройки</translation>
     </message>
     <message>
-        <location filename="../bgui/bmainwindow.cpp" line="445"/>
+        <location filename="../bgui/bmainwindow.cpp" line="444"/>
+        <source>Use this action to configure the application and it&apos;s plugins (if any)</source>
+        <comment>act whatsThis</comment>
+        <translation type="unfinished">Используйте это действие чтобы настроить приложение и расширения (если они есть)</translation>
+    </message>
+    <message>
+        <location filename="../bgui/bmainwindow.cpp" line="447"/>
         <source>Help</source>
         <comment>mnu title</comment>
         <translation type="unfinished">Справка</translation>
     </message>
     <message>
-        <location filename="../bgui/bmainwindow.cpp" line="446"/>
+        <location filename="../bgui/bmainwindow.cpp" line="448"/>
         <source>Open homepage</source>
         <comment>act text</comment>
         <translation type="unfinished">Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../bgui/bmainwindow.cpp" line="448"/>
+        <location filename="../bgui/bmainwindow.cpp" line="449"/>
+        <source>Use this action to open the application&apos;s home page with your web browser</source>
+        <comment>act whatsThis</comment>
+        <translation type="unfinished">Используйте это действие чтобы открыть домашнюю страницу приложения в вашем веб-браузере</translation>
+    </message>
+    <message>
+        <location filename="../bgui/bmainwindow.cpp" line="452"/>
+        <source>Use this action to show the application&apos;s Help contents</source>
+        <comment>act whatsThis</comment>
+        <translation type="unfinished">Используйте это действие чтобы показать содержание Справки приложения</translation>
+    </message>
+    <message>
+        <location filename="../bgui/bmainwindow.cpp" line="453"/>
         <source>Contextual help</source>
         <comment>act text</comment>
         <translation type="unfinished">Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../bgui/bmainwindow.cpp" line="447"/>
+        <location filename="../bgui/bmainwindow.cpp" line="464"/>
+        <source>Use this action to show information about the libraries with which this application is built</source>
+        <comment>act whatsThis</comment>
+        <translation type="unfinished">Используйте это действие чтобы показать информацию о библиотеках, с помощью которых собрано это приложение</translation>
+    </message>
+    <message>
+        <location filename="../bgui/bmainwindow.cpp" line="451"/>
         <source>Contents</source>
         <comment>act text</comment>
         <translation type="unfinished">Содержание</translation>
     </message>
     <message>
-        <location filename="../bgui/bmainwindow.cpp" line="453"/>
+        <location filename="../bgui/bmainwindow.cpp" line="454"/>
+        <source>Use this action to show Help for the currently active part of the application</source>
+        <comment>act whatsThis</comment>
+        <translation type="unfinished">Используйте это действие чтобы показать Справку по активной в данный момент части приложения</translation>
+    </message>
+    <message>
+        <location filename="../bgui/bmainwindow.cpp" line="460"/>
         <source>About</source>
         <comment>act text</comment>
         <translation type="unfinished">О программе</translation>
     </message>
     <message>
-        <location filename="../bgui/bmainwindow.cpp" line="454"/>
+        <location filename="../bgui/bmainwindow.cpp" line="461"/>
+        <source>Use this action to show information about the application, it&apos;s version, authors, license, etc.</source>
+        <comment>act whatsThis</comment>
+        <translation type="unfinished">Используйте это действие чтобы показать информацию о приложении, его версию, авторов, лицензию и т.д.</translation>
+    </message>
+    <message>
+        <location filename="../bgui/bmainwindow.cpp" line="463"/>
         <source>About the Qt framework</source>
         <comment>act text</comment>
         <translation type="unfinished">О фреймворке Qt</translation>
