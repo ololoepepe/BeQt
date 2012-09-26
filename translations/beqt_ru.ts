@@ -1028,7 +1028,7 @@
         <location filename="../bgui/btexteditor.cpp" line="2215"/>
         <source>Use this action to apply last recorded macro. Warning: execution of macro can&apos;t be interrupted</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы применить последний записанный макрос. Предупреждение: выполнение макроса не может быть прервано</translation>
+        <translation type="unfinished">Используйте это действие чтобы применить последний записанный макрос. Предупреждение: выполнение макроса нельзя прервать</translation>
     </message>
     <message>
         <location filename="../bgui/btexteditor.cpp" line="2219"/>
