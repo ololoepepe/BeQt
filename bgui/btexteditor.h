@@ -71,6 +71,7 @@ public:
           CutAction,
           CopyAction,
           PasteAction,
+          AutoTextAction,
           //separator
           SwitchSelectedTextLayoutAction,
           //separator
@@ -90,9 +91,7 @@ public:
           ShowHideMacrosConsole,
           //separator
           LoadMacroAction,
-          SaveMacroAction,
-          //separator
-          AutoTextAction
+          SaveMacroAction
     };
     //
     class BGUISHARED_EXPORT SettingsOptions

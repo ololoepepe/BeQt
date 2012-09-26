@@ -737,6 +737,7 @@ QList<QAction *> BTextEditor::editorActions(Menu id, bool includeSeparators) con
         list << _m_actions.value(CutAction);
         list << _m_actions.value(CopyAction);
         list << _m_actions.value(PasteAction);
+        list << _m_actions.value(AutoTextAction);
         if (includeSeparators)
             list << _m_createSeparator();
         list << _m_actions.value(SwitchSelectedTextLayoutAction);
@@ -764,9 +765,6 @@ QList<QAction *> BTextEditor::editorActions(Menu id, bool includeSeparators) con
             list << _m_createSeparator();
         list << _m_actions.value(LoadMacroAction);
         list << _m_actions.value(SaveMacroAction);
-        if (includeSeparators)
-            list << _m_createSeparator();
-        list << _m_actions.value(AutoTextAction);
         break;
     default:
         break;
@@ -1138,6 +1136,7 @@ void BTextEditor::_m_initToolBars()
       _m_createAction(CutAction, tbar, "editcut", "Ctrl+X");
       _m_createAction(CopyAction, tbar, "editcopy", "Ctrl+C");
       _m_createAction(PasteAction, tbar, "editpaste", "Ctrl+V");
+      _m_createMenuAction(AutoTextAction, tbar, "editpaste");
       tbar->addSeparator();
       _m_createAction(SwitchSelectedTextLayoutAction, 0, "charset", "Ctrl+L");
       _m_createAction(FindAction, tbar, "edit_find", "Ctrl+F");
@@ -1162,8 +1161,6 @@ void BTextEditor::_m_initToolBars()
       _m_createAction(LoadMacroAction, 0, "fileopen", "", true);
       act = _m_createAction(SaveMacroAction, 0, "filesaveas");
       connect( _m_recorder, SIGNAL( macroAvailableChanged(bool) ), act, SLOT( setEnabled(bool) ) );
-      tbar->addSeparator();
-      _m_createMenuAction(AutoTextAction, tbar, "editpaste");
 }
 
 void BTextEditor::_m_initMenus()
@@ -2171,6 +2168,8 @@ void BTextEditor::_m_retranslateUi()
     _m_retranslateAction( PasteAction, tr("Paste", "act text"), tr("Paste from clipboard", "act toolTip"),
                           tr("Use this action to insert the text from the clipboard into current document at "
                              "cursor position", "act WhatsThis") );
+    _m_retranslateAction( AutoTextAction, tr("Insert autotext", "act text"),
+                          tr("Insert autotext into current document", "act toolTip") );
     _m_resetSwitchDocumentMainAction(); //TODO: whatsThis
     _m_retranslateAction( MakeBookmarkAction, tr("Make bookmark", "act text"),
                           tr("Make bookmark at current cursor position", "act toolTip"),
@@ -2199,8 +2198,6 @@ void BTextEditor::_m_retranslateUi()
     _m_resetShowHideMacrosAction(); //TODO: whatsThis
     _m_retranslateAction( LoadMacroAction, tr("Load...", "act text"), tr("Load macro...", "act toolTip") ); //TODO
     _m_retranslateAction( SaveMacroAction, tr("Save as...", "act text"), tr("Save macro as...", "act toolTip") );
-    _m_retranslateAction( AutoTextAction, tr("Insert autotext", "act text"),
-                          tr("Insert autotext into current document", "act toolTip") );
     //menus
     _m_retranslateMenu( FileMenu, tr("File", "mnu title") );
     _m_retranslateMenu( EditMenu, tr("Edit", "mnu title") );
