@@ -46,7 +46,5 @@
         <file>res/ico/back.png</file>
         <file>res/ico/forward.png</file>
         <file>res/ico/gohome.png</file>
-        <file>res/translations/beqt_ru.qm</file>
-        <file>res/translations/qt_ru.qm</file>
     </qresource>
 </RCC>

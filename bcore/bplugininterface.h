@@ -20,8 +20,6 @@ public:
     virtual void saveSettings() = 0;
     virtual void handleLoad(QObject *object) = 0;
     virtual void handleUnload(QObject *object) = 0;
-    virtual QString translatorPrefix() const = 0;
-    virtual QString translatorPath() const = 0;
 };
 
 Q_DECLARE_INTERFACE(BPluginInterface, "BeQt.BPluginInterface")

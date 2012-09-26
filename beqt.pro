@@ -6,4 +6,4 @@ SUBDIRS += \
     bnetwork
 
 TRANSLATIONS += \
-    bcore/res/translations/beqt_ru.ts
+    translations/beqt_ru.ts

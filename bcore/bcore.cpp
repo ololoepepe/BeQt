@@ -138,8 +138,6 @@ void BCore::init(bool noUserDir)
     addTranslatorPrefix("qt");
     addTranslatorPrefix("beqt");
     addTranslatorPrefix(appnameUnix);
-    addTranslatorPath(ResourcesPath + "/translations");
-    addTranslatorPath(":/res/translations");
     addTranslatorPath(_m_sharedTranslationsDir);
     if (!noUserDir)
         addTranslatorPath(_m_userTranslationsDir);
@@ -557,8 +555,6 @@ void BCore::_m_loadPlugin(const QString &fileName)
         pl->unload();
         return pl->deleteLater();
     }
-    addTranslatorPath( interface->translatorPath() );
-    addTranslatorPrefix( interface->translatorPrefix() );
     _m_pluginMap.insert(fileName, pl);
     for (int i = 0; i < _m_pluginHandlingObjects.size(); ++i)
         interface->handleLoad( _m_pluginHandlingObjects.at(i).data() );
