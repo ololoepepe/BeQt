@@ -438,6 +438,8 @@ void BMainWindow::_m_retranslateUi()
     //MenuFile
     _m_mnuFile->setTitle( tr("File", "mnu title") );
     _m_actExit->setText( tr("Exit", "act text") );
+    _m_actExit->setWhatsThis( tr("Use this action to close the window. "
+                                 "If no other windows are opened, the application will quit", "act whatsThis") );
     //MenuEdit
     _m_mnuEdit->setTitle( tr("Edit", "mnu title") );
     _m_actSettings->setText(tr("Settings", "act text") + "...");
