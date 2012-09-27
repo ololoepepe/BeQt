@@ -28,10 +28,12 @@ BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, cons
           _m_btnHome->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
         _m_hltActions->addWidget(_m_btnHome);
         _m_btnBack = new QPushButton(this);
+          _m_btnBack->setEnabled(false);
           _m_btnBack->setIconSize(BtnIconSize);
           _m_btnBack->setIcon( QIcon( BCore::beqtIcon("back") ) );
         _m_hltActions->addWidget(_m_btnBack);
         _m_btnForward = new QPushButton(this);
+          _m_btnForward->setEnabled(false);
           _m_btnForward->setIconSize(BtnIconSize);
           _m_btnForward->setIcon( QIcon( BCore::beqtIcon("forward") ) );
         _m_hltActions->addWidget(_m_btnForward);
@@ -51,6 +53,8 @@ BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, cons
         connect( _m_btnBack, SIGNAL( clicked() ), _m_tbsr, SLOT( backward() ) );
         connect( _m_btnForward, SIGNAL( clicked() ), _m_tbsr, SLOT( forward() ) );
         connect( _m_tbsr, SIGNAL( sourceChanged(QUrl) ), this, SLOT( _m_updateCaption() ) );
+        connect( _m_tbsr, SIGNAL( backwardAvailable(bool) ), _m_btnBack, SLOT( setEnabled(bool) ) );
+        connect( _m_tbsr, SIGNAL( forwardAvailable(bool) ), _m_btnForward, SLOT( setEnabled(bool) ) );
       _m_vlt->addWidget(_m_tbsr);
     //
     _m_retranslateUi();

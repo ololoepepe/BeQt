@@ -6,6 +6,8 @@
 
 * Remove icons from the resources, install them to the Shared directory instead
 * Remove bcore/BCryptor
+* Move bgui/"About Qt" to the "About" dialog
+* Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
 
 === Global ===
 
