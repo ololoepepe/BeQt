@@ -26,7 +26,7 @@ common features as:
 BeQt consists of three libraries: beqtcore, beqtgui and beqtnetwork. These
 libraries correspond to QtCore, QtGui and QtNetwork modules, respectively.
 
-beqtcore provides a namespace BCore, containing some useful constants (such as
+beqtcore provides a class BCore, containing some useful constants (such as
 const int Kilobyte = 1024), some methods for handling plugins, and other useful
 methods.
 
@@ -34,8 +34,9 @@ beqtgui implements a main window widget with some features common for most of
 applications. It also provides a minimalistic yet powerfull text editor, and
 some other widgets.
 
-beqtnetwork helps you deal with TCP sockets. It provides a TCP socket-based
-classes, which are much more abstracted than the ones provided by Qt.
+beqtnetwork helps you deal with network connections via the client-server
+model. It provides socket-based classes, which are much more abstracted than
+the ones provided by Qt.
 
 ===============================================================================
  Requirements
@@ -58,20 +59,21 @@ UNIX-like systems and ".dll" on Windows). This is because there are some issues
 when linking one static library to another.
 
 The first possibility is to use Qt Creator with the appropriate libraries, and
-then use the install script only. In this case, you should specify the "build"
+then use the install script only. In this case, you must specify the "build"
 subdirectory as the target directory. After building the project, simply run
 "./install.sh" (on UNIX-like systems) or "install.bat" (on Windows).
 
-The other possibility is to use the terminal. You have to configure your "PATH"
+Another possibility is to use the terminal. You have to configure your "PATH"
 variable correctly, or configure the terminal session to use the building
-script. On Windows, for example, you may use the special configuration batch
+script. For example, on Windows you may use the special configuration batch
 files from the Qt SDK. After configuring the system environment (or terminal
 session) do the following:
 
   1. On UNIX-like systems:
 
     In terminal, cd to the BeQt source files directory and run:
-    "./build-install.sh"
+    "./build-install.sh [make_parameters]", where make_parameters is the list
+    of make parameters.
 
   2. On Windows:
 
@@ -82,8 +84,8 @@ session) do the following:
     (up to 4).
 
 On UNIX-like systems the library files will be located in the "/usr/lib"
-directory, and the headers will be located in the "/usr/include/beqt"
-directory.
+directory, the headers will be located in the "/usr/include/beqt" directory,
+and the resources will be located in the "/usr/share/beqt" directory.
 
 On Windows all files will be located in the "%systemdrive%\Program files\BeQt"
 directory ("%systemdrive%" usually stands for "C:", but some systems may be
@@ -92,6 +94,7 @@ be created:
 
  * "lib" - library files will be located here, for example "beqtcore0.dll"
  * "include" - headers will be located here, for example "bcore.h"
+ * "translations" - translation files (.qm)
 
 ===============================================================================
  Using
@@ -123,3 +126,31 @@ add the correspoding Qt module to your project for each library.
 
 To include a module, add the following line to your project's ".pro" file:
 "QT += <name>", where "<name>" stands for module name.
+
+If you wish to use the translation or plugins system, or the BMainWindow class,
+you have to create an instance of QCoreApplication (or QApplication for GUI
+programms), and then call BCore::init(). After that, you may call
+BCore::loadSettings(), and then you may create your objects and call
+QApplication::exec(). If you wish to save the BCore settings, you must call
+BCore::saveSettngs() before returning from the main() function.
+
+===============================================================================
+ Deploying
+===============================================================================
+
+When deploying a BeQt-based application, you should remember to supply BeQt
+library files and resources. You should create some directories for that.
+
+Let's assume you are deploying the "myapp" application.
+
+On UNIX-like systems the directories will be:
+
+ * "/usr/share/myapp/translations"
+
+On Windows the directories will be:
+
+ * "%systemdrive%\Program files\myapp\translations"
+
+You should put the BeQt translation files to the "translations" subdirectory of
+your application. See Building and installing section for BeQt resources
+location.
