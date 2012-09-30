@@ -361,7 +361,7 @@ QString BCore::beqtIcon(const QString &iconName)
 
 QString BCore::docsDir()
 {
-    return _m_sharedDocsDir;
+    return localeBasedDirName(_m_sharedDocsDir);
 }
 
 //plugins

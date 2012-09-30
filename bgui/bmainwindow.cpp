@@ -376,14 +376,13 @@ void BMainWindow::_m_loadSettings()
 
 QString BMainWindow::_m_hlpFileName(QWidget *widget)
 {
+    QString dir = BCore::docsDir();
     if (!widget)
-        return BCore::docsDir() + "/index.html";
+        return dir + "/index.html";
     QString fn = widget->property("help").toString();
     if ( fn.isEmpty() )
         fn = _m_hlpFileName( widget->parentWidget() );
-    if ( fn.isEmpty() )
-        fn = BCore::docsDir() + "/index.html";
-    return fn;
+    return !fn.isEmpty() ? dir + "/" + fn : dir + "/index.html";
 }
 
 QMenu *BMainWindow::_m_menu(StandardMenu menu) const
@@ -509,7 +508,7 @@ void BMainWindow::_m_actHomepageTriggered()
 
 void BMainWindow::_m_actHelpContentsTriggered()
 {
-    QString url = QUrl::fromLocalFile(BCore::docsDir() + "/index.html").toString();
+    QString url = QUrl::fromLocalFile( BCore::docsDir() + "/index.html").toString();
     BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, url, url);
     hw->resize(_m_HelpWgtSizeDef);
     hw->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -521,11 +520,8 @@ void BMainWindow::_m_actContextualHelpTriggered()
     QString url;
     QWidget *fw = QApplication::focusWidget();
     url = _m_hlpFileName(fw);
-    if ( url.isEmpty() )
-        url = BCore::docsDir() + "/index.html";
-    QString burl = QUrl::fromLocalFile( BCore::docsDir() ).toString();
-    BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, burl + "/" + BCore::docsDir() + "/index.html",
-                                      burl + "/" + url);
+    QString burl = QUrl::fromLocalFile( BCore::docsDir() + "/index.html" ).toString();
+    BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, burl, url);
     hw->resize(_m_HelpWgtSizeDef);
     hw->setAttribute(Qt::WA_DeleteOnClose, true);
     hw->show();
