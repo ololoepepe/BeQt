@@ -128,7 +128,7 @@ void BCore::init(bool noUserDir)
     _m_sharedPluginsDir = appdir + "/plugins";
 #endif
     _m_sharedTranslationsDir = _m_sharedRoot + "/translations";
-    _m_sharedDocsDir = _m_sharedRoot + "/docs";
+    _m_sharedDocsDir = _m_sharedRoot + "/doc";
     _m_userPluginsDir = _m_userRoot + "/plugins";
     _m_userTranslationsDir = _m_userRoot + "/translations";
     if (!noUserDir)
