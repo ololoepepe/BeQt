@@ -122,13 +122,14 @@ void BCore::init(bool noUserDir)
     _m_sharedRoot = "/usr/share/" + appnameUnix;
     _m_userRoot = QDir::homePath() + "/." + appnameUnix;
     _m_sharedPluginsDir = "/usr/lib/" + appnameUnix + "/plugins";
+    _m_sharedDocsDir = "/usr/share/doc/" + appnameUnix;
 #elif defined(Q_OS_WIN)
     _m_sharedRoot = appdir;
     _m_userRoot = QDir::homePath() + "/" + appname;
     _m_sharedPluginsDir = appdir + "/plugins";
+    _m_sharedDocsDir = appdir + "/doc";
 #endif
     _m_sharedTranslationsDir = _m_sharedRoot + "/translations";
-    _m_sharedDocsDir = _m_sharedRoot + "/doc";
     _m_userPluginsDir = _m_userRoot + "/plugins";
     _m_userTranslationsDir = _m_userRoot + "/translations";
     if (!noUserDir)
