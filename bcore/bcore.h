@@ -61,6 +61,7 @@ public:
     static QString shared(const QString &key = QString(), bool file = false);
     static QString user(const QString &key = QString(), bool file = false);
     static QString beqtIcon(const QString &iconName);
+    static QString docsDir();
     //plugins
     static void addPluginHandlingObject(QObject *object);
     static void removePluginHandlingObject(QObject *object);
@@ -93,6 +94,7 @@ private:
     static QLocale _m_locale;
     static QString _m_sharedTranslationsDir;
     static QString _m_userTranslationsDir;
+    static QString _m_sharedDocsDir;
     static QString _m_sharedRoot;
     static QString _m_userRoot;
     static QMap<QString, QString> _m_dirMap;

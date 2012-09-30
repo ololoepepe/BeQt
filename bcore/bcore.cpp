@@ -67,6 +67,7 @@ QMap<QString, QString> BCore::_m_dirMap;
 QMap<QString, QString> BCore::_m_fileMap;
 QString BCore::_m_sharedPluginsDir;
 QString BCore::_m_userPluginsDir;
+QString BCore::_m_sharedDocsDir;
 QList< QPointer<QObject> > BCore::_m_pluginHandlingObjects;
 QMap<QString, QPluginLoader *> BCore::_m_pluginMap;
 bool (*BCore::_m_pluginValidityChecker)(const QObject *) = 0;
@@ -127,6 +128,7 @@ void BCore::init(bool noUserDir)
     _m_sharedPluginsDir = appdir + "/plugins";
 #endif
     _m_sharedTranslationsDir = _m_sharedRoot + "/translations";
+    _m_sharedDocsDir = _m_sharedRoot + "/docs";
     _m_userPluginsDir = _m_userRoot + "/plugins";
     _m_userTranslationsDir = _m_userRoot + "/translations";
     if (!noUserDir)
@@ -354,6 +356,11 @@ QString BCore::user(const QString &key, bool file)
 QString BCore::beqtIcon(const QString &iconName)
 {
     return IcoPath + "/" + (QFileInfo(iconName).suffix().isEmpty() ? iconName + ".png" : iconName);
+}
+
+QString BCore::docsDir()
+{
+    return _m_sharedDocsDir;
 }
 
 //plugins

@@ -63,8 +63,6 @@ public:
             const QString &settingsGroup = QString() );
     //
     void setSettingsOptions(const SettingsOptions &opt);
-    void setHelpDir(const QString &dir);
-    void setHelpIndex(const QString &fileName);
     void setContextualHelpEnabled(bool enabled);
     void setMenuBarEnabled(bool enabled);
     void setAboutIcon(const QString &fileName);
@@ -82,7 +80,6 @@ public:
     void addSeparatorToMenu(StandardMenu standardMenu);
     QAction *whatsThisAction() const;
     const QString &settingsGroup() const;
-    const QString &helpDir() const;
     bool menuBarEnabled() const;
 public slots:
     void saveGuiSettings();
@@ -105,8 +102,6 @@ private:
     QRect _m_prevGeom;
     QByteArray _m_prevState;
     bool _m_maximized;
-    QString _m_hlpDir;
-    QString _m_hlpIndex;
     bool _m_isInitialized;
     BAboutDialog *_m_aboutDlg;
     SettingsOptions _m_settingsOptions;

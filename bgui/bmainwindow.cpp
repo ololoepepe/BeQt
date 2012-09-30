@@ -115,16 +115,6 @@ void BMainWindow::setSettingsOptions(const SettingsOptions &opt)
     _m_settingsOptions = opt;
 }
 
-void BMainWindow::setHelpDir(const QString &dir)
-{
-    _m_hlpDir = dir;
-}
-
-void BMainWindow::setHelpIndex(const QString &fileName)
-{
-    _m_hlpIndex = fileName;
-}
-
 void BMainWindow::setContextualHelpEnabled(bool enabled)
 {
     _m_actContextualHelp->setVisible(enabled);
@@ -303,11 +293,6 @@ const QString &BMainWindow::settingsGroup() const
     return _m_CSettingsGroup;
 }
 
-const QString &BMainWindow::helpDir() const
-{
-    return _m_hlpDir;
-}
-
 bool BMainWindow::menuBarEnabled() const
 {
     return _m_mnuBar->isVisible();
@@ -392,12 +377,12 @@ void BMainWindow::_m_loadSettings()
 QString BMainWindow::_m_hlpFileName(QWidget *widget)
 {
     if (!widget)
-        return _m_hlpIndex;
+        return BCore::docsDir() + "/index.html";
     QString fn = widget->property("help").toString();
     if ( fn.isEmpty() )
         fn = _m_hlpFileName( widget->parentWidget() );
     if ( fn.isEmpty() )
-        fn = _m_hlpIndex;
+        fn = BCore::docsDir() + "/index.html";
     return fn;
 }
 
@@ -524,7 +509,7 @@ void BMainWindow::_m_actHomepageTriggered()
 
 void BMainWindow::_m_actHelpContentsTriggered()
 {
-    QString url = QUrl::fromLocalFile(_m_hlpDir + "/" + _m_hlpIndex).toString();
+    QString url = QUrl::fromLocalFile(BCore::docsDir() + "/index.html").toString();
     BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, url, url);
     hw->resize(_m_HelpWgtSizeDef);
     hw->setAttribute(Qt::WA_DeleteOnClose, true);
@@ -537,9 +522,10 @@ void BMainWindow::_m_actContextualHelpTriggered()
     QWidget *fw = QApplication::focusWidget();
     url = _m_hlpFileName(fw);
     if ( url.isEmpty() )
-        url = _m_hlpIndex;
-    QString burl = QUrl::fromLocalFile(_m_hlpDir).toString();
-    BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, burl + "/" + _m_hlpIndex, burl + "/" + url);
+        url = BCore::docsDir() + "/index.html";
+    QString burl = QUrl::fromLocalFile( BCore::docsDir() ).toString();
+    BHelpWidget *hw = new BHelpWidget(_m_CSettingsGroup, burl + "/" + BCore::docsDir() + "/index.html",
+                                      burl + "/" + url);
     hw->resize(_m_HelpWgtSizeDef);
     hw->setAttribute(Qt::WA_DeleteOnClose, true);
     hw->show();
