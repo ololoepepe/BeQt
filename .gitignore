@@ -5,7 +5,7 @@
 *.dll
 *.exe
 *.o
-*.so
+*.so*
 
 # Packages #
 ############
@@ -41,3 +41,4 @@ Thumbs.db
 #########
 *.pro.user
 *.autosave
+Makefile
