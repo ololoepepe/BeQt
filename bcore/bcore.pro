@@ -8,6 +8,8 @@ DEFINES += BCORE_LIBRARY
 
 QT -= gui
 
+CONFIG += release
+
 SOURCES += \
     bcore.cpp \
     bcryptor.cpp \

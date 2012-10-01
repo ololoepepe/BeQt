@@ -8,6 +8,8 @@ DEFINES += BGUI_LIBRARY
 
 QT += xml
 
+CONFIG += release
+
 SOURCES += \
     babstractsettingstab.cpp \
     bcontainerwidget.cpp \

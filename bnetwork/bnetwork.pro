@@ -9,6 +9,8 @@ DEFINES += BNETWORK_LIBRARY
 QT -= gui
 QT += network
 
+CONFIG += release
+
 HEADERS += \
     bgenericserver.h \
     bgenericsocket.h \

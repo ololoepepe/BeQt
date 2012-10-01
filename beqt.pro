@@ -5,6 +5,8 @@ SUBDIRS += \
     bgui \
     bnetwork
 
+CONFIG += release
+
 TRANSLATIONS += \
     translations/beqt_ru.ts
 
