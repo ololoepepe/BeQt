@@ -74,9 +74,11 @@ else:unix:!symbian: LIBS += -L$$OUT_PWD/../bcore/ -lbeqtcore
 INCLUDEPATH += $$PWD/../bcore
 DEPENDPATH += $$PWD/../bcore
 
-MOC_DIR = .build
-OBJECTS_DIR = .build
-RCC_DIR = .build
+builddir = .build
+
+MOC_DIR = $$builddir
+OBJECTS_DIR = $$builddir
+RCC_DIR = $$builddir
 
 unix {
 ### Target ###
@@ -88,12 +90,14 @@ includes.path = /usr/include/beqt
 INSTALLS += includes
 }
 win32 {
-libdir = "$$(systemdrive)/Program files/BeQt"
+isEmpty(PREFIX) {
+    PREFIX = $$(systemdrive)/Program files/BeQt
+}
 ### Target ###
-target.path = "$$libdir/lib"
+target.path = $$PREFIX/lib
 INSTALLS = target
 ### Includes ###
 includes.files = *.h
-includes.path = "$$libdir/include"
+includes.path = $$PREFIX/include
 INSTALLS += includes
 }

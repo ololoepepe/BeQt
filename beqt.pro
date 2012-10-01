@@ -15,9 +15,11 @@ trans.path = /usr/share/beqt/translations
 INSTALLS += trans
 }
 win32 {
-libdir = "$$(systemdrive)/Program files/BeQt"
+isEmpty(PREFIX) {
+    PREFIX = $$(systemdrive)/Program files/BeQt
+}
 ### Translations ###
 trans.files = translations/*.qm
-trans.path = "$$libdir/translations"
+trans.path = $$PREFIX/translations
 INSTALLS += trans
 }
