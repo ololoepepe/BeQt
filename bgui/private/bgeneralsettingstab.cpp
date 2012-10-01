@@ -1,6 +1,6 @@
 #include "bgeneralsettingstab.h"
-#include "bguiplugininterface.h"
 #include "bsettingsdialog.h"
+#include "../bguiplugininterface.h"
 
 #include "../bcore/bcore.h"
 #include "../bcore/bplugininterface.h"

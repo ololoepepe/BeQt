@@ -6,6 +6,7 @@
 *.exe
 *.o
 *.so*
+*.a
 
 # Packages #
 ############
@@ -42,3 +43,5 @@ Thumbs.db
 *.pro.user
 *.autosave
 Makefile
+*.Debug
+*.Release

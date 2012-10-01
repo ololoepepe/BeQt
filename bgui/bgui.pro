@@ -88,9 +88,9 @@ includes.path = /usr/include/beqt
 INSTALLS += includes
 }
 win32 {
-libdir = "$$(systemdrive)/Program files/BeQt";
+libdir = "$$(systemdrive)/Program files/BeQt"
 ### Target ###
-target.path = "$$libdir"
+target.path = "$$libdir/lib"
 INSTALLS = target
 ### Includes ###
 includes.files = *.h
