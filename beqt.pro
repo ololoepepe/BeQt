@@ -18,7 +18,7 @@ INSTALLS += trans
 }
 win32 {
 isEmpty(PREFIX) {
-    PREFIX = $$(systemdrive)/Program files/BeQt
+    PREFIX = $$(systemdrive)/BeQt
 }
 ### Translations ###
 trans.files = translations/*.qm

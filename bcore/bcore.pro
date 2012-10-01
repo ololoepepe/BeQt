@@ -42,7 +42,7 @@ INSTALLS += includes
 }
 win32 {
 isEmpty(PREFIX) {
-    PREFIX = $$(systemdrive)/Program files/BeQt
+    PREFIX = $$(systemdrive)/BeQt
 }
 ### Target ###
 target.path = $$PREFIX/lib
