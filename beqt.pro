@@ -10,18 +10,55 @@ CONFIG += release
 TRANSLATIONS += \
     translations/beqt_ru.ts
 
+
+###############################################################################
+# PREFIX
+###############################################################################
+
 unix {
-### Translations ###
-trans.files = translations/*.qm
-trans.path = /usr/share/beqt/translations
-INSTALLS += trans
+isEmpty(PREFIX) {
+    PREFIX = /usr
+}
 }
 win32 {
 isEmpty(PREFIX) {
-    PREFIX = $$(systemdrive)/BeQt
+    contains(QMAKE_HOST.arch, x86_64) {
+        PREFIX = $$quote($$(systemdrive)/Program files (x86))
+    } else {
+        PREFIX = $$quote($$(systemdrive)/Program files)
+    }
 }
-### Translations ###
-trans.files = translations/*.qm
-trans.path = $$PREFIX/translations
-INSTALLS += trans
 }
+
+###############################################################################
+# INSTALLS.files
+###############################################################################
+
+I_HEADERS.files = \
+    bcore/*.h \ #TODO: move headers to "include" subdirectory
+    bgui/*.h \ #TODO: move headers to "include" subdirectory
+    bnetwork/*.h #TODO: move headers to "include" subdirectory
+I_TRANSLATIONS.files = translations/*.qm
+
+###############################################################################
+# INSTALLS.path
+###############################################################################
+
+unix {
+TARGET.path = $$PREFIX/lib
+I_HEADERS.path = $$PREFIX/include/beqt
+I_TRANSLATIONS.path = $$PREFIX/share/beqt/translations
+}
+win32 {
+TARGET.path = $$quote($$PREFIX/BeQt/lib)
+I_HEADERS.path = $$quote($$PREFIX/BeQt/include)
+I_TRANSLATIONS.path = $$quote($$PREFIX/BeQt/translations)
+}
+
+###############################################################################
+# INSTALLS
+###############################################################################
+
+INSTALLS = TARGET
+INSTALLS += I_HEADERS
+INSTALLS += I_TRANSLATIONS
