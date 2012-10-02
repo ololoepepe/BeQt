@@ -48,24 +48,38 @@ MOC_DIR = $$builddir
 OBJECTS_DIR = $$builddir
 RCC_DIR = $$builddir
 
+###############################################################################
+# PREFIX
+###############################################################################
+
 unix {
-### Target ###
-target.path = /usr/lib
-INSTALLS = target
-### Includes ###
-includes.files = *.h
-includes.path = /usr/include/beqt
-INSTALLS += includes
+isEmpty(PREFIX) {
+    PREFIX = /usr
+}
 }
 win32 {
 isEmpty(PREFIX) {
-    PREFIX = $$(systemdrive)/BeQt
+    contains(QMAKE_HOST.arch, x86_64) {
+        PREFIX = $$quote($$(systemdrive)/Program files (x86))
+    } else {
+        PREFIX = $$quote($$(systemdrive)/Program files)
+    }
 }
-### Target ###
+}
+
+###############################################################################
+# INSTALLS.path
+###############################################################################
+
+unix {
 target.path = $$PREFIX/lib
-INSTALLS = target
-### Includes ###
-includes.files = *.h
-includes.path = $$PREFIX/include
-INSTALLS += includes
 }
+win32 {
+target.path = $$quote($$PREFIX/BeQt/lib)
+}
+
+###############################################################################
+# INSTALLS
+###############################################################################
+
+INSTALLS = target
