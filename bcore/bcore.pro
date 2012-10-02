@@ -35,34 +35,12 @@ RCC_DIR = $$builddir
 # PREFIX
 ###############################################################################
 
-unix {
-isEmpty(PREFIX) {
-    PREFIX = /usr
-}
-}
-win32 {
-isEmpty(PREFIX) {
-    contains(QMAKE_HOST.arch, x86_64) {
-        PREFIX = $$quote($$(systemdrive)/Program files (x86))
-    } else {
-        PREFIX = $$quote($$(systemdrive)/Program files)
-    }
-}
-}
-
-###############################################################################
-# INSTALLS.path
-###############################################################################
-
-unix {
-target.path = $$PREFIX/lib
-}
-win32 {
-target.path = $$quote($$PREFIX/BeQt/lib)
-}
+unix:isEmpty(PREFIX):PREFIX = /usr
+win32:PREFX = ../BeQt
 
 ###############################################################################
 # INSTALLS
 ###############################################################################
 
+target.path = $$PREFIX/lib
 INSTALLS = target

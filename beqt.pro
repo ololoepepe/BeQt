@@ -14,20 +14,8 @@ TRANSLATIONS += \
 # PREFIX
 ###############################################################################
 
-unix {
-isEmpty(PREFIX) {
-    PREFIX = /usr
-}
-}
-win32 {
-isEmpty(PREFIX) {
-    contains(QMAKE_HOST.arch, x86_64) {
-        PREFIX = $$quote($$(systemdrive)/Program files (x86))
-    } else {
-        PREFIX = $$quote($$(systemdrive)/Program files)
-    }
-}
-}
+unix:isEmpty(PREFIX):PREFIX = /usr
+win32:PREFX = ../BeQt
 
 ###############################################################################
 # INSTALLS.files
@@ -48,8 +36,8 @@ I_HEADERS.path = $$PREFIX/include/beqt
 I_TRANSLATIONS.path = $$PREFIX/share/beqt/translations
 }
 win32 {
-I_HEADERS.path = $$quote($$PREFIX/BeQt/include)
-I_TRANSLATIONS.path = $$quote($$PREFIX/BeQt/translations)
+I_HEADERS.path = $$PREFIX/include
+I_TRANSLATIONS.path = $$PREFIX/translations
 }
 
 ###############################################################################
