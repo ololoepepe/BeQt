@@ -16,7 +16,7 @@ TRANSLATIONS += \
 
 isEmpty(PREFIX) {
 unix:PREFIX = /usr
-win32:PREFIX = C:/PROGRA~1/BeQt
+win32:PREFIX = $$(systemdrive)/PROGRA~1/BeQt
 }
 
 ###############################################################################
