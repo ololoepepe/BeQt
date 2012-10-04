@@ -12,7 +12,6 @@ class QPushButton;
 #include <QDialog>
 #include <QList>
 #include <QString>
-#include <QRect>
 
 class BSelectFilesDialog : public QDialog
 {
@@ -25,13 +24,11 @@ public:
         SaveDecision
     };
     //
-    explicit BSelectFilesDialog(const QString &id, const QList<BTextEditorDocument *> &documents, QWidget *parent = 0);
+    explicit BSelectFilesDialog(const QList<BTextEditorDocument *> &documents, QWidget *parent = 0);
     //
     Decision decision() const;
     QList<BTextEditorDocument *> selectedDocuments() const;
 private:
-    const QString _m_CId;
-    //
     QList<BTextEditorDocument *> _m_documents;
     Decision _m_decision;
     //
@@ -45,9 +42,6 @@ private:
         QPushButton *_m_btnDiscard;
         QPushButton *_m_btnCancel;
         QPushButton *_m_btnSave;
-    //
-    void _m_loadSettings();
-    void _m_saveSettings();
 private slots:
     void _m_btnDiscardClicked();
     void _m_btnCancelClicked();

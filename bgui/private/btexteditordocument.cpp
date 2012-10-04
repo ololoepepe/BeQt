@@ -4,6 +4,7 @@
 #include "bsplittedlinesdialog.h"
 #include "bmacrorecorder.h"
 #include "../bsyntax.h"
+#include "../bkeyboardlayoutmap.h"
 
 #include "../../bcore/bcore.h"
 
@@ -48,6 +49,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+#include <QFontInfo>
 
 #include <QDebug>
 
@@ -63,7 +65,7 @@ struct _m_ProcessLoadedTextResult
 typedef QFuture<_m_ProcessLoadedTextResult> _m_Future;
 typedef QFutureWatcher<_m_ProcessLoadedTextResult> _m_FutureWatcher;
 
-const int _m_DefMaxBookmarkCount = 10;
+const int BookmarkCountMax = 10;
 const QList<QChar> _m_UnprintedList = QList<QChar>() << QChar(1) << QChar(2) << QChar(3) << QChar(4) << QChar(5)
     << QChar(6) << QChar(7) << QChar(8) << QChar(9) << QChar(11) << QChar(12) << QChar(13) << QChar(14) << QChar(15)
     << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21) << QChar(22) << QChar(23)
@@ -161,30 +163,76 @@ _m_ProcessLoadedTextResult processLoadedText(QString text, int lineLength, int t
 
 //
 
-BTextEditorDocument::BTextEditorDocument(const QString &fileName, QObject *parent) :
+const QStringList BTextEditorDocument::EncodingsValid = QStringList() << "UTF-16" << "UTF-8" << "ISO 8859-13"
+    << "ISO 8859-4" << "Windows-1257" << "ISO 8859-6" << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16"
+    << "ISO 8859-2" << "Windows-1250" << "ISO 8859-7" << "Windows-1253" << "IBM 850" << "ISO 8859-1" << "ISO 8859-15"
+    << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10" << "ISO 8859-3" << "Windows-1258" << "Big5"
+    << "Big5-HKSCS" << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS" << "TIS-620"
+    << "ISO 8859-9" << "Windows-1254" << "ISO 8859-6" << "Windows-1256" << "Windows-1255" << "ISO 8859-8";
+const QString BTextEditorDocument::EncodingDef = "UTF-8";
+const int BTextEditorDocument::FontPointSizeMin = 6;
+const int BTextEditorDocument::FontPointSizeDef = 10;
+const int BTextEditorDocument::FontPointSizeMax = 20;
+const int BTextEditorDocument::LineLengthMin = 80;
+const int BTextEditorDocument::LineLengthDef = 300;
+const int BTextEditorDocument::LineLengthMax = 500;
+const int BTextEditorDocument::TabWidthDef = 4;
+const QList<int> BTextEditorDocument::TabWidthsValid = QList<int>() << 2 << 4 << 8;
+const bool BTextEditorDocument::BlockModeDef = false;
+#if defined(Q_OS_MAC)
+const QString BTextEditorDocument::FontFamilyDef = "Monaco";
+#elif defined(Q_OS_UNIX)
+const QString BTextEditorDocument::FontFamilyDef = "DejaVu Sans Mono";
+#elif defined(Q_OS_WIN)
+const QString BTextEditorDocument::FontFamilyDef = "Courier";
+#endif
+
+//
+
+bool BTextEditorDocument::checkEncoding(const QString &codecName)
+{
+    return !codecName.isEmpty() && EncodingsValid.contains(codecName);
+}
+
+bool BTextEditorDocument::checkFontFamily(const QString &family)
+{
+    QFont fnt(family);
+    QFontInfo fnti(fnt);
+    return fnti.fixedPitch();
+}
+
+bool BTextEditorDocument::checkFontPointSize(int pointSize)
+{
+    return pointSize >= FontPointSizeMin && pointSize <= FontPointSizeMax;
+}
+
+bool BTextEditorDocument::checkLineLength(int length)
+{
+    return length >= LineLengthMin && length <= LineLengthMax;
+}
+
+bool BTextEditorDocument::checkTabWidth(int width)
+{
+    return TabWidthsValid.contains(width);
+}
+
+//
+
+BTextEditorDocument::BTextEditorDocument(const QString &fileName, const QString &codecName, QObject *parent) :
     QObject(parent)
 {
     _m_fileName = fileName;
-    _m_lineLength = 120;
-    _m_tabWidth = 4;
-    _m_codecName = "UTF-8";
-    connect( QApplication::clipboard(), SIGNAL( dataChanged() ), this, SLOT( _m_clipboardDataChanged() ) );
+    _m_lineLength = LineLengthDef;
+    _m_tabWidth = TabWidthDef;
+    _m_codecName = checkEncoding(codecName) ? codecName : EncodingDef;
     _m_initWidget();
     _m_initMenu();
-    _m_blockMode = false;
-    _m_maxBookmarkCount = _m_DefMaxBookmarkCount;
+    _m_blockMode = BlockModeDef;
     _m_recorder = 0;
-#if defined(Q_OS_LINUX)
-    setFontFamily("Monospace");
-#elif defined(Q_OS_WIN)
-    setFontFamily("Courier");
-#elif defined(Q_OS_MAC)
-    setFontFamily("Monaco");
-#elif defined(Q_OS_UNIX)
-    //
-#endif
-    setFontPointSize(10);
+    setFontFamily(FontFamilyDef);
+    setFontPointSize(FontPointSizeDef);
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 BTextEditorDocument::~BTextEditorDocument()
@@ -201,9 +249,6 @@ bool BTextEditorDocument::eventFilter(QObject *object, QEvent *event)
         return QObject::eventFilter(object, event);
     switch ( event->type() )
     {
-    case QEvent::LanguageChange:
-        _m_retranslateUi();
-        return true;
     case QEvent::KeyPress:
         return _m_handleKeyPressEvent( object, static_cast<QKeyEvent *>(event) );
     case QEvent::MouseButtonPress:
@@ -228,21 +273,23 @@ void BTextEditorDocument::setReadOnly(bool readOnly)
     _m_undoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isUndoAvailable() );
     _m_redoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isRedoAvailable() );
     _m_modificationChanged( !_m_edit->isReadOnly() && _m_edit->document()->isModified() );
-    _m_clipboardDataChanged();
+    setClipboardHasText( !QApplication::clipboard()->text().isEmpty() );
 }
 
 void BTextEditorDocument::setFontFamily(const QString &family)
 {
-    //no check for font being monospace is provided by Qt. sad but true
+    if ( !checkFontFamily(family) )
+        return;
     QFont fnt = _m_edit->font();
-    fnt.setStyleHint(QFont::TypeWriter); //this ensures that the font will be monospace
-    //but it does not guarantee that it's family will be equal to the one passed to this function
+    //fnt.setStyleHint(QFont::TypeWriter);
     fnt.setFamily(family);
     _m_edit->setFont(fnt);
 }
 
 void BTextEditorDocument::setFontPointSize(int pointSize)
 {
+    if ( !checkFontPointSize(pointSize) )
+        return;
     QFont fnt = _m_edit->font();
     fnt.setPointSize(pointSize);
     _m_edit->setFont(fnt);
@@ -264,16 +311,9 @@ void BTextEditorDocument::setSyntax(const BSyntax &syntax)
     _m_highlightBrackets();
 }
 
-void BTextEditorDocument::setMaxBookmarkCount(int count)
-{
-    _m_maxBookmarkCount = count > 0 ? count : _m_DefMaxBookmarkCount;
-    while (_m_bookmarks.size() > _m_maxBookmarkCount)
-        _m_bookmarks.removeLast();
-}
-
 void BTextEditorDocument::setLineLength(int length)
 {
-    if (length < 10 || length == _m_lineLength)
+    if (!checkLineLength(length) || length == _m_lineLength)
         return;
     _m_lineLength = length;
     QString text = _m_edit->toPlainText();
@@ -330,9 +370,14 @@ void BTextEditorDocument::setLineLength(int length)
 
 void BTextEditorDocument::setTabWidth(int width)
 {
-    if (width < 2 || width == _m_tabWidth)
+    if (!checkTabWidth(width) || width == _m_tabWidth)
         return;
     _m_tabWidth = width;
+}
+
+void BTextEditorDocument::setClipboardHasText(bool b)
+{
+    _m_actPaste->setEnabled(!_m_edit->isReadOnly() && b);
 }
 
 const QString &BTextEditorDocument::fileName() const
@@ -360,6 +405,11 @@ bool BTextEditorDocument::isCopyAvailable() const
     return _m_edit->textCursor().hasSelection();
 }
 
+bool BTextEditorDocument::isPasteAvailable() const
+{
+    return _m_actPaste->isEnabled();
+}
+
 bool BTextEditorDocument::isUndoAvailable() const
 {
     return !_m_edit->isReadOnly() && _m_edit->document()->isUndoAvailable();
@@ -378,6 +428,11 @@ bool BTextEditorDocument::isModified() const
 bool BTextEditorDocument::hasBookmarks() const
 {
     return !_m_bookmarks.isEmpty();
+}
+
+bool BTextEditorDocument::hasSelection() const
+{
+    return _m_edit->textCursor().hasSelection();
 }
 
 const BSyntax &BTextEditorDocument::syntax() const
@@ -478,7 +533,7 @@ bool BTextEditorDocument::saveAs(const QString &fileName, const QString &codecNa
     return _m_setFileName(fileName) ? save(codecName) : false;
 }
 
-bool BTextEditorDocument::find( const QString &text, QTextDocument::FindFlags flags, bool cyclic)
+bool BTextEditorDocument::find(const QString &text, QTextDocument::FindFlags flags, bool cyclic)
 {
     if ( text.isEmpty() )
         return false;
@@ -719,7 +774,7 @@ void BTextEditorDocument::makeBookmark()
     if ( _m_bookmarks.contains(bm) )
         _m_bookmarks.removeAll(bm);
     _m_bookmarks.prepend(bm);
-    while (_m_bookmarks.size() > _m_maxBookmarkCount)
+    while (_m_bookmarks.size() > BookmarkCountMax)
         _m_bookmarks.removeLast();
     emit hasBookmarkChanged( hasBookmarks() );
 }
@@ -737,59 +792,20 @@ void BTextEditorDocument::gotoNextBookmark()
     _m_bookmarks.append(bm);
 }
 
-void BTextEditorDocument::switchSelectedTextLayout(
-        const QMap<QChar, QChar> &directMap, const QMap<QChar, QChar> &reverseMap,
-        const QList<QChar> &directUnique, const QList<QChar> &reverseUnique)
+void BTextEditorDocument::switchSelectedTextLayout(const BKeyboardLayoutMap &klm)
 {
-    if ( _m_edit->isReadOnly() )
+    if ( _m_edit->isReadOnly() || !klm.isValid() )
         return;
     QString text = selectedText();
-    if ( text.isEmpty() )
+    if ( !klm.switchLayout(text) )
         return;
-    if ( directMap.isEmpty() || directUnique.isEmpty() || reverseMap.isEmpty() || reverseUnique.isEmpty() )
-        return;
-    bool direct = false;
-    bool reverse = false;
-    for (int i = 0; i < directUnique.size(); ++i)
-    {
-        if ( text.contains( directUnique.at(i) ) )
-        {
-            direct = true;
-            break;
-        }
-    }
-    for (int i = 0; i < reverseUnique.size(); ++i)
-    {
-        if ( text.contains( reverseUnique.at(i) ) )
-        {
-            reverse = true;
-            break;
-        }
-    }
-    if ( (direct && reverse) || (!direct && !reverse) )
-        return;
-    const QMap<QChar, QChar> &map = direct ? directMap : reverseMap;
-    QList<QChar> keys = map.keys();
     QTextCursor tc = _m_edit->textCursor();
     int start = tc.selectionStart();
     int end = tc.selectionEnd();
-    _m_ExtraSelectionList esl = _m_edit->extraSelections();
-    for (int i = 0; i < esl.size(); ++i)
-    {
-        QTextCursor &tce = esl[i].cursor;
-        QString etext = tce.selectedText();
-        for (int j = 0; j < etext.length(); ++j)
-        {
-            const QChar &c = etext.at(j);
-            if ( keys.contains(c) )
-                etext[j] = map.value(c);
-        }
-        tce.insertText(etext);
-    }
+    insertText(text);
     tc.setPosition(start);
     tc.setPosition(end, QTextCursor::KeepAnchor);
     _m_edit->setTextCursor(tc);
-    _m_editSelectionChanged();
 }
 
 //
@@ -869,7 +885,7 @@ void BTextEditorDocument::setFocusToEdit()
 
 void BTextEditorDocument::_m_initWidget()
 {
-    _m_edit = new BPlainTextEdit;
+    _m_edit = new BPlainTextEdit(this);
     //_m_edit->setCenterOnScroll(true);
     _m_highlighter = new BSyntaxHighlighter( _m_edit->document() );
     _m_highlighter->setSyntax(_m_syntax);
@@ -903,50 +919,39 @@ void BTextEditorDocument::_m_initWidget()
 void BTextEditorDocument::_m_initMenu()
 {
     _m_mnuContext = new QMenu(_m_edit);
-    _m_initAction(_m_actUndo, "undo.png", "Ctrl+Z");
+    _m_initAction(_m_actUndo, "edit_undo", "Ctrl+Z");
     connect( _m_actUndo, SIGNAL( triggered() ), this, SLOT( undo() ) );
     connect( this, SIGNAL( undoAvailableChanged(bool) ), _m_actUndo, SLOT( setEnabled(bool) ) );
-    _m_initAction(_m_actRedo, "redo.png", "Ctrl+Shift+Z");
+    _m_initAction(_m_actRedo, "edit_redo", "Ctrl+Shift+Z");
     connect( _m_actRedo, SIGNAL( triggered() ), this, SLOT( redo() ) );
     connect( this, SIGNAL( redoAvailableChanged(bool) ), _m_actRedo, SLOT( setEnabled(bool) ) );
     _m_mnuContext->addSeparator();
-    _m_initAction(_m_actCut, "editcut.png", "Ctrl+X");
+    _m_initAction(_m_actCut, "editcut", "Ctrl+X");
     connect( _m_actCut, SIGNAL( triggered() ), this, SLOT( cut() ) );
     connect( this, SIGNAL( cutAvailableChanged(bool) ), _m_actCut, SLOT( setEnabled(bool) ) );
-    _m_initAction(_m_actCopy, "editcopy.png", "Ctrl+C");
+    _m_initAction(_m_actCopy, "editcopy", "Ctrl+C");
     connect( _m_actCopy, SIGNAL( triggered() ), this, SLOT( copy() ) );
     connect( this, SIGNAL( copyAvailableChanged(bool) ), _m_actCopy, SLOT( setEnabled(bool) ) );
-    _m_initAction( _m_actPaste, "editpaste.png", "Ctrl+V",
+    _m_initAction( _m_actPaste, "editpaste", "Ctrl+V",
                    !_m_edit->isReadOnly() && !QApplication::clipboard()->text().isEmpty() );
     connect( _m_actPaste, SIGNAL( triggered() ), this, SLOT( paste() ) );
-    _m_initAction(_m_actDelete, "editdelete.png");
+    _m_initAction(_m_actDelete, "editdelete");
     connect( _m_actDelete, SIGNAL( triggered() ), this, SLOT( _m_deleteSelection() ) );
     _m_mnuContext->addSeparator();
-    _m_initAction(_m_actSelectAll, "select_all.png", "Ctrl+A", true);
+    _m_initAction(_m_actSelectAll, "edit_select_all", "Ctrl+A", true);
     connect( _m_actSelectAll, SIGNAL( triggered() ), this, SLOT( _m_selectAll() ) );
 }
 
-void BTextEditorDocument::_m_initAction(QAction *&action, const QString &iconFileName,
+void BTextEditorDocument::_m_initAction(QAction *&action, const QString &iconName,
                                         const QString &shortcut, bool enabled)
 {
     action = new QAction(this);
     action->setEnabled(enabled);
-    if ( !iconFileName.isEmpty() )
-        action->setIcon( QIcon(BCore::IcoPath + "/" + iconFileName) );
+    if ( !iconName.isEmpty() )
+        action->setIcon( QIcon( BCore::beqtIcon(iconName) ) );
     if ( !shortcut.isEmpty() )
         action->setShortcut( QKeySequence(shortcut) );
     _m_mnuContext->addAction(action);
-}
-
-void BTextEditorDocument::_m_retranslateUi()
-{
-    _m_actUndo->setText( tr("Undo action", "act text") );
-    _m_actRedo->setText( tr("Redo action", "act text") );
-    _m_actCut->setText( tr("Cut", "act text") );
-    _m_actCopy->setText( tr("Copy", "act text") );
-    _m_actPaste->setText( tr("Paste", "act text") );
-    _m_actDelete->setText( tr("Delete", "act text") );
-    _m_actSelectAll->setText( tr("Select all", "act text") );
 }
 
 bool BTextEditorDocument::_m_setFileName(const QString &fileName)
@@ -1765,6 +1770,17 @@ void BTextEditorDocument::_m_highlightBracket(int pos, bool highlight, bool erro
 
 //
 
+void BTextEditorDocument::_m_retranslateUi()
+{
+    _m_actUndo->setText( tr("Undo action", "act text") );
+    _m_actRedo->setText( tr("Redo action", "act text") );
+    _m_actCut->setText( tr("Cut", "act text") );
+    _m_actCopy->setText( tr("Copy", "act text") );
+    _m_actPaste->setText( tr("Paste", "act text") );
+    _m_actDelete->setText( tr("Delete", "act text") );
+    _m_actSelectAll->setText( tr("Select all", "act text") );
+}
+
 void BTextEditorDocument::_m_cutAvailableChanged(bool available)
 {
     emit cutAvailableChanged(!_m_edit->isReadOnly() && available);
@@ -1783,11 +1799,6 @@ void BTextEditorDocument::_m_redoAvailableChanged(bool available)
 void BTextEditorDocument::_m_modificationChanged(bool modified)
 {
     emit modificationChanged(!_m_edit->isReadOnly() && modified);
-}
-
-void BTextEditorDocument::_m_clipboardDataChanged()
-{
-    _m_actPaste->setEnabled( !_m_edit->isReadOnly() && !QApplication::clipboard()->text().isEmpty() );
 }
 
 void BTextEditorDocument::_m_documentBlockCountChanged(int count)

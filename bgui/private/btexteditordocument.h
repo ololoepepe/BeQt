@@ -12,6 +12,7 @@ class QEvent;
 class QKeyEvent;
 class QMouseEvent;
 
+#include "../bkeyboardlayoutmap.h"
 #include "../bsyntax.h"
 
 #include <QObject>
@@ -37,7 +38,26 @@ public:
         int column;
     };
     //
-    explicit BTextEditorDocument(const QString &fileName, QObject *parent = 0);
+    static const QStringList EncodingsValid;
+    static const QString EncodingDef;
+    static const QString FontFamilyDef;
+    static const int FontPointSizeMin;
+    static const int FontPointSizeDef;
+    static const int FontPointSizeMax;
+    static const int LineLengthMin;
+    static const int LineLengthDef;
+    static const int LineLengthMax;
+    static const int TabWidthDef;
+    static const QList<int> TabWidthsValid;
+    static const bool BlockModeDef;
+    //
+    static bool checkEncoding(const QString &codecName);
+    static bool checkFontFamily(const QString &family);
+    static bool checkFontPointSize(int pointSize);
+    static bool checkLineLength(int length);
+    static bool checkTabWidth(int width);
+    //
+    explicit BTextEditorDocument(const QString &fileName, const QString &codecName, QObject *parent = 0);
     ~BTextEditorDocument();
     //
     bool eventFilter(QObject *object, QEvent *event);
@@ -47,18 +67,20 @@ public:
     void setFontPointSize(int pointSize);
     void setBlockMode(bool enabled);
     void setSyntax(const BSyntax &syntax);
-    void setMaxBookmarkCount(int count);
     void setLineLength(int length);
     void setTabWidth(int width);
+    void setClipboardHasText(bool b);
     const QString &fileName() const;
     const QString &codecName() const;
     bool isReadOnly() const;
     bool isCutAvailable() const;
     bool isCopyAvailable() const;
+    bool isPasteAvailable() const;
     bool isUndoAvailable() const;
     bool isRedoAvailable() const;
     bool isModified() const;
     bool hasBookmarks() const;
+    bool hasSelection() const;
     const BSyntax &syntax() const;
     CursorPosition cursorPosition() const;
     QPlainTextEdit *editWidget() const;
@@ -77,8 +99,7 @@ public:
     void deselect();
     void makeBookmark();
     void gotoNextBookmark();
-    void switchSelectedTextLayout(const QMap<QChar, QChar> &directMap, const QMap<QChar, QChar> &reverseMap,
-                                  const QList<QChar> &directUnique, const QList<QChar> &reverseUnique);
+    void switchSelectedTextLayout(const BKeyboardLayoutMap &klm);
 public slots:
     void undo();
     void redo();
@@ -118,14 +139,12 @@ private:
     QTextCharFormat _m_tcfHighlighted;
     bool _m_blockMode;
     QList<int> _m_highlightPosList;
-    int _m_maxBookmarkCount;
     QList<_m_Bookmark> _m_bookmarks;
     //
     void _m_initWidget();
     void _m_initMenu();
-    void _m_initAction(QAction *&action, const QString &iconFileName,
+    void _m_initAction(QAction *&action, const QString &iconName,
                        const QString &shortcut = QString(), bool enabled = false);
-    void _m_retranslateUi();
     bool _m_setFileName(const QString &fileName);
     void _m_processSavedText(QString &text);
     void _m_addSpaces(QString &text) const;
@@ -149,11 +168,11 @@ private:
     void _m_highlightBrackets();
     void _m_highlightBracket(int pos, bool highlight, bool error);
 private slots:
+    void _m_retranslateUi();
     void _m_cutAvailableChanged(bool available);
     void _m_undoAvailableChanged(bool available);
     void _m_redoAvailableChanged(bool available);
     void _m_modificationChanged(bool modified);
-    void _m_clipboardDataChanged();
     void _m_documentBlockCountChanged(int count);
     void _m_editCursorPositionChanged();
     void _m_editSelectionChanged();

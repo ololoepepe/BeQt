@@ -1,5 +1,4 @@
 #include "bhelpwidget.h"
-#include "bguicommon.h"
 
 #include "../bcore/bcore.h"
 
@@ -10,16 +9,12 @@
 #include <QPushButton>
 #include <QTextBrowser>
 #include <QUrl>
-#include <QEvent>
-#include <QCloseEvent>
 #include <QSettings>
 #include <QRect>
+#include <QSize>
+#include <QIcon>
 
-const QRect _m_DefGeometry = QRect(200, 200, 640, 640);
-//
-//_m_GroupMainWindow
-  const QString _m_GroupHelpWidget = "help_widget";
-    const QString _m_KeyGeometry = "geometry";
+const QSize BHelpWidget::BtnIconSize = QSize(24, 24);
 
 //
 
@@ -29,13 +24,23 @@ BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, cons
     _m_vlt = new QVBoxLayout(this);
       _m_hltActions = new QHBoxLayout;
         _m_btnHome = new QPushButton(this);
+          _m_btnHome->setIconSize(BtnIconSize);
+          _m_btnHome->setIcon( QIcon( BCore::beqtIcon("gohome") ) );
         _m_hltActions->addWidget(_m_btnHome);
         _m_btnBack = new QPushButton(this);
+          _m_btnBack->setEnabled(false);
+          _m_btnBack->setIconSize(BtnIconSize);
+          _m_btnBack->setIcon( QIcon( BCore::beqtIcon("back") ) );
         _m_hltActions->addWidget(_m_btnBack);
         _m_btnForward = new QPushButton(this);
+          _m_btnForward->setEnabled(false);
+          _m_btnForward->setIconSize(BtnIconSize);
+          _m_btnForward->setIcon( QIcon( BCore::beqtIcon("forward") ) );
         _m_hltActions->addWidget(_m_btnForward);
         _m_hltActions->addStretch();
         _m_btnClose = new QPushButton(this);
+          _m_btnClose->setIconSize(BtnIconSize);
+          _m_btnClose->setIcon( QIcon( BCore::beqtIcon("window_close") ) );
           connect( _m_btnClose, SIGNAL( clicked() ), this, SLOT( close() ) );
         _m_hltActions->addWidget(_m_btnClose);
       _m_vlt->addLayout(_m_hltActions);
@@ -48,25 +53,12 @@ BHelpWidget::BHelpWidget(const QString &settingsGroup, const QString &home, cons
         connect( _m_btnBack, SIGNAL( clicked() ), _m_tbsr, SLOT( backward() ) );
         connect( _m_btnForward, SIGNAL( clicked() ), _m_tbsr, SLOT( forward() ) );
         connect( _m_tbsr, SIGNAL( sourceChanged(QUrl) ), this, SLOT( _m_updateCaption() ) );
+        connect( _m_tbsr, SIGNAL( backwardAvailable(bool) ), _m_btnBack, SLOT( setEnabled(bool) ) );
+        connect( _m_tbsr, SIGNAL( forwardAvailable(bool) ), _m_btnForward, SLOT( setEnabled(bool) ) );
       _m_vlt->addWidget(_m_tbsr);
     //
-    _m_loadSettings();
     _m_retranslateUi();
-}
-
-//
-
-void BHelpWidget::changeEvent(QEvent *event)
-{
-    if (!event || event->type() != QEvent::LanguageChange)
-        return QWidget::changeEvent(event);
-    _m_retranslateUi();
-}
-
-void BHelpWidget::closeEvent(QCloseEvent *event)
-{
-    _m_saveSettings();
-    QWidget::closeEvent(event);
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 //
@@ -79,40 +71,6 @@ void BHelpWidget::_m_retranslateUi()
     _m_btnClose->setText( tr("Close", "btn text") );
     _m_updateCaption();
 }
-
-void BHelpWidget::_m_loadSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->beginGroup(_m_CSettingsGroup);
-    s->beginGroup(_m_GroupMainWindow);
-      s->beginGroup(_m_GroupHelpWidget);
-        setGeometry( s->value(_m_KeyGeometry, _m_DefGeometry).toRect() );
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->endGroup();
-}
-
-void BHelpWidget::_m_saveSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->beginGroup(_m_CSettingsGroup);
-    s->beginGroup(_m_GroupMainWindow);
-      s->beginGroup(_m_GroupHelpWidget);
-        s->setValue( _m_KeyGeometry, geometry() );
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CSettingsGroup.isEmpty() )
-        s->endGroup();
-}
-
-//
 
 void BHelpWidget::_m_updateCaption()
 {

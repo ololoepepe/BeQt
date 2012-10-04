@@ -1,9 +1,9 @@
 class QWidget;
 
 #include "bfinddialog.h"
-#include "bguicommon.h"
+#include "btexteditordocument.h"
 
-#include "../bcore/bcore.h"
+#include "../../bcore/bcore.h"
 
 #include <QString>
 #include <QDialog>
@@ -18,10 +18,6 @@ class QWidget;
 #include <QKeySequence>
 #include <QMenu>
 #include <QAction>
-#include <QEvent>
-#include <QCloseEvent>
-#include <QSettings>
-#include <QApplication>
 #include <QVariant>
 #include <QStringList>
 #include <QTextDocument>
@@ -30,22 +26,12 @@ class QWidget;
 
 #include <QDebug>
 
-const int _m_MaxHistorySize = 20;
-//
-//_m_GroupTextEditor
-  const QString _m_GroupFindDialog = "find_dialog";
-    const QString _m_KeyTextHistory = "text_history";
-    const QString _m_KeyNewTextHistory = "new_text_history";
-    const QString _m_GroupOptions = "options";
-      const QString _m_KeyCaseSensitive = "case_sensitive";
-      const QString _m_KeyWholeWords = "whole_words";
-      const QString _m_KeyBackwardOrder = "backward_order";
-      const QString _m_KeyCyclic = "cyclic";
+const int BFindDialog::_m_HistorySizeMax = 20;
 
 //
 
-BFindDialog::BFindDialog(const QString &id, QWidget *parent) :
-    QDialog(parent), _m_CId(id)
+BFindDialog::BFindDialog(QWidget *parent) :
+    QDialog(parent)
 {
     _m_documentAvailable = false;
     _m_selectionAvailable = false;
@@ -58,10 +44,10 @@ BFindDialog::BFindDialog(const QString &id, QWidget *parent) :
         _m_hltText->addWidget(_m_lblText);
         _m_cmboxText = new QComboBox(this);
           _m_cmboxText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-          _m_cmboxText->setMaxCount(_m_MaxHistorySize);
+          _m_cmboxText->setMaxCount(_m_HistorySizeMax);
           _m_cmboxText->setInsertPolicy(QComboBox::InsertAtTop);
           _m_cmboxText->setEditable(true);
-          _m_cmboxText->lineEdit()->setMaxLength(120);
+          _m_cmboxText->lineEdit()->setMaxLength(BTextEditorDocument::LineLengthDef);
           connect( _m_cmboxText, SIGNAL( editTextChanged(QString) ),
                    this, SLOT( _m_cmboxTextEditTextChanged(QString) ) );
         _m_hltText->addWidget(_m_cmboxText);
@@ -71,10 +57,10 @@ BFindDialog::BFindDialog(const QString &id, QWidget *parent) :
         _m_hltNewText->addWidget(_m_lblNewText);
         _m_cmboxNewText = new QComboBox(this);
           _m_cmboxNewText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-          _m_cmboxNewText->setMaxCount(_m_MaxHistorySize);
+          _m_cmboxNewText->setMaxCount(_m_HistorySizeMax);
           _m_cmboxNewText->setInsertPolicy(QComboBox::InsertAtTop);
           _m_cmboxNewText->setEditable(true);
-          _m_cmboxNewText->lineEdit()->setMaxLength(120);
+          _m_cmboxNewText->lineEdit()->setMaxLength(BTextEditorDocument::LineLengthDef);
         _m_hltNewText->addWidget(_m_cmboxNewText);
       _m_vlt->addLayout(_m_hltNewText);
       _m_gboxOptions = new QGroupBox(this);
@@ -129,8 +115,8 @@ BFindDialog::BFindDialog(const QString &id, QWidget *parent) :
           connect( _m_btnFind, SIGNAL( clicked() ), this, SLOT( _m_appendTextHistory() ) );
         _m_hltActions->addWidget(_m_btnFind);
       _m_vlt->addLayout(_m_hltActions);
-    _m_loadSettings();
     _m_retranslateUi();
+    connect( BCore::instance(), SIGNAL( localeChanged() ), this, SLOT( _m_retranslateUi() ) );
 }
 
 //
@@ -160,10 +146,32 @@ void BFindDialog::setReplaceAvailable(bool available)
 
 void BFindDialog::setLineLength(int length)
 {
-    if (length < 10)
+    if ( !BTextEditorDocument::checkLineLength(length) )
         return;
     _m_cmboxText->lineEdit()->setMaxLength(length);
     _m_cmboxNewText->lineEdit()->setMaxLength(length);
+}
+
+void BFindDialog::setParameters(const Parameters &param)
+{
+    _m_cmboxText->addItems(param.textHistory);
+    _m_cmboxNewText->addItems(param.newTextHistory);
+    _m_cboxCaseSensitive->setChecked(param.caseSensitive);
+    _m_cboxWholeWords->setChecked(param.wholeWords);
+    _m_cboxBackwardOrder->setChecked(param.backwardOrder);
+    _m_cboxCyclic->setChecked(param.cyclic);
+}
+
+BFindDialog::Parameters BFindDialog::parameters() const
+{
+    Parameters param;
+    param.textHistory = _m_textHistory();
+    param.newTextHistory = _m_newTextHistory();
+    param.caseSensitive = _m_cboxCaseSensitive->isChecked();
+    param.wholeWords = _m_cboxWholeWords->isChecked();
+    param.backwardOrder = _m_cboxBackwardOrder->isChecked();
+    param.cyclic = _m_cboxCyclic->isChecked();
+    return param;
 }
 
 QString BFindDialog::text() const
@@ -200,19 +208,6 @@ bool BFindDialog::cyclic() const
 
 //
 
-void BFindDialog::changeEvent(QEvent *event)
-{
-    if (!event || event->type() != QEvent::LanguageChange)
-        return QDialog::changeEvent(event);
-    _m_retranslateUi();
-}
-
-void BFindDialog::closeEvent(QCloseEvent *event)
-{
-    _m_saveSettings();
-    QDialog::closeEvent(event);
-}
-
 void BFindDialog::showEvent(QShowEvent *event)
 {
     QLineEdit *le = _m_cmboxText->lineEdit();
@@ -223,71 +218,6 @@ void BFindDialog::showEvent(QShowEvent *event)
 }
 
 //
-
-void BFindDialog::_m_retranslateUi()
-{
-    setWindowTitle( tr("Find and replace", "windowTitle") );
-    _m_lblText->setText( tr("Find:", "lbl text") );
-    _m_lblNewText->setText( tr("Replace with:", "lbl text") );
-    _m_gboxOptions->setTitle( tr("Options", "gbox title") );
-    _m_cboxCaseSensitive->setText( tr("Case sensitive", "cbox text") );
-    _m_cboxWholeWords->setText( tr("Whole words only", "cbox text") );
-    _m_cboxBackwardOrder->setText( tr("Reverse search", "cbox text") );
-    _m_cboxCyclic->setText( tr("Cyclic search", "cbox text") );
-    _m_btnClose->setText( tr("Close", "btn text") );
-    _m_btnReplaceAll->setText( tr("Replace all", "btn text") );
-    _m_actSelection->setText( tr("in selection", "act text") );
-    _m_actDocument->setText( tr("in document", "act text") );
-    _m_actAllDocuments->setText( tr("in all documents", "act text") );
-    _m_btnReplace->setText( tr("Replace", "btn text") );
-    _m_btnFind->setText( tr("Find", "btn text") );
-}
-
-void BFindDialog::_m_loadSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CId.isEmpty() )
-        s->beginGroup(_m_CId);
-    s->beginGroup(_m_GroupTextEditor);
-      s->beginGroup(_m_GroupFindDialog);
-        _m_cmboxText->addItems( s->value(_m_KeyTextHistory).toStringList() );
-        _m_cmboxNewText->addItems( s->value(_m_KeyNewTextHistory).toStringList() );
-        s->beginGroup(_m_GroupOptions);
-          _m_cboxCaseSensitive->setChecked( s->value(_m_KeyCaseSensitive).toBool() );
-          _m_cboxWholeWords->setChecked( s->value(_m_KeyWholeWords).toBool() );
-          _m_cboxBackwardOrder->setChecked( s->value(_m_KeyBackwardOrder).toBool() );
-          _m_cboxCyclic->setChecked( s->value(_m_KeyCyclic).toBool() );
-        s->endGroup();
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CId.isEmpty() )
-        s->endGroup();
-}
-
-void BFindDialog::_m_saveSettings()
-{
-    QScopedPointer<QSettings> s( BCore::newSettingsInstance() );
-    if (!s)
-        return;
-    if ( !_m_CId.isEmpty() )
-        s->beginGroup(_m_CId);
-    s->beginGroup(_m_GroupTextEditor);
-      s->beginGroup(_m_GroupFindDialog);
-        s->setValue( _m_KeyTextHistory, _m_textHistory() );
-        s->setValue( _m_KeyNewTextHistory, _m_newTextHistory() );
-        s->beginGroup(_m_GroupOptions);
-          s->setValue( _m_KeyCaseSensitive, _m_cboxCaseSensitive->isChecked() );
-          s->setValue( _m_KeyWholeWords, _m_cboxWholeWords->isChecked() );
-          s->setValue( _m_KeyBackwardOrder, _m_cboxBackwardOrder->isChecked() );
-          s->setValue( _m_KeyCyclic, _m_cboxCyclic->isChecked() );
-        s->endGroup();
-      s->endGroup();
-    s->endGroup();
-    if ( !_m_CId.isEmpty() )
-        s->endGroup();
-}
 
 void BFindDialog::_m_check()
 {
@@ -320,6 +250,25 @@ QStringList BFindDialog::_m_newTextHistory() const
 
 //
 
+void BFindDialog::_m_retranslateUi()
+{
+    setWindowTitle( tr("Find and replace", "windowTitle") );
+    _m_lblText->setText( tr("Find:", "lbl text") );
+    _m_lblNewText->setText( tr("Replace with:", "lbl text") );
+    _m_gboxOptions->setTitle( tr("Options", "gbox title") );
+    _m_cboxCaseSensitive->setText( tr("Case sensitive", "cbox text") );
+    _m_cboxWholeWords->setText( tr("Whole words only", "cbox text") );
+    _m_cboxBackwardOrder->setText( tr("Reverse search", "cbox text") );
+    _m_cboxCyclic->setText( tr("Cyclic search", "cbox text") );
+    _m_btnClose->setText( tr("Close", "btn text") );
+    _m_btnReplaceAll->setText( tr("Replace all", "btn text") );
+    _m_actSelection->setText( tr("in selection", "act text") );
+    _m_actDocument->setText( tr("in document", "act text") );
+    _m_actAllDocuments->setText( tr("in all documents", "act text") );
+    _m_btnReplace->setText( tr("Replace", "btn text") );
+    _m_btnFind->setText( tr("Find", "btn text") );
+}
+
 void BFindDialog::_m_cmboxTextEditTextChanged(const QString &text)
 {
     _m_check();
@@ -333,8 +282,8 @@ void BFindDialog::_m_appendTextHistory()
     int index = _m_cmboxText->findText(text);
     if (index >= 0)
         _m_cmboxText->removeItem(index);
-    else if (_m_cmboxText->count() >= _m_MaxHistorySize)
-        _m_cmboxText->removeItem(_m_MaxHistorySize - 1);
+    else if (_m_cmboxText->count() >= _m_HistorySizeMax)
+        _m_cmboxText->removeItem(_m_HistorySizeMax - 1);
     _m_cmboxText->insertItem(0, text);
     _m_cmboxText->setCurrentIndex(0);
 }
@@ -347,8 +296,8 @@ void BFindDialog::_m_appendNewTextHistory()
     int index = _m_cmboxNewText->findText(text);
     if (index >= 0)
         _m_cmboxNewText->removeItem(index);
-    else if (_m_cmboxNewText->count() >= _m_MaxHistorySize)
-        _m_cmboxNewText->removeItem(_m_MaxHistorySize - 1);
+    else if (_m_cmboxNewText->count() >= _m_HistorySizeMax)
+        _m_cmboxNewText->removeItem(_m_HistorySizeMax - 1);
     _m_cmboxNewText->insertItem(0, text);
     _m_cmboxNewText->setCurrentIndex(0);
 }

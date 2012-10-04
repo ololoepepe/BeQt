@@ -1,253 +1,236 @@
 #include "bnetworkconnection.h"
-#include "bsocketshell.h"
+#include "bsocketwrapper.h"
+#include "bgenericsocket.h"
+#include "bnetworkoperation.h"
+#include "bterminaliohandler.h"
 
 #include <QObject>
 #include <QDataStream>
 #include <QString>
-#include <QMap>
 #include <QIODevice>
 #include <QAbstractSocket>
-#include <QHostAddress>
-#include <QTimer>
+#include <QThread>
+#include <QDateTime>
 
-const QDataStream::Version BNetworkConnection::DefaultDataStreamVersion = QDataStream::Qt_4_7;
-const QString BNetworkConnection::AuthorizeOperation = "authorize";
-
-//
-
-bool BNetworkConnection::checkSocket(QAbstractSocket *socket)
+BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
+    QObject(parent), _m_CUniqueId( QUuid::createUuid() )
 {
-    return socket && socket->isOpen() && (socket->openMode() & QAbstractSocket::ReadWrite);
-}
-
-bool BNetworkConnection::checkInDataStream(const QDataStream &in)
-{
-    QIODevice *devIn = in.device();
-    return devIn && (devIn->openMode() & QIODevice::ReadOnly);
-}
-
-bool BNetworkConnection::checkInOutDataStreams(const QDataStream &in, const QDataStream &out)
-{
-    QIODevice *devOut = out.device();
-    return devOut && (devOut->openMode() & QIODevice::WriteOnly) && checkInDataStream(in);
-}
-
-//
-
-BNetworkConnection::BNetworkConnection(QAbstractSocket *socket, int authorizationTimeout, QObject *parent) :
-    QObject(parent)
-{
-    _m_logger = 0;
-    _m_authorized = false;
-    _m_dataStreamVersion = DefaultDataStreamVersion;
-    _m_socket = socket;
-    if (!_m_socket)
+    _m_init();
+    if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
-    _m_socket->setParent(this);
-    _m_socketShell = new BSocketShell(this);
-    _m_socketShell->setSocket(_m_socket);
-    connect( _m_socket, SIGNAL( disconnected() ), this, SLOT( _m_disconnected() ) );
-    connect( _m_socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-             this, SLOT( _m_error(QAbstractSocket::SocketError) ) );
-    connect( _m_socketShell, SIGNAL( dataReceived(QByteArray) ), this, SLOT( _m_dataReceived(QByteArray) ) );
-    connect( _m_socketShell, SIGNAL( dataSent() ), this, SLOT( _m_dataSent() ) );
-    connect( _m_socketShell, SIGNAL( criticalBufferSizeReached() ), this, SIGNAL( criticalBufferSizeReached() ) );
-    addRequestHandler(AuthorizeOperation, &BNetworkConnection::_m_handleAuthorizationRequest);
-    addReplyHandler(AuthorizeOperation, &BNetworkConnection::_m_handleAuthorizationReply);
-    if (authorizationTimeout > 0)
-        QTimer::singleShot( authorizationTimeout, this, SLOT( _m_checkAuthorization() ) );
-    if ( _m_socket->isOpen() )
-        _m_address = _m_socket->peerAddress().toString();
+    _m_setSocket(socket);
+    log( tr("Incoming connection", "log text") );
+}
+
+BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
+    QObject(parent), _m_CUniqueId( QUuid::createUuid() )
+{
+    _m_init();
+    BGenericSocket *socket = new BGenericSocket(type);
+    if ( !socket->isSocketSet() )
+    {
+        socket->deleteLater();
+        return;
+    }
+    _m_setSocket(socket);
 }
 
 //
 
-void BNetworkConnection::setDataStreamVersion(QDataStream::Version version)
+void BNetworkConnection::setCriticalBufferSize(qint64 size)
 {
-    _m_dataStreamVersion = version;
+    _m_socketWrapper->setCriticalBufferSize(size);
 }
 
-void BNetworkConnection::setCriticalBufferSize(quint64 size)
+void BNetworkConnection::setCloseOnCriticalBufferSize(bool close)
 {
-    _m_socketShell->setCriticalBufferSize(size);
+    _m_socketWrapper->setCloseOnCriticalBufferSize(close);
 }
 
-void BNetworkConnection::setCloseOnCriticalBufferSizeReached(bool close)
+void BNetworkConnection::setDetailedLogMode(bool enabled)
 {
-    _m_socketShell->setCloseOnCriticalBufferSizeReached(close);
+    _m_detailedLog = enabled;
 }
 
-bool BNetworkConnection::connectToHost(const QString &hostName, quint16 port,
-                                       const QString &login, const QString &password, int timeout)
+void BNetworkConnection::setAutoDeleteSentReplies(bool enabled)
 {
-    _m_address = hostName;
-    if ( !_m_socket || _m_socket->isOpen() || hostName.isEmpty() )
+    _m_autoDelete = enabled;
+}
+
+void BNetworkConnection::connectToHost(const QString &hostName, quint16 port)
+{
+    if ( isConnected() || hostName.isEmpty() )
+        return;
+    _m_socket->connectToHost(hostName, port);
+}
+
+bool BNetworkConnection::connectToHostBlocking(const QString &hostName, quint16 port, int msecs)
+{
+    if ( isConnected() || hostName.isEmpty() )
         return false;
     _m_socket->connectToHost(hostName, port);
-    log( tr("Connecting...", "log text") );
-    if ( !_m_socket->waitForConnected(timeout) )
-    {
-        log( tr("Connection failed", "log text") );
-        return false;
-    }
-    log( tr("Connected", "log text") );
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion( dataStreamVersion() );
-    out << (int) Request;
-    out << BNetworkConnection::AuthorizeOperation;
-    out << login;
-    out << password;
-    _m_socketShell->sendData(ba);
-    return true;
+    return _m_socket->waitForConnected(msecs);
 }
 
-bool BNetworkConnection::disconnectFromHost(int timeout)
+void BNetworkConnection::disconnectFromHost()
+{
+    if ( !isConnected() )
+        return;
+    _m_socket->disconnectFromHost();
+}
+
+bool BNetworkConnection::disconnectFromHostBlocking(int msecs)
 {
     if ( !isConnected() )
         return true;
-    if (timeout > 0)
-    {
-        _m_socket->disconnectFromHost();
-        return _m_socket->waitForDisconnected(timeout);
-    }
-    else
-    {
-        _m_socket->close();
-        return true;
-    }
+    _m_socket->disconnectFromHost();
+    return _m_socket->waitForDisconnected(msecs);
+}
+
+void BNetworkConnection::close()
+{
+    if ( !isConnected() )
+        return;
+    _m_socket->close();
 }
 
 bool BNetworkConnection::isValid() const
 {
-    return _m_socket;
+    return !_m_socket.isNull() && _m_socket->isSocketSet();
 }
 
 bool BNetworkConnection::isConnected() const
 {
-    return checkSocket(_m_socket);
+    return isValid() && _m_socket->isOpen();
 }
 
-bool BNetworkConnection::isAuthorized() const
+const QUuid &BNetworkConnection::uniqueId() const
 {
-    return _m_authorized;
+    return _m_CUniqueId;
 }
 
 QAbstractSocket::SocketError BNetworkConnection::error() const
 {
-    return _m_socket ? _m_socket->error() : QAbstractSocket::UnknownSocketError;
+    return isValid() ? _m_socket->error() : QAbstractSocket::UnknownSocketError;
 }
 
 QString BNetworkConnection::errorString() const
 {
-    return _m_socket ? _m_socket->errorString() : "";
+    return isValid() ? _m_socket->errorString() : "";
 }
 
-QDataStream::Version BNetworkConnection::dataStreamVersion() const
+qint64 BNetworkConnection::criticalBufferSize() const
 {
-    return _m_dataStreamVersion;
+    return _m_socketWrapper->criticalBufferSize();
 }
 
-quint64 BNetworkConnection::criticalBufferSize() const
+bool BNetworkConnection::closeOnCriticalBufferSize() const
 {
-    return _m_socketShell ? _m_socketShell->criticalBufferSize() : 0;
+    return _m_socketWrapper->closeOnCriticalBufferSize();
 }
 
-bool BNetworkConnection::closeOnCriticalBufferSizeReached() const
+bool BNetworkConnection::detailedLogMode() const
 {
-    return _m_socketShell ? _m_socketShell->closeOnCriticalBufferSizeReached() : false;
+    return _m_detailedLog;
 }
 
-QString BNetworkConnection::address() const
+bool BNetworkConnection::autoDeleteSentReplies() const
 {
-    return _m_address;
+    return _m_autoDelete;
+}
+
+QString BNetworkConnection::peerAddress() const
+{
+    return isValid() ? _m_socket->peerAddress() : "";
+}
+
+BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, const QByteArray &data)
+{
+    if ( !isConnected() || operation.isEmpty() )
+        return 0;
+    _m_Data dat;
+    dat.first = data;
+    dat.second.setId( QUuid::createUuid() );
+    dat.second.setIsRequest(true);
+    dat.second.setOperation(operation);
+    BNetworkOperation *op = new BNetworkOperation(dat.second, this);
+    connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( _m_operationDestroyed(QObject *) ) );
+    _m_requests.insert(dat.second, op);
+    _m_dataQueue.enqueue(dat);
+    _m_sendNext();
+    return op;
+}
+
+bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArray &data)
+{
+    if ( !isConnected() || !operation || !operation->isValid() || operation->isRequest() )
+        return false;
+    _m_Data dat;
+    dat.first = data;
+    dat.second = operation->metaData();
+    _m_dataQueue.enqueue(dat);
+    _m_sendNext();
+    return true;
 }
 
 //
-
-void BNetworkConnection::addRequestHandler(const QString &id, RequestHandler handler)
-{
-    if (id.isEmpty() || !handler)
-        return;
-    _m_requestHandlers.insert(id, handler);
-}
-
-void BNetworkConnection::addReplyHandler(const QString &id, ReplyHandler handler)
-{
-    if (id.isEmpty() || !handler)
-        return;
-    _m_replyHandlers.insert(id, handler);
-}
-
-void BNetworkConnection::setLogger(Logger logger)
-{
-    _m_logger = logger;
-}
 
 void BNetworkConnection::log(const QString &text)
 {
-    if (_m_logger)
-        (this->*_m_logger)(text);
-}
-
-bool BNetworkConnection::sendData(OperationType type, const QString &operation, const QByteArray &data)
-{
-    if ( !isAuthorized() || Invalid == type || operation.isEmpty() || data.isEmpty() )
-        return false;
-    _m_lastOperationType = type;
-    _m_lastOperation = operation;
-    _m_socketShell->sendData(data);
-    return true;
-}
-
-bool BNetworkConnection::authorize(const QString &login, const QString &password)
-{
-    return true;
+    BTerminalIOHandler::writeLine("[" + QDateTime::currentDateTime().toString("dd/MMM/yyy hh:mm:ss") + "] [" +
+                                  peerAddress() + "] " + text);
 }
 
 //
 
-void BNetworkConnection::_m_handleAuthorizationRequest(QDataStream &in, QDataStream &out)
+void BNetworkConnection::_m_init()
 {
-    QString login;
-    QString password;
-    in >> login;
-    in >> password;
-    _m_authorized = authorize(login, password);
-    out << _m_authorized;
-    if (_m_authorized)
-    {
-        if ( !login.isEmpty() )
-            log(tr("Authorized as:", "log text") + " " + login);
-        else
-            log( tr("Authorized", "log text") );
-        emit authorized();
-    }
+    _m_detailedLog = false;
+    _m_autoDelete = true;
+    _m_socketWrapper = new BSocketWrapper(this);
+    connect(_m_socketWrapper, SIGNAL( downloadProgress(BSocketWrapper::MetaData, qint64, qint64) ),
+            this, SLOT( _m_downloadProgress(BSocketWrapper::MetaData, qint64, qint64) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( uploadProgress(BSocketWrapper::MetaData, qint64, qint64) ),
+            this, SLOT( _m_uploadProgress(BSocketWrapper::MetaData, qint64, qint64) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( dataReceived(QByteArray, BSocketWrapper::MetaData) ),
+            this, SLOT( _m_dataReceived(QByteArray, BSocketWrapper::MetaData) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( dataSent(BSocketWrapper::MetaData) ),
+            this, SLOT( _m_dataSent(BSocketWrapper::MetaData) ), Qt::DirectConnection);
+    connect(_m_socketWrapper, SIGNAL( criticalBufferSizeReached() ),
+            this, SIGNAL( criticalBufferSizeReached() ), Qt::DirectConnection);
 }
 
-void BNetworkConnection::_m_handleAuthorizationReply(bool success, QDataStream &in)
+void BNetworkConnection::_m_setSocket(BGenericSocket *socket)
 {
-    if (success)
-    {
-        _m_authorized = true;
-        log( tr("Authorized", "log text") );
-        emit authorized();
-    }
-    else
-    {
-        emit authorizationFailed();
-    }
-}
-
-//
-
-void BNetworkConnection::_m_checkAuthorization()
-{
-    if (_m_authorized)
+    if (!socket)
         return;
-    _m_socket->close();
-    log( tr("Authorization failed", "log text")  );
-    emit authorizationFailed();
+    _m_socket = socket;
+    _m_socketWrapper->setSocket(socket);
+    socket->setParent(this);
+    connect(socket, SIGNAL( connected() ), this, SLOT( _m_connected() ), Qt::DirectConnection);
+    connect(socket, SIGNAL( disconnected() ), this, SLOT( _m_disconnected() ), Qt::DirectConnection);
+    connect(socket, SIGNAL( error(QAbstractSocket::SocketError) ),
+            this, SLOT( _m_error(QAbstractSocket::SocketError) ), Qt::DirectConnection);
+}
+
+void BNetworkConnection::_m_sendNext()
+{
+    if ( !isConnected() || _m_socketWrapper->isBuisy() || _m_dataQueue.isEmpty() )
+        return;
+    _m_Data data = _m_dataQueue.dequeue();
+    if ( !data.second.isValid() )
+        return;
+    BNetworkOperation *op = data.second.isRequest() ? _m_requests.value(data.second) : _m_replies.value(data.second);
+    if (op)
+        _m_socketWrapper->sendData(data.first, data.second) ? op->_m_setStarted() : op->_m_setError();
+}
+
+//
+
+void BNetworkConnection::_m_connected()
+{
+    log( tr("Connected", "log text") );
+    emit connected();
 }
 
 void BNetworkConnection::_m_disconnected()
@@ -256,74 +239,119 @@ void BNetworkConnection::_m_disconnected()
     emit disconnected();
 }
 
-void BNetworkConnection::_m_error(QAbstractSocket::SocketError error)
+void BNetworkConnection::_m_error(QAbstractSocket::SocketError socketError)
 {
-    QString err = errorString();
-    log(tr("Error:", "log text") + " " + err);
-    emit errorOccured(err);
+    log( tr("Error:", "log text") + " " + errorString() );
+    emit error(socketError);
 }
 
-void BNetworkConnection::_m_dataReceived(const QByteArray &data)
+void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &metaData,
+                                             qint64 bytesReady, qint64 bytesTotal)
 {
-    _m_lastOperationType = Invalid;
-    _m_lastOperation.clear();
-    QDataStream in(data);
-    in.setVersion(_m_dataStreamVersion);
-    in >> _m_lastOperationType;
-    in >> _m_lastOperation;
-    switch (_m_lastOperationType)
+    if ( metaData.isRequest() )
     {
-    case Request:
-    {
-        QByteArray ba;
-        QDataStream out(&ba, QIODevice::WriteOnly);
-        out.setVersion(_m_dataStreamVersion);
-        out << (int) Reply;
-        out << _m_lastOperation;
-        RequestHandler h = _m_requestHandlers.value(_m_lastOperation);
-        if (h)
+        BSocketWrapper::MetaData mdat = metaData;
+        mdat.setIsRequest(false);
+        BNetworkOperation *op = _m_replies.value(mdat);
+        if (op)
         {
-            (this->*h)(in, out);
+            op->_m_setDownloadProgress(bytesReady, bytesTotal);
         }
         else
         {
-            log( tr("Unidentified request", "log text") );
-            out << false;
-            out << tr("Unidentified operation", "reply text");
+            op = new BNetworkOperation(mdat, this);
+            connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( _m_operationDestroyed(QObject *) ) );
+            _m_replies.insert(mdat, op);
+            op->_m_setStarted();
+            if (_m_detailedLog)
+                log( tr("Incoming request:", "log text") + " " + metaData.operation() );
+            emit incomingRequest(op);
         }
-        _m_lastOperationType = Reply;
-        _m_socketShell->sendData(ba);
-        break;
     }
-    case Reply:
+    else
     {
-        bool success = false;
-        in >> success;
-        ReplyHandler h = _m_replyHandlers.value(_m_lastOperation);
-        if (h)
-            (this->*h)(success, in);
-        else
-            log( tr("Unidentified reply", "log text") );
-        break;
-    }
-    default:
-        break;
+        BSocketWrapper::MetaData mdat = metaData;
+        mdat.setIsRequest(true);
+        BNetworkOperation *op = _m_requests.value(mdat);
+        if (op)
+            op->_m_setDownloadProgress(bytesReady, bytesTotal);
     }
 }
 
-void BNetworkConnection::_m_dataSent()
+void BNetworkConnection::_m_uploadProgress(const BSocketWrapper::MetaData &metaData,
+                                           qint64 bytesReady, qint64 bytesTotal)
 {
-    switch (_m_lastOperationType)
+    BNetworkOperation *op = metaData.isRequest() ? _m_requests.value(metaData) : _m_replies.value(metaData);
+    if (op)
+        op->_m_setUploadProgress(bytesReady, bytesTotal);
+}
+
+void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWrapper::MetaData &metaData)
+{
+    if ( metaData.isRequest() )
     {
-    case Request:
-        log(tr("Request sent:", "log text") + " " + _m_lastOperation);
-        emit requestSent(_m_lastOperation);
-        break;
-    case Reply:
-        log(tr("Reply sent:", "log text") + " " + _m_lastOperation);
-        emit replySent(_m_lastOperation);
-        break;
-    default:
-        break;
+        BSocketWrapper::MetaData mdat = metaData;
+        mdat.setIsRequest(false);
+        BNetworkOperation *op = _m_replies.value(mdat);
+        if (!op)
+            return;
+        op->_m_bytesInReady = op->_m_bytesInTotal;
+        op->_m_data = data;
+        if (_m_detailedLog)
+            log( tr("Request received:", "log text") + " " + metaData.operation() );
+        emit requestReceived(op);
     }
+    else
+    {
+        BSocketWrapper::MetaData mdat = metaData;
+        mdat.setIsRequest(false);
+        BNetworkOperation *op = _m_requests.value(mdat);
+        if (!op)
+            return;
+        _m_requests.remove(mdat);
+        op->_m_bytesInReady = op->_m_bytesInTotal;
+        op->_m_setFinished(data);
+        if (_m_detailedLog)
+            log( tr("Reply received:", "log text") + " " + metaData.operation() );
+        emit replyReceived(op);
+    }
+}
+
+void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
+{
+    if ( metaData.isRequest() )
+    {
+        BNetworkOperation *op = _m_requests.value(metaData);
+        if (!op)
+            return;
+        if (_m_detailedLog)
+            log( tr("Request sent:", "log text") + " " + metaData.operation() );
+        emit requestSent(op);
+    }
+    else
+    {
+        BNetworkOperation *op = _m_replies.value(metaData);
+        if (!op)
+            return;
+        _m_replies.remove(metaData);
+        op->_m_setFinished();
+        if (_m_detailedLog)
+            log( tr("Reply sent:", "log text") + " " + metaData.operation() );
+        if (_m_autoDelete)
+            op->deleteLater();
+        else
+            emit replySent(op);
+    }
+    _m_sendNext();
+}
+
+void BNetworkConnection::_m_operationDestroyed(QObject *object)
+{
+    BNetworkOperation *operation = qobject_cast<BNetworkOperation *>(object);
+    if (!operation)
+        return;
+    if ( operation->isRequest() )
+        _m_requests.remove( operation->metaData() );
+    else
+        _m_replies.remove( operation->metaData() );
 }

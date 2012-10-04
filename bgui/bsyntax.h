@@ -68,8 +68,8 @@ public:
     static void removeSpaces(QString &text);
     //
     BSyntax();
-    explicit BSyntax(const QString &fileName);
     BSyntax(const BSyntax &other);
+    explicit BSyntax(const QString &fileName);
     ~BSyntax();
     //
     void loadSyntax(const QString &fileName);
