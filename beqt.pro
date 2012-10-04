@@ -14,8 +14,10 @@ TRANSLATIONS += \
 # PREFIX
 ###############################################################################
 
-unix:isEmpty(PREFIX):PREFIX = /usr
-win32:PREFIX = BeQt
+isEmpty(PREFIX) {
+unix:PREFIX = /usr
+win32:PREFIX = C:/PROGRA~1/BeQt
+}
 
 ###############################################################################
 # INSTALLS.files
