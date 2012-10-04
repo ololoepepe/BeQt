@@ -20,7 +20,7 @@
 #include <QDebug>
 
 //beqt
-const QString BCore::BeQtVersion = "1.0.0b1";
+const QString BCore::BeQtVersion = "1.0.0";
 const QString BCore::ResourcesPath = ":/beqt/res";
 const QString BCore::IcoPath = BCore::ResourcesPath + "/ico";
 const QLocale BCore::DefaultLocale = QLocale(QLocale::English, QLocale::UnitedStates);

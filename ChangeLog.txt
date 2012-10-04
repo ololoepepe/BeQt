@@ -1,10 +1,12 @@
-=== BeQt 0.1.0 (11 September 2012) ===
-    * First release
-
-=== BeQt 1.0.0 (01 October 2012) ===
+=== BeQt 1.0.0 (04 October 2012) ===
     * Implement new BCore interface
     * Change icon set from Crystal to Oxygen
     * Redesign toolbars and menus (rearrange and change titles)
     * Redesign settings dialog
     * Add and systematize new encodings
     * Implement new bnetwork classes
+    * Change interfaces of some classes (mostly BTextEditor)
+    * Add some new classes
+
+=== BeQt 0.1.0 (11 September 2012) ===
+    * First release
