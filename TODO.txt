@@ -8,6 +8,7 @@
 * Remove bcore/BCryptor
 * Move bgui/"About Qt" to the "About" dialog
 * Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
+* Make usage of <Backspace> possible when <Shift> key is pressed (bgui/BTextEditorDocument)
 
 === Global ===
 
