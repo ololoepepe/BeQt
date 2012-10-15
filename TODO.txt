@@ -1,18 +1,18 @@
-=== This release ===
-
-[Done] Improve the README
-
 === Next release ===
 
 * Remove icons from the resources, install them to the Shared directory instead
 * Remove bcore/BCryptor
 * Move bgui/"About Qt" to the "About" dialog
 * Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
-* Make usage of <Backspace> possible when <Shift> key is pressed (bgui/BTextEditorDocument)
+[done] Make usage of <Backspace> possible when <Shift> key is pressed (bgui/BTextEditorDocument)
 
 === Global ===
 
 * Fix dragging from BPlainTextEdit
 * Create user manual
 * Add comments to the code and make docs
-[Done] Add tooltips for elements of SwitchDocumentCmbox in BTextEditor
+[done] Add tooltips for elements of SwitchDocumentCmbox in BTextEditor
+
+=== History ===
+
+[done] Improve the README
