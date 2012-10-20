@@ -1166,6 +1166,9 @@ bool BTextEditorDocument::_m_handleKeyPressEvent(QObject *object, QKeyEvent *eve
     case Qt::ShiftModifier:
         switch (key)
         {
+        case Qt::Key_Backspace:
+            _m_handleBackspace();
+            return true;
         case Qt::Key_Left:
             _m_handleLeft(true);
             return true;

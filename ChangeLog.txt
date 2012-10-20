@@ -1,3 +1,6 @@
+=== BeQt 1.0.1 (20 October 2012) ===
+    * Make usage of <Backspace> possible when <Shift> key is pressed (BTextEditorDocument)
+
 === BeQt 1.0.0 (04 October 2012) ===
     * Implement new BCore interface
     * Change icon set from Crystal to Oxygen

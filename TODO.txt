@@ -1,6 +1,6 @@
-=== This release ===
+=== Next patch ===
 
-[Done] Improve the README
+[done] Make usage of <Backspace> possible when <Shift> key is pressed (bgui/BTextEditorDocument)
 
 === Next release ===
 
@@ -14,4 +14,8 @@
 * Fix dragging from BPlainTextEdit
 * Create user manual
 * Add comments to the code and make docs
-[Done] Add tooltips for elements of SwitchDocumentCmbox in BTextEditor
+[done] Add tooltips for elements of SwitchDocumentCmbox in BTextEditor
+
+=== History ===
+
+[done] Improve the README
