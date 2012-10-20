@@ -2,7 +2,7 @@ TARGET = beqtnetwork
 TEMPLATE = lib
 VER_MAJ = 1
 VER_MIN = 0
-VER_PAT = 0
+VER_PAT = 1
 
 DEFINES += BNETWORK_LIBRARY
 
