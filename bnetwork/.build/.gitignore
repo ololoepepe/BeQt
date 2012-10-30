@@ -1,7 +1,0 @@
-# All files #
-#############
-*
-
-# Excluding .gitignore #
-########################
-!.gitignore
