@@ -1,1 +1,0 @@
-BEQT_PART = example

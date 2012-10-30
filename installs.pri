@@ -1,3 +1,6 @@
+### Headers ###
+###############
+
 #Gets contents of a normal .h header
 #Returns the corresponding header (included into the given header)
 defineReplace(beqtRealHeaderInternal) {
@@ -5,7 +8,7 @@ defineReplace(beqtRealHeaderInternal) {
     beqt_header=$$replace(beqt_header_cat, "$${LITERAL_HASH}include", "")
     beqt_header=$$replace(beqt_header, "\\.\\./\\.\\./", "")
     beqt_header=$$replace(beqt_header, "\"", "")
-    return($${PWD}/../$${beqt_header})
+    return($${PWD}/$${beqt_header})
 }
 
 #Gets contents of a header (either .h or with no extension)
@@ -32,7 +35,7 @@ defineReplace(beqtRealHeader) {
 #Returns a list of "real" headers to which headers in the given subdir points
 defineReplace(beqtRealHeaders) {
     beqt_headers_subdir=$${1}
-    beqt_headers=$$files($${PWD}/$${beqt_headers_subdir}/*)
+    beqt_headers=$$files($${PWD}/include/$${beqt_headers_subdir}/*)
     beqt_real_headers=
     for(beqt_header, beqt_headers) {
         beqt_real_headers += $$beqtRealHeader($${beqt_header})
@@ -71,3 +74,28 @@ INSTALLS += beqt_installs_headers_network
 beqt_installs_headers_widgets.files=$$beqtRealHeaders(BeQtWidgets)
 beqt_installs_headers_widgets.path=$$beqtHeadersInstallsPath(BeQtWidgets)
 INSTALLS += beqt_installs_headers_widgets
+
+### Translations ###
+####################
+
+#Gets a file name
+#Returns the given file name.
+#On Windows slash characters will be replaced by backslashes
+defineReplace(beqtNativeFileName) {
+    beqt_file_name=$${1}
+    win32:beqt_native_file_name=$$replace(beqt_file_name, "/", "\\")
+    else:beqt_native_file_name=$${beqt_file_name}
+    return($${beqt_native_file_name})
+}
+
+beqt_translations_ts=$$files($${PWD}/*.ts)
+for(beqt_translation_ts, beqt_translations_ts) {
+    beqt_translation_ts_native=$$beqtNativeFileName($${beqt_translation_ts})
+    system(lrelease $${beqt_translation_ts_native})
+}
+beqt_installs_translations.files=$$files($${PWD}/*.qm)
+#TODO: Paths should be defined in a separate .pri file
+#test
+beqt_installs_translations.path=/home/darkangel/tmp/x_beqt/translations
+#end test
+INSTALLS += beqt_installs_translations
