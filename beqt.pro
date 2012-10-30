@@ -1,50 +1,8 @@
+CONFIG += ordered
 TEMPLATE = subdirs
 
-SUBDIRS += \
-    bcore \
-    bgui \
-    bnetwork
+SUBDIRS = src examples
 
-CONFIG += release
-
-TRANSLATIONS += \
-    translations/beqt_ru.ts
-
-###############################################################################
-# PREFIX
-###############################################################################
-
-isEmpty(PREFIX) {
-unix:PREFIX = /usr
-win32:PREFIX = $$(systemdrive)/PROGRA~1/BeQt
-}
-
-###############################################################################
-# INSTALLS.files
-###############################################################################
-
-I_HEADERS.files = \
-    bcore/*.h \ #TODO: move headers to "include" subdirectory
-    bgui/*.h \ #TODO: move headers to "include" subdirectory
-    bnetwork/*.h #TODO: move headers to "include" subdirectory
-I_TRANSLATIONS.files = translations/*.qm
-
-###############################################################################
-# INSTALLS.path
-###############################################################################
-
-unix {
-I_HEADERS.path = $$PREFIX/include/beqt
-I_TRANSLATIONS.path = $$PREFIX/share/beqt/translations
-}
-win32 {
-I_HEADERS.path = $$PREFIX/include
-I_TRANSLATIONS.path = $$PREFIX/translations
-}
-
-###############################################################################
-# INSTALLS
-###############################################################################
-
-INSTALLS += I_HEADERS
-INSTALLS += I_TRANSLATIONS
+include(include/install.pri)
+include(images/install.pri)
+include(translations/install.pri)
