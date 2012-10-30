@@ -38,10 +38,19 @@ Icon?
 ehthumbs.db
 Thumbs.db
 
-# Other #
-#########
+# Qt #
+######
+moc_*
+qrc_*
 *.pro.user
 *.autosave
 Makefile
 *.Debug
 *.Release
+
+# MacOS Framework binaries #
+############################
+BeQtCodeEditor
+BeQtCore
+BeQtNetwork
+BeQtWidgets
