@@ -3,6 +3,6 @@ TEMPLATE = subdirs
 
 SUBDIRS = src examples
 
-include(include/install.pri)
-include(images/install.pri)
-include(translations/install.pri)
+include(pri/install_headers.pri)
+include(pri/install_images.pri)
+include(pri/install_translations.pri)
