@@ -1,0 +1,8 @@
+#include "bcoreapplication.h"
+#include "bdirtools.h"
+#include "bglobal.h"
+#include "bnamespace.h"
+#include "bplugin.h"
+#include "bplugininterface.h"
+#include "bterminaliohandler.h"
+#include "btranslator.h"

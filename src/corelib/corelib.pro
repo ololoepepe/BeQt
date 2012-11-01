@@ -14,7 +14,19 @@ include(../../depend.pri)
 DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
-    global/bglobal.h
+    bcoreapplication.h \
+    bdirtools.h \
+    bglobal.h \
+    bnamespace.h \
+    bplugin.h \
+    bplugininterface.h \
+    bterminaliohandler.h \
+    btranslator.h
 
 SOURCES += \
-    global/bglobal.cpp
+    bcoreapplication.cpp \
+    bdirtools.cpp \
+    bglobal.cpp \
+    bplugin.cpp \
+    bterminaliohandler.cpp \
+    btranslator.cpp \
