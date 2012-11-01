@@ -15,6 +15,7 @@ DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
     bcoreapplication.h \
+    bcoreapplication_p.h \
     bdirtools.h \
     bglobal.h \
     bnamespace.h \

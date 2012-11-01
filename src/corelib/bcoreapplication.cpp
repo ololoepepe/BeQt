@@ -1,26 +1,500 @@
 #include "bcoreapplication.h"
+#include "bcoreapplication_p.h"
 
-class BCoreApplicationPrivate
-{
-public:
-    BCoreApplicationPrivate();
-    ~BCoreApplicationPrivate();
-};
+#include <BeQt>
+#include <BDirTools>
+#include <BTranslator>
+#include <BPlugin>
 
-BCoreApplicationPrivate::BCoreApplicationPrivate()
+#include <QObject>
+#include <QString>
+#include <QStringList>
+#include <QCoreApplication>
+#include <QDir>
+#include <QSysInfo>
+#include <QFileInfo>
+#include <QFile>
+#include <QList>
+#include <QtGlobal>
+#include <QSettings>
+#include <QMetaObject>
+
+QString BCoreApplicationPrivate::toLowerNoSpaces(const QString &string)
 {
-    //
+    return string.toLower().replace(QRegExp("\\s"), "-");
 }
 
-BCoreApplicationPrivate::~BCoreApplicationPrivate()
+QString BCoreApplicationPrivate::subdir(BCoreApplication::Location loc)
 {
-    //
+    switch (loc)
+    {
+    case BCoreApplication::DocumentationPath:
+        return "doc";
+    case BCoreApplication::PluginsPath:
+        return "plugins";
+    case BCoreApplication::SettingsPath:
+        return "settings";
+    case BCoreApplication::TranslationsPath:
+        return "translations";
+    case BCoreApplication::BeqtPath:
+        return "beqt";
+    case BCoreApplication::DataPath:
+    default:
+        return "";
+    }
+}
+
+bool BCoreApplicationPrivate::testCoreInit()
+{
+    if ( !bTest(BCoreApplication::_m_self, "BCoreApplication", "There must be a BCoreApplication instance") )
+        return false;
+    else if ( !bTest(BCoreApplication::_m_self->d_func()->initialized, "BCoreApplication",
+                     "BCoreApplication must be initialized") )
+        return false;
+    else
+        return true;
 }
 
 //
 
-BCoreApplication::BCoreApplication() :
-    QObject(0)
+BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options) :
+    _m_q(q)
+{
+    initialized = false;
+    portable = false;
+    init(options);
+}
+
+BCoreApplicationPrivate::~BCoreApplicationPrivate()
+{
+    foreach (BTranslator *t, translators)
+        t->deleteLater();
+}
+
+//
+
+QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name, bool create) const
+{
+    if ( path.isEmpty() || name.isEmpty() )
+        return QString();
+    QString bfn = name;
+#if defined(B_OS_UNIX)
+    bfn = toLowerNoSpaces(bfn);
+#endif
+    QString fn = path + "/" + bfn + ".conf";
+    QFile f(fn);
+    bool exists = f.exists();
+    if (create)
+    {
+        if ( !exists && !f.open(QFile::WriteOnly) )
+            return QString();
+        f.close();
+    }
+    else if (!exists)
+    {
+        return QString();
+    }
+    return fn;
+}
+
+QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) const
+{
+    switch (type)
+    {
+    case BCoreApplication::UserResources :
+        return userPrefix;
+    case BCoreApplication::SharedResources :
+        return sharedPrefix;
+#if defined(B_OS_MAC)
+    case BCoreApplication::BundleResources :
+        return bundlePrefix;
+#endif
+    default:
+        return "";
+    }
+}
+
+void BCoreApplicationPrivate::emitPluginActivated(BPlugin *plugin)
+{
+    deactivatedPlugins.removeAll( plugin->name() );
+    QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPlugin *, plugin) );
+}
+
+void BCoreApplicationPrivate::emitPluginAboutToBeDeactivated(BPlugin *plugin)
+{
+    if ( !deactivatedPlugins.contains( plugin->name() ) )
+        deactivatedPlugins << plugin->name();
+    QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPlugin *, plugin) );
+}
+
+//
+
+#if defined(B_OS_MAC)
+const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dylib");
+#elif defined(B_OS_UNIX)
+const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.so");
+#elif defined(B_OS_WIN)
+const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll");
+#endif
+const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
+const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
+const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
+
+//
+
+void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
+{
+    //checks
+    QString an = QCoreApplication::applicationName();
+    QString on = QCoreApplication::organizationName();
+    QString ap = QCoreApplication::applicationDirPath().remove( QRegExp("/(b|B)(i|I)(n|N)$") );
+    if ( !bTest(BCoreApplication::instance(), "BCoreApplication", "missing BCoreApplication instance") )
+        return;
+    if ( !bTest(QCoreApplication::instance(), "BCoreApplication", "missing QCoreApplication instance") )
+        return;
+    if ( !bTest(!an.isEmpty(), "BCoreApplication", "missing application name") )
+        return;
+    if ( !bTest(!on.isEmpty(), "BCoreApplication", "missing organization name") )
+        return;
+    if ( !bTest(QFileInfo(ap).isDir(), "BCoreApplication", "unable to get application directory") )
+        return;
+    appName = an;
+    orgName = on;
+    appPath = ap;
+    QString anls = toLowerNoSpaces(appName);
+    //vars
+#if defined(B_OS_MAC)
+    userPrefix = QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
+    sharedPrefix = "/Library/Application Support/" + orgName + "/" + appName;
+    bundlePrefix = QDir(appPath + "/../Resources").absolutePath();
+#elif defined (B_OS_UNIX)
+    userPrefix = QDir::homePath() + "/." + anls;
+    sharedPrefix = "/usr/share/" + anls;
+#elif defined(B_OS_WIN)
+    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
+        userPrefix = QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
+    else
+        userPrefix = QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
+    /*bool sws = (BCoreApplication::SM_SystemWide == options.settingsMode);
+    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
+    {
+        QString x = QDir::rootPath() + "/Documents and Settings/All Users";
+        userPrefix = (!sws ? QDir::homePath() : x) + "/Application Data/" + orgName + "/" + appName;
+    }
+    else
+    {
+        QString x = QDir::rootPath() + "/Users/Default";
+        userPrefix = (!sws ? QDir::homePath() : x) + "/AppData/Roaming/" + orgName + "/" + appName;
+    }*/
+    sharedPrefix = appPath;
+#endif
+    //app mode
+    portable = QFileInfo( confFileName(appPath, appName, false) ).isFile();
+    if (portable)
+    {
+        userPrefix = appPath;
+        sharedPrefix = appPath;
+#if defined(B_OS_MAC)
+        bundlePrefix = appPath;
+#endif
+    }
+    //default locale
+    locale = options.defaultLocale;
+    //installing basic translators
+    translators.insert( "qt", new BTranslator("qt") );
+    translators.insert( "beqt", new BTranslator("beqt") );
+    translators.insert( anls, new BTranslator(anls) );
+    //creating settings dir
+    if (!portable && !options.noSettingsDir)
+        BDirTools::mkpath( userPrefix + "/" + subdir(BCoreApplication::SettingsPath) );
+    //reading beqt settings
+    if (!options.noSettingsDir)
+    {
+        QSettings *s = new QSettings(confFileName(userPrefix, appName, true), QSettings::IniFormat);
+        if (s)
+        {
+            s->beginGroup(SettingsGroupBeqt);
+            deactivatedPlugins = s->value(SettingsKeyDeactivatedPlugins).toStringList();
+            locale = s->value(SettingsKeyLocale, locale).toLocale();
+            s->endGroup();
+            s->deleteLater();
+            foreach (BTranslator *t, translators)
+                t->setLocale(locale);
+        }
+    }
+    //initialized
+    initialized = true;
+}
+
+//
+
+BCoreApplication *BCoreApplication::instance()
+{
+    return _m_self;
+}
+
+QString BCoreApplication::location(Location loc, ResourcesType type)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return "";
+    QDir d( _m_self->d_func()->prefix(type) + "/" + BCoreApplicationPrivate::subdir(loc) );
+    return d.exists() ? d.absolutePath() : "";
+}
+
+QString BCoreApplication::location(const QString &subdir, ResourcesType type)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return "";
+    if ( subdir.isEmpty() )
+        return "";
+    QDir d(_m_self->d_func()->prefix(type) + "/" + subdir);
+    return d.exists() ? d.absolutePath() : "";
+}
+
+QStringList BCoreApplication::locations(Location loc)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return QStringList();
+    QStringList sl;
+    sl << location(loc, UserResources);
+    sl << location(loc, SharedResources);
+#if defined(B_OS_MAC)
+    sl << location(loc, BundleResources);
+#endif
+    sl.removeAll("");
+    sl.removeDuplicates();
+    return sl;
+}
+
+QStringList BCoreApplication::locations(const QString &subdir)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return QStringList();
+    QStringList sl;
+    sl << location(subdir, UserResources);
+    sl << location(subdir, SharedResources);
+#if defined(B_OS_MAC)
+    sl << location(subdir, BundleResources);
+#endif
+    sl.removeAll("");
+    sl.removeDuplicates();
+    return sl;
+}
+
+void BCoreApplication::createUserLocation(Location loc)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BDirTools::mkpath( _m_self->d_func()->userPrefix + "/" + BCoreApplicationPrivate::subdir(loc) );
+}
+
+void BCoreApplication::createUserLocation(const QString &subdir)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BDirTools::mkpath(_m_self->d_func()->userPrefix + "/" + subdir);
+}
+
+void BCoreApplication::createUserLocations(const QStringList &subdirs)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    foreach (QString subdir, subdirs)
+        createUserLocation(subdir);
+}
+
+QSettings *BCoreApplication::createAppSettingsInstance(bool createFile)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return 0;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    return new QSettings(d->confFileName(d->userPrefix, d->appName, createFile), QSettings::IniFormat);
+}
+
+void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
+                                   bool (*testFunction)(const QObject *), bool reload)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    //loading plugins
+    //TODO: No means to determine from which dir the plugin is loaded.
+    //Plugins from user dir should replace plugins from other dirs, even if they are already loaded
+    //For now it's only possible to reload ALL plugins, so ones located in user dir are loaded first
+    QStringList dirs = locations(PluginsPath);
+    foreach (QString dirName, dirs)
+    {
+        QDir dir(dirName);
+        QStringList files = dir.entryList(BCoreApplicationPrivate::PluginSuffixes, QDir::Files);
+        foreach (QString file, files)
+        {
+            BPlugin *p = new BPlugin( dir.absoluteFilePath(file) );
+            if ( !p->isValid() )
+            {
+                p->deleteLater();
+                continue;
+            }
+            QString name = p->name();
+            if ( d->plugins.contains(name) )
+            {
+                if (reload)
+                {
+                    BPlugin *pp = d->plugins.take(name);
+                    //Notifying from plugin itself
+                    pp->deactivate();
+                    pp->deleteLater();
+                }
+                else
+                {
+                    p->deleteLater();
+                    continue;
+                }
+            }
+            if ( !acceptableTypes.isEmpty() && !acceptableTypes.contains( p->type() ) )
+            {
+                p->deleteLater();
+                continue;
+            }
+            if ( testFunction && !testFunction( p->instance() ) )
+            {
+                p->deleteLater();
+                continue;
+            }
+            if ( d->deactivatedPlugins.contains(name) )
+                p->deactivate();
+            else
+                p->activate();
+            d->plugins.insert(name, p);
+            //Notifying from plugin itself
+        }
+    }
+}
+
+BPlugin *BCoreApplication::plugin(const QString &name)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return 0;
+    return _m_self->d_func()->plugins.value(name);
+}
+
+QList<BPlugin *> BCoreApplication::plugins(const QString &type)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return QList<BPlugin *>();
+    QList<BPlugin *> list;
+    foreach (BPlugin *pl, _m_self->d_func()->plugins)
+        if (pl->type() == type)
+            list << pl;
+    return list;
+}
+
+void BCoreApplication::installTranslator(BTranslator *translator)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    if (!translator)
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    if ( d->translators.contains( translator->fileName() ) )
+        return;
+    d->translators.insert(translator->fileName(), translator);
+}
+
+void BCoreApplication::installTranslator(const QString &fileName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    if ( fileName.isEmpty() )
+        return;
+    installTranslator( new BTranslator(fileName) );
+}
+
+void BCoreApplication::removeTranslator(BTranslator *translator)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    if (!translator)
+        return;
+    removeTranslator( translator->fileName() );
+}
+
+void BCoreApplication::removeTranslator(const QString &fileName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    if ( fileName.isEmpty() || fileName == "qt" || fileName == "beqt" || fileName == d->toLowerNoSpaces(d->appName) )
+        return;
+    BTranslator *t = d->translators.take(fileName);
+    if (t)
+        t->deleteLater();
+}
+
+void BCoreApplication::setLocale(const QLocale &l)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    if (l == d->locale)
+        return;
+    d->locale = l;
+    foreach (BTranslator *t, d->translators)
+        t->setLocale(l);
+    foreach (BPlugin *pl, d->plugins)
+        pl->setLocale(l);
+}
+
+QLocale BCoreApplication::locale()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return QLocale::system();
+    return _m_self->d_func()->locale;
+}
+
+QList<QLocale> BCoreApplication::availableLocales()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return QList<QLocale>();
+    QList<QLocale> list;
+    //TODO: Fill the list
+    return list;
+}
+
+void BCoreApplication::retranslateUi()
+{
+    //TODO: Block QCoreApplication LanguageChange events (maybe inside BPlugin)
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    foreach (BTranslator *t, d->translators)
+        t->reload();
+    foreach (BPlugin *pl, d->plugins)
+        pl->reloadTranslator();
+    QMetaObject::invokeMethod(_m_self, "languageChanged");
+}
+
+void BCoreApplication::saveSettings()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    QSettings *s = createAppSettingsInstance(true);
+    if (!s)
+        return;
+    s->beginGroup(BCoreApplicationPrivate::SettingsGroupBeqt);
+    s->setValue(BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins, d->deactivatedPlugins);
+    s->setValue(BCoreApplicationPrivate::SettingsKeyLocale, d->locale);
+    s->endGroup();
+}
+
+//
+
+BCoreApplication *BCoreApplication::_m_self = 0;
+
+//
+
+BCoreApplication::BCoreApplication(const AppOptions &options) :
+    QObject(0), _m_d( new BCoreApplicationPrivate(this, options) )
 {
     //
 }
