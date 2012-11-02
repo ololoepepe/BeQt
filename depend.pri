@@ -112,13 +112,14 @@ win32 {
 #If "BEQT_HEADERS_ONLY" is not set, appends "LIBS" with corresponding libraries
 defineTest(beqtAddModule) {
     beqt_module_name=$${1}
+    beqt_headers_only=$${2}
     #Headers
     INCLUDEPATH *= $${beqt_headers_prefix}/$${beqt_module_name}
     DEPENDPATH *= $${beqt_headers_prefix}/$${beqt_module_name}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     #Libs
-    isEmpty(BEQT_HEADERS_ONLY) {
+    isEmpty(beqt_headers_only) {
         !isEmpty(BEQT_PART) {
             beqt_module_build_subdir=$$beqtModuleBuildSubdir($${beqt_module_name})
             beqt_libs_path=$${beqt_libs_prefix}/$${beqt_module_build_subdir}$${beqt_release_debug_suffix}
@@ -140,7 +141,7 @@ DEPENDPATH *= $${beqt_headers_prefix}
 
 #Replaces "all" meta-module with the list of all BeQt modules
 contains(BEQT, all) {
-    BEQT -= all
+    BEQT=
     BEQT *= \
         codeeditor \
         core \
@@ -150,6 +151,9 @@ contains(BEQT, all) {
 
 #Adds corresponding headers' and libs' paths for each valid BeQt module contained in "BEQT" variable
 for(beqt_module, BEQT) {
-    beqt_module_name=$$beqtModuleName($${beqt_module})
-    !isEmpty(beqt_module_name):beqtAddModule($${beqt_module_name})
+    beqt_module_noh=$$replace(beqt_module, "\\_h", "")
+    beqt_headers_only=
+    !equals(beqt_module, $${beqt_module_noh}):beqt_headers_only=true
+    beqt_module_name=$$beqtModuleName($${beqt_module_noh})
+    !isEmpty(beqt_module_name):beqtAddModule($${beqt_module_name}, $${beqt_headers_only})
 }

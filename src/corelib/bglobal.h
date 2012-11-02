@@ -9,6 +9,12 @@
 #   define B_CORE_EXPORT Q_DECL_IMPORT
 #endif
 
+#if defined(BEQT_BUILD_NETWORK_LIB)
+#   define B_NETWORK_EXPORT Q_DECL_EXPORT
+#else
+#   define B_NETWORK_EXPORT Q_DECL_IMPORT
+#endif
+
 #if defined(Q_OS_MAC)
 #   define B_OS_MAC
 #elif defined(Q_OS_UNIX)
