@@ -1,3 +1,6 @@
+#ifndef BEQT_BEQTCORE_MODULE_H
+#define BEQT_BEQTCORE_MODULE_H
+
 #include "bcoreapplication.h"
 #include "bdirtools.h"
 #include "bglobal.h"
@@ -6,3 +9,5 @@
 #include "bplugininterface.h"
 #include "bterminaliohandler.h"
 #include "btranslator.h"
+
+#endif //BEQT_BEQTCORE_MODULE_H
