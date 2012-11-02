@@ -1,9 +1,9 @@
 #ifndef BCOREAPPLICATION_P_H
 #define BCOREAPPLICATION_P_H
 
-class BPlugin;
+class BPluginWrapper;
 class BTranslator;
-class BPluginPrivate;
+class BPluginWrapperPrivate;
 class BTranslatorPrivate;
 
 class QString;
@@ -31,12 +31,15 @@ public:
     //
     QString confFileName(const QString &path, const QString &name, bool create = false) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
-    void emitPluginActivated(BPlugin *plugin);
-    void emitPluginAboutToBeDeactivated(BPlugin *plugin);
-    void installTranslator(BTranslator *translator);
-    void removeTranslator(BTranslator *translator);
+    void emitPluginActivated(BPluginWrapper *pluginWrapper);
+    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void emitLanguageChange();
+    void installTranslator(BTranslator *translator, bool languageChange);
+    void removeTranslator(BTranslator *translator, bool languageChange);
+    void loadSettings();
+    void saveSettings();
     //
-    BCoreApplication *_m_q;
+    BCoreApplication *const _m_q;
     bool initialized;
     QString appName;
     QString orgName;
@@ -49,20 +52,20 @@ public:
     bool portable;
     QLocale locale;
     QStringList deactivatedPlugins;
-    QList<BTranslator *> internalTranslators;
-    QList<BTranslator *> userTranslators;
-    QMap<QString, BPlugin *> plugins;
+    QMap<QString, BTranslator *> translators;
+    QList<BPluginWrapper *> plugins;
 private:
     static const QStringList PluginSuffixes;
     static const QString SettingsGroupBeqt;
-    static const QString SettingsKeyDeactivatedPlugins;
-    static const QString SettingsKeyLocale;
+      static const QString SettingsGroupCore;
+        static const QString SettingsKeyDeactivatedPlugins;
+        static const QString SettingsKeyLocale;
     //
     void init(const BCoreApplication::AppOptions &options);
     //
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     //
-    friend class BPluginPrivate;
+    friend class BPluginWrapperPrivate;
     friend class BTranslatorPrivate;
 };
 

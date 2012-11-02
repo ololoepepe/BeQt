@@ -18,8 +18,9 @@ HEADERS += \
     bdirtools.h \
     bglobal.h \
     bnamespace.h \
-    bplugin.h \
     bplugininterface.h \
+    bpluginwrapper.h \
+    bpluginwrapper_p.h \
     bterminaliohandler.h \
     btranslator.h \
     btranslator_p.h
@@ -28,6 +29,6 @@ SOURCES += \
     bcoreapplication.cpp \
     bdirtools.cpp \
     bglobal.cpp \
-    bplugin.cpp \
+    bpluginwrapper.cpp \
     bterminaliohandler.cpp \
     btranslator.cpp \

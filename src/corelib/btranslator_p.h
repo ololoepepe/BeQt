@@ -10,20 +10,20 @@ class QTranslator;
 
 #include <QList>
 
-class BTranslatorPrivate
+class B_CORE_EXPORT BTranslatorPrivate
 {
     B_DECLARE_PUBLIC(BTranslator)
 public:
-    explicit BTranslatorPrivate(BTranslator *q, const QString &fileName);
+    explicit BTranslatorPrivate(BTranslator *q);
     ~BTranslatorPrivate();
     //
     void clear();
     void install();
     void remove();
+    void emitLanguageChange();
     //
-    const QString FileName;
-    //
-    BTranslator *_m_q;
+    BTranslator *const _m_q;
+    QString fileName;
     QList<QTranslator *> translators;
     bool installed;
 };

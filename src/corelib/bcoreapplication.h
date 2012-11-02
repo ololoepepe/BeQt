@@ -2,15 +2,15 @@
 #define BCOREAPPLICATION_H
 
 class BCoreApplicationPrivate;
-class BPlugin;
 class BTranslator;
 class BTranslatorPrivate;
-class BPluginPrivate;
+class BPluginWrapperPrivate;
 
 class QLocale;
 class QSettings;
 
 #include <BeQt>
+#include <BPluginWrapper>
 
 #include <QObject>
 #include <QLocale>
@@ -40,13 +40,7 @@ public:
         , BundleResources
 #endif
     };
-    enum LocaleSupport
-    {
-        LS_No = 0,
-        LS_Partial,
-        LS_Good,
-        LS_Full
-    };
+    //
     struct AppOptions
     {
         bool noSettingsDir;
@@ -59,6 +53,20 @@ public:
         }
     };
     //
+    struct LocaleSupportInfo
+    {
+        QLocale locale;
+        int supports;
+        int total;
+        //
+        LocaleSupportInfo()
+        {
+            locale = QLocale(QLocale::English);
+            supports = 0;
+            total = 0;
+        }
+    };
+    //
     static BCoreApplication *instance();
     static QString location(Location loc, ResourcesType type);
     static QString location(const QString &subdir, ResourcesType type);
@@ -68,25 +76,28 @@ public:
     static void createUserLocation(const QString &subdir);
     static void createUserLocations(const QStringList &subdirs);
     static QSettings *createAppSettingsInstance(bool createFile = true);
+    static void registerPluginWrapper(BPluginWrapper *plugin);
+    static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(),
-                            bool (*testFunction)(const QObject *) = 0, bool reload = false);
-    static BPlugin *plugin(const QString &name);
-    static QList<BPlugin *> plugins( const QString &type = QString() );
-    static void installTranslator(BTranslator *translator);
-    static void removeTranslator(BTranslator *translator);
+                            BPluginWrapper::InterfaceTestFunction function = 0, bool reload = false);
+    static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
+    static void installTranslator(BTranslator *translator, bool noLanguageChange = false);
+    static void removeTranslator(BTranslator *translator, bool noLanguageChange = false);
     static void setLocale(const QLocale &l);
     static QLocale locale();
-    static QList<QLocale> availableLocales();
-    static LocaleSupport localeSupport();
+    static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
     static void retranslateUi();
+    static void loadSettings();
     static void saveSettings();
     //
     explicit BCoreApplication( const AppOptions &options = AppOptions() );
     ~BCoreApplication();
 signals:
-    void pluginActivated(BPlugin *plugin);
-    void pluginAboutToBeDeactivated(BPlugin *plugin);
+    void pluginActivated(BPluginWrapper *pluginWrapper);
+    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();
+    void settingsLoaded();
+    void settingsSaved();
 protected:
     BCoreApplicationPrivate *_m_d;
 private:
@@ -95,7 +106,7 @@ private:
     static BCoreApplication *_m_self;
     //
     friend class BTranslatorPrivate;
-    friend class BPluginPrivate;
+    friend class BPluginWrapperPrivate;
 };
 
 #endif // BCOREAPPLICATION_H

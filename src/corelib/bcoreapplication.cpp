@@ -4,7 +4,7 @@
 #include <BeQt>
 #include <BDirTools>
 #include <BTranslator>
-#include <BPlugin>
+#include <BPluginWrapper>
 
 #include <private/btranslator_p.h>
 
@@ -70,12 +70,10 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q, const BCor
 
 BCoreApplicationPrivate::~BCoreApplicationPrivate()
 {
-    foreach (BTranslator *t, internalTranslators)
-        t->deleteLater();
-    foreach (BTranslator *t, userTranslators)
-        removeTranslator(t);
-    foreach (BPlugin *pl, plugins)
-        pl->deleteLater();
+    foreach (BTranslator *t, translators)
+        removeTranslator(t, false);
+    foreach (BPluginWrapper *pw, plugins)
+        pw->deleteLater();
 }
 
 //
@@ -121,31 +119,71 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
     }
 }
 
-void BCoreApplicationPrivate::emitPluginActivated(BPlugin *plugin)
+void BCoreApplicationPrivate::emitPluginActivated(BPluginWrapper *pluginWrapper)
 {
-    deactivatedPlugins.removeAll( plugin->name() );
-    QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPlugin *, plugin) );
+    deactivatedPlugins.removeAll( pluginWrapper->name() );
+    QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
-void BCoreApplicationPrivate::emitPluginAboutToBeDeactivated(BPlugin *plugin)
+void BCoreApplicationPrivate::emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
 {
-    if ( !deactivatedPlugins.contains( plugin->name() ) )
-        deactivatedPlugins << plugin->name();
-    QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPlugin *, plugin) );
+    if ( !deactivatedPlugins.contains( pluginWrapper->name() ) )
+        deactivatedPlugins << pluginWrapper->name();
+    QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
-void BCoreApplicationPrivate::installTranslator(BTranslator *translator)
+void BCoreApplicationPrivate::emitLanguageChange()
 {
-    if (!translator)
+    QMetaObject::invokeMethod(q_func(), "languageChanged");
+}
+
+void BCoreApplicationPrivate::installTranslator(BTranslator *translator, bool languageChange)
+{
+    if ( !translator || !translator->isValid() || translators.contains( translator->fileName() ) )
         return;
+    translators.insert(translator->fileName(), translator);
     translator->d_func()->install();
+    if (languageChange)
+        emitLanguageChange();
 }
 
-void BCoreApplicationPrivate::removeTranslator(BTranslator *translator)
+void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool languageChange)
 {
-    if (!translator)
+    if ( !translator || !translators.contains( translator->fileName() ) )
         return;
+    translators.remove( translator->fileName() );
     translator->d_func()->remove();
+    if (languageChange)
+        emitLanguageChange();
+}
+
+void BCoreApplicationPrivate::loadSettings()
+{
+    QSettings *s = BCoreApplication::createAppSettingsInstance(true);
+    if (!s)
+        return;
+    s->beginGroup(SettingsGroupBeqt);
+      s->beginGroup(SettingsGroupCore);
+        deactivatedPlugins = s->value(SettingsKeyDeactivatedPlugins).toStringList();
+        locale = s->value(SettingsKeyLocale, locale).toLocale();
+      s->endGroup();
+    s->endGroup();
+    s->deleteLater();
+    QMetaObject::invokeMethod(q_func(), "settingsLoaded");
+}
+
+void BCoreApplicationPrivate::saveSettings()
+{
+    QSettings *s = BCoreApplication::createAppSettingsInstance(true);
+    if (!s)
+        return;
+    s->beginGroup(SettingsGroupBeqt);
+      s->beginGroup(SettingsGroupCore);
+        s->setValue(SettingsKeyDeactivatedPlugins, deactivatedPlugins);
+        s->setValue(SettingsKeyLocale, locale);
+      s->endGroup();
+    s->endGroup();
+    QMetaObject::invokeMethod(q_func(), "settingsSaved");
 }
 
 //
@@ -158,8 +196,9 @@ const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.so");
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll");
 #endif
 const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
-const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
-const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
+  const QString BCoreApplicationPrivate::SettingsGroupCore = "Core";
+    const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
+    const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
 
 //
 
@@ -221,26 +260,6 @@ void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
     }
     //default locale
     locale = options.defaultLocale;
-    //reading beqt settings
-    if (!options.noSettingsDir)
-    {
-        QSettings *s = new QSettings(confFileName(userPrefix, appName, true), QSettings::IniFormat);
-        if (s)
-        {
-            s->beginGroup(SettingsGroupBeqt);
-            deactivatedPlugins = s->value(SettingsKeyDeactivatedPlugins).toStringList();
-            locale = s->value(SettingsKeyLocale, locale).toLocale();
-            s->endGroup();
-            s->deleteLater();
-        }
-    }
-    //installing basic translators
-    BTranslator *t = new BTranslator("qt");
-    installTranslator(t);
-    internalTranslators << t;
-    t = new BTranslator("beqt");
-    internalTranslators << t;
-    installTranslator(t);
     //creating settings dir
     if (!portable && !options.noSettingsDir)
         BDirTools::mkpath( userPrefix + "/" + subdir(BCoreApplication::SettingsPath) );
@@ -333,8 +352,29 @@ QSettings *BCoreApplication::createAppSettingsInstance(bool createFile)
     return new QSettings(d->confFileName(d->userPrefix, d->appName, createFile), QSettings::IniFormat);
 }
 
+void BCoreApplication::registerPluginWrapper(BPluginWrapper *plugin)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    if (!plugin)
+        return;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    if ( d->plugins.contains(plugin) )
+        return;
+    d->plugins << plugin;
+}
+
+void BCoreApplication::unregisterPluginWrapper(BPluginWrapper *plugin)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    if (!plugin)
+        return;
+    _m_self->d_func()->plugins.removeAll(plugin);
+}
+
 void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
-                                   bool (*testFunction)(const QObject *), bool reload)
+                                   BPluginWrapper::InterfaceTestFunction function, bool reload)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
@@ -350,89 +390,47 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
         QStringList files = dir.entryList(BCoreApplicationPrivate::PluginSuffixes, QDir::Files);
         foreach (QString file, files)
         {
-            BPlugin *p = new BPlugin( dir.absoluteFilePath(file) );
-            if ( !p->isValid() )
+            BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
+            pw->setAcceptableTypes(acceptableTypes);
+            pw->setInterfaceTestFunction(function);
+            pw->activate();
+            if ( !pw->isValid() ) //Validity checking includes checking that the plugin is unique (global map)
             {
-                p->deleteLater();
+                pw->deleteLater();
                 continue;
             }
-            QString name = p->name();
-            if ( d->plugins.contains(name) )
-            {
-                if (reload)
-                {
-                    BPlugin *pp = d->plugins.take(name);
-                    //Notifying from plugin itself
-                    pp->deactivate();
-                    pp->deleteLater();
-                }
-                else
-                {
-                    p->deleteLater();
-                    continue;
-                }
-            }
-            if ( !acceptableTypes.isEmpty() && !acceptableTypes.contains( p->type() ) )
-            {
-                p->deleteLater();
-                continue;
-            }
-            if ( testFunction && !testFunction( p->instance() ) )
-            {
-                p->deleteLater();
-                continue;
-            }
-            if ( d->deactivatedPlugins.contains(name) )
-                p->deactivate();
+            if ( d->deactivatedPlugins.contains( pw->name() ) )
+                pw->deactivate();
             else
-                p->activate();
-            d->plugins.insert(name, p);
-            //Notifying from plugin itself
+                d->emitPluginActivated(pw);
+            d->plugins << pw;
         }
     }
 }
 
-BPlugin *BCoreApplication::plugin(const QString &name)
+QList<BPluginWrapper *> BCoreApplication::pluginWrappers(const QString &type)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
-        return 0;
-    return _m_self->d_func()->plugins.value(name);
-}
-
-QList<BPlugin *> BCoreApplication::plugins(const QString &type)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return QList<BPlugin *>();
-    QList<BPlugin *> list;
-    foreach (BPlugin *pl, _m_self->d_func()->plugins)
-        if (pl->type() == type)
-            list << pl;
+        return QList<BPluginWrapper *>();
+    QList<BPluginWrapper *> list;
+    foreach (BPluginWrapper *pw, _m_self->d_func()->plugins)
+        if (pw->type() == type)
+            list << pw;
     return list;
 }
 
-void BCoreApplication::installTranslator(BTranslator *translator)
+void BCoreApplication::installTranslator(BTranslator *translator, bool noLanguageChange)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
-    if ( !translator || !translator->isValid() )
-        return;
-    BCoreApplicationPrivate *const d = _m_self->d_func();
-    if ( d->userTranslators.contains(translator) )
-        return;
-    d->userTranslators << translator;
-    d->installTranslator(translator);
+    _m_self->d_func()->installTranslator(translator, !noLanguageChange);
 }
 
-void BCoreApplication::removeTranslator(BTranslator *translator)
+void BCoreApplication::removeTranslator(BTranslator *translator, bool noLanguageChange)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
-    if (!translator)
-        return;
-    BCoreApplicationPrivate *const d = _m_self->d_func();
-    if ( !d->userTranslators.removeAll(translator) )
-        return;
-    d->removeTranslator(translator);
+    _m_self->d_func()->removeTranslator(translator, !noLanguageChange);
 }
 
 void BCoreApplication::setLocale(const QLocale &l)
@@ -453,75 +451,73 @@ QLocale BCoreApplication::locale()
     return _m_self->d_func()->locale;
 }
 
-QList<QLocale> BCoreApplication::availableLocales()
+QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bool alwaysIncludeEnglish)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
-        return QList<QLocale>();
-    QList<QLocale> list;
+        return QList<BCoreApplication::LocaleSupportInfo>();
     BCoreApplicationPrivate *const d = _m_self->d_func();
-    foreach (BTranslator *t, d->internalTranslators)
-        list << t->availableLocales();
-    foreach (BTranslator *t, d->userTranslators)
-        list << t->availableLocales();
+    QList< QList<QLocale> > lll;
+    foreach (BTranslator *t, d->translators)
+        lll << t->availableLocales();
+    QList<QLocale> llist;
+    QList<BCoreApplication::LocaleSupportInfo> list;
+    if (alwaysIncludeEnglish)
+    {
+        LocaleSupportInfo en;
+        en.total = d->translators.size();
+        en.supports = en.total;
+        list << en;
+    }
+    foreach (const QList<QLocale> &ll, lll)
+    {
+        foreach (const QLocale &l, ll)
+        {
+            if ( !llist.contains(l) )
+            {
+                llist << l;
+                LocaleSupportInfo lsi;
+                lsi.locale = l;
+                lsi.total = d->translators.size();
+                list << lsi;
+            }
+        }
+    }
+    for (int i = 0; i < list.size(); ++i)
+    {
+        LocaleSupportInfo &lsi = list[i];
+        foreach (const QList<QLocale> &ll, lll)
+            if ( ll.contains(lsi.locale) )
+                ++lsi.supports;
+    }
     return list;
-}
-
-BCoreApplication::LocaleSupport BCoreApplication::localeSupport()
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return LS_No;
-    BCoreApplicationPrivate *const d = _m_self->d_func();
-    bool beqtSupport = false;
-    foreach (BTranslator *t, d->internalTranslators)
-        if (t->fileName() == "beqt")
-            beqtSupport = t->availableLocales().contains(d->locale);
-    int userCount = d->userTranslators.size();
-    int userSupportedCount = 0;
-    foreach (BTranslator *t, d->userTranslators)
-        if ( t->availableLocales().contains(d->locale) )
-            ++userSupportedCount;
-    if (beqtSupport && userSupportedCount == userCount)
-        return LS_Full;
-    else if (userSupportedCount == userCount)
-        return LS_Good;
-    else if (beqtSupport)
-        return LS_Partial;
-    else
-        return LS_No;
 }
 
 void BCoreApplication::retranslateUi()
 {
-    //TODO: Block QCoreApplication LanguageChange events (maybe inside BPlugin)
+    //TODO: Block QCoreApplication LanguageChange events
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     BCoreApplicationPrivate *const d = _m_self->d_func();
-    foreach (BTranslator *t, d->internalTranslators)
+    foreach (BTranslator *t, d->translators)
     {
-        d->removeTranslator(t);
-        d->installTranslator(t);
+        d->removeTranslator(t, false);
+        d->installTranslator(t, false);
     }
-    foreach (BTranslator *t, d->userTranslators)
-    {
-        d->removeTranslator(t);
-        d->installTranslator(t);
-    }
-    //TODO: plugins' translators?
     QMetaObject::invokeMethod(_m_self, "languageChanged");
+}
+
+void BCoreApplication::loadSettings()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    _m_self->d_func()->loadSettings();
 }
 
 void BCoreApplication::saveSettings()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
-    BCoreApplicationPrivate *const d = _m_self->d_func();
-    QSettings *s = createAppSettingsInstance(true);
-    if (!s)
-        return;
-    s->beginGroup(BCoreApplicationPrivate::SettingsGroupBeqt);
-    s->setValue(BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins, d->deactivatedPlugins);
-    s->setValue(BCoreApplicationPrivate::SettingsKeyLocale, d->locale);
-    s->endGroup();
+    _m_self->d_func()->saveSettings();
 }
 
 //

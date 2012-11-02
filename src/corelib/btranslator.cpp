@@ -14,8 +14,8 @@
 #include <QCoreApplication>
 #include <QDir>
 
-BTranslatorPrivate::BTranslatorPrivate(BTranslator *q, const QString &fileName) :
-    _m_q(q), FileName(fileName)
+BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
+    _m_q(q)
 {
     installed = false;
 }
@@ -36,7 +36,7 @@ void BTranslatorPrivate::install()
     for (int i = dirs.size() - 1; i >= 0; --i) //User translators come last, having higher priority
     {
         QTranslator *t = new QTranslator;
-        if ( t->load(l, FileName, "_", dirs.at(i), ".qm") )
+        if ( t->load(l,fileName, "_", dirs.at(i), ".qm") )
         {
             translators << t;
             QCoreApplication::installTranslator(t);
@@ -62,12 +62,19 @@ void BTranslatorPrivate::remove()
     installed = false;
 }
 
+void BTranslatorPrivate::emitLanguageChange()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BTranslator") )
+        return;
+    BCoreApplication::instance()->d_func()->emitLanguageChange();
+}
+
 //
 
 BTranslator::BTranslator(const QString &fileName, QObject *parent) :
-    QObject(parent), _m_d( new BTranslatorPrivate(this, fileName) )
+    QObject(parent), _m_d( new BTranslatorPrivate(this) )
 {
-    //
+    d_func()->fileName = fileName;
 }
 
 BTranslator::~BTranslator()
@@ -77,14 +84,34 @@ BTranslator::~BTranslator()
 
 //
 
+void BTranslator::setFileName(const QString &fileName, bool languageChange)
+{
+    BTranslatorPrivate *const d = d_func();
+    bool wasInstalled = isInstalled();
+    if (wasInstalled)
+        d->remove();
+    d->fileName = fileName;
+    if ( !isValid() )
+        return;
+    if (wasInstalled)
+        d->install();
+    if (languageChange)
+        d->emitLanguageChange();
+}
+
 bool BTranslator::isValid() const
 {
     return !fileName().isEmpty();
 }
 
+bool BTranslator::isInstalled() const
+{
+    return d_func()->installed;
+}
+
 QString BTranslator::fileName() const
 {
-    return d_func()->FileName;
+    return d_func()->fileName;
 }
 
 QList<QLocale> BTranslator::availableLocales() const
@@ -94,7 +121,7 @@ QList<QLocale> BTranslator::availableLocales() const
     const BTranslatorPrivate *const d = d_func();
     QList<QLocale> list;
     QStringList validFiles;
-    int fnLen = d->FileName.length();
+    int fnLen = d->fileName.length();
     QStringList paths = BCoreApplication::locations(BCoreApplication::TranslationsPath);
     for (int i = 0; i < paths.size(); ++i)
     {
@@ -103,7 +130,7 @@ QList<QLocale> BTranslator::availableLocales() const
         for (int i = 0; i < files.size(); ++i)
         {
             const QString &file = files.at(i);
-            if ( file.left(fnLen) == d->FileName && !validFiles.contains(file) )
+            if ( file.left(fnLen) == d->fileName && !validFiles.contains(file) )
                 validFiles << file;
         }
     }

@@ -4,23 +4,25 @@
 class BTranslatorPrivate;
 class BCoreApplicationPrivate;
 
-class QString;
 class QLocale;
 
 #include <BeQt>
 
 #include <QObject>
 #include <QList>
+#include <QString>
 
 class B_CORE_EXPORT BTranslator : public QObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTranslator)
 public:
-    explicit BTranslator(const QString &fileName, QObject *parent = 0);
+        explicit BTranslator(const QString &fileName = QString(), QObject *parent = 0);
     ~BTranslator();
     //
+    void setFileName(const QString &fileName, bool languageChange = false);
     bool isValid() const;
+    bool isInstalled() const;
     QString fileName() const;
     QList<QLocale> availableLocales() const;
 protected:
