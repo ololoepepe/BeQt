@@ -54,3 +54,7 @@ BeQtCodeEditor
 BeQtCore
 BeQtNetwork
 BeQtWidgets
+!include/BeQtCodeEditor
+!include/BeQtCore
+!include/BeQtNetwork
+!include/BeQtWidgets

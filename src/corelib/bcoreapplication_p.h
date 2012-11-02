@@ -3,6 +3,8 @@
 
 class BPlugin;
 class BTranslator;
+class BPluginPrivate;
+class BTranslatorPrivate;
 
 class QString;
 class QLocale;
@@ -61,6 +63,7 @@ private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     //
     friend class BPluginPrivate;
+    friend class BTranslatorPrivate;
 };
 
 #endif // BCOREAPPLICATION_P_H

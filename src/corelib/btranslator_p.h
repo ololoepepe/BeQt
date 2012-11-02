@@ -14,15 +14,16 @@ class BTranslatorPrivate
 {
     B_DECLARE_PUBLIC(BTranslator)
 public:
-    explicit BTranslatorPrivate(BTranslator *q);
+    explicit BTranslatorPrivate(BTranslator *q, const QString &fileName);
     ~BTranslatorPrivate();
     //
     void clear();
     void install();
     void remove();
     //
+    const QString FileName;
+    //
     BTranslator *_m_q;
-    QString fileName;
     QList<QTranslator *> translators;
     bool installed;
 };

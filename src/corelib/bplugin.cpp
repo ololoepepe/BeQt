@@ -59,8 +59,10 @@ BPluginPrivate::BPluginPrivate(BPlugin *q, const QString &fileName) :
     isValid = interface;
     state = BPlugin::NotInitialized;
 }
+
 BPluginPrivate::~BPluginPrivate()
 {
+    deactivate();
     loader->deleteLater();
 }
 

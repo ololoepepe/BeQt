@@ -24,9 +24,6 @@ public:
         Deactivated
     };
     //
-    explicit BPlugin(const QString &fileName, QObject *parent = 0);
-    ~BPlugin();
-    //
     void setActivated(bool b);
     QString fileName() const;
     PluginState state() const;
@@ -45,6 +42,9 @@ signals:
 protected:
     BPluginPrivate *_m_d;
 private:
+    explicit BPlugin(const QString &fileName, QObject *parent = 0);
+    ~BPlugin();
+    //
     Q_DISABLE_COPY(BPlugin)
     //
     friend class BCoreApplication;

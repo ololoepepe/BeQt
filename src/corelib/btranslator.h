@@ -17,10 +17,9 @@ class B_CORE_EXPORT BTranslator : public QObject
     Q_OBJECT
     B_DECLARE_PRIVATE(BTranslator)
 public:
-    explicit BTranslator(QObject *parent = 0);
+    explicit BTranslator(const QString &fileName, QObject *parent = 0);
     ~BTranslator();
     //
-    void setFileName(const QString &fileName);
     bool isValid() const;
     QString fileName() const;
     QList<QLocale> availableLocales() const;

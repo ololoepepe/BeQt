@@ -74,6 +74,8 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
         t->deleteLater();
     foreach (BTranslator *t, userTranslators)
         removeTranslator(t);
+    foreach (BPlugin *pl, plugins)
+        pl->deleteLater();
 }
 
 //
@@ -233,12 +235,10 @@ void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
         }
     }
     //installing basic translators
-    BTranslator *t = new BTranslator;
-    t->setFileName("qt");
+    BTranslator *t = new BTranslator("qt");
     installTranslator(t);
     internalTranslators << t;
-    t = new BTranslator;
-    t->setFileName("beqt");
+    t = new BTranslator("beqt");
     internalTranslators << t;
     installTranslator(t);
     //creating settings dir
@@ -466,33 +466,29 @@ QList<QLocale> BCoreApplication::availableLocales()
     return list;
 }
 
-/*BCoreApplication::LocaleSupport BCoreApplication::localeSupport()
+BCoreApplication::LocaleSupport BCoreApplication::localeSupport()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return LS_No;
     BCoreApplicationPrivate *const d = _m_self->d_func();
-    bool beqtSupport = d->translators.value("beqt")->availableLocales().contains(d->locale);
-    bool appSupport = d->translators.value(
-                BCoreApplicationPrivate::toLowerNoSpaces(d->appName) )->availableLocales().contains(d->locale);
-    bool pluginsSupport = d->plugins.isEmpty();
-    if (!pluginsSupport)
-    {
-        foreach (BPlugin *pl, d->plugins)
-        {
-            pluginsSupport = pluginsSupport && pl->translator()->availableLocales().contains(d->locale);
-            if (!pluginsSupport)
-                break;
-        }
-    }
-    if (beqtSupport && appSupport && pluginsSupport)
+    bool beqtSupport = false;
+    foreach (BTranslator *t, d->internalTranslators)
+        if (t->fileName() == "beqt")
+            beqtSupport = t->availableLocales().contains(d->locale);
+    int userCount = d->userTranslators.size();
+    int userSupportedCount = 0;
+    foreach (BTranslator *t, d->userTranslators)
+        if ( t->availableLocales().contains(d->locale) )
+            ++userSupportedCount;
+    if (beqtSupport && userSupportedCount == userCount)
         return LS_Full;
-    else if (appSupport)
-        return LS_Satisfying;
-    else if (beqtSupport || pluginsSupport)
-        return LS_Weak;
+    else if (userSupportedCount == userCount)
+        return LS_Good;
+    else if (beqtSupport)
+        return LS_Partial;
     else
         return LS_No;
-}*/
+}
 
 void BCoreApplication::retranslateUi()
 {
