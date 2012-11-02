@@ -15,6 +15,18 @@
 #   define B_NETWORK_EXPORT Q_DECL_IMPORT
 #endif
 
+#if defined(BEQT_BUILD_WIDGETS_LIB)
+#   define B_WIDGETS_EXPORT Q_DECL_EXPORT
+#else
+#   define B_WIDGETS_EXPORT Q_DECL_IMPORT
+#endif
+
+#if defined(BEQT_BUILD_CODEEDITOR_LIB)
+#   define B_CODEEDITOR_EXPORT Q_DECL_EXPORT
+#else
+#   define B_CODEEDITOR_EXPORT Q_DECL_IMPORT
+#endif
+
 #if defined(Q_OS_MAC)
 #   define B_OS_MAC
 #elif defined(Q_OS_UNIX)

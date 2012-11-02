@@ -67,7 +67,9 @@ defineReplace(beqtModuleName) {
 defineReplace(beqtModuleBuildSubdir) {
     beqt_module_name=$${1}
     equals(beqt_module_name, BeQtCore):beqt_module_build_subdir=corelib
-    else:beqt_module_build_subdir=$$lower($${beqt_module_name})
+    else:equals(beqt_module_name, BeQtNetwork):beqt_module_build_subdir=network
+    else:equals(beqt_module_name, BeQtWidgets):beqt_module_build_subdir=widgets
+    else:equals(beqt_module_name, BeQtCodeEditor):beqt_module_build_subdir=codeeditor
     return($${beqt_module_build_subdir})
 }
 

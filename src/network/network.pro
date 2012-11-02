@@ -10,7 +10,7 @@ BEQT = core network_h
 include(../module.pri)
 include(../../depend.pri)
 
-DEFINES += BEQT_BUILD_CORE_LIB
+DEFINES += BEQT_BUILD_NETWORK_LIB
 
 HEADERS += \
     bgenericserver.h \
