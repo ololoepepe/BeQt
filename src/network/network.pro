@@ -19,6 +19,7 @@ HEADERS += \
     bnetworkconnection.h \
     bnetworkoperation.h \
     bnetworkserver.h \
+    bnetworkserver_p.h \
     bnetworkserverthread.h \
     bnetworkserverworker.h \
     bsocketwrapper.h \

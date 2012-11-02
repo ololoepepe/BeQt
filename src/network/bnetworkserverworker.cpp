@@ -3,13 +3,15 @@
 
 #include "bgenericsocket.h"
 
+#include "bnetworkserver_p.h"
+
 #include <QObject>
 #include <QList>
 #include <QMutex>
 #include <QMutexLocker>
 
-BNetworkServerWorker::BNetworkServerWorker(QObject *parent) :
-    QObject(parent)
+BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *serverPrivate, QObject *parent) :
+    QObject(parent), _m_ServerPrivate(serverPrivate)
 {
 }
 
@@ -25,24 +27,11 @@ int BNetworkServerWorker::connectionCount() const
 
 void BNetworkServerWorker::addConnection(int socketDescriptor)
 {
-    BNetworkConnection *connection = createConnection(socketDescriptor);
+    BNetworkConnection *connection = _m_ServerPrivate->createConnection(socketDescriptor);
     if ( !connection || !connection->isValid() )
         return;
     QMutexLocker locker(&_m_connectionsMutex);
     _m_connections << connection;
-}
-
-//
-
-BNetworkConnection *BNetworkServerWorker::createConnection(int socketDescriptor)
-{
-    BGenericSocket *socket = new BGenericSocket(BGenericSocket::TcpSocket);
-    if ( !socket->setSocketDescriptor(socketDescriptor) || !socket->isValid() )
-    {
-        socket->deleteLater();
-        return 0;
-    }
-    return new BNetworkConnection(socket);
 }
 
 //

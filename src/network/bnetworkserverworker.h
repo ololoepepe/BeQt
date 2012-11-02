@@ -2,6 +2,7 @@
 #define BNETWORKSERVERWORKER_H
 
 class BNetworkConnection;
+class BNetworkServerPrivate;
 
 #include <BeQt>
 
@@ -9,18 +10,18 @@ class BNetworkConnection;
 #include <QList>
 #include <QMutex>
 
-class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
+class BNetworkServerWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit BNetworkServerWorker(QObject *parent = 0);
+    explicit BNetworkServerWorker(BNetworkServerPrivate *serverPrivate, QObject *parent = 0);
     //
     int connectionCount() const;
 public slots:
     void addConnection(int socketDescriptor);
-protected:
-    virtual BNetworkConnection *createConnection(int socketDescriptor);
 private:
+    BNetworkServerPrivate *_m_ServerPrivate;
+    //
     mutable QMutex _m_connectionsMutex;
     QList<BNetworkConnection *> _m_connections;
 private slots:

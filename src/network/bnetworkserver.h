@@ -3,6 +3,8 @@
 
 class BNetworkServerThread;
 class BNetworkServerWorker;
+class BNetworkConnection;
+class BNetworkServerPrivate;
 
 #include <BeQt>
 
@@ -16,6 +18,7 @@ class BNetworkServerWorker;
 class B_NETWORK_EXPORT BNetworkServer : public QObject
 {
     Q_OBJECT
+    B_DECLARE_PRIVATE(BNetworkServer)
 public:
     explicit BNetworkServer(BGenericServer::ServerType type, QObject *parent = 0);
     ~BNetworkServer();
@@ -32,8 +35,9 @@ public:
     int maxThreadCount() const;
     int currentThreadCount() const;
 protected:
-    virtual BNetworkServerWorker *createWorker();
+    virtual BNetworkConnection *createConnection(int socketDescriptor);
 private:
+    BNetworkServerPrivate *_m_d;
     QPointer<BGenericServer> _m_server;
     QList<BNetworkServerThread *> _m_threads;
     int _m_maxConnectionCount;

@@ -1,6 +1,9 @@
 #include "bnetworkserver.h"
 #include "bnetworkserverthread.h"
 #include "bnetworkserverworker.h"
+#include "bnetworkconnection.h"
+
+#include "bnetworkserver_p.h"
 
 #include "bgenericserver.h"
 
@@ -9,8 +12,21 @@
 #include <QThread>
 #include <QString>
 
+BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q) :
+    _m_q(q)
+{
+    //
+}
+
+BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor)
+{
+    return _m_q->createConnection(socketDescriptor);
+}
+
+//
+
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
-    QObject(parent)
+    QObject(parent), _m_d( new BNetworkServerPrivate(this) )
 {
     _m_maxConnectionCount = 0;
     _m_maxThreadCount = 0;
@@ -24,6 +40,7 @@ BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent)
 
 BNetworkServer::~BNetworkServer()
 {
+    delete _m_d;
     for (int i = 0; i < _m_threads.size(); ++i)
     {
         QThread *t = _m_threads.at(i);
@@ -99,9 +116,15 @@ int BNetworkServer::currentThreadCount() const
 
 //
 
-BNetworkServerWorker *BNetworkServer::createWorker()
+BNetworkConnection *BNetworkServer::createConnection(int socketDescriptor)
 {
-    return new BNetworkServerWorker;
+    BGenericSocket *socket = new BGenericSocket(BGenericSocket::TcpSocket);
+    if ( !socket->setSocketDescriptor(socketDescriptor) || !socket->isValid() )
+    {
+        socket->deleteLater();
+        return 0;
+    }
+    return new BNetworkConnection(socket);
 }
 
 //
@@ -127,7 +150,7 @@ void BNetworkServer::_m_newConnection(int socketDescriptor)
     }
     else
     {
-        BNetworkServerThread *t = new BNetworkServerThread(createWorker(), this);
+        BNetworkServerThread *t = new BNetworkServerThread(new BNetworkServerWorker( d_func() ), this);
         if ( !t->isValid() )
         {
             t->deleteLater();
