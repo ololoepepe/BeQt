@@ -9,6 +9,7 @@ class QLocale;
 #include <BeQt>
 
 #include <QObject>
+#include <QList>
 
 class B_CORE_EXPORT BTranslator : public QObject
 {
@@ -20,7 +21,11 @@ public:
     //
     void setLocale(const QLocale &l);
     void reload();
+    void unload();
     QString fileName() const;
+    bool isValid() const;
+    QLocale locale() const;
+    QList<QLocale> availableLocales() const;
 protected:
     BTranslatorPrivate *_m_d;
 private:

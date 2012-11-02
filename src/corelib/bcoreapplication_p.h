@@ -22,7 +22,7 @@ class B_CORE_EXPORT BCoreApplicationPrivate
 public:
     static QString toLowerNoSpaces(const QString &string);
     static QString subdir(BCoreApplication::Location loc);
-    static bool testCoreInit();
+    static bool testCoreInit(const char *where = 0);
     //
     BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options);
     ~BCoreApplicationPrivate();

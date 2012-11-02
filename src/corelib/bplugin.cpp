@@ -17,52 +17,105 @@ class BPluginPrivate
 {
     B_DECLARE_PUBLIC(BPlugin)
 public:
-    BPlugin *_m_q;
+    BPlugin *const _m_q;
+    const QString FileName;
+    //
     QPluginLoader *loader;
     QObject *instance;
     BPluginInterface *interface;
     BTranslator *translator;
+    bool isValid;
+    BPlugin::PluginState state;
+    QString type;
+    QString name;
+    BPluginInterface::PluginInfo info;
     //
-    BPluginPrivate(BPlugin *q) :
-        _m_q(q)
-    {
-        loader = new QPluginLoader;
-        instance = 0;
-        interface = 0;
-        translator = 0;
-    }
-    ~BPluginPrivate()
-    {
-        loader->deleteLater();
-        if (translator)
-            translator->deleteLater();
-    }
+    BPluginPrivate(BPlugin *q, const QString &fileName);
+    ~BPluginPrivate();
     //
-    void activate()
-    {
-        BCoreApplication *app = BCoreApplication::instance();
-        if (app)
-            app->d_func()->emitPluginActivated( q_func() );
-        //
-        QMetaObject::invokeMethod(q_func(), "activated");
-
-    }
-    void deactivate()
-    {
-        BCoreApplication *app = BCoreApplication::instance();
-        if (app)
-            app->d_func()->emitPluginAboutToBeDeactivated( q_func() );
-        //
-        QMetaObject::invokeMethod(q_func(), "deactivated");
-    }
+    void activate();
+    void deactivate();
 private:
     friend class BCoreApplicationPrivate;
 };
 
 //
 
+BPluginPrivate::BPluginPrivate(BPlugin *q, const QString &fileName) :
+    _m_q(q), FileName(fileName)
+{
+    loader = new QPluginLoader(FileName);
+    loader->load();
+    instance = loader->instance();
+    interface = qobject_cast<BPluginInterface *>(instance);
+    if (interface)
+    {
+        type = interface->type();
+        name = interface->name();
+        info = interface->info();
+    }
+    else
+    {
+        instance = 0;
+    }
+    translator = new BTranslator(FileName);
+    isValid = interface;
+    state = BPlugin::NotInitialized;
+}
+BPluginPrivate::~BPluginPrivate()
+{
+    loader->deleteLater();
+    translator->deleteLater();
+}
+
+//
+
+void BPluginPrivate::activate()
+{
+    if (!isValid)
+        return;
+    if (!instance)
+    {
+        loader->load();
+        instance = loader->instance();
+        interface = qobject_cast<BPluginInterface *>(instance);
+        if (interface)
+        {
+            type = interface->type();
+            name = interface->name();
+            info = interface->info();
+            BCoreApplication::installTranslator(translator);
+            state = BPlugin::Activated;
+            BCoreApplication *app = BCoreApplication::instance();
+            if (app)
+                app->d_func()->emitPluginActivated( q_func() );
+            QMetaObject::invokeMethod(q_func(), "activated");
+        }
+        else
+        {
+            instance = 0;
+        }
+    }
+}
+void BPluginPrivate::deactivate()
+{
+    if (!isValid || BPlugin::Activated != state)
+        return;
+    BCoreApplication *app = BCoreApplication::instance();
+    if (app)
+        app->d_func()->emitPluginAboutToBeDeactivated( q_func() );
+    loader->unload();
+    instance = 0;
+    interface = 0;
+    BCoreApplication::removeTranslator(translator);
+    state = BPlugin::Deactivated;
+    QMetaObject::invokeMethod(q_func(), "deactivated");
+}
+
+//
+
 BPlugin::BPlugin(const QString &fileName, QObject *parent) :
-    QObject(parent), _m_d( new BPluginPrivate(this) )
+    QObject(parent), _m_d( new BPluginPrivate(this, fileName) )
 {
     //
 }
@@ -76,44 +129,57 @@ BPlugin::~BPlugin()
 
 void BPlugin::setActivated(bool b)
 {
-    //
+    if ( (b && state() == Activated) || (!b && state() == Deactivated) )
+        return;
+    if (b)
+        activate();
+    else
+        deactivate();
 }
 
 void BPlugin::setLocale(const QLocale &l)
 {
-    if (d_func()->translator)
-        d_func()->translator->setLocale(l);
+    d_func()->translator->setLocale(l);
 }
 
 void BPlugin::reloadTranslator()
 {
-    if (d_func()->translator)
-        d_func()->translator->reload();
+    d_func()->translator->reload();
+}
+
+QString BPlugin::fileName() const
+{
+    return d_func()->FileName;
+}
+
+const BTranslator *BPlugin::translator() const
+{
+    return d_func()->translator;
 }
 
 BPlugin::PluginState BPlugin::state() const
 {
-    //
+    return d_func()->state;
 }
 
 bool BPlugin::isValid() const
 {
-    //
+    return d_func()->isValid;
 }
 
 QString BPlugin::type() const
 {
-    //
+    return d_func()->type;
 }
 
 QString BPlugin::name() const
 {
-    //
+    return d_func()->name;
 }
 
 BPluginInterface::PluginInfo BPlugin::info() const
 {
-    //
+    return d_func()->info;
 }
 
 QObject *BPlugin::instance() const
@@ -130,10 +196,13 @@ BPluginInterface *BPlugin::interface() const
 
 void BPlugin::activate()
 {
-    //
+    if (state() == Activated)
+        return;
+    d_func()->activate();
 }
 
 void BPlugin::deactivate()
 {
-    //
+    if (state() == Deactivated)
+        d_func()->deactivate();
 }

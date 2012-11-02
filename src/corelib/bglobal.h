@@ -40,5 +40,6 @@
     friend class Class;
 
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
+B_CORE_EXPORT const char *bVersion();
 
 #endif // BGLOBAL_H

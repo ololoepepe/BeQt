@@ -9,3 +9,8 @@ bool bTest(bool condition, const char *where, const char *what)
         qCritical() << qPrintable( QString(where) + ": " + QString(what) );
     return condition;
 }
+
+const char *bVersion()
+{
+    return "2.0.0pa1";
+}

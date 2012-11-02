@@ -44,12 +44,12 @@ QString BCoreApplicationPrivate::subdir(BCoreApplication::Location loc)
     }
 }
 
-bool BCoreApplicationPrivate::testCoreInit()
+bool BCoreApplicationPrivate::testCoreInit(const char *where)
 {
-    if ( !bTest(BCoreApplication::_m_self, "BCoreApplication", "There must be a BCoreApplication instance") )
+    const char *w = where ? where : "BCoreApplication";
+    if ( !bTest(BCoreApplication::_m_self, w, "There must be a BCoreApplication instance") )
         return false;
-    else if ( !bTest(BCoreApplication::_m_self->d_func()->initialized, "BCoreApplication",
-                     "BCoreApplication must be initialized") )
+    else if ( !bTest(BCoreApplication::_m_self->d_func()->initialized, w, "BCoreApplication must be initialized") )
         return false;
     else
         return true;
@@ -204,6 +204,9 @@ void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
     translators.insert( "qt", new BTranslator("qt") );
     translators.insert( "beqt", new BTranslator("beqt") );
     translators.insert( anls, new BTranslator(anls) );
+    translators.value("qt")->reload();
+    translators.value("beqt")->reload();
+    translators.value(anls)->reload();
     //creating settings dir
     if (!portable && !options.noSettingsDir)
         BDirTools::mkpath( userPrefix + "/" + subdir(BCoreApplication::SettingsPath) );
@@ -398,6 +401,10 @@ void BCoreApplication::installTranslator(BTranslator *translator)
     if ( d->translators.contains( translator->fileName() ) )
         return;
     d->translators.insert(translator->fileName(), translator);
+    if (translator->locale() != d->locale)
+        translator->setLocale(d->locale);
+    else
+        translator->reload();
 }
 
 void BCoreApplication::installTranslator(const QString &fileName)
@@ -427,7 +434,7 @@ void BCoreApplication::removeTranslator(const QString &fileName)
         return;
     BTranslator *t = d->translators.take(fileName);
     if (t)
-        t->deleteLater();
+        t->unload();
 }
 
 void BCoreApplication::setLocale(const QLocale &l)
@@ -456,8 +463,41 @@ QList<QLocale> BCoreApplication::availableLocales()
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return QList<QLocale>();
     QList<QLocale> list;
-    //TODO: Fill the list
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    foreach (BTranslator *t, d->translators)
+        list << t->availableLocales();
+    foreach (BPlugin *pl, d->plugins)
+        if ( !pl->isValid() )
+            list << pl->translator()->availableLocales();
     return list;
+}
+
+BCoreApplication::LocaleSupport BCoreApplication::localeSupport()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return LS_No;
+    BCoreApplicationPrivate *const d = _m_self->d_func();
+    bool beqtSupport = d->translators.value("beqt")->availableLocales().contains(d->locale);
+    bool appSupport = d->translators.value(
+                BCoreApplicationPrivate::toLowerNoSpaces(d->appName) )->availableLocales().contains(d->locale);
+    bool pluginsSupport = d->plugins.isEmpty();
+    if (!pluginsSupport)
+    {
+        foreach (BPlugin *pl, d->plugins)
+        {
+            pluginsSupport = pluginsSupport && pl->translator()->availableLocales().contains(d->locale);
+            if (!pluginsSupport)
+                break;
+        }
+    }
+    if (beqtSupport && appSupport && pluginsSupport)
+        return LS_Full;
+    else if (appSupport)
+        return LS_Satisfying;
+    else if (beqtSupport || pluginsSupport)
+        return LS_Weak;
+    else
+        return LS_No;
 }
 
 void BCoreApplication::retranslateUi()
@@ -496,7 +536,7 @@ BCoreApplication *BCoreApplication::_m_self = 0;
 BCoreApplication::BCoreApplication(const AppOptions &options) :
     QObject(0), _m_d( new BCoreApplicationPrivate(this, options) )
 {
-    //
+    delete _m_d;
 }
 
 BCoreApplication::~BCoreApplication()

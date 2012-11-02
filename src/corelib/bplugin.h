@@ -3,6 +3,7 @@
 
 class BPluginPrivate;
 class BCoreApplication;
+class BTranslator;
 
 class QString;
 class QLocale;
@@ -31,6 +32,8 @@ public:
     void setActivated(bool b);
     void setLocale(const QLocale &l);
     void reloadTranslator();
+    QString fileName() const;
+    const BTranslator *translator() const;
     PluginState state() const;
     bool isValid() const;
     QString type() const;

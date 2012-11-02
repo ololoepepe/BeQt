@@ -40,6 +40,13 @@ public:
         , BundleResources
 #endif
     };
+    enum LocaleSupport
+    {
+        LS_No = 0,
+        LS_Weak,
+        LS_Satisfying,
+        LS_Full
+    };
     struct AppOptions
     {
         bool noSettingsDir;
@@ -72,6 +79,7 @@ public:
     static void setLocale(const QLocale &l);
     static QLocale locale();
     static QList<QLocale> availableLocales();
+    static LocaleSupport localeSupport();
     static void retranslateUi();
     static void saveSettings();
     //
