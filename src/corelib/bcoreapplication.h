@@ -40,13 +40,13 @@ public:
         , BundleResources
 #endif
     };
-    enum LocaleSupport
+    /*enum LocaleSupport
     {
         LS_No = 0,
         LS_Weak,
         LS_Satisfying,
         LS_Full
-    };
+    };*/
     struct AppOptions
     {
         bool noSettingsDir;
@@ -73,13 +73,11 @@ public:
     static BPlugin *plugin(const QString &name);
     static QList<BPlugin *> plugins( const QString &type = QString() );
     static void installTranslator(BTranslator *translator);
-    static void installTranslator(const QString &fileName);
     static void removeTranslator(BTranslator *translator);
-    static void removeTranslator(const QString &fileName);
     static void setLocale(const QLocale &l);
     static QLocale locale();
     static QList<QLocale> availableLocales();
-    static LocaleSupport localeSupport();
+    //static LocaleSupport localeSupport();
     static void retranslateUi();
     static void saveSettings();
     //

@@ -31,6 +31,8 @@ public:
     QString prefix(BCoreApplication::ResourcesType type) const;
     void emitPluginActivated(BPlugin *plugin);
     void emitPluginAboutToBeDeactivated(BPlugin *plugin);
+    void installTranslator(BTranslator *translator);
+    void removeTranslator(BTranslator *translator);
     //
     BCoreApplication *_m_q;
     bool initialized;
@@ -45,7 +47,8 @@ public:
     bool portable;
     QLocale locale;
     QStringList deactivatedPlugins;
-    QMap<QString, BTranslator *> translators;
+    QList<BTranslator *> internalTranslators;
+    QList<BTranslator *> userTranslators;
     QMap<QString, BPlugin *> plugins;
 private:
     static const QStringList PluginSuffixes;

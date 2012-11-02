@@ -21,7 +21,8 @@ HEADERS += \
     bplugin.h \
     bplugininterface.h \
     bterminaliohandler.h \
-    btranslator.h
+    btranslator.h \
+    btranslator_p.h
 
 SOURCES += \
     bcoreapplication.cpp \

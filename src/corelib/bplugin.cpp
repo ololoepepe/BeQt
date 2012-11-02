@@ -1,7 +1,6 @@
 #include "bplugin.h"
 
 #include <BPluginInterface>
-#include <BTranslator>
 #include <BCoreApplication>
 
 #include <private/bcoreapplication_p.h>
@@ -23,7 +22,6 @@ public:
     QPluginLoader *loader;
     QObject *instance;
     BPluginInterface *interface;
-    BTranslator *translator;
     bool isValid;
     BPlugin::PluginState state;
     QString type;
@@ -58,14 +56,12 @@ BPluginPrivate::BPluginPrivate(BPlugin *q, const QString &fileName) :
     {
         instance = 0;
     }
-    translator = new BTranslator(FileName);
     isValid = interface;
     state = BPlugin::NotInitialized;
 }
 BPluginPrivate::~BPluginPrivate()
 {
     loader->deleteLater();
-    translator->deleteLater();
 }
 
 //
@@ -84,7 +80,6 @@ void BPluginPrivate::activate()
             type = interface->type();
             name = interface->name();
             info = interface->info();
-            BCoreApplication::installTranslator(translator);
             state = BPlugin::Activated;
             BCoreApplication *app = BCoreApplication::instance();
             if (app)
@@ -107,7 +102,6 @@ void BPluginPrivate::deactivate()
     loader->unload();
     instance = 0;
     interface = 0;
-    BCoreApplication::removeTranslator(translator);
     state = BPlugin::Deactivated;
     QMetaObject::invokeMethod(q_func(), "deactivated");
 }
@@ -137,24 +131,9 @@ void BPlugin::setActivated(bool b)
         deactivate();
 }
 
-void BPlugin::setLocale(const QLocale &l)
-{
-    d_func()->translator->setLocale(l);
-}
-
-void BPlugin::reloadTranslator()
-{
-    d_func()->translator->reload();
-}
-
 QString BPlugin::fileName() const
 {
     return d_func()->FileName;
-}
-
-const BTranslator *BPlugin::translator() const
-{
-    return d_func()->translator;
 }
 
 BPlugin::PluginState BPlugin::state() const
