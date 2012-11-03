@@ -1,10 +1,12 @@
 #include "bdirtools.h"
+#include "bcoreapplication.h"
 
 #include <QString>
 #include <QDir>
 #include <QFileInfo>
 #include <QStringList>
 #include <QFile>
+#include <QLocale>
 
 bool BDirTools::mkpath(const QString &dirPath)
 {
@@ -58,6 +60,52 @@ bool BDirTools::copyDir(const QString &dirName, const QString &newDirName, bool 
         }
     }
     return true;
+}
+
+QString BDirTools::localeBasedFileName(const QString &fileName, const QString &defaultFileName,
+                                   const QString &possibleSuffix)
+{
+    if ( fileName.isEmpty() )
+        return "";
+    QString lname = BCoreApplication::locale().name().left(5);
+    QFileInfo fi(fileName);
+    QString bfn = fi.path() + "/" + fi.baseName();
+    QString suff = fi.suffix();
+    suff = suff.isEmpty() ? possibleSuffix : "";
+    if ( !suff.isEmpty() )
+        suff.prepend('.');
+    QFile f(bfn + "_" + lname);
+    if ( !f.exists() )
+        f.setFileName(bfn + "_" + lname + suff);
+    lname = lname.left(2);
+    if ( !f.exists() )
+        f.setFileName(bfn + "_" + lname);
+    if ( !f.exists() )
+        f.setFileName(bfn + "_" + lname + suff);
+    if ( !f.exists() )
+        f.setFileName(defaultFileName);
+    if ( !f.exists() )
+        f.setFileName(defaultFileName + suff);
+    if ( !f.exists() )
+        return "";
+    return f.fileName();
+}
+
+QString BDirTools::localeBasedDirName(const QString &dir)
+{
+    if ( dir.isEmpty() )
+        return "";
+    QString lname = BCoreApplication::locale().name().left(5);
+    QDir d(dir + "/" + lname);
+    if ( !d.exists() )
+        d.setPath( dir + "/" + lname.left(2) );
+    if ( !d.exists() )
+        d.setPath(dir + "/" + "en");
+    if ( !d.exists() )
+        d.setPath(dir);
+    if ( !d.exists() )
+        return "";
+    return d.path();
 }
 
 //

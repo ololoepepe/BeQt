@@ -26,8 +26,9 @@ public:
     static bool testCoreInit(const char *where = 0);
     //
     BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options);
-    ~BCoreApplicationPrivate();
+    virtual ~BCoreApplicationPrivate();
     //
+    void init(const BCoreApplication::AppOptions &options);
     QString confFileName(const QString &path, const QString &name, bool create = false) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
     void emitPluginActivated(BPluginWrapper *pluginWrapper);
@@ -59,8 +60,6 @@ private:
       static const QString SettingsGroupCore;
         static const QString SettingsKeyDeactivatedPlugins;
         static const QString SettingsKeyLocale;
-    //
-    void init(const BCoreApplication::AppOptions &options);
     //
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     //

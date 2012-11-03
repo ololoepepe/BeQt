@@ -13,6 +13,9 @@ public:
     static bool rmdir(const QString &dirName);
     static bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );
     static bool copyDir(const QString &dirName, const QString &newDirName, bool recursively = false);
+    static QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
+                                        const QString &possibleSuffix = QString() );
+    static QString localeBasedDirName(const QString &dir);
 private:
     BDirTools();
 };

@@ -13,9 +13,13 @@ include(../../depend.pri)
 DEFINES += BEQT_BUILD_WIDGETS_LIB
 
 HEADERS += \
-    bflowlayout.h \
-    bapplication.h
+    baboutdialog.h \
+    baboutdialog_p.h \
+    bapplication.h \
+    bflowlayout.h
+
 
 SOURCES += \
-    bflowlayout.cpp \
-    bapplication.cpp
+    baboutdialog.cpp \
+    bapplication.cpp \
+    bflowlayout.cpp

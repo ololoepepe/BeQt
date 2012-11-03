@@ -19,6 +19,7 @@
 #include <QSettings>
 #include <QMetaObject>
 #include <QTranslator>
+#include <QPointer>
 
 QString BCoreApplicationPrivate::toLowerNoSpaces(const QString &string)
 {
@@ -76,6 +77,71 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
 
 //
 
+void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
+{
+    //checks
+    QString an = QCoreApplication::applicationName();
+    QString on = QCoreApplication::organizationName();
+    QString ap = QCoreApplication::applicationDirPath().remove( QRegExp("/(b|B)(i|I)(n|N)$") );
+    if ( !bTest(QCoreApplication::instance(), "BCoreApplication", "missing QCoreApplication instance") )
+        return;
+    //if ( !bTest(BCoreApplication::instance(), "BCoreApplication", "missing BCoreApplication instance") )
+        //return;
+    if ( !bTest(!an.isEmpty(), "BCoreApplication", "missing application name") )
+        return;
+    if ( !bTest(!on.isEmpty(), "BCoreApplication", "missing organization name") )
+        return;
+    if ( !bTest(QFileInfo(ap).isDir(), "BCoreApplication", "unable to get application directory") )
+        return;
+    appName = an;
+    orgName = on;
+    appPath = ap;
+    QString anls = toLowerNoSpaces(appName);
+    //vars
+#if defined(B_OS_MAC)
+    userPrefix = QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
+    sharedPrefix = "/Library/Application Support/" + orgName + "/" + appName;
+    bundlePrefix = QDir(appPath + "/../Resources").absolutePath();
+#elif defined (B_OS_UNIX)
+    userPrefix = QDir::homePath() + "/." + anls;
+    sharedPrefix = "/usr/share/" + anls;
+#elif defined(B_OS_WIN)
+    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
+        userPrefix = QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
+    else
+        userPrefix = QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
+    /*bool sws = (BCoreApplication::SM_SystemWide == options.settingsMode);
+    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
+    {
+        QString x = QDir::rootPath() + "/Documents and Settings/All Users";
+        userPrefix = (!sws ? QDir::homePath() : x) + "/Application Data/" + orgName + "/" + appName;
+    }
+    else
+    {
+        QString x = QDir::rootPath() + "/Users/Default";
+        userPrefix = (!sws ? QDir::homePath() : x) + "/AppData/Roaming/" + orgName + "/" + appName;
+    }*/
+    sharedPrefix = appPath;
+#endif
+    //app mode
+    portable = QFileInfo( confFileName(appPath, appName, false) ).isFile();
+    if (portable)
+    {
+        userPrefix = appPath;
+        sharedPrefix = appPath;
+#if defined(B_OS_MAC)
+        bundlePrefix = appPath;
+#endif
+    }
+    //default locale
+    locale = options.defaultLocale;
+    //creating settings dir
+    if (!portable && !options.noSettingsDir)
+        BDirTools::mkpath( userPrefix + "/" + subdir(BCoreApplication::SettingsPath) );
+    //initialized
+    initialized = true;
+}
+
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name, bool create) const
 {
     if ( path.isEmpty() || name.isEmpty() )
@@ -84,7 +150,7 @@ QString BCoreApplicationPrivate::confFileName(const QString &path, const QString
 #if defined(B_OS_UNIX)
     bfn = toLowerNoSpaces(bfn);
 #endif
-    QString fn = path + "/" + bfn + ".conf";
+    QString fn = path + "/settings/" + bfn + ".conf";
     QFile f(fn);
     bool exists = f.exists();
     if (create)
@@ -157,8 +223,8 @@ void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool lan
 
 void BCoreApplicationPrivate::loadSettings()
 {
-    QSettings *s = BCoreApplication::createAppSettingsInstance(true);
-    if (!s)
+    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance(true);
+    if ( s.isNull() )
         return;
     s->beginGroup(SettingsGroupBeqt);
       s->beginGroup(SettingsGroupCore);
@@ -166,14 +232,16 @@ void BCoreApplicationPrivate::loadSettings()
         locale = s->value(SettingsKeyLocale, locale).toLocale();
       s->endGroup();
     s->endGroup();
+    QMetaObject::invokeMethod( q_func(), "settingsLoaded", Q_ARG( QSettings *, s.data() ) );
+    if ( s.isNull() )
+        return;
     s->deleteLater();
-    QMetaObject::invokeMethod(q_func(), "settingsLoaded");
 }
 
 void BCoreApplicationPrivate::saveSettings()
 {
-    QSettings *s = BCoreApplication::createAppSettingsInstance(true);
-    if (!s)
+    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance(true);
+    if ( s.isNull() )
         return;
     s->beginGroup(SettingsGroupBeqt);
       s->beginGroup(SettingsGroupCore);
@@ -181,7 +249,11 @@ void BCoreApplicationPrivate::saveSettings()
         s->setValue(SettingsKeyLocale, locale);
       s->endGroup();
     s->endGroup();
-    QMetaObject::invokeMethod(q_func(), "settingsSaved");
+    QMetaObject::invokeMethod( q_func(), "settingsSaved", Q_ARG( QSettings *, s.data() ) );
+    if ( s.isNull() )
+        return;
+    s->sync();
+    s->deleteLater();
 }
 
 //
@@ -197,73 +269,6 @@ const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
   const QString BCoreApplicationPrivate::SettingsGroupCore = "Core";
     const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
     const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
-
-//
-
-void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
-{
-    //checks
-    QString an = QCoreApplication::applicationName();
-    QString on = QCoreApplication::organizationName();
-    QString ap = QCoreApplication::applicationDirPath().remove( QRegExp("/(b|B)(i|I)(n|N)$") );
-    if ( !bTest(BCoreApplication::instance(), "BCoreApplication", "missing BCoreApplication instance") )
-        return;
-    if ( !bTest(QCoreApplication::instance(), "BCoreApplication", "missing QCoreApplication instance") )
-        return;
-    if ( !bTest(!an.isEmpty(), "BCoreApplication", "missing application name") )
-        return;
-    if ( !bTest(!on.isEmpty(), "BCoreApplication", "missing organization name") )
-        return;
-    if ( !bTest(QFileInfo(ap).isDir(), "BCoreApplication", "unable to get application directory") )
-        return;
-    appName = an;
-    orgName = on;
-    appPath = ap;
-    QString anls = toLowerNoSpaces(appName);
-    //vars
-#if defined(B_OS_MAC)
-    userPrefix = QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
-    sharedPrefix = "/Library/Application Support/" + orgName + "/" + appName;
-    bundlePrefix = QDir(appPath + "/../Resources").absolutePath();
-#elif defined (B_OS_UNIX)
-    userPrefix = QDir::homePath() + "/." + anls;
-    sharedPrefix = "/usr/share/" + anls;
-#elif defined(B_OS_WIN)
-    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
-        userPrefix = QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
-    else
-        userPrefix = QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
-    /*bool sws = (BCoreApplication::SM_SystemWide == options.settingsMode);
-    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
-    {
-        QString x = QDir::rootPath() + "/Documents and Settings/All Users";
-        userPrefix = (!sws ? QDir::homePath() : x) + "/Application Data/" + orgName + "/" + appName;
-    }
-    else
-    {
-        QString x = QDir::rootPath() + "/Users/Default";
-        userPrefix = (!sws ? QDir::homePath() : x) + "/AppData/Roaming/" + orgName + "/" + appName;
-    }*/
-    sharedPrefix = appPath;
-#endif
-    //app mode
-    portable = QFileInfo( confFileName(appPath, appName, false) ).isFile();
-    if (portable)
-    {
-        userPrefix = appPath;
-        sharedPrefix = appPath;
-#if defined(B_OS_MAC)
-        bundlePrefix = appPath;
-#endif
-    }
-    //default locale
-    locale = options.defaultLocale;
-    //creating settings dir
-    if (!portable && !options.noSettingsDir)
-        BDirTools::mkpath( userPrefix + "/" + subdir(BCoreApplication::SettingsPath) );
-    //initialized
-    initialized = true;
-}
 
 //
 
@@ -520,17 +525,27 @@ void BCoreApplication::saveSettings()
 
 //
 
-BCoreApplication *BCoreApplication::_m_self = 0;
-
-//
-
 BCoreApplication::BCoreApplication(const AppOptions &options) :
     QObject(0), _m_d( new BCoreApplicationPrivate(this, options) )
 {
-    delete _m_d;
+    _m_self = this;
 }
 
 BCoreApplication::~BCoreApplication()
 {
-    //
+    delete _m_d;
+    _m_self = 0;
+}
+
+//
+
+
+BCoreApplication *BCoreApplication::_m_self = 0;
+
+//
+
+BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d) :
+    _m_d(&d)
+{
+    _m_self = this;
 }

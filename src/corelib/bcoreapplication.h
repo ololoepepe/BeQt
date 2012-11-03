@@ -18,6 +18,8 @@ class QSettings;
 #include <QString>
 #include <QStringList>
 
+#define bApp BCoreApplication::instance()
+
 class B_CORE_EXPORT BCoreApplication : public QObject
 {
     Q_OBJECT
@@ -96,14 +98,16 @@ signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();
-    void settingsLoaded();
-    void settingsSaved();
+    void settingsLoaded(QSettings *s);
+    void settingsSaved(QSettings *s);
 protected:
+    static BCoreApplication *_m_self;
+    //
+    BCoreApplication(BCoreApplicationPrivate &d);
+    //
     BCoreApplicationPrivate *_m_d;
 private:
     Q_DISABLE_COPY(BCoreApplication)
-    //
-    static BCoreApplication *_m_self;
     //
     friend class BTranslatorPrivate;
     friend class BPluginWrapperPrivate;
