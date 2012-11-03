@@ -47,9 +47,9 @@ public:
     explicit BAboutDialog(const AboutOptions &options, QWidget *parent = 0);
     ~BAboutDialog();
     //
-    void setIcon(const QString &fileName);
-    void setAbout(const QString &description, const QString &copyright, const QString &website);
-    void setChangeLog(const QString &text);
+    void setPixmap(const QPixmap &pixmap);
+    void setPixmap(const QString &fileName);
+    void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
     void setChangeLog(const QString &fileName, const char *codecName);
     void setAuthorsInfos(const PersonInfoList &infos);
     void setTranslationInfos(const PersonInfoList &infos);

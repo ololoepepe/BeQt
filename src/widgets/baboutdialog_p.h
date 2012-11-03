@@ -45,13 +45,13 @@ public:
     void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
     //
     BAboutDialog *const _m_q;
+    QString appName;
     QMap<DialogTab, QTextBrowser *> tbrsrs;
     BAboutDialog *aboutBeqtDlg;
     QVBoxLayout *vlt;
       QHBoxLayout *hltHeader;
         QLabel *lblIcon;
         QLabel *lblText;
-        QLabel *lblWebsite;
         //stretch
         QToolButton *tbtnAboutQt;
         QToolButton *tbtnAboutBeQt;
@@ -65,6 +65,7 @@ public:
         QTextBrowser *tbsrLicense;
       QHBoxLayout *hltActions;
         QLabel *lblCopyright;
+        QLabel *lblWebsite;
         //stretch
         QPushButton *btnClose;
 private:
@@ -76,7 +77,6 @@ private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
 private slots:
     void retranslateUi();
-    void tbtnAboutBeQtClicked();
 };
 
 #endif // BABOUTDIALOG_P_H

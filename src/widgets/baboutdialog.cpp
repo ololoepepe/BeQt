@@ -4,7 +4,6 @@ class QWidget;
 #include "baboutdialog_p.h"
 #include "bapplication.h"
 
-#include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BDirTools>
 
 #include <QDialog>
@@ -47,11 +46,10 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
           font.setPointSize(12);
           font.setBold(true);
           lblText->setFont(font);
-          lblText->setText(options.appName + " v" + options.appVersion);
+          appName = !options.appName.isEmpty() ? options.appName : QApplication::applicationName();
+          QString appVersion = !options.appVersion.isEmpty() ? options.appVersion : QApplication::applicationVersion();
+          lblText->setText(appName + " v" + appVersion);
         hltHeader->addWidget(lblText);
-        lblWebsite = new QLabel(q);
-          lblWebsite->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-          lblWebsite->setTextFormat(Qt::RichText);
         hltHeader->addStretch();
         if (options.aboutQtButton)
         {
@@ -68,27 +66,22 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         {
             tbtnAboutBeQt = new QToolButton(q);
               tbtnAboutBeQt->setIcon( BApplication::beqtIcon("beqt_logo") );
-              connect( tbtnAboutBeQt, SIGNAL( clicked() ), this, SLOT( tbtnAboutBeQtClicked() ) );
             hltHeader->addWidget(tbtnAboutBeQt);
             //
             BAboutDialog::AboutOptions opt;
             opt.appName = "BeQt";
             opt.appVersion = bVersion();
-            aboutBeqtDlg = new BAboutDialog(opt, q);
-            aboutBeqtDlg->setIcon(BCoreApplication::location(BCoreApplication::BeqtPath,
-                                                             BCoreApplication::SharedResources) +
-                                  "/images/icons/beqt_logo.png" );
+            aboutBeqtDlg = new BAboutDialog( opt, q_func() );
+            aboutBeqtDlg->setWindowModality(Qt::NonModal);
+            aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
+            connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
         }
         else
         {
-            tbtnAboutBeQt = 0;
             aboutBeqtDlg = 0;
+            tbtnAboutBeQt = 0;
         }
       vlt->addLayout(hltHeader);
-      if (options.aboutQtButton || options.aboutBeQtButton)
-          vlt->addWidget(lblWebsite);
-      else
-          hltHeader->addWidget(lblWebsite);
       twgt = new QTabWidget(q);
         tbsrAbout = 0;
         tbsrChangeLog = 0;
@@ -101,6 +94,11 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         lblCopyright = new QLabel(q);
           lblCopyright->setTextFormat(Qt::RichText);
         hltActions->addWidget(lblCopyright);
+        lblWebsite = new QLabel(q);
+          lblWebsite->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+          lblWebsite->setTextFormat(Qt::RichText);
+          lblWebsite->setOpenExternalLinks(true);
+        hltActions->addWidget(lblWebsite);
         hltActions->addStretch();
         btnClose = new QPushButton(q);
           btnClose->setDefault(true);
@@ -213,9 +211,9 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BAboutDialog::PersonInfoLis
             continue;
         s += "<b>" + inf.name + "</b><br>" + HtmlSpaceDouble + inf.role + "<br>";
         if ( !inf.site.isEmpty() )
-            s += HtmlSpaceDouble + "<i>website</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a><br>";
+            s += HtmlSpaceDouble + "<i>Website</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a><br>";
         if ( !inf.mail.isEmpty() )
-            s += HtmlSpaceDouble + "<i>e-mail</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a><br>";
+            s += HtmlSpaceDouble + "<i>E-mail</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a><br>";
         if (i < infos.size() - 1)
             s += "<br>";
     }
@@ -233,7 +231,7 @@ const QString BAboutDialogPrivate::HtmlGT = "&gt;";
 
 void BAboutDialogPrivate::retranslateUi()
 {
-    q_func()->setWindowTitle( tr("About", "windowTitle") );
+    q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
     btnClose->setText( tr("Close", "btn text") );
     foreach ( DialogTab t, tbrsrs.keys() )
         twgt->setTabText( tabIndex(t), tabTitle(t) );
@@ -243,12 +241,13 @@ void BAboutDialogPrivate::retranslateUi()
         tbtnAboutBeQt->setToolTip( tr("About BeQt", "tbtn toolTip") );
     if (aboutBeqtDlg)
     {
-        QString beqtdir = BCoreApplication::location(BCoreApplication::BeqtPath, BCoreApplication::SharedResources);
+        QString beqtdir = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources);
         QString descrfn = BDirTools::localeBasedFileName(beqtdir + "/about/ABOUT", beqtdir + "/ABOUT", "txt");
         QString copyright = "2012 Andrey Bogdanov";
         QString website = "https://github.com/the-dark-angel/BeQt";
         aboutBeqtDlg->setAbout(readFile(descrfn, "UTF-8"), copyright, website);
-        aboutBeqtDlg->setChangeLog("=== BeQt 2.0.0pa1 (04 November 2012) ===");
+        aboutBeqtDlg->setChangeLog(BDirTools::localeBasedFileName(beqtdir + "/changelog/ChangeLog",
+                                                                  beqtdir + "/ChangeLog", "txt"), "UTF-8");
         BAboutDialog::PersonInfo pi;
         pi.name = tr("Andrey Bogdanov", "info name");
         pi.role = tr("Main developer", "info role");
@@ -257,16 +256,9 @@ void BAboutDialogPrivate::retranslateUi()
         aboutBeqtDlg->setAuthorsInfos(BAboutDialog::PersonInfoList() << pi);
         pi.role = tr("Translator", "info role");
         aboutBeqtDlg->setTranslationInfos(BAboutDialog::PersonInfoList() << pi);
-        aboutBeqtDlg->setLicense( BDirTools::localeBasedFileName(beqtdir + "/copying/COPYING",
-                                                                 beqtdir + "/COPYING", "txt"), "UTF-8" );
+        aboutBeqtDlg->setLicense(BDirTools::localeBasedFileName(beqtdir + "/copying/COPYING",
+                                                                beqtdir + "/COPYING", "txt"), "UTF-8");
     }
-}
-
-void BAboutDialogPrivate::tbtnAboutBeQtClicked()
-{
-    if (!aboutBeqtDlg)
-        return;
-    aboutBeqtDlg->exec();
 }
 
 //
@@ -290,12 +282,16 @@ BAboutDialog::~BAboutDialog()
 
 //
 
-void BAboutDialog::setIcon(const QString &fileName)
+void BAboutDialog::setPixmap(const QPixmap &pixmap)
 {
     BAboutDialogPrivate *const d = d_func();
-    QPixmap pm(fileName);
-    d->lblIcon->setPixmap( QPixmap(fileName).scaled(64, 64) );
-    d->lblIcon->setVisible( !pm.isNull() );
+    d->lblIcon->setPixmap( pixmap.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation) );
+    d->lblIcon->setVisible( !pixmap.isNull() );
+}
+
+void BAboutDialog::setPixmap(const QString &fileName)
+{
+    setPixmap( QPixmap(fileName) );
 }
 
 void BAboutDialog::setAbout(const QString &description, const QString &copyright, const QString &website)
@@ -305,11 +301,15 @@ void BAboutDialog::setAbout(const QString &description, const QString &copyright
     BAboutDialogPrivate *const d = d_func();
     d->fillTab(BAboutDialogPrivate::AboutTab, description, false);
     d->lblCopyright->setText(tr("Copyright", "about") + " &copy; " + copyright);
-    d->lblWebsite->setText(!website.isEmpty() ? ("<a href=\"" + website + "\">" + website + "</a>") : "");
+    QString s = !website.isEmpty() ? ("<a href=\"" + website + "\">[" + tr("Website", "lbl text") + "]</a>") : "";
+    d->lblWebsite->setText(s);
+    d->lblWebsite->setToolTip(website);
 }
 
-void BAboutDialog::setChangeLog(const QString &text)
+void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
 {
+    BAboutDialogPrivate *const d = d_func();
+    QString text = d->readFile(fileName, codecName);
     QString s;
     QStringList sl = text.split('\n');
     for (int i = 0; i < sl.size(); ++i)
@@ -361,12 +361,7 @@ void BAboutDialog::setChangeLog(const QString &text)
         if (i < sl.size() - 1)
             s += "<br>";
     }
-    d_func()->fillTab(BAboutDialogPrivate::ChangeLogTab, s, true);
-}
-
-void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
-{
-    setChangeLog( d_func()->readFile(fileName, codecName) );
+    d->fillTab(BAboutDialogPrivate::ChangeLogTab, s, true);
 }
 
 void BAboutDialog::setAuthorsInfos(const PersonInfoList &infos)

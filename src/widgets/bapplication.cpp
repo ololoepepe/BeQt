@@ -10,6 +10,8 @@
 #include <QString>
 #include <QFileInfo>
 #include <QApplication>
+#include <QPixmap>
+#include <QSize>
 
 #include <QDebug>
 
@@ -30,46 +32,23 @@ public:
         }
     }
     //
+    void initAboutDlg()
+    {
+        if (aboutDlg)
+            return;
+        BAboutDialog::AboutOptions opt;
+        opt.aboutQtButton = true;
+        opt.aboutBeQtButton = true;
+        aboutDlg = new BAboutDialog(opt);
+        aboutDlg->setWindowModality(Qt::NonModal);
+    }
     void showAbout()
     {
-        if (!aboutDlg)
-        {
-            BAboutDialog::AboutOptions opt;
-            opt.aboutQtButton = true;
-            opt.aboutBeQtButton = true;
-            aboutDlg = new BAboutDialog(opt);
-            aboutDlg->setIcon(BApplication::location(BApplication::DataPath,
-                                                     BApplication::SharedResources) + "/images/myapp.png");
-        }
-        //test
-        aboutDlg->setAbout("This is an example application", "2012 Andrey Bogdanov",
-                           "https://github.com/the-dark-angel/test");
-        aboutDlg->setChangeLog("=== My App 0.1.0pa1 (04 November 2012) ===\n    * First pre-alpha release");
-        BAboutDialog::PersonInfo pi;
-        pi.name = "Andrey Bogdanov";
-        pi.role = "Main developer";
-        pi.mail = "the-dark-angel@yandex.ru";
-        pi.site = "https://github.com/the-dark-angel";
-        aboutDlg->setAuthorsInfos(BAboutDialog::PersonInfoList() << pi);
-        pi.role = "Translator";
-        aboutDlg->setTranslationInfos(BAboutDialog::PersonInfoList() << pi);
-        pi.name = "Miku";
-        pi.role = "Muse";
-        pi.mail = "";
-        pi.site = "";
-        aboutDlg->setThanksToInfos(BAboutDialog::PersonInfoList() << pi);
-        aboutDlg->setLicense("MIT license");
-        //end test
+        initAboutDlg();
         if ( aboutDlg->isVisible() )
-        {
             aboutDlg->activateWindow();
-        }
         else
-        {
-            aboutDlg->setParent( QApplication::activeWindow() );
-            aboutDlg->exec();
-        }
-        aboutDlg->setParent(0);
+            aboutDlg->open();
     }
     //
     BAboutDialog *aboutDlg;
@@ -90,6 +69,103 @@ QIcon BApplication::beqtIcon(const QString &fileName)
     if ( QFileInfo(fileName).suffix().isEmpty() )
         fn += ".png";
     return QIcon(dir + "/" + fn);
+}
+
+QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return QPixmap();
+    if ( fileName.isEmpty() )
+        return QPixmap();
+    QString dir = location(BeqtPath, SharedResources) + "/" + "images/icons";
+    if ( !QFileInfo(dir).isDir() )
+        return QPixmap();
+    QString fn = fileName;
+    if ( QFileInfo(fileName).suffix().isEmpty() )
+        fn += ".png";
+    QPixmap pm(dir + "/" + fn);
+    return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+void BApplication::setAboutPixmap(const QPixmap &pixmap)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setPixmap(pixmap);
+}
+
+void BApplication::setAboutPixmap(const QString &fileName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setPixmap(fileName);
+}
+
+void BApplication::setAbout(const QString &description, const QString &copyright, const QString &website)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setAbout(description, copyright, website);
+}
+
+void BApplication::setAboutChangeLog(const QString &fileName, const char *codecName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setChangeLog(fileName, codecName);
+}
+
+void BApplication::setAboutAuthorsInfos(const BAboutDialog::PersonInfoList &infos)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setAuthorsInfos(infos);
+}
+
+void BApplication::setAboutTranslationInfos(const BAboutDialog::PersonInfoList &infos)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setTranslationInfos(infos);
+}
+
+void BApplication::setAboutThanksToInfos(const BAboutDialog::PersonInfoList &infos)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setThanksToInfos(infos);
+}
+
+void BApplication::setAboutLicense(const QString &text)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setLicense(text);
+}
+
+void BApplication::setAboutLicense(const QString &fileName, const char *codecName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    BApplicationPrivate *const d = ds_func();
+    d->initAboutDlg();
+    d->aboutDlg->setLicense(fileName, codecName);
 }
 
 //
