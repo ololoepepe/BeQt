@@ -10,8 +10,7 @@ class QString;
 class QLocale;
 
 #include "bcoreapplication.h"
-
-#include <BeQt>
+#include "bnamespace.h"
 
 #include <QtGlobal>
 #include <QList>

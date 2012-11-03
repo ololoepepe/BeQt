@@ -3,9 +3,9 @@
 
 class BNetworkConnection;
 
-#include <BeQt>
-
 #include "bsocketwrapper.h"
+
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QString>

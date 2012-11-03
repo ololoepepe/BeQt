@@ -1,10 +1,9 @@
 #include "bnetworkconnection.h"
 #include "bnetworkoperation.h"
-
 #include "bsocketwrapper.h"
 #include "bgenericsocket.h"
 
-#include <BTerminalIOHandler>
+#include <BeQtCore/BTerminalIOHandler>
 
 #include <QObject>
 #include <QDataStream>

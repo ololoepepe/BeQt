@@ -1,9 +1,7 @@
 #include "btranslator.h"
 #include "btranslator_p.h"
-
-#include <BCoreApplication>
-
-#include <private/bcoreapplication_p.h>
+#include "bcoreapplication.h"
+#include "bcoreapplication_p.h"
 
 #include <QObject>
 #include <QString>

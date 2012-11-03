@@ -5,7 +5,7 @@ CONFIG += release
 
 QT = core gui #Replace "gui" with "widgets" if using Qt5
 
-BEQT = core widgets_h
+BEQT = core
 
 include(../module.pri)
 include(../../depend.pri)
@@ -13,7 +13,9 @@ include(../../depend.pri)
 DEFINES += BEQT_BUILD_WIDGETS_LIB
 
 HEADERS += \
-    bflowlayout.h
+    bflowlayout.h \
+    bapplication.h
 
 SOURCES += \
-    bflowlayout.cpp
+    bflowlayout.cpp \
+    bapplication.cpp

@@ -1,7 +1,7 @@
 #ifndef BDIRTOOLS_H
 #define BDIRTOOLS_H
 
-#include <BeQt>
+#include "bnamespace.h"
 
 #include <QString>
 #include <QStringList>

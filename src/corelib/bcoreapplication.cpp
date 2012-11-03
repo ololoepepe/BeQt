@@ -1,12 +1,10 @@
 #include "bcoreapplication.h"
 #include "bcoreapplication_p.h"
-
-#include <BeQt>
-#include <BDirTools>
-#include <BTranslator>
-#include <BPluginWrapper>
-
-#include <private/btranslator_p.h>
+#include "bnamespace.h"
+#include "bdirtools.h"
+#include "btranslator.h"
+#include "bpluginwrapper.h"
+#include "btranslator_p.h"
 
 #include <QObject>
 #include <QString>

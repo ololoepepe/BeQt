@@ -5,7 +5,7 @@ CONFIG += release
 
 QT = core
 
-BEQT = core_h
+BEQT =
 
 include(../module.pri)
 include(../../depend.pri)

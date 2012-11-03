@@ -2,11 +2,10 @@
 #define BNETWORKCONNECTON_H
 
 #include "bnetworkoperation.h"
-
 #include "bgenericsocket.h"
 #include "bsocketwrapper.h"
 
-#include <BeQt>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QByteArray>

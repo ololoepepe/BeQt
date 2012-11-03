@@ -9,8 +9,8 @@ class BPluginWrapperPrivate;
 class QLocale;
 class QSettings;
 
-#include <BeQt>
-#include <BPluginWrapper>
+#include "bnamespace.h"
+#include "bpluginwrapper.h"
 
 #include <QObject>
 #include <QLocale>

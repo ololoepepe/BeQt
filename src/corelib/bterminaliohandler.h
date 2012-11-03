@@ -1,7 +1,7 @@
 #ifndef BTERMINALIOHANDLER_H
 #define BTERMINALIOHANDLER_H
 
-#include <BeQt>
+#include "bnamespace.h"
 
 #include <QThread>
 #include <QString>

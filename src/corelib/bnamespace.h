@@ -1,7 +1,7 @@
 #ifndef BNAMESPACE_H
 #define BNAMESPACE_H
 
-#include <BeQtGlobal>
+#include "bglobal.h"
 
 #include <QtGlobal>
 

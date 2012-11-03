@@ -1,8 +1,6 @@
 #include "bnetworkserverworker.h"
 #include "bnetworkconnection.h"
-
 #include "bgenericsocket.h"
-
 #include "bnetworkserver_p.h"
 
 #include <QObject>

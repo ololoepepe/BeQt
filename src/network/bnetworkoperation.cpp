@@ -1,5 +1,4 @@
 #include "bnetworkoperation.h"
-
 #include "bsocketwrapper.h"
 
 #include <QObject>

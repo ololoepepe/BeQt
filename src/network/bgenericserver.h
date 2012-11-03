@@ -3,7 +3,7 @@
 
 #include "bgenericsocket.h"
 
-#include <BeQt>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QTcpServer>

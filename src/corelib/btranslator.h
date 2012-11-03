@@ -6,7 +6,7 @@ class BCoreApplicationPrivate;
 
 class QLocale;
 
-#include <BeQt>
+#include "bnamespace.h"
 
 #include <QObject>
 #include <QList>

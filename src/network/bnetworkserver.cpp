@@ -2,9 +2,7 @@
 #include "bnetworkserverthread.h"
 #include "bnetworkserverworker.h"
 #include "bnetworkconnection.h"
-
 #include "bnetworkserver_p.h"
-
 #include "bgenericserver.h"
 
 #include <QObject>

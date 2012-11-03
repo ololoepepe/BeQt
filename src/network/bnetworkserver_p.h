@@ -4,7 +4,7 @@
 class BNetworkServer;
 class BNetworkConnection;
 
-#include <BeQt>
+#include <BeQtCore/BeQt>
 
 class BNetworkServerPrivate
 {

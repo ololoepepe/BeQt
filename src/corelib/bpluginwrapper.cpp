@@ -1,10 +1,8 @@
 #include "bpluginwrapper.h"
 #include "bpluginwrapper_p.h"
-
-#include <BPluginInterface>
-#include <BCoreApplication>
-
-#include <private/bcoreapplication_p.h>
+#include "bplugininterface.h"
+#include "bcoreapplication.h"
+#include "bcoreapplication_p.h"
 
 #include <QtGlobal>
 #include <QObject>

@@ -114,27 +114,24 @@ win32 {
 #If "BEQT_HEADERS_ONLY" is not set, appends "LIBS" with corresponding libraries
 defineTest(beqtAddModule) {
     beqt_module_name=$${1}
-    beqt_headers_only=$${2}
     #Headers
     INCLUDEPATH *= $${beqt_headers_prefix}/$${beqt_module_name}
     DEPENDPATH *= $${beqt_headers_prefix}/$${beqt_module_name}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     #Libs
-    isEmpty(beqt_headers_only) {
-        !isEmpty(BEQT_PART) {
-            beqt_module_build_subdir=$$beqtModuleBuildSubdir($${beqt_module_name})
-            beqt_libs_path=$${beqt_libs_prefix}/$${beqt_module_build_subdir}$${beqt_release_debug_suffix}
-            LIBS *= -L$${beqt_libs_path}/ -l$${beqt_module_name}
+    !isEmpty(BEQT_PART) {
+        beqt_module_build_subdir=$$beqtModuleBuildSubdir($${beqt_module_name})
+        beqt_libs_path=$${beqt_libs_prefix}/$${beqt_module_build_subdir}$${beqt_release_debug_suffix}
+        LIBS *= -L$${beqt_libs_path}/ -l$${beqt_module_name}
+    } else {
+        mac:$$equals(beqt_path_type, normal) {
+            LIBS *= -F$${beqt_libs_prefix}/$${beqt_module_name}.framework/ -framework $${beqt_module_name}
         } else {
-            mac:$$equals(beqt_path_type, normal) {
-                LIBS *= -F$${beqt_libs_prefix}/$${beqt_module_name}.framework/ -framework $${beqt_module_name}
-            } else {
-                LIBS *= -L$${beqt_libs_path}/ -l$${beqt_module_name}
-            }
+            LIBS *= -L$${beqt_libs_path}/ -l$${beqt_module_name}
         }
-        export(LIBS)
     }
+    export(LIBS)
 }
 
 #Appending "INCLUDEPATH" and "DEPENDPATH" with BeQt headers base dir
@@ -153,9 +150,6 @@ contains(BEQT, all) {
 
 #Adds corresponding headers' and libs' paths for each valid BeQt module contained in "BEQT" variable
 for(beqt_module, BEQT) {
-    beqt_module_noh=$$replace(beqt_module, "\\_h", "")
-    beqt_headers_only=
-    !equals(beqt_module, $${beqt_module_noh}):beqt_headers_only=true
-    beqt_module_name=$$beqtModuleName($${beqt_module_noh})
-    !isEmpty(beqt_module_name):beqtAddModule($${beqt_module_name}, $${beqt_headers_only})
+    beqt_module_name=$$beqtModuleName($${beqt_module})
+    !isEmpty(beqt_module_name):beqtAddModule($${beqt_module_name})
 }

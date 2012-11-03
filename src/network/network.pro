@@ -5,7 +5,7 @@ CONFIG += release
 
 QT = core network
 
-BEQT = core network_h
+BEQT = core
 
 include(../module.pri)
 include(../../depend.pri)

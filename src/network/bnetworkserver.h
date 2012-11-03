@@ -6,9 +6,9 @@ class BNetworkServerWorker;
 class BNetworkConnection;
 class BNetworkServerPrivate;
 
-#include <BeQt>
-
 #include "bgenericserver.h"
+
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QList>

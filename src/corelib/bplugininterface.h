@@ -1,7 +1,7 @@
 #ifndef BPLUGININTERFACE_H
 #define BPLUGININTERFACE_H
 
-#include <BeQt>
+#include "bnamespace.h"
 
 #include <QString>
 #include <QtPlugin>

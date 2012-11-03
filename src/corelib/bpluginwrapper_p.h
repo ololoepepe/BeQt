@@ -1,14 +1,13 @@
 #ifndef BPLUGINWRAPPER_P_H
 #define BPLUGINWRAPPER_P_H
 
-#include "bpluginwrapper.h"
-
 class BPluginWrapper;
 
 class QPluginLoader;
 
-#include <BeQt>
-#include <BPluginInterface>
+#include "bpluginwrapper.h"
+#include "bnamespace.h"
+#include "bplugininterface.h"
 
 #include <QObject>
 #include <QList>

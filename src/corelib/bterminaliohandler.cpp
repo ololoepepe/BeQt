@@ -1,5 +1,4 @@
 #include "bterminaliohandler.h"
-
 #include "bglobal.h"
 
 #include <QTextStream>

@@ -5,8 +5,8 @@ class BPluginWrapperPrivate;
 
 class QStringList;
 
-#include <BeQt>
-#include <BPluginInterface>
+#include "bnamespace.h"
+#include "bplugininterface.h"
 
 #include <QObject>
 #include <QList>

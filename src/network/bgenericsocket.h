@@ -5,7 +5,7 @@ class QTcpSocket;
 class QSslSocket;
 class QUdpSocket;
 
-#include <BeQt>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QPointer>
