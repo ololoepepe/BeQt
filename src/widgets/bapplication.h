@@ -8,6 +8,7 @@ class QString;
 class QPixmap;
 
 #include "baboutdialog.h"
+#include "bsettingsdialog.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BCoreApplication>
@@ -42,9 +43,13 @@ public:
     explicit BApplication( const AppOptions &options = AppOptions() );
     ~BApplication();
 public slots:
-    void showAbout();
+    void showAboutDialog();
+    void showSettingsDialog();
 protected:
     BApplication(BApplicationPrivate &d);
+    //
+    virtual BSettingsDialog::SettingsTabMap settingsTabMap() const;
+    virtual void handleSettings(const BSettingsDialog::SettingsMap &s);
 private:
     Q_DISABLE_COPY(BApplication)
 };

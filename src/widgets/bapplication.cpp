@@ -1,5 +1,6 @@
 #include "bapplication.h"
 #include "baboutdialog.h"
+#include "bsettingsdialog.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BCoreApplication>
@@ -12,6 +13,7 @@
 #include <QApplication>
 #include <QPixmap>
 #include <QSize>
+#include <QScopedPointer>
 
 #include <QDebug>
 
@@ -183,17 +185,35 @@ BApplication::~BApplication()
 
 //
 
-void BApplication::showAbout()
+void BApplication::showAboutDialog()
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
     d_func()->showAbout();
 }
 
+void BApplication::showSettingsDialog()
+{
+    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), QApplication::activeWindow() ) );
+    if (sd->exec() != BSettingsDialog::Accepted)
+        return;
+    handleSettings( sd->settingsMap() );
+}
+
 //
 
 BApplication::BApplication(BApplicationPrivate &d) :
     BCoreApplication(d)
+{
+    //
+}
+
+BSettingsDialog::SettingsTabMap BApplication::settingsTabMap() const
+{
+    return BSettingsDialog::SettingsTabMap();
+}
+
+void BApplication::handleSettings(const BSettingsDialog::SettingsMap &s)
 {
     //
 }

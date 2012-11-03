@@ -23,7 +23,6 @@ class BAboutDialogPrivate : public QObject
     Q_OBJECT
     B_DECLARE_PUBLIC(BAboutDialog)
 public:
-    int a;
     enum DialogTab
     {
         AboutTab,

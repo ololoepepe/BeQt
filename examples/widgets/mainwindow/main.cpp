@@ -1,3 +1,5 @@
+#include "application.h"
+
 #include <BApplication>
 #include <BTerminalIOHandler>
 #include <BAboutDialog>
@@ -9,10 +11,11 @@
 #include <QEventLoop>
 #include <QTimer>
 #include <QTextStream>
-#include <QMainWindow>
+#include <QWidget>
 #include <QIcon>
 #include <QLibraryInfo>
 #include <QPushButton>
+#include <QVBoxLayout>
 
 #include <QDebug>
 
@@ -22,7 +25,7 @@ int main(int argc, char **argv)
     QApplication::setApplicationName("My App");
     QApplication::setOrganizationName("darkangel");
     QApplication::setApplicationVersion("0.1.0pa1");
-    BApplication *bapp = new BApplication;
+    BApplication *bapp = new Application;
     //test
     BApplication::loadSettings();
     //about
@@ -46,11 +49,15 @@ int main(int argc, char **argv)
     BApplication::setAboutLicense("MIT License");
     //end about
     QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
-    QMainWindow *mw = new QMainWindow();
-    QPushButton *btn = new QPushButton("About", mw);
-    QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAbout() ) );
-    mw->setCentralWidget(btn);
-    mw->show();
+    QWidget *w = new QWidget;
+    QVBoxLayout *vlt = new QVBoxLayout(w);
+    QPushButton *btn = new QPushButton("About", w);
+    QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAboutDialog() ) );
+    vlt->addWidget(btn);
+    QPushButton *btn2 = new QPushButton("Settings", w);
+    QObject::connect( btn2, SIGNAL( clicked() ), bApp, SLOT( showSettingsDialog() ) );
+    vlt->addWidget(btn2);
+    w->show();
     int ret = app->exec();
     //end test
     BApplication::saveSettings();

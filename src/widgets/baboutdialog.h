@@ -60,7 +60,7 @@ public:
 protected:
     BAboutDialog(BAboutDialogPrivate &d);
     //
-    BAboutDialogPrivate *_m_d;
+    BAboutDialogPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BAboutDialog)
 };

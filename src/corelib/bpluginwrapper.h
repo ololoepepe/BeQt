@@ -43,7 +43,7 @@ signals:
     void activated();
     void aboutToBeDeactivated();
 protected:
-    BPluginWrapperPrivate *_m_d;
+    BPluginWrapperPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BPluginWrapper)
     //

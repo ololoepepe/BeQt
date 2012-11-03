@@ -59,4 +59,4 @@ mainwindow
 !include/BeQtCore
 !include/BeQtNetwork
 !include/BeQtWidgets
-!widgets/mainwindow
+!examples/widgets/mainwindow

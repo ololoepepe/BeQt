@@ -105,7 +105,7 @@ protected:
     //
     BCoreApplication(BCoreApplicationPrivate &d);
     //
-    BCoreApplicationPrivate *_m_d;
+    BCoreApplicationPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BCoreApplication)
     //

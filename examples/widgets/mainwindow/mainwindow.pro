@@ -11,4 +11,10 @@ BEQT_PART=example
 include(../../../depend.pri)
 
 SOURCES = \
-    main.cpp
+    main.cpp \
+    settingstab.cpp \
+    application.cpp
+
+HEADERS += \
+    settingstab.h \
+    application.h
