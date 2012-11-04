@@ -2,6 +2,7 @@
 #include "bgenericsocket.h"
 #include "btcpserver.h"
 #include "blocalserver.h"
+#include "bgenericserver_p.h"
 
 #include <QObject>
 #include <QTcpServer>
@@ -11,121 +12,182 @@
 #include <QAbstractSocket>
 #include <QHostAddress>
 #include <QQueue>
+#include <QMetaObject>
 
-BGenericServer::BGenericServer(ServerType type, QObject *parent) :
-    QObject(parent)
+BGenericServerPrivateObject::BGenericServerPrivateObject(BGenericServerPrivate *p) :
+    QObject(0), _m_p(p)
 {
-    _m_maxPending = 0;
+    //
+}
+
+BGenericServerPrivateObject::~BGenericServerPrivateObject()
+{
+    //
+}
+
+//
+
+void BGenericServerPrivateObject::newConnection(int socketDescriptor)
+{
+    _m_p->newConnection(socketDescriptor);
+}
+
+//
+
+BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type) :
+    BBasePrivate(q), _m_o( new BGenericServerPrivateObject(this) )
+{
+    maxPending = 0;
     switch (type)
     {
-    case LocalServer:
+    case BGenericServer::LocalServer:
     {
-        BLocalServer *server = new BLocalServer(this);
-        connect(server, SIGNAL( newConnection(int) ), this, SLOT( _m_newConnection(int) ), Qt::DirectConnection);
-        _m_lserver = server;
+        BLocalServer *server = new BLocalServer( q_func() );
+        QObject::connect(server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ), Qt::DirectConnection);
+        lserver = server;
         break;
     }
-    case TcpServer:
+    case BGenericServer::TcpServer:
     {
-        BTcpServer *server = new BTcpServer(this);
-        connect(server, SIGNAL( newConnection(int) ), this, SLOT( _m_newConnection(int) ), Qt::DirectConnection);
-        _m_tserver = server;
+        BTcpServer *server = new BTcpServer( q_func() );
+        QObject::connect(server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ), Qt::DirectConnection);
+        tserver = server;
     }
     default:
         break;
     }
 }
 
+BGenericServerPrivate::~BGenericServerPrivate()
+{
+    //
+}
+
+//
+
+void BGenericServerPrivate::newConnection(int socketDescriptor)
+{
+    B_Q(BGenericServer);
+    if (maxPending > 0)
+    {
+        BGenericSocket *socket = q->createSocket(socketDescriptor);
+        if ( !socket || !socket->isValid() || !( socket->socketType() & q->serverType() ) )
+            return;
+        socket->setParent(q);
+        socketQueue.enqueue(socket);
+    }
+    else
+    {
+        QMetaObject::invokeMethod( q, "newConnection", Q_ARG(int, socketDescriptor) );
+    }
+}
+
+//
+
+BGenericServer::BGenericServer(ServerType type, QObject *parent) :
+    QObject(parent), BBase( *new BGenericServerPrivate(this, type) )
+{
+    //
+}
+
 //
 
 QTcpServer *BGenericServer::tcpServer() const
 {
-    return _m_tserver.data();
+    return d_func()->tserver.data();
 }
 
 QLocalServer *BGenericServer::localServer() const
 {
-    return _m_lserver.data();
+    return d_func()->lserver.data();
 }
 
 void BGenericServer::close()
 {
-    !_m_tserver.isNull() ? _m_tserver->close() : _m_lserver->close();
+    B_D(BGenericServer);
+    !d->tserver.isNull() ? d->tserver->close() : d->lserver->close();
 }
 
 QString BGenericServer::errorString() const
 {
     if ( !isServerSet() )
         return "";
-    return !_m_tserver.isNull() ? _m_tserver->errorString() : _m_lserver->errorString();
+    const B_D(BGenericServer);
+    return !d->tserver.isNull() ? d->tserver->errorString() : d->lserver->errorString();
 }
 
 bool BGenericServer::hasPendingConnections() const
 {
-    return !_m_socketQueue.isEmpty();
+    return !d_func()->socketQueue.isEmpty();
 }
 
 bool BGenericServer::isListening() const
 {
     if ( !isServerSet() )
         return false;
-    return !_m_tserver.isNull() ? _m_tserver->isListening() : _m_lserver->isListening();
+    const B_D(BGenericServer);
+    return !d->tserver.isNull() ? d->tserver->isListening() : d->lserver->isListening();
 }
 
 bool BGenericServer::isServerSet() const
 {
-    return !_m_tserver.isNull() || !_m_lserver.isNull();
+    const B_D(BGenericServer);
+    return !d->tserver.isNull() || !d->lserver.isNull();
 }
 
 bool BGenericServer::listen(const QString &address, quint16 port)
 {
     if ( !isServerSet() )
         return false;
-    return !_m_tserver.isNull() ? _m_tserver->listen(QHostAddress(address), port) : _m_lserver->listen(address);
+    const B_D(BGenericServer);
+    return !d->tserver.isNull() ? d->tserver->listen(QHostAddress(address), port) : d->lserver->listen(address);
 }
 
 int BGenericServer::maxPendingConnections() const
 {
-    return _m_maxPending;
+    return d_func()->maxPending;
 }
 
 BGenericSocket *BGenericServer::nextPendingConnection()
 {
-    return hasPendingConnections() ? _m_socketQueue.dequeue() : 0;
+    return hasPendingConnections() ? d_func()->socketQueue.dequeue() : 0;
 }
 
 QString BGenericServer::serverAddress() const
 {
     if ( !isServerSet() )
         return "";
-    return !_m_tserver.isNull() ? _m_tserver->serverAddress().toString() : _m_lserver->serverName();
+    const B_D(BGenericServer);
+    return !d->tserver.isNull() ? d->tserver->serverAddress().toString() : d->lserver->serverName();
 }
 
 QAbstractSocket::SocketError BGenericServer::serverError() const
 {
     if ( !isServerSet() )
         return QAbstractSocket::UnknownSocketError;
-    return !_m_tserver.isNull() ? _m_tserver->serverError() : _m_lserver->serverError();
+    const B_D(BGenericServer);
+    return !d->tserver.isNull() ? d->tserver->serverError() : d->lserver->serverError();
 }
 
 BGenericServer::ServerType BGenericServer::serverType() const
 {
     if ( !isServerSet() )
         return NoServer;
-    return !_m_tserver.isNull() ? TcpServer : LocalServer;
+    return !d_func()->tserver.isNull() ? TcpServer : LocalServer;
 }
 
 void BGenericServer::setMaxPendingConnections(int numConnections)
 {
-    _m_maxPending = numConnections > 0 ? numConnections : 0;
+    d_func()->maxPending = numConnections > 0 ? numConnections : 0;
 }
 
 bool BGenericServer::waitForNewConnection(int msec, bool *timedOut)
 {
     if ( !isServerSet() )
         return false;
-    return !_m_tserver.isNull() ? _m_tserver->waitForNewConnection(msec, timedOut) :
-                                  _m_lserver->waitForNewConnection(msec, timedOut);
+    B_D(BGenericServer);
+    return !d->tserver.isNull() ? d->tserver->waitForNewConnection(msec, timedOut) :
+                                  d->lserver->waitForNewConnection(msec, timedOut);
 }
 
 //
@@ -146,22 +208,4 @@ BGenericSocket *BGenericServer::createSocket(int socketDescriptor)
         break;
     }
     return socket;
-}
-
-//
-
-void BGenericServer::_m_newConnection(int socketDescriptor)
-{
-    if (_m_maxPending > 0)
-    {
-        BGenericSocket *socket = createSocket(socketDescriptor);
-        if ( !socket || !socket->isValid() || !( socket->socketType() & serverType() ) )
-            return;
-        socket->setParent(this);
-        _m_socketQueue.enqueue(socket);
-    }
-    else
-    {
-        emit newConnection(socketDescriptor);
-    }
 }

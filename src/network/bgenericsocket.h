@@ -1,32 +1,35 @@
 #ifndef BGENERICSOCKET_H
 #define BGENERICSOCKET_H
 
+class BGenericSocketPrivate;
+
 class QTcpSocket;
 class QSslSocket;
 class QUdpSocket;
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BBase>
 
 #include <QObject>
-#include <QPointer>
 #include <QAbstractSocket>
 #include <QLocalSocket>
 #include <QIODevice>
 #include <QString>
 #include <QByteArray>
 
-class B_NETWORK_EXPORT BGenericSocket : public QObject
+class B_NETWORK_EXPORT BGenericSocket : public QObject, public BBase
 {
+    B_DECLARE_PRIVATE(BGenericSocket)
     Q_OBJECT
 public:
     enum SocketType
     {
-        NoSocket = 0x00,                    //000 0 0 0 0 0
-        AbstractSocket = 0x01,              //000 0 0 0 0 1
-        TcpSocket = AbstractSocket + 0x02,  //000 0 0 0 1 1
-        SslSocket = TcpSocket + 0x04,       //000 0 0 1 1 1
-        UdpSocket = AbstractSocket + 0x08,  //000 0 1 0 0 1
-        LocalSocket = 0x10                  //000 1 0 0 0 0
+        NoSocket = 0x00,                    //0 0 0 0 0 0 0 0
+        AbstractSocket = 0x01,              //0 0 0 0 0 0 0 1
+        TcpSocket = AbstractSocket + 0x02,  //0 0 0 0 0 0 1 1
+        SslSocket = TcpSocket + 0x04,       //0 0 0 0 0 1 1 1
+        UdpSocket = AbstractSocket + 0x08,  //0 0 0 0 1 0 0 1
+        LocalSocket = 0x10                  //0 0 0 1 0 0 0 0
     };
     //
     explicit BGenericSocket(SocketType type, QObject *parent = 0);
@@ -71,17 +74,6 @@ public:
     bool waitForDisconnected(int msecs = 30000);
     bool waitForReadyRead(int msecs);
     qint64 write(const QByteArray &byteArray);
-private:
-    QPointer<QAbstractSocket> _m_asocket;
-    QPointer<QLocalSocket> _m_lsocket;
-    //
-    void _m_setSocket(QAbstractSocket *socket);
-    void _m_setSocket(QLocalSocket *socket);
-    void _m_connectIODevice();
-    void _m_disconnectIODevice();
-private slots:
-    void _m_lsocketError(QLocalSocket::LocalSocketError socketError);
-    void _m_lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
 signals:
     void aboutToClose();
     void connected();
@@ -91,6 +83,10 @@ signals:
     void readChannelFinished();
     void readyRead();
     void stateChanged(QAbstractSocket::SocketState socketState);
+protected:
+    BGenericSocket(BGenericSocketPrivate &d);
+private:
+    Q_DISABLE_COPY(BGenericSocket)
 };
 
 #endif // BGENERICSOCKET_H

@@ -1,4 +1,5 @@
 #include "bgenericsocket.h"
+#include "bgenericsocket_p.h"
 
 #include <QObject>
 #include <QPointer>
@@ -15,67 +16,179 @@
 #include <QAuthenticator>
 #include <QThread>
 #include <QMetaType>
+#include <QMetaObject>
 
-BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
-    QObject(parent)
+BGenericSocketPrivateObject::BGenericSocketPrivateObject(BGenericSocketPrivate *p) :
+    QObject(0), _m_p(p)
+{
+    //
+}
+
+BGenericSocketPrivateObject::~BGenericSocketPrivateObject()
+{
+    //
+}
+
+//
+
+void BGenericSocketPrivateObject::lsocketError(QLocalSocket::LocalSocketError socketError)
+{
+    _m_p->lsocketError(socketError);
+}
+
+void BGenericSocketPrivateObject::lsocketStateChanged(QLocalSocket::LocalSocketState socketState)
+{
+    _m_p->lsocketStateChanged(socketState);
+}
+
+//
+
+BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type) :
+    BBasePrivate(q), _m_o( new BGenericSocketPrivateObject(this) )
 {
     switch (type)
     {
-    case LocalSocket:
-        _m_setSocket(new QLocalSocket);
+    case BGenericSocket::LocalSocket:
+        setSocket(new QLocalSocket);
         break;
-    case SslSocket:
-        _m_setSocket(new QSslSocket);
+    case BGenericSocket::SslSocket:
+        setSocket(new QSslSocket);
         break;
-    case TcpSocket:
-        _m_setSocket(new QTcpSocket);
+    case BGenericSocket::TcpSocket:
+        setSocket(new QTcpSocket);
         break;
-    case UdpSocket:
-        _m_setSocket(new QUdpSocket);
+    case BGenericSocket::UdpSocket:
+        setSocket(new QUdpSocket);
         break;
     default:
         break;
     }
 }
 
+BGenericSocketPrivate::~BGenericSocketPrivate()
+{
+    //
+}
+
+//
+
+void BGenericSocketPrivate::setSocket(QAbstractSocket *socket)
+{
+    B_Q(BGenericSocket);
+    if (q->isSocketSet() || !socket)
+        return;
+    socket->setParent(q);
+    asocket = socket;
+    connectIODevice();
+    QObject::connect( socket, SIGNAL( connected() ), q, SIGNAL( connected() ) );
+    QObject::connect( socket, SIGNAL( disconnected() ), q, SIGNAL( disconnected() ) );
+    QObject::connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
+                      q, SIGNAL( error(QAbstractSocket::SocketError) ) );
+    QObject::connect( socket, SIGNAL( stateChanged(QAbstractSocket::SocketState) ),
+                      q, SIGNAL( stateChanged(QAbstractSocket::SocketState) ) );
+}
+
+void BGenericSocketPrivate::setSocket(QLocalSocket *socket)
+{
+    B_Q(BGenericSocket);
+    if (q->isSocketSet() || !socket)
+        return;
+    socket->setParent(q);
+    lsocket = socket;
+    connectIODevice();
+    QObject::connect( socket, SIGNAL( connected() ), q, SIGNAL( connected() ) );
+    QObject::connect( socket, SIGNAL( disconnected() ), q, SIGNAL( disconnected() ) );
+    QObject::connect( socket, SIGNAL( error(QLocalSocket::SocketError) ),
+                      _m_o, SLOT( lsocketError(QLocalSocket::SocketError) ) );
+    QObject::connect( socket, SIGNAL( stateChanged(QLocalSocket::SocketState) ),
+                      _m_o, SIGNAL( lsocketStateChanged(QLocalSocket::SocketState) ) );
+}
+
+void BGenericSocketPrivate::connectIODevice()
+{
+    B_Q(BGenericSocket);
+    QIODevice *device = q->ioDevice();
+    if (!device)
+        return;
+    QObject::connect( device, SIGNAL( aboutToClose() ), q, SIGNAL( aboutToClose() ) );
+    QObject::connect( device, SIGNAL( bytesWritten(qint64) ), q, SIGNAL( bytesWritten(qint64) ) );
+    QObject::connect( device, SIGNAL( readChannelFinished() ), q, SIGNAL( readChannelFinished() ) );
+    QObject::connect( device, SIGNAL( readyRead() ), q, SIGNAL( readyRead() ) );
+}
+
+void BGenericSocketPrivate::disconnectIODevice()
+{
+    B_Q(BGenericSocket);
+    QIODevice *device = q->ioDevice();
+    if (!device)
+        return;
+    QObject::disconnect( device, SIGNAL( aboutToClose() ), q, SIGNAL( aboutToClose() ) );
+    QObject::disconnect( device, SIGNAL( bytesWritten(qint64) ), q, SIGNAL( bytesWritten(qint64) ) );
+    QObject::disconnect( device, SIGNAL( readChannelFinished() ), q, SIGNAL( readChannelFinished() ) );
+    QObject::disconnect( device, SIGNAL( readyRead() ), q, SIGNAL( readyRead() ) );
+}
+
+void BGenericSocketPrivate::lsocketError(QLocalSocket::LocalSocketError socketError)
+{
+    QMetaObject::invokeMethod( q_func(), "error", Q_ARG( QAbstractSocket::SocketError,
+                                                         static_cast<QAbstractSocket::SocketError>(socketError) ) );
+}
+
+void BGenericSocketPrivate::lsocketStateChanged(QLocalSocket::LocalSocketState socketState)
+{
+    QMetaObject::invokeMethod( q_func(), "stateChanged",
+                               Q_ARG( QAbstractSocket::SocketState,
+                                      static_cast<QAbstractSocket::SocketState>(socketState) ) );
+}
+
+//
+
+BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
+    QObject(parent), BBase( *new BGenericSocketPrivate(this, type) )
+{
+    //
+}
+
 //
 
 QIODevice *BGenericSocket::ioDevice() const
 {
-    return !_m_asocket.isNull() ? static_cast<QIODevice *>( _m_asocket.data() ) :
-                                  static_cast<QIODevice *>( _m_lsocket.data() );
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? static_cast<QIODevice *>( d->asocket.data() ) :
+                                  static_cast<QIODevice *>( d->lsocket.data() );
 }
 
 QAbstractSocket *BGenericSocket::abstractSocket() const
 {
-    return _m_asocket.data();
+    return d_func()->asocket.data();
 }
 
 QTcpSocket *BGenericSocket::tcpSocket() const
 {
-    return qobject_cast<QTcpSocket *>( _m_asocket.data() );
+    return static_cast<QTcpSocket *>( d_func()->asocket.data() );
 }
 
 QSslSocket *BGenericSocket::sslSocket() const
 {
-    return qobject_cast<QSslSocket *>( _m_asocket.data() );
+    return static_cast<QSslSocket *>( d_func()->asocket.data() );
 }
 
 QUdpSocket *BGenericSocket::udpSocket() const
 {
-    return qobject_cast<QUdpSocket *>( _m_asocket.data() );
+    return static_cast<QUdpSocket *>( d_func()->asocket.data() );
 }
 
 QLocalSocket *BGenericSocket::localSocket() const
 {
-    return _m_lsocket.data();
+    return d_func()->lsocket.data();
 }
 
 void BGenericSocket::abort()
 {
     if ( !isSocketSet() )
         return;
-    !_m_asocket.isNull() ? _m_asocket->abort() : _m_lsocket->abort();
+    B_D(BGenericSocket);
+    !d->asocket.isNull() ? d->asocket->abort() : d->lsocket->abort();
 }
 
 qint64 BGenericSocket::bytesAvailable() const
@@ -104,23 +217,26 @@ void BGenericSocket::connectToHost(const QString &hostName, quint16 port, QIODev
 {
     if ( !isSocketSet() )
         return;
-    !_m_asocket.isNull() ? _m_asocket->connectToHost(hostName, port, openMode) :
-                           _m_lsocket->connectToServer(hostName, openMode);
+    B_D(BGenericSocket);
+    !d->asocket.isNull() ? d->asocket->connectToHost(hostName, port, openMode) :
+                           d->lsocket->connectToServer(hostName, openMode);
 }
 
 void BGenericSocket::disconnectFromHost()
 {
     if ( !isSocketSet() )
         return;
-    !_m_asocket.isNull() ? _m_asocket->disconnectFromHost() : _m_lsocket->disconnectFromServer();
+    B_D(BGenericSocket);
+    !d->asocket.isNull() ? d->asocket->disconnectFromHost() : d->lsocket->disconnectFromServer();
 }
 
 QAbstractSocket::SocketError BGenericSocket::error() const
 {
     if ( !isSocketSet() )
         return QAbstractSocket::UnknownSocketError;
-    return !_m_asocket.isNull() ? _m_asocket->error() :
-                                  static_cast<QAbstractSocket::SocketError>( _m_lsocket->error() );
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->error() :
+                                  static_cast<QAbstractSocket::SocketError>( d->lsocket->error() );
 }
 
 QString BGenericSocket::errorString() const
@@ -132,7 +248,8 @@ bool BGenericSocket::flush()
 {
     if ( !isSocketSet() )
         return false;
-    return !_m_asocket.isNull() ? _m_asocket->flush() : _m_lsocket->flush();
+    B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->flush() : d->lsocket->flush();
 }
 
 bool BGenericSocket::isOpen() const
@@ -152,7 +269,8 @@ bool BGenericSocket::isSequential() const
 
 bool BGenericSocket::isSocketSet() const
 {
-    return !_m_asocket.isNull() || !_m_lsocket.isNull();
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() || !d->lsocket.isNull();
 }
 
 bool BGenericSocket::isTextModeEnabled() const
@@ -164,7 +282,8 @@ bool BGenericSocket::isValid() const
 {
     if ( !isSocketSet() )
         return false;
-    return !_m_asocket.isNull() ? _m_asocket->isValid() : _m_lsocket->isValid();
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->isValid() : d->lsocket->isValid();
 }
 
 bool BGenericSocket::isWritable() const
@@ -181,7 +300,8 @@ QString BGenericSocket::peerAddress() const
 {
     if ( !isSocketSet() )
         return "";
-    return !_m_asocket.isNull() ? _m_asocket->peerAddress().toString() : _m_lsocket->serverName();
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->peerAddress().toString() : d->lsocket->serverName();
 }
 
 QByteArray BGenericSocket::read(qint64 maxSize)
@@ -198,7 +318,8 @@ qint64 BGenericSocket::readBufferSize() const
 {
     if ( !isSocketSet() )
         return 0;
-    return !_m_asocket.isNull() ? _m_asocket->readBufferSize() : _m_lsocket->readBufferSize();
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->readBufferSize() : d->lsocket->readBufferSize();
 }
 
 QByteArray BGenericSocket::readLine(qint64 maxSize)
@@ -210,16 +331,18 @@ void BGenericSocket::setReadBufferSize(qint64 size)
 {
     if ( !isSocketSet() )
         return;
-    return !_m_asocket.isNull() ? _m_asocket->setReadBufferSize(size) : _m_lsocket->setReadBufferSize(size);
+    B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->setReadBufferSize(size) : d->lsocket->setReadBufferSize(size);
 }
 
 bool BGenericSocket::setSocketDescriptor(int socketDescriptor, QIODevice::OpenMode openMode)
 {
     if ( socketDescriptor < 0 || !isSocketSet() )
         return false;
-    return !_m_asocket.isNull() ?
-                _m_asocket->setSocketDescriptor(socketDescriptor, QAbstractSocket::ConnectedState, openMode) :
-                _m_lsocket->setSocketDescriptor(socketDescriptor, QLocalSocket::ConnectedState, openMode);
+    B_D(BGenericSocket);
+    return !d->asocket.isNull() ?
+                d->asocket->setSocketDescriptor(socketDescriptor, QAbstractSocket::ConnectedState, openMode) :
+                d->lsocket->setSocketDescriptor(socketDescriptor, QLocalSocket::ConnectedState, openMode);
 }
 
 void BGenericSocket::setTextModeEnabled(bool enabled)
@@ -233,19 +356,21 @@ int BGenericSocket::socketDescriptor() const
 {
     if ( !isSocketSet() )
         return -1;
-    return !_m_asocket.isNull() ? _m_asocket->socketDescriptor() : _m_lsocket->socketDescriptor();
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->socketDescriptor() : d->lsocket->socketDescriptor();
 }
 
 BGenericSocket::SocketType BGenericSocket::socketType() const
 {
     if ( !isSocketSet() )
         return NoSocket;
-    if ( !_m_asocket.isNull() )
+    const B_D(BGenericSocket);
+    if ( !d->asocket.isNull() )
     {
-        switch ( _m_asocket->socketType() )
+        switch ( d->asocket->socketType() )
         {
         case QAbstractSocket::TcpSocket:
-            return qobject_cast<QSslSocket *>( _m_asocket.data() ) ? SslSocket : TcpSocket;
+            return static_cast<QSslSocket *>( d->asocket.data() ) ? SslSocket : TcpSocket;
         case QAbstractSocket::UdpSocket:
             return UdpSocket;
         default:
@@ -262,8 +387,9 @@ QAbstractSocket::SocketState BGenericSocket::state() const
 {
     if ( !isSocketSet() )
         return QAbstractSocket::UnconnectedState;
-    return !_m_asocket.isNull() ? _m_asocket->state() :
-                                  static_cast<QAbstractSocket::SocketState>( _m_lsocket->state() );
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->state() :
+                                  static_cast<QAbstractSocket::SocketState>( d->lsocket->state() );
 }
 
 bool BGenericSocket::waitForBytesWritten(int msecs)
@@ -275,14 +401,16 @@ bool BGenericSocket::waitForConnected(int msecs)
 {
     if ( !isSocketSet() )
         return false;
-    return !_m_asocket.isNull() ? _m_asocket->waitForConnected(msecs) : _m_lsocket->waitForConnected(msecs);
+    B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->waitForConnected(msecs) : d->lsocket->waitForConnected(msecs);
 }
 
 bool BGenericSocket::waitForDisconnected(int msecs)
 {
     if ( !isSocketSet() )
         return false;
-    return !_m_asocket.isNull() ? _m_asocket->waitForDisconnected(msecs) : _m_lsocket->waitForDisconnected(msecs);
+    B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->waitForDisconnected(msecs) : d->lsocket->waitForDisconnected(msecs);
 }
 
 bool BGenericSocket::waitForReadyRead(int msecs)
@@ -293,70 +421,4 @@ bool BGenericSocket::waitForReadyRead(int msecs)
 qint64 BGenericSocket::write(const QByteArray &byteArray)
 {
     return isSocketSet() ? ioDevice()->write(byteArray) : -1;
-}
-
-//
-
-void BGenericSocket::_m_setSocket(QAbstractSocket *socket)
-{
-    if (isSocketSet() || !socket)
-        return;
-    socket->setParent(this);
-    _m_asocket = socket;
-    _m_connectIODevice();
-    connect(socket, SIGNAL( connected() ), this, SIGNAL( connected() ), Qt::DirectConnection);
-    connect(socket, SIGNAL( disconnected() ), this, SIGNAL( disconnected() ), Qt::DirectConnection);
-    connect(socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-            this, SIGNAL( error(QAbstractSocket::SocketError) ), Qt::DirectConnection);
-    connect(socket, SIGNAL( stateChanged(QAbstractSocket::SocketState) ),
-            this, SIGNAL( stateChanged(QAbstractSocket::SocketState) ), Qt::DirectConnection);
-}
-
-void BGenericSocket::_m_setSocket(QLocalSocket *socket)
-{
-    if (isSocketSet() || !socket)
-        return;
-    socket->setParent(this);
-    _m_lsocket = socket;
-    _m_connectIODevice();
-    connect(socket, SIGNAL( connected() ), this, SIGNAL( connected() ), Qt::DirectConnection);
-    connect(socket, SIGNAL( disconnected() ), this, SIGNAL( disconnected() ), Qt::DirectConnection);
-    connect(socket, SIGNAL( error(QLocalSocket::SocketError) ),
-            this, SLOT( _m_lsocketError(QLocalSocket::SocketError) ), Qt::DirectConnection);
-    connect(socket, SIGNAL( stateChanged(QLocalSocket::SocketState) ),
-            this, SIGNAL( _m_lsocketStateChanged(QLocalSocket::SocketState) ), Qt::DirectConnection);
-}
-
-void BGenericSocket::_m_connectIODevice()
-{
-    QIODevice *device = ioDevice();
-    if (!device)
-        return;
-    connect(device, SIGNAL( aboutToClose() ), this, SIGNAL( aboutToClose() ), Qt::DirectConnection);
-    connect(device, SIGNAL( bytesWritten(qint64) ), this, SIGNAL( bytesWritten(qint64) ), Qt::DirectConnection);
-    connect(device, SIGNAL( readChannelFinished() ), this, SIGNAL( readChannelFinished() ), Qt::DirectConnection);
-    connect(device, SIGNAL( readyRead() ), this, SIGNAL( readyRead() ), Qt::DirectConnection);
-}
-
-void BGenericSocket::_m_disconnectIODevice()
-{
-    QIODevice *device = ioDevice();
-    if (!device)
-        return;
-    disconnect( device, SIGNAL( aboutToClose() ), this, SIGNAL( aboutToClose() ) );
-    disconnect( device, SIGNAL( bytesWritten(qint64) ), this, SIGNAL( bytesWritten(qint64) ) );
-    disconnect( device, SIGNAL( readChannelFinished() ), this, SIGNAL( readChannelFinished() ) );
-    disconnect( device, SIGNAL( readyRead() ), this, SIGNAL( readyRead() ) );
-}
-
-//
-
-void BGenericSocket::_m_lsocketError(QLocalSocket::LocalSocketError socketError)
-{
-    emit error( static_cast<QAbstractSocket::SocketError>(socketError) );
-}
-
-void BGenericSocket::_m_lsocketStateChanged(QLocalSocket::LocalSocketState socketState)
-{
-    emit stateChanged( static_cast<QAbstractSocket::SocketState>(socketState) );
 }

@@ -14,7 +14,9 @@ DEFINES += BEQT_BUILD_NETWORK_LIB
 
 HEADERS += \
     bgenericserver.h \
+    bgenericserver_p.h \
     bgenericsocket.h \
+    bgenericsocket_p.h \
     blocalserver.h \
     bnetworkconnection.h \
     bnetworkoperation.h \

@@ -8,10 +8,10 @@ class BTcpServer : public QTcpServer
     Q_OBJECT
 public:
     explicit BTcpServer(QObject *parent = 0);
-protected:
-    void incomingConnection(int handle);
 signals:
     void newConnection(int socketDescriptor);
+protected:
+    void incomingConnection(int handle);
 };
 
 #endif // BTCPSERVER_H

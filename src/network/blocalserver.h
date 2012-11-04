@@ -8,10 +8,10 @@ class BLocalServer : public QLocalServer
     Q_OBJECT
 public:
     explicit BLocalServer(QObject *parent = 0);
-protected:
-    void incomingConnection(quintptr socketDescriptor);
 signals:
     void newConnection(int socketDescriptor);
+protected:
+    void incomingConnection(quintptr socketDescriptor);
 };
 
 #endif // BLOCALSERVER_H

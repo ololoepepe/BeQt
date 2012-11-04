@@ -28,6 +28,12 @@ public:
     static bool testCoreInit(const char *where = 0);
     static bool testCoreUnique();
     //
+    static const QStringList PluginSuffixes;
+    static const QString SettingsGroupBeqt;
+      static const QString SettingsGroupCore;
+        static const QString SettingsKeyDeactivatedPlugins;
+        static const QString SettingsKeyLocale;
+    //
     BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options);
     virtual ~BCoreApplicationPrivate();
     //
@@ -57,12 +63,6 @@ public:
     QMap<QString, BTranslator *> translators;
     QList<BPluginWrapper *> plugins;
 private:
-    static const QStringList PluginSuffixes;
-    static const QString SettingsGroupBeqt;
-      static const QString SettingsGroupCore;
-        static const QString SettingsKeyDeactivatedPlugins;
-        static const QString SettingsKeyLocale;
-    //
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     //
     friend class BPluginWrapperPrivate;

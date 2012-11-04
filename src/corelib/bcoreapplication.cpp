@@ -23,6 +23,20 @@
 
 #include <QDebug>
 
+#if defined(B_OS_MAC)
+const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dylib");
+#elif defined(B_OS_UNIX)
+const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.so");
+#elif defined(B_OS_WIN)
+const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll");
+#endif
+const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
+  const QString BCoreApplicationPrivate::SettingsGroupCore = "Core";
+    const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
+    const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
+
+//
+
 QString BCoreApplicationPrivate::toLowerNoSpaces(const QString &string)
 {
     return string.toLower().replace(QRegExp("\\s"), "-");
@@ -262,20 +276,6 @@ void BCoreApplicationPrivate::saveSettings()
     s->sync();
     s->deleteLater();
 }
-
-//
-
-#if defined(B_OS_MAC)
-const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dylib");
-#elif defined(B_OS_UNIX)
-const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.so");
-#elif defined(B_OS_WIN)
-const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll");
-#endif
-const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
-  const QString BCoreApplicationPrivate::SettingsGroupCore = "Core";
-    const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
-    const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
 
 //
 
