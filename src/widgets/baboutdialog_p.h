@@ -13,15 +13,30 @@ class QToolButton;
 #include "baboutdialog.h"
 
 #include <BeQtCore/BeQt>
+#include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
 #include <QList>
 #include <QMap>
 
-class BAboutDialogPrivate : public QObject
+class BAboutDialogPrivateObject : public QObject
 {
     Q_OBJECT
+public:
+    explicit BAboutDialogPrivateObject(BAboutDialogPrivate *p);
+    ~BAboutDialogPrivateObject();
+    //
+    BAboutDialogPrivate *const _m_p;
+public slots:
+    void retranslateUi();
+private:
+    Q_DISABLE_COPY(BAboutDialogPrivateObject)
+};
+
+class BAboutDialogPrivate : public BBasePrivate
+{
     B_DECLARE_PUBLIC(BAboutDialog)
+    Q_DECLARE_TR_FUNCTIONS(BAboutDialog)
 public:
     enum DialogTab
     {
@@ -33,6 +48,11 @@ public:
         LicenseTab
     };
     //
+    static const QString HtmlSpace;
+    static const QString HtmlSpaceDouble;
+    static const QString HtmlLT;
+    static const QString HtmlGT;
+    //
     BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options);
     ~BAboutDialogPrivate();
     //
@@ -42,8 +62,10 @@ public:
     QString readFile(const QString &fileName, const char *codecName) const;
     void fillTab(DialogTab t, const QString &text, bool html);
     void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
+    void retranslateUi();
     //
-    BAboutDialog *const _m_q;
+    BAboutDialogPrivateObject *const _m_o;
+    //
     QString appName;
     QMap<DialogTab, QTextBrowser *> tbrsrs;
     BAboutDialog *aboutBeqtDlg;
@@ -56,26 +78,15 @@ public:
         QToolButton *tbtnAboutBeQt;
       QTabWidget *twgt;
         //text browsers
-        QTextBrowser *tbsrAbout;
-        QTextBrowser *tbsrChangeLog;
-        QTextBrowser *tbsrAuthors;
-        QTextBrowser *tbsrThanksTo;
-        QTextBrowser *tbsrTranslators;
-        QTextBrowser *tbsrLicense;
       QHBoxLayout *hltActions;
         QLabel *lblCopyright;
         QLabel *lblWebsite;
         //stretch
         QPushButton *btnClose;
 private:
-    static const QString HtmlSpace;
-    static const QString HtmlSpaceDouble;
-    static const QString HtmlLT;
-    static const QString HtmlGT;
-    //
     Q_DISABLE_COPY(BAboutDialogPrivate)
-private slots:
-    void retranslateUi();
+    //
+    friend class BAboutDialogPrivateObject;
 };
 
 #endif // BABOUTDIALOG_P_H

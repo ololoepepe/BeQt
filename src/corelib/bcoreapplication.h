@@ -11,6 +11,7 @@ class QSettings;
 
 #include "bnamespace.h"
 #include "bpluginwrapper.h"
+#include "bbase.h"
 
 #include <QObject>
 #include <QLocale>
@@ -20,10 +21,11 @@ class QSettings;
 
 #define bApp BCoreApplication::instance()
 
-class B_CORE_EXPORT BCoreApplication : public QObject
+class B_CORE_EXPORT BCoreApplication : public QObject, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BCoreApplication)
+    B_DECLARE_PRIVATE_S(BCoreApplication)
 public:
     enum Location
     {
@@ -104,8 +106,6 @@ protected:
     static BCoreApplication *_m_self;
     //
     BCoreApplication(BCoreApplicationPrivate &d);
-    //
-    BCoreApplicationPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BCoreApplication)
     //

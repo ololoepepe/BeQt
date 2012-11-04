@@ -1,5 +1,6 @@
 #include "bterminaliohandler.h"
 #include "bglobal.h"
+#include "bbase_p.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -19,17 +20,28 @@
 #include "windows.h"
 #endif
 
-BTerminalIOHandler *BTerminalIOHandler::_m_inst = 0;
-QMutex BTerminalIOHandler::_m_instMutex;
-QMutex BTerminalIOHandler::_m_stdinMutex;
-QMutex BTerminalIOHandler::_m_stdoutMutex;
-QMutex BTerminalIOHandler::_m_readLineMutex;
-bool BTerminalIOHandler::_m_prefereReadLine = false;
-QString BTerminalIOHandler::_m_lastLine;
+class BTerminalIOHandlerPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BTerminalIOHandler)
+    B_DECLARE_PUBLIC_S(BTerminalIOHandler)
+public:
+    static QStringList splitCommand(const QString &command);
+    //
+    explicit BTerminalIOHandlerPrivate(BTerminalIOHandler *q);
+    ~BTerminalIOHandlerPrivate();
+    //
+    static QMutex instMutex;
+    static QMutex stdinMutex;
+    static QMutex stdoutMutex;
+    static QMutex readLineMutex;
+    static QMutex echoMutex;
+    static bool prefereReadLine;
+    static QString lastLine;
+};
 
 //
 
-QStringList BTerminalIOHandler::_m_splitCommand(const QString &command)
+QStringList BTerminalIOHandlerPrivate::splitCommand(const QString &command)
 {
     QStringList args;
     QString arg;
@@ -66,39 +78,60 @@ QStringList BTerminalIOHandler::_m_splitCommand(const QString &command)
 
 //
 
+BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
+  BBasePrivate(q)
+{
+    prefereReadLine = false;
+}
+
+BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
+{
+    //
+}
+
+QMutex BTerminalIOHandlerPrivate::instMutex;
+QMutex BTerminalIOHandlerPrivate::stdinMutex;
+QMutex BTerminalIOHandlerPrivate::stdoutMutex;
+QMutex BTerminalIOHandlerPrivate::readLineMutex;
+QMutex BTerminalIOHandlerPrivate::echoMutex;
+bool BTerminalIOHandlerPrivate::prefereReadLine = false;
+QString BTerminalIOHandlerPrivate::lastLine;
+
+//
+
 BTerminalIOHandler *BTerminalIOHandler::instance()
 {
-    if (!_m_inst)
+    if (!_m_self)
     {
-        _m_instMutex.lock();
-        if (!_m_inst)
+        BTerminalIOHandlerPrivate::instMutex.lock();
+        if (!_m_self)
         {
-            _m_inst = new BTerminalIOHandler;
-            _m_inst->start();
+            _m_self = new BTerminalIOHandler;
+            _m_self->start();
         }
-        _m_instMutex.unlock();
+        BTerminalIOHandlerPrivate::instMutex.unlock();
     }
-    return _m_inst;
+    return _m_self;
 }
 
 QString BTerminalIOHandler::readLine()
 {
     QString line;
-    QMutexLocker locker(&_m_readLineMutex);
-    if ( _m_stdinMutex.tryLock() )
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::readLineMutex);
+    if ( BTerminalIOHandlerPrivate::stdinMutex.tryLock() )
     {
         static QTextStream in(stdin, QIODevice::ReadOnly);
         line = in.readLine();
-        _m_stdinMutex.unlock();
+        BTerminalIOHandlerPrivate::stdinMutex.unlock();
     }
     else
     {
-        _m_prefereReadLine = true;
-        _m_stdinMutex.lock();
-        line = _m_lastLine;
-        _m_prefereReadLine = false;
-        _m_lastLine.clear();
-        _m_stdinMutex.unlock();
+        BTerminalIOHandlerPrivate::prefereReadLine = true;
+        BTerminalIOHandlerPrivate::stdinMutex.lock();
+        line = BTerminalIOHandlerPrivate::lastLine;
+        BTerminalIOHandlerPrivate::prefereReadLine = false;
+        BTerminalIOHandlerPrivate::lastLine.clear();
+        BTerminalIOHandlerPrivate::stdinMutex.unlock();
     }
     return line;
 }
@@ -106,7 +139,7 @@ QString BTerminalIOHandler::readLine()
 void BTerminalIOHandler::write(const QString &text)
 {
     static QTextStream out(stdout, QIODevice::WriteOnly);
-    QMutexLocker locker(&_m_stdoutMutex);
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::stdoutMutex);
     out << text;
     out.flush();
 }
@@ -118,7 +151,16 @@ void BTerminalIOHandler::writeLine(const QString &text)
 
 void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 {
-#if defined(Q_OS_WIN)
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::echoMutex);
+#if defined(B_OS_MAC) || defined(B_OS_UNIX)
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    if(enabled)
+        tty.c_lflag |= ECHO;
+    else
+        tty.c_lflag &= ~ECHO;
+    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
+#elif defined(B_OS_WIN)
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
     GetConsoleMode(hStdin, &mode);
@@ -127,14 +169,6 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
     else
         mode &= ~ENABLE_ECHO_INPUT;
     SetConsoleMode(hStdin, mode);
-#elif defined(Q_OS_UNIX)
-    struct termios tty;
-    tcgetattr(STDIN_FILENO, &tty);
-    if(enabled)
-        tty.c_lflag |= ECHO;
-    else
-        tty.c_lflag &= ~ECHO;
-    tcsetattr(STDIN_FILENO, TCSANOW, &tty);
 #endif
 }
 
@@ -145,28 +179,32 @@ void BTerminalIOHandler::run()
     QTextStream in(stdin, QIODevice::ReadOnly);
     forever
     {
-        _m_stdinMutex.lock();
+        BTerminalIOHandlerPrivate::stdinMutex.lock();
         QString line = in.readLine();
-        if (_m_prefereReadLine)
+        if (BTerminalIOHandlerPrivate::prefereReadLine)
         {
-            _m_lastLine = line;
+            BTerminalIOHandlerPrivate::lastLine = line;
         }
         else
         {
-            QStringList args = _m_splitCommand(line);
+            QStringList args = BTerminalIOHandlerPrivate::splitCommand(line);
             QString command = args.takeFirst();
-            QMetaObject::invokeMethod( _m_inst, "commandEntered", Qt::QueuedConnection,
+            QMetaObject::invokeMethod( _m_self, "commandEntered", Qt::QueuedConnection,
                                        Q_ARG(QString, command), Q_ARG(QStringList, args) );
         }
-        _m_stdinMutex.unlock();
+        BTerminalIOHandlerPrivate::stdinMutex.unlock();
         msleep(100); //Required for readLine() to be able to lock the mutex. This is unlikely to be noticed by users
     }
 }
 
 //
 
+BTerminalIOHandler *BTerminalIOHandler::_m_self = 0;
+
+//
+
 BTerminalIOHandler::BTerminalIOHandler() :
-    QThread(0)
+    QThread(0), BBase( *new BTerminalIOHandlerPrivate(this) )
 {
     //
 }

@@ -1,10 +1,13 @@
 #ifndef BFLOWLAYOUT_H
 #define BFLOWLAYOUT_H
 
+class BFlowLayoutPrivate;
+
 class QLayoutItem;
 class QWidget;
 
-#include <BeQt>
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BBase>
 
 #include <QLayout>
 #include <QRect>
@@ -12,12 +15,13 @@ class QWidget;
 #include <QStyle>
 #include <QSize>
 
-class B_WIDGETS_EXPORT BFlowLayout : public QLayout
+class B_WIDGETS_EXPORT BFlowLayout : public QLayout, public BBase
 {
     Q_OBJECT
+    B_DECLARE_PRIVATE(BFlowLayout)
 public:
-    BFlowLayout(QWidget *parent, int hSpacing = -1, int vSpacing = -1);
-    BFlowLayout(int hSpacing = -1, int vSpacing = -1);
+    explicit BFlowLayout(QWidget *parent, int hSpacing = -1, int vSpacing = -1);
+    explicit BFlowLayout(int hSpacing = -1, int vSpacing = -1);
     ~BFlowLayout();
     //
     void addItem(QLayoutItem *item);
@@ -32,13 +36,10 @@ public:
     QLayoutItem *takeAt(int index);
     QSize minimumSize() const;
     QSize sizeHint() const;
+protected:
+    BFlowLayout(BFlowLayoutPrivate &d);
 private:
-    QList<QLayoutItem *> _m_items;
-    int _m_hSpace;
-    int _m_vSpace;
-    //
-    int _m_doLayout(const QRect &rect, bool testOnly) const;
-    int _m_smartSpacing(QStyle::PixelMetric pm) const;
+    Q_DISABLE_COPY(BFlowLayout)
 };
 
 #endif // BFLOWLAYOUT_H

@@ -30,8 +30,35 @@ class QWidget;
 
 #include <QDebug>
 
+BAboutDialogPrivateObject::BAboutDialogPrivateObject(BAboutDialogPrivate *p) :
+    QObject(0), _m_p(p)
+{
+    //
+}
+
+BAboutDialogPrivateObject::~BAboutDialogPrivateObject()
+{
+    //
+}
+
+//
+
+void BAboutDialogPrivateObject::retranslateUi()
+{
+    _m_p->retranslateUi();
+}
+
+//
+
+const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
+const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
+const QString BAboutDialogPrivate::HtmlLT = "&lt;";
+const QString BAboutDialogPrivate::HtmlGT = "&gt;";
+
+//
+
 BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options) :
-    _m_q(q)
+    BBasePrivate(q), _m_o( new BAboutDialogPrivateObject(this) )
 {
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
@@ -55,7 +82,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         {
             tbtnAboutQt = new QToolButton(q);
               tbtnAboutQt->setIcon( BApplication::beqtIcon("qt_logo") );
-              connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
+              QObject::connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
             hltHeader->addWidget(tbtnAboutQt);
         }
         else
@@ -73,8 +100,9 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
             opt.appVersion = bVersion();
             aboutBeqtDlg = new BAboutDialog( opt, q_func() );
             aboutBeqtDlg->setWindowModality(Qt::NonModal);
+            BApplication::beqtPixmap("beqt_logo");
             aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
-            connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
+            QObject::connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
         }
         else
         {
@@ -83,12 +111,6 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         }
       vlt->addLayout(hltHeader);
       twgt = new QTabWidget(q);
-        tbsrAbout = 0;
-        tbsrChangeLog = 0;
-        tbsrAuthors = 0;
-        tbsrTranslators = 0;
-        tbsrThanksTo = 0;
-        tbsrLicense = 0;
       vlt->addWidget(twgt);
       hltActions = new QHBoxLayout;
         lblCopyright = new QLabel(q);
@@ -103,11 +125,11 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         btnClose = new QPushButton(q);
           btnClose->setDefault(true);
           btnClose->setFocus();
-          connect( btnClose, SIGNAL( clicked() ), q, SLOT( reject() ) );
+          QObject::connect( btnClose, SIGNAL( clicked() ), q, SLOT( reject() ) );
         hltActions->addWidget(btnClose);
       vlt->addLayout(hltActions);
-    retranslateUi();
-    connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    _m_o->retranslateUi();
+    QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), _m_o, SLOT( retranslateUi() ) );
 }
 
 BAboutDialogPrivate::~BAboutDialogPrivate()
@@ -220,15 +242,6 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BAboutDialog::PersonInfoLis
     fillTab(t, s, true);
 }
 
-//
-
-const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
-const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
-const QString BAboutDialogPrivate::HtmlLT = "&lt;";
-const QString BAboutDialogPrivate::HtmlGT = "&gt;";
-
-//
-
 void BAboutDialogPrivate::retranslateUi()
 {
     q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
@@ -264,27 +277,27 @@ void BAboutDialogPrivate::retranslateUi()
 //
 
 BAboutDialog::BAboutDialog(QWidget *parent) :
-    QDialog(parent), _m_d( new BAboutDialogPrivate( this, AboutOptions() ) )
+    QDialog(parent), BBase( *new BAboutDialogPrivate( this, AboutOptions() ) )
 {
     //
 }
 
 BAboutDialog::BAboutDialog(const AboutOptions &options, QWidget *parent) :
-    QDialog(parent), _m_d( new BAboutDialogPrivate(this, options) )
+    QDialog(parent), BBase( *new BAboutDialogPrivate(this, options) )
 {
     //
 }
 
 BAboutDialog::~BAboutDialog()
 {
-    _m_d->deleteLater();
+    //
 }
 
 //
 
 void BAboutDialog::setPixmap(const QPixmap &pixmap)
 {
-    BAboutDialogPrivate *const d = d_func();
+    B_D(BAboutDialog);
     d->lblIcon->setPixmap( pixmap.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation) );
     d->lblIcon->setVisible( !pixmap.isNull() );
 }
@@ -298,7 +311,7 @@ void BAboutDialog::setAbout(const QString &description, const QString &copyright
 {
     if ( description.isEmpty() || copyright.isEmpty() )
         return;
-    BAboutDialogPrivate *const d = d_func();
+    B_D(BAboutDialog);
     d->fillTab(BAboutDialogPrivate::AboutTab, description, false);
     d->lblCopyright->setText(tr("Copyright", "about") + " &copy; " + copyright);
     QString s = !website.isEmpty() ? ("<a href=\"" + website + "\">[" + tr("Website", "lbl text") + "]</a>") : "";
@@ -308,7 +321,7 @@ void BAboutDialog::setAbout(const QString &description, const QString &copyright
 
 void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
 {
-    BAboutDialogPrivate *const d = d_func();
+    B_D(BAboutDialog);
     QString text = d->readFile(fileName, codecName);
     QString s;
     QStringList sl = text.split('\n');
@@ -381,7 +394,7 @@ void BAboutDialog::setThanksToInfos(const PersonInfoList &infos)
 
 void BAboutDialog::setLicense(const QString &text)
 {
-    BAboutDialogPrivate *const d = d_func();
+    B_D(BAboutDialog);
     if ( text.isEmpty() )
         return d->removeTab(BAboutDialogPrivate::LicenseTab);
     QTextBrowser *&tab = d->tbrsrs[BAboutDialogPrivate::LicenseTab];
@@ -412,7 +425,7 @@ void BAboutDialog::resetTabs()
 //
 
 BAboutDialog::BAboutDialog(BAboutDialogPrivate &d) :
-    _m_d(&d)
+    BBase(d)
 {
     //
 }

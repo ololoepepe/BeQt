@@ -16,45 +16,58 @@
 #include <QScopedPointer>
 
 #include <QDebug>
+#include <QPointer>
 
 class BApplicationPrivate : public BCoreApplicationPrivate
 {
 public:
-    BApplicationPrivate(BApplication *q, const BCoreApplication::AppOptions &options) :
-        BCoreApplicationPrivate(q, options)
-    {
-        aboutDlg = 0;
-    }
-    ~BApplicationPrivate()
-    {
-        if (aboutDlg)
-        {
-            aboutDlg->close();
-            aboutDlg->deleteLater();
-        }
-    }
+    BApplicationPrivate(BApplication *q, const BCoreApplication::AppOptions &options);
+    ~BApplicationPrivate();
     //
-    void initAboutDlg()
-    {
-        if (aboutDlg)
-            return;
-        BAboutDialog::AboutOptions opt;
-        opt.aboutQtButton = true;
-        opt.aboutBeQtButton = true;
-        aboutDlg = new BAboutDialog(opt);
-        aboutDlg->setWindowModality(Qt::NonModal);
-    }
-    void showAbout()
-    {
-        initAboutDlg();
-        if ( aboutDlg->isVisible() )
-            aboutDlg->activateWindow();
-        else
-            aboutDlg->open();
-    }
+    void initAboutDlg();
+    void showAbout();
     //
     BAboutDialog *aboutDlg;
+private:
+    Q_DISABLE_COPY(BApplicationPrivate)
 };
+
+//
+
+BApplicationPrivate::BApplicationPrivate(BApplication *q, const BCoreApplication::AppOptions &options) :
+    BCoreApplicationPrivate(q, options)
+{
+    aboutDlg = 0;
+}
+
+BApplicationPrivate::~BApplicationPrivate()
+{
+    if (aboutDlg)
+    {
+        aboutDlg->close();
+        aboutDlg->deleteLater();
+    }
+}
+
+void BApplicationPrivate::initAboutDlg()
+{
+    if (aboutDlg)
+        return;
+    BAboutDialog::AboutOptions opt;
+    opt.aboutQtButton = true;
+    opt.aboutBeQtButton = true;
+    aboutDlg = new BAboutDialog(opt);
+    aboutDlg->setWindowModality(Qt::NonModal);
+}
+
+void BApplicationPrivate::showAbout()
+{
+    initAboutDlg();
+    if ( aboutDlg->isVisible() )
+        aboutDlg->activateWindow();
+    else
+        aboutDlg->open();
+}
 
 //
 
@@ -93,81 +106,81 @@ void BApplication::setAboutPixmap(const QPixmap &pixmap)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setPixmap(pixmap);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setPixmap(pixmap);
 }
 
 void BApplication::setAboutPixmap(const QString &fileName)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setPixmap(fileName);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setPixmap(fileName);
 }
 
 void BApplication::setAbout(const QString &description, const QString &copyright, const QString &website)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setAbout(description, copyright, website);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setAbout(description, copyright, website);
 }
 
 void BApplication::setAboutChangeLog(const QString &fileName, const char *codecName)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setChangeLog(fileName, codecName);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setChangeLog(fileName, codecName);
 }
 
 void BApplication::setAboutAuthorsInfos(const BAboutDialog::PersonInfoList &infos)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setAuthorsInfos(infos);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setAuthorsInfos(infos);
 }
 
 void BApplication::setAboutTranslationInfos(const BAboutDialog::PersonInfoList &infos)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setTranslationInfos(infos);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setTranslationInfos(infos);
 }
 
 void BApplication::setAboutThanksToInfos(const BAboutDialog::PersonInfoList &infos)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setThanksToInfos(infos);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setThanksToInfos(infos);
 }
 
 void BApplication::setAboutLicense(const QString &text)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setLicense(text);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setLicense(text);
 }
 
 void BApplication::setAboutLicense(const QString &fileName, const char *codecName)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
-    BApplicationPrivate *const d = ds_func();
-    d->initAboutDlg();
-    d->aboutDlg->setLicense(fileName, codecName);
+    B_DS(BApplication);
+    ds->initAboutDlg();
+    ds->aboutDlg->setLicense(fileName, codecName);
 }
 
 //

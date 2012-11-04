@@ -13,6 +13,8 @@ include(../../depend.pri)
 DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
+    bbase.h \
+    bbase_p.h \
     bcoreapplication.h \
     bcoreapplication_p.h \
     bdirtools.h \
@@ -26,6 +28,7 @@ HEADERS += \
     btranslator_p.h
 
 SOURCES += \
+    bbase.cpp \
     bcoreapplication.cpp \
     bdirtools.cpp \
     bglobal.cpp \

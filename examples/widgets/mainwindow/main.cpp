@@ -25,12 +25,16 @@ int main(int argc, char **argv)
     QApplication::setApplicationName("My App");
     QApplication::setOrganizationName("darkangel");
     QApplication::setApplicationVersion("0.1.0pa1");
+    /*BCoreApplication *bapp = new BCoreApplication;
+    delete bapp;
+    delete app;
+    return 0;*/
     BApplication *bapp = new Application;
     //test
     BApplication::loadSettings();
     //about
-    BApplication::setAboutPixmap( BApplication::location(BApplication::DataPath,
-                                                         BApplication::SharedResources) + "/images/myapp.png");
+    BApplication::setAboutPixmap(BApplication::location(BApplication::DataPath,
+                                                        BApplication::SharedResources) + "/images/myapp.png");
     BApplication::setAbout("This is an example application", "2012 Andrey Bogdanov",
                            "https://github.com/the-dark-angel/test");
     BAboutDialog::PersonInfo pi;
@@ -50,6 +54,7 @@ int main(int argc, char **argv)
     //end about
     QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
     QWidget *w = new QWidget;
+    w->move(800, 400);
     QVBoxLayout *vlt = new QVBoxLayout(w);
     QPushButton *btn = new QPushButton("About", w);
     QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAboutDialog() ) );

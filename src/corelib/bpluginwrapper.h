@@ -7,19 +7,21 @@ class QStringList;
 
 #include "bnamespace.h"
 #include "bplugininterface.h"
+#include "bbase.h"
 
 #include <QObject>
 #include <QList>
 #include <QString>
 
-class B_CORE_EXPORT BPluginWrapper : public QObject
+class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginWrapper)
 public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
     //
-    explicit BPluginWrapper(const QString &fileName = QString(), QObject *parent = 0);
+    explicit BPluginWrapper(QObject *parent = 0);
+    explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);
     ~BPluginWrapper();
     //
     void setActivated(bool b);
@@ -43,7 +45,7 @@ signals:
     void activated();
     void aboutToBeDeactivated();
 protected:
-    BPluginWrapperPrivate *const _m_d;
+    BPluginWrapper(BPluginWrapperPrivate &d);
 private:
     Q_DISABLE_COPY(BPluginWrapper)
     //

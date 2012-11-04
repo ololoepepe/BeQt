@@ -7,13 +7,14 @@ class QWidget;
 class QIcon;
 
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BBase>
 
 #include <QDialog>
 #include <QList>
 #include <QString>
 #include <QCoreApplication>
 
-class B_WIDGETS_EXPORT BAboutDialog : public QDialog
+class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAboutDialog)
@@ -59,8 +60,6 @@ public:
     void resetTabs();
 protected:
     BAboutDialog(BAboutDialogPrivate &d);
-    //
-    BAboutDialogPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BAboutDialog)
 };

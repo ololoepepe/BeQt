@@ -8,16 +8,15 @@ class QPluginLoader;
 #include "bpluginwrapper.h"
 #include "bnamespace.h"
 #include "bplugininterface.h"
+#include "bbase_p.h"
 
-#include <QObject>
 #include <QList>
 #include <QString>
 #include <QStringList>
 #include <QMap>
 
-class B_CORE_EXPORT BPluginWrapperPrivate : public QObject
+class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
-    Q_OBJECT
     B_DECLARE_PUBLIC(BPluginWrapper)
 public:
     static QMap<QString, BPluginWrapper *> globalQMap;
@@ -28,7 +27,6 @@ public:
     void activate();
     void deactivate();
     //
-    BPluginWrapper *const _m_q;
     QPluginLoader *loader;
     QStringList acctptableTypes;
     BPluginWrapper::InterfaceTestFunction testFunction;

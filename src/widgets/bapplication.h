@@ -25,7 +25,6 @@ class B_WIDGETS_EXPORT BApplication : public BCoreApplication
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BApplication)
-    B_DECLARE_SELF(BApplication)
     B_DECLARE_PRIVATE_S(BApplication)
 public:
     static QIcon beqtIcon(const QString &fileName);

@@ -17,7 +17,7 @@ QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
 //
 
 BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper *q) :
-    _m_q(q)
+    BBasePrivate(q)
 {
     loader = new QPluginLoader;
     loader->load();
@@ -68,7 +68,7 @@ void BPluginWrapperPrivate::activate()
     activated = true;
     valid = true;
     interface->activate();
-    BPluginWrapper *q = q_func();
+    B_Q(BPluginWrapper);
     globalQMap.insert(name, q);
     QMetaObject::invokeMethod(q, "activated");
     if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
@@ -82,7 +82,7 @@ void BPluginWrapperPrivate::deactivate()
 {
     if (!activated)
         return;
-    BPluginWrapper *q = q_func();
+    B_Q(BPluginWrapper);
     QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
     if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
     {
@@ -98,15 +98,21 @@ void BPluginWrapperPrivate::deactivate()
 
 //
 
+BPluginWrapper::BPluginWrapper(QObject *parent) :
+    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
+{
+    //
+}
+
 BPluginWrapper::BPluginWrapper(const QString &fileName, QObject *parent) :
-    QObject(parent), _m_d( new BPluginWrapperPrivate(this) )
+    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
 {
     setFileName(fileName);
 }
 
 BPluginWrapper::~BPluginWrapper()
 {
-    delete _m_d;
+    //
 }
 
 //
@@ -123,7 +129,7 @@ void BPluginWrapper::setFileName(const QString &fileName)
 {
     if ( isActivated() )
         return;
-    BPluginWrapperPrivate *const d = d_func();
+    B_D(BPluginWrapper);
     BPluginWrapperPrivate::globalQMap.remove(d->name);
     d->loader->setFileName(fileName);
     d->instance = 0;
@@ -204,4 +210,12 @@ void BPluginWrapper::activate()
 void BPluginWrapper::deactivate()
 {
     d_func()->deactivate();
+}
+
+//
+
+BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d) :
+    BBase(d)
+{
+    //
 }

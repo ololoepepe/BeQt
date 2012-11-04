@@ -11,19 +11,22 @@ class QLocale;
 
 #include "bcoreapplication.h"
 #include "bnamespace.h"
+#include "bbase_p.h"
 
 #include <QtGlobal>
 #include <QList>
 #include <QMap>
 #include <QStringList>
 
-class B_CORE_EXPORT BCoreApplicationPrivate
+class B_CORE_EXPORT BCoreApplicationPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCoreApplication)
+    B_DECLARE_PUBLIC_S(BCoreApplication)
 public:
     static QString toLowerNoSpaces(const QString &string);
     static QString subdir(BCoreApplication::Location loc);
     static bool testCoreInit(const char *where = 0);
+    static bool testCoreUnique();
     //
     BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options);
     virtual ~BCoreApplicationPrivate();
@@ -39,7 +42,6 @@ public:
     void loadSettings();
     void saveSettings();
     //
-    BCoreApplication *const _m_q;
     bool initialized;
     QString appName;
     QString orgName;

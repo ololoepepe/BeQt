@@ -1,5 +1,7 @@
 #include "bflowlayout.h"
 
+#include <BeQtCore/private/bbase_p.h>
+
 #include <QLayout>
 #include <QRect>
 #include <QList>
@@ -9,109 +11,55 @@
 #include <QWidget>
 #include <QObject>
 
-BFlowLayout::BFlowLayout(QWidget *parent, int hSpacing, int vSpacing) :
-    QLayout(parent), _m_hSpace(hSpacing), _m_vSpace(vSpacing)
+class BFlowLayoutPrivate : public BBasePrivate
 {
+    B_DECLARE_PUBLIC(BFlowLayout)
+public:
+    explicit BFlowLayoutPrivate(BFlowLayout *q);
+    ~BFlowLayoutPrivate();
+    //
+    int doLayout(const QRect &rect, bool testOnly) const;
+    int smartSpacing(QStyle::PixelMetric pm) const;
+    //
+    QList<QLayoutItem *> items;
+    int hSpace;
+    int vSpace;
+private:
+    Q_DISABLE_COPY(BFlowLayoutPrivate)
+};
+
+//
+
+BFlowLayoutPrivate::BFlowLayoutPrivate(BFlowLayout *q) :
+    BBasePrivate(q)
+{
+    //
 }
 
-BFlowLayout::BFlowLayout(int hSpacing, int vSpacing) :
-    _m_hSpace(hSpacing), _m_vSpace(vSpacing)
+BFlowLayoutPrivate::~BFlowLayoutPrivate()
 {
-}
-
-BFlowLayout::~BFlowLayout()
-{
-    QLayoutItem *item;
-    while ( ( item = takeAt(0) ) )
-        delete item;
+    //
 }
 
 //
 
-void BFlowLayout::addItem(QLayoutItem *item)
+int BFlowLayoutPrivate::doLayout(const QRect &rect, bool testOnly) const
 {
-    _m_items << item;
-}
-
-void BFlowLayout::setGeometry(const QRect &rect)
-{
-    QLayout::setGeometry(rect);
-    _m_doLayout(rect, false);
-}
-
-int BFlowLayout::horizontalSpacing() const
-{
-    return (_m_hSpace >= 0) ? _m_hSpace : _m_smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
-}
-
-int BFlowLayout::verticalSpacing() const
-{
-    return (_m_vSpace >= 0) ? _m_vSpace : _m_smartSpacing(QStyle::PM_LayoutVerticalSpacing);
-}
-
-Qt::Orientations BFlowLayout::expandingDirections() const
-{
-    return 0;
-}
-
-bool BFlowLayout::hasHeightForWidth() const
-{
-    return true;
-}
-
-int BFlowLayout::heightForWidth(int width) const
-{
-    return _m_doLayout(QRect(0, 0, width, 0), true);
-}
-
-int BFlowLayout::count() const
-{
-    return _m_items.size();
-}
-
-QLayoutItem *BFlowLayout::itemAt(int index) const
-{
-    return _m_items.value(index);
-}
-
-QLayoutItem *BFlowLayout::takeAt(int index)
-{
-    return ( index >= 0 && index < _m_items.size() ) ? _m_items.takeAt(index) : 0;
-}
-
-QSize BFlowLayout::minimumSize() const
-{
-    QSize size;
-    QLayoutItem *item;
-    foreach (item, _m_items)
-        size = size.expandedTo( item->minimumSize() );
-    size += QSize( 2 * margin(), 2 * margin() );
-    return size;
-}
-
-QSize BFlowLayout::sizeHint() const
-{
-    return minimumSize();
-}
-
-//
-
-int BFlowLayout::_m_doLayout(const QRect &rect, bool testOnly) const
-{
+    const B_Q(BFlowLayout);
     int left, top, right, bottom;
-    getContentsMargins(&left, &top, &right, &bottom);
+    q->getContentsMargins(&left, &top, &right, &bottom);
     QRect effectiveRect = rect.adjusted(+left, +top, -right, -bottom);
     int x = effectiveRect.x();
     int y = effectiveRect.y();
     int lineHeight = 0;
     QLayoutItem *item;
-    foreach (item, _m_items)
+    foreach (item, items)
     {
         QWidget *wid = item->widget();
-        int spaceX = horizontalSpacing();
+        int spaceX = q->horizontalSpacing();
         if (spaceX == -1)
             spaceX = wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Horizontal);
-        int spaceY = verticalSpacing();
+        int spaceY = q->verticalSpacing();
         if (spaceY == -1)
             spaceY = wid->style()->layoutSpacing(QSizePolicy::PushButton, QSizePolicy::PushButton, Qt::Vertical);
         int nextX = x + item->sizeHint().width() + spaceX;
@@ -130,9 +78,9 @@ int BFlowLayout::_m_doLayout(const QRect &rect, bool testOnly) const
     return y + lineHeight - rect.y() + bottom;
 }
 
-int BFlowLayout::_m_smartSpacing(QStyle::PixelMetric pm) const
+int BFlowLayoutPrivate::smartSpacing(QStyle::PixelMetric pm) const
 {
-    QObject *parent = this->parent();
+    QObject *parent = q_func()->parent();
     if (!parent)
     {
         return -1;
@@ -146,4 +94,100 @@ int BFlowLayout::_m_smartSpacing(QStyle::PixelMetric pm) const
     {
         return static_cast<QLayout *>(parent)->spacing();
     }
+}
+
+//
+
+BFlowLayout::BFlowLayout(QWidget *parent, int hSpacing, int vSpacing) :
+    QLayout(parent), BBase( *new BFlowLayoutPrivate(this) )
+{
+    B_D(BFlowLayout);
+    d->hSpace = hSpacing;
+    d->vSpace = vSpacing;
+}
+
+BFlowLayout::BFlowLayout(int hSpacing, int vSpacing) :
+    QLayout(0), BBase( *new BFlowLayoutPrivate(this) )
+{
+    B_D(BFlowLayout);
+    d->hSpace = hSpacing;
+    d->vSpace = vSpacing;
+}
+
+BFlowLayout::~BFlowLayout()
+{
+    QLayoutItem *item;
+    while ( ( item = takeAt(0) ) )
+        delete item;
+}
+
+//
+
+void BFlowLayout::addItem(QLayoutItem *item)
+{
+    d_func()->items << item;
+}
+
+void BFlowLayout::setGeometry(const QRect &rect)
+{
+    QLayout::setGeometry(rect);
+    d_func()->doLayout(rect, false);
+}
+
+int BFlowLayout::horizontalSpacing() const
+{
+    const B_D(BFlowLayout);
+    return (d->hSpace >= 0) ? d->hSpace : d->smartSpacing(QStyle::PM_LayoutHorizontalSpacing);
+}
+
+int BFlowLayout::verticalSpacing() const
+{
+    const B_D(BFlowLayout);
+    return (d->vSpace >= 0) ? d->vSpace : d->smartSpacing(QStyle::PM_LayoutVerticalSpacing);
+}
+
+Qt::Orientations BFlowLayout::expandingDirections() const
+{
+    return 0;
+}
+
+bool BFlowLayout::hasHeightForWidth() const
+{
+    return true;
+}
+
+int BFlowLayout::heightForWidth(int width) const
+{
+    return d_func()->doLayout(QRect(0, 0, width, 0), true);
+}
+
+int BFlowLayout::count() const
+{
+    return d_func()->items.size();
+}
+
+QLayoutItem *BFlowLayout::itemAt(int index) const
+{
+    return d_func()->items.value(index);
+}
+
+QLayoutItem *BFlowLayout::takeAt(int index)
+{
+    B_D(BFlowLayout);
+    return ( index >= 0 && index < d->items.size() ) ? d->items.takeAt(index) : 0;
+}
+
+QSize BFlowLayout::minimumSize() const
+{
+    QSize size;
+    QLayoutItem *item;
+    foreach (item, d_func()->items)
+        size = size.expandedTo( item->minimumSize() );
+    size += QSize( 2 * margin(), 2 * margin() );
+    return size;
+}
+
+QSize BFlowLayout::sizeHint() const
+{
+    return minimumSize();
 }

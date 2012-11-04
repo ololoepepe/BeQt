@@ -7,10 +7,12 @@ class QString;
 class QTranslator;
 
 #include "bnamespace.h"
+#include "bbase_p.h"
 
 #include <QList>
+#include <QtGlobal>
 
-class B_CORE_EXPORT BTranslatorPrivate
+class B_CORE_EXPORT BTranslatorPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTranslator)
 public:
@@ -22,10 +24,11 @@ public:
     void remove();
     void emitLanguageChange();
     //
-    BTranslator *const _m_q;
     QString fileName;
     QList<QTranslator *> translators;
     bool installed;
+private:
+    Q_DISABLE_COPY(BTranslatorPrivate)
 };
 
 #endif // BTRANSLATOR_P_H

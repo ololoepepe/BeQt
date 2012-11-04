@@ -13,7 +13,7 @@
 #include <QDir>
 
 BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
-    _m_q(q)
+    BBasePrivate(q)
 {
     installed = false;
 }
@@ -69,22 +69,28 @@ void BTranslatorPrivate::emitLanguageChange()
 
 //
 
+BTranslator::BTranslator(QObject *parent) :
+    QObject(parent), BBase( *new BTranslatorPrivate(this) )
+{
+    //
+}
+
 BTranslator::BTranslator(const QString &fileName, QObject *parent) :
-    QObject(parent), _m_d( new BTranslatorPrivate(this) )
+    QObject(parent), BBase( *new BTranslatorPrivate(this) )
 {
     d_func()->fileName = fileName;
 }
 
 BTranslator::~BTranslator()
 {
-    delete _m_d;
+    //
 }
 
 //
 
 void BTranslator::setFileName(const QString &fileName, bool languageChange)
 {
-    BTranslatorPrivate *const d = d_func();
+    B_D(BTranslator);
     bool wasInstalled = isInstalled();
     if (wasInstalled)
         d->remove();
@@ -116,7 +122,7 @@ QList<QLocale> BTranslator::availableLocales() const
 {
     if ( !isValid() )
         return QList<QLocale>();
-    const BTranslatorPrivate *const d = d_func();
+    const B_D(BTranslator);
     QList<QLocale> list;
     QStringList validFiles;
     int fnLen = d->fileName.length();
@@ -140,4 +146,12 @@ QList<QLocale> BTranslator::availableLocales() const
             list << l;
     }
     return list;
+}
+
+//
+
+BTranslator::BTranslator(BTranslatorPrivate &d) :
+    BBase(d)
+{
+    //
 }

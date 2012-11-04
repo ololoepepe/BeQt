@@ -7,12 +7,13 @@ class BSettingsDialogPrivate;
 class QWidget;
 
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BBase>
 
 #include <QDialog>
 #include <QMap>
 #include <QVariantMap>
 
-class B_WIDGETS_EXPORT BSettingsDialog : public QDialog
+class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSettingsDialog)
@@ -26,8 +27,6 @@ public:
     SettingsMap settingsMap() const;
 protected:
     BSettingsDialog(BSettingsDialogPrivate &d);
-    //
-    BSettingsDialogPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BSettingsDialog)
 };
