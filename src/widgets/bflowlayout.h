@@ -7,7 +7,7 @@ class QLayoutItem;
 class QWidget;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/private/bbase.h>
 
 #include <QLayout>
 #include <QRect>

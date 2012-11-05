@@ -7,7 +7,7 @@ class BSettingsDialogPrivate;
 class QWidget;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/private/bbase.h>
 
 #include <QDialog>
 #include <QMap>

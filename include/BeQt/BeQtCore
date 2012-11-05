@@ -1,7 +1,6 @@
 #ifndef BEQT_BEQTCORE_MODULE_H
 #define BEQT_BEQTCORE_MODULE_H
 
-#include "bbase.h"
 #include "bcoreapplication.h"
 #include "bdirtools.h"
 #include "bglobal.h"

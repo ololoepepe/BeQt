@@ -1,22 +1,27 @@
 #ifndef BNETWORKSERVERTHREAD_H
 #define BNETWORKSERVERTHREAD_H
 
-class BNetworkServerWorker;
+class BNetworkServerThreadPrivate;
+class BNetworkServerPrivate;
+
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbase.h>
 
 #include <QThread>
-#include <QPointer>
 
-class BNetworkServerThread : public QThread
+class BNetworkServerThread : public QThread, public BBase
 {
+    B_DECLARE_PRIVATE(BNetworkServerThread)
     Q_OBJECT
 public:
-    explicit BNetworkServerThread(BNetworkServerWorker *worker, QObject *parent = 0);
+    explicit BNetworkServerThread(BNetworkServerPrivate *serverPrivate);
     //
     void addConnection(int socketDescriptor);
     int connectionCount() const;
-    bool isValid() const;
+protected:
+    BNetworkServerThread(BNetworkServerThreadPrivate &d);
 private:
-    QPointer<BNetworkServerWorker> _m_worker;
+    Q_DISABLE_COPY(BNetworkServerThread)
 };
 
 #endif // BNETWORKSERVERTHREAD_H

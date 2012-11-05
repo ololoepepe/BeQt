@@ -1,24 +1,22 @@
 #ifndef BNETWORKSERVER_H
 #define BNETWORKSERVER_H
 
-class BNetworkServerThread;
-class BNetworkServerWorker;
-class BNetworkConnection;
 class BNetworkServerPrivate;
+class BNetworkConnection;
+
+class QString;
 
 #include "bgenericserver.h"
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbase.h>
 
 #include <QObject>
-#include <QList>
-#include <QPointer>
-#include <QString>
 
-class B_NETWORK_EXPORT BNetworkServer : public QObject
+class B_NETWORK_EXPORT BNetworkServer : public QObject, public BBase
 {
-    Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkServer)
+    Q_OBJECT
 public:
     explicit BNetworkServer(BGenericServer::ServerType type, QObject *parent = 0);
     ~BNetworkServer();
@@ -35,16 +33,11 @@ public:
     int maxThreadCount() const;
     int currentThreadCount() const;
 protected:
-    virtual BNetworkConnection *createConnection(int socketDescriptor);
+    BNetworkServer(BNetworkServerPrivate &d);
+    //
+    virtual BNetworkConnection *createConnection(int socketDescriptor) const = 0;
 private:
-    BNetworkServerPrivate *_m_d;
-    QPointer<BGenericServer> _m_server;
-    QList<BNetworkServerThread *> _m_threads;
-    int _m_maxConnectionCount;
-    int _m_maxThreadCount;
-private slots:
-    void _m_newConnection(int socketDescriptor);
-    void _m_finished();
+    Q_DISABLE_COPY(BNetworkServer)
 };
 
 #endif // BNETWORKSERVER_H

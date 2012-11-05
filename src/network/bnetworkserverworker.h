@@ -1,33 +1,31 @@
 #ifndef BNETWORKSERVERWORKER_H
 #define BNETWORKSERVERWORKER_H
 
-class BNetworkConnection;
+class BNetworkServerWorkerPrivate;
 class BNetworkServerPrivate;
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbase.h>
 
 #include <QObject>
-#include <QList>
-#include <QMutex>
 
-class BNetworkServerWorker : public QObject
+class BNetworkServerWorker : public QObject, public BBase
 {
+    B_DECLARE_PRIVATE(BNetworkServerWorker)
     Q_OBJECT
 public:
-    explicit BNetworkServerWorker(BNetworkServerPrivate *serverPrivate, QObject *parent = 0);
+    explicit BNetworkServerWorker(BNetworkServerPrivate *serverPrivate);
+    ~BNetworkServerWorker();
     //
     int connectionCount() const;
 public slots:
     void addConnection(int socketDescriptor);
-private:
-    BNetworkServerPrivate *_m_ServerPrivate;
-    //
-    mutable QMutex _m_connectionsMutex;
-    QList<BNetworkConnection *> _m_connections;
-private slots:
-    void _m_disconnected();
 signals:
     void ranOutOfConnections();
+protected:
+    BNetworkServerWorker(BNetworkServerWorkerPrivate &d);
+private:
+    Q_DISABLE_COPY(BNetworkServerWorker)
 };
 
 #endif // BNETWORKSERVERWORKER_H

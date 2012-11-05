@@ -15,7 +15,7 @@ class QAbstractSokcet;
 #include <QLocalSocket>
 #include <QPointer>
 
-class BGenericSocketPrivateObject : public QObject
+class B_NETWORK_EXPORT BGenericSocketPrivateObject : public QObject
 {
     Q_OBJECT
 public:
@@ -30,7 +30,7 @@ private:
     Q_DISABLE_COPY(BGenericSocketPrivateObject)
 };
 
-class BGenericSocketPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BGenericSocket)
 public:

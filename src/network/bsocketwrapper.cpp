@@ -55,7 +55,7 @@ BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
 
 BSocketWrapperPrivate::~BSocketWrapperPrivate()
 {
-    //
+    _m_o->deleteLater();
 }
 
 //

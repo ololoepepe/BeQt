@@ -67,7 +67,7 @@ BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::
 
 BGenericSocketPrivate::~BGenericSocketPrivate()
 {
-    //
+    _m_o->deleteLater();
 }
 
 //

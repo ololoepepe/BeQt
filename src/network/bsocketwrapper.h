@@ -9,7 +9,7 @@ class QByteArray;
 #include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/private/bbase.h>
 
 #include <QObject>
 #include <QDataStream>

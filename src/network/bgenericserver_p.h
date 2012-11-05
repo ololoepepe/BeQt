@@ -16,7 +16,7 @@ class QLocalServer;
 #include <QQueue>
 #include <QPointer>
 
-class BGenericServerPrivateObject : public QObject
+class B_NETWORK_EXPORT BGenericServerPrivateObject : public QObject
 {
     Q_OBJECT
 public:
@@ -30,7 +30,7 @@ private:
     Q_DISABLE_COPY(BGenericServerPrivateObject)
 };
 
-class BGenericServerPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BGenericServer)
 public:

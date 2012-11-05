@@ -10,41 +10,50 @@
 #include <QThread>
 #include <QString>
 
-BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q) :
-    _m_q(q)
+BNetworkServerPrivateObject::BNetworkServerPrivateObject(BNetworkServerPrivate *p) :
+    QObject(0), _m_p(p)
 {
     //
 }
 
-BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor)
+BNetworkServerPrivateObject::~BNetworkServerPrivateObject()
 {
-    return _m_q->createConnection(socketDescriptor);
+    //
+}
+
+void BNetworkServerPrivateObject::newConnection(int socketDescriptor)
+{
+    _m_p->newConnection(socketDescriptor);
+}
+
+void BNetworkServerPrivateObject::finished()
+{
+    _m_p->finished( static_cast<BNetworkServerThread *>( sender() ) );
 }
 
 //
 
-BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
-    QObject(parent), _m_d( new BNetworkServerPrivate(this) )
+BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
+    BBasePrivate(q), _m_o( new BNetworkServerPrivateObject(this) )
 {
-    _m_maxConnectionCount = 0;
-    _m_maxThreadCount = 0;
+    maxConnectionCount = 0;
+    maxThreadCount = 0;
     if (BGenericServer::NoServer != type)
     {
-        _m_server = new BGenericServer(type, this);
-        _m_server->setMaxPendingConnections(0);
-        connect( _m_server.data(), SIGNAL( newConnection(int) ), this, SLOT( _m_newConnection(int) ) );
+        server = new BGenericServer( type, q_func() );
+        server->setMaxPendingConnections(0);
+        QObject::connect( server.data(), SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ) );
     }
 }
 
-BNetworkServer::~BNetworkServer()
+BNetworkServerPrivate::~BNetworkServerPrivate()
 {
-    delete _m_d;
-    for (int i = 0; i < _m_threads.size(); ++i)
+    _m_o->deleteLater();
+    foreach (BNetworkServerThread *t, threads)
     {
-        QThread *t = _m_threads.at(i);
         if (!t)
             continue;
-        disconnect( t, SIGNAL( finished() ), this, SLOT( _m_finished() ) );
+        QObject::disconnect( t, SIGNAL( finished() ), _m_o, SLOT( finished() ) );
         t->quit();
         t->wait(1000);
     }
@@ -52,120 +61,125 @@ BNetworkServer::~BNetworkServer()
 
 //
 
-void BNetworkServer::setMaxConnectionCount(int count)
+void BNetworkServerPrivate::newConnection(int socketDescriptor)
 {
-    _m_maxConnectionCount = count > 0 ? count : 0;
-}
-
-void BNetworkServer::setMaxThreadCount(int count)
-{
-    _m_maxThreadCount = count > 0 ? count : 0;
-}
-
-bool BNetworkServer::isValid() const
-{
-    return _m_server.isNull() && _m_server->isServerSet();
-}
-
-bool BNetworkServer::isListening() const
-{
-    return !_m_server.isNull() && _m_server->isListening();
-}
-
-bool BNetworkServer::listen(const QString &address, quint16 port)
-{
-    return !_m_server.isNull() && _m_server->listen(address, port);
-}
-
-void BNetworkServer::close()
-{
-    if ( _m_server.isNull() )
+    B_Q(BNetworkServer);
+    if (maxConnectionCount > 0 && q->currentConnectionCount() > maxConnectionCount)
         return;
-    _m_server->close();
-}
-
-BGenericServer::ServerType BNetworkServer::serverType() const
-{
-    return !_m_server.isNull() ? _m_server->serverType() : BGenericServer::NoServer;
-}
-
-int BNetworkServer::maxConnectionCount() const
-{
-    return _m_maxConnectionCount;
-}
-
-int BNetworkServer::currentConnectionCount() const
-{
-    int count = 0;
-    for (int i = 0; i < _m_threads.size(); ++i)
-        count += _m_threads.at(i)->connectionCount();
-    return count;
-}
-
-int BNetworkServer::maxThreadCount() const
-{
-    return _m_maxThreadCount;
-}
-
-int BNetworkServer::currentThreadCount() const
-{
-    return _m_threads.size();
-}
-
-//
-
-BNetworkConnection *BNetworkServer::createConnection(int socketDescriptor)
-{
-    BGenericSocket *socket = new BGenericSocket(BGenericSocket::TcpSocket);
-    if ( !socket->setSocketDescriptor(socketDescriptor) || !socket->isValid() )
+    if (maxThreadCount > 0 && q->currentThreadCount() == maxThreadCount)
     {
-        socket->deleteLater();
-        return 0;
-    }
-    return new BNetworkConnection(socket);
-}
-
-//
-
-void BNetworkServer::_m_newConnection(int socketDescriptor)
-{
-    if (_m_maxConnectionCount > 0 && currentConnectionCount() > _m_maxConnectionCount)
-        return;
-    if (_m_maxThreadCount > 0 && currentThreadCount() == _m_maxThreadCount)
-    {
-        int cc = _m_threads.first()->connectionCount();
+        int cc = threads.first()->connectionCount();
         int ind = 0;
-        for (int i = 0; i < _m_threads.size(); ++i)
+        for (int i = 0; i < threads.size(); ++i)
         {
-            int ccc = _m_threads.at(i)->connectionCount();
+            int ccc = threads.at(i)->connectionCount();
             if (ccc < cc)
             {
                 cc = ccc;
                 ind = i;
             }
         }
-        _m_threads[ind]->addConnection(socketDescriptor);
+        threads[ind]->addConnection(socketDescriptor);
     }
     else
     {
-        BNetworkServerThread *t = new BNetworkServerThread(new BNetworkServerWorker( d_func() ), this);
-        if ( !t->isValid() )
-        {
-            t->deleteLater();
-            return;
-        }
-        connect(t, SIGNAL( finished() ), this, SLOT( _m_finished() ), Qt::DirectConnection);
+        BNetworkServerThread *t = new BNetworkServerThread(this);
+        QObject::connect( t, SIGNAL( finished() ), _m_o, SLOT( finished() ) );
         t->start();
         t->addConnection(socketDescriptor);
-        _m_threads << t;
+        threads << t;
     }
 }
 
-void BNetworkServer::_m_finished()
+void BNetworkServerPrivate::finished(BNetworkServerThread *t)
 {
-    BNetworkServerThread *t = qobject_cast<BNetworkServerThread *>( sender() );
     if (!t)
         return;
-    _m_threads.removeAll(t);
+    threads.removeAll(t);
     t->deleteLater();
+}
+
+BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor) const
+{
+    return q_func()->createConnection(socketDescriptor);
+}
+
+//
+
+BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
+    QObject(parent), BBase( *new BNetworkServerPrivate(this, type) )
+{
+    //
+}
+
+BNetworkServer::~BNetworkServer()
+{
+    //
+}
+
+//
+
+void BNetworkServer::setMaxConnectionCount(int count)
+{
+    d_func()->maxConnectionCount = count > 0 ? count : 0;
+}
+
+void BNetworkServer::setMaxThreadCount(int count)
+{
+    d_func()->maxThreadCount = count > 0 ? count : 0;
+}
+
+bool BNetworkServer::isValid() const
+{
+    const B_D(BNetworkServer);
+    return d->server.isNull() && d->server->isServerSet();
+}
+
+bool BNetworkServer::isListening() const
+{
+    const B_D(BNetworkServer);
+    return !d->server.isNull() && d->server->isListening();
+}
+
+bool BNetworkServer::listen(const QString &address, quint16 port)
+{
+    B_D(BNetworkServer);
+    return !d->server.isNull() && d->server->listen(address, port);
+}
+
+void BNetworkServer::close()
+{
+    B_D(BNetworkServer);
+    if ( d->server.isNull() )
+        return;
+    d->server->close();
+}
+
+BGenericServer::ServerType BNetworkServer::serverType() const
+{
+    const B_D(BNetworkServer);
+    return !d->server.isNull() ? d->server->serverType() : BGenericServer::NoServer;
+}
+
+int BNetworkServer::maxConnectionCount() const
+{
+    return d_func()->maxConnectionCount;
+}
+
+int BNetworkServer::currentConnectionCount() const
+{
+    int count = 0;
+    foreach (BNetworkServerThread *t, d_func()->threads)
+        count += t->connectionCount();
+    return count;
+}
+
+int BNetworkServer::maxThreadCount() const
+{
+    return d_func()->maxThreadCount;
+}
+
+int BNetworkServer::currentThreadCount() const
+{
+    return d_func()->threads.size();
 }

@@ -11,7 +11,7 @@ class QString;
 #include "bgenericsocket.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/private/bbase.h>
 
 #include <QObject>
 #include <QAbstractSocket>

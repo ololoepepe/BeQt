@@ -14,7 +14,7 @@ class BSocketWrapperPrivate;
 #include <QAbstractSocket>
 #include <QPointer>
 
-class BSocketWrapperPrivateObject : public QObject
+class B_NETWORK_EXPORT BSocketWrapperPrivateObject : public QObject
 {
     Q_OBJECT
 public:

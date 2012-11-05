@@ -1,102 +1,136 @@
 #include "bnetworkoperation.h"
 #include "bsocketwrapper.h"
+#include "bnetworkoperation_p.h"
+
+#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
 #include <QString>
 #include <QUuid>
 #include <QByteArray>
 
-const BNetworkOperationMetaData &BNetworkOperation::metaData() const
+BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md) :
+    BBasePrivate(q), MetaData(md)
 {
-    return _m_CMetaData;
+    isStarted = false;
+    isError = false;
+    bytesInReady = 0;
+    bytesInTotal = -1;
+    bytesOutReady = 0;
+    bytesOutTotal = -1;
+    isFinished = false;
 }
+
+BNetworkOperationPrivate::~BNetworkOperationPrivate()
+{
+    //
+}
+
+//
+
+void BNetworkOperationPrivate::setStarted()
+{
+    isStarted = true;
+    QMetaObject::invokeMethod(q_func(), "started");
+}
+
+void BNetworkOperationPrivate::setError()
+{
+    isError = true;
+    QMetaObject::invokeMethod(q_func(), "error");
+}
+
+void BNetworkOperationPrivate::setDownloadProgress(qint64 bytesReady, qint64 bytesTotal)
+{
+    bytesInReady = bytesReady;
+    bytesInTotal = bytesTotal;
+    QMetaObject::invokeMethod( q_func(), "downloadProgress", Q_ARG(qint64, bytesReady), Q_ARG(qint64, bytesTotal) );
+}
+
+void BNetworkOperationPrivate::setUploadProgress(qint64 bytesReady, qint64 bytesTotal)
+{
+    bytesOutReady = bytesReady;
+    bytesOutTotal = bytesTotal;
+    QMetaObject::invokeMethod( q_func(), "uploadProgress", Q_ARG(qint64, bytesReady), Q_ARG(qint64, bytesTotal) );
+}
+
+void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
+{
+    if ( !dt.isEmpty() )
+        data = dt;
+    isFinished = true;
+    QMetaObject::invokeMethod(q_func(), "finished");
+}
+
+//
+
+BNetworkOperation::~BNetworkOperation()
+{
+    emit destroyed(d_func()->MetaData);
+}
+
+//
 
 const QByteArray &BNetworkOperation::data() const
 {
-    return _m_data;
+    return d_func()->data;
+}
+
+BNetworkOperationMetaData BNetworkOperation::metaData() const
+{
+    return d_func()->MetaData;
 }
 
 bool BNetworkOperation::isRequest() const
 {
-    return _m_CMetaData.isRequest();
+    return d_func()->MetaData.isRequest();
 }
 
 bool BNetworkOperation::isValid() const
 {
-    return _m_CMetaData.isValid();
+    return d_func()->MetaData.isValid();
 }
 
 bool BNetworkOperation::isStarted() const
 {
-    return _m_isStarted;
+    return d_func()->isStarted;
 }
 
 bool BNetworkOperation::isError() const
 {
-    return _m_isError;
+    return d_func()->isError;
 }
 
 int BNetworkOperation::downloadProgress() const
 {
-    return _m_bytesInTotal != 0 ? ( (qreal) _m_bytesInReady / (qreal) _m_bytesInTotal ) * 100 : 100;
+    const B_D(BNetworkOperation);
+    return d->bytesInTotal != 0 ? ( (qreal) d->bytesInReady / (qreal) d->bytesInTotal ) * 100 : 100;
 }
 
 int BNetworkOperation::uploadProgress() const
 {
-    return _m_bytesOutTotal != 0 ? ( (qreal) _m_bytesOutReady / (qreal) _m_bytesOutTotal ) * 100 : 100;
+    const B_D(BNetworkOperation);
+    return d->bytesOutTotal != 0 ? ( (qreal) d->bytesOutReady / (qreal) d->bytesOutTotal ) * 100 : 100;
 }
 
 bool BNetworkOperation::isFinished() const
 {
-    return _m_isFinished;
+    return d_func()->isFinished;
+}
+
+//
+
+BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d) :
+    BBase(d)
+{
+    //
 }
 
 //
 
 BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent) :
-    QObject(parent), _m_CMetaData(metaData)
+    QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData) )
 {
-    _m_isStarted = false;
-    _m_isError = false;
-    _m_bytesInReady = 0;
-    _m_bytesInTotal = -1;
-    _m_bytesOutReady = 0;
-    _m_bytesOutTotal = -1;
-    _m_isFinished = false;
-}
-
-//
-
-void BNetworkOperation::_m_setStarted()
-{
-    _m_isStarted = true;
-    emit started();
-}
-
-void BNetworkOperation::_m_setError()
-{
-    _m_isError = true;
-    emit error();
-}
-
-void BNetworkOperation::_m_setDownloadProgress(qint64 bytesReady, qint64 bytesTotal)
-{
-    _m_bytesInReady = bytesReady;
-    _m_bytesInTotal = bytesTotal;
-    emit downloadProgress(bytesReady, bytesTotal);
-}
-
-void BNetworkOperation::_m_setUploadProgress(qint64 bytesReady, qint64 bytesTotal)
-{
-    _m_bytesOutReady = bytesReady;
-    _m_bytesOutTotal = bytesTotal;
-    emit uploadProgress(bytesReady, bytesTotal);
-}
-
-void BNetworkOperation::_m_setFinished(const QByteArray &data)
-{
-    if ( !data.isEmpty() )
-        _m_data = data;
-    _m_isFinished = true;
-    emit finished();
+    //
 }

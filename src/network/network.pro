@@ -19,12 +19,15 @@ HEADERS += \
     bgenericsocket_p.h \
     blocalserver.h \
     bnetworkconnection.h \
+    bnetworkconnection_p.h \
     bnetworkoperation.h \
+    bnetworkoperation_p.h \
     bnetworkoperationmetadata.h \
     bnetworkserver.h \
     bnetworkserver_p.h \
     bnetworkserverthread.h \
     bnetworkserverworker.h \
+    bnetworkserverworker_p.h \
     bsocketwrapper.h \
     bsocketwrapper_p.h \
     btcpserver.h \

@@ -19,7 +19,7 @@ class QToolButton;
 #include <QList>
 #include <QMap>
 
-class BAboutDialogPrivateObject : public QObject
+class B_WIDGETS_EXPORT BAboutDialogPrivateObject : public QObject
 {
     Q_OBJECT
 public:
@@ -33,7 +33,7 @@ private:
     Q_DISABLE_COPY(BAboutDialogPrivateObject)
 };
 
-class BAboutDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BAboutDialog)
     Q_DECLARE_TR_FUNCTIONS(BAboutDialog)

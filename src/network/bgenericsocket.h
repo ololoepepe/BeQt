@@ -8,7 +8,7 @@ class QSslSocket;
 class QUdpSocket;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/private/bbase.h>
 
 #include <QObject>
 #include <QAbstractSocket>

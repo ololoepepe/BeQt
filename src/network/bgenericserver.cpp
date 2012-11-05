@@ -60,7 +60,7 @@ BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::
 
 BGenericServerPrivate::~BGenericServerPrivate()
 {
-    //
+    _m_o->deleteLater();
 }
 
 //
