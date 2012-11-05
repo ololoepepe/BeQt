@@ -246,12 +246,12 @@ void BNetworkConnection::_m_error(QAbstractSocket::SocketError socketError)
     emit error(socketError);
 }
 
-void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &metaData,
+void BNetworkConnection::_m_downloadProgress(const BNetworkOperationMetaData &metaData,
                                              qint64 bytesReady, qint64 bytesTotal)
 {
     if ( metaData.isRequest() )
     {
-        BSocketWrapper::MetaData mdat = metaData;
+        BNetworkOperationMetaData mdat = metaData;
         mdat.setIsRequest(false);
         BNetworkOperation *op = _m_replies.value(mdat);
         if (op)
@@ -271,7 +271,7 @@ void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &met
     }
     else
     {
-        BSocketWrapper::MetaData mdat = metaData;
+        BNetworkOperationMetaData mdat = metaData;
         mdat.setIsRequest(true);
         BNetworkOperation *op = _m_requests.value(mdat);
         if (op)
@@ -279,7 +279,7 @@ void BNetworkConnection::_m_downloadProgress(const BSocketWrapper::MetaData &met
     }
 }
 
-void BNetworkConnection::_m_uploadProgress(const BSocketWrapper::MetaData &metaData,
+void BNetworkConnection::_m_uploadProgress(const BNetworkOperationMetaData &metaData,
                                            qint64 bytesReady, qint64 bytesTotal)
 {
     BNetworkOperation *op = metaData.isRequest() ? _m_requests.value(metaData) : _m_replies.value(metaData);
@@ -287,11 +287,11 @@ void BNetworkConnection::_m_uploadProgress(const BSocketWrapper::MetaData &metaD
         op->_m_setUploadProgress(bytesReady, bytesTotal);
 }
 
-void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWrapper::MetaData &metaData)
+void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData)
 {
     if ( metaData.isRequest() )
     {
-        BSocketWrapper::MetaData mdat = metaData;
+        BNetworkOperationMetaData mdat = metaData;
         mdat.setIsRequest(false);
         BNetworkOperation *op = _m_replies.value(mdat);
         if (!op)
@@ -304,7 +304,7 @@ void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWr
     }
     else
     {
-        BSocketWrapper::MetaData mdat = metaData;
+        BNetworkOperationMetaData mdat = metaData;
         mdat.setIsRequest(false);
         BNetworkOperation *op = _m_requests.value(mdat);
         if (!op)
@@ -318,7 +318,7 @@ void BNetworkConnection::_m_dataReceived(const QByteArray &data, const BSocketWr
     }
 }
 
-void BNetworkConnection::_m_dataSent(const BSocketWrapper::MetaData &metaData)
+void BNetworkConnection::_m_dataSent(const BNetworkOperationMetaData &metaData)
 {
     if ( metaData.isRequest() )
     {

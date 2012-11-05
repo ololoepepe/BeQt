@@ -55,6 +55,10 @@ BeQtCore
 BeQtNetwork
 BeQtWidgets
 mainwindow
+!include/BeQt/BeQtCodeEditor
+!include/BeQt/BeQtCore
+!include/BeQt/BeQtNetwork
+!include/BeQt/BeQtWidgets
 !include/BeQtCodeEditor
 !include/BeQtCore
 !include/BeQtNetwork

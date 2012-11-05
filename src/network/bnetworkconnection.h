@@ -48,14 +48,14 @@ public:
 protected:
     virtual void log(const QString &text);
 private:
-    typedef QPair<QByteArray, BSocketWrapper::MetaData> _m_Data;
+    typedef QPair<QByteArray, BNetworkOperationMetaData> _m_Data;
     //
     const QUuid _m_CUniqueId;
     //
     QPointer<BGenericSocket> _m_socket;
     QPointer<BSocketWrapper> _m_socketWrapper;
-    QMap<BSocketWrapper::MetaData, BNetworkOperation *> _m_requests;
-    QMap<BSocketWrapper::MetaData, BNetworkOperation *> _m_replies;
+    QMap<BNetworkOperationMetaData, BNetworkOperation *> _m_requests;
+    QMap<BNetworkOperationMetaData, BNetworkOperation *> _m_replies;
     QQueue<_m_Data> _m_dataQueue;
     bool _m_detailedLog;
     bool _m_autoDelete;
@@ -67,10 +67,10 @@ private slots:
     void _m_connected();
     void _m_disconnected();
     void _m_error(QAbstractSocket::SocketError socketError);
-    void _m_downloadProgress(const BSocketWrapper::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void _m_uploadProgress(const BSocketWrapper::MetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void _m_dataReceived(const QByteArray &data, const BSocketWrapper::MetaData &metaData);
-    void _m_dataSent(const BSocketWrapper::MetaData &metaData);
+    void _m_downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
+    void _m_uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
+    void _m_dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
+    void _m_dataSent(const BNetworkOperationMetaData &metaData);
     void _m_operationDestroyed(QObject *object);
 signals:
     void connected();

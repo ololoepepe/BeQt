@@ -4,6 +4,7 @@
 class BNetworkConnection;
 
 #include "bsocketwrapper.h"
+#include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/BeQt>
 
@@ -17,7 +18,7 @@ class B_NETWORK_EXPORT BNetworkOperation : public QObject
     Q_OBJECT
 public:
     const QByteArray &data() const;
-    const BSocketWrapper::MetaData &metaData() const;
+    const BNetworkOperationMetaData &metaData() const;
     bool isRequest() const;
     bool isValid() const;
     bool isStarted() const;
@@ -28,7 +29,7 @@ public:
 private:
     friend class BNetworkConnection;
     //
-    BSocketWrapper::MetaData _m_CMetaData;
+    BNetworkOperationMetaData _m_CMetaData;
     bool _m_isStarted;
     bool _m_isError;
     qint64 _m_bytesInReady;
@@ -38,7 +39,7 @@ private:
     bool _m_isFinished;
     QByteArray _m_data;
     //
-    explicit BNetworkOperation(const BSocketWrapper::MetaData &metaData, QObject *parent = 0);
+    explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent = 0);
     //
     void _m_setStarted();
     void _m_setError();

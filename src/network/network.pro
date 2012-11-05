@@ -20,12 +20,14 @@ HEADERS += \
     blocalserver.h \
     bnetworkconnection.h \
     bnetworkoperation.h \
+    bnetworkoperationmetadata.h \
     bnetworkserver.h \
     bnetworkserver_p.h \
     bnetworkserverthread.h \
     bnetworkserverworker.h \
     bsocketwrapper.h \
-    btcpserver.h
+    bsocketwrapper_p.h \
+    btcpserver.h \
 
 SOURCES += \
     bgenericserver.cpp \
@@ -33,6 +35,7 @@ SOURCES += \
     blocalserver.cpp \
     bnetworkconnection.cpp \
     bnetworkoperation.cpp \
+    bnetworkoperationmetadata.cpp \
     bnetworkserver.cpp \
     bnetworkserverthread.cpp \
     bnetworkserverworker.cpp \

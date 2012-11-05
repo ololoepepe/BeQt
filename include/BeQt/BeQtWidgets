@@ -1,0 +1,10 @@
+#ifndef BEQT_BEQTWIDGETS_MODULE_H
+#define BEQT_BEQTWIDGETS_MODULE_H
+
+#include "baboutdialog.h"
+#include "babstractsettingstab.h"
+#include "bapplication.h"
+#include "bflowlayout.h"
+#include "bsettingsdialog.h"
+
+#endif //BEQT_BEQTWIDGETS_MODULE_H
