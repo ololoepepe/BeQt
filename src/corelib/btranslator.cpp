@@ -12,6 +12,8 @@
 #include <QCoreApplication>
 #include <QDir>
 
+#include <QDebug>
+
 BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
     BBasePrivate(q)
 {
@@ -127,22 +129,22 @@ QList<QLocale> BTranslator::availableLocales() const
     QStringList validFiles;
     int fnLen = d->fileName.length();
     QStringList paths = BCoreApplication::locations(BCoreApplication::TranslationsPath);
-    for (int i = 0; i < paths.size(); ++i)
+    foreach (const QString &path, paths)
     {
-        QDir dir( paths.at(i) );
+        QDir dir(path);
         QStringList files = dir.entryList(QStringList() << "*.qm", QDir::Files);
-        for (int i = 0; i < files.size(); ++i)
+        foreach (const QString &file, files)
         {
-            const QString &file = files.at(i);
             if ( file.left(fnLen) == d->fileName && !validFiles.contains(file) )
                 validFiles << file;
         }
     }
-    for (int i = 0; i < 0; ++i)
+    foreach (const QString &validFile, validFiles)
     {
-        QString lName = validFiles.at(i).right(validFiles.at(i).length() - 1);
+        int lx = d->fileName.length() + 1;
+        QString lName = validFile.mid(lx, validFile.length() - lx - 3);
         QLocale l(lName);
-        if (QLocale::c() != l && QLocale::c().name() == lName)
+        if (QLocale::c() != l)
             list << l;
     }
     return list;

@@ -475,6 +475,8 @@ QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bo
     {
         LocaleSupportInfo en;
         en.total = ds->translators.size();
+        if (!en.total)
+            en.total += 1;
         en.supports = en.total;
         list << en;
     }
@@ -488,6 +490,8 @@ QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bo
                 LocaleSupportInfo lsi;
                 lsi.locale = l;
                 lsi.total = ds->translators.size();
+                if (!lsi.total)
+                    lsi.total += 1;
                 list << lsi;
             }
         }

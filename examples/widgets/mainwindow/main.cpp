@@ -3,6 +3,8 @@
 #include <BApplication>
 #include <BTerminalIOHandler>
 #include <BAboutDialog>
+#include <BLocaleComboBox>
+#include <BTranslator>
 
 #include <QApplication>
 #include <QString>
@@ -56,6 +58,15 @@ int main(int argc, char **argv)
     QWidget *w = new QWidget;
     w->move(800, 400);
     QVBoxLayout *vlt = new QVBoxLayout(w);
+    //locale combo box
+    BTranslator *t = new BTranslator("qt");
+    BApplication::installTranslator(t);
+    t = new BTranslator("beqt");
+    BApplication::installTranslator(t);
+    BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
+    vlt->addWidget(lcb);
+    //lcb->updateAvailableLocales();
+    //
     QPushButton *btn = new QPushButton("About", w);
     QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAboutDialog() ) );
     vlt->addWidget(btn);

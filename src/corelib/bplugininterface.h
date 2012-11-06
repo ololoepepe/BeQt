@@ -5,17 +5,33 @@
 
 #include <QString>
 #include <QtPlugin>
+#include <QList>
 
 class B_CORE_EXPORT BPluginInterface
 {
 public:
+    struct PersonInfo
+    {
+        QString name;
+        QString mail;
+        QString site;
+        QString role;
+    };
+    //
+    typedef QList<PersonInfo> PersonInfoList;
+    //
     struct PluginInfo
     {
         QString description;
-        QString author;
         QString copyright;
         QString website;
+        QString changelog;
+        PersonInfoList authors;
+        PersonInfoList translators;
+        PersonInfoList thanksTo;
+        QString license;
     };
+    //
     virtual ~BPluginInterface() {}
     //
     virtual QString type() const = 0;

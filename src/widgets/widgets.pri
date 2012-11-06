@@ -4,6 +4,8 @@ HEADERS += \
     $${PWD}/babstractsettingstab.h \
     $${PWD}/bapplication.h \
     $${PWD}/bflowlayout.h \
+    $${PWD}/bguiplugininterface.h \
+    $${PWD}/blocalecombobox.h \
     $${PWD}/bsettingsdialog.h
 
 SOURCES += \
@@ -11,4 +13,5 @@ SOURCES += \
     $${PWD}/babstractsettingstab.cpp \
     $${PWD}/bapplication.cpp \
     $${PWD}/bflowlayout.cpp \
+    $${PWD}/blocalecombobox.cpp \
     $${PWD}/bsettingsdialog.cpp
