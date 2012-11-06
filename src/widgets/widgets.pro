@@ -12,17 +12,4 @@ include(../../depend.pri)
 
 DEFINES += BEQT_BUILD_WIDGETS_LIB
 
-HEADERS += \
-    baboutdialog.h \
-    baboutdialog_p.h \
-    babstractsettingstab.h \
-    bapplication.h \
-    bflowlayout.h \
-    bsettingsdialog.h
-
-SOURCES += \
-    baboutdialog.cpp \
-    babstractsettingstab.cpp \
-    bapplication.cpp \
-    bflowlayout.cpp \
-    bsettingsdialog.cpp
+include(widgets.pri)

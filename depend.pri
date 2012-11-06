@@ -1,3 +1,7 @@
+#Include this file in your project if you are using BeQt as an external library set
+#BeQt libraries must be built and installed properly before you use them this way
+#No source files will be added to your project
+
 #Gets "standalone" or anything
 #Returns true if essential BeQt files exist, otherwise retruns false
 defineTest(beqtTestEssentials) {

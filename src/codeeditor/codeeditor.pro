@@ -12,8 +12,4 @@ include(../../depend.pri)
 
 DEFINES += BEQT_BUILD_CODEEDITOR_LIB
 
-HEADERS += \
-    bplaintextedit.h
-
-SOURCES += \
-    bplaintextedit.cpp
+include(codeeditor.pri)
