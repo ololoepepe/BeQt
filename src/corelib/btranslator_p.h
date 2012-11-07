@@ -6,7 +6,7 @@ class BTranslator;
 class QString;
 class QTranslator;
 
-#include "bnamespace.h"
+#include "bglobal.h"
 #include "bbase_p.h"
 
 #include <QList>

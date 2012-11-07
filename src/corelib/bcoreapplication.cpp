@@ -1,6 +1,6 @@
 #include "bcoreapplication.h"
+#include "bglobal.h"
 #include "bcoreapplication_p.h"
-#include "bnamespace.h"
 #include "bdirtools.h"
 #include "btranslator.h"
 #include "bpluginwrapper.h"
@@ -400,6 +400,7 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
         QStringList files = dir.entryList(BCoreApplicationPrivate::PluginSuffixes, QDir::Files);
         foreach (QString file, files)
         {
+            qDebug() << file;
             BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
             pw->setAcceptableTypes(acceptableTypes);
             pw->setInterfaceTestFunction(function);
@@ -424,7 +425,7 @@ QList<BPluginWrapper *> BCoreApplication::pluginWrappers(const QString &type)
         return QList<BPluginWrapper *>();
     QList<BPluginWrapper *> list;
     foreach (BPluginWrapper *pw, ds_func()->plugins)
-        if (pw->type() == type)
+        if (type.isEmpty() || pw->type() == type)
             list << pw;
     return list;
 }

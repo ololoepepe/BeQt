@@ -7,6 +7,7 @@
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "blocalecombobox.h"
+#include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
 
 #endif //BEQT_BEQTWIDGETS_MODULE_H

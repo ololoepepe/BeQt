@@ -6,7 +6,7 @@ class BPluginWrapper;
 class QPluginLoader;
 
 #include "bpluginwrapper.h"
-#include "bnamespace.h"
+#include "bglobal.h"
 #include "bplugininterface.h"
 #include "bbase_p.h"
 

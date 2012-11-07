@@ -1,1 +1,1 @@
-#include "../../src/widgets/baguiplugininterface.h"
+#include "../../src/widgets/bguiplugininterface.h"

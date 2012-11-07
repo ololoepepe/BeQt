@@ -5,6 +5,7 @@ class QWidget;
 #include "bapplication.h"
 
 #include <BeQtCore/BDirTools>
+#include <BeQtCore/BPluginInterface>
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -54,6 +55,23 @@ const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
 const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
 const QString BAboutDialogPrivate::HtmlLT = "&lt;";
 const QString BAboutDialogPrivate::HtmlGT = "&gt;";
+
+//
+
+BAboutDialog::PersonInfoList BAboutDialog::fromPluginPersonInfoList(const BPluginInterface::PersonInfoList &list)
+{
+    PersonInfoList newList;
+    foreach (const BPluginInterface::PersonInfo &info, list)
+    {
+        PersonInfo newInfo;
+        newInfo.name = info.name;
+        newInfo.role = info.role;
+        newInfo.site = info.site;
+        newInfo.mail = info.mail;
+        newList << newInfo;
+    }
+    return newList;
+}
 
 //
 
@@ -319,10 +337,8 @@ void BAboutDialog::setAbout(const QString &description, const QString &copyright
     d->lblWebsite->setToolTip(website);
 }
 
-void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
+void BAboutDialog::setChangeLog(const QString &text)
 {
-    B_D(BAboutDialog);
-    QString text = d->readFile(fileName, codecName);
     QString s;
     QStringList sl = text.split('\n');
     for (int i = 0; i < sl.size(); ++i)
@@ -374,7 +390,12 @@ void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
         if (i < sl.size() - 1)
             s += "<br>";
     }
-    d->fillTab(BAboutDialogPrivate::ChangeLogTab, s, true);
+    d_func()->fillTab(BAboutDialogPrivate::ChangeLogTab, s, true);
+}
+
+void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
+{
+    setChangeLog( d_func()->readFile(fileName, codecName) );
 }
 
 void BAboutDialog::setAuthorsInfos(const PersonInfoList &infos)
@@ -382,14 +403,29 @@ void BAboutDialog::setAuthorsInfos(const PersonInfoList &infos)
     d_func()->fillTab(BAboutDialogPrivate::AuthorsTab, infos);
 }
 
+void BAboutDialog::setAuthorsInfos(const BPluginInterface::PersonInfoList &infos)
+{
+    setAuthorsInfos( fromPluginPersonInfoList(infos) );
+}
+
 void BAboutDialog::setTranslationInfos(const PersonInfoList &infos)
 {
     d_func()->fillTab(BAboutDialogPrivate::TranslatorsTab, infos);
 }
 
+void BAboutDialog::setTranslationInfos(const BPluginInterface::PersonInfoList &infos)
+{
+    setTranslationInfos( fromPluginPersonInfoList(infos) );
+}
+
 void BAboutDialog::setThanksToInfos(const PersonInfoList &infos)
 {
     d_func()->fillTab(BAboutDialogPrivate::ThanksToTab, infos);
+}
+
+void BAboutDialog::setThanksToInfos(const BPluginInterface::PersonInfoList &infos)
+{
+    setThanksToInfos( fromPluginPersonInfoList(infos) );
 }
 
 void BAboutDialog::setLicense(const QString &text)

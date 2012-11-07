@@ -5,7 +5,7 @@ class BNetworkServerWorkerPrivate;
 class BNetworkServerPrivate;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
 
 #include <QObject>
 

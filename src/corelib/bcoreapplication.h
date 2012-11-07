@@ -9,7 +9,7 @@ class BPluginWrapperPrivate;
 class QLocale;
 class QSettings;
 
-#include "bnamespace.h"
+#include "bglobal.h"
 #include "bpluginwrapper.h"
 #include "bbase.h"
 

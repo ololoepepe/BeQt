@@ -7,7 +7,8 @@ class QWidget;
 class QIcon;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
+#include <BeQtCore/BPluginInterface>
 
 #include <QDialog>
 #include <QList>
@@ -44,6 +45,8 @@ public:
     //
     typedef QList<PersonInfo> PersonInfoList;
     //
+    static PersonInfoList fromPluginPersonInfoList(const BPluginInterface::PersonInfoList &list);
+    //
     explicit BAboutDialog(QWidget *parent = 0);
     explicit BAboutDialog(const AboutOptions &options, QWidget *parent = 0);
     ~BAboutDialog();
@@ -51,10 +54,14 @@ public:
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);
     void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
+    void setChangeLog(const QString &text);
     void setChangeLog(const QString &fileName, const char *codecName);
     void setAuthorsInfos(const PersonInfoList &infos);
+    void setAuthorsInfos(const BPluginInterface::PersonInfoList &infos);
     void setTranslationInfos(const PersonInfoList &infos);
+    void setTranslationInfos(const BPluginInterface::PersonInfoList &infos);
     void setThanksToInfos(const PersonInfoList &infos);
+    void setThanksToInfos(const BPluginInterface::PersonInfoList &infos);
     void setLicense(const QString &text);
     void setLicense(const QString &fileName, const char *codecName);
     void resetTabs();

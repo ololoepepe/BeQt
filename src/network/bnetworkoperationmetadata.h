@@ -6,7 +6,7 @@ class BNetworkOperationMetaDataPrivate;
 class QString;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
 
 #include <QUuid>
 

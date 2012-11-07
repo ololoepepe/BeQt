@@ -1,7 +1,7 @@
 #ifndef BDIRTOOLS_H
 #define BDIRTOOLS_H
 
-#include "bnamespace.h"
+#include "bglobal.h"
 
 #include <QString>
 #include <QStringList>

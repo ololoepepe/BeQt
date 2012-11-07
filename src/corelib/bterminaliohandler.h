@@ -3,7 +3,7 @@
 
 class BTerminalIOHandlerPrivate;
 
-#include "bnamespace.h"
+#include "bglobal.h"
 #include "bbase.h"
 
 #include <QThread>

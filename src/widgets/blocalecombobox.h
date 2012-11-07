@@ -7,7 +7,7 @@ class QWidget;
 class QLocale;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
 
 #include <QComboBox>
 

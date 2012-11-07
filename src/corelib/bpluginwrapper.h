@@ -5,7 +5,7 @@ class BPluginWrapperPrivate;
 
 class QStringList;
 
-#include "bnamespace.h"
+#include "bglobal.h"
 #include "bplugininterface.h"
 #include "bbase.h"
 

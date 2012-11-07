@@ -17,8 +17,6 @@ class QByteArray;
 
 #include <QObject>
 #include <QCoreApplication>
-//#include <QByteArray>
-//#include <QString>
 #include <QAbstractSocket>
 #include <QPointer>
 #include <QQueue>

@@ -8,7 +8,7 @@ class BNetworkConnectionPrivate;
 #include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
 
 #include <QObject>
 #include <QString>

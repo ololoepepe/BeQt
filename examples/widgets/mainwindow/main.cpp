@@ -67,6 +67,9 @@ int main(int argc, char **argv)
     vlt->addWidget(lcb);
     //lcb->updateAvailableLocales();
     //
+    //loading plugins
+    BApplication::loadPlugins();
+    //
     QPushButton *btn = new QPushButton("About", w);
     QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAboutDialog() ) );
     vlt->addWidget(btn);

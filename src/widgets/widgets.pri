@@ -6,6 +6,8 @@ HEADERS += \
     $${PWD}/bflowlayout.h \
     $${PWD}/bguiplugininterface.h \
     $${PWD}/blocalecombobox.h \
+    $${PWD}/bpluginssettingstab.h \
+    $${PWD}/bpluginssettingstab_p.h \
     $${PWD}/bsettingsdialog.h
 
 SOURCES += \
@@ -14,4 +16,5 @@ SOURCES += \
     $${PWD}/bapplication.cpp \
     $${PWD}/bflowlayout.cpp \
     $${PWD}/blocalecombobox.cpp \
+    $${PWD}/bpluginssettingstab.cpp \
     $${PWD}/bsettingsdialog.cpp

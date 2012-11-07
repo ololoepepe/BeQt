@@ -1,4 +1,5 @@
 #include "bbase.h"
+
 #include "bbase_p.h"
 
 BBasePrivate::BBasePrivate(BBase *q) :

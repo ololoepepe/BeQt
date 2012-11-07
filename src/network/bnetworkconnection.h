@@ -11,7 +11,7 @@ class QUuid;
 #include "bsocketwrapper.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
 
 #include <QObject>
 #include <QByteArray>

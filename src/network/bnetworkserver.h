@@ -9,7 +9,7 @@ class QString;
 #include "bgenericserver.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase.h>
+#include <BeQtCore/BBase>
 
 #include <QObject>
 

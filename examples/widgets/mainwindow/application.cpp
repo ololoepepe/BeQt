@@ -1,6 +1,8 @@
 #include "application.h"
 #include "settingstab.h"
 
+#include <BPluginsSettingsTab>
+
 Application::Application() :
     BApplication()
 {
@@ -12,6 +14,7 @@ BSettingsDialog::SettingsTabMap Application::settingsTabMap() const
 {
     BSettingsDialog::SettingsTabMap m;
     m.insert( "myapp", new SettingsTab(firstName, secondName) );
+    m.insert("plugins", new BPluginsSettingsTab);
     return m;
 }
 
