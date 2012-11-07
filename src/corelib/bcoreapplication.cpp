@@ -400,7 +400,6 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
         QStringList files = dir.entryList(BCoreApplicationPrivate::PluginSuffixes, QDir::Files);
         foreach (QString file, files)
         {
-            qDebug() << file;
             BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
             pw->setAcceptableTypes(acceptableTypes);
             pw->setInterfaceTestFunction(function);

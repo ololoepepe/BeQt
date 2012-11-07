@@ -21,6 +21,7 @@
 #include <QPixmap>
 #include <QObject>
 #include <QMessageBox>
+#include <QListWidgetItem>
 
 #include <QDebug>
 
@@ -38,6 +39,11 @@ BPluginsSettingsTabPrivateObject::~BPluginsSettingsTabPrivateObject()
 void BPluginsSettingsTabPrivateObject::lstwgtCurrentRowChanged(int currentRow)
 {
     _m_p->lstwgtCurrentRowChanged(currentRow);
+}
+
+void BPluginsSettingsTabPrivateObject::lstwgtItemChanged(QListWidgetItem *item)
+{
+    _m_p->lstwgtItemChanged(item);
 }
 
 void BPluginsSettingsTabPrivateObject::btnSettingsClicked()
@@ -60,8 +66,16 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
     hlt = new QHBoxLayout(q);
       lstwgt = new QListWidget(q);
         foreach (BPluginWrapper *pw, plugins)
-            lstwgt->addItem( pw->name() );
+        {
+            QListWidgetItem *lwi = new QListWidgetItem;
+            lwi->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
+            lwi->setCheckState(pw->isActivated() ? Qt::Checked : Qt::Unchecked);
+            lwi->setText( pw->name() );
+            lstwgt->addItem(lwi);
+        }
         QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), _m_o, SLOT( lstwgtCurrentRowChanged(int) ) );
+        QObject::connect( lstwgt, SIGNAL( itemChanged(QListWidgetItem *) ),
+                          _m_o, SLOT( lstwgtItemChanged(QListWidgetItem *) ) );
       hlt->addWidget(lstwgt);
       vlt = new QVBoxLayout;
         btnSettings = new QPushButton(q);
@@ -92,6 +106,13 @@ void BPluginsSettingsTabPrivate::lstwgtCurrentRowChanged(int currentRow)
     bool b = (currentRow >= 0);
     btnSettings->setEnabled( b && plugins.at(currentRow)->isActivated() );
     btnAbout->setEnabled(b);
+}
+
+void BPluginsSettingsTabPrivate::lstwgtItemChanged(QListWidgetItem *item)
+{
+    bool b = (item->checkState() == Qt::Checked);
+    plugins.at( lstwgt->row(item) )->setActivated(b);
+    btnSettings->setEnabled(b);
 }
 
 void BPluginsSettingsTabPrivate::btnSettingsClicked()
@@ -158,7 +179,6 @@ QString BPluginsSettingsTab::title() const
 
 QVariantMap BPluginsSettingsTab::valueMap() const
 {
-    //
     return QVariantMap();
 }
 

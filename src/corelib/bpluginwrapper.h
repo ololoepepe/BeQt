@@ -4,6 +4,7 @@
 class BPluginWrapperPrivate;
 
 class QStringList;
+class QSettings;
 
 #include "bglobal.h"
 #include "bplugininterface.h"
@@ -19,6 +20,8 @@ class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
     B_DECLARE_PRIVATE(BPluginWrapper)
 public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
+    //
+    static QSettings *createPluginSettingsInstance(const QString &pluginName, bool createFile = true);
     //
     explicit BPluginWrapper(QObject *parent = 0);
     explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);

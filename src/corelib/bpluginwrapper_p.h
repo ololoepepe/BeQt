@@ -4,6 +4,7 @@
 class BPluginWrapper;
 
 class QPluginLoader;
+class QSettings;
 
 #include "bpluginwrapper.h"
 #include "bglobal.h"
@@ -19,13 +20,15 @@ class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPluginWrapper)
 public:
+    static QSettings *createPluginSettingsInstance(const QString &pluginName, bool createFile);
+    //
     static QMap<QString, BPluginWrapper *> globalQMap;
     //
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
     //
     void activate();
-    void deactivate();
+    void deactivate(); 
     //
     QPluginLoader *loader;
     QStringList acctptableTypes;

@@ -1,7 +1,12 @@
 #include "myplugin.h"
 #include "settingstab.h"
 
+#include <BeQtCore/BPluginWrapper>
+
 #include <QPixmap>
+#include <QSettings>
+#include <QString>
+#include <QVariant>
 
 MyPlugin::MyPlugin()
 {
@@ -50,12 +55,24 @@ MyPlugin::PluginInfo MyPlugin::info() const
 
 void MyPlugin::activate()
 {
-    //
+    QSettings *s = BPluginWrapper::createPluginSettingsInstance( name() );
+    if (!s)
+        return;
+    s->beginGroup("Global");
+    firstName = s->value("first_name").toString();
+    s->endGroup();
+    s->deleteLater();
 }
 
 void MyPlugin::deactivate()
 {
-    //
+    QSettings *s = BPluginWrapper::createPluginSettingsInstance( name() );
+    if (!s)
+        return;
+    s->beginGroup("Global");
+    s->setValue("first_name", firstName);
+    s->endGroup();
+    s->deleteLater();
 }
 
 QPixmap MyPlugin::pixmap() const

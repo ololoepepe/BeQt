@@ -11,10 +11,22 @@
 #include <QPluginLoader>
 #include <QMetaObject>
 #include <QMap>
+#include <QObject>
+#include <QSettings>
 
 #include <QDebug>
 
 QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
+
+//
+
+QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName, bool createFile)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return 0;
+    BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
+    return new QSettings( dapp->confFileName(dapp->userPrefix, pluginName, createFile), QSettings::IniFormat);
+}
 
 //
 
@@ -32,8 +44,8 @@ BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper *q) :
 
 BPluginWrapperPrivate::~BPluginWrapperPrivate()
 {
-    if ( !name.isEmpty() )
-        globalQMap.remove(name);
+    //if ( !name.isEmpty() )
+        //globalQMap.remove(name);
     deactivate();
     loader->deleteLater();
 }
@@ -77,7 +89,10 @@ void BPluginWrapperPrivate::activate()
     {
         BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
         if ( dapp->plugins.contains(q) )
+        {
+            dapp->deactivatedPlugins.removeAll(name);
             dapp->emitPluginActivated(q);
+        }
     }
 }
 void BPluginWrapperPrivate::deactivate()
@@ -93,9 +108,18 @@ void BPluginWrapperPrivate::deactivate()
             dapp->emitPluginAboutToBeDeactivated(q);
     }
     interface->deactivate();
-    loader->unload();
+    instance->deleteLater();
     instance = 0;
     interface = 0;
+    activated = false;
+    globalQMap.remove(name);
+}
+
+//
+
+QSettings *BPluginWrapper::createPluginSettingsInstance(const QString &pluginName, bool createFile)
+{
+    return BPluginWrapperPrivate::createPluginSettingsInstance(pluginName, createFile);
 }
 
 //

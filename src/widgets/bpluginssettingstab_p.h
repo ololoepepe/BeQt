@@ -7,6 +7,7 @@ class QHBoxLayout;
 class QListWidget;
 class QVBoxLayout;
 class QPushButton;
+class QListWidgetItem;
 
 #include "bpluginssettingstab.h"
 
@@ -27,6 +28,7 @@ public:
     BPluginsSettingsTabPrivate *const _m_p;
 public slots:
     void lstwgtCurrentRowChanged(int currentRow);
+    void lstwgtItemChanged(QListWidgetItem *item);
     void btnSettingsClicked();
     void btnAboutClicked();
 private:
@@ -42,6 +44,7 @@ public:
     ~BPluginsSettingsTabPrivate();
     //
     void lstwgtCurrentRowChanged(int currentRow);
+    void lstwgtItemChanged(QListWidgetItem *item);
     void btnSettingsClicked();
     void btnAboutClicked();
     //
