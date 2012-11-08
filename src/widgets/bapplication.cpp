@@ -205,9 +205,10 @@ void BApplication::showAboutDialog()
     d_func()->showAbout();
 }
 
-void BApplication::showSettingsDialog()
+void BApplication::showSettingsDialog(BSettingsDialog::Navigation navigation)
 {
-    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), QApplication::activeWindow() ) );
+    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), navigation,
+                                                             QApplication::activeWindow() ) );
     if (sd->exec() != BSettingsDialog::Accepted)
         return;
     handleSettings( sd->settingsMap() );

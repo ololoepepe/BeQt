@@ -43,7 +43,7 @@ public:
     ~BApplication();
 public slots:
     void showAboutDialog();
-    void showSettingsDialog();
+    void showSettingsDialog(BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
 protected:
     BApplication(BApplicationPrivate &d);
     //

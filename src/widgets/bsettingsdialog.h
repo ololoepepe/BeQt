@@ -18,12 +18,20 @@ class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BSettingsDialog)
 public:
+    enum Navigation
+    {
+        ListNavigation,
+        TabbedNavigation
+    };
+    //
     typedef QMap<QString, BAbstractSettingsTab *> SettingsTabMap;
     typedef QMap<QString, QVariantMap> SettingsMap;
     //
     explicit BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent = 0);
+    explicit BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent = 0);
     ~BSettingsDialog();
     //
+    bool isValid() const;
     SettingsMap settingsMap() const;
 protected:
     BSettingsDialog(BSettingsDialogPrivate &d);

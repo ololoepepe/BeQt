@@ -14,18 +14,26 @@
 #include <QTabWidget>
 #include <QLabel>
 #include <QCoreApplication>
+#include <QListWidget>
+#include <QStackedWidget>
+#include <QListWidgetItem>
+#include <QSplitter>
 
-class BSettingsDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBasePrivate
 {
     Q_DECLARE_TR_FUNCTIONS(BSettingsDialog)
     B_DECLARE_PUBLIC(BSettingsDialog)
 public:
-    BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs);
+    BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
+                           BSettingsDialog::Navigation navigation);
     ~BSettingsDialogPrivate();
     //
-    BSettingsDialog::SettingsTabMap tabMap;
-    QLabel *lbl;
+    const BSettingsDialog::SettingsTabMap TabMap;
+    //
     QVBoxLayout *vlt;
+      QSplitter *hspltr;
+        QListWidget *lstwgt;
+        QStackedWidget *stkdwgt;
       QTabWidget *twgt;
       QHBoxLayout *hltActions;
         //stretch
@@ -37,35 +45,62 @@ private:
 
 //
 
-BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs) :
-  BBasePrivate(q)
+BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
+                                               BSettingsDialog::Navigation navigation) :
+    BBasePrivate(q), TabMap(tabs)
 {
-    tabMap = tabs;
     q->setWindowTitle( tr("Settings", "windowTitle") );
     q->setMinimumHeight(120);
     q->setMinimumWidth(240);
     vlt = new QVBoxLayout(q);
-    if (tabMap.size() > 1)
+    if (TabMap.size() > 1)
     {
-        lbl = 0;
-        twgt = new QTabWidget(q);
-        foreach (BAbstractSettingsTab *tab, tabMap)
-            twgt->addTab( tab, tab->icon(), tab->title() );
-        vlt->addWidget(twgt);
+        if (BSettingsDialog::ListNavigation == navigation)
+        {
+            hspltr = new QSplitter(Qt::Horizontal, q);
+            lstwgt = new QListWidget(q);
+            hspltr->addWidget(lstwgt);
+            stkdwgt = new QStackedWidget(q);
+              QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), stkdwgt, SLOT( setCurrentIndex(int) ) );
+            hspltr->addWidget(stkdwgt);
+            vlt->addWidget(hspltr);
+            twgt = 0;
+            foreach (BAbstractSettingsTab *tab, TabMap)
+            {
+                stkdwgt->addWidget(tab);
+                QListWidgetItem *lwi = new QListWidgetItem;
+                lwi->setText( tab->title() );
+                lwi->setIcon( tab->icon() );
+                lstwgt->addItem(lwi);
+            }
+            lstwgt->setCurrentRow(0);
+        }
+        else
+        {
+            hspltr = 0;
+            lstwgt = 0;
+            stkdwgt = 0;
+            twgt = new QTabWidget(q);
+            vlt->addWidget(twgt);
+            foreach (BAbstractSettingsTab *tab, TabMap)
+                twgt->addTab( tab, tab->icon(), tab->title() );
+        }
     }
-    else if ( !tabMap.isEmpty() )
+    else if ( !TabMap.isEmpty() )
     {
-        BAbstractSettingsTab *tab = tabMap.value( tabMap.keys().first() );
-        q->setWindowTitle( q->windowTitle() + ": " + tab->title() );
-        twgt = 0;
-        lbl = new QLabel(q);
-          lbl->setText( tab->title() );
-        vlt->addWidget(lbl);
+        BAbstractSettingsTab *tab = TabMap.value( TabMap.keys().first() );
         vlt->addWidget(tab);
+        hspltr = 0;
+        lstwgt = 0;
+        stkdwgt = 0;
+        twgt = 0;
+        q->setWindowTitle( q->windowTitle() + ": " + tab->title() );
     }
     else
     {
-        lbl = 0;
+        hspltr = 0;
+        lstwgt = 0;
+        stkdwgt = 0;
         twgt = 0;
         hltActions = 0;
         btnCancel = 0;
@@ -95,7 +130,13 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
 //
 
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs) )
+    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation) )
+{
+    //
+}
+
+BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent) :
+    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation) )
 {
     //
 }
@@ -107,12 +148,17 @@ BSettingsDialog::~BSettingsDialog()
 
 //
 
+bool BSettingsDialog::isValid() const
+{
+    return d_func()->hltActions;
+}
+
 BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const
 {
     SettingsMap m;
     const BSettingsDialogPrivate *const d = d_func();
-    foreach ( const QString &key, d->tabMap.keys() )
-        m.insert( key, d->tabMap.value(key)->valueMap() );
+    foreach ( const QString &key, d->TabMap.keys() )
+        m.insert( key, d->TabMap.value(key)->valueMap() );
     return m;
 }
 
