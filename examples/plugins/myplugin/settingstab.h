@@ -2,6 +2,7 @@
 #define SETTINGSTAB_H
 
 class QLineEdit;
+class QIcon;
 
 #include <BAbstractSettingsTab>
 
@@ -13,6 +14,7 @@ public:
     ~SettingsTab();
     //
     QString title() const;
+    QIcon icon() const;
     QVariantMap valueMap() const;
 private:
     QLineEdit *ledt;

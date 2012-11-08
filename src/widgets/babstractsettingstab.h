@@ -2,6 +2,7 @@
 #define BABSTRACTSETTINGSTAB_H
 
 class QString;
+class QIcon;
 
 #include <BeQtCore/BeQt>
 
@@ -17,6 +18,7 @@ public:
     ~BAbstractSettingsTab();
     //
     virtual QString title() const = 0;
+    virtual QIcon icon() const = 0;
     virtual QVariantMap valueMap() const = 0;
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)

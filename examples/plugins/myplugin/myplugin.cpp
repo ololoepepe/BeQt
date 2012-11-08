@@ -1,12 +1,15 @@
 #include "myplugin.h"
 #include "settingstab.h"
 
-#include <BeQtCore/BPluginWrapper>
+#include <BPluginWrapper>
+#include <BApplication>
 
 #include <QPixmap>
 #include <QSettings>
 #include <QString>
 #include <QVariant>
+
+#include <QDebug>
 
 MyPlugin::MyPlugin()
 {
@@ -77,7 +80,8 @@ void MyPlugin::deactivate()
 
 QPixmap MyPlugin::pixmap() const
 {
-    return QPixmap();
+    return QPixmap(BApplication::location(BApplication::DataPath, BApplication::UserResources) +
+                   "/my-plugin/images/myplugin.png");
 }
 
 BAbstractSettingsTab *MyPlugin::settingsTab() const

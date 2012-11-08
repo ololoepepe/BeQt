@@ -18,10 +18,11 @@
 #include <QPushButton>
 #include <QApplication>
 #include <QList>
-#include <QPixmap>
+//#include <QPixmap>
 #include <QObject>
 #include <QMessageBox>
 #include <QListWidgetItem>
+#include <QIcon>
 
 #include <QDebug>
 
@@ -71,6 +72,9 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
             lwi->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
             lwi->setCheckState(pw->isActivated() ? Qt::Checked : Qt::Unchecked);
             lwi->setText( pw->name() );
+            BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
+            if (gpi)
+                lwi->setIcon( QIcon( gpi->pixmap() ) );
             lstwgt->addItem(lwi);
         }
         QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), _m_o, SLOT( lstwgtCurrentRowChanged(int) ) );
@@ -175,6 +179,11 @@ BPluginsSettingsTab::~BPluginsSettingsTab()
 QString BPluginsSettingsTab::title() const
 {
     return tr("Plugins", "title");
+}
+
+QIcon BPluginsSettingsTab::icon() const
+{
+    return BApplication::beqtIcon("binary");
 }
 
 QVariantMap BPluginsSettingsTab::valueMap() const

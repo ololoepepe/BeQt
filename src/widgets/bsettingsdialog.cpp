@@ -50,7 +50,7 @@ BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettin
         lbl = 0;
         twgt = new QTabWidget(q);
         foreach (BAbstractSettingsTab *tab, tabMap)
-            twgt->addTab( tab, tab->title() );
+            twgt->addTab( tab, tab->icon(), tab->title() );
         vlt->addWidget(twgt);
     }
     else if ( !tabMap.isEmpty() )

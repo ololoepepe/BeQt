@@ -4,6 +4,7 @@
 class BPluginsSettingsTabPrivate;
 
 class QString;
+class QIcon;
 
 #include "babstractsettingstab.h"
 
@@ -21,6 +22,7 @@ public:
     ~BPluginsSettingsTab();
     //
     QString title() const;
+    QIcon icon() const;
     QVariantMap valueMap() const;
 protected:
     BPluginsSettingsTab(BPluginsSettingsTabPrivate &d);

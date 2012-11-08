@@ -1,8 +1,11 @@
 #include "settingstab.h"
 
+#include <BApplication>
+
 #include <QFormLayout>
 #include <QLineEdit>
 #include <QString>
+#include <QIcon>
 
 SettingsTab::SettingsTab(const QString &firstName, const QString &secondName)
 {
@@ -18,6 +21,11 @@ SettingsTab::SettingsTab(const QString &firstName, const QString &secondName)
 QString SettingsTab::title() const
 {
     return "MyApp";
+}
+
+QIcon SettingsTab::icon() const
+{
+    return QIcon(BApplication::location(BApplication::DataPath, BApplication::UserResources) + "/images/myapp.png");
 }
 
 QVariantMap SettingsTab::valueMap() const

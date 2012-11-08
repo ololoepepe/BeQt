@@ -3,6 +3,7 @@
 
 class QLineEdit;
 class QString;
+class QIcon;
 
 #include <BAbstractSettingsTab>
 
@@ -13,6 +14,7 @@ public:
     SettingsTab(const QString &firstName, const QString &secondName);
     //
     QString title() const;
+    QIcon icon() const;
     QVariantMap valueMap() const;
 private:
     QLineEdit *ledt1;
