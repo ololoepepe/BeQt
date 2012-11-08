@@ -12,9 +12,11 @@ include(../../../depend.pri)
 
 HEADERS += \
     settingstab.h \
-    application.h
+    application.h \
+    mainwindow.h
 
 SOURCES = \
     main.cpp \
     settingstab.cpp \
-    application.cpp
+    application.cpp \
+    mainwindow.cpp

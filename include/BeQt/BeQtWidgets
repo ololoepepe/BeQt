@@ -7,6 +7,7 @@
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "blocalecombobox.h"
+#include "bmainwindow.h"
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
 

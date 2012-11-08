@@ -1,4 +1,5 @@
 #include "application.h"
+#include "mainwindow.h"
 
 #include <BApplication>
 #include <BTerminalIOHandler>
@@ -27,6 +28,7 @@ int main(int argc, char **argv)
     QApplication *app = new QApplication(argc, argv);
     QApplication::setApplicationName("My App");
     QApplication::setOrganizationName("darkangel");
+    QApplication::setOrganizationDomain("https://github.com/the-dark-angel/test");
     QApplication::setApplicationVersion("0.1.0pa1");
     /*BCoreApplication *bapp = new BCoreApplication;
     delete bapp;
@@ -59,7 +61,8 @@ int main(int argc, char **argv)
     //BApplication::setSettingsTabDefaultNavigation(BApplication::DefaultNavigation);
     //end navigation
     QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
-    QWidget *w = new QWidget;
+    MainWindow *mw = new MainWindow;
+    QWidget *w = new QWidget(mw);
     w->move(800, 400);
     QVBoxLayout *vlt = new QVBoxLayout(w);
     //locale combo box
@@ -80,8 +83,11 @@ int main(int argc, char **argv)
     QPushButton *btn2 = new QPushButton("Settings", w);
     QObject::connect( btn2, SIGNAL( clicked() ), bApp, SLOT( showSettingsDialog() ) );
     vlt->addWidget(btn2);
-    w->show();
+    mw->setCentralWidget(w);
+    mw->show();
+    mw->loadSettings();
     int ret = app->exec();
+    mw->saveSettings();
     //end test
     BApplication::saveSettings();
     delete bapp;

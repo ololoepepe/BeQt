@@ -1,0 +1,1 @@
+#include "../BeQtWidgets/bmainwindow.h"
