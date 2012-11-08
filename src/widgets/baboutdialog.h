@@ -66,7 +66,7 @@ public:
     void setLicense(const QString &fileName, const char *codecName);
     void resetTabs();
 protected:
-    BAboutDialog(BAboutDialogPrivate &d);
+    BAboutDialog(BAboutDialogPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BAboutDialog)
 };

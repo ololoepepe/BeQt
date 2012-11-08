@@ -11,7 +11,7 @@ class BNetworkConnectionPrivate;
 
 #include <QByteArray>
 
-class BNetworkOperationPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BNetworkOperationPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BNetworkOperation)
 public:

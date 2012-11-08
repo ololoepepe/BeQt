@@ -26,9 +26,6 @@ public:
     //
 public slots:
     void languageChanged();
-    void openHomepage();
-    void showHelpContents();
-    void showContextualHelp();
 private:
     Q_DISABLE_COPY(BMainWindowPrivateObject)
 };
@@ -58,9 +55,6 @@ public:
     const QString SettingsGroup;
     //
     void languageChanged();
-    void openHomepage();
-    void showHelpContents();
-    void showContextualHelp();
     void retranslateAction(QAction *action, Action type) const;
     void retranslateMenu(QMenu *menu, Menu type) const;
 private:

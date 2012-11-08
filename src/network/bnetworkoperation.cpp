@@ -121,8 +121,8 @@ bool BNetworkOperation::isFinished() const
 
 //
 
-BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d) :
-    BBase(d)
+BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
 {
     //
 }

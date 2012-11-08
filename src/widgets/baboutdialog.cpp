@@ -460,8 +460,8 @@ void BAboutDialog::resetTabs()
 
 //
 
-BAboutDialog::BAboutDialog(BAboutDialogPrivate &d) :
-    BBase(d)
+BAboutDialog::BAboutDialog(BAboutDialogPrivate &d, QWidget *parent) :
+    QDialog(parent), BBase(d)
 {
     //
 }

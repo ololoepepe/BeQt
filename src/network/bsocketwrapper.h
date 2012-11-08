@@ -43,7 +43,7 @@ signals:
     void dataSent(const BNetworkOperationMetaData &metaData);
     void criticalBufferSizeReached();
 protected:
-    BSocketWrapper(BSocketWrapperPrivate &d);
+    BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BSocketWrapper)
 };

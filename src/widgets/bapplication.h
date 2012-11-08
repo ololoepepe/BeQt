@@ -4,7 +4,6 @@
 class BApplicationPrivate;
 
 class QIcon;
-class QString;
 class QPixmap;
 
 #include "baboutdialog.h"
@@ -15,6 +14,7 @@ class QPixmap;
 
 #include <QObject>
 #include <QSize>
+#include <QString>
 
 #if defined(bApp)
 #   undef bApp
@@ -33,6 +33,12 @@ public:
         ListNavigation,
         TabbedNavigation
     };
+    enum HelpMode
+    {
+        InternalMode,
+        ExternalOfflineMode,
+        ExternalOnlineMode
+    };
     //
     static QIcon beqtIcon(const QString &fileName);
     static QPixmap beqtPixmap( const QString &fileName, const QSize &scale = QSize() );
@@ -46,12 +52,17 @@ public:
     static void setAboutLicense(const QString &text);
     static void setAboutLicense(const QString &fileName, const char *codecName);
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
+    static void setHelpMode(HelpMode mode);
+    static void setHelpIndex(const QString &index);
     //
     explicit BApplication( const AppOptions &options = AppOptions() );
     ~BApplication();
 public slots:
     void showAboutDialog();
     void showSettingsDialog(SettingsTabNavigation navigation = DefaultNavigation);
+    void showHelpContents();
+    void showContextualHelp();
+    void openHomepage();
 protected:
     BApplication(BApplicationPrivate &d);
     //

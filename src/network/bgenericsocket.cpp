@@ -422,3 +422,11 @@ qint64 BGenericSocket::write(const QByteArray &byteArray)
 {
     return isSocketSet() ? ioDevice()->write(byteArray) : -1;
 }
+
+//
+
+BGenericSocket::BGenericSocket(BGenericSocketPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    //
+}

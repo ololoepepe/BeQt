@@ -77,6 +77,7 @@ int main(int argc, char **argv)
     //loading plugins
     BApplication::loadPlugins();
     //
+    //BApplication::setHelpMode(BApplication::ExternalOnlineMode);
     QPushButton *btn = new QPushButton("About", w);
     QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAboutDialog() ) );
     vlt->addWidget(btn);

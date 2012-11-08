@@ -31,7 +31,7 @@ private:
     Q_DISABLE_COPY(BSocketWrapperPrivateObject)
 };
 
-class BSocketWrapperPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSocketWrapper)
 public:

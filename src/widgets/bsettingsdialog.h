@@ -34,7 +34,7 @@ public:
     bool isValid() const;
     SettingsMap settingsMap() const;
 protected:
-    BSettingsDialog(BSettingsDialogPrivate &d);
+    BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BSettingsDialog)
 };

@@ -6,6 +6,7 @@
 #include "bapplication.h"
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
+#include "bhelpbrowser.h"
 #include "blocalecombobox.h"
 #include "bmainwindow.h"
 #include "bpluginssettingstab.h"

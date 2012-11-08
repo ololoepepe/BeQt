@@ -1,10 +1,12 @@
 #include "bapplication.h"
 #include "baboutdialog.h"
 #include "bsettingsdialog.h"
+#include "bhelpbrowser.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/private/bcoreapplication_p.h>
+#include <BeQtCore/BDirTools>
 
 #include <QObject>
 #include <QIcon>
@@ -14,6 +16,11 @@
 #include <QPixmap>
 #include <QSize>
 #include <QScopedPointer>
+#include <QStringList>
+#include <QDesktopServices>
+#include <QUrl>
+#include <QDir>
+#include <QTextBrowser>
 
 #include <QDebug>
 #include <QPointer>
@@ -26,9 +33,19 @@ public:
     //
     void initAboutDlg();
     void showAbout();
+    QString helpContext(QWidget *widget = 0) const;
+    QString getHelpIndex() const;
+    QStringList helpSearchPaths() const;
+    void openInternalHelp(const QString &file);
+    void openExternalOfflineHelp(const QString &file);
+    void openExternalOnlineHelp(const QString &file);
+    void showHelp( const QString &file = QString() );
     //
+    QString homepage;
     BAboutDialog *aboutDlg;
     BApplication::SettingsTabNavigation navigation;
+    BApplication::HelpMode helpMode;
+    QString helpIndex;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };
@@ -40,6 +57,7 @@ BApplicationPrivate::BApplicationPrivate(BApplication *q, const BCoreApplication
 {
     aboutDlg = 0;
     navigation = BApplication::DefaultNavigation;
+    helpMode = BApplication::InternalMode;
 }
 
 BApplicationPrivate::~BApplicationPrivate()
@@ -69,6 +87,93 @@ void BApplicationPrivate::showAbout()
         aboutDlg->activateWindow();
     else
         aboutDlg->open();
+}
+
+QString BApplicationPrivate::helpContext(QWidget *widget) const
+{
+    if (!widget)
+        widget = QApplication::focusWidget();
+    if (!widget)
+        return "";
+    QString context = widget->property("help").toString();
+    if ( context.isEmpty() )
+    {
+        QWidget *pw = widget->parentWidget();
+        return pw ? helpContext(pw) : QString();
+    }
+    else
+    {
+        return context;
+    }
+}
+
+QString BApplicationPrivate::getHelpIndex() const
+{
+    return !helpIndex.isEmpty() ? helpIndex : QString("index.html");
+}
+
+QStringList BApplicationPrivate::helpSearchPaths() const
+{
+    QStringList paths;
+    foreach ( const QString &loc, BApplication::locations(BApplication::DocumentationPath) )
+        paths << BDirTools::localeBasedDirName(loc);
+    return paths;
+}
+
+void BApplicationPrivate::openInternalHelp(const QString &file)
+{
+    BHelpBrowser *hb = new BHelpBrowser(helpSearchPaths(), getHelpIndex(), file);
+    hb->setAttribute(Qt::WA_DeleteOnClose, true);
+    hb->show();
+}
+
+void BApplicationPrivate::openExternalOfflineHelp(const QString &file)
+{
+    QString fn = file;
+    if ( !QFileInfo(file).isAbsolute() )
+    {
+        foreach ( const QString &path, helpSearchPaths() )
+        {
+            if ( QFileInfo(path + "/" + file).exists() )
+            {
+                fn = path + "/" + file;
+                break;
+            }
+        }
+    }
+    if ( !QFileInfo(fn).isAbsolute() )
+        return;
+    QUrl url = QUrl::fromLocalFile(fn);
+    if ( !url.isValid() )
+        return;
+    QDesktopServices::openUrl(url);
+}
+
+void BApplicationPrivate::openExternalOnlineHelp(const QString &file)
+{
+    QUrl url = QUrl::fromUserInput(file);
+    if ( !url.isValid() )
+        return;
+    QDesktopServices::openUrl(url);
+}
+
+void BApplicationPrivate::showHelp(const QString &file)
+{
+    QString fn = !file.isEmpty() ? file : getHelpIndex();
+    switch (helpMode)
+    {
+    case BApplication::InternalMode:
+        openInternalHelp(fn);
+        break;
+    case BApplication::ExternalOfflineMode:
+        openExternalOfflineHelp(fn);
+        break;
+    case BApplication::ExternalOnlineMode:
+        openExternalOnlineHelp(fn);
+        break;
+    default:
+        break;
+    }
 }
 
 //
@@ -127,6 +232,7 @@ void BApplication::setAbout(const QString &description, const QString &copyright
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
     B_DS(BApplication);
+    ds->homepage = website;
     ds->initAboutDlg();
     ds->aboutDlg->setAbout(description, copyright, website);
 }
@@ -187,7 +293,23 @@ void BApplication::setAboutLicense(const QString &fileName, const char *codecNam
 
 void BApplication::setSettingsTabDefaultNavigation(SettingsTabNavigation navigation)
 {
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
     ds_func()->navigation = navigation;
+}
+
+void BApplication::setHelpMode(HelpMode mode)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->helpMode = mode;
+}
+
+void BApplication::setHelpIndex(const QString &index)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->helpIndex = index;
 }
 
 //
@@ -232,6 +354,24 @@ void BApplication::showSettingsDialog(SettingsTabNavigation navigation)
     if (sd->exec() != BSettingsDialog::Accepted)
         return;
     handleSettings( sd->settingsMap() );
+}
+
+void BApplication::showHelpContents()
+{
+    d_func()->showHelp();
+}
+
+void BApplication::showContextualHelp()
+{
+    B_D(BApplication);
+    d->showHelp( d->helpContext() );
+}
+
+void BApplication::openHomepage()
+{
+    const B_D(BApplication);
+    QString url = !d->homepage.isEmpty() ? d->homepage : QApplication::organizationDomain();
+    QDesktopServices::openUrl( QUrl::fromUserInput(url) );
 }
 
 //

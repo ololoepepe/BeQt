@@ -48,7 +48,7 @@ signals:
     void activated();
     void aboutToBeDeactivated();
 protected:
-    BPluginWrapper(BPluginWrapperPrivate &d);
+    BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BPluginWrapper)
     //

@@ -152,8 +152,8 @@ QList<QLocale> BTranslator::availableLocales() const
 
 //
 
-BTranslator::BTranslator(BTranslatorPrivate &d) :
-    BBase(d)
+BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
 {
     //
 }

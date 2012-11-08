@@ -84,7 +84,7 @@ signals:
     void readyRead();
     void stateChanged(QAbstractSocket::SocketState socketState);
 protected:
-    BGenericSocket(BGenericSocketPrivate &d);
+    BGenericSocket(BGenericSocketPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BGenericSocket)
 };

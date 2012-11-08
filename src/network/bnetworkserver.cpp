@@ -183,3 +183,11 @@ int BNetworkServer::currentThreadCount() const
 {
     return d_func()->threads.size();
 }
+
+//
+
+BNetworkServer::BNetworkServer(BNetworkServerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    //
+}

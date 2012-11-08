@@ -9,14 +9,13 @@
 #include <QApplication>
 #include <QString>
 #include <QWhatsThis>
-#include <QDesktopServices>
-#include <QUrl>
 #include <QKeySequence>
 #include <QSettings>
 #include <QVariant>
 #include <QRect>
 #include <QByteArray>
 #include <QDesktopWidget>
+#include <QCloseEvent>
 
 BMainWindowPrivateObject::BMainWindowPrivateObject(BMainWindowPrivate *p) :
     QObject(0), _m_p(p)
@@ -36,21 +35,6 @@ void BMainWindowPrivateObject::languageChanged()
     _m_p->languageChanged();
 }
 
-void BMainWindowPrivateObject::openHomepage()
-{
-    _m_p->openHomepage();
-}
-
-void BMainWindowPrivateObject::showHelpContents()
-{
-    _m_p->showHelpContents();
-}
-
-void BMainWindowPrivateObject::showContextualHelp()
-{
-    _m_p->showContextualHelp();
-}
-
 //
 
 BMainWindowPrivate::BMainWindowPrivate(BMainWindow *q, const QString &sg) :
@@ -67,21 +51,6 @@ BMainWindowPrivate::~BMainWindowPrivate()
 //
 
 void BMainWindowPrivate::languageChanged()
-{
-    //
-}
-
-void BMainWindowPrivate::openHomepage()
-{
-    QDesktopServices::openUrl( QUrl( QApplication::organizationDomain() ) );
-}
-
-void BMainWindowPrivate::showHelpContents()
-{
-    //
-}
-
-void BMainWindowPrivate::showContextualHelp()
 {
     //
 }
@@ -192,13 +161,21 @@ void BMainWindow::saveSettings(QSettings *s)
 
 //
 
-BMainWindow::BMainWindow(BMainWindowPrivate &d) :
-    BBase(d)
+BMainWindow::BMainWindow(BMainWindowPrivate &d, QWidget *parent) :
+    QMainWindow(parent), BBase(d)
 {
     //
 }
 
 //
+
+void BMainWindow::closeEvent(QCloseEvent *event)
+{
+    if ( handleClosing() )
+        QMainWindow::closeEvent(event);
+    else
+        event->ignore();
+}
 
 QMenu *BMainWindow::createHelpMenu(const HelpMenuOptions &options)
 {
@@ -209,7 +186,7 @@ QMenu *BMainWindow::createHelpMenu(const HelpMenuOptions &options)
         QAction *act = new QAction(this);
         act->setObjectName("ActionHomepage");
         d->retranslateAction(act, BMainWindowPrivate::HomepageAction);
-        connect( act, SIGNAL( triggered() ), d->_m_o, SLOT( openHomepage() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( openHomepage() ) );
         menu->addAction(act);
     }
     if (options.contents)
@@ -219,7 +196,7 @@ QMenu *BMainWindow::createHelpMenu(const HelpMenuOptions &options)
         if (!options.contextual)
             act->setShortcut( QKeySequence("F1") );
         d->retranslateAction(act, BMainWindowPrivate::ContentsAction);
-        connect( act, SIGNAL( triggered() ), d->_m_o, SLOT( showHelpContents() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( showHelpContents() ) );
         if ( !menu->isEmpty() )
             menu->addSeparator();
         menu->addAction(act);
@@ -230,7 +207,7 @@ QMenu *BMainWindow::createHelpMenu(const HelpMenuOptions &options)
         act->setObjectName("ActionContextual");
         act->setShortcut( QKeySequence("F1") );
         d->retranslateAction(act, BMainWindowPrivate::ContextualAction);
-        connect( act, SIGNAL( triggered() ), d->_m_o, SLOT( showContextualHelp() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( showContextualHelp() ) );
         if (!menu->isEmpty() && !options.contents)
             menu->addSeparator();
         menu->addAction(act);
@@ -264,4 +241,9 @@ QMenu *BMainWindow::createHelpMenu(const HelpMenuOptions &options)
         d->retranslateMenu(menu, BMainWindowPrivate::HelpMenu);
     }
     return menu;
+}
+
+bool BMainWindow::handleClosing()
+{
+    return true;
 }

@@ -57,7 +57,7 @@ signals:
     void replySent(BNetworkOperation *operation);
     void criticalBufferSizeReached();
 protected:
-    BNetworkConnection(BNetworkConnectionPrivate &d);
+    BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
     //
     virtual void log(const QString &text);
 private:

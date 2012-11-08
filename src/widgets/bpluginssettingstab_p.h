@@ -35,7 +35,7 @@ private:
     Q_DISABLE_COPY(BPluginsSettingsTabPrivateObject)
 };
 
-class BPluginsSettingsTabPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBasePrivate
 {
     Q_DECLARE_TR_FUNCTIONS(BPluginsSettingsTab)
     B_DECLARE_PUBLIC(BPluginsSettingsTab)

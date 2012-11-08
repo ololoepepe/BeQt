@@ -306,3 +306,11 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
 //
 
 const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_4_8;
+
+//
+
+BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    //
+}

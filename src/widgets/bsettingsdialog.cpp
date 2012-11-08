@@ -19,7 +19,7 @@
 #include <QListWidgetItem>
 #include <QSplitter>
 
-class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBasePrivate
+class BSettingsDialogPrivate : public BBasePrivate
 {
     Q_DECLARE_TR_FUNCTIONS(BSettingsDialog)
     B_DECLARE_PUBLIC(BSettingsDialog)
@@ -164,8 +164,8 @@ BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const
 
 //
 
-BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d) :
-    BBase(d)
+BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
+    QDialog(parent), BBase(d)
 {
     //
 }

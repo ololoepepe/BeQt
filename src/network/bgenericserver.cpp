@@ -209,3 +209,11 @@ BGenericSocket *BGenericServer::createSocket(int socketDescriptor)
     }
     return socket;
 }
+
+//
+
+BGenericServer::BGenericServer(BGenericServerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    //
+}

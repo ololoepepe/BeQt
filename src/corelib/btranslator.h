@@ -28,7 +28,7 @@ public:
     QString fileName() const;
     QList<QLocale> availableLocales() const;
 protected:
-    BTranslator(BTranslatorPrivate &d);
+    BTranslator(BTranslatorPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BTranslator)
     //

@@ -240,8 +240,8 @@ void BPluginWrapper::deactivate()
 
 //
 
-BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d) :
-    BBase(d)
+BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
 {
     //
 }

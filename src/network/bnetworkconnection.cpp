@@ -444,6 +444,14 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
 
 //
 
+BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    //
+}
+
+//
+
 void BNetworkConnection::log(const QString &text)
 {
     BTerminalIOHandler::writeLine("[" + QDateTime::currentDateTime().toString("dd/MMM/yyy hh:mm:ss") + "] [" +

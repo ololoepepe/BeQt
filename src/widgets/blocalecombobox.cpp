@@ -112,3 +112,11 @@ void BLocaleComboBox::updateAvailableLocales()
 {
     d_func()->updateAvailableLocales();
 }
+
+//
+
+BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
+    QComboBox(parent), BBase(d)
+{
+    //
+}

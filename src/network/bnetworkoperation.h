@@ -39,7 +39,7 @@ signals:
     void finished();
     void destroyed(const BNetworkOperationMetaData &metaData);
 protected:
-    BNetworkOperation(BNetworkOperationPrivate &d);
+    BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent = 0);
 private:
     explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent = 0);
     //

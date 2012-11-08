@@ -33,7 +33,7 @@ public:
     int maxThreadCount() const;
     int currentThreadCount() const;
 protected:
-    BNetworkServer(BNetworkServerPrivate &d);
+    BNetworkServer(BNetworkServerPrivate &d, QObject *parent = 0);
     //
     virtual BNetworkConnection *createConnection(int socketDescriptor) const = 0;
 private:

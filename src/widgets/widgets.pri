@@ -5,6 +5,8 @@ HEADERS += \
     $${PWD}/bapplication.h \
     $${PWD}/bflowlayout.h \
     $${PWD}/bguiplugininterface.h \
+    $${PWD}/bhelpbrowser.h \
+    $${PWD}/bhelpbrowser_p.h \
     $${PWD}/blocalecombobox.h \
     $${PWD}/bmainwindow.h \
     $${PWD}/bmainwindow_p.h \
@@ -17,6 +19,7 @@ SOURCES += \
     $${PWD}/babstractsettingstab.cpp \
     $${PWD}/bapplication.cpp \
     $${PWD}/bflowlayout.cpp \
+    $${PWD}/bhelpbrowser.cpp \
     $${PWD}/blocalecombobox.cpp \
     $${PWD}/bmainwindow.cpp \
     $${PWD}/bpluginssettingstab.cpp \

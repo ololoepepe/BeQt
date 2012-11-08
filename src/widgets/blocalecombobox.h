@@ -27,7 +27,7 @@ public slots:
 signals:
     void currentLocaleChanged(const QLocale &locale);
 protected:
-    BLocaleComboBox(BLocaleComboBoxPrivate &d);
+    BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BLocaleComboBox)
 };

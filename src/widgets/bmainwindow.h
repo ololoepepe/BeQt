@@ -7,6 +7,7 @@ class QWidget;
 class QMenu;
 class QSettings;
 class QString;
+class QCloseEvent;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -44,9 +45,11 @@ public slots:
     void loadSettings(QSettings *s = 0);
     void saveSettings(QSettings *s = 0);
 protected:
-    BMainWindow(BMainWindowPrivate &d);
+    BMainWindow(BMainWindowPrivate &d, QWidget *parent = 0);
     //
+    void closeEvent(QCloseEvent *event);
     QMenu *createHelpMenu( const HelpMenuOptions &options = HelpMenuOptions() );
+    virtual bool handleClosing();
 private:
     Q_DISABLE_COPY(BMainWindow)
 };

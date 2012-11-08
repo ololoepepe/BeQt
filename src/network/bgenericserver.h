@@ -48,7 +48,7 @@ public:
 signals:
     void newConnection(int socketDescriptor);
 protected:
-    BGenericServer(BGenericServerPrivate &d);
+    BGenericServer(BGenericServerPrivate &d, QObject *parent = 0);
     //
     virtual BGenericSocket *createSocket(int socketDescriptor);
 private:

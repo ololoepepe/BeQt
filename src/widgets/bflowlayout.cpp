@@ -191,3 +191,11 @@ QSize BFlowLayout::sizeHint() const
 {
     return minimumSize();
 }
+
+//
+
+BFlowLayout::BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent) :
+    QLayout(parent), BBase(d)
+{
+    //
+}
