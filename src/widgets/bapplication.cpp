@@ -28,6 +28,7 @@ public:
     void showAbout();
     //
     BAboutDialog *aboutDlg;
+    BApplication::SettingsTabNavigation navigation;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };
@@ -38,6 +39,7 @@ BApplicationPrivate::BApplicationPrivate(BApplication *q, const BCoreApplication
     BCoreApplicationPrivate(q, options)
 {
     aboutDlg = 0;
+    navigation = BApplication::DefaultNavigation;
 }
 
 BApplicationPrivate::~BApplicationPrivate()
@@ -183,6 +185,11 @@ void BApplication::setAboutLicense(const QString &fileName, const char *codecNam
     ds->aboutDlg->setLicense(fileName, codecName);
 }
 
+void BApplication::setSettingsTabDefaultNavigation(SettingsTabNavigation navigation)
+{
+    ds_func()->navigation = navigation;
+}
+
 //
 
 BApplication::BApplication(const AppOptions &options) :
@@ -205,10 +212,23 @@ void BApplication::showAboutDialog()
     d_func()->showAbout();
 }
 
-void BApplication::showSettingsDialog(BSettingsDialog::Navigation navigation)
+void BApplication::showSettingsDialog(SettingsTabNavigation navigation)
 {
-    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), navigation,
-                                                             QApplication::activeWindow() ) );
+    BSettingsDialog::Navigation nvg;
+    switch (navigation)
+    {
+    case ListNavigation:
+        nvg = BSettingsDialog::ListNavigation;
+        break;
+    case TabbedNavigation:
+        nvg = BSettingsDialog::TabbedNavigation;
+        break;
+    default:
+        nvg = (TabbedNavigation == d_func()->navigation) ? BSettingsDialog::TabbedNavigation :
+                                                           BSettingsDialog::ListNavigation;
+        break;
+    }
+    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), nvg, QApplication::activeWindow() ) );
     if (sd->exec() != BSettingsDialog::Accepted)
         return;
     handleSettings( sd->settingsMap() );

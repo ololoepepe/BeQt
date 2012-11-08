@@ -5,6 +5,7 @@
 #include <BAboutDialog>
 #include <BLocaleComboBox>
 #include <BTranslator>
+#include <BSettingsDialog>
 
 #include <QApplication>
 #include <QString>
@@ -54,6 +55,9 @@ int main(int argc, char **argv)
     BApplication::setAboutThanksToInfos(BAboutDialog::PersonInfoList() << pi);
     BApplication::setAboutLicense("MIT License");
     //end about
+    //navigation
+    //BApplication::setSettingsTabDefaultNavigation(BApplication::DefaultNavigation);
+    //end navigation
     QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
     QWidget *w = new QWidget;
     w->move(800, 400);

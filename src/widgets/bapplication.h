@@ -27,6 +27,13 @@ class B_WIDGETS_EXPORT BApplication : public BCoreApplication
     B_DECLARE_PRIVATE(BApplication)
     B_DECLARE_PRIVATE_S(BApplication)
 public:
+    enum SettingsTabNavigation
+    {
+        DefaultNavigation,
+        ListNavigation,
+        TabbedNavigation
+    };
+    //
     static QIcon beqtIcon(const QString &fileName);
     static QPixmap beqtPixmap( const QString &fileName, const QSize &scale = QSize() );
     static void setAboutPixmap(const QPixmap &pixmap);
@@ -38,12 +45,13 @@ public:
     static void setAboutThanksToInfos(const BAboutDialog::PersonInfoList &infos);
     static void setAboutLicense(const QString &text);
     static void setAboutLicense(const QString &fileName, const char *codecName);
+    static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     //
     explicit BApplication( const AppOptions &options = AppOptions() );
     ~BApplication();
 public slots:
     void showAboutDialog();
-    void showSettingsDialog(BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
+    void showSettingsDialog(SettingsTabNavigation navigation = DefaultNavigation);
 protected:
     BApplication(BApplicationPrivate &d);
     //
