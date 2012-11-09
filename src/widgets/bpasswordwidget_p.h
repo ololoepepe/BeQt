@@ -16,7 +16,7 @@ class QToolButton;
 #include <QObject>
 #include <QApplication>
 
-class BPasswordWidgetPrivateObject : public QObject
+class B_WIDGETS_EXPORT BPasswordWidgetPrivateObject : public QObject
 {
     Q_OBJECT
 public:
@@ -32,7 +32,7 @@ private:
     Q_DISABLE_COPY(BPasswordWidgetPrivateObject)
 };
 
-class BPasswordWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPasswordWidget)
     Q_DECLARE_TR_FUNCTIONS(BPasswordWidget)

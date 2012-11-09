@@ -59,10 +59,12 @@ BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     ledt = new QLineEdit(q);
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
+      tbtnSave->setIcon( BApplication::beqtIcon("password_save") );
       QObject::connect( tbtnSave, SIGNAL( clicked() ), _m_o, SLOT( tbtnSaveClicked() ) );
       resetSave();
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
+      tbtnShow->setIcon( BApplication::beqtIcon("decrypted") );
       QObject::connect( tbtnShow, SIGNAL( clicked() ), _m_o, SLOT( tbtnShowClicked() ) );
       resetShow();
     hlt->addWidget(tbtnShow);
@@ -87,13 +89,13 @@ void BPasswordWidgetPrivate::retranslateUi()
 void BPasswordWidgetPrivate::resetSave()
 {
     save = !save;
-    tbtnSave->setIcon( BApplication::beqtIcon(save ? "password_save" : "password_dont_save") );
+    tbtnSave->setDown(save);
 }
 
 void BPasswordWidgetPrivate::resetShow()
 {
     show = !show;
-    tbtnShow->setIcon( BApplication::beqtIcon(show ? "decrypted" : "encrypted") );
+    tbtnShow->setDown(show);
     ledt->setEchoMode(show ? QLineEdit::Normal : QLineEdit::Password);
 }
 

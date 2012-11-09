@@ -12,7 +12,7 @@ class QString;
 #include <QWidget>
 #include <QCryptographicHash>
 
-class BPasswordWidget : public QWidget, public BBase
+class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBase
 {
     B_DECLARE_PRIVATE(BPasswordWidget)
     Q_OBJECT
