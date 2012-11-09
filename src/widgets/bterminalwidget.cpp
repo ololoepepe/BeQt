@@ -1,5 +1,5 @@
-#include "bterminal.h"
-#include "bterminal_p.h"
+#include "bterminalwidget.h"
+#include "bterminalwidget_p.h"
 #include "babstractterminaldriver.h"
 
 #include <BeQtCore/BeQtGlobal>
@@ -16,20 +16,20 @@
 
 #include <QDebug>
 
-BTerminalPrivateObject::BTerminalPrivateObject(BTerminalPrivate *p) :
+BTerminalWidgetPrivateObject::BTerminalWidgetPrivateObject(BTerminalWidgetPrivate *p) :
     QObject(0), _m_p(p)
 {
     //
 }
 
-BTerminalPrivateObject::~BTerminalPrivateObject()
+BTerminalWidgetPrivateObject::~BTerminalWidgetPrivateObject()
 {
     //
 }
 
 //
 
-bool BTerminalPrivateObject::eventFilter(QObject *object, QEvent *event)
+bool BTerminalWidgetPrivateObject::eventFilter(QObject *object, QEvent *event)
 {
     if (event->type() != QEvent::KeyPress)
         return QObject::eventFilter(object, event);
@@ -39,20 +39,20 @@ bool BTerminalPrivateObject::eventFilter(QObject *object, QEvent *event)
 
 //
 
-void BTerminalPrivateObject::readyRead()
+void BTerminalWidgetPrivateObject::readyRead()
 {
     _m_p->read();
 }
 
-void BTerminalPrivateObject::finished(int exitCode)
+void BTerminalWidgetPrivateObject::finished(int exitCode)
 {
     _m_p->finished(exitCode);
 }
 
 //
 
-BTerminalPrivate::BTerminalPrivate(BTerminal *q) :
-    BBasePrivate(q), _m_o( new BTerminalPrivateObject(this) )
+BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q) :
+    BBasePrivate(q), _m_o( new BTerminalWidgetPrivateObject(this) )
 {
     driver = 0;
     len = 0;
@@ -60,7 +60,7 @@ BTerminalPrivate::BTerminalPrivate(BTerminal *q) :
     q->installEventFilter(_m_o);
 }
 
-BTerminalPrivate::~BTerminalPrivate()
+BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 {
     if (driver)
         driver->deleteLater();
@@ -69,7 +69,7 @@ BTerminalPrivate::~BTerminalPrivate()
 
 //
 
-void BTerminalPrivate::setDriver(BAbstractTerminalDriver *drv)
+void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
 {
     if (driver)
     {
@@ -86,9 +86,9 @@ void BTerminalPrivate::setDriver(BAbstractTerminalDriver *drv)
     appendText( driver->prompt() );
 }
 
-bool BTerminalPrivate::handleKeyPress(int key, int modifiers)
+bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
 {
-    B_Q(BTerminal);
+    B_Q(BTerminalWidget);
     QTextCursor tc = q->textCursor();
     QTextBlock tb = tc.block();
     if (key >= Qt::Key_Left && key <= Qt::Key_Down)
@@ -138,9 +138,9 @@ bool BTerminalPrivate::handleKeyPress(int key, int modifiers)
     return false;
 }
 
-void BTerminalPrivate::scrollDown()
+void BTerminalWidgetPrivate::scrollDown()
 {
-    B_Q(BTerminal);
+    B_Q(BTerminalWidget);
     QScrollBar *sb = q->verticalScrollBar();
     if (sb)
         sb->setValue( sb->maximum() );
@@ -149,9 +149,9 @@ void BTerminalPrivate::scrollDown()
     q->setTextCursor(tc);
 }
 
-void BTerminalPrivate::read()
+void BTerminalWidgetPrivate::read()
 {
-    B_Q(BTerminal);
+    B_Q(BTerminalWidget);
     QTextCursor tc = q->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText( driver->read() );
@@ -161,16 +161,16 @@ void BTerminalPrivate::read()
     scrollDown();
 }
 
-void BTerminalPrivate::finished(int exitCode)
+void BTerminalWidgetPrivate::finished(int exitCode)
 {
     read();
     QMetaObject::invokeMethod( q_func(), "finished", Q_ARG(int, exitCode) );
     appendText( driver->prompt() );
 }
 
-void BTerminalPrivate::appendText(const QString &text)
+void BTerminalWidgetPrivate::appendText(const QString &text)
 {
-    B_Q(BTerminal);
+    B_Q(BTerminalWidget);
     QTextCursor tc = q->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText(text);
@@ -179,9 +179,9 @@ void BTerminalPrivate::appendText(const QString &text)
     len = q->textCursor().block().length();
 }
 
-void BTerminalPrivate::appendLine(const QString &text)
+void BTerminalWidgetPrivate::appendLine(const QString &text)
 {
-    B_Q(BTerminal);
+    B_Q(BTerminalWidget);
     QTextCursor tc = q->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText(text);
@@ -193,56 +193,56 @@ void BTerminalPrivate::appendLine(const QString &text)
 
 //
 
-BTerminal::BTerminal(QWidget *parent) :
-    QPlainTextEdit(parent), BBase( *new BTerminalPrivate(this) )
+BTerminalWidget::BTerminalWidget(QWidget *parent) :
+    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this) )
 {
     //
 }
 
-BTerminal::BTerminal(BAbstractTerminalDriver *driver, QWidget *parent) :
-    QPlainTextEdit(parent), BBase( *new BTerminalPrivate(this) )
+BTerminalWidget::BTerminalWidget(BAbstractTerminalDriver *driver, QWidget *parent) :
+    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this) )
 {
     setDriver(driver);
 }
 
-BTerminal::~BTerminal()
+BTerminalWidget::~BTerminalWidget()
 {
     //
 }
 
 //
 
-void BTerminal::setDriver(BAbstractTerminalDriver *driver)
+void BTerminalWidget::setDriver(BAbstractTerminalDriver *driver)
 {
     d_func()->setDriver(driver);
 }
 
-BAbstractTerminalDriver *BTerminal::driver() const
+BAbstractTerminalDriver *BTerminalWidget::driver() const
 {
     return d_func()->driver;
 }
 
-bool BTerminal::isValid() const
+bool BTerminalWidget::isValid() const
 {
     return d_func()->driver;
 }
 
-bool BTerminal::isActive() const
+bool BTerminalWidget::isActive() const
 {
-    const B_D(BTerminal);
+    const B_D(BTerminalWidget);
     return d->driver && d->driver->isActive();
 }
 
 //
 
-void BTerminal::close()
+void BTerminalWidget::close()
 {
     if ( !isActive() )
         return;
     d_func()->driver->close();
 }
 
-void BTerminal::terminate()
+void BTerminalWidget::terminate()
 {
     if ( !isActive() )
         return;
@@ -251,7 +251,7 @@ void BTerminal::terminate()
 
 //
 
-BTerminal::BTerminal(BTerminalPrivate &d, QWidget *parent) :
+BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
     QPlainTextEdit(parent), BBase(d)
 {
     //

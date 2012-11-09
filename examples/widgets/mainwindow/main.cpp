@@ -7,7 +7,7 @@
 #include <BLocaleComboBox>
 #include <BTranslator>
 #include <BSettingsDialog>
-#include <BTerminal>
+#include <BTerminalWidget>
 #include <BLocalTerminalDriver>
 
 #include <QApplication>
@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     //mw->show();
     mw->loadSettings();
     //terminal
-    BTerminal *term = new BTerminal;
+    BTerminalWidget *term = new BTerminalWidget;
     term->setDriver(new BLocalTerminalDriver);
     term->show();
     //end terminal

@@ -18,8 +18,8 @@ HEADERS += \
     $${PWD}/bpluginssettingstab.h \
     $${PWD}/bpluginssettingstab_p.h \
     $${PWD}/bsettingsdialog.h \
-    $${PWD}/bterminal.h \
-    $${PWD}/bterminal_p.h
+    $${PWD}/bterminalwidget.h \
+    $${PWD}/bterminalwidget_p.h
 
 SOURCES += \
     $${PWD}/baboutdialog.cpp \
@@ -34,4 +34,4 @@ SOURCES += \
     $${PWD}/bpasswordwidget.cpp \
     $${PWD}/bpluginssettingstab.cpp \
     $${PWD}/bsettingsdialog.cpp \
-    $${PWD}/bterminal.cpp
+    $${PWD}/bterminalwidget.cpp

@@ -14,6 +14,6 @@
 #include "bpasswordwidget.h"
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
-#include "bterminal.h"
+#include "bterminalwidget.h"
 
 #endif //BEQT_BEQTWIDGETS_MODULE_H
