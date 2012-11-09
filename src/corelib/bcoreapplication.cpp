@@ -5,6 +5,7 @@
 #include "btranslator.h"
 #include "bpluginwrapper.h"
 #include "btranslator_p.h"
+#include "bpluginwrapper_p.h"
 
 #include <QObject>
 #include <QString>
@@ -277,6 +278,21 @@ void BCoreApplicationPrivate::saveSettings()
     s->deleteLater();
 }
 
+void BCoreApplicationPrivate::initialActivatePlugin(BPluginWrapper *wrapper)
+{
+    wrapper->d_func()->activate(false);
+}
+
+void BCoreApplicationPrivate::initialDeactivatePlugin(BPluginWrapper *wrapper)
+{
+    wrapper->d_func()->deactivate(false);
+}
+
+void BCoreApplicationPrivate::finalizePluginActivation(BPluginWrapper *wrapper)
+{
+    wrapper->d_func()->finalizeActivation();
+}
+
 //
 
 BCoreApplication *BCoreApplication::instance()
@@ -403,16 +419,16 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
             BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
             pw->setAcceptableTypes(acceptableTypes);
             pw->setInterfaceTestFunction(function);
-            pw->activate();
+            ds->initialActivatePlugin(pw);
             if ( !pw->isValid() ) //Validity checking includes checking that the plugin is unique (global map)
             {
                 pw->deleteLater();
                 continue;
             }
             if ( ds->deactivatedPlugins.contains( pw->name() ) )
-                pw->deactivate();
+                ds->initialDeactivatePlugin(pw);
             else
-                ds->emitPluginActivated(pw);
+                ds->finalizePluginActivation(pw);
             ds->plugins << pw;
         }
     }

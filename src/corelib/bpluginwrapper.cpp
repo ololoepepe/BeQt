@@ -52,9 +52,9 @@ BPluginWrapperPrivate::~BPluginWrapperPrivate()
 
 //
 
-void BPluginWrapperPrivate::activate()
+void BPluginWrapperPrivate::activate(bool full)
 {
-    if (activated)
+    if (full && activated)
         return;
     valid = false;
     if ( !loader->load() )
@@ -79,11 +79,18 @@ void BPluginWrapperPrivate::activate()
     type = tp;
     name = nm;
     info = interface->info();
-    activated = true;
     valid = true;
-    interface->activate();
+    globalQMap.insert( name, q_func() );
+    if (full)
+        finalizeActivation();
+
+}
+
+void BPluginWrapperPrivate::finalizeActivation()
+{
     B_Q(BPluginWrapper);
-    globalQMap.insert(name, q);
+    interface->activate();
+    activated = true;
     QMetaObject::invokeMethod(q, "activated");
     if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
     {
@@ -95,19 +102,23 @@ void BPluginWrapperPrivate::activate()
         }
     }
 }
-void BPluginWrapperPrivate::deactivate()
+
+void BPluginWrapperPrivate::deactivate(bool full)
 {
-    if (!activated)
+    if (full && !activated)
         return;
-    B_Q(BPluginWrapper);
-    QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
-    if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
+    if (full)
     {
-        BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
-        if ( dapp->plugins.contains(q) )
-            dapp->emitPluginAboutToBeDeactivated(q);
+        B_Q(BPluginWrapper);
+        QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
+        if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
+        {
+            BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
+            if ( dapp->plugins.contains(q) )
+                dapp->emitPluginAboutToBeDeactivated(q);
+        }
+        interface->deactivate();
     }
-    interface->deactivate();
     instance->deleteLater();
     instance = 0;
     interface = 0;

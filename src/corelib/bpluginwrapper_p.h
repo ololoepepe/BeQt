@@ -27,8 +27,9 @@ public:
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
     //
-    void activate();
-    void deactivate(); 
+    void activate(bool full = true);
+    void finalizeActivation();
+    void deactivate(bool full = true);
     //
     QPluginLoader *loader;
     QStringList acctptableTypes;

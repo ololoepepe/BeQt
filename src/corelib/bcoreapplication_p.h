@@ -47,6 +47,9 @@ public:
     void removeTranslator(BTranslator *translator, bool languageChange);
     void loadSettings();
     void saveSettings();
+    void initialActivatePlugin(BPluginWrapper *wrapper);
+    void initialDeactivatePlugin(BPluginWrapper *wrapper);
+    void finalizePluginActivation(BPluginWrapper *wrapper);
     //
     bool initialized;
     QString appName;
