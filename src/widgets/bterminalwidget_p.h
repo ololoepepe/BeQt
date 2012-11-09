@@ -50,6 +50,7 @@ public:
     BTerminalWidgetPrivateObject *const _m_o;
     //
     BAbstractTerminalDriver *driver;
+    bool userCommands;
     int terminatingKey;
     int terminatingModifiers;
     QString terminatingSymbols;

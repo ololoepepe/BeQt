@@ -22,8 +22,11 @@ public:
     ~BTerminalWidget();
     //
     void setDriver(BAbstractTerminalDriver *driver);
+    void setCurrentDirectory(const QString &path);
     void setTerminatingSequence( int key, int modifiers, const QString &displayedSymbols = QString() );
+    void setUserCommandsEnabled(bool b);
     BAbstractTerminalDriver *driver() const;
+    QString currentDirectory() const;
     bool isValid() const;
     bool isActive() const;
 public slots:

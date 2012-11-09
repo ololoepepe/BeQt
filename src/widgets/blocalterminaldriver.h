@@ -20,8 +20,10 @@ public:
     explicit BLocalTerminalDriver(QObject *parent = 0);
     ~BLocalTerminalDriver();
     //
+    void setCurrentDirectory(const QString &path);
+    QString currentDirectory() const;
     QString prompt() const;
-    QString invalidCommandMessage() const;
+    QString invalidCommandMessage(const QString &command) const;
     bool isActive() const;
     QString read();
     bool applyCommand(const QString &command);

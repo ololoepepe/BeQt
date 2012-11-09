@@ -12,6 +12,7 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QObject>
+#include <QDir>
 
 #include <QDebug>
 
@@ -44,6 +45,7 @@ BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver *q
     BBasePrivate(q), _m_o( new BLocalTerminalDriverPrivateObject(this) )
 {
     process = new QProcess(q);
+    currentDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
     QObject::connect( process, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
     QObject::connect( process, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
@@ -83,14 +85,22 @@ BLocalTerminalDriver::~BLocalTerminalDriver()
 
 //
 
-QString BLocalTerminalDriver::prompt() const
+void BLocalTerminalDriver::setCurrentDirectory(const QString &path)
 {
-    //test
-    return "$ ";
-    //end test
+    d_func()->currentDirectory = !path.isEmpty() ? path : QDir::homePath();
 }
 
-QString BLocalTerminalDriver::invalidCommandMessage() const
+QString BLocalTerminalDriver::currentDirectory() const
+{
+    return d_func()->currentDirectory;
+}
+
+QString BLocalTerminalDriver::prompt() const
+{
+    return d_func()->currentDirectory + "$ ";
+}
+
+QString BLocalTerminalDriver::invalidCommandMessage(const QString &command) const
 {
     return tr("No such command", "invalidCommandMessage");
 }
@@ -124,6 +134,7 @@ bool BLocalTerminalDriver::applyCommand(const QString &command)
         QString program = args.takeFirst();
         if ( program.isEmpty() )
             return false;
+        d->process->setWorkingDirectory(d->currentDirectory);
         d->process->start(program, args);
         return d->process->waitForStarted();
     }
