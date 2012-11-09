@@ -60,9 +60,7 @@ BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
 
 void BLocalTerminalDriverPrivate::finished(int exitCode)
 {
-    B_Q(BLocalTerminalDriver);
-    q->emitFinished(exitCode);
-
+    q_func()->emitFinished(exitCode);
 }
 
 void BLocalTerminalDriverPrivate::readyRead()
@@ -136,12 +134,20 @@ QString BLocalTerminalDriver::terminalCommand(const QString &command, const QStr
     if ( isActive() )
         return tr("A process is running", "terminalCommand return");
     B_D(BLocalTerminalDriver);
+    //test
+    if ( !command.compare("cd", Qt::CaseInsensitive) && !arguments.isEmpty() && QDir( arguments.first() ).exists() )
+    {
+        d->workingDirectory = arguments.first();
+        emitFinished(0, true);
+        return "";
+    }
+    //end test
     d->process->setWorkingDirectory(d->workingDirectory);
     d->process->start(command, arguments);
     bool b = d->process->waitForStarted();
     if (!b)
         d->process->close();
-    return b ? QString() : tr("Cold not find or start programm", "terminalCommand return");
+    return b ? QString() : tr("Could not find or start programm", "terminalCommand return");
 }
 
 void BLocalTerminalDriver::setWorkingDirectory(const QString &path)

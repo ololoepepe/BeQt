@@ -30,7 +30,7 @@ signals:
     void finished(int exitCode);
 protected slots:
     void emitReadyRead();
-    void emitFinished(int exitCode);
+    void emitFinished(int exitCode, bool delayed = false);
 private:
     Q_DISABLE_COPY(BAbstractTerminalDriver)
 };

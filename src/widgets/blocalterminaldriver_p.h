@@ -12,6 +12,7 @@ class QString;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
+#include <QMap>
 
 class B_WIDGETS_EXPORT BLocalTerminalDriverPrivateObject : public QObject
 {

@@ -116,8 +116,9 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
         return false;
     if (key == terminatingKey && modifiers == terminatingModifiers)
     {
+        if ( !driver || !driver->isActive() )
+            return true;
         appendText( !terminatingSymbols.isEmpty() ? terminatingSymbols : QString("^D") );
-        appendLine();
         driver->close();
         return true;
     }
@@ -140,7 +141,7 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
             return true;
         }
     }
-    else if ( (Qt::ControlModifier | Qt::ShiftModifier) == modifiers )
+    else if (modifiers & Qt::ControlModifier)
     {
         return true;
     }

@@ -1,6 +1,7 @@
 #include "babstractterminaldriver.h"
 
 #include <QObject>
+#include <QMetaObject>
 
 BAbstractTerminalDriver::BAbstractTerminalDriver(QObject *parent) :
     QObject(parent)
@@ -42,7 +43,10 @@ void BAbstractTerminalDriver::emitReadyRead()
     emit readyRead();
 }
 
-void BAbstractTerminalDriver::emitFinished(int exitCode)
+void BAbstractTerminalDriver::emitFinished(int exitCode, bool delayed)
 {
-    emit finished(exitCode);
+    if (delayed)
+        QMetaObject::invokeMethod( this, "finished", Qt::QueuedConnection, Q_ARG(int, exitCode) );
+    else
+        emit finished(exitCode);
 }
