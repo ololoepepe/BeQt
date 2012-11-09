@@ -10,6 +10,8 @@ HEADERS += \
     $${PWD}/blocalecombobox.h \
     $${PWD}/bmainwindow.h \
     $${PWD}/bmainwindow_p.h \
+    $${PWD}/bpasswordwidget_p.h \
+    $${PWD}/bpasswordwidget.h \
     $${PWD}/bpluginssettingstab.h \
     $${PWD}/bpluginssettingstab_p.h \
     $${PWD}/bsettingsdialog.h
@@ -22,5 +24,6 @@ SOURCES += \
     $${PWD}/bhelpbrowser.cpp \
     $${PWD}/blocalecombobox.cpp \
     $${PWD}/bmainwindow.cpp \
+    $${PWD}/bpasswordwidget.cpp \
     $${PWD}/bpluginssettingstab.cpp \
     $${PWD}/bsettingsdialog.cpp

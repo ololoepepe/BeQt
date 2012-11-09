@@ -2,6 +2,8 @@
 #define APPLICATION_H
 
 class QString;
+class QByteArray;
+class QSettings;
 
 #include <BApplication>
 #include <BSettingsDialog>
@@ -17,6 +19,12 @@ protected:
 private:
     QString firstName;
     QString secondName;
+    QByteArray password;
+    int cc;
+    bool save;
+private slots:
+    void loadSettingsSlot(QSettings *s);
+    void saveSettingsSlot(QSettings *s);
 };
 
 #endif // APPLICATION_H

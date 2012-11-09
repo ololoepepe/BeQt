@@ -6,7 +6,7 @@ class BHelpBrowserPrivate;
 class QString;
 class QStringList;
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QWidget>
