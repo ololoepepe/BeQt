@@ -9,8 +9,8 @@ class QHBoxLayout;
 class QLabel;
 class QTabWidget;
 class QTextBrowser;
-class QPushButton;
 class QToolButton;
+class QDialogButtonBox;
 
 #include "baboutdialog.h"
 
@@ -84,7 +84,8 @@ public:
         QLabel *lblCopyright;
         QLabel *lblWebsite;
         //stretch
-        QPushButton *btnClose;
+        QDialogButtonBox *dlgbbox;
+          //Close
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
     //

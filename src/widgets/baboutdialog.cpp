@@ -28,6 +28,7 @@ class QWidget;
 #include <QUrl>
 #include <QToolButton>
 #include <QTextOption>
+#include <QDialogButtonBox>
 
 #include <QDebug>
 
@@ -140,12 +141,12 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
           lblWebsite->setOpenExternalLinks(true);
         hltActions->addWidget(lblWebsite);
         hltActions->addStretch();
-        btnClose = new QPushButton(q);
-          btnClose->setDefault(true);
-          btnClose->setFocus();
-          QObject::connect( btnClose, SIGNAL( clicked() ), q, SLOT( reject() ) );
-        hltActions->addWidget(btnClose);
+        dlgbbox = new QDialogButtonBox(QDialogButtonBox::Close, Qt::Horizontal, q);
+          dlgbbox->setFocus();
+          QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
+        hltActions->addWidget(dlgbbox);
       vlt->addLayout(hltActions);
+    //
     _m_o->retranslateUi();
     QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), _m_o, SLOT( retranslateUi() ) );
 }
@@ -263,7 +264,6 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BAboutDialog::PersonInfoLis
 void BAboutDialogPrivate::retranslateUi()
 {
     q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
-    btnClose->setText( tr("Close", "btn text") );
     foreach ( DialogTab t, tbrsrs.keys() )
         twgt->setTabText( tabIndex(t), tabTitle(t) );
     if (tbtnAboutQt)

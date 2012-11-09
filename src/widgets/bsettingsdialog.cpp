@@ -6,8 +6,6 @@
 #include <QString>
 #include <QDialog>
 #include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QPushButton>
 #include <QList>
 #include <QMap>
 #include <QVariantMap>
@@ -18,6 +16,8 @@
 #include <QStackedWidget>
 #include <QListWidgetItem>
 #include <QSplitter>
+#include <QDialogButtonBox>
+#include <QPushButton>
 
 class BSettingsDialogPrivate : public BBasePrivate
 {
@@ -35,10 +35,9 @@ public:
         QListWidget *lstwgt;
         QStackedWidget *stkdwgt;
       QTabWidget *twgt;
-      QHBoxLayout *hltActions;
-        //stretch
-        QPushButton *btnCancel;
-        QPushButton *btnOk;
+      QDialogButtonBox *dlgbbox;
+        //Ok
+        //Cancel
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };
@@ -102,24 +101,15 @@ BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettin
         lstwgt = 0;
         stkdwgt = 0;
         twgt = 0;
-        hltActions = 0;
-        btnCancel = 0;
-        btnOk = 0;
+        dlgbbox = 0;
         q->setWindowTitle(q->windowTitle() + " [" + tr("invalid", "windowTitle") + "]");
         return;
     }
-    hltActions = new QHBoxLayout;
-      hltActions->addStretch();
-      btnCancel = new QPushButton(q);
-        btnCancel->setText( tr("Cancel", "btn text") );
-        QObject::connect( btnCancel, SIGNAL( clicked() ), q, SLOT( reject() ) );
-      hltActions->addWidget(btnCancel);
-      btnOk = new QPushButton(q);
-        btnOk->setDefault(true);
-        btnOk->setText( tr("Ok", "btn text") );
-        QObject::connect( btnOk, SIGNAL( clicked() ), q, SLOT( accept() ) );
-      hltActions->addWidget(btnOk);
-    vlt->addLayout(hltActions);
+    dlgbbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, q);
+      dlgbbox->button(QDialogButtonBox::Ok)->setDefault(true);
+      QObject::connect( dlgbbox, SIGNAL( accepted() ), q, SLOT( accept() ) );
+      QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
+    vlt->addWidget(dlgbbox);
 }
 
 BSettingsDialogPrivate::~BSettingsDialogPrivate()
@@ -150,7 +140,7 @@ BSettingsDialog::~BSettingsDialog()
 
 bool BSettingsDialog::isValid() const
 {
-    return d_func()->hltActions;
+    return d_func()->dlgbbox;
 }
 
 BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const
