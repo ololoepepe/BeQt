@@ -10,6 +10,7 @@ class QWidget;
 #include <BeQtCore/BBase>
 
 #include <QPlainTextEdit>
+#include <QString>
 
 class B_WIDGETS_EXPORT BTerminalWidget : public QPlainTextEdit, public BBase
 {
@@ -21,12 +22,14 @@ public:
     ~BTerminalWidget();
     //
     void setDriver(BAbstractTerminalDriver *driver);
+    void setTerminatingSequence( int key, int modifiers, const QString &displayedSymbols = QString() );
     BAbstractTerminalDriver *driver() const;
     bool isValid() const;
     bool isActive() const;
 public slots:
     void close();
     void terminate();
+    void emulateCommand(const QString &command);
 signals:
     void finished(int exitCode);
 protected:

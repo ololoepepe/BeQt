@@ -93,6 +93,7 @@ int main(int argc, char **argv)
     BTerminalWidget *term = new BTerminalWidget;
     term->setDriver(new BLocalTerminalDriver);
     term->show();
+    //term->emulateCommand("tex-creator.sh");
     //end terminal
     int ret = app->exec();
     mw->saveSettings();

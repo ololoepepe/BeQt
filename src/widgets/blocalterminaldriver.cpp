@@ -13,6 +13,8 @@
 #include <QStringList>
 #include <QObject>
 
+#include <QDebug>
+
 BLocalTerminalDriverPrivateObject::BLocalTerminalDriverPrivateObject(BLocalTerminalDriverPrivate *p) :
     QObject(0), _m_p(p)
 {
@@ -56,7 +58,9 @@ BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
 
 void BLocalTerminalDriverPrivate::finished(int exitCode)
 {
-    q_func()->emitFinished(exitCode);
+    B_Q(BLocalTerminalDriver);
+    q->emitFinished(exitCode);
+
 }
 
 void BLocalTerminalDriverPrivate::readyRead()
@@ -84,6 +88,11 @@ QString BLocalTerminalDriver::prompt() const
     //test
     return "$ ";
     //end test
+}
+
+QString BLocalTerminalDriver::invalidCommandMessage() const
+{
+    return tr("No such command", "invalidCommandMessage");
 }
 
 bool BLocalTerminalDriver::isActive() const
@@ -116,15 +125,14 @@ bool BLocalTerminalDriver::applyCommand(const QString &command)
         if ( program.isEmpty() )
             return false;
         d->process->start(program, args);
-        if ( !d->process->waitForStarted() )
-            return false;
+        return d->process->waitForStarted();
     }
     return true;
 }
 
 void BLocalTerminalDriver::close()
 {
-    d_func()->process->closeWriteChannel();
+    d_func()->process->close();
 }
 
 void BLocalTerminalDriver::terminate()

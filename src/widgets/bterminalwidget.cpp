@@ -13,6 +13,7 @@
 #include <QPlainTextEdit>
 #include <QScrollBar>
 #include <QMetaObject>
+#include <QApplication>
 
 #include <QDebug>
 
@@ -55,6 +56,9 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q) :
     BBasePrivate(q), _m_o( new BTerminalWidgetPrivateObject(this) )
 {
     driver = 0;
+    terminatingKey = Qt::Key_D;
+    terminatingModifiers = Qt::ControlModifier;
+    terminatingSymbols = "^D";
     len = 0;
     q->setContextMenuPolicy(Qt::NoContextMenu);
     q->installEventFilter(_m_o);
@@ -93,43 +97,31 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
     QTextBlock tb = tc.block();
     if (key >= Qt::Key_Left && key <= Qt::Key_Down)
         return false;
-    if (Qt::NoModifier == modifiers || Qt::ShiftModifier == modifiers)
+    if (key == terminatingKey && modifiers == terminatingModifiers)
+    {
+        appendLine( !terminatingSymbols.isEmpty() ? terminatingSymbols : QString("^D") );
+        driver->close();
+        return true;
+    }
+    else if (Qt::NoModifier == modifiers || Qt::ShiftModifier == modifiers)
     {
         if ( tb.next().isValid() )
             return true;
-        if (Qt::Key_Backspace == key && driver && !driver->isActive() && tc.positionInBlock() < len)
+        if ( Qt::Key_Backspace == key && ( (driver && !driver->isActive() && tc.positionInBlock() < len) ||
+                                           tb.text().isEmpty() ) )
             return true;
         if ( Qt::NoModifier == modifiers && (Qt::Key_Enter == key || Qt::Key_Return == key) )
         {
             if ( !driver->applyCommand( tb.text().right(tb.length() - len) ) )
             {
+                driver->close();
                 appendLine();
+                appendLine( driver->invalidCommandMessage() );
                 appendText( driver->prompt() );
                 return true;
             }
         }
         return false;
-    }
-    else if (Qt::ControlModifier == modifiers)
-    {
-        if (Qt::Key_X == key || Qt::Key_V == key)
-            return true;
-        if (Qt::Key_Z == key)
-        {
-#ifdef B_OS_WIN
-            appendText("^Z");
-            driver->close();
-#endif
-            return true;
-        }
-#ifdef B_OS_UNIX
-        if (Qt::Key_D == key)
-        {
-            appendText("^D");
-            driver->close();
-            return true;
-        }
-#endif
     }
     else if ( (Qt::ControlModifier | Qt::ShiftModifier) == modifiers )
     {
@@ -164,6 +156,7 @@ void BTerminalWidgetPrivate::read()
 void BTerminalWidgetPrivate::finished(int exitCode)
 {
     read();
+    driver->close();
     QMetaObject::invokeMethod( q_func(), "finished", Q_ARG(int, exitCode) );
     appendText( driver->prompt() );
 }
@@ -171,23 +164,19 @@ void BTerminalWidgetPrivate::finished(int exitCode)
 void BTerminalWidgetPrivate::appendText(const QString &text)
 {
     B_Q(BTerminalWidget);
-    QTextCursor tc = q->textCursor();
-    tc.movePosition(QTextCursor::End);
-    tc.insertText(text);
-    //tc.setCharFormat( QTextCharFormat() );
     scrollDown();
+    QTextCursor tc = q->textCursor();
+    tc.insertText(text);
     len = q->textCursor().block().length();
 }
 
 void BTerminalWidgetPrivate::appendLine(const QString &text)
 {
     B_Q(BTerminalWidget);
-    QTextCursor tc = q->textCursor();
-    tc.movePosition(QTextCursor::End);
-    tc.insertText(text);
-    //tc.setCharFormat( QTextCharFormat() );
-    tc.insertBlock();
     scrollDown();
+    QTextCursor tc = q->textCursor();
+    tc.insertText(text);
+    tc.insertBlock();
     len = q->textCursor().block().length();
 }
 
@@ -215,6 +204,14 @@ BTerminalWidget::~BTerminalWidget()
 void BTerminalWidget::setDriver(BAbstractTerminalDriver *driver)
 {
     d_func()->setDriver(driver);
+}
+
+void BTerminalWidget::setTerminatingSequence(int key, int modifiers, const QString &displayedSymbols)
+{
+    B_D(BTerminalWidget);
+    d->terminatingKey = key;
+    d->terminatingModifiers = modifiers;
+    d->terminatingSymbols = displayedSymbols;
 }
 
 BAbstractTerminalDriver *BTerminalWidget::driver() const
@@ -247,6 +244,16 @@ void BTerminalWidget::terminate()
     if ( !isActive() )
         return;
     d_func()->driver->terminate();
+}
+
+void BTerminalWidget::emulateCommand(const QString &command)
+{
+    B_D(BTerminalWidget);
+    d->scrollDown();
+    QTextCursor tc = textCursor();
+    tc.insertText(command);
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    QApplication::sendEvent(this, &e);
 }
 
 //

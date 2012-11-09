@@ -15,6 +15,7 @@ public:
     ~BAbstractTerminalDriver();
     //
     virtual QString prompt() const = 0;
+    virtual QString invalidCommandMessage() const = 0;
     virtual bool isActive() const = 0;
     virtual QString read() = 0;
     virtual bool applyCommand(const QString &command) = 0;

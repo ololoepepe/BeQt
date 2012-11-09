@@ -21,6 +21,7 @@ public:
     ~BLocalTerminalDriver();
     //
     QString prompt() const;
+    QString invalidCommandMessage() const;
     bool isActive() const;
     QString read();
     bool applyCommand(const QString &command);

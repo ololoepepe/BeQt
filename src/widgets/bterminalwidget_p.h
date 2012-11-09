@@ -5,6 +5,7 @@ class BTerminalWidgetPrivate;
 class BAbstractTerminalDriver;
 
 class QEvent;
+class QString;
 
 #include "bterminalwidget.h"
 
@@ -49,6 +50,9 @@ public:
     BTerminalWidgetPrivateObject *const _m_o;
     //
     BAbstractTerminalDriver *driver;
+    int terminatingKey;
+    int terminatingModifiers;
+    QString terminatingSymbols;
     int len;
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivate)
