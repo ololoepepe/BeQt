@@ -7,6 +7,8 @@
 #include <BLocaleComboBox>
 #include <BTranslator>
 #include <BSettingsDialog>
+#include <BTerminal>
+#include <BLocalTerminalDriver>
 
 #include <QApplication>
 #include <QString>
@@ -85,8 +87,13 @@ int main(int argc, char **argv)
     QObject::connect( btn2, SIGNAL( clicked() ), bApp, SLOT( showSettingsDialog() ) );
     vlt->addWidget(btn2);
     mw->setCentralWidget(w);
-    mw->show();
+    //mw->show();
     mw->loadSettings();
+    //terminal
+    BTerminal *term = new BTerminal;
+    term->setDriver(new BLocalTerminalDriver);
+    term->show();
+    //end terminal
     int ret = app->exec();
     mw->saveSettings();
     //end test

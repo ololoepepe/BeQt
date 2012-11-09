@@ -16,6 +16,7 @@ class B_CORE_EXPORT BTerminalIOHandler : public QThread, public BBase
     B_DECLARE_PRIVATE(BTerminalIOHandler)
     B_DECLARE_PRIVATE_S(BTerminalIOHandler)
 public:
+    static QStringList splitCommand(const QString &command);
     static BTerminalIOHandler *instance();
     static QString readLine();
     static void write(const QString &text);

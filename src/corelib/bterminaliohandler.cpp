@@ -41,7 +41,28 @@ public:
 
 //
 
-QStringList BTerminalIOHandlerPrivate::splitCommand(const QString &command)
+BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
+  BBasePrivate(q)
+{
+    prefereReadLine = false;
+}
+
+BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
+{
+    //
+}
+
+QMutex BTerminalIOHandlerPrivate::instMutex;
+QMutex BTerminalIOHandlerPrivate::stdinMutex;
+QMutex BTerminalIOHandlerPrivate::stdoutMutex;
+QMutex BTerminalIOHandlerPrivate::readLineMutex;
+QMutex BTerminalIOHandlerPrivate::echoMutex;
+bool BTerminalIOHandlerPrivate::prefereReadLine = false;
+QString BTerminalIOHandlerPrivate::lastLine;
+
+//
+
+QStringList BTerminalIOHandler::splitCommand(const QString &command)
 {
     QStringList args;
     QString arg;
@@ -75,29 +96,6 @@ QStringList BTerminalIOHandlerPrivate::splitCommand(const QString &command)
         args.first().toLower();
     return args;
 }
-
-//
-
-BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
-  BBasePrivate(q)
-{
-    prefereReadLine = false;
-}
-
-BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
-{
-    //
-}
-
-QMutex BTerminalIOHandlerPrivate::instMutex;
-QMutex BTerminalIOHandlerPrivate::stdinMutex;
-QMutex BTerminalIOHandlerPrivate::stdoutMutex;
-QMutex BTerminalIOHandlerPrivate::readLineMutex;
-QMutex BTerminalIOHandlerPrivate::echoMutex;
-bool BTerminalIOHandlerPrivate::prefereReadLine = false;
-QString BTerminalIOHandlerPrivate::lastLine;
-
-//
 
 BTerminalIOHandler *BTerminalIOHandler::instance()
 {
@@ -187,7 +185,7 @@ void BTerminalIOHandler::run()
         }
         else
         {
-            QStringList args = BTerminalIOHandlerPrivate::splitCommand(line);
+            QStringList args = splitCommand(line);
             QString command = args.takeFirst();
             QMetaObject::invokeMethod( _m_self, "commandEntered", Qt::QueuedConnection,
                                        Q_ARG(QString, command), Q_ARG(QStringList, args) );

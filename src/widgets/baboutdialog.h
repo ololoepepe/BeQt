@@ -17,8 +17,8 @@ class QIcon;
 
 class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBase
 {
-    Q_OBJECT
     B_DECLARE_PRIVATE(BAboutDialog)
+    Q_OBJECT
 public:
     struct AboutOptions
     {

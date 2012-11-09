@@ -61,6 +61,8 @@ public:
       QTextBrowser *tbrsr;
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivate)
+    //
+    friend class BHelpBrowserPrivateObject;
 };
 
 #endif // BHELPBROWSER_P_H

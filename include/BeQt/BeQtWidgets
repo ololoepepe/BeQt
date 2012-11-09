@@ -3,13 +3,17 @@
 
 #include "baboutdialog.h"
 #include "babstractsettingstab.h"
+#include "babstractterminaldriver.h"
 #include "bapplication.h"
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"
 #include "blocalecombobox.h"
+#include "blocalterminaldriver.h"
 #include "bmainwindow.h"
+#include "bpasswordwidget.h"
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
+#include "bterminal.h"
 
 #endif //BEQT_BEQTWIDGETS_MODULE_H

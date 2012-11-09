@@ -4,7 +4,7 @@
 class QString;
 class QIcon;
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
 
 #include <QWidget>
 #include <QtGlobal>
