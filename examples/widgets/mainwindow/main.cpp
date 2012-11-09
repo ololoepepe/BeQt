@@ -87,12 +87,12 @@ int main(int argc, char **argv)
     QObject::connect( btn2, SIGNAL( clicked() ), bApp, SLOT( showSettingsDialog() ) );
     vlt->addWidget(btn2);
     mw->setCentralWidget(w);
-    //mw->show();
+    mw->show();
     mw->loadSettings();
     //terminal
     BTerminalWidget *term = new BTerminalWidget;
     term->setDriver(new BLocalTerminalDriver);
-    term->show();
+    //term->show();
     //term->emulateCommand("tex-creator.sh");
     //end terminal
     int ret = app->exec();

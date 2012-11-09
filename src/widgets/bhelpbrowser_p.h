@@ -19,6 +19,7 @@ class QString;
 #include <QApplication>
 #include <QStringList>
 #include <QObject>
+#include <QMap>
 
 class B_WIDGETS_EXPORT BHelpBrowserPrivateObject : public QObject
 {
@@ -31,6 +32,7 @@ public:
 public slots:
     void languageChanged();
     void sourceChanged();
+    void ledtSearchReturnPressed();
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivateObject)
 };
@@ -46,9 +48,11 @@ public:
     //
     void retranslateUi();
     void updateCaption();
+    void search();
     //
     BHelpBrowserPrivateObject *const _m_o;
     //
+    QMap<QString, QStringList> searchCache;
     QVBoxLayout *vlt;
       QToolBar *tbar;
         QToolButton *tbtnBackward;

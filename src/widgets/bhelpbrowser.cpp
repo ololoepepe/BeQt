@@ -13,6 +13,11 @@
 #include <QToolButton>
 #include <QLabel>
 #include <QLineEdit>
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+
+#include <QDebug>
 
 BHelpBrowserPrivateObject::BHelpBrowserPrivateObject(BHelpBrowserPrivate *p) :
     QObject(0), _m_p(p)
@@ -35,6 +40,11 @@ void BHelpBrowserPrivateObject::languageChanged()
 void BHelpBrowserPrivateObject::sourceChanged()
 {
     _m_p->updateCaption();
+}
+
+void BHelpBrowserPrivateObject::ledtSearchReturnPressed()
+{
+    _m_p->search();
 }
 
 //
@@ -61,6 +71,7 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, 
         lblSearch = new QLabel;
         tbar->addWidget(lblSearch);
         ledtSearch = new QLineEdit;
+          QObject::connect( ledtSearch, SIGNAL( returnPressed() ), _m_o, SLOT( ledtSearchReturnPressed() ) );
         tbar->addWidget(ledtSearch);
       vlt->addWidget(tbar);
       tbrsr = new QTextBrowser(q);
@@ -105,6 +116,45 @@ void BHelpBrowserPrivate::updateCaption()
     if ( !dt.isEmpty() )
         title += ": " + dt;
     q_func()->setWindowTitle(title);
+}
+
+void BHelpBrowserPrivate::search()
+{
+    QString text = ledtSearch->text().toLower();
+    if ( text.isEmpty() )
+        return;
+    QStringList sl = searchCache.value(text);
+    if ( sl.isEmpty() )
+    {
+        foreach ( const QString &path, tbrsr->searchPaths() )
+        {
+            QDir dir(path);
+            QStringList files = dir.entryList(QStringList() << "*.html" << "*.htm", QDir::Files);
+            foreach (const QString &file, files)
+            {
+                if ( file.contains(text, Qt::CaseInsensitive) )
+                    sl << file;
+                QFile f( dir.absoluteFilePath(file) );
+                if ( !f.open(QFile::ReadOnly) )
+                    continue;
+                QTextStream in(&f);
+                //in.setCodec("UTF-8");
+                QString ft = in.readAll();
+                f.close();
+                if ( ft.contains(text, Qt::CaseInsensitive) )
+                    sl << file;
+            }
+        }
+    }
+    if ( sl.isEmpty() )
+        return;
+    if ( !searchCache.contains(text) )
+        searchCache.insert(text, sl);
+    QString source = "<center><font size=5><b>" + tr("Search results", "tbrsr text") + "</b></font></center><br><br>";
+    foreach (const QString &file, sl)
+        source += "<a href=\"" + file + "\">" + file + "</a><br>";
+    source += "<br><br><a href=\"" + tbrsr->source().toString() + "\">" + tr("Back", "tbrsr text") + "</a>";
+    tbrsr->setHtml(source);
 }
 
 //
