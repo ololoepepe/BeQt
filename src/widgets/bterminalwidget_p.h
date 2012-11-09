@@ -36,7 +36,7 @@ class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BTerminalWidget)
     Q_DECLARE_TR_FUNCTIONS(BTerminalWidget)
 public:
-    explicit BTerminalWidgetPrivate(BTerminalWidget *q);
+    explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
     ~BTerminalWidgetPrivate();
     //
     void setDriver(BAbstractTerminalDriver *drv);
@@ -48,9 +48,9 @@ public:
     void appendLine( const QString &text = QString() );
     //
     BTerminalWidgetPrivateObject *const _m_o;
+    const bool NormalMode;
     //
     BAbstractTerminalDriver *driver;
-    bool userCommands;
     int terminatingKey;
     int terminatingModifiers;
     QString terminatingSymbols;

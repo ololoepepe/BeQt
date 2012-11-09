@@ -2,6 +2,7 @@
 #define BABSTRACTTERMINALDRIVER_H
 
 class QString;
+class QStringList;
 
 #include <BeQtCore/BeQtGlobal>
 
@@ -14,16 +15,16 @@ public:
     explicit BAbstractTerminalDriver(QObject *parent = 0);
     ~BAbstractTerminalDriver();
     //
-    virtual void setCurrentDirectory(const QString &path) = 0;
-    virtual QString currentDirectory() const = 0;
-    virtual QString prompt() const = 0;
-    virtual QString invalidCommandMessage(const QString &command) const = 0;
+    virtual QString processCommand(const QString &command, const QStringList &arguments) = 0;
     virtual bool isActive() const = 0;
     virtual QString read() = 0;
-    virtual bool applyCommand(const QString &command) = 0;
     virtual void close() = 0;
     virtual void terminate() = 0;
     virtual void kill() = 0;
+    virtual QString prompt() const;
+    virtual QString terminalCommand(const QString &command, const QStringList &arguments);
+    virtual void setWorkingDirectory(const QString &path);
+    virtual QString workingDirectory() const;
 signals:
     void readyRead();
     void finished(int exitCode);

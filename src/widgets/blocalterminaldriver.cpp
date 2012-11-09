@@ -45,7 +45,7 @@ BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver *q
     BBasePrivate(q), _m_o( new BLocalTerminalDriverPrivateObject(this) )
 {
     process = new QProcess(q);
-    currentDirectory = QDir::homePath();
+    workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
     QObject::connect( process, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
     QObject::connect( process, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
@@ -85,24 +85,18 @@ BLocalTerminalDriver::~BLocalTerminalDriver()
 
 //
 
-void BLocalTerminalDriver::setCurrentDirectory(const QString &path)
+QString BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments)
 {
-    d_func()->currentDirectory = !path.isEmpty() ? path : QDir::homePath();
-}
-
-QString BLocalTerminalDriver::currentDirectory() const
-{
-    return d_func()->currentDirectory;
-}
-
-QString BLocalTerminalDriver::prompt() const
-{
-    return d_func()->currentDirectory + "$ ";
-}
-
-QString BLocalTerminalDriver::invalidCommandMessage(const QString &command) const
-{
-    return tr("No such command", "invalidCommandMessage");
+    if ( !isActive() )
+        return tr("No process is running", "processCommand return");
+    QTextStream out(d_func()->process);
+    out.setCodec("UTF-8");
+    QString cmd = command;
+    foreach (const QString &arg, arguments)
+        cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
+    cmd += "\n";
+    out << (cmd);
+    return "";
 }
 
 bool BLocalTerminalDriver::isActive() const
@@ -115,30 +109,6 @@ QString BLocalTerminalDriver::read()
     QTextStream in(d_func()->process);
     in.setCodec("UTF-8");
     return in.readAll();
-}
-
-bool BLocalTerminalDriver::applyCommand(const QString &command)
-{
-    B_D(BLocalTerminalDriver);
-    if ( isActive() )
-    {
-        QTextStream out(d->process);
-        out.setCodec("UTF-8");
-        out << (command + "\n");
-    }
-    else
-    {
-        QStringList args = BTerminalIOHandler::splitCommand(command);
-        if ( args.isEmpty() )
-            return false;
-        QString program = args.takeFirst();
-        if ( program.isEmpty() )
-            return false;
-        d->process->setWorkingDirectory(d->currentDirectory);
-        d->process->start(program, args);
-        return d->process->waitForStarted();
-    }
-    return true;
 }
 
 void BLocalTerminalDriver::close()
@@ -154,6 +124,36 @@ void BLocalTerminalDriver::terminate()
 void BLocalTerminalDriver::kill()
 {
     d_func()->process->kill();
+}
+
+QString BLocalTerminalDriver::prompt() const
+{
+    return d_func()->workingDirectory + "$ ";
+}
+
+QString BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments)
+{
+    if ( isActive() )
+        return tr("A process is running", "terminalCommand return");
+    B_D(BLocalTerminalDriver);
+    d->process->setWorkingDirectory(d->workingDirectory);
+    d->process->start(command, arguments);
+    bool b = d->process->waitForStarted();
+    if (!b)
+        d->process->close();
+    return b ? QString() : tr("Cold not find or start programm", "terminalCommand return");
+}
+
+void BLocalTerminalDriver::setWorkingDirectory(const QString &path)
+{
+    if ( isActive() )
+        return;
+    d_func()->workingDirectory = !path.isEmpty() ? path : QDir::homePath();
+}
+
+QString BLocalTerminalDriver::workingDirectory() const
+{
+    return d_func()->workingDirectory;
 }
 
 //

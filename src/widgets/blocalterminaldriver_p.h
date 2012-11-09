@@ -41,7 +41,7 @@ public:
     BLocalTerminalDriverPrivateObject *const _m_o;
     //
     QProcess *process;
-    QString currentDirectory;
+    QString workingDirectory;
 private:
     Q_DISABLE_COPY(BLocalTerminalDriverPrivate)
     //

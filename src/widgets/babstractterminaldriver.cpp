@@ -15,6 +15,28 @@ BAbstractTerminalDriver::~BAbstractTerminalDriver()
 
 //
 
+QString BAbstractTerminalDriver::prompt() const
+{
+    return "$";
+}
+
+QString BAbstractTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments)
+{
+    return "";
+}
+
+void BAbstractTerminalDriver::setWorkingDirectory(const QString &path)
+{
+    //
+}
+
+QString BAbstractTerminalDriver::workingDirectory() const
+{
+    return "";
+}
+
+//
+
 void BAbstractTerminalDriver::emitReadyRead()
 {
     emit readyRead();

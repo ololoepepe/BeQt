@@ -90,7 +90,7 @@ int main(int argc, char **argv)
     //mw->show();
     mw->loadSettings();
     //terminal
-    BTerminalWidget *term = new BTerminalWidget;
+    BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
     term->setDriver(new BLocalTerminalDriver);
     term->show();
     //term->emulateCommand("tex-creator.sh");

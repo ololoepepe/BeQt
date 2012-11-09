@@ -56,11 +56,10 @@ void BTerminalWidgetPrivateObject::finished(int exitCode)
 
 //
 
-BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q) :
-    BBasePrivate(q), _m_o( new BTerminalWidgetPrivateObject(this) )
+BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
+    BBasePrivate(q), _m_o( new BTerminalWidgetPrivateObject(this) ), NormalMode(nmode)
 {
     driver = 0;
-    userCommands = true;
     terminatingKey = Qt::Key_D;
     terminatingModifiers = Qt::ControlModifier;
     terminatingSymbols = "^D";
@@ -74,8 +73,6 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q) :
 
 BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 {
-    if (driver)
-        driver->deleteLater();
     _m_o->deleteLater();
 }
 
@@ -93,10 +90,21 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
     driver = drv;
     if (!driver)
         return;
+    B_Q(BTerminalWidget);
+    driver->setParent(q);
     QObject::connect( driver, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
     QObject::connect( driver, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
-    if (userCommands)
-        appendText( driver->prompt() );
+    if (NormalMode)
+    {
+        QTextCursor tc = q->textCursor();
+        scrollDown();
+        tc.movePosition(QTextCursor::End);
+        q->setTextCursor(tc);
+        if ( tc.block().text().isEmpty() )
+            appendText( driver->prompt() );
+        else
+            appendLine( driver->prompt() );
+    }
 }
 
 bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
@@ -104,11 +112,12 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
     B_Q(BTerminalWidget);
     QTextCursor tc = q->textCursor();
     QTextBlock tb = tc.block();
-    if (key >= Qt::Key_Left && key <= Qt::Key_Down)
+    if (key >= Qt::Key_Left && key <= Qt::Key_Down) //TODO: Implement history using arrow keys
         return false;
     if (key == terminatingKey && modifiers == terminatingModifiers)
     {
-        appendLine( !terminatingSymbols.isEmpty() ? terminatingSymbols : QString("^D") );
+        appendText( !terminatingSymbols.isEmpty() ? terminatingSymbols : QString("^D") );
+        appendLine();
         driver->close();
         return true;
     }
@@ -121,35 +130,15 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
             return true;
         if ( Qt::NoModifier == modifiers && (Qt::Key_Enter == key || Qt::Key_Return == key) )
         {
+            if (!driver)
+                return false;
             QString command = tb.text().right(tb.length() - len);
-            if ( command.isEmpty() )
-            {
-                if (userCommands)
-                    appendText( driver->prompt() );
-                return true;
-            }
-            else if ( userCommands && !command.left(2).compare("cd", Qt::CaseInsensitive) )
-            {
-                //TODO: Only for test purposes
-                QStringList args = BTerminalIOHandler::splitCommand(command);
-                if (args.size() > 2)
-                    return true;
-                driver->setCurrentDirectory( args.at(1) );
-                appendLine();
-                appendText( driver->prompt() );
-                return true;
-            }
-            else if ( userCommands && !driver->applyCommand(command) )
-            {
-                driver->close();
-                appendLine();
-                appendLine( driver->invalidCommandMessage(command) );
-                if (userCommands)
-                    appendText( driver->prompt() );
-                return true;
-            }
+            if ( driver->isActive() )
+                q->processCommand(command);
+            else if (NormalMode)
+                q->terminalCommand(command);
+            return true;
         }
-        return false;
     }
     else if ( (Qt::ControlModifier | Qt::ShiftModifier) == modifiers )
     {
@@ -164,21 +153,17 @@ void BTerminalWidgetPrivate::scrollDown()
     QScrollBar *sb = q->verticalScrollBar();
     if (sb)
         sb->setValue( sb->maximum() );
-    QTextCursor tc = q->textCursor();
-    tc.movePosition(QTextCursor::End);
-    q->setTextCursor(tc);
 }
 
 void BTerminalWidgetPrivate::read()
 {
     B_Q(BTerminalWidget);
+    scrollDown();
     QTextCursor tc = q->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText( driver->read() );
-    tc = q->textCursor();
-    tc.movePosition(QTextCursor::End);
+    q->setTextCursor(tc);
     len = tc.block().length();
-    scrollDown();
 }
 
 void BTerminalWidgetPrivate::finished(int exitCode)
@@ -186,8 +171,18 @@ void BTerminalWidgetPrivate::finished(int exitCode)
     read();
     driver->close();
     QMetaObject::invokeMethod( q_func(), "finished", Q_ARG(int, exitCode) );
-    if (userCommands)
-        appendText( driver->prompt() );
+    if (NormalMode)
+    {
+        B_Q(BTerminalWidget);
+        QTextCursor tc = q->textCursor();
+        scrollDown();
+        tc.movePosition(QTextCursor::End);
+        q->setTextCursor(tc);
+        if ( tc.block().text().isEmpty() )
+            appendText( driver->prompt() );
+        else
+            appendLine( driver->prompt() );
+    }
 }
 
 void BTerminalWidgetPrivate::appendText(const QString &text)
@@ -195,7 +190,9 @@ void BTerminalWidgetPrivate::appendText(const QString &text)
     B_Q(BTerminalWidget);
     scrollDown();
     QTextCursor tc = q->textCursor();
+    tc.movePosition(QTextCursor::End);
     tc.insertText(text);
+    q->setTextCursor(tc);
     len = q->textCursor().block().length();
 }
 
@@ -204,21 +201,22 @@ void BTerminalWidgetPrivate::appendLine(const QString &text)
     B_Q(BTerminalWidget);
     scrollDown();
     QTextCursor tc = q->textCursor();
-    tc.insertText(text);
+    tc.movePosition(QTextCursor::End);
     tc.insertBlock();
+    tc.insertText(text);
     len = q->textCursor().block().length();
 }
 
 //
 
-BTerminalWidget::BTerminalWidget(QWidget *parent) :
-    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this) )
+BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
+    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
     //
 }
 
-BTerminalWidget::BTerminalWidget(BAbstractTerminalDriver *driver, QWidget *parent) :
-    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this) )
+BTerminalWidget::BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent) :
+    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
     setDriver(driver);
 }
@@ -235,14 +233,6 @@ void BTerminalWidget::setDriver(BAbstractTerminalDriver *driver)
     d_func()->setDriver(driver);
 }
 
-void BTerminalWidget::setCurrentDirectory(const QString &path)
-{
-    B_D(BTerminalWidget);
-    if (d->userCommands || !d->driver)
-        return;
-    d->driver->setCurrentDirectory(path);
-}
-
 void BTerminalWidget::setTerminatingSequence(int key, int modifiers, const QString &displayedSymbols)
 {
     B_D(BTerminalWidget);
@@ -251,20 +241,17 @@ void BTerminalWidget::setTerminatingSequence(int key, int modifiers, const QStri
     d->terminatingSymbols = displayedSymbols;
 }
 
-void BTerminalWidget::setUserCommandsEnabled(bool b)
+void BTerminalWidget::setWorkingDirectory(const QString &path)
 {
     B_D(BTerminalWidget);
-    if (b == d->userCommands)
+    if (d->NormalMode || !d->driver)
         return;
-    d->userCommands = b;
-    if (d->userCommands && d->driver)
-    {
-        d->scrollDown();
-        QTextCursor tc = textCursor();
-        if ( !tc.block().text().isEmpty() )
-            d->appendLine();
-        d->appendText( d->driver->prompt() );
-    }
+    d->driver->setWorkingDirectory(path);
+}
+
+BTerminalWidget::TerminalMode BTerminalWidget::mode() const
+{
+    return d_func()->NormalMode ? NormalMode : ProgrammaticMode;
 }
 
 BAbstractTerminalDriver *BTerminalWidget::driver() const
@@ -272,10 +259,10 @@ BAbstractTerminalDriver *BTerminalWidget::driver() const
     return d_func()->driver;
 }
 
-QString BTerminalWidget::currentDirectory() const
+QString BTerminalWidget::workingDirectory() const
 {
     const B_D(BTerminalWidget);
-    return d->driver ? d->driver->currentDirectory() : QString("");
+    return d->driver ? d->driver->workingDirectory() : QString("");
 }
 
 bool BTerminalWidget::isValid() const
@@ -291,6 +278,62 @@ bool BTerminalWidget::isActive() const
 
 //
 
+void BTerminalWidget::terminalCommand(const QString &command)
+{
+    QStringList args = BTerminalIOHandler::splitCommand(command);
+    QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
+    terminalCommand(cmd, args);
+}
+
+void BTerminalWidget::terminalCommand(const QString &command, const QStringList &arguments)
+{
+    B_D(BTerminalWidget);
+    if ( !d->NormalMode || !d->driver || d->driver->isActive() )
+        return;
+    if ( command.isEmpty() )
+        return d->appendLine( d->driver->prompt() );
+    QString ret = d->driver->terminalCommand(command, arguments);
+    if ( !ret.isEmpty() )
+    {
+        d->appendLine(tr("Error:", "text") + " " + ret);
+        d->appendLine( d->driver->prompt() );
+    }
+    else
+    {
+        d->appendLine();
+    }
+}
+
+void BTerminalWidget::processCommand(const QString &command)
+{
+    QStringList args = BTerminalIOHandler::splitCommand(command);
+    QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
+    processCommand(cmd, args);
+}
+
+void BTerminalWidget::processCommand(const QString &command, const QStringList &arguments)
+{
+    B_D(BTerminalWidget);
+    if ( !d->driver || !d->driver->isActive() )
+        return;
+    if ( command.isEmpty() )
+        return d->appendLine();
+    QString ret = d->driver->processCommand(command, arguments);
+    if ( !ret.isEmpty() )
+        d->appendLine(tr("Error:", "text") + " " + ret);
+    d->appendLine();
+}
+
+void BTerminalWidget::emulateUserInput(const QString &command)
+{
+    B_D(BTerminalWidget);
+    d->scrollDown();
+    QTextCursor tc = textCursor();
+    tc.insertText(command);
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
+    QApplication::sendEvent(this, &e);
+}
+
 void BTerminalWidget::close()
 {
     if ( !isActive() )
@@ -305,14 +348,11 @@ void BTerminalWidget::terminate()
     d_func()->driver->terminate();
 }
 
-void BTerminalWidget::emulateCommand(const QString &command)
+void BTerminalWidget::kill()
 {
-    B_D(BTerminalWidget);
-    d->scrollDown();
-    QTextCursor tc = textCursor();
-    tc.insertText(command);
-    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
-    QApplication::sendEvent(this, &e);
+    if ( !isActive() )
+        return;
+    d_func()->driver->kill();
 }
 
 //

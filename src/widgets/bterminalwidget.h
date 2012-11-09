@@ -5,6 +5,7 @@ class BTerminalWidgetPrivate;
 class BAbstractTerminalDriver;
 
 class QWidget;
+class QStringList;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -17,22 +18,33 @@ class B_WIDGETS_EXPORT BTerminalWidget : public QPlainTextEdit, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BTerminalWidget)
 public:
-    explicit BTerminalWidget(QWidget *parent = 0);
-    explicit BTerminalWidget(BAbstractTerminalDriver *driver, QWidget *parent = 0);
+    enum TerminalMode
+    {
+        NormalMode,
+        ProgrammaticMode
+    };
+    //
+    explicit BTerminalWidget(TerminalMode mode, QWidget *parent = 0);
+    explicit BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent = 0);
     ~BTerminalWidget();
     //
     void setDriver(BAbstractTerminalDriver *driver);
-    void setCurrentDirectory(const QString &path);
     void setTerminatingSequence( int key, int modifiers, const QString &displayedSymbols = QString() );
-    void setUserCommandsEnabled(bool b);
+    void setWorkingDirectory(const QString &path);
+    TerminalMode mode() const;
     BAbstractTerminalDriver *driver() const;
-    QString currentDirectory() const;
+    QString workingDirectory() const;
     bool isValid() const;
     bool isActive() const;
 public slots:
+    void terminalCommand(const QString &command);
+    void terminalCommand(const QString &command, const QStringList &arguments);
+    void processCommand(const QString &command);
+    void processCommand(const QString &command, const QStringList &arguments);
+    void emulateUserInput(const QString &command);
     void close();
     void terminate();
-    void emulateCommand(const QString &command);
+    void kill();
 signals:
     void finished(int exitCode);
 protected:
