@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     BApplicationServer *as = new BApplicationServer;
     if ( !as->tryListen(AppName) )
     {
-        bool b = as->sendMessage(argc, argv, AppName);
+        bool b = as->sendMessage(AppName, argc, argv);
         delete as;
         return b ? 0 : -1;
     }

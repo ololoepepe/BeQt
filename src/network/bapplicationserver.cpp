@@ -110,22 +110,21 @@ bool BApplicationServer::tryListen(const QString &serverName)
 {
     if ( !QCoreApplication::instance() )
         return false;
-    QString nm = !serverName.isEmpty() ? serverName : QCoreApplication::applicationName();
-    if ( nm.isEmpty() )
+    if ( serverName.isEmpty() )
         return false;
     B_D(BApplicationServer);
-    if ( !d->server->listen(nm) )
+    if ( !d->server->listen(serverName) )
     {
         QByteArray data;
         QDataStream out(&data, QIODevice::WriteOnly);
         out.setVersion(BApplicationServerPrivate::DSVersion);
         out << false;
         BGenericSocket s(BGenericSocket::LocalSocket);
-        s.connectToHost(nm);
+        s.connectToHost(serverName);
         if ( !s.waitForConnected(BApplicationServerPrivate::OperationTimeout) || !s.write(data) ||
              !s.waitForBytesWritten(BApplicationServerPrivate::OperationTimeout) ||
              !s.waitForReadyRead(BApplicationServerPrivate::OperationTimeout) )
-            return QLocalServer::removeServer(nm) && d->server->listen(nm);
+            return QLocalServer::removeServer(serverName) && d->server->listen(serverName);
         else
             return false;
     }
@@ -135,24 +134,23 @@ bool BApplicationServer::tryListen(const QString &serverName)
     }
 }
 
-bool BApplicationServer::sendMessage(int &argc, char **argv, const QString &serverName)
+bool BApplicationServer::sendMessage(const QString &serverName, int &argc, char **argv)
 {
-    if (argc < 1 || !argv)
+    if ( argc < 1 || !argv || serverName.isEmpty() )
         return false;
     QStringList args;
     for (int i = 1; i < argc; ++i)
         args << argv[i];
-    return sendMessage(args, serverName);
+    return sendMessage(serverName, args);
 }
 
-bool BApplicationServer::sendMessage(const QStringList &arguments, const QString &serverName)
+bool BApplicationServer::sendMessage(const QString &serverName, const QStringList &arguments)
 {
     if ( d_func()->server->isListening() ) //Not sure if valid
         return false;
-    QString nm = !serverName.isEmpty() ? serverName : QCoreApplication::applicationName();
-    if ( nm.isEmpty() )
+    if ( serverName.isEmpty() )
         return false;
-    QStringList args = !arguments.isEmpty() ? arguments : QCoreApplication::arguments();
+    QStringList args = !arguments.isEmpty() ? arguments : QStringList( QCoreApplication::arguments().mid(1) );
     if ( args.isEmpty() )
         return false;
     QByteArray ba;
@@ -161,7 +159,7 @@ bool BApplicationServer::sendMessage(const QStringList &arguments, const QString
     out << true;
     out << args;
     BGenericSocket s(BGenericSocket::LocalSocket);
-    s.connectToHost(nm);
+    s.connectToHost(serverName);
     if ( !s.waitForConnected(BApplicationServerPrivate::OperationTimeout) )
         return false;
     if ( !s.write(ba) )
@@ -181,5 +179,5 @@ BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
 
 void BApplicationServer::handleMessage(const QStringList &arguments)
 {
-    //
+    qDebug() << arguments;
 }

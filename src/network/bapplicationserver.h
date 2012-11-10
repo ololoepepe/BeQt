@@ -16,9 +16,9 @@ public:
     BApplicationServer();
     ~BApplicationServer();
     //
-    bool tryListen( const QString &serverName = QString() );
-    bool sendMessage( int &argc, char **argv, const QString &serverName = QString() );
-    bool sendMessage( const QStringList &arguments = QStringList(), const QString &serverName = QString() );
+    bool tryListen(const QString &serverName);
+    bool sendMessage(const QString &serverName, int &argc, char **argv);
+    bool sendMessage( const QString &serverName, const QStringList &arguments = QStringList() );
 protected:
     BApplicationServer(BApplicationServerPrivate &d);
     //
