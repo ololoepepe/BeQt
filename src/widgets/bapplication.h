@@ -5,11 +5,12 @@ class BApplicationPrivate;
 
 class QIcon;
 class QPixmap;
+class QAction;
 
 #include "baboutdialog.h"
 #include "bsettingsdialog.h"
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BCoreApplication>
 
 #include <QObject>
@@ -23,9 +24,9 @@ class QPixmap;
 
 class B_WIDGETS_EXPORT BApplication : public BCoreApplication
 {
-    Q_OBJECT
     B_DECLARE_PRIVATE(BApplication)
     B_DECLARE_PRIVATE_S(BApplication)
+    Q_OBJECT
 public:
     enum SettingsTabNavigation
     {
@@ -33,11 +34,15 @@ public:
         ListNavigation,
         TabbedNavigation
     };
-    enum HelpMode
+    enum StandardAction
     {
-        InternalMode,
-        ExternalOfflineMode,
-        ExternalOnlineMode
+        InvalidAction = 0,
+        SettingsAction,
+        HomepageAction,
+        HelpContentsAction,
+        ContextualHelpAction,
+        WhatsThisAction,
+        AboutAction
     };
     //
     static QIcon beqtIcon(const QString &fileName);
@@ -52,14 +57,16 @@ public:
     static void setAboutLicense(const QString &text);
     static void setAboutLicense(const QString &fileName, const char *codecName);
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
-    static void setHelpMode(HelpMode mode);
     static void setHelpIndex(const QString &index);
+    static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
+    static void retranslateStandardAction(QAction *action);
     //
     explicit BApplication( const AppOptions &options = AppOptions() );
     ~BApplication();
 public slots:
     void showAboutDialog();
-    void showSettingsDialog(SettingsTabNavigation navigation = DefaultNavigation);
+    void showSettingsDialog();
+    void showSettingsDialog(SettingsTabNavigation navigation);
     void showHelpContents();
     void showContextualHelp();
     void openHomepage();

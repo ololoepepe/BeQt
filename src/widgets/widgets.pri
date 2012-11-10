@@ -4,6 +4,7 @@ HEADERS += \
     $${PWD}/babstractsettingstab.h \
     $${PWD}/babstractterminaldriver.h \
     $${PWD}/bapplication.h \
+    $${PWD}/bapplication_p.h \
     $${PWD}/bflowlayout.h \
     $${PWD}/bguiplugininterface.h \
     $${PWD}/bhelpbrowser.h \
@@ -11,8 +12,6 @@ HEADERS += \
     $${PWD}/blocalecombobox.h \
     $${PWD}/blocalterminaldriver.h \
     $${PWD}/blocalterminaldriver_p.h \
-    $${PWD}/bmainwindow.h \
-    $${PWD}/bmainwindow_p.h \
     $${PWD}/bpasswordwidget_p.h \
     $${PWD}/bpasswordwidget.h \
     $${PWD}/bpluginssettingstab.h \
@@ -30,7 +29,6 @@ SOURCES += \
     $${PWD}/bhelpbrowser.cpp \
     $${PWD}/blocalecombobox.cpp \
     $${PWD}/blocalterminaldriver.cpp \
-    $${PWD}/bmainwindow.cpp \
     $${PWD}/bpasswordwidget.cpp \
     $${PWD}/bpluginssettingstab.cpp \
     $${PWD}/bsettingsdialog.cpp \

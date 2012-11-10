@@ -45,7 +45,7 @@ BAboutDialogPrivateObject::~BAboutDialogPrivateObject()
 
 //
 
-void BAboutDialogPrivateObject::retranslateUi()
+void BAboutDialogPrivateObject::languageChanged()
 {
     _m_p->retranslateUi();
 }
@@ -147,8 +147,8 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         hltActions->addWidget(dlgbbox);
       vlt->addLayout(hltActions);
     //
-    _m_o->retranslateUi();
-    QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), _m_o, SLOT( retranslateUi() ) );
+    retranslateUi();
+    QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), _m_o, SLOT( languageChanged() ) );
 }
 
 BAboutDialogPrivate::~BAboutDialogPrivate()

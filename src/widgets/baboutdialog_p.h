@@ -14,7 +14,7 @@ class QDialogButtonBox;
 
 #include "baboutdialog.h"
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
@@ -30,7 +30,7 @@ public:
     //
     BAboutDialogPrivate *const _m_p;
 public slots:
-    void retranslateUi();
+    void languageChanged();
 private:
     Q_DISABLE_COPY(BAboutDialogPrivateObject)
 };

@@ -10,7 +10,6 @@
 #include "bhelpbrowser.h"
 #include "blocalecombobox.h"
 #include "blocalterminaldriver.h"
-#include "bmainwindow.h"
 #include "bpasswordwidget.h"
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"

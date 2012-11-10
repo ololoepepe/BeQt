@@ -32,10 +32,6 @@ int main(int argc, char **argv)
     QApplication::setOrganizationName("darkangel");
     QApplication::setOrganizationDomain("https://github.com/the-dark-angel/test");
     QApplication::setApplicationVersion("0.1.0pa1");
-    /*BCoreApplication *bapp = new BCoreApplication;
-    delete bapp;
-    delete app;
-    return 0;*/
     BApplication *bapp = new Application;
     //test
     BApplication::loadSettings();
@@ -75,28 +71,16 @@ int main(int argc, char **argv)
     BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
     vlt->addWidget(lcb);
     //lcb->updateAvailableLocales();
-    //
-    //loading plugins
-    BApplication::loadPlugins();
-    //
-    //BApplication::setHelpMode(BApplication::ExternalOnlineMode);
-    QPushButton *btn = new QPushButton("About", w);
-    QObject::connect( btn, SIGNAL( clicked() ), bApp, SLOT( showAboutDialog() ) );
-    vlt->addWidget(btn);
-    QPushButton *btn2 = new QPushButton("Settings", w);
-    QObject::connect( btn2, SIGNAL( clicked() ), bApp, SLOT( showSettingsDialog() ) );
-    vlt->addWidget(btn2);
+    //BApplication::loadPlugins();
     mw->setCentralWidget(w);
-    //mw->show();
-    mw->loadSettings();
+    mw->show();
     //terminal
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
     term->setDriver(new BLocalTerminalDriver);
-    term->show();
+    //term->show();
     //term->emulateCommand("tex-creator.sh");
     //end terminal
     int ret = app->exec();
-    mw->saveSettings();
     //end test
     BApplication::saveSettings();
     delete bapp;

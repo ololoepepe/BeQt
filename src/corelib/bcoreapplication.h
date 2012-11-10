@@ -23,9 +23,9 @@ class QSettings;
 
 class B_CORE_EXPORT BCoreApplication : public QObject, public BBase
 {
-    Q_OBJECT
     B_DECLARE_PRIVATE(BCoreApplication)
     B_DECLARE_PRIVATE_S(BCoreApplication)
+    Q_OBJECT
 public:
     enum Location
     {

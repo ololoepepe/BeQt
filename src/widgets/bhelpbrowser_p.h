@@ -39,9 +39,11 @@ private:
 
 class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
 {
-    Q_DECLARE_TR_FUNCTIONS(BHelpBrowser)
     B_DECLARE_PUBLIC(BHelpBrowser)
+    Q_DECLARE_TR_FUNCTIONS(BHelpBrowser)
 public:
+    static QMap<QString, QStringList> searchCache;
+    //
     BHelpBrowserPrivate( BHelpBrowser *q, const QString &index, const QString &file,
                          const QStringList &searchPaths = QStringList() );
     ~BHelpBrowserPrivate();
@@ -52,7 +54,6 @@ public:
     //
     BHelpBrowserPrivateObject *const _m_o;
     //
-    QMap<QString, QStringList> searchCache;
     QVBoxLayout *vlt;
       QToolBar *tbar;
         QToolButton *tbtnBackward;
