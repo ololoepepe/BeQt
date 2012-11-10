@@ -48,6 +48,7 @@ BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
     server = new BGenericServer(BGenericServer::LocalServer);
     //TODO: On Qt5, set socket options
+    //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
     QObject::connect( server, SIGNAL( newPendingConnection() ), _m_o, SLOT( newPendingConnection() ) );
 }
 
