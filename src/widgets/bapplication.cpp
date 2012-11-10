@@ -117,7 +117,9 @@ QIcon BApplication::beqtIcon(const QString &fileName)
         return QIcon();
     if ( fileName.isEmpty() )
         return QIcon();
-    QString dir = location(BeqtPath, SharedResources) + "/" + "images/icons";
+    QString dir = location(BeqtPath, SharedResources) + "/images/icons";
+    if ( !QFileInfo(dir).isDir() )
+        dir = location(BeqtPath, BuiltinResources) + "/images/icons";
     if ( !QFileInfo(dir).isDir() )
         return QIcon();
     QString fn = fileName;
@@ -133,6 +135,8 @@ QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
     if ( fileName.isEmpty() )
         return QPixmap();
     QString dir = location(BeqtPath, SharedResources) + "/" + "images/icons";
+    if ( !QFileInfo(dir).isDir() )
+        dir = location(BeqtPath, BuiltinResources) + "/images/icons";
     if ( !QFileInfo(dir).isDir() )
         return QPixmap();
     QString fn = fileName;
