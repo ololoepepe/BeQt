@@ -3,9 +3,9 @@ TARGET = mainwindow
 
 CONFIG += release
 
-QT = core gui
+QT = core network gui
 
-BEQT = core widgets
+BEQT = core network widgets
 BEQT_PART=example
 
 include(../../../depend.pri)

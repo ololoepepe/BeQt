@@ -9,6 +9,7 @@
 #include <BSettingsDialog>
 #include <BTerminalWidget>
 #include <BLocalTerminalDriver>
+#include <BApplicationServer>
 
 #include <QApplication>
 #include <QString>
@@ -22,20 +23,32 @@
 #include <QLibraryInfo>
 #include <QPushButton>
 #include <QVBoxLayout>
+#include <QLocalServer>
 
 #include <QDebug>
 
+const QString AppName = "My App";
+
 int main(int argc, char **argv)
 {
+    //Creating QApplication instance
     QApplication *app = new QApplication(argc, argv);
-    QApplication::setApplicationName("My App");
+    //Checking other application process instances
+    BApplicationServer *as = new BApplicationServer;
+    if ( !as->tryListen(AppName) )
+    {
+        bool b = as->sendMessage(argc, argv, AppName);
+        delete as;
+        return b ? 0 : -1;
+    }
+    //Continuing QApplication initialization
+    QApplication::setApplicationName(AppName);
     QApplication::setOrganizationName("darkangel");
     QApplication::setOrganizationDomain("https://github.com/the-dark-angel/test");
     QApplication::setApplicationVersion("0.1.0pa1");
+    //Creating BApplication instance
     BApplication *bapp = new Application;
-    //test
-    BApplication::loadSettings();
-    //about
+    //Initializing BApplication About
     BApplication::setAboutPixmap(BApplication::location(BApplication::DataPath,
                                                         BApplication::SharedResources) + "/images/myapp.png");
     BApplication::setAbout("This is an example application", "2012 Andrey Bogdanov",
@@ -54,36 +67,40 @@ int main(int argc, char **argv)
     pi.site = "";
     BApplication::setAboutThanksToInfos(BAboutDialog::PersonInfoList() << pi);
     BApplication::setAboutLicense("MIT License");
-    //end about
-    //navigation
-    //BApplication::setSettingsTabDefaultNavigation(BApplication::DefaultNavigation);
-    //end navigation
-    QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
-    MainWindow *mw = new MainWindow;
-    QWidget *w = new QWidget(mw);
-    w->move(800, 400);
-    QVBoxLayout *vlt = new QVBoxLayout(w);
-    //locale combo box
+    //Installing translators
     BTranslator *t = new BTranslator("qt");
     BApplication::installTranslator(t);
     t = new BTranslator("beqt");
     BApplication::installTranslator(t);
-    BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
-    vlt->addWidget(lcb);
-    //lcb->updateAvailableLocales();
-    //BApplication::loadPlugins();
-    mw->setCentralWidget(w);
-    mw->show();
-    //terminal
+    //Creating and initializing GUI
+    QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
+    //MainWindow
+    MainWindow *mw = new MainWindow;
+      QWidget *w = new QWidget(mw);
+        QVBoxLayout *vlt = new QVBoxLayout(w);
+          BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
+        vlt->addWidget(lcb);
+      mw->setCentralWidget(w);
+    mw->move(800, 400);
+    //BTerminalWidget
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
     term->setDriver(new BLocalTerminalDriver);
+    //Loading settings and plugins
+    BApplication::loadSettings();
+    //BApplication::loadPlugins();
+    //Showing widgets
+    mw->show();
     //term->show();
-    //term->emulateCommand("tex-creator.sh");
-    //end terminal
+    //Running main event loop
     int ret = app->exec();
-    //end test
+    //Saving settings
     BApplication::saveSettings();
+    //Deleting objects
+    delete mw;
+    delete term;
     delete bapp;
     delete app;
+    delete as;
+    //Returning from main
     return ret;
 }

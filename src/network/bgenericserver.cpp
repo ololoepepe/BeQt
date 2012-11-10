@@ -14,6 +14,8 @@
 #include <QQueue>
 #include <QMetaObject>
 
+#include <QDebug>
+
 BGenericServerPrivateObject::BGenericServerPrivateObject(BGenericServerPrivate *p) :
     QObject(0), _m_p(p)
 {
@@ -37,20 +39,20 @@ void BGenericServerPrivateObject::newConnection(int socketDescriptor)
 BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type) :
     BBasePrivate(q), _m_o( new BGenericServerPrivateObject(this) )
 {
-    maxPending = 0;
+    maxPending = 10;
     switch (type)
     {
     case BGenericServer::LocalServer:
     {
         BLocalServer *server = new BLocalServer( q_func() );
-        QObject::connect(server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ), Qt::DirectConnection);
+        QObject::connect( server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ) );
         lserver = server;
         break;
     }
     case BGenericServer::TcpServer:
     {
         BTcpServer *server = new BTcpServer( q_func() );
-        QObject::connect(server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ), Qt::DirectConnection);
+        QObject::connect( server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ) );
         tserver = server;
     }
     default:
@@ -68,13 +70,21 @@ BGenericServerPrivate::~BGenericServerPrivate()
 void BGenericServerPrivate::newConnection(int socketDescriptor)
 {
     B_Q(BGenericServer);
-    if (maxPending > 0)
+    if (maxPending)
     {
         BGenericSocket *socket = q->createSocket(socketDescriptor);
         if ( !socket || !socket->isValid() || !( socket->socketType() & q->serverType() ) )
             return;
+        if (maxPending > 0 && socketQueue.size() >= maxPending)
+        {
+            socket->close();
+            socket->deleteLater();
+            QMetaObject::invokeMethod(q, "connectionOverflow");
+            return;
+        }
         socket->setParent(q);
         socketQueue.enqueue(socket);
+        QMetaObject::invokeMethod(q, "newPendingConnection");
     }
     else
     {

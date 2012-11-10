@@ -49,6 +49,10 @@ void BHelpBrowserPrivateObject::ledtSearchReturnPressed()
 
 //
 
+QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
+
+//
+
 BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, const QString &file,
                                          const QStringList &searchPaths) :
     BBasePrivate(q), _m_o( new BHelpBrowserPrivateObject(this) )

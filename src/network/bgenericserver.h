@@ -46,7 +46,9 @@ public:
     void setMaxPendingConnections(int numConnections);
     bool waitForNewConnection(int msec = 0, bool *timedOut = 0);
 signals:
+    void newPendingConnection();
     void newConnection(int socketDescriptor);
+    void connectionOverflow();
 protected:
     BGenericServer(BGenericServerPrivate &d, QObject *parent = 0);
     //

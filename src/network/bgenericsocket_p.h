@@ -4,7 +4,6 @@
 class BGenericSocketPrivate;
 
 class QLocalSocket;
-class QAbstractSokcet;
 
 #include "bgenericsocket.h"
 
@@ -14,6 +13,7 @@ class QAbstractSokcet;
 #include <QObject>
 #include <QLocalSocket>
 #include <QPointer>
+#include <QAbstractSocket>
 
 class B_NETWORK_EXPORT BGenericSocketPrivateObject : public QObject
 {
@@ -26,6 +26,14 @@ public:
 public slots:
     void lsocketError(QLocalSocket::LocalSocketError socketError);
     void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
+    void aboutToClose();
+    void connected();
+    void bytesWritten(qint64 bytes);
+    void disconnected();
+    void error(QAbstractSocket::SocketError socketError);
+    void readChannelFinished();
+    void readyRead();
+    void stateChanged(QAbstractSocket::SocketState socketState);
 private:
     Q_DISABLE_COPY(BGenericSocketPrivateObject)
 };
@@ -43,6 +51,14 @@ public:
     void disconnectIODevice();
     void lsocketError(QLocalSocket::LocalSocketError socketError);
     void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
+    void aboutToClose();
+    void connected();
+    void bytesWritten(qint64 bytes);
+    void disconnected();
+    void error(QAbstractSocket::SocketError socketError);
+    void readChannelFinished();
+    void readyRead();
+    void stateChanged(QAbstractSocket::SocketState socketState);
     //
     BGenericSocketPrivateObject *const _m_o;
     //

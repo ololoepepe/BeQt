@@ -1,6 +1,7 @@
 #ifndef BEQT_BEQTNETWORK_MODULE_H
 #define BEQT_BEQTNETWORK_MODULE_H
 
+#include "bapplicationserver.h"
 #include "bgenericserver.h"
 #include "bgenericsocket.h"
 #include "bnetworkconnection.h"

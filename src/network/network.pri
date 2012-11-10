@@ -1,4 +1,6 @@
 HEADERS += \
+    $${PWD}/bapplicationserver.h \
+    $${PWD}/bapplicationserver_p.h \
     $${PWD}/bgenericserver.h \
     $${PWD}/bgenericserver_p.h \
     $${PWD}/bgenericsocket.h \
@@ -19,6 +21,7 @@ HEADERS += \
     $${PWD}/btcpserver.h
 
 SOURCES += \
+    $${PWD}/bapplicationserver.cpp \
     $${PWD}/bgenericserver.cpp \
     $${PWD}/bgenericsocket.cpp \
     $${PWD}/blocalserver.cpp \
