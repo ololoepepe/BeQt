@@ -117,15 +117,9 @@ QIcon BApplication::beqtIcon(const QString &fileName)
         return QIcon();
     if ( fileName.isEmpty() )
         return QIcon();
-    QString dir = location(BeqtPath, SharedResources) + "/images/icons";
-    if ( !QFileInfo(dir).isDir() )
-        dir = location(BeqtPath, BuiltinResources) + "/images/icons";
-    if ( !QFileInfo(dir).isDir() )
-        return QIcon();
-    QString fn = fileName;
-    if ( QFileInfo(fileName).suffix().isEmpty() )
-        fn += ".png";
-    return QIcon(dir + "/" + fn);
+    QString fn = "beqt/images/icons/" + fileName + (QFileInfo(fileName).suffix().isEmpty() ? ".png" : "");
+    fn = BDirTools::findResource(fn, BDirTools::GlobalOnly);
+    return !fn.isEmpty() ? QIcon(fn) : QIcon();
 }
 
 QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
@@ -134,15 +128,11 @@ QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
         return QPixmap();
     if ( fileName.isEmpty() )
         return QPixmap();
-    QString dir = location(BeqtPath, SharedResources) + "/images/icons";
-    if ( !QFileInfo(dir).isDir() )
-        dir = location(BeqtPath, BuiltinResources) + "/images/icons";
-    if ( !QFileInfo(dir).isDir() )
+    QString fn = "beqt/images/icons/" + fileName + (QFileInfo(fileName).suffix().isEmpty() ? ".png" : "");
+    fn = BDirTools::findResource(fn, BDirTools::GlobalOnly);
+    if ( fn.isEmpty() )
         return QPixmap();
-    QString fn = fileName;
-    if ( QFileInfo(fileName).suffix().isEmpty() )
-        fn += ".png";
-    QPixmap pm(dir + "/" + fn);
+    QPixmap pm(fn);
     return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 

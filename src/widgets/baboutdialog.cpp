@@ -257,11 +257,6 @@ void BAboutDialogPrivate::retranslateUi()
         tbtnAboutBeQt->setToolTip( tr("About BeQt", "tbtn toolTip") );
     if (aboutBeqtDlg)
     {
-        /*QString beqtdir = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources);
-        QString beqtdirb = BApplication::location(BApplication::BeqtPath, BApplication::BuiltinResources);
-        QString descrfn = BDirTools::localeBasedFileName(beqtdir + "/about/ABOUT", beqtdir + "/ABOUT", "txt");
-        if ( descrfn.isEmpty() )
-            descrfn = BDirTools::localeBasedFileName(beqtdirb + "/about/ABOUT", beqtdirb + "/ABOUT", "txt");*/
         QString copyright = "2012 Andrey Bogdanov";
         QString website = "https://github.com/the-dark-angel/BeQt";
         aboutBeqtDlg->setAbout(BApplication::beqtInfo(BApplication::Description), copyright, website);

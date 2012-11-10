@@ -130,6 +130,47 @@ QString BDirTools::readTextFile(const QString &fileName, const char *codecName)
     return readTextFile( fileName, QTextCodec::codecForName(codecName) );
 }
 
+QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)
+{
+    switch (mode)
+    {
+    case GlobalOnly:
+    {
+        QString dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
+        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
+            return dir + "/" + subpath;
+#if defined(B_OS_MAC)
+        dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
+        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
+            return dir + "/" + subpath;
+#endif
+        dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResources);
+        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
+            return dir + "/" + subpath;
+        break;
+    }
+    case UserOnly:
+    {
+        QString dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResources);
+        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
+            return dir + "/" + subpath;
+        break;
+    }
+    case AllResources:
+    default:
+    {
+        QString res = findResource(subpath, GlobalOnly);
+        if ( !res.isEmpty() )
+            return res;
+        res = findResource(subpath, UserOnly);
+        if ( !res.isEmpty() )
+            return res;
+        break;
+    }
+    }
+    return "";
+}
+
 //
 
 BDirTools::BDirTools()

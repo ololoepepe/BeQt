@@ -11,6 +11,13 @@ class QTextCodec;
 class B_CORE_EXPORT BDirTools
 {
 public:
+    enum ResourceLookupMode
+    {
+        AllResources,
+        GlobalOnly,
+        UserOnly
+    };
+    //
     static bool mkpath(const QString &dirPath);
     static bool rmdir(const QString &dirName);
     static bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );
@@ -20,6 +27,7 @@ public:
     static QString localeBasedDirName(const QString &dir);
     static QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
     static QString readTextFile(const QString &fileName, const char *codecName = 0);
+    static QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
 private:
     BDirTools();
 };

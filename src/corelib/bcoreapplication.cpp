@@ -578,10 +578,19 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
         return "";
     }
     QString dir = location(BeqtPath, SharedResources) + "/";
-    QString dirb = location(BeqtPath, BuiltinResources) + "/";
     QString fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
     if ( fn.isEmpty() )
-        fn = BDirTools::localeBasedFileName(dirb + pfn, dirb + dfn, "txt");
+    {
+        dir = location(BeqtPath, BuiltinResources) + "/";
+        fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
+    }
+#if defined(B_OS_MAC)
+    if ( fn.isEmpty() )
+    {
+        dir = location(BeqtPath, BundleResources) + "/";
+        fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
+    }
+#endif
     return BDirTools::readTextFile(fn, "UTF-8");
 }
 
