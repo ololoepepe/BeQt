@@ -248,7 +248,6 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case SettingsAction:
         act = new QAction(parent);
         act->setObjectName("ActionSettings");
-        act->setShortcut( QKeySequence("Ctrl+P") );
         act->setIcon( beqtIcon("configure") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showSettingsDialog() ) );
         break;
@@ -267,7 +266,6 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case ContextualHelpAction:
         act = new QAction(parent);
         act->setObjectName("ActionContextualHelp");
-        act->setShortcut( QKeySequence("F1") );
         act->setIcon( beqtIcon("help_contextual") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showContextualHelp() ) );
         break;
