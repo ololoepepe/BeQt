@@ -39,10 +39,11 @@ public:
     enum ResourcesType
     {
         UserResources,
-        SharedResources
+        SharedResources,
 #if defined(B_OS_MAC)
-        , BundleResources
+        BundleResources,
 #endif
+        BuiltinResources
     };
     //
     struct AppOptions

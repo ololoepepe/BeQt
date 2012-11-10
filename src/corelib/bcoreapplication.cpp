@@ -200,6 +200,8 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
     case BCoreApplication::BundleResources :
         return bundlePrefix;
 #endif
+    case BCoreApplication::BuiltinResources:
+        return ":";
     default:
         return "";
     }
@@ -328,6 +330,7 @@ QStringList BCoreApplication::locations(Location loc)
 #if defined(B_OS_MAC)
     sl << location(loc, BundleResources);
 #endif
+    sl << location(loc, BuiltinResources);
     sl.removeAll("");
     sl.removeDuplicates();
     return sl;
@@ -343,6 +346,7 @@ QStringList BCoreApplication::locations(const QString &subdir)
 #if defined(B_OS_MAC)
     sl << location(subdir, BundleResources);
 #endif
+    sl << location(subdir, BuiltinResources);
     sl.removeAll("");
     sl.removeDuplicates();
     return sl;
