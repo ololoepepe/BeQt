@@ -21,3 +21,5 @@ SOURCES += \
     $${PWD}/bpluginwrapper.cpp \
     $${PWD}/bterminaliohandler.cpp \
     $${PWD}/btranslator.cpp
+
+contains(CONFIG, beqt_builtin_resources):RESOURCES += ../../beqt.qrc

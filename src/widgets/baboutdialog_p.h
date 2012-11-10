@@ -61,7 +61,6 @@ public:
     QString tabTitle(DialogTab t) const;
     int tabIndex(DialogTab t) const;
     void removeTab(DialogTab t);
-    QString readFile(const QString &fileName, const char *codecName) const;
     void fillTab(DialogTab t, const QString &text, bool html);
     void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
     void retranslateUi();

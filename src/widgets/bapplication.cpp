@@ -134,7 +134,7 @@ QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
         return QPixmap();
     if ( fileName.isEmpty() )
         return QPixmap();
-    QString dir = location(BeqtPath, SharedResources) + "/" + "images/icons";
+    QString dir = location(BeqtPath, SharedResources) + "/images/icons";
     if ( !QFileInfo(dir).isDir() )
         dir = location(BeqtPath, BuiltinResources) + "/images/icons";
     if ( !QFileInfo(dir).isDir() )
@@ -264,7 +264,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case HelpContentsAction:
         act = new QAction(parent);
         act->setObjectName("ActionHelpContents");
-        act->setIcon( beqtIcon("") );
+        //act->setIcon( beqtIcon("") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showHelpContents() ) );
         break;
     case ContextualHelpAction:

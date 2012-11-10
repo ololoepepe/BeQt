@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>images/icons/back.png</file>
+        <file>images/icons/beqt_logo.png</file>
+        <file>images/icons/binary.png</file>
+        <file>images/icons/configure.png</file>
+        <file>images/icons/decrypted.png</file>
+        <file>images/icons/encrypted.png</file>
+        <file>images/icons/forward.png</file>
+        <file>images/icons/gohome.png</file>
+        <file>images/icons/help_about.png</file>
+        <file>images/icons/help_contextual.png</file>
+        <file>images/icons/messagebox_warning.png</file>
+        <file>images/icons/network.png</file>
+        <file>images/icons/ok.png</file>
+        <file>images/icons/password_dont_save.png</file>
+        <file>images/icons/password_save.png</file>
+        <file>images/icons/qt_logo.png</file>
+        <file>ChangeLog.txt</file>
+        <file>COPYING.txt</file>
+        <file>misc/copying/COPYING_ru.txt</file>
+        <file>misc/description/DESCRIPTION.txt</file>
+    </qresource>
+</RCC>

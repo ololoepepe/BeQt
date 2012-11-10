@@ -7,6 +7,8 @@
 #include <QStringList>
 #include <QFile>
 #include <QLocale>
+#include <QTextStream>
+#include <QTextCodec>
 
 bool BDirTools::mkpath(const QString &dirPath)
 {
@@ -106,6 +108,26 @@ QString BDirTools::localeBasedDirName(const QString &dir)
     if ( !d.exists() )
         return "";
     return d.path();
+}
+
+QString BDirTools::readTextFile(const QString &fileName, QTextCodec *codec)
+{
+    if ( fileName.isEmpty() )
+        return "";
+    QFile f(fileName);
+    if ( !f.open(QFile::ReadOnly) )
+        return "";
+    QTextStream in(&f);
+    if (codec)
+        in.setCodec(codec);
+    QString text = in.readAll();
+    f.close();
+    return text;
+}
+
+QString BDirTools::readTextFile(const QString &fileName, const char *codecName)
+{
+    return readTextFile( fileName, QTextCodec::codecForName(codecName) );
 }
 
 //

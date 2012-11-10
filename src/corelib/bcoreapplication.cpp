@@ -554,6 +554,37 @@ void BCoreApplication::saveSettings()
     ds_func()->saveSettings();
 }
 
+QString BCoreApplication::beqtInfo(BeQtInfo type)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return "";
+    QString pfn;
+    QString dfn;
+    switch (type)
+    {
+    case Description:
+        pfn = "misc/description/DESCRIPTION";
+        dfn = pfn;
+        break;
+    case ChangeLog:
+        pfn = "misc/changelog/ChangeLog";
+        dfn = "ChangeLog";
+        break;
+    case License:
+        pfn = "misc/copying/COPYING";
+        dfn = pfn;
+        break;
+    default:
+        return "";
+    }
+    QString dir = location(BeqtPath, SharedResources) + "/";
+    QString dirb = location(BeqtPath, BuiltinResources) + "/";
+    QString fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
+    if ( fn.isEmpty() )
+        fn = BDirTools::localeBasedFileName(dirb + pfn, dirb + dfn, "txt");
+    return BDirTools::readTextFile(fn, "UTF-8");
+}
+
 //
 
 BCoreApplication::BCoreApplication(const AppOptions &options) :

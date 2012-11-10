@@ -209,21 +209,6 @@ void BAboutDialogPrivate::removeTab(DialogTab t)
     tab->deleteLater();
 }
 
-QString BAboutDialogPrivate::readFile(const QString &fileName, const char *codecName) const
-{
-    QFile f(fileName);
-    if ( !f.open(QFile::ReadOnly) )
-        return QString();
-    QTextStream in(&f);
-    if (codecName)
-        in.setCodec(codecName);
-    else
-        in.setCodec("UTF-8");
-    QString text = in.readAll();
-    f.close();
-    return text;
-}
-
 void BAboutDialogPrivate::fillTab(DialogTab t, const QString &text, bool html)
 {
     if ( text.isEmpty() )
@@ -272,13 +257,15 @@ void BAboutDialogPrivate::retranslateUi()
         tbtnAboutBeQt->setToolTip( tr("About BeQt", "tbtn toolTip") );
     if (aboutBeqtDlg)
     {
-        QString beqtdir = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources);
+        /*QString beqtdir = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources);
+        QString beqtdirb = BApplication::location(BApplication::BeqtPath, BApplication::BuiltinResources);
         QString descrfn = BDirTools::localeBasedFileName(beqtdir + "/about/ABOUT", beqtdir + "/ABOUT", "txt");
+        if ( descrfn.isEmpty() )
+            descrfn = BDirTools::localeBasedFileName(beqtdirb + "/about/ABOUT", beqtdirb + "/ABOUT", "txt");*/
         QString copyright = "2012 Andrey Bogdanov";
         QString website = "https://github.com/the-dark-angel/BeQt";
-        aboutBeqtDlg->setAbout(readFile(descrfn, "UTF-8"), copyright, website);
-        aboutBeqtDlg->setChangeLog(BDirTools::localeBasedFileName(beqtdir + "/changelog/ChangeLog",
-                                                                  beqtdir + "/ChangeLog", "txt"), "UTF-8");
+        aboutBeqtDlg->setAbout(BApplication::beqtInfo(BApplication::Description), copyright, website);
+        aboutBeqtDlg->setChangeLog( BApplication::beqtInfo(BApplication::ChangeLog) );
         BAboutDialog::PersonInfo pi;
         pi.name = tr("Andrey Bogdanov", "info name");
         pi.role = tr("Main developer", "info role");
@@ -287,8 +274,7 @@ void BAboutDialogPrivate::retranslateUi()
         aboutBeqtDlg->setAuthorsInfos(BAboutDialog::PersonInfoList() << pi);
         pi.role = tr("Translator", "info role");
         aboutBeqtDlg->setTranslationInfos(BAboutDialog::PersonInfoList() << pi);
-        aboutBeqtDlg->setLicense(BDirTools::localeBasedFileName(beqtdir + "/copying/COPYING",
-                                                                beqtdir + "/COPYING", "txt"), "UTF-8");
+        aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
     }
 }
 
@@ -395,7 +381,7 @@ void BAboutDialog::setChangeLog(const QString &text)
 
 void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
 {
-    setChangeLog( d_func()->readFile(fileName, codecName) );
+    setChangeLog( BDirTools::readTextFile(fileName, codecName) );
 }
 
 void BAboutDialog::setAuthorsInfos(const PersonInfoList &infos)
@@ -446,7 +432,7 @@ void BAboutDialog::setLicense(const QString &text)
 
 void BAboutDialog::setLicense(const QString &fileName, const char *codecName)
 {
-    setLicense(d_func()->readFile( fileName, codecName) );
+    setLicense( BDirTools::readTextFile( fileName, codecName) );
 }
 
 void BAboutDialog::resetTabs()

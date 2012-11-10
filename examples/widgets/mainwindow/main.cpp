@@ -25,12 +25,16 @@
 #include <QVBoxLayout>
 #include <QLocalServer>
 
+#include <QDir>
+
 #include <QDebug>
 
 const QString AppName = "My App";
 
 int main(int argc, char **argv)
 {
+    //Initializing BeQt built-in resources
+    Q_INIT_RESOURCE(beqt);
     //Creating QApplication instance
     QApplication *app = new QApplication(argc, argv);
     //Checking other application process instances
@@ -101,6 +105,8 @@ int main(int argc, char **argv)
     delete bapp;
     delete app;
     delete as;
+    //Cleaning up BeQt built-in resources
+    Q_CLEANUP_RESOURCE(beqt);
     //Returning from main
     return ret;
 }

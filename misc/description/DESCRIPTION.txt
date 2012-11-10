@@ -1,0 +1,7 @@
+BeQt is a library set, developed as an extension of Qt (or you may say a framework in a framework). That is where the project's name comes from.
+BeQt is suitable for small and medium desktop applications, implementing such common features as:
+
+ * Translating UI
+ * Loading plugins
+ * Showing About, Help and Settings dialogs
+ * Storing basic application settings

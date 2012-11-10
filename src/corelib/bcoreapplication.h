@@ -45,6 +45,12 @@ public:
 #endif
         BuiltinResources
     };
+    enum BeQtInfo
+    {
+        Description,
+        ChangeLog,
+        License
+    };
     //
     struct AppOptions
     {
@@ -57,7 +63,6 @@ public:
             defaultLocale = QLocale::system();
         }
     };
-    //
     struct LocaleSupportInfo
     {
         QLocale locale;
@@ -94,6 +99,7 @@ public:
     static void retranslateUi();
     static void loadSettings();
     static void saveSettings();
+    static QString beqtInfo(BeQtInfo type);
     //
     explicit BCoreApplication( const AppOptions &options = AppOptions() );
     ~BCoreApplication();
