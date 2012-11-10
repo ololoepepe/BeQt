@@ -52,6 +52,25 @@ contains(BEQT, all) {
         widgets
 }
 
+#Add required Qt and BeQt modules (on which other included modules depend)
+contains(BEQT, codeeditor) {
+    QT *= core gui #Qt4
+    #QT *= core gui #Qt5
+    BEQT *= core widgets
+}
+contains(BEQT,core ) {
+    QT *= core
+}
+contains(BEQT, network) {
+    QT *= core network
+    BEQT *= core network
+}
+contains(BEQT, widgets) {
+    QT *= core gui #Qt4
+    #QT *= core gui #Qt5
+    BEQT *= core widgets
+}
+
 #Adds corresponding headers' paths for each valid BeQt module contained in "BEQT" variable
 for(beqt_module, BEQT) {
     beqt_headers_subdir=$$beqtHeadersSubdir($${beqt_module})
