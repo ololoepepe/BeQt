@@ -163,6 +163,13 @@ void BHelpBrowserPrivate::search()
 
 //
 
+void BHelpBrowser::clearSearchCache()
+{
+    BHelpBrowserPrivate::searchCache.clear();
+}
+
+//
+
 BHelpBrowser::BHelpBrowser(QWidget *parent) :
     QWidget(parent), BBase( *new BHelpBrowserPrivate(this, "", "") )
 {

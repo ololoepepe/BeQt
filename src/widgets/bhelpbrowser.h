@@ -13,9 +13,11 @@ class QStringList;
 
 class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBase
 {
-    Q_OBJECT
     B_DECLARE_PRIVATE(BHelpBrowser)
+    Q_OBJECT
 public:
+    static void clearSearchCache();
+    //
     explicit BHelpBrowser(QWidget *parent = 0);
     explicit BHelpBrowser(const QStringList &searchPaths, QWidget *parent = 0);
     explicit BHelpBrowser(const QString &file, QWidget *parent = 0);

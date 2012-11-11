@@ -152,6 +152,13 @@ QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
     return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
+void BApplication::clearIconSearchCache()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->iconPaths.clear();
+}
+
 void BApplication::setAboutPixmap(const QPixmap &pixmap)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )

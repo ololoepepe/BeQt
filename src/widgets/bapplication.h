@@ -47,6 +47,7 @@ public:
     //
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
+    static void clearIconSearchCache();
     static void setAboutPixmap(const QPixmap &pixmap);
     static void setAboutPixmap(const QString &fileName);
     static void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
