@@ -27,6 +27,8 @@
 #include <QWhatsThis>
 #include <QKeySequence>
 #include <QList>
+#include <QImageReader>
+#include <QByteArray>
 
 #include <QDebug>
 #include <QPointer>
@@ -115,11 +117,7 @@ QIcon BApplication::beqtIcon(const QString &fileName)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
-    if ( fileName.isEmpty() )
-        return QIcon();
-    QString fn = "beqt/images/icons/" + fileName + (QFileInfo(fileName).suffix().isEmpty() ? ".png" : "");
-    fn = BDirTools::findResource(fn, BDirTools::GlobalOnly);
-    return !fn.isEmpty() ? QIcon(fn) : QIcon();
+    return QIcon( beqtPixmap(fileName) );
 }
 
 QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
@@ -128,12 +126,21 @@ QPixmap BApplication::beqtPixmap(const QString &fileName, const QSize &scale)
         return QPixmap();
     if ( fileName.isEmpty() )
         return QPixmap();
-    QString fn = "beqt/images/icons/" + fileName + (QFileInfo(fileName).suffix().isEmpty() ? ".png" : "");
-    fn = BDirTools::findResource(fn, BDirTools::GlobalOnly);
-    if ( fn.isEmpty() )
-        return QPixmap();
-    QPixmap pm(fn);
-    return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+    QList<QByteArray> formats = QImageReader::supportedImageFormats();
+    formats.prepend( QByteArray() );
+    QStringList subdirs;
+    subdirs << "images/icons/beqt" << "beqt/images/icons";
+    QPixmap pm;
+    foreach (const QString &subdir, subdirs)
+    {
+        QString dir = BDirTools::findResource(subdir, BDirTools::GlobalOnly);
+        if ( dir.isEmpty() )
+            continue;
+        foreach (const QByteArray &format, formats)
+            if ( pm.load( dir + "/" + fileName, format.data() ) )
+                break;
+    }
+    return ( scale.isEmpty() || pm.isNull() ) ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
 void BApplication::setAboutPixmap(const QPixmap &pixmap)
