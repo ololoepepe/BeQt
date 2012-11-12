@@ -54,6 +54,16 @@ void BTerminalWidgetPrivateObject::finished(int exitCode)
     _m_p->finished(exitCode);
 }
 
+void BTerminalWidgetPrivateObject::blockTerminal()
+{
+    _m_p->blockTerminal();
+}
+
+void BTerminalWidgetPrivateObject::unblockTerminal()
+{
+    _m_p->unblockTerminal();
+}
+
 //
 
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
@@ -86,6 +96,8 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
             return;
         QObject::disconnect( driver, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
         QObject::disconnect( driver, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
+        QObject::disconnect( driver, SIGNAL( blockTerminal() ), _m_o, SLOT( blockTerminal() ) );
+        QObject::disconnect( driver, SIGNAL( unblockTerminal() ), _m_o, SLOT( unblockTerminal() ) );
     }
     driver = drv;
     if (!driver)
@@ -94,6 +106,8 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
     driver->setParent(q);
     QObject::connect( driver, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
     QObject::connect( driver, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
+    QObject::connect( driver, SIGNAL( blockTerminal() ), _m_o, SLOT( blockTerminal() ) );
+    QObject::connect( driver, SIGNAL( unblockTerminal() ), _m_o, SLOT( unblockTerminal() ) );
     if (NormalMode)
     {
         QTextCursor tc = q->textCursor();
@@ -156,6 +170,38 @@ void BTerminalWidgetPrivate::scrollDown()
         sb->setValue( sb->maximum() );
 }
 
+void BTerminalWidgetPrivate::appendText(const QString &text)
+{
+    B_Q(BTerminalWidget);
+    scrollDown();
+    QTextCursor tc = q->textCursor();
+    tc.movePosition(QTextCursor::End);
+    tc.insertText(text);
+    q->setTextCursor(tc);
+    len = q->textCursor().block().length();
+}
+
+void BTerminalWidgetPrivate::appendLine(const QString &text)
+{
+    B_Q(BTerminalWidget);
+    scrollDown();
+    QTextCursor tc = q->textCursor();
+    tc.movePosition(QTextCursor::End);
+    tc.insertBlock();
+    tc.insertText(text);
+    len = q->textCursor().block().length();
+}
+
+void BTerminalWidgetPrivate::blockTerminal()
+{
+    q_func()->setReadOnly(true);
+}
+
+void BTerminalWidgetPrivate::unblockTerminal()
+{
+    q_func()->setReadOnly(false);
+}
+
 void BTerminalWidgetPrivate::read()
 {
     B_Q(BTerminalWidget);
@@ -184,28 +230,6 @@ void BTerminalWidgetPrivate::finished(int exitCode)
         else
             appendLine( driver->prompt() );
     }
-}
-
-void BTerminalWidgetPrivate::appendText(const QString &text)
-{
-    B_Q(BTerminalWidget);
-    scrollDown();
-    QTextCursor tc = q->textCursor();
-    tc.movePosition(QTextCursor::End);
-    tc.insertText(text);
-    q->setTextCursor(tc);
-    len = q->textCursor().block().length();
-}
-
-void BTerminalWidgetPrivate::appendLine(const QString &text)
-{
-    B_Q(BTerminalWidget);
-    scrollDown();
-    QTextCursor tc = q->textCursor();
-    tc.movePosition(QTextCursor::End);
-    tc.insertBlock();
-    tc.insertText(text);
-    len = q->textCursor().block().length();
 }
 
 //

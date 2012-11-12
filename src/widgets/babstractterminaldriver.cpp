@@ -50,3 +50,13 @@ void BAbstractTerminalDriver::emitFinished(int exitCode, bool delayed)
     else
         emit finished(exitCode);
 }
+
+void BAbstractTerminalDriver::emitBlockTerminal()
+{
+    emit blockTerminal();
+}
+
+void BAbstractTerminalDriver::emitUnblockTerminal()
+{
+    emit unblockTerminal();
+}

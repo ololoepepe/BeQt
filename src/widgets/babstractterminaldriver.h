@@ -28,9 +28,13 @@ public:
 signals:
     void readyRead();
     void finished(int exitCode);
+    void blockTerminal();
+    void unblockTerminal();
 protected slots:
     void emitReadyRead();
     void emitFinished(int exitCode, bool delayed = false);
+    void emitBlockTerminal();
+    void emitUnblockTerminal();
 private:
     Q_DISABLE_COPY(BAbstractTerminalDriver)
 };

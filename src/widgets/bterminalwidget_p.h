@@ -27,6 +27,8 @@ public:
 public slots:
     void readyRead();
     void finished(int exitCode);
+    void blockTerminal();
+    void unblockTerminal();
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivateObject)
 };
@@ -42,10 +44,12 @@ public:
     void setDriver(BAbstractTerminalDriver *drv);
     bool handleKeyPress(int key, int modifiers);
     void scrollDown();
-    void read();
-    void finished(int exitCode);
     void appendText(const QString &text);
     void appendLine( const QString &text = QString() );
+    void read();
+    void finished(int exitCode);
+    void blockTerminal();
+    void unblockTerminal();
     //
     BTerminalWidgetPrivateObject *const _m_o;
     const bool NormalMode;
