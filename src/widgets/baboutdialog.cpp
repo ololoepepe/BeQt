@@ -86,16 +86,30 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         lblIcon = new QLabel(q);
           lblIcon->setVisible(false);
         hltHeader->addWidget(lblIcon);
-        lblText = new QLabel(q);
-          lblText->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Preferred);
-          QFont font;
-          font.setPointSize(12);
-          font.setBold(true);
-          lblText->setFont(font);
-          appName = !options.appName.isEmpty() ? options.appName : QApplication::applicationName();
-          QString appVersion = !options.appVersion.isEmpty() ? options.appVersion : QApplication::applicationVersion();
-          lblText->setText(appName + " v" + appVersion);
-        hltHeader->addWidget(lblText);
+        vltHeader = new QVBoxLayout;
+          lblName = new QLabel(q);
+            QFont font;
+            font.setPointSize(12);
+            font.setBold(true);
+            lblName->setFont(font);
+            appName = !options.appName.isEmpty() ? options.appName : QApplication::applicationName();
+            QString appVersion = !options.appVersion.isEmpty() ? options.appVersion :
+                                                                 QApplication::applicationVersion();
+            lblName->setText(appName + " v" + appVersion);
+          vltHeader->addWidget(lblName);
+          hltCRWebsite = new QHBoxLayout;
+            lblCopyright = new QLabel(q);
+              lblCopyright->setTextFormat(Qt::RichText);
+              lblCopyright->setVisible(false);
+            hltCRWebsite->addWidget(lblCopyright);
+            lblWebsite = new QLabel(q);
+              lblWebsite->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
+              lblWebsite->setTextFormat(Qt::RichText);
+              lblWebsite->setOpenExternalLinks(true);
+              lblWebsite->setVisible(false);
+            hltCRWebsite->addWidget(lblWebsite);
+          vltHeader->addLayout(hltCRWebsite);
+        hltHeader->addLayout(vltHeader);
         hltHeader->addStretch();
         if (options.aboutQtButton)
         {
@@ -119,33 +133,21 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
             opt.appVersion = bVersion();
             aboutBeqtDlg = new BAboutDialog( opt, q_func() );
             aboutBeqtDlg->setWindowModality(Qt::NonModal);
-            BApplication::beqtPixmap("beqt_logo");
             aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
             QObject::connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
         }
         else
         {
-            aboutBeqtDlg = 0;
             tbtnAboutBeQt = 0;
+            aboutBeqtDlg = 0;
         }
       vlt->addLayout(hltHeader);
       twgt = new QTabWidget(q);
       vlt->addWidget(twgt);
-      hltActions = new QHBoxLayout;
-        lblCopyright = new QLabel(q);
-          lblCopyright->setTextFormat(Qt::RichText);
-        hltActions->addWidget(lblCopyright);
-        lblWebsite = new QLabel(q);
-          lblWebsite->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
-          lblWebsite->setTextFormat(Qt::RichText);
-          lblWebsite->setOpenExternalLinks(true);
-        hltActions->addWidget(lblWebsite);
-        hltActions->addStretch();
-        dlgbbox = new QDialogButtonBox(QDialogButtonBox::Close, Qt::Horizontal, q);
-          dlgbbox->setFocus();
-          QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
-        hltActions->addWidget(dlgbbox);
-      vlt->addLayout(hltActions);
+      dlgbbox = new QDialogButtonBox(QDialogButtonBox::Close, Qt::Horizontal, q);
+        dlgbbox->setFocus();
+        QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
+      vlt->addWidget(dlgbbox);
     //
     retranslateUi();
     QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), _m_o, SLOT( languageChanged() ) );
@@ -308,9 +310,12 @@ void BAboutDialog::setPixmap(const QString &fileName)
 
 void BAboutDialog::setAbout(const QString &description, const QString &copyright, const QString &website)
 {
-    if ( description.isEmpty() || copyright.isEmpty() )
-        return;
     B_D(BAboutDialog);
+    bool b = !description.isEmpty() && !copyright.isEmpty();
+    d->lblCopyright->setVisible(b);
+    d->lblWebsite->setVisible(b);
+    if (!b)
+        return;
     d->fillTab(BAboutDialogPrivate::AboutTab, description, false);
     d->lblCopyright->setText(tr("Copyright", "about") + " &copy; " + copyright);
     QString s = !website.isEmpty() ? ("<a href=\"" + website + "\">[" + tr("Website", "lbl text") + "]</a>") : "";

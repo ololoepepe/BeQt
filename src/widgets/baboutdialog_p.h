@@ -73,18 +73,18 @@ public:
     QVBoxLayout *vlt;
       QHBoxLayout *hltHeader;
         QLabel *lblIcon;
-        QLabel *lblText;
+        QVBoxLayout *vltHeader;
+          QLabel *lblName;
+          QHBoxLayout *hltCRWebsite;
+            QLabel *lblCopyright;
+            QLabel *lblWebsite;
         //stretch
         QToolButton *tbtnAboutQt;
         QToolButton *tbtnAboutBeQt;
       QTabWidget *twgt;
         //text browsers
-      QHBoxLayout *hltActions;
-        QLabel *lblCopyright;
-        QLabel *lblWebsite;
-        //stretch
-        QDialogButtonBox *dlgbbox;
-          //Close
+      QDialogButtonBox *dlgbbox;
+        //Close
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
     //
