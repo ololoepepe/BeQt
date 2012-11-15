@@ -4,6 +4,8 @@
 class BPlainTextEditPrivate;
 
 class QTextCursor;
+class QPainter;
+class QBrush;
 
 #include "bplaintextedit.h"
 
@@ -12,8 +14,11 @@ class QTextCursor;
 
 #include <QObject>
 #include <QCoreApplication>
+#include <QRectF>
+#include <QAbstractTextDocumentLayout>
+#include <QVector>
 
-class BPlainTextEditPrivateObject : public QObject
+class B_WIDGETS_EXPORT BPlainTextEditPrivateObject : public QObject
 {
     Q_OBJECT
 public:
@@ -24,24 +29,45 @@ public:
 public slots:
     void cursorPositionChanged(const QTextCursor &cursor);
     void contentsChange(int position, int charsRemoved, int charsAdded);
+    void selectionChanged();
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivateObject)
 };
 
-class BPlainTextEditPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPlainTextEditPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPlainTextEdit)
     Q_DECLARE_TR_FUNCTIONS(BPlainTextEdit)
 public:
+    struct SelectionRange
+    {
+        int start;
+        int end;
+        //
+        SelectionRange()
+        {
+            start = -1;
+            end = -1;
+        }
+    };
+    //
+    static void fillBackground( QPainter *painter, const QRectF &rect, QBrush brush, QRectF gradientRect = QRectF() );
+    //
     explicit BPlainTextEditPrivate(BPlainTextEdit *q);
     ~BPlainTextEditPrivate();
     //
     void cursorPositionChanged(const QTextCursor &cursor);
     void contentsChange(int position, int charsRemoved, int charsAdded);
+    void selectionChanged();
+    inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
     //
     BPlainTextEditPrivateObject *const _m_o;
     //
     bool drag;
+    bool blockMode;
+    bool hasSelection;
+    int lineLength;
+    QVector<SelectionRange> selectionRanges;
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivate)
     //

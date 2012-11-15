@@ -92,6 +92,7 @@ int main(int argc, char **argv)
     term->setDriver(new BLocalTerminalDriver);
     //BPlainTextEdit
     BPlainTextEdit *pte = new BPlainTextEdit;
+    pte->setMode(BPlainTextEdit::BlockMode);
     //Loading settings and plugins
     BApplication::loadSettings();
     //BApplication::loadPlugins();
