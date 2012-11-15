@@ -3,9 +3,11 @@
 
 class BTerminalWidgetPrivate;
 class BAbstractTerminalDriver;
+class BPlainTextEdit;
 
 class QEvent;
 class QString;
+class QVBoxLayout;
 
 #include "bterminalwidget.h"
 
@@ -59,6 +61,9 @@ public:
     int terminatingModifiers;
     QString terminatingSymbols;
     int len;
+    //
+    QVBoxLayout *vlt;
+      BPlainTextEdit *ptedt;
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivate)
     //

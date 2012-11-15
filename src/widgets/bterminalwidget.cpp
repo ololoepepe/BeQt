@@ -1,6 +1,7 @@
 #include "bterminalwidget.h"
 #include "bterminalwidget_p.h"
 #include "babstractterminaldriver.h"
+#include "bplaintextedit.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BTerminalIOHandler>
@@ -11,13 +12,13 @@
 #include <QKeyEvent>
 #include <QTextCursor>
 #include <QTextBlock>
-#include <QPlainTextEdit>
 #include <QScrollBar>
 #include <QMetaObject>
 #include <QApplication>
 #include <QDir>
 #include <QDragMoveEvent>
 #include <QStringList>
+#include <QVBoxLayout>
 
 #include <QDebug>
 
@@ -74,11 +75,15 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
     terminatingModifiers = Qt::ControlModifier;
     terminatingSymbols = "^D";
     len = 0;
-    q->setContextMenuPolicy(Qt::NoContextMenu);
-    q->installEventFilter(_m_o);
-    Qt::TextInteractionFlags tif = q->textInteractionFlags() &= ~(Qt::TextSelectableByMouse |
-                                                                  Qt::TextSelectableByKeyboard);
-    q->setTextInteractionFlags(tif);
+    //
+    vlt = new QVBoxLayout(q);
+      vlt->setContentsMargins(0, 0, 0, 0);
+      ptedt = new BPlainTextEdit(q);
+        ptedt->setDragEnabled(false);
+        ptedt->setAcceptDrops(false);
+        ptedt->installEventFilter(_m_o);
+        ptedt->setContextMenuPolicy(Qt::NoContextMenu);
+      vlt->addWidget(ptedt);
 }
 
 BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
@@ -102,18 +107,17 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
     driver = drv;
     if (!driver)
         return;
-    B_Q(BTerminalWidget);
-    driver->setParent(q);
+    driver->setParent( q_func() );
     QObject::connect( driver, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
     QObject::connect( driver, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
     QObject::connect( driver, SIGNAL( blockTerminal() ), _m_o, SLOT( blockTerminal() ) );
     QObject::connect( driver, SIGNAL( unblockTerminal() ), _m_o, SLOT( unblockTerminal() ) );
     if (NormalMode)
     {
-        QTextCursor tc = q->textCursor();
+        QTextCursor tc = ptedt->textCursor();
         scrollDown();
         tc.movePosition(QTextCursor::End);
-        q->setTextCursor(tc);
+        ptedt->setTextCursor(tc);
         if ( tc.block().text().isEmpty() )
             appendText( driver->prompt() );
         else
@@ -124,7 +128,7 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
 bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
 {
     B_Q(BTerminalWidget);
-    QTextCursor tc = q->textCursor();
+    QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
     if (key >= Qt::Key_Left && key <= Qt::Key_Down) //TODO: Implement history using arrow keys
         return false;
@@ -164,52 +168,48 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
 
 void BTerminalWidgetPrivate::scrollDown()
 {
-    B_Q(BTerminalWidget);
-    QScrollBar *sb = q->verticalScrollBar();
+    QScrollBar *sb = ptedt->verticalScrollBar();
     if (sb)
         sb->setValue( sb->maximum() );
 }
 
 void BTerminalWidgetPrivate::appendText(const QString &text)
 {
-    B_Q(BTerminalWidget);
     scrollDown();
-    QTextCursor tc = q->textCursor();
+    QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText(text);
-    q->setTextCursor(tc);
-    len = q->textCursor().block().length();
+    ptedt->setTextCursor(tc);
+    len = ptedt->textCursor().block().length();
 }
 
 void BTerminalWidgetPrivate::appendLine(const QString &text)
 {
-    B_Q(BTerminalWidget);
     scrollDown();
-    QTextCursor tc = q->textCursor();
+    QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertBlock();
     tc.insertText(text);
-    len = q->textCursor().block().length();
+    len = ptedt->textCursor().block().length();
 }
 
 void BTerminalWidgetPrivate::blockTerminal()
 {
-    q_func()->setReadOnly(true);
+    ptedt->setReadOnly(true);
 }
 
 void BTerminalWidgetPrivate::unblockTerminal()
 {
-    q_func()->setReadOnly(false);
+    ptedt->setReadOnly(false);
 }
 
 void BTerminalWidgetPrivate::read()
 {
-    B_Q(BTerminalWidget);
     scrollDown();
-    QTextCursor tc = q->textCursor();
+    QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText( driver->read() );
-    q->setTextCursor(tc);
+    ptedt->setTextCursor(tc);
     len = tc.block().length();
 }
 
@@ -220,11 +220,10 @@ void BTerminalWidgetPrivate::finished(int exitCode)
     QMetaObject::invokeMethod( q_func(), "finished", Q_ARG(int, exitCode) );
     if (NormalMode)
     {
-        B_Q(BTerminalWidget);
-        QTextCursor tc = q->textCursor();
+        QTextCursor tc = ptedt->textCursor();
         scrollDown();
         tc.movePosition(QTextCursor::End);
-        q->setTextCursor(tc);
+        ptedt->setTextCursor(tc);
         if ( tc.block().text().isEmpty() )
             appendText( driver->prompt() );
         else
@@ -235,13 +234,13 @@ void BTerminalWidgetPrivate::finished(int exitCode)
 //
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
-    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
+    QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
     //
 }
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent) :
-    QPlainTextEdit(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
+    QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
     setDriver(driver);
 }
@@ -353,7 +352,7 @@ void BTerminalWidget::emulateUserInput(const QString &command)
 {
     B_D(BTerminalWidget);
     d->scrollDown();
-    QTextCursor tc = textCursor();
+    QTextCursor tc = d->ptedt->textCursor();
     tc.insertText(command);
     QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Return, Qt::NoModifier);
     QApplication::sendEvent(this, &e);
@@ -383,7 +382,7 @@ void BTerminalWidget::kill()
 //
 
 BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
-    QPlainTextEdit(parent), BBase(d)
+    QWidget(parent), BBase(d)
 {
     //
 }

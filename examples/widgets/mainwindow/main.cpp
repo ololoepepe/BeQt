@@ -10,6 +10,7 @@
 #include <BTerminalWidget>
 #include <BLocalTerminalDriver>
 #include <BApplicationServer>
+#include <BPlainTextEdit>
 
 #include <QApplication>
 #include <QString>
@@ -89,12 +90,15 @@ int main(int argc, char **argv)
     //BTerminalWidget
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
     term->setDriver(new BLocalTerminalDriver);
+    //BPlainTextEdit
+    BPlainTextEdit *pte = new BPlainTextEdit;
     //Loading settings and plugins
     BApplication::loadSettings();
     //BApplication::loadPlugins();
     //Showing widgets
-    mw->show();
+    //mw->show();
     //term->show();
+    pte->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings

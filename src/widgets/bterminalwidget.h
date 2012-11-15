@@ -10,10 +10,10 @@ class QStringList;
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
-#include <QPlainTextEdit>
+#include <QWidget>
 #include <QString>
 
-class B_WIDGETS_EXPORT BTerminalWidget : public QPlainTextEdit, public BBase
+class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTerminalWidget)
