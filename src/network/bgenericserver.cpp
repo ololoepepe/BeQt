@@ -1,7 +1,5 @@
 #include "bgenericserver.h"
 #include "bgenericsocket.h"
-#include "btcpserver.h"
-#include "blocalserver.h"
 #include "bgenericserver_p.h"
 
 #include <QObject>
@@ -15,6 +13,34 @@
 #include <QMetaObject>
 
 #include <QDebug>
+
+BLocalServer::BLocalServer(QObject *parent) :
+    QLocalServer(parent)
+{
+}
+
+//
+
+void BLocalServer::incomingConnection(quintptr socketDescriptor)
+{
+    emit newConnection(socketDescriptor);
+}
+
+//
+
+BTcpServer::BTcpServer(QObject *parent) :
+    QTcpServer(parent)
+{
+}
+
+//
+
+void BTcpServer::incomingConnection(int handle)
+{
+    emit newConnection(handle);
+}
+
+//
 
 BGenericServerPrivateObject::BGenericServerPrivateObject(BGenericServerPrivate *p) :
     QObject(0), _m_p(p)

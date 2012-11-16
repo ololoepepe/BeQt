@@ -15,6 +15,30 @@ class QLocalServer;
 #include <QObject>
 #include <QQueue>
 #include <QPointer>
+#include <QTcpServer>
+#include <QLocalServer>
+
+class B_NETWORK_EXPORT BLocalServer : public QLocalServer
+{
+    Q_OBJECT
+public:
+    explicit BLocalServer(QObject *parent = 0);
+signals:
+    void newConnection(int socketDescriptor);
+protected:
+    void incomingConnection(quintptr socketDescriptor);
+};
+
+class B_NETWORK_EXPORT BTcpServer : public QTcpServer
+{
+    Q_OBJECT
+public:
+    explicit BTcpServer(QObject *parent = 0);
+signals:
+    void newConnection(int socketDescriptor);
+protected:
+    void incomingConnection(int handle);
+};
 
 class B_NETWORK_EXPORT BGenericServerPrivateObject : public QObject
 {

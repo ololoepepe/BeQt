@@ -28,4 +28,11 @@ private:
     BTextEditorDocument *const _m_CDocument;
 };
 
+class Testeggg : public QObject
+{
+    Q_OBJECT
+public:
+    explicit Testeggg(QObject *parent = 0) : QObject(parent) {}
+};
+
 #endif // BPLAINTEXTEDIT_H
