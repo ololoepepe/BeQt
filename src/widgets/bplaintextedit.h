@@ -17,27 +17,23 @@ class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBase
     B_DECLARE_PRIVATE(BPlainTextEdit)
     Q_OBJECT
 public:
-    enum Mode
+    enum SelectionMode
     {
-        NormalMode,
-        BlockMode
+        NormalSelection,
+        BlockSelection
     };
     //
     explicit BPlainTextEdit(QWidget *parent = 0);
     ~BPlainTextEdit();
     //
     void setDragEnabled(bool b);
-    void setMode(Mode mode);
-    void setLineLength(int length);
+    void setSelectionMode(SelectionMode mode);
     bool dragEnabled() const;
-    Mode mode() const;
-    int lineLength() const;
+    SelectionMode mode() const;
 protected:
     BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent = 0);
     //
-    bool canInsertFromMimeData(const QMimeData *source) const;
     QMimeData *createMimeDataFromSelection() const;
-    void insertFromMimeData(const QMimeData *source);
     void paintEvent(QPaintEvent *e);
 private:
     Q_DISABLE_COPY(BPlainTextEdit)

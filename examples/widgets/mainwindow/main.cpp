@@ -25,6 +25,7 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <QLocalServer>
+#include <QFont>
 
 #include <QDir>
 
@@ -92,7 +93,8 @@ int main(int argc, char **argv)
     term->setDriver(new BLocalTerminalDriver);
     //BPlainTextEdit
     BPlainTextEdit *pte = new BPlainTextEdit;
-    pte->setMode(BPlainTextEdit::BlockMode);
+    pte->setFont( QFont("DejaVu Sans Mono") );
+    pte->setSelectionMode(BPlainTextEdit::BlockSelection);
     //Loading settings and plugins
     BApplication::loadSettings();
     //BApplication::loadPlugins();

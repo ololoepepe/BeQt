@@ -29,7 +29,6 @@
 #include <QScrollBar>
 #include <QTextBlock>
 #include <QVector>
-#include <QFont>
 #include <QKeyEvent>
 #include <QEvent>
 #include <QApplication>
@@ -48,16 +47,6 @@ BPlainTextEditPrivateObject::~BPlainTextEditPrivateObject()
 }
 
 //
-
-void BPlainTextEditPrivateObject::cursorPositionChanged(const QTextCursor &cursor)
-{
-    _m_p->cursorPositionChanged(cursor);
-}
-
-void BPlainTextEditPrivateObject::contentsChange(int position, int charsRemoved, int charsAdded)
-{
-    _m_p->contentsChange(position, charsRemoved, charsAdded);
-}
 
 void BPlainTextEditPrivateObject::selectionChanged()
 {
@@ -96,12 +85,6 @@ BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit *q) :
     drag = true;
     blockMode = false;
     hasSelection = false;
-    lineLength = 20; //Just for test
-    q->setFont( QFont("DejaVu Sans Mono") ); //Just for test
-    QObject::connect( q->document(), SIGNAL( cursorPositionChanged(QTextCursor) ),
-                      _m_o, SLOT( cursorPositionChanged(QTextCursor) ) );
-    QObject::connect( q->document(), SIGNAL( contentsChange(int, int, int) ),
-                      _m_o, SLOT( contentsChange(int, int, int) ) );
     QObject::connect( q, SIGNAL( selectionChanged() ), _m_o, SLOT( selectionChanged() ) );
 }
 
@@ -111,16 +94,6 @@ BPlainTextEditPrivate::~BPlainTextEditPrivate()
 }
 
 //
-
-void BPlainTextEditPrivate::cursorPositionChanged(const QTextCursor &cursor)
-{
-    //
-}
-
-void BPlainTextEditPrivate::contentsChange(int position, int charsRemoved, int charsAdded)
-{
-    //
-}
 
 void BPlainTextEditPrivate::selectionChanged()
 {
@@ -133,12 +106,13 @@ void BPlainTextEditPrivate::selectionChanged()
     if (!hasSelection)
         return;
     //Assuming all lines have the same length
+    //It's also good to set a monospace font
     int start = tc.selectionStart();
     int end = tc.selectionEnd();
     int soffset = start - q->document()->findBlock(start).position();
     int eoffset = end - q->document()->findBlock(end).position();
-    if (soffset == eoffset) //Seems to be odd, such a situation is hardly possible
-        return;
+    if (soffset == eoffset)
+        return emulateShiftPress(); //Workaround to update the selection
     int minoffset = qMin<int>(soffset, eoffset);
     int maxoffset = qMax<int>(soffset, eoffset);
     int astart = qMin<int>(start, end);
@@ -151,20 +125,19 @@ void BPlainTextEditPrivate::selectionChanged()
         if (bpos > aend)
             break;
         sr.start = bpos + minoffset;
-        sr.end = bpos + maxoffset;
+        sr.end = bpos + qMin(maxoffset, tb.length() - 1);
         selectionRanges.append(sr);
         tb = tb.next();
     }
-    //Workaround
-    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
-    QApplication::sendEvent(q, &e);
+    //Workaround to update the selection
+    emulateShiftPress();
 }
 
 QAbstractTextDocumentLayout::PaintContext BPlainTextEditPrivate::getPaintContext() const
 {
-    if (!blockMode || !hasSelection)
-        return q_func()->getPaintContext();
     QAbstractTextDocumentLayout::PaintContext context = q_func()->getPaintContext();
+    if (!blockMode || !hasSelection)
+        return context;
     QAbstractTextDocumentLayout::Selection sel = context.selections.last();
     context.selections.remove(context.selections.size() - 1);
     foreach (const SelectionRange &sr, selectionRanges)
@@ -174,6 +147,12 @@ QAbstractTextDocumentLayout::PaintContext BPlainTextEditPrivate::getPaintContext
         context.selections.append(sel);
     }
     return context;
+}
+
+void BPlainTextEditPrivate::emulateShiftPress()
+{
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
+    QApplication::sendEvent(q_func(), &e);
 }
 
 //
@@ -196,16 +175,9 @@ void BPlainTextEdit::setDragEnabled(bool b)
     d_func()->drag = b;
 }
 
-void BPlainTextEdit::setMode(Mode mode)
+void BPlainTextEdit::setSelectionMode(SelectionMode mode)
 {
-    d_func()->blockMode = (BlockMode == mode);
-}
-
-void BPlainTextEdit::setLineLength(int length)
-{
-    if (length < 10) //Just for test
-        return;
-    d_func()->lineLength = length;
+    d_func()->blockMode = (BlockSelection == mode);
 }
 
 bool BPlainTextEdit::dragEnabled() const
@@ -213,14 +185,9 @@ bool BPlainTextEdit::dragEnabled() const
     return d_func()->drag;
 }
 
-BPlainTextEdit::Mode BPlainTextEdit::mode() const
+BPlainTextEdit::SelectionMode BPlainTextEdit::mode() const
 {
-    return d_func()->blockMode ? BlockMode : NormalMode;
-}
-
-int BPlainTextEdit::lineLength() const
-{
-    return d_func()->lineLength;
+    return d_func()->blockMode ? BlockSelection : NormalSelection;
 }
 
 //
@@ -233,26 +200,13 @@ BPlainTextEdit::BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent) :
 
 //
 
-bool BPlainTextEdit::canInsertFromMimeData(const QMimeData *source) const
-{
-    return QPlainTextEdit::canInsertFromMimeData(source);
-}
-
 QMimeData *BPlainTextEdit::createMimeDataFromSelection() const
 {
     return d_func()->drag ? QPlainTextEdit::createMimeDataFromSelection() : 0;
 }
 
-void BPlainTextEdit::insertFromMimeData(const QMimeData *source)
-{
-    QPlainTextEdit::insertFromMimeData(source);
-}
-
 void BPlainTextEdit::paintEvent(QPaintEvent *e)
 {
-    B_D(BPlainTextEdit);
-    if (!d->blockMode || !d->hasSelection)
-        return QPlainTextEdit::paintEvent(e);
     QPainter painter( viewport() );
     Q_ASSERT( qobject_cast<QPlainTextDocumentLayout*>( document()->documentLayout() ) );
     QPointF offset( contentOffset() );
@@ -265,7 +219,7 @@ void BPlainTextEdit::paintEvent(QPaintEvent *e)
     int maxX = offset.x() + qMax( (qreal) viewportRect.width(), maximumWidth ) - document()->documentMargin();
     er.setRight( qMin(er.right(), maxX) );
     painter.setClipRect(er);
-    QAbstractTextDocumentLayout::PaintContext context = d->getPaintContext(); //my paint context
+    QAbstractTextDocumentLayout::PaintContext context = d_func()->getPaintContext(); //Custom paint context
     while ( block.isValid() )
     {
         QRectF r = blockBoundingRect(block).translated(offset);

@@ -27,8 +27,6 @@ public:
     //
     BPlainTextEditPrivate *const _m_p;
 public slots:
-    void cursorPositionChanged(const QTextCursor &cursor);
-    void contentsChange(int position, int charsRemoved, int charsAdded);
     void selectionChanged();
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivateObject)
@@ -51,22 +49,21 @@ public:
         }
     };
     //
-    static void fillBackground( QPainter *painter, const QRectF &rect, QBrush brush, QRectF gradientRect = QRectF() );
+    static inline void fillBackground( QPainter *painter, const QRectF &rect,
+                                       QBrush brush, QRectF gradientRect = QRectF() );
     //
     explicit BPlainTextEditPrivate(BPlainTextEdit *q);
     ~BPlainTextEditPrivate();
     //
-    void cursorPositionChanged(const QTextCursor &cursor);
-    void contentsChange(int position, int charsRemoved, int charsAdded);
     void selectionChanged();
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
+    void emulateShiftPress();
     //
     BPlainTextEditPrivateObject *const _m_o;
     //
     bool drag;
     bool blockMode;
     bool hasSelection;
-    int lineLength;
     QVector<SelectionRange> selectionRanges;
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivate)
