@@ -15,6 +15,8 @@
 #include <QLineEdit>
 #include <QToolButton>
 #include <QIcon>
+#include <QDataStream>
+#include <QIODevice>
 
 #include <QDebug>
 
@@ -45,6 +47,10 @@ void BPasswordWidgetPrivateObject::tbtnShowClicked()
 {
     _m_p->resetShow();
 }
+
+//
+
+const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
 
 //
 
@@ -158,11 +164,42 @@ void BPasswordWidget::setShowPassword(bool b)
     d->resetShow();
 }
 
+void BPasswordWidget::setData(const PasswordWidgetData &pd)
+{
+    if ( !pd.password.isEmpty() )
+        setPassword(pd.password);
+    else
+        setEncryptedPassword(pd.encryptedPassword, pd.charCount);
+    setSavePassword(pd.save);
+    setShowPassword(pd.show);
+}
+
 void BPasswordWidget::clear()
 {
     B_D(BPasswordWidget);
     d->encPassword.clear();
     d->ledt->clear();
+}
+
+void BPasswordWidget::restoreState(const QByteArray &ba)
+{
+    QDataStream in(ba);
+    in.setVersion(BPasswordWidgetPrivate::DSVersion);
+    bool enc = false;
+    in >> enc;
+    PasswordWidgetData pd;
+    if (enc)
+    {
+        in >> pd.encryptedPassword;
+        in >> pd.charCount;
+    }
+    else
+    {
+        in >> pd.password;
+    }
+    in >> pd.save;
+    in >> pd.show;
+    setData(pd);
 }
 
 QString BPasswordWidget::password() const
@@ -192,6 +229,31 @@ bool BPasswordWidget::savePassword() const
 bool BPasswordWidget::showPassword() const
 {
     return d_func()->show;
+}
+
+QByteArray BPasswordWidget::saveState() const
+{
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(BPasswordWidgetPrivate::DSVersion);
+    out << false;
+    out << password();
+    out << savePassword();
+    out << showPassword();
+    return ba;
+}
+
+QByteArray BPasswordWidget::saveStateEncrypted(QCryptographicHash::Algorithm method) const
+{
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(BPasswordWidgetPrivate::DSVersion);
+    out << true;
+    out << encryptedPassword(method);
+    out << d_func()->charCount;
+    out << savePassword();
+    out << showPassword();
+    return ba;
 }
 
 //

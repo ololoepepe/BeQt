@@ -15,6 +15,7 @@ class QToolButton;
 
 #include <QObject>
 #include <QApplication>
+#include <QDataStream>
 
 class B_WIDGETS_EXPORT BPasswordWidgetPrivateObject : public QObject
 {
@@ -37,6 +38,8 @@ class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BPasswordWidget)
     Q_DECLARE_TR_FUNCTIONS(BPasswordWidget)
 public:
+    static const QDataStream::Version DSVersion;
+    //
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);
     ~BPasswordWidgetPrivate();
     //

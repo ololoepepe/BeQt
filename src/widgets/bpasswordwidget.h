@@ -17,6 +17,22 @@ class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBase
     B_DECLARE_PRIVATE(BPasswordWidget)
     Q_OBJECT
 public:
+    struct PasswordWidgetData
+    {
+        QString password;
+        QByteArray encryptedPassword;
+        int charCount;
+        bool save;
+        bool show;
+        //
+        PasswordWidgetData()
+        {
+            charCount = -1;
+            save = false;
+            show = false;
+        }
+    };
+    //
     static QByteArray encrypt(const QString &string, QCryptographicHash::Algorithm method = QCryptographicHash::Sha1);
     //
     explicit BPasswordWidget(QWidget *parent = 0);
@@ -26,12 +42,17 @@ public:
     void setEncryptedPassword(const QByteArray &password, int charCount = -1);
     void setSavePassword(bool b);
     void setShowPassword(bool b);
+    void setData(const PasswordWidgetData &pd);
     void clear();
+    void restoreState(const QByteArray &ba);
     QString password() const;
     QByteArray encryptedPassword(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
     int passwordCharCount() const;
     bool savePassword() const;
     bool showPassword() const;
+    PasswordWidgetData data(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
+    QByteArray saveState() const;
+    QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
 protected:
     BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent = 0);
 private:
