@@ -9,7 +9,7 @@
 #include <QIcon>
 #include <QByteArray>
 
-SettingsTab::SettingsTab(const QString &firstName, const QString &secondName, const QByteArray &password, int cc, bool save)
+SettingsTab::SettingsTab(const QString &firstName, const QString &secondName, const QByteArray &pwstate)
 {
     QFormLayout *flt = new QFormLayout(this);
     ledt1 = new QLineEdit(firstName);
@@ -19,8 +19,7 @@ SettingsTab::SettingsTab(const QString &firstName, const QString &secondName, co
     ledt2->setText(secondName);
     flt->addRow("Second name", ledt2);
     pwdwgt = new BPasswordWidget;
-    pwdwgt->setEncryptedPassword(password, cc);
-    pwdwgt->setSavePassword(save);
+    pwdwgt->restoreState(pwstate);
     flt->addRow("Password", pwdwgt);
 }
 
@@ -41,8 +40,9 @@ QVariantMap SettingsTab::valueMap() const
     QVariantMap m;
     m.insert( "first name", ledt1->text() );
     m.insert( "second name", ledt2->text() );
-    m.insert( "password", pwdwgt->encryptedPassword() );
-    m.insert( "char_count", pwdwgt->passwordCharCount() );
-    m.insert( "save", pwdwgt->savePassword() );
+    m.insert( "pw state", pwdwgt->saveStateEncrypted() );
+    //m.insert( "password", pwdwgt->encryptedPassword() );
+    //m.insert( "char_count", pwdwgt->passwordCharCount() );
+    //m.insert( "save", pwdwgt->savePassword() );
     return m;
 }

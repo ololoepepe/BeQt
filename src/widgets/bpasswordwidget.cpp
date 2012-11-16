@@ -57,8 +57,8 @@ const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4
 BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     BBasePrivate(q), _m_o( new BPasswordWidgetPrivateObject(this) )
 {
-    save = true;
-    show = true;
+    save = true; //Is reset to false, so it's false by default
+    show = true; //Is reset to false, so it's false by default
     charCount = -1;
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
@@ -110,6 +110,48 @@ void BPasswordWidgetPrivate::resetShow()
 QByteArray BPasswordWidget::encrypt(const QString &string, QCryptographicHash::Algorithm method)
 {
     return QCryptographicHash::hash(string.toUtf8(), method);
+}
+
+BPasswordWidget::PasswordWidgetData BPasswordWidget::stateToData(const QByteArray &ba)
+{
+    QDataStream in(ba);
+    in.setVersion(BPasswordWidgetPrivate::DSVersion);
+    bool enc = false;
+    in >> enc;
+    PasswordWidgetData pd;
+    if (enc)
+    {
+        in >> pd.encryptedPassword;
+        in >> pd.charCount;
+    }
+    else
+    {
+        in >> pd.password;
+    }
+    in >> pd.save;
+    in >> pd.show;
+    return pd;
+}
+
+QByteArray BPasswordWidget::dataToState(const PasswordWidgetData &dt)
+{
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(BPasswordWidgetPrivate::DSVersion);
+    bool enc = !dt.encryptedPassword.isEmpty();
+    out << enc;
+    if (enc)
+    {
+        out << dt.encryptedPassword;
+        out << dt.charCount;
+    }
+    else
+    {
+        out << dt.password;
+    }
+    out << dt.save;
+    out << dt.show;
+    return ba;
 }
 
 //
@@ -183,23 +225,7 @@ void BPasswordWidget::clear()
 
 void BPasswordWidget::restoreState(const QByteArray &ba)
 {
-    QDataStream in(ba);
-    in.setVersion(BPasswordWidgetPrivate::DSVersion);
-    bool enc = false;
-    in >> enc;
-    PasswordWidgetData pd;
-    if (enc)
-    {
-        in >> pd.encryptedPassword;
-        in >> pd.charCount;
-    }
-    else
-    {
-        in >> pd.password;
-    }
-    in >> pd.save;
-    in >> pd.show;
-    setData(pd);
+    setData( stateToData(ba) );
 }
 
 QString BPasswordWidget::password() const
@@ -231,29 +257,33 @@ bool BPasswordWidget::showPassword() const
     return d_func()->show;
 }
 
+BPasswordWidget::PasswordWidgetData BPasswordWidget::data() const
+{
+    PasswordWidgetData pd;
+    pd.password = password();
+    pd.save = savePassword();
+    pd.show = showPassword();
+    return pd;
+}
+
+BPasswordWidget::PasswordWidgetData BPasswordWidget::encryptedData(QCryptographicHash::Algorithm method) const
+{
+    PasswordWidgetData pd;
+    pd.encryptedPassword = encryptedPassword(method);
+    pd.charCount = passwordCharCount();
+    pd.save = savePassword();
+    pd.show = showPassword();
+    return pd;
+}
+
 QByteArray BPasswordWidget::saveState() const
 {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BPasswordWidgetPrivate::DSVersion);
-    out << false;
-    out << password();
-    out << savePassword();
-    out << showPassword();
-    return ba;
+    return dataToState( data() );
 }
 
 QByteArray BPasswordWidget::saveStateEncrypted(QCryptographicHash::Algorithm method) const
 {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BPasswordWidgetPrivate::DSVersion);
-    out << true;
-    out << encryptedPassword(method);
-    out << d_func()->charCount;
-    out << savePassword();
-    out << showPassword();
-    return ba;
+    return dataToState( encryptedData(method) );
 }
 
 //

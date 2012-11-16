@@ -85,7 +85,7 @@ int main(int argc, char **argv)
       QWidget *w = new QWidget(mw);
         QVBoxLayout *vlt = new QVBoxLayout(w);
           BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
-        vlt->addWidget(lcb);
+          vlt->addWidget(lcb);
       mw->setCentralWidget(w);
     mw->move(800, 400);
     //BTerminalWidget
@@ -99,9 +99,9 @@ int main(int argc, char **argv)
     BApplication::loadSettings();
     //BApplication::loadPlugins();
     //Showing widgets
-    //mw->show();
+    mw->show();
     //term->show();
-    pte->show();
+    //pte->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings

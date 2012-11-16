@@ -20,5 +20,9 @@ MainWindow::MainWindow(QWidget *parent) :
     mnu->addSeparator();
     mnu->addAction( BApplication::createStandardAction(BApplication::AboutAction, this) );
     menuBar()->addMenu(mnu);
+    mnu = new QMenu(this);
+    mnu->setTitle("Settings");
+    mnu->addAction( BApplication::createStandardAction(BApplication::SettingsAction, this) );
+    menuBar()->addMenu(mnu);
     setProperty("help", "mainwindow.html");
 }

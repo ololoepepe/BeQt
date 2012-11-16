@@ -9,12 +9,13 @@ class QIcon;
 class QByteArray;
 
 #include <BAbstractSettingsTab>
+#include <BPasswordWidget>
 
 class SettingsTab : public BAbstractSettingsTab
 {
     Q_OBJECT
 public:
-    SettingsTab(const QString &firstName, const QString &secondName, const QByteArray &password, int cc, bool save);
+    SettingsTab(const QString &firstName, const QString &secondName, const QByteArray &pwstate);
     //
     QString title() const;
     QIcon icon() const;

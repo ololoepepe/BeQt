@@ -37,18 +37,6 @@ class B_WIDGETS_EXPORT BPlainTextEditPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BPlainTextEdit)
     Q_DECLARE_TR_FUNCTIONS(BPlainTextEdit)
 public:
-    struct SelectionRange
-    {
-        int start;
-        int end;
-        //
-        SelectionRange()
-        {
-            start = -1;
-            end = -1;
-        }
-    };
-    //
     static inline void fillBackground( QPainter *painter, const QRectF &rect,
                                        QBrush brush, QRectF gradientRect = QRectF() );
     //
@@ -64,7 +52,7 @@ public:
     bool drag;
     bool blockMode;
     bool hasSelection;
-    QVector<SelectionRange> selectionRanges;
+    QVector<BPlainTextEdit::SelectionRange> selectionRanges;
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivate)
     //

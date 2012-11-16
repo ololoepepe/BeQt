@@ -19,9 +19,7 @@ protected:
 private:
     QString firstName;
     QString secondName;
-    QByteArray password;
-    int cc;
-    bool save;
+    QByteArray pwstate;
 private slots:
     void loadSettingsSlot(QSettings *s);
     void saveSettingsSlot(QSettings *s);

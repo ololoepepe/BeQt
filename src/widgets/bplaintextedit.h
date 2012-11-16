@@ -11,6 +11,7 @@ class QPaintEvent;
 #include <BeQtCore/BBase>
 
 #include <QPlainTextEdit>
+#include <QVector>
 
 class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBase
 {
@@ -23,6 +24,18 @@ public:
         BlockSelection
     };
     //
+    struct SelectionRange
+    {
+        int start;
+        int end;
+        //
+        SelectionRange()
+        {
+            start = -1;
+            end = -1;
+        }
+    };
+    //
     explicit BPlainTextEdit(QWidget *parent = 0);
     ~BPlainTextEdit();
     //
@@ -30,6 +43,7 @@ public:
     void setSelectionMode(SelectionMode mode);
     bool dragEnabled() const;
     SelectionMode mode() const;
+    QVector<SelectionRange> selectionRanges() const;
 protected:
     BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent = 0);
     //

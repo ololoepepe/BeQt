@@ -118,7 +118,7 @@ void BPlainTextEditPrivate::selectionChanged()
     int astart = qMin<int>(start, end);
     int aend = qMax<int>(start, end);
     QTextBlock tb = q->document()->findBlock(astart);
-    SelectionRange sr;
+    BPlainTextEdit::SelectionRange sr;
     while ( tb.isValid() )
     {
         int bpos = tb.position();
@@ -140,7 +140,7 @@ QAbstractTextDocumentLayout::PaintContext BPlainTextEditPrivate::getPaintContext
         return context;
     QAbstractTextDocumentLayout::Selection sel = context.selections.last();
     context.selections.remove(context.selections.size() - 1);
-    foreach (const SelectionRange &sr, selectionRanges)
+    foreach (const BPlainTextEdit::SelectionRange &sr, selectionRanges)
     {
         sel.cursor.setPosition(sr.start);
         sel.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
@@ -188,6 +188,11 @@ bool BPlainTextEdit::dragEnabled() const
 BPlainTextEdit::SelectionMode BPlainTextEdit::mode() const
 {
     return d_func()->blockMode ? BlockSelection : NormalSelection;
+}
+
+QVector<BPlainTextEdit::SelectionRange> BPlainTextEdit::selectionRanges() const
+{
+    return d_func()->selectionRanges;
 }
 
 //

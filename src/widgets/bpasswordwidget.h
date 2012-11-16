@@ -34,6 +34,8 @@ public:
     };
     //
     static QByteArray encrypt(const QString &string, QCryptographicHash::Algorithm method = QCryptographicHash::Sha1);
+    static PasswordWidgetData stateToData(const QByteArray &ba);
+    static QByteArray dataToState(const PasswordWidgetData &dt);
     //
     explicit BPasswordWidget(QWidget *parent = 0);
     ~BPasswordWidget();
@@ -50,7 +52,8 @@ public:
     int passwordCharCount() const;
     bool savePassword() const;
     bool showPassword() const;
-    PasswordWidgetData data(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
+    PasswordWidgetData data() const;
+    PasswordWidgetData encryptedData(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
     QByteArray saveState() const;
     QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
 protected:
