@@ -417,7 +417,7 @@ void BCoreApplication::removeTranslator(BTranslator *translator, bool noLanguage
     ds_func()->removeTranslator(translator, !noLanguageChange);
 }
 
-void BCoreApplication::setLocale(const QLocale &l)
+void BCoreApplication::setLocale(const QLocale &l, bool noRetranslate)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
@@ -425,7 +425,8 @@ void BCoreApplication::setLocale(const QLocale &l)
     if (l == ds->locale)
         return;
     ds->locale = l;
-    retranslateUi();
+    if (!noRetranslate)
+        retranslateUi();
 }
 
 QLocale BCoreApplication::locale()

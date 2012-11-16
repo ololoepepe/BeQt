@@ -80,7 +80,7 @@ public:
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
     static void installTranslator(BTranslator *translator, bool noLanguageChange = false);
     static void removeTranslator(BTranslator *translator, bool noLanguageChange = false);
-    static void setLocale(const QLocale &l);
+    static void setLocale(const QLocale &l, bool noRetranslate = false);
     static QLocale locale();
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
     static void retranslateUi();
