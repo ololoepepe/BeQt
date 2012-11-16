@@ -1,0 +1,1 @@
+#include "../BeQtCodeEditor/babstractfiletype.h"

@@ -1,0 +1,6 @@
+#ifndef BEQT_BEQTCODEEDITOR_MODULE_H
+#define BEQT_BEQTCODEEDITOR_MODULE_H
+
+#include "babstractfiletype.h"
+
+#endif //BEQT_BEQTCODEEDITOR_MODULE_H

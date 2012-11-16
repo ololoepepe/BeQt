@@ -1,5 +1,5 @@
 HEADERS += \
-    $${PWD}/bplaintextedit.h
+    $${PWD}/babstractfiletype.h
 
 SOURCES += \
-    $${PWD}/bplaintextedit.cpp
+    $${PWD}/babstractfiletype.cpp
