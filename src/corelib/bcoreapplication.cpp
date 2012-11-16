@@ -83,26 +83,11 @@ bool BCoreApplicationPrivate::testCoreUnique()
 
 //
 
-BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options) :
+BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
     BBasePrivate(q)
 {
     initialized = false;
     portable = false;
-    init(options);
-}
-
-BCoreApplicationPrivate::~BCoreApplicationPrivate()
-{
-    foreach (BTranslator *t, translators)
-        removeTranslator(t, false);
-    foreach (BPluginWrapper *pw, plugins)
-        pw->deleteLater();
-}
-
-//
-
-void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
-{
     //checks
     QString an = QCoreApplication::applicationName();
     QString on = QCoreApplication::organizationName();
@@ -156,10 +141,20 @@ void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
 #endif
     }
     //default locale
-    locale = options.defaultLocale;
+    locale = QLocale::system();;
     //initialized
     initialized = true;
 }
+
+BCoreApplicationPrivate::~BCoreApplicationPrivate()
+{
+    foreach (BTranslator *t, translators)
+        removeTranslator(t, false);
+    foreach (BPluginWrapper *pw, plugins)
+        pw->deleteLater();
+}
+
+//
 
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name, bool create) const
 {
@@ -555,8 +550,8 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
 
 //
 
-BCoreApplication::BCoreApplication(const AppOptions &options) :
-    QObject(0), BBase( *new BCoreApplicationPrivate(this, options) )
+BCoreApplication::BCoreApplication() :
+    QObject(0), BBase( *new BCoreApplicationPrivate(this) )
 {
     BCoreApplicationPrivate::testCoreUnique();
     _m_self = this;

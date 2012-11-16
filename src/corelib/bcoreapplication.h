@@ -53,15 +53,6 @@ public:
         License
     };
     //
-    struct AppOptions
-    {
-        QLocale defaultLocale;
-        //
-        AppOptions()
-        {
-            defaultLocale = QLocale::system();
-        }
-    };
     struct LocaleSupportInfo
     {
         QLocale locale;
@@ -97,7 +88,7 @@ public:
     static void saveSettings();
     static QString beqtInfo(BeQtInfo type);
     //
-    explicit BCoreApplication( const AppOptions &options = AppOptions() );
+    explicit BCoreApplication();
     ~BCoreApplication();
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);

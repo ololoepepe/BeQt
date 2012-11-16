@@ -17,7 +17,7 @@ class B_WIDGETS_EXPORT BApplicationPrivate : public BCoreApplicationPrivate
     B_DECLARE_PUBLIC(BApplication)
     Q_DECLARE_TR_FUNCTIONS(BApplication)
 public:
-    BApplicationPrivate(BApplication *q, const BCoreApplication::AppOptions &options);
+    BApplicationPrivate(BApplication *q);
     ~BApplicationPrivate();
     //
     void initAboutDlg();

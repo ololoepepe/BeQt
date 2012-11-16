@@ -62,7 +62,7 @@ public:
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
     static void retranslateStandardAction(QAction *action);
     //
-    explicit BApplication( const AppOptions &options = AppOptions() );
+    explicit BApplication();
     ~BApplication();
 public slots:
     void showAboutDialog();

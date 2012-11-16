@@ -33,8 +33,8 @@
 #include <QDebug>
 #include <QPointer>
 
-BApplicationPrivate::BApplicationPrivate(BApplication *q, const BCoreApplication::AppOptions &options) :
-    BCoreApplicationPrivate(q, options)
+BApplicationPrivate::BApplicationPrivate(BApplication *q) :
+    BCoreApplicationPrivate(q)
 {
     aboutDlg = 0;
     navigation = BApplication::DefaultNavigation;
@@ -356,8 +356,8 @@ void BApplication::retranslateStandardAction(QAction *action)
 
 //
 
-BApplication::BApplication(const AppOptions &options) :
-    BCoreApplication( *new BApplicationPrivate(this, options) )
+BApplication::BApplication() :
+    BCoreApplication( *new BApplicationPrivate(this) )
 {
     //
 }

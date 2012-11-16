@@ -35,10 +35,9 @@ public:
         static const QString SettingsKeyDeactivatedPlugins;
         static const QString SettingsKeyLocale;
     //
-    BCoreApplicationPrivate(BCoreApplication *q, const BCoreApplication::AppOptions &options);
+    BCoreApplicationPrivate(BCoreApplication *q);
     virtual ~BCoreApplicationPrivate();
     //
-    void init(const BCoreApplication::AppOptions &options);
     QString confFileName(const QString &path, const QString &name, bool create = false) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);
