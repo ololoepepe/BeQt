@@ -11,6 +11,7 @@
 #include "blocalecombobox.h"
 #include "blocalterminaldriver.h"
 #include "bpasswordwidget.h"
+#include "bplaintextedit.h"
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
 #include "bterminalwidget.h"
