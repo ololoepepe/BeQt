@@ -5,6 +5,7 @@ class BPluginWrapper;
 class BTranslator;
 class BPluginWrapperPrivate;
 class BTranslatorPrivate;
+class BDirTools;
 
 class QString;
 class QLocale;
@@ -40,16 +41,13 @@ public:
     void init(const BCoreApplication::AppOptions &options);
     QString confFileName(const QString &path, const QString &name, bool create = false) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
-    void emitPluginActivated(BPluginWrapper *pluginWrapper);
-    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void pluginActivated(BPluginWrapper *pluginWrapper);
+    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void emitLanguageChange();
     void installTranslator(BTranslator *translator, bool languageChange);
     void removeTranslator(BTranslator *translator, bool languageChange);
     void loadSettings();
     void saveSettings();
-    void initialActivatePlugin(BPluginWrapper *wrapper);
-    void initialDeactivatePlugin(BPluginWrapper *wrapper);
-    void finalizePluginActivation(BPluginWrapper *wrapper);
     //
     bool initialized;
     QString appName;
@@ -70,6 +68,7 @@ private:
     //
     friend class BPluginWrapperPrivate;
     friend class BTranslatorPrivate;
+    friend class BDirTools;
 };
 
 #endif // BCOREAPPLICATION_P_H

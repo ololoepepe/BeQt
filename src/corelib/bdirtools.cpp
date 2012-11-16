@@ -1,5 +1,6 @@
 #include "bdirtools.h"
 #include "bcoreapplication.h"
+#include "bcoreapplication_p.h"
 
 #include <QString>
 #include <QDir>
@@ -9,6 +10,30 @@
 #include <QLocale>
 #include <QTextStream>
 #include <QTextCodec>
+
+class BDirToolsPrivate
+{
+public:
+    static BCoreApplicationPrivate *appD();
+private:
+    BDirToolsPrivate();
+};
+
+//
+
+BCoreApplicationPrivate *BDirToolsPrivate::appD()
+{
+    return bApp ? bApp->ds_func() : 0;
+}
+
+//
+
+BDirToolsPrivate::BDirToolsPrivate()
+{
+    //
+}
+
+//
 
 bool BDirTools::mkpath(const QString &dirPath)
 {
@@ -169,6 +194,30 @@ QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)
     }
     }
     return "";
+}
+
+bool BDirTools::createUserLocation(BCoreApplication::Location loc)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
+        return false;
+    return mkpath( BDirToolsPrivate::appD()->userPrefix + "/" + BCoreApplicationPrivate::subdir(loc) );
+}
+
+bool BDirTools::createUserLocation(const QString &subdir)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
+        return false;
+    return BDirTools::mkpath(BDirToolsPrivate::appD()->userPrefix + "/" + subdir);
+}
+
+bool BDirTools::createUserLocations(const QStringList &subdirs)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
+        return false;
+    foreach (const QString &subdir, subdirs)
+        if ( !createUserLocation(subdir) )
+            return false;
+    return true;
 }
 
 //

@@ -15,6 +15,7 @@ class QSettings;
 #include <QString>
 #include <QStringList>
 #include <QMap>
+#include <QPointer>
 
 class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
@@ -27,16 +28,20 @@ public:
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
     //
-    void activate(bool full = true);
-    void finalizeActivation();
-    void deactivate(bool full = true);
+    bool load();
+    void unload();
+    bool activate();
+    void deactivate();
+    void createLoader();
+    void deleteLoader();
     //
-    QPluginLoader *loader;
+    QString fileName;
+    QPointer<QPluginLoader> loader;
     QStringList acctptableTypes;
     BPluginWrapper::InterfaceTestFunction testFunction;
     QObject *instance;
     BPluginInterface *interface;
-    bool valid;
+    bool loaded;
     bool activated;
     QString type;
     QString name;

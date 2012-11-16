@@ -27,12 +27,13 @@ public:
     explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);
     ~BPluginWrapper();
     //
+    void setLoaded(bool b);
     void setActivated(bool b);
-    void setFileName(const QString &fileName);
+    void setFileName(const QString &fn);
     void setAcceptableTypes(const QStringList &list);
     void setInterfaceTestFunction(InterfaceTestFunction function);
+    bool isLoaded() const;
     bool isActivated() const;
-    bool isValid() const;
     QString fileName() const;
     QStringList acceptableFileTypes() const;
     InterfaceTestFunction interfacetestFunction() const;
@@ -42,7 +43,9 @@ public:
     QObject *instance() const;
     BPluginInterface *interface() const;
 public slots:
-    void activate();
+    bool load();
+    void unload();
+    bool activate();
     void deactivate();
 signals:
     void activated();

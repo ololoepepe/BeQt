@@ -28,6 +28,7 @@
 #include <QFont>
 
 #include <QDir>
+#include <QSettings>
 
 #include <QDebug>
 
@@ -97,7 +98,7 @@ int main(int argc, char **argv)
     pte->setSelectionMode(BPlainTextEdit::BlockSelection);
     //Loading settings and plugins
     BApplication::loadSettings();
-    //BApplication::loadPlugins();
+    BApplication::loadPlugins();
     //Showing widgets
     mw->show();
     //term->show();

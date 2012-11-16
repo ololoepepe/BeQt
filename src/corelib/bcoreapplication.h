@@ -5,6 +5,7 @@ class BCoreApplicationPrivate;
 class BTranslator;
 class BTranslatorPrivate;
 class BPluginWrapperPrivate;
+class BDirToolsPrivate;
 
 class QLocale;
 class QSettings;
@@ -54,12 +55,10 @@ public:
     //
     struct AppOptions
     {
-        bool noSettingsDir;
         QLocale defaultLocale;
         //
         AppOptions()
         {
-            noSettingsDir = false;
             defaultLocale = QLocale::system();
         }
     };
@@ -82,9 +81,6 @@ public:
     static QString location(const QString &subdir, ResourcesType type);
     static QStringList locations(Location loc);
     static QStringList locations(const QString &subdir);
-    static void createUserLocation(Location loc);
-    static void createUserLocation(const QString &subdir);
-    static void createUserLocations(const QStringList &subdirs);
     static QSettings *createAppSettingsInstance(bool createFile = true);
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
@@ -118,6 +114,7 @@ private:
     //
     friend class BTranslatorPrivate;
     friend class BPluginWrapperPrivate;
+    friend class BDirToolsPrivate;
 };
 
 #endif // BCOREAPPLICATION_H

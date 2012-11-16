@@ -157,9 +157,6 @@ void BCoreApplicationPrivate::init(const BCoreApplication::AppOptions &options)
     }
     //default locale
     locale = options.defaultLocale;
-    //creating settings dir
-    if (!portable && !options.noSettingsDir)
-        BDirTools::mkpath( userPrefix + "/" + subdir(BCoreApplication::SettingsPath) );
     //initialized
     initialized = true;
 }
@@ -207,16 +204,15 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
     }
 }
 
-void BCoreApplicationPrivate::emitPluginActivated(BPluginWrapper *pluginWrapper)
+void BCoreApplicationPrivate::pluginActivated(BPluginWrapper *pluginWrapper)
 {
     deactivatedPlugins.removeAll( pluginWrapper->name() );
     QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
-void BCoreApplicationPrivate::emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
+void BCoreApplicationPrivate::pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
 {
-    if ( !deactivatedPlugins.contains( pluginWrapper->name() ) )
-        deactivatedPlugins << pluginWrapper->name();
+    deactivatedPlugins << pluginWrapper->name();
     QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
@@ -269,6 +265,7 @@ void BCoreApplicationPrivate::saveSettings()
         return;
     s->beginGroup(SettingsGroupBeqt);
       s->beginGroup(SettingsGroupCore);
+        deactivatedPlugins.removeDuplicates();
         s->setValue(SettingsKeyDeactivatedPlugins, deactivatedPlugins);
         s->setValue(SettingsKeyLocale, locale);
       s->endGroup();
@@ -278,21 +275,6 @@ void BCoreApplicationPrivate::saveSettings()
         return;
     s->sync();
     s->deleteLater();
-}
-
-void BCoreApplicationPrivate::initialActivatePlugin(BPluginWrapper *wrapper)
-{
-    wrapper->d_func()->activate(false);
-}
-
-void BCoreApplicationPrivate::initialDeactivatePlugin(BPluginWrapper *wrapper)
-{
-    wrapper->d_func()->deactivate(false);
-}
-
-void BCoreApplicationPrivate::finalizePluginActivation(BPluginWrapper *wrapper)
-{
-    wrapper->d_func()->finalizeActivation();
 }
 
 //
@@ -352,28 +334,6 @@ QStringList BCoreApplication::locations(const QString &subdir)
     return sl;
 }
 
-void BCoreApplication::createUserLocation(Location loc)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return;
-    BDirTools::mkpath( ds_func()->userPrefix + "/" + BCoreApplicationPrivate::subdir(loc) );
-}
-
-void BCoreApplication::createUserLocation(const QString &subdir)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return;
-    BDirTools::mkpath(ds_func()->userPrefix + "/" + subdir);
-}
-
-void BCoreApplication::createUserLocations(const QStringList &subdirs)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return;
-    foreach (QString subdir, subdirs)
-        createUserLocation(subdir);
-}
-
 QSettings *BCoreApplication::createAppSettingsInstance(bool createFile)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
@@ -423,16 +383,15 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
             BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
             pw->setAcceptableTypes(acceptableTypes);
             pw->setInterfaceTestFunction(function);
-            ds->initialActivatePlugin(pw);
-            if ( !pw->isValid() ) //Validity checking includes checking that the plugin is unique (global map)
+            if ( !pw->load() )
             {
                 pw->deleteLater();
                 continue;
             }
             if ( ds->deactivatedPlugins.contains( pw->name() ) )
-                ds->initialDeactivatePlugin(pw);
+                pw->unload();
             else
-                ds->finalizePluginActivation(pw);
+                pw->activate();
             ds->plugins << pw;
         }
     }
