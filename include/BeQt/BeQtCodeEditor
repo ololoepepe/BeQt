@@ -2,6 +2,7 @@
 #define BEQT_BEQTCODEEDITOR_MODULE_H
 
 #include "babstractfiletype.h"
+#include "bcodeedit.h"
 #include "bcodeeditor.h"
 
 #endif //BEQT_BEQTCODEEDITOR_MODULE_H
