@@ -11,8 +11,10 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *serverPrivate) :
-    QObject(0), BBase( *new BNetworkServerWorkerPrivate(this, serverPrivate) )
+/*========== Network Server Worker ==========*/
+
+BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *sp) :
+    QObject(0), serverPrivate(sp)
 {
     //
 }
@@ -26,117 +28,63 @@ BNetworkServerWorker::~BNetworkServerWorker()
 
 int BNetworkServerWorker::connectionCount() const
 {
-    const B_D(BNetworkServerWorker);
-    QMutexLocker locker(&d->connectionsMutex);
-    return d->connections.size();
+    QMutexLocker locker(&connectionsMutex);
+    return connections.size();
 }
 
 //
 
 void BNetworkServerWorker::addConnection(int socketDescriptor)
 {
-    B_D(BNetworkServerWorker);
-    BNetworkConnection *connection = d->serverPrivate->createConnection(socketDescriptor);
+    BNetworkConnection *connection = serverPrivate->createConnection(socketDescriptor);
     if ( !connection || !connection->isValid() )
         return;
-    connect( connection, SIGNAL( disconnected() ), d->_m_o, SLOT( disconnected() ) );
-    QMutexLocker locker(&d->connectionsMutex);
-    d->connections << connection;
+    connect( connection, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+    QMutexLocker locker(&connectionsMutex);
+    connections << connection;
 }
 
 //
 
-BNetworkServerWorker::BNetworkServerWorker(BNetworkServerWorkerPrivate &d) :
-    BBase(d)
+void BNetworkServerWorker::disconnected()
 {
-    //
-}
-
-//
-
-BNetworkServerWorkerPrivateObject::BNetworkServerWorkerPrivateObject(BNetworkServerWorkerPrivate *p) :
-    _m_p(p)
-{
-    //
-}
-
-BNetworkServerWorkerPrivateObject::~BNetworkServerWorkerPrivateObject()
-{
-    //
-}
-
-//
-
-void BNetworkServerWorkerPrivateObject::disconnected()
-{
-    _m_p->disconnected( static_cast<BNetworkConnection *>( sender() ) );
-}
-
-//
-
-BNetworkServerWorkerPrivate::BNetworkServerWorkerPrivate(BNetworkServerWorker *q, BNetworkServerPrivate *sp) :
-    BBasePrivate(q), _m_o( new BNetworkServerWorkerPrivateObject(this) ), serverPrivate(sp)
-{
-    //
-}
-
-BNetworkServerWorkerPrivate::~BNetworkServerWorkerPrivate()
-{
-    _m_o->deleteLater();
-}
-
-//
-
-void BNetworkServerWorkerPrivate::disconnected(BNetworkConnection *connection)
-{
-    if (!connection)
+    BNetworkConnection *c = static_cast<BNetworkConnection *>( sender() );
+    if (!c)
         return;
     QMutexLocker locker(&connectionsMutex);
-    connections.removeAll(connection);
-    connection->deleteLater();
+    connections.removeAll(c);
+    c->deleteLater();
     if ( connections.isEmpty() )
-        QMetaObject::invokeMethod(q_func(), "ranOutOfConnections");
+        emit ranOutOfConnections();
 }
 
-//
+/*========== Network Server Thread ==========*/
 
 BNetworkServerThread::BNetworkServerThread(BNetworkServerPrivate *serverPrivate) :
-    QThread(0), BBase( *new BNetworkServerThreadPrivate(this, serverPrivate) )
+    QThread(0), worker( new BNetworkServerWorker(serverPrivate) )
 {
-    //
+    worker->moveToThread(this);
+    QObject::connect(worker, SIGNAL( ranOutOfConnections() ), this, SLOT( quit() ), Qt::QueuedConnection);
+}
+
+BNetworkServerThread::~BNetworkServerThread()
+{
+    worker->deleteLater();
 }
 
 //
 
 void BNetworkServerThread::addConnection(int socketDescriptor)
 {
-    B_D(BNetworkServerThread);
-    if (!d->worker)
-        return;
-    QMetaObject::invokeMethod( d->worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor) );
+    QMetaObject::invokeMethod( worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor) );
 }
 
 int BNetworkServerThread::connectionCount() const
 {
-    return !d_func()->worker->connectionCount();
+    return worker->connectionCount();
 }
 
-//
-
-BNetworkServerThreadPrivate::BNetworkServerThreadPrivate(BNetworkServerThread *q,
-                                                         BNetworkServerPrivate *serverPrivate) :
-    BBasePrivate(q), worker( new BNetworkServerWorker(serverPrivate) )
-{
-    worker->moveToThread(q);
-    QObject::connect(worker, SIGNAL( ranOutOfConnections() ), q, SLOT( quit() ), Qt::QueuedConnection);
-}
-
-BNetworkServerThreadPrivate::~BNetworkServerThreadPrivate()
-{
-    worker->deleteLater();
-}
-
-//
+/*========== Network Server Private Object ==========*/
 
 BNetworkServerPrivateObject::BNetworkServerPrivateObject(BNetworkServerPrivate *p) :
     QObject(0), _m_p(p)
@@ -159,7 +107,7 @@ void BNetworkServerPrivateObject::finished()
     _m_p->finished( static_cast<BNetworkServerThread *>( sender() ) );
 }
 
-//
+/*========== Network Server Private ==========*/
 
 BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
     BBasePrivate(q), _m_o( new BNetworkServerPrivateObject(this) )
@@ -232,7 +180,7 @@ BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor
     return q_func()->createConnection(socketDescriptor);
 }
 
-//
+/*========== Network Server ==========*/
 
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BNetworkServerPrivate(this, type) )
