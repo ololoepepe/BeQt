@@ -4,6 +4,7 @@
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BPlainTextEdit>
 
 #include <QObject>
@@ -19,6 +20,66 @@
 #include <QStringList>
 #include <QVector>
 #include <QChar>
+#include <QFutureWatcher>
+#include <QFuture>
+#include <QMetaObject>
+#include <QSyntaxHighlighter>
+#include <QPoint>
+#include <QMenu>
+#include <QAction>
+#include <QFont>
+#include <QFontInfo>
+#include <QtConcurrentRun>
+#include <QApplication>
+#include <QClipboard>
+#include <QTextEdit>
+
+/*========== Code Edit Clipboard Notifier ==========*/
+
+BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::instance()
+{
+    return _m_self;
+}
+
+//
+
+BCodeEditClipboardNotifier::BCodeEditClipboardNotifier() :
+    QObject(0)
+{
+    dataChanged();
+    connect( QApplication::clipboard(), SIGNAL( dataChanged() ), this, SLOT( dataChanged() ) );
+    bTest(!_m_self, "BCodeEditClipboardNotifier", "There should be only one instance of BCodeEditClipboardNotifier");
+    _m_self = this;
+}
+
+BCodeEditClipboardNotifier::~BCodeEditClipboardNotifier()
+{
+    _m_self = 0;
+}
+
+//
+
+bool BCodeEditClipboardNotifier::clipboardDataAvailable() const
+{
+    return dataAvailable;
+}
+
+//
+
+void BCodeEditClipboardNotifier::dataChanged()
+{
+    bool b = !QApplication::clipboard()->text().isEmpty();
+    bool bb = (b != dataAvailable);
+    dataAvailable = b;
+    if (bb)
+        emit clipboardDataAvailableChanged(b);
+}
+
+//
+
+BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
+
+//
 
 /*========== Code Edit Private Object ==========*/
 
@@ -48,6 +109,28 @@ bool BCodeEditPrivateObject::eventFilter(QObject *obj, QEvent *e)
     default:
         return QObject::eventFilter(obj, e);
     }
+}
+
+//
+
+void BCodeEditPrivateObject::futureWatcherFinished()
+{
+    _m_p->futureWatcherFinished( static_cast<BCodeEditPrivate::ProcessTextFutureWatcher *>( sender() ) );
+}
+
+void BCodeEditPrivateObject::customContextMenuRequested(const QPoint &pos)
+{
+    _m_p->popupMenu(pos);
+}
+
+void BCodeEditPrivateObject::cursorPositionChanged()
+{
+    _m_p->updateCursorPosition();
+}
+
+void BCodeEditPrivateObject::clipboardDataAvailableChanged(bool available)
+{
+    _m_p->updateClipboardDataAvailable(available);
 }
 
 /*========== Code Edit Private ==========*/
@@ -116,8 +199,8 @@ QString BCodeEditPrivate::removeUnsupportedSymbols(const QString &s)
 void BCodeEditPrivate::removeUnsupportedSymbols(QString &text)
 {
     text.remove('\r');
-    //for (int i = 0; i < _m_UnprintedList.size(); ++i)
-        //text.remove( _m_UnprintedList.at(i) );
+    for (int i = 0; i < unsupportedSymbols.size(); ++i)
+        text.remove( unsupportedSymbols.at(i) );
 }
 
 QString BCodeEditPrivate::removeTrailingSpaces(const QString &s)
@@ -178,6 +261,15 @@ void BCodeEditPrivate::replaceTabs(QString &s, BCodeEdit::TabWidth tw)
     }
 }
 
+void BCodeEditPrivate::removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
+                                             const QList<QTextEdit::ExtraSelection> &what)
+{
+    for (int i = from.size() - 1; i >= 0; --i)
+        foreach (const QTextEdit::ExtraSelection &es, what)
+            if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
+                from.removeAt(i);
+}
+
 //
 
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
@@ -186,12 +278,26 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
     blockMode = false;
     lineLength = 120;
     tabWidth = BCodeEdit::TabWidth4;
+    maxBookmarks = 4;
+    brackets = BCodeEdit::defaultBrackets();
+    bracketsHighlighting = true;
+    highlighter = 0;
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
       ptedt = new BPlainTextEdit(q);
         ptedt->installEventFilter(_m_o);
+        ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
+        QObject::connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ),
+                          _m_o, SLOT( customContextMenuRequested(QPoint) ) );
+        QObject::connect( ptedt, SIGNAL( cursorPositionChanged() ), _m_o, SLOT( cursorPositionChanged() ) );
       vlt->addWidget(ptedt);
+    //
+    setTextToEmptyLine();
+    if ( !BCodeEditClipboardNotifier::instance() )
+        new BCodeEditClipboardNotifier;
+    QObject::connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
+                      _m_o, SLOT( clipboardDataAvailableChanged(bool) ) );
 }
 
 BCodeEditPrivate::~BCodeEditPrivate()
@@ -379,6 +485,11 @@ bool BCodeEditPrivate::mousePressEvent(QMouseEvent *e)
     return true;
 }
 
+void BCodeEditPrivate::setTextToEmptyLine()
+{
+    ptedt->setPlainText( QString().fill(' ', lineLength) );
+}
+
 void BCodeEditPrivate::deleteSelection()
 {
     QTextCursor tc = ptedt->textCursor();
@@ -415,6 +526,147 @@ void BCodeEditPrivate::deleteSelection()
     tc.setPosition(pos);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
+}
+
+void BCodeEditPrivate::seletAll()
+{
+    //TODO: Don't select last line's trailing spaces in normal mode; don't select any trailing spaces in block mode
+    ptedt->selectAll();
+    //_m_editSelectionChanged();
+}
+
+int BCodeEditPrivate::replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
+{
+    if (blockMode)
+        return -1;
+    B_Q(BCodeEdit);
+    if ( !q->hasSelection() )
+        return -1;
+    QString ntext = q->selectedText();
+    int count = ntext.count(text, cs);
+    if (!count)
+        return 0;
+    QTextCursor tc = ptedt->textCursor();
+    tc.beginEditBlock();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    removeTrailingSpaces(ntext);
+    ntext.replace(text, newText, cs);
+    q->insertText(ntext);
+    tc = ptedt->textCursor();
+    int pos = tc.position();
+    tc.setPosition(end < start ? pos : start);
+    tc.setPosition(end < start ? end : pos, QTextCursor::KeepAnchor);
+    ptedt->setTextCursor(tc);
+    //_m_editSelectionChanged();
+    tc.endEditBlock();
+    //Rehighlighting
+    if (highlighter)
+    {
+        QTextBlock tb = ptedt->document()->findBlock( qMin<int>(start, end) );
+        QTextBlock tbe = ptedt->document()->findBlock( qMax<int>(start, end) );
+        while ( tb.isValid() && tb.blockNumber() < tbe.blockNumber() )
+        {
+            highlighter->rehighlightBlock(tb);
+            tb = tb.next();
+        }
+    }
+    return count;
+}
+
+int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
+{
+    //TODO: Improve replacing
+    if (!blockMode)
+        return -1;
+    B_Q(BCodeEdit);
+    if ( !q->hasSelection() )
+        return -1;
+    int count = 0;
+    int maxlen = 0;
+    QStringList sl;
+    QTextCursor tcr = ptedt->textCursor();
+    QVector<BPlainTextEdit::SelectionRange> ranges = ptedt->selectionRanges();
+    foreach (const BPlainTextEdit::SelectionRange &range, ranges)
+    {
+        tcr.setPosition(range.start);
+        tcr.setPosition(range.end, QTextCursor::KeepAnchor);
+        QString st = tcr.selectedText();
+        int slen = st.length();
+        count += st.count(text, cs);
+        removeTrailingSpaces(st);
+        st.replace(text, newText, cs);
+        if (st.length() > maxlen)
+            maxlen = st.length();
+        QTextBlock tbr = tcr.block();
+        QString txt = tbr.text();
+        removeTrailingSpaces(txt);
+        sl << txt.replace(tcr.selectionStart() - tbr.position(), slen, st);
+        if (txt.length() > lineLength) //This must be fixed
+            return -1;
+    }
+    QTextCursor tc = ptedt->textCursor();
+    tc.beginEditBlock();
+    QTextBlock tbf = ptedt->document()->findBlock(ranges.first().start);
+    int offset = ranges.first().start - tbf.position();
+    int bpos = tc.block().position();
+    int dlen = maxlen - (ranges.first().end - ranges.first().start);
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    foreach (const QString &txt, sl)
+    {
+        tc.movePosition(QTextCursor::StartOfBlock);
+        tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        tc.insertText(txt);
+    }
+    if (start < end)
+    {
+        if (start > bpos + offset)
+            start += dlen;
+        else
+            end += dlen;
+    }
+    else
+    {
+        if (end > bpos + offset)
+            end += dlen;
+        else
+            start += dlen;
+    }
+    tc.setPosition(start);
+    tc.setPosition(end, QTextCursor::KeepAnchor);
+    ptedt->setTextCursor(tc);
+    //_m_editSelectionChanged();
+    tc.endEditBlock();
+    //Rehighlighting
+    if (highlighter)
+        foreach (const BPlainTextEdit::SelectionRange &range, ranges)
+            highlighter->rehighlightBlock( ptedt->document()->findBlock(range.start) );
+    return count;
+}
+
+void BCodeEditPrivate::highlightBrackets()
+{
+    QList<QTextEdit::ExtraSelection> list = ptedt->extraSelections();
+    removeExtraSelections(list, highlightedBrackets);
+    highlightedBrackets.clear();
+    QTextCursor tc = ptedt->textCursor();
+    //_m_highlighter->rehighlightBlock( tc.block() );
+    //BSyntax::CursorProcessingResult r = _m_syntax.processCursor(tc);
+    //_m_highlightPosList << r.positions.keys();
+    //TODO: Search for brackets
+    //
+    ptedt->setExtraSelections(list);
+}
+
+void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges)
+{
+    if (ranges.size() > 1)
+        QMetaObject::invokeMethod( q_func(), "linesSplitted",
+                                   Q_ARG(const QList<BCodeEdit::SplittedLinesRange> &, ranges) );
+    else if (ranges.size() == 1)
+        QMetaObject::invokeMethod( q_func(), "lineSplitted",
+                                   Q_ARG( const BCodeEdit::SplittedLinesRange &, ranges.first() ) );
 }
 
 void BCodeEditPrivate::handleBackspace()
@@ -771,7 +1023,71 @@ void BCodeEditPrivate::move(int key)
     tc.endEditBlock();
 }
 
+void BCodeEditPrivate::futureWatcherFinished(ProcessTextFutureWatcher *watcher)
+{
+    if (watcher)
+        return;
+    ProcessTextResult res = watcher->result();
+    watcher->deleteLater();
+    ptedt->setEnabled(true);
+    if (highlighter)
+        highlighter->setDocument(0);
+    ptedt->setPlainText(res.newText);
+    if (highlighter)
+        highlighter->setDocument( ptedt->document() );
+    ptedt->document()->setModified(false);
+    ptedt->setFocus();
+    emitLinesSplitted(res.splittedLinesRanges);
+}
+
+void BCodeEditPrivate::popupMenu(const QPoint &pos)
+{
+    QMenu *menu = ptedt->createStandardContextMenu();
+    //TODO
+    QList<QAction *> actions = menu->actions();
+    //
+    menu->popup( ptedt->mapToGlobal(pos) );
+}
+
+void BCodeEditPrivate::updateCursorPosition()
+{
+    if (bracketsHighlighting)
+        highlightBrackets();
+    QTextCursor tc = ptedt->textCursor();
+    cursorPosition = QPoint( tc.positionInBlock(), tc.blockNumber() );
+    QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
+}
+
+void BCodeEditPrivate::updateClipboardDataAvailable(bool available)
+{
+    //
+}
+
+//
+
+const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QChar(1) << QChar(2) << QChar(3)
+    << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8) << QChar(9) << QChar(11) << QChar(12) << QChar(13)
+    << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21)
+    << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26) << QChar(27) << QChar(28) << QChar(29)
+    << QChar(30) << QChar(31);
+
 /*========== Code Edit ==========*/
+
+QList<BCodeEdit::BracketPair> BCodeEdit::defaultBrackets()
+{
+    QList<BracketPair> list;
+    BracketPair pair("(", ")");
+    list << pair;
+    pair.opening = "[";
+    pair.closing = "]";
+    list << pair;
+    pair.opening = "{";
+    pair.closing = "}";
+    list << pair;
+    return list;
+}
+
+//
 
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
@@ -784,30 +1100,340 @@ BCodeEdit::~BCodeEdit()
     //
 }
 
-//
+//Setters
+
+void BCodeEdit::setReadOnly(bool ro)
+{
+    B_D(BCodeEdit);
+    d->ptedt->setReadOnly(ro);
+    //_m_cutAvailableChanged( !_m_edit->isReadOnly() && _m_edit->textCursor().hasSelection() );
+    //_m_undoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isUndoAvailable() );
+    //_m_redoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isRedoAvailable() );
+    //_m_modificationChanged( !_m_edit->isReadOnly() && _m_edit->document()->isModified() );
+    //setClipboardHasText( !QApplication::clipboard()->text().isEmpty() );
+}
+
+void BCodeEdit::setEditFont(const QFont &fnt)
+{
+    if ( !QFontInfo(fnt).fixedPitch() )
+        return;
+    if (fnt.pointSize() < 1 && fnt.pixelSize() < 1)
+        return;
+    d_func()->ptedt->setFont(fnt);
+}
+
+void BCodeEdit::setEditMode(EditMode mode)
+{
+    B_D(BCodeEdit);
+    bool b = (BlockMode == mode);
+    if (b == d->blockMode)
+        return;
+    d->blockMode = b;
+    d->ptedt->update();
+    emit editModeChanged(mode);
+}
+
+void BCodeEdit::setEditLineLength(int ll)
+{
+    B_D(BCodeEdit);
+    if (ll < 1 || ll == d->lineLength)
+        return;
+    d->lineLength = ll;
+    QString text = d->ptedt->toPlainText();
+    bool pm = d->ptedt->document()->isModified();
+    setText(text);
+    d->ptedt->document()->setModified(pm);
+}
+
+void BCodeEdit::setEditTabWidth(TabWidth tw)
+{
+    B_D(BCodeEdit);
+    if (tw == d->tabWidth)
+        return;
+    d->tabWidth = tw;
+}
+
+void BCodeEdit::setMaximumBookmarkCount(int count)
+{
+    B_D(BCodeEdit);
+    if (count == d->maxBookmarks)
+        return;
+    if (count < 0)
+    {
+        d->bookmarks.clear();
+        count = -1;
+    }
+    else
+    {
+        while (d->bookmarks.size() > count)
+            d->bookmarks.removeFirst();
+    }
+    d->maxBookmarks = count;
+}
+
+void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
+{
+    B_D(BCodeEdit);
+    d->bracketsHighlighting = enabled;
+    d->highlightBrackets();
+}
+
+void BCodeEdit::setRecognizedBrackets(const QList<BracketPair> &list)
+{
+    B_D(BCodeEdit);
+    d->brackets = list;
+    d->highlightBrackets();
+}
+
+void BCodeEdit::setHighlighter(QSyntaxHighlighter *highlighter)
+{
+    B_D(BCodeEdit);
+    if (d->highlighter)
+    {
+        d->highlighter->setDocument(0);
+        if ( !d->highlighter->parent() )
+            d->highlighter->deleteLater();
+    }
+    d->highlighter = highlighter;
+    if (highlighter)
+        highlighter->setDocument( d->ptedt->document() );
+}
+
+//Getters
 
 bool BCodeEdit::isReadOnly() const
 {
     return d_func()->ptedt->isReadOnly();
 }
 
-//
+bool BCodeEdit::isModified() const
+{
+    return d_func()->ptedt->document()->isModified();
+}
 
-QList<BCodeEdit::SplittedLinesRange> BCodeEdit::insertText(const QString &text)
+bool BCodeEdit::hasSelection() const
+{
+    return d_func()->ptedt->textCursor().hasSelection();
+}
+
+bool BCodeEdit::hasBookmarks() const
+{
+    return !d_func()->bookmarks.isEmpty();
+}
+
+bool BCodeEdit::isCutAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->ptedt->textCursor().hasSelection();
+}
+
+bool BCodeEdit::isCopyAvailable() const
+{
+    return d_func()->ptedt->textCursor().hasSelection();
+}
+
+bool BCodeEdit::isPasteAvailable() const
+{
+    return !d_func()->ptedt->isReadOnly() && BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
+}
+
+bool BCodeEdit::isUndoAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->ptedt->document()->isUndoAvailable();
+}
+
+bool BCodeEdit::isRedoAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->ptedt->document()->isRedoAvailable();
+}
+
+QFont BCodeEdit::editFont() const
+{
+    return d_func()->ptedt->font();
+}
+
+BCodeEdit::EditMode BCodeEdit::editMode() const
+{
+    return d_func()->blockMode ? BlockMode : NormalMode;
+}
+
+int BCodeEdit::editLineLength() const
+{
+    return d_func()->lineLength;
+}
+
+BCodeEdit::TabWidth BCodeEdit::editTabWidth() const
+{
+    return d_func()->tabWidth;
+}
+
+int BCodeEdit::maximumBookmarkCount() const
+{
+    return d_func()->maxBookmarks;
+}
+
+bool BCodeEdit::isBracketHighlightingEnabled() const
+{
+    return d_func()->bracketsHighlighting;
+}
+
+QPoint BCodeEdit::cursorPosition() const
+{
+    return d_func()->cursorPosition;
+}
+
+QString BCodeEdit::text() const
+{
+    const QString text = d_func()->ptedt->toPlainText().replace(QChar::ParagraphSeparator, '\n');
+    return BCodeEditPrivate::removeTrailingSpaces(text);
+}
+
+QString BCodeEdit::selectedText() const
+{
+    const B_D(BCodeEdit);
+    QTextCursor tc = d->ptedt->textCursor();
+    if ( !tc.hasSelection() )
+        return "";
+    if (!d->blockMode)
+    {
+        const QString text = tc.selectedText().replace(QChar::ParagraphSeparator, '\n');
+        return BCodeEditPrivate::removeTrailingSpaces(text);
+    }
+    QStringList lines;
+    foreach ( const BPlainTextEdit::SelectionRange &range, d->ptedt->selectionRanges() )
+    {
+        QTextBlock tb = d->ptedt->document()->findBlock(range.start);
+        int offset = tb.position();
+        lines << tb.text().mid(range.start - offset, range.end - offset);
+    }
+    return lines.join("\n");
+}
+
+//Operations
+
+bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    if ( txt.isEmpty() )
+        return false;
+    B_D(BCodeEdit);
+    bool b = d->ptedt->find(txt, flags);
+    if (!b && cyclic)
+    {
+        if (flags & QTextDocument::FindBackward)
+            d->ptedt->moveCursor(QTextCursor::End);
+        else
+            d->ptedt->moveCursor(QTextCursor::Start);
+        b = d->ptedt->find(txt, flags);
+    }
+    //if (b)
+        //_m_editSelectionChanged();
+    return b;
+}
+
+bool BCodeEdit::replaceNext(const QString &newText)
+{
+    if ( isReadOnly() || !hasSelection() )
+        return false;
+    insertText(newText);
+    return true;
+}
+
+int BCodeEdit::replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
 {
     B_D(BCodeEdit);
-    if ( d->ptedt->isReadOnly() || text.isEmpty() )
+    if ( isReadOnly() || txt.isEmpty() || txt == newText || txt.length() > d->lineLength)
+        return -1;
+    return d->blockMode ? d->replaceInSelectionBlocks(txt, newText, cs) : d->replaceInSelectionLines(txt, newText, cs);
+}
+
+int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+{
+    B_D(BCodeEdit);
+    if ( isReadOnly() || txt.isEmpty() || txt == newText || txt.length() > d->lineLength)
+        return -1;
+    QTextCursor tc = d->ptedt->textCursor();
+    int pos = tc.position();
+    QString ptext = text();
+    int count = ptext.count(txt, cs);
+    if (!count)
+        return 0;
+    ptext.replace(txt, newText, cs);
+    int lind = ptext.lastIndexOf(txt, -1, cs);
+    int llnl = d->lineLength + 1;
+    int llinepos = (lind / llnl) * llnl;
+    QString lline = ptext.mid(llinepos, d->lineLength);
+    BCodeEditPrivate::removeTrailingSpaces(lline);
+    int llind = lline.lastIndexOf(txt, -1, cs);
+    QString llinex = lline.left(llind).replace(txt, newText, cs);
+    lline.replace(0, llind, llinex);
+    BCodeEditPrivate::appendTrailingSpaces(lline, d->lineLength);
+    ptext.replace(llinepos, d->lineLength, lline);
+    lind = ptext.lastIndexOf(txt, -1, cs);
+    int dpos = ptext.length() - lind - newText.length();
+    BCodeEditPrivate::removeTrailingSpaces(lline);
+    if (lline.length() + ( newText.length() - txt.length() ) > d->lineLength)
+    {
+        dpos += d->lineLength + 1;
+        int x = lline.lastIndexOf(txt, -1, cs) + newText.length();
+        if (x > d->lineLength)
+        {
+            dpos -= x - d->lineLength;
+            if ( (lline.lastIndexOf(txt, -1, cs) + txt.length() ) == d->lineLength )
+                dpos += 1;
+        }
+    }
+    pos = ptext.length() - dpos;
+    setText(ptext);
+    tc.setPosition(pos);
+    d->ptedt->setTextCursor(tc);
+    return count;
+}
+
+//
+
+void BCodeEdit::setText(const QString &txt)
+{
+    B_D(BCodeEdit);
+    if ( isReadOnly() )
+        return;
+    if ( txt.isEmpty() )
+        return d->setTextToEmptyLine();
+    d->ptedt->setEnabled(false);
+    d->ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
+    BCodeEditPrivate::ProcessTextFuture fut = QtConcurrent::run(&BCodeEditPrivate::processText,
+                                                                txt, d->lineLength, d->tabWidth);
+    BCodeEditPrivate::ProcessTextFutureWatcher *watcher = new BCodeEditPrivate::ProcessTextFutureWatcher(this);
+    watcher->setFuture(fut);
+    connect( watcher, SIGNAL( finished() ), d->_m_o, SLOT( futureWatcherFinished() ) );
+}
+
+void BCodeEdit::switchMode()
+{
+    setEditMode(editMode() == NormalMode ? BlockMode : NormalMode);
+}
+
+QList<BCodeEdit::SplittedLinesRange> BCodeEdit::insertText(const QString &txt)
+{
+    B_D(BCodeEdit);
+    if ( d->ptedt->isReadOnly() )
         return QList<SplittedLinesRange>();
     QTextCursor tc = d->ptedt->textCursor();
     tc.beginEditBlock();
     d->deleteSelection();
+    if ( txt.isEmpty() )
+    {
+        tc.endEditBlock();
+        return QList<SplittedLinesRange>(); //TODO: deleteSelection() must return a splitted lines list
+    }
     tc = d->ptedt->textCursor();
     int posb = tc.positionInBlock();
     QString btext = tc.block().text();
     QString ltext = btext.left(posb);
     QString rtext = btext.right(btext.length() - posb);
     BCodeEditPrivate::removeTrailingSpaces(rtext);
-    QStringList sl = BCodeEditPrivate::replaceTabs(BCodeEditPrivate::removeUnsupportedSymbols(text),
+    QStringList sl = BCodeEditPrivate::replaceTabs(BCodeEditPrivate::removeUnsupportedSymbols(txt),
                                                    d->tabWidth).split('\n');
     bool b = false;
     if ( d->blockMode && sl.size() > 1 && sl.size() < d->ptedt->blockCount() )
@@ -823,6 +1449,7 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::insertText(const QString &text)
             }
         }
     }
+    QList<SplittedLinesRange> ranges;
     if (b)
     {
         //TODO: Improve text insertion in block mode
@@ -886,20 +1513,183 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::insertText(const QString &text)
         if (pos > 0)
             pos -= rtext.length();
         tc.setPosition(tc.block().position() + pos);
-        for (int i = 0; i < res.splittedLinesRanges.size(); ++i)
+        ranges = res.splittedLinesRanges;
+        for (int i = 0; i < ranges.size(); ++i)
         {
-            res.splittedLinesRanges[i].firstLineNumber += boffset;
-            res.splittedLinesRanges[i].lastLineNumber += boffset;
+            ranges[i].firstLineNumber += boffset;
+            ranges[i].lastLineNumber += boffset;
         }
-        if (res.splittedLinesRanges.size() > 1)
-            emit linesSplitted(res.splittedLinesRanges);
-        else if (res.splittedLinesRanges.size() == 1)
-            emit lineSplitted( res.splittedLinesRanges.first() );
+
+        d->emitLinesSplitted(ranges);
     }
     d->ptedt->setTextCursor(tc);
-    //_m_highlighter->rehighlight();
+    if (d->highlighter)
+        d->highlighter->rehighlight();
     tc.endEditBlock();
-    return QList<SplittedLinesRange>();
+    return ranges;
+}
+
+void BCodeEdit::moveCursor(const QPoint &pos)
+{
+    B_D(BCodeEdit);
+    QTextBlock tb = d->ptedt->document()->findBlockByLineNumber( pos.y() );
+    if ( !tb.isValid() )
+        return;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.setPosition( tb.position() + (pos.x() > 0 ? pos.x() : 0) );
+    d->ptedt->setTextCursor(tc);
+    //_m_editSelectionChanged();
+}
+
+void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
+{
+    B_D(BCodeEdit);
+    QTextBlock tbs = d->ptedt->document()->findBlockByLineNumber( start.y() );
+    if ( !tbs.isValid() )
+        return;
+    QTextBlock tbe = d->ptedt->document()->findBlockByLineNumber( end.y() );
+    if ( !tbe.isValid() )
+        return;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.setPosition(tbs.position() + (start.x() > 0 ? start.x() : 0) );
+    tc.setPosition(tbe.position() + (end.x() > 0 ? end.x() : 0), QTextCursor::KeepAnchor);
+    d->ptedt->setTextCursor(tc);
+    //_m_editSelectionChanged();
+}
+
+void BCodeEdit::deselectText()
+{
+    B_D(BCodeEdit);
+    QTextCursor tc = d->ptedt->textCursor();
+    if ( !tc.hasSelection() )
+        return;
+    tc.setPosition( tc.selectionEnd() );
+    d->ptedt->setTextCursor(tc);
+}
+
+void BCodeEdit::makeBookmark()
+{
+    B_D(BCodeEdit);
+    QTextCursor tc = d->ptedt->textCursor();
+    BCodeEditPrivate::Bookmark bm;
+    bm.block = tc.block();
+    bm.posInBlock = tc.positionInBlock();
+    if ( d->bookmarks.contains(bm) )
+        d->bookmarks.removeAll(bm);
+    d->bookmarks << bm;
+    while (d->bookmarks.size() > d->maxBookmarks)
+        d->bookmarks.removeFirst();
+    //emit hasBookmarkChanged( hasBookmarks() );
+}
+
+void BCodeEdit::removeBookmark(int index)
+{
+    B_D(BCodeEdit);
+    if ( index < 0 || index >= d->bookmarks.size() )
+        return;
+    int pind = d->bookmarks.indexOf(d->currentBookmark) - 1;
+    if (pind < 0)
+        pind = 0;
+    d->bookmarks.removeAt(index);
+    d->currentBookmark = d->bookmarks.at(pind);
+}
+
+void BCodeEdit::removeLastBookmark()
+{
+    B_D(BCodeEdit);
+    if ( d->bookmarks.isEmpty() )
+        return;
+    removeBookmark( d->bookmarks.indexOf(d->currentBookmark) );
+}
+
+bool BCodeEdit::gotoBookmark(int index)
+{
+    B_D(BCodeEdit);
+    if ( index < 0 || index >= d->bookmarks.size() )
+        return false;
+    d->currentBookmark = d->bookmarks.at(index);
+    if ( !d->currentBookmark.block.isValid() )
+    {
+        removeBookmark(index);
+        d->currentBookmark = BCodeEditPrivate::Bookmark();
+        return false;
+    }
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.setPosition(d->currentBookmark.block.position() + d->currentBookmark.posInBlock);
+    d->ptedt->setTextCursor(tc);
+    return true;
+}
+
+bool BCodeEdit::gotoNextBookmark()
+{
+    B_D(BCodeEdit);
+    if ( d->bookmarks.isEmpty() )
+        return false;
+    int ind = d->bookmarks.indexOf(d->currentBookmark) + 1;
+    return gotoBookmark(d->bookmarks.size() != ind ? ind : 0);
+}
+
+void BCodeEdit::cut()
+{
+    if ( isReadOnly() || !hasSelection() )
+    copy();
+    d_func()->deleteSelection();
+}
+
+void BCodeEdit::copy()
+{
+    QString text = selectedText();
+    if ( text.isEmpty() )
+        return;
+    QApplication::clipboard()->setText(text);
+}
+
+void BCodeEdit::paste()
+{
+    if ( isReadOnly() )
+        return;
+    QString text = QApplication::clipboard()->text();
+    if ( text.isEmpty() )
+        return;
+    insertText(text);
+}
+
+void BCodeEdit::undo()
+{
+    if ( isReadOnly() || !isUndoAvailable() )
+        return;
+    B_D(BCodeEdit);
+    d->ptedt->undo();
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = tc.block();
+    QString text = tb.text();
+    int i = text.length() - 1;
+    while (i >= 0 && text.at(i) == ' ')
+        --i;
+    if (tc.positionInBlock() <= i)
+        return;
+    tc.setPosition(tb.position() + i + 1);
+    d->ptedt->setTextCursor(tc);
+    //_m_editCursorPositionChanged();
+}
+
+void BCodeEdit::redo()
+{
+    if ( isReadOnly() || !isRedoAvailable() )
+        return;
+    B_D(BCodeEdit);
+    d->ptedt->redo();
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = tc.block();
+    QString text = tb.text();
+    int i = text.length() - 1;
+    while (i >= 0 && text.at(i) == ' ')
+        --i;
+    if (tc.positionInBlock() <= i)
+        return;
+    tc.setPosition(tb.position() + i + 1);
+    d->ptedt->setTextCursor(tc);
+    //_m_editCursorPositionChanged();
 }
 
 //
@@ -908,4 +1698,11 @@ BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
     //
+}
+
+//
+
+BPlainTextEdit *BCodeEdit::innerEdit() const
+{
+    return d_func()->ptedt;
 }

@@ -11,6 +11,8 @@ class QMouseEvent;
 class QString;
 class QChar;
 class QStringList;
+class QSyntaxHighlighter;
+class QPoint;
 
 #include "bcodeedit.h"
 
@@ -20,6 +22,34 @@ class QStringList;
 #include <QObject>
 #include <QCoreApplication>
 #include <QList>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QTextBlock>
+#include <QTextEdit>
+
+/*========== Code Edit Clipboard Notifier ==========*/
+
+class BCodeEditClipboardNotifier : public QObject
+{
+    Q_OBJECT
+public:
+    static BCodeEditClipboardNotifier *instance();
+    //
+    explicit BCodeEditClipboardNotifier();
+    ~BCodeEditClipboardNotifier();
+    //
+    bool clipboardDataAvailable() const;
+    //
+    static BCodeEditClipboardNotifier *_m_self;
+signals:
+    void clipboardDataAvailableChanged(bool available);
+private:
+    Q_DISABLE_COPY(BCodeEditClipboardNotifier)
+    //
+    bool dataAvailable;
+public slots:
+    void dataChanged();
+};
 
 /*========== Code Edit Private Object ==========*/
 
@@ -34,7 +64,10 @@ public:
     //
     BCodeEditPrivate *const _m_p;
 public slots:
-    //
+    void futureWatcherFinished();
+    void customContextMenuRequested(const QPoint &pos);
+    void cursorPositionChanged();
+    void clipboardDataAvailableChanged(bool available);
 private:
     Q_DISABLE_COPY(BCodeEditPrivateObject)
 };
@@ -51,6 +84,24 @@ public:
         QString newText;
         QList<BCodeEdit::SplittedLinesRange> splittedLinesRanges;
     };
+    struct Bookmark
+    {
+        QTextBlock block;
+        int posInBlock;
+        //
+        Bookmark()
+        {
+            posInBlock = -1;
+        }
+        //
+        bool operator==(const Bookmark &other) const
+        {
+            return block == other.block && posInBlock == other.posInBlock;
+        }
+    };
+    //
+    typedef QFuture<ProcessTextResult> ProcessTextFuture;
+    typedef QFutureWatcher<ProcessTextResult> ProcessTextFutureWatcher;
     //
     static QStringList processLine(const QString &line, int ll, BCodeEdit::TabWidth tw);
     static ProcessTextResult processText(const QString &text, int ll, BCodeEdit::TabWidth tw);
@@ -62,6 +113,8 @@ public:
     static void appendTrailingSpaces(QString &s, int ll);
     static QString replaceTabs(const QString &s, BCodeEdit::TabWidth tw);
     static void replaceTabs(QString &s, BCodeEdit::TabWidth tw);
+    static void removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
+                                      const QList<QTextEdit::ExtraSelection> &what);
     //
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
@@ -69,7 +122,13 @@ public:
     inline bool keyPressEvent(QKeyEvent *e);
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);
+    void setTextToEmptyLine();
     void deleteSelection();
+    void seletAll();
+    int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
+    int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
+    void highlightBrackets();
+    void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
     //KeyPress handlers
     void handleBackspace();
     void handleCtrlBackspace();
@@ -81,12 +140,27 @@ public:
     void handleCtrlLeft();
     void handleCtrlRight();
     void move(int key);
+    //Called from BCodeEditPrivate
+    void futureWatcherFinished(ProcessTextFutureWatcher *watcher);
+    void popupMenu(const QPoint &pos);
+    void updateCursorPosition();
+    void updateClipboardDataAvailable(bool available);
+    //
+    static const QList<QChar> unsupportedSymbols;
     //
     BCodeEditPrivateObject *const _m_o;
     //
     bool blockMode;
     int lineLength;
     BCodeEdit::TabWidth tabWidth;
+    QSyntaxHighlighter *highlighter;
+    QPoint cursorPosition;
+    QList<Bookmark> bookmarks;
+    int maxBookmarks;
+    Bookmark currentBookmark;
+    QList<BCodeEdit::BracketPair> brackets;
+    bool bracketsHighlighting;
+    QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEdit *ptedt;
 private:

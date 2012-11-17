@@ -100,9 +100,9 @@ int main(int argc, char **argv)
     BApplication::loadSettings();
     BApplication::loadPlugins();
     //Showing widgets
-    mw->show();
+    //mw->show();
     //term->show();
-    //pte->show();
+    pte->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings
