@@ -1,5 +1,8 @@
 HEADERS += \
-    $${PWD}/babstractfiletype.h
+    $${PWD}/babstractfiletype.h \
+    $${PWD}/bcodeeditor_p.h \
+    $${PWD}/bcodeeditor.h
 
 SOURCES += \
-    $${PWD}/babstractfiletype.cpp
+    $${PWD}/babstractfiletype.cpp \
+    $${PWD}/bcodeeditor.cpp

@@ -1,0 +1,1 @@
+#include "../BeQtCodeEditor/bcodeeditor.h"
