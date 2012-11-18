@@ -17,21 +17,27 @@ class QWidget;
 #include <QObject>
 #include <QList>
 
-class BCodeEditorDocument : public BCodeEdit
+/*============================================================================
+================================ Code Editor Document
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BCodeEditorDocument : public BCodeEdit
 {
     B_DECLARE_PRIVATE(BCodeEditorDocument)
     Q_OBJECT
 public:
-    explicit BCodeEditorDocument(const QList<BAbstractDocumentDriver *> &drivers, QWidget *parent = 0);
+    explicit BCodeEditorDocument(QWidget *parent = 0);
     ~BCodeEditorDocument();
     //
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *codec);
     void setCodec(const char *codecName);
-    bool load(const QString &driverId);
-    bool save(const QString &driverId);
+    void setAsyncProcessingMinimumLength(int length);
+    bool load(BAbstractDocumentDriver *driver);
+    bool save(BAbstractDocumentDriver *driver);
     QString fileName() const;
     QTextCodec *codec() const;
+    int asyncProcessingMinimumLength() const;
     bool isBuisy() const;
 signals:
     void fileNameChanged(const QString &fn);

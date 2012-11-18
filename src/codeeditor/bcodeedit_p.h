@@ -32,7 +32,7 @@ class QPoint;
 ================================ Code Edit Clipboard Notifier
 ============================================================================*/
 
-class BCodeEditClipboardNotifier : public QObject
+class B_CODEEDITOR_EXPORT BCodeEditClipboardNotifier : public QObject
 {
     Q_OBJECT
 public:
@@ -58,7 +58,7 @@ public slots:
 ================================ Code Edit Private Object
 ============================================================================*/
 
-class BCodeEditPrivateObject : public BBasePrivateObject
+class B_CODEEDITOR_EXPORT BCodeEditPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BCodeEdit)
     Q_OBJECT

@@ -15,7 +15,7 @@ class BCodeEditorPrivate;
 ================================ Code Editor Private Object
 ============================================================================*/
 
-class BCodeEditorPrivateObject : public BBasePrivateObject
+class B_CODEEDITOR_EXPORT BCodeEditorPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BCodeEditor)
     Q_OBJECT
@@ -32,7 +32,7 @@ private:
 ================================ Code Editor Private
 ============================================================================*/
 
-class BCodeEditorPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEditor)
     B_DECLARE_OBJECT(BCodeEditor)

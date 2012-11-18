@@ -4,7 +4,7 @@
 class BCodeEditPrivate;
 class BPlainTextEdit;
 class BAbstractFileType;
-class BCodeEditorDocumentPrivate;
+//class BCodeEditorDocumentPrivate;
 
 class QString;
 class QPoint;
@@ -21,7 +21,7 @@ class QFont;
 ================================ Code Edit
 ============================================================================*/
 
-class BCodeEdit : public QWidget, public BBase
+class B_CODEEDITOR_EXPORT BCodeEdit : public QWidget, public BBase
 {
     B_DECLARE_PRIVATE(BCodeEdit)
     Q_OBJECT
@@ -87,7 +87,7 @@ public:
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
 public slots:
-    QList<SplittedLinesRange> setText(const QString &txt, int processIfLongerThan = 100 * BeQt::Kilobyte);
+    QList<SplittedLinesRange> setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
     void switchMode();
     QList<SplittedLinesRange> insertText(const QString &txt);
     void moveCursor(const QPoint &pos);
@@ -123,7 +123,7 @@ protected:
 private:
     Q_DISABLE_COPY(BCodeEdit)
     //
-    friend class BCodeEditorDocumentPrivate;
+    //friend class BCodeEditorDocumentPrivate;
 };
 
 #endif // BCODEEDIT_H

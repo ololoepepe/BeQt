@@ -1596,7 +1596,7 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
 
 //
 
-QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int processIfLongerThan)
+QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
 {
     B_D(BCodeEdit);
     if ( isReadOnly() )
@@ -1606,7 +1606,7 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int 
         d->setTextToEmptyLine();
         return QList<SplittedLinesRange>();
     }
-    if (processIfLongerThan > 0 && txt.length() > processIfLongerThan)
+    if (asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
     {
         d->ptedt->setEnabled(false);
         d->ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );

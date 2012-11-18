@@ -4,6 +4,8 @@
 class QStringList;
 class QSyntaxHighlighter;
 
+#include <BeQtCore/BeQtGlobal>
+
 #include <QString>
 #include <QList>
 #include <QApplication>
@@ -12,7 +14,7 @@ class QSyntaxHighlighter;
 ================================ Abstract File Type
 ============================================================================*/
 
-class BAbstractFileType
+class B_CODEEDITOR_EXPORT BAbstractFileType
 {
 public:
     struct BracketPair

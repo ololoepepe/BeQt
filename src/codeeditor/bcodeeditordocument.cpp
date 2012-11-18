@@ -5,7 +5,7 @@
 #include "bcodeedit_p.h"
 #include "bplaintextedit.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 
@@ -19,7 +19,9 @@
 #include <QMap>
 #include <QTextDocument>
 
-/*========== Code Editor Document Private Object ==========*/
+/*============================================================================
+================================ Code Editor Document Private Object
+============================================================================*/
 
 BCodeEditorDocumentPrivateObject::BCodeEditorDocumentPrivateObject(BCodeEditorDocumentPrivate *p) :
     BCodeEditPrivateObject(p)
@@ -34,61 +36,49 @@ BCodeEditorDocumentPrivateObject::~BCodeEditorDocumentPrivateObject()
 
 //
 
-void BCodeEditorDocumentPrivateObject::loadingFinished(bool success, const QString &text)
+void BCodeEditorDocumentPrivateObject::loadingFinished(BCodeEditorDocument *doc, bool success, const QString &text)
 {
-    p_func()->loadingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success, text);
+    B_P(BCodeEditorDocument);
+    if ( doc != p->q_func() )
+        return;
+    p->loadingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success, text);
 }
 
-void BCodeEditorDocumentPrivateObject::savingFinished(bool success)
+void BCodeEditorDocumentPrivateObject::savingFinished(BCodeEditorDocument *doc, bool success)
 {
-    p_func()->savingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success);
+    B_P(BCodeEditorDocument);
+    if ( doc != p->q_func() )
+        return;
+    p->savingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success);
 }
 
-/*========== Code Editor Document Private ==========*/
+/*============================================================================
+================================ Code Editor Document Private
+============================================================================*/
 
-QMap<QString, BAbstractDocumentDriver *> BCodeEditorDocumentPrivate::createDriverMap(
-        const QList<BAbstractDocumentDriver *> &drs)
+BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q) :
+    BCodeEditPrivate( *q, *new BCodeEditorDocumentPrivateObject(this) )
 {
-    QMap<QString, BAbstractDocumentDriver *> m;
-    foreach (BAbstractDocumentDriver *dr, drs)
-    {
-        QString id = dr->id();
-        if ( !id.contains(id) )
-            m.insert(id, dr);
-    }
-    return m;
-}
-
-//
-
-BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q,
-                                                       const QList<BAbstractDocumentDriver *> &drs) :
-    BCodeEditPrivate( *q, *new BCodeEditorDocumentPrivateObject(this) ), Drivers( createDriverMap(drs) )
-{
-    foreach (BAbstractDocumentDriver *dr, drs)
-    {
-        QObject::connect( dr, SIGNAL( loadingFinished(bool, QString) ),
-                          o_func(), SLOT( loadingFinished(bool, QString) ) );
-        QObject::connect( dr, SIGNAL( savingFinished(bool) ), o_func(), SLOT( savingFinished(bool) ) );
-    }
     codec = QTextCodec::codecForName("UTF-8");
+    asyncMin = 100 * BeQt::Kilobyte;
     buisy = false;
 }
 
 BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 {
-    foreach (BAbstractDocumentDriver *drv, Drivers)
-        delete drv;
+    //
 }
 
 //
 
 void BCodeEditorDocumentPrivate::loadingFinished(BAbstractDocumentDriver *driver, bool success, const QString &text)
 {
+    QObject::disconnect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
+                         o_func(), SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
     B_Q(BCodeEditorDocument);
     if (success)
     {
-        q->setText(text);
+        q->setText(text, asyncMin);
         q->innerEdit()->document()->setModified(false);
     }
     QMetaObject::invokeMethod( q, "loadingFinished", Q_ARG(bool, success) );
@@ -98,6 +88,8 @@ void BCodeEditorDocumentPrivate::loadingFinished(BAbstractDocumentDriver *driver
 
 void BCodeEditorDocumentPrivate::savingFinished(BAbstractDocumentDriver *driver, bool success)
 {
+    QObject::disconnect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
+                         o_func(), SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
     B_Q(BCodeEditorDocument);
     if (success)
         q->innerEdit()->document()->setModified(false);
@@ -106,10 +98,12 @@ void BCodeEditorDocumentPrivate::savingFinished(BAbstractDocumentDriver *driver,
     QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
 }
 
-/*========== Code Editor Document ==========*/
+/*============================================================================
+================================ Code Editor Document
+============================================================================*/
 
-BCodeEditorDocument::BCodeEditorDocument(const QList<BAbstractDocumentDriver *> &drivers, QWidget *parent) :
-    BCodeEdit(*new BCodeEditorDocumentPrivate(this, drivers), parent)
+BCodeEditorDocument::BCodeEditorDocument(QWidget *parent) :
+    BCodeEdit(*new BCodeEditorDocumentPrivate(this), parent)
 {
     //
 }
@@ -148,42 +142,57 @@ void BCodeEditorDocument::setCodec(const char *codecName)
     setCodec( QTextCodec::codecForName(codecName) );
 }
 
-bool BCodeEditorDocument::load(const QString &driverId)
+void BCodeEditorDocument::setAsyncProcessingMinimumLength(int length)
 {
-    if ( isBuisy() )
-        return false;
-    BAbstractDocumentDriver *dr = d_func()->Drivers.value(driverId);
-    if (dr)
-        return false;
-    B_D(BCodeEditorDocument);
-    d->buisy = true;
-    emit buisyChanged(true);
-    bool b;// = dr->load(d->fileName, d->codec);
-    if (!b)
-    {
-        d->buisy = false;
-        emit buisyChanged(false);
-    }
-    return b;
+    if (length < 0)
+        length = 0;
+    d_func()->asyncMin = length;
 }
 
-bool BCodeEditorDocument::save(const QString &driverId)
+bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver)
 {
-    if ( isBuisy() )
-        return false;
-    BAbstractDocumentDriver *dr = d_func()->Drivers.value(driverId);
-    if (dr)
+    if ( !driver || isBuisy() )
         return false;
     B_D(BCodeEditorDocument);
-    d->buisy = true;
-    emit buisyChanged(true);
-    bool b;// = dr->save(d->fileName, text(), d->codec);
-    if (!b)
+    bool fin = false;
+    if ( driver->enqueueLoadOperation(this, &fin) )
     {
-        d->buisy = false;
-        emit buisyChanged(false);
+        if (!fin)
+        {
+            connect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
+                     d->o_func(), SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
+            d->buisy = true;
+            emit buisyChanged(true);
+        }
+        return true;
     }
-    return b;
+    else
+    {
+        return false;
+    }
+}
+
+bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver)
+{
+    if ( !driver || isBuisy() )
+        return false;
+    B_D(BCodeEditorDocument);
+    bool fin = false;
+    if ( driver->enqueueSaveOperation(this, &fin) )
+    {
+        if (!fin)
+        {
+            connect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
+                     d->o_func(), SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
+            d->buisy = true;
+            emit buisyChanged(true);
+        }
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }
 
 QString BCodeEditorDocument::fileName() const
@@ -194,6 +203,11 @@ QString BCodeEditorDocument::fileName() const
 QTextCodec *BCodeEditorDocument::codec() const
 {
     return d_func()->codec;
+}
+
+int BCodeEditorDocument::asyncProcessingMinimumLength() const
+{
+    return d_func()->asyncMin;
 }
 
 bool BCodeEditorDocument::isBuisy() const

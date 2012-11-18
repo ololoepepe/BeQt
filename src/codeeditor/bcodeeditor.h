@@ -12,7 +12,7 @@ class BCodeEditorPrivate;
 ================================ Code Editor
 ============================================================================*/
 
-class BCodeEditor : public QWidget, public BBase
+class B_CODEEDITOR_EXPORT BCodeEditor : public QWidget, public BBase
 {
     B_DECLARE_PRIVATE(BCodeEditor)
     Q_OBJECT

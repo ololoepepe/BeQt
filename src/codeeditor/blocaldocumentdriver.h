@@ -1,11 +1,13 @@
 #ifndef BLOCALDOCUMENTDRIVER_H
 #define BLOCALDOCUMENTDRIVER_H
 
-class BCodeEdit;
+class BCodeEditorDocument;
 
 class QObject;
 
 #include "babstractdocumentdriver.h"
+
+#include <BeQtCore/BeQtGlobal>
 
 #include <QString>
 
@@ -13,15 +15,16 @@ class QObject;
 ================================ Local Document Driver
 ============================================================================*/
 
-class BLocalDocumentDriver : public BAbstractDocumentDriver
+class B_CODEEDITOR_EXPORT BLocalDocumentDriver : public BAbstractDocumentDriver
 {
 public:
     explicit BLocalDocumentDriver(QObject *parent = 0);
     ~BLocalDocumentDriver();
     //
     QString id() const;
-    bool load( BCodeEdit *edit, const QString &fileName, const QString &codecName = QString() );
-    bool save( BCodeEdit *edit, const QString &fileName, const QString &text, const QString &codecName = QString() );
+protected:
+    bool load(BCodeEditorDocument *doc, bool *finished = 0);
+    bool save(BCodeEditorDocument *doc, bool *finished = 0);
 };
 
 #endif // BLOCALDOCUMENTDRIVER_H
