@@ -15,6 +15,7 @@ class QSyntaxHighlighter;
 class QPoint;
 
 #include "bcodeedit.h"
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -99,6 +100,30 @@ public:
             return block == other.block && posInBlock == other.posInBlock;
         }
     };
+    struct TestBracketResult
+    {
+        bool valid;
+        BAbstractFileType::BracketPair bracket;
+        bool opening;
+        //
+        TestBracketResult()
+        {
+            valid = false;
+            opening = true;
+        }
+    };
+    struct FindBracketResult
+    {
+        bool valid;
+        int pos;
+        BAbstractFileType::BracketPair bracket;
+        //
+        FindBracketResult()
+        {
+            valid = false;
+            pos = -1;
+        }
+    };
     //
     typedef QFuture<ProcessTextResult> ProcessTextFuture;
     typedef QFutureWatcher<ProcessTextResult> ProcessTextFutureWatcher;
@@ -115,6 +140,11 @@ public:
     static void replaceTabs(QString &s, BCodeEdit::TabWidth tw);
     static void removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
                                       const QList<QTextEdit::ExtraSelection> &what);
+    static FindBracketResult findBracketPair(const BAbstractFileType::BracketPair &br,
+                                             bool opening, const QTextBlock &tb, int pos,
+                                             const QList<BAbstractFileType::BracketPair> &brlist);
+    static TestBracketResult testBracket(const QString &txt, int pos,
+                                         const QList<BAbstractFileType::BracketPair> &brlist);
     //
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
@@ -158,7 +188,8 @@ public:
     QList<Bookmark> bookmarks;
     int maxBookmarks;
     Bookmark currentBookmark;
-    QList<BCodeEdit::BracketPair> brackets;
+    BAbstractFileType *fileType;
+    QList<BAbstractFileType::BracketPair> brackets;
     bool bracketsHighlighting;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;

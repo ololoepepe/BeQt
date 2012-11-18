@@ -3,11 +3,11 @@
 
 class BCodeEditPrivate;
 class BPlainTextEdit;
+class BAbstractFileType;
 
 class QString;
 class QPoint;
 class QFont;
-class QSyntaxHighlighter;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -44,19 +44,6 @@ public:
             lastLineNumber = -1;
         }
     };
-    struct BracketPair
-    {
-        QString opening;
-        QString closing;
-        //
-        BracketPair(const QString &op, const QString &cl)
-        {
-            opening = op;
-            closing = cl;
-        }
-    };
-    //
-    static QList<BracketPair> defaultBrackets();
     //
     explicit BCodeEdit(QWidget *parent = 0);
     ~BCodeEdit();
@@ -68,8 +55,7 @@ public:
     void setEditTabWidth(TabWidth tw);
     void setMaximumBookmarkCount(int count);
     void setBracketHighlightingEnabled(bool enabled);
-    void setRecognizedBrackets(const QList<BracketPair> &list);
-    void setHighlighter(QSyntaxHighlighter *highlighter);
+    void setFileType(BAbstractFileType *type);
     //Getters
     bool isReadOnly() const;
     bool isModified() const;
@@ -86,6 +72,7 @@ public:
     TabWidth editTabWidth() const;
     int maximumBookmarkCount() const;
     bool isBracketHighlightingEnabled() const;
+    BAbstractFileType *fileType() const;
     QPoint cursorPosition() const;
     QString text() const;
     QString selectedText() const;

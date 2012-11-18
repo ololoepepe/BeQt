@@ -1,5 +1,6 @@
 #include "bcodeedit.h"
 #include "bcodeedit_p.h"
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -33,6 +34,10 @@
 #include <QApplication>
 #include <QClipboard>
 #include <QTextEdit>
+#include <QMap>
+#include <QTextCharFormat>
+#include <QBrush>
+#include <QColor>
 
 /*========== Code Edit Clipboard Notifier ==========*/
 
@@ -270,6 +275,76 @@ void BCodeEditPrivate::removeExtraSelections(QList<QTextEdit::ExtraSelection> &f
                 from.removeAt(i);
 }
 
+BCodeEditPrivate::TestBracketResult BCodeEditPrivate::testBracket(const QString &txt, int pos,
+                                                                  const QList<BAbstractFileType::BracketPair> &brlist)
+{
+    if ( txt.isEmpty() || pos < 0 || pos >= txt.length() || brlist.isEmpty() )
+        return TestBracketResult();
+    foreach (const BAbstractFileType::BracketPair &br, brlist)
+    {
+        if ( br.opening.isEmpty() || br.closing.isEmpty() )
+            continue;
+        if (pos >= br.escape.length() && txt.mid( pos - br.escape.length(), br.escape.length() ) == br.escape)
+            continue;
+        if (txt.mid( pos, br.opening.length() ) == br.opening)
+        {
+            TestBracketResult r;
+            r.valid = true;
+            r.bracket = br;
+            r.opening = true;
+            return r;
+        }
+        if (txt.mid( pos, br.closing.length() ) == br.closing)
+        {
+            TestBracketResult r;
+            r.valid = true;
+            r.bracket = br;
+            r.opening = false;
+            return r;
+        }
+    }
+    return TestBracketResult();
+}
+
+BCodeEditPrivate::FindBracketResult BCodeEditPrivate::findBracketPair(
+        const BAbstractFileType::BracketPair &br, bool opening, const QTextBlock &tb, int pos,
+        const QList<BAbstractFileType::BracketPair> &brlist)
+{
+    if ( br.opening.isEmpty() || br.closing.isEmpty() || !tb.isValid() || brlist.isEmpty() )
+        return FindBracketResult();
+    QTextBlock tbx = tb;
+    bool b = true;
+    int depth = 0;
+    FindBracketResult ret;
+    while ( tbx.isValid() )
+    {
+        QString txt = removeTrailingSpaces( tbx.text() );
+        int lb = opening ? (b ? pos : 0) : txt.length() - 1;
+        int ub = opening ? (b ? pos : txt.length() ) : -1;
+        int m = opening ? 1 : -1;
+        for (int i = lb; i != ub; i += m)
+        {
+            TestBracketResult r = testBracket(txt, i, brlist);
+            if (!r.valid)
+                continue;
+            if (r.opening != opening && !depth--)
+            {
+                ret.valid = true;
+                ret.pos = tbx.position() + i;
+                ret.bracket = r.bracket;
+                return ret;
+            }
+            else
+            {
+                ++depth;
+            }
+        }
+        b = false;
+        tbx = opening ? tbx.next() : tbx.previous();
+    }
+    return ret;
+}
+
 //
 
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
@@ -279,9 +354,10 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
     lineLength = 120;
     tabWidth = BCodeEdit::TabWidth4;
     maxBookmarks = 4;
-    brackets = BCodeEdit::defaultBrackets();
+    fileType = 0; //TODO: Set a default filetype
+    //brackets; //TODO: Set from default filetype
     bracketsHighlighting = true;
-    highlighter = 0;
+    highlighter = 0; //TODO: Set from default filetype
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -651,11 +727,58 @@ void BCodeEditPrivate::highlightBrackets()
     removeExtraSelections(list, highlightedBrackets);
     highlightedBrackets.clear();
     QTextCursor tc = ptedt->textCursor();
-    //_m_highlighter->rehighlightBlock( tc.block() );
-    //BSyntax::CursorProcessingResult r = _m_syntax.processCursor(tc);
-    //_m_highlightPosList << r.positions.keys();
-    //TODO: Search for brackets
-    //
+    QTextBlock tb = tc.block();
+    TestBracketResult op = testBracket(removeTrailingSpaces( tb.text() ), tc.positionInBlock(), brackets);
+    TestBracketResult cl = testBracket(removeTrailingSpaces( tb.text() ), tc.positionInBlock() - 1, brackets);
+    if (op.valid && op.opening)
+    {
+        FindBracketResult r = findBracketPair(op.bracket, true, tb, tc.positionInBlock(), brackets);
+        if (r.valid)
+        {
+            QTextEdit::ExtraSelection es;
+            es.format.setBackground( QBrush( QColor("yellow") ) );
+            es.cursor.setPosition( tb.position() + tc.positionInBlock() );
+            es.cursor.setPosition(tb.position() + tc.positionInBlock() + r.bracket.opening.length(),
+                                  QTextCursor::KeepAnchor);
+            list << es;
+            es.cursor.setPosition(r.pos);
+            es.cursor.setPosition(r.pos + r.bracket.closing.length(), QTextCursor::KeepAnchor);
+            list << es;
+        }
+        else
+        {
+            QTextEdit::ExtraSelection es;
+            es.format.setBackground( QBrush( QColor("hotpink") ) );
+            es.cursor.setPosition( tb.position() + tc.positionInBlock() );
+            es.cursor.setPosition(ptedt->document()->lastBlock().position() + ptedt->document()->lastBlock().length(),
+                                  QTextCursor::KeepAnchor);
+            list << es;
+        }
+    }
+    if (cl.valid && !cl.opening)
+    {
+        FindBracketResult r = findBracketPair(op.bracket, false, tb, tc.positionInBlock() - 1, brackets);
+        if (r.valid)
+        {
+            QTextEdit::ExtraSelection es;
+            es.format.setBackground( QBrush( QColor("yellow") ) );
+            es.cursor.setPosition(tb.position() + tc.positionInBlock() - 1);
+            es.cursor.setPosition(tb.position() + tc.positionInBlock() - 1 + r.bracket.opening.length(),
+                                  QTextCursor::KeepAnchor);
+            list << es;
+            es.cursor.setPosition(r.pos);
+            es.cursor.setPosition(r.pos + r.bracket.closing.length(), QTextCursor::KeepAnchor);
+            list << es;
+        }
+        else
+        {
+            QTextEdit::ExtraSelection es;
+            es.format.setBackground( QBrush( QColor("hotpink") ) );
+            es.cursor.setPosition(tb.position() + tc.positionInBlock() - 1);
+            es.cursor.setPosition(0, QTextCursor::KeepAnchor);
+            list << es;
+        }
+    }
     ptedt->setExtraSelections(list);
 }
 
@@ -1073,22 +1196,6 @@ const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QCha
 
 /*========== Code Edit ==========*/
 
-QList<BCodeEdit::BracketPair> BCodeEdit::defaultBrackets()
-{
-    QList<BracketPair> list;
-    BracketPair pair("(", ")");
-    list << pair;
-    pair.opening = "[";
-    pair.closing = "]";
-    list << pair;
-    pair.opening = "{";
-    pair.closing = "}";
-    list << pair;
-    return list;
-}
-
-//
-
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
 {
@@ -1178,25 +1285,17 @@ void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
     d->highlightBrackets();
 }
 
-void BCodeEdit::setRecognizedBrackets(const QList<BracketPair> &list)
+void BCodeEdit::setFileType(BAbstractFileType *type)
 {
+    if (!type)
+        return;
     B_D(BCodeEdit);
-    d->brackets = list;
-    d->highlightBrackets();
-}
-
-void BCodeEdit::setHighlighter(QSyntaxHighlighter *highlighter)
-{
-    B_D(BCodeEdit);
+    d->highlighter->deleteLater();
+    d->fileType = type;
+    d->brackets = type->brackets();
+    d->highlighter = type->createHighlighter();
     if (d->highlighter)
-    {
-        d->highlighter->setDocument(0);
-        if ( !d->highlighter->parent() )
-            d->highlighter->deleteLater();
-    }
-    d->highlighter = highlighter;
-    if (highlighter)
-        highlighter->setDocument( d->ptedt->document() );
+        d->highlighter->setDocument( d->ptedt->document() );
 }
 
 //Getters
@@ -1277,6 +1376,11 @@ int BCodeEdit::maximumBookmarkCount() const
 bool BCodeEdit::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
+}
+
+BAbstractFileType *BCodeEdit::fileType() const
+{
+    return d_func()->fileType;
 }
 
 QPoint BCodeEdit::cursorPosition() const
