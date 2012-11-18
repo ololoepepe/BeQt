@@ -10,6 +10,10 @@ class QIcon;
 #include <QtGlobal>
 #include <QVariantMap>
 
+/*============================================================================
+================================ Abstract Settings Tab
+============================================================================*/
+
 class B_WIDGETS_EXPORT BAbstractSettingsTab : public QWidget
 {
     Q_OBJECT

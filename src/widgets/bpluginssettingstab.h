@@ -13,6 +13,10 @@ class QIcon;
 
 #include <QVariantMap>
 
+/*============================================================================
+================================ Plugins Settings Tab
+============================================================================*/
+
 class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public BBase
 {
     Q_OBJECT

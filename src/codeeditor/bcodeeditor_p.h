@@ -11,6 +11,10 @@ class BCodeEditorPrivate;
 #include <QObject>
 #include <QCoreApplication>
 
+/*============================================================================
+================================ Code Editor Private Object
+============================================================================*/
+
 class BCodeEditorPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BCodeEditor)
@@ -23,6 +27,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BCodeEditorPrivateObject)
 };
+
+/*============================================================================
+================================ Code Editor Private
+============================================================================*/
 
 class BCodeEditorPrivate : public BBasePrivate
 {

@@ -15,6 +15,10 @@ class QIcon;
 #include <QString>
 #include <QCoreApplication>
 
+/*============================================================================
+================================ About Dialog
+============================================================================*/
+
 class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBase
 {
     B_DECLARE_PRIVATE(BAboutDialog)

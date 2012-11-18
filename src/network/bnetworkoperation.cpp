@@ -10,6 +10,10 @@
 #include <QUuid>
 #include <QByteArray>
 
+/*============================================================================
+================================ Network Operation Private
+============================================================================*/
+
 BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md) :
     BBasePrivate(q), MetaData(md)
 {
@@ -71,7 +75,9 @@ BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation &q, BBasePr
     //
 }
 
-//
+/*============================================================================
+================================ Network Operation
+============================================================================*/
 
 BNetworkOperation::~BNetworkOperation()
 {

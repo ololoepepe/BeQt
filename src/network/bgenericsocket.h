@@ -17,6 +17,10 @@ class QUdpSocket;
 #include <QString>
 #include <QByteArray>
 
+/*============================================================================
+================================ Generic Socket
+============================================================================*/
+
 class B_NETWORK_EXPORT BGenericSocket : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BGenericSocket)

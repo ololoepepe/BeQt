@@ -8,6 +8,10 @@ class QStringList;
 
 #include <QObject>
 
+/*============================================================================
+================================ Abstract Terminal Driver
+============================================================================*/
+
 class B_WIDGETS_EXPORT BAbstractTerminalDriver : public QObject
 {
     Q_OBJECT
@@ -22,7 +26,8 @@ public:
     virtual void terminate() = 0;
     virtual void kill() = 0;
     virtual QString prompt() const;
-    virtual QString terminalCommand(const QString &command, const QStringList &arguments);
+    virtual QString terminalCommand(const QString &command, const QStringList &arguments,
+                                    bool *finished = 0, int *exitCode = 0);
     virtual void setWorkingDirectory(const QString &path);
     virtual QString workingDirectory() const;
 signals:
@@ -32,7 +37,7 @@ signals:
     void unblockTerminal();
 protected slots:
     void emitReadyRead();
-    void emitFinished(int exitCode, bool delayed = false);
+    void emitFinished(int exitCode);
     void emitBlockTerminal();
     void emitUnblockTerminal();
 private:

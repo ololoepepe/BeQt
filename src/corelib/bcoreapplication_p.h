@@ -19,6 +19,10 @@ class QLocale;
 #include <QMap>
 #include <QStringList>
 
+/*============================================================================
+================================ Core Application Private
+============================================================================*/
+
 class B_CORE_EXPORT BCoreApplicationPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCoreApplication)

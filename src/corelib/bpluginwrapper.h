@@ -14,6 +14,10 @@ class QSettings;
 #include <QList>
 #include <QString>
 
+/*============================================================================
+================================ Plugin Wrapper
+============================================================================*/
+
 class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
 {
     Q_OBJECT

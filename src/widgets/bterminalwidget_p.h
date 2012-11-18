@@ -16,6 +16,10 @@ class QVBoxLayout;
 #include <QObject>
 #include <QCoreApplication>
 
+/*============================================================================
+================================ Terminal Widget Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BTerminalWidgetPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BTerminalWidget)
@@ -33,6 +37,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivateObject)
 };
+
+/*============================================================================
+================================ Terminal Widget Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBasePrivate
 {

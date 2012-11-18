@@ -20,6 +20,10 @@
 #include "windows.h"
 #endif
 
+/*============================================================================
+================================ Terminal IO Handler Private (declaration)
+============================================================================*/
+
 class BTerminalIOHandlerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTerminalIOHandler)
@@ -39,7 +43,9 @@ public:
     static QString lastLine;
 };
 
-//
+/*============================================================================
+================================ Terminal IO Handler (definition)
+============================================================================*/
 
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
   BBasePrivate(q)
@@ -60,7 +66,9 @@ QMutex BTerminalIOHandlerPrivate::echoMutex;
 bool BTerminalIOHandlerPrivate::prefereReadLine = false;
 QString BTerminalIOHandlerPrivate::lastLine;
 
-//
+/*============================================================================
+================================ Terminal IO Handler
+============================================================================*/
 
 QStringList BTerminalIOHandler::splitCommand(const QString &command)
 {

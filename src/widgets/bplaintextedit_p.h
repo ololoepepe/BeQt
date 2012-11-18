@@ -18,6 +18,10 @@ class QBrush;
 #include <QAbstractTextDocumentLayout>
 #include <QVector>
 
+/*============================================================================
+================================ Plain Text Edit Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BPlainTextEditPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BPlainTextEdit)
@@ -30,6 +34,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivateObject)
 };
+
+/*============================================================================
+================================ Plain Text Edit Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BPlainTextEditPrivate : public BBasePrivate
 {

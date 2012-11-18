@@ -10,6 +10,10 @@ class QString;
 
 #include <QUuid>
 
+/*============================================================================
+================================ Network Operation Meta Data
+============================================================================*/
+
 class B_NETWORK_EXPORT BNetworkOperationMetaData : public BBase
 {
     B_DECLARE_PRIVATE(BNetworkOperationMetaData)

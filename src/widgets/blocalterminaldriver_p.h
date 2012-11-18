@@ -14,6 +14,10 @@ class QString;
 #include <QObject>
 #include <QMap>
 
+/*============================================================================
+================================ Local Terminal Driver Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BLocalTerminalDriverPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BLocalTerminalDriver)
@@ -27,6 +31,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BLocalTerminalDriverPrivateObject)
 };
+
+/*============================================================================
+================================ Local Terminal Driver Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BLocalTerminalDriverPrivate : public BBasePrivate
 {

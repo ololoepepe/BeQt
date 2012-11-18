@@ -35,6 +35,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Plain Text Edit Private Object
+============================================================================*/
+
 BPlainTextEditPrivateObject::BPlainTextEditPrivateObject(BPlainTextEditPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -53,7 +57,9 @@ void BPlainTextEditPrivateObject::selectionChanged()
     p_func()->selectionChanged();
 }
 
-//
+/*============================================================================
+================================ Plain Text Edit Private
+============================================================================*/
 
 void BPlainTextEditPrivate::fillBackground(QPainter *painter, const QRectF &rect, QBrush brush, QRectF gradientRect)
 {
@@ -163,7 +169,9 @@ BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit &q, BPlainTextEditPr
     //
 }
 
-//
+/*============================================================================
+================================ Plain Text Edit
+============================================================================*/
 
 BPlainTextEdit::BPlainTextEdit(QWidget *parent) :
     QPlainTextEdit(parent), BBase( *new BPlainTextEditPrivate(this) )

@@ -12,6 +12,10 @@ class QTranslator;
 #include <QList>
 #include <QtGlobal>
 
+/*============================================================================
+================================ Translator Private
+============================================================================*/
+
 class B_CORE_EXPORT BTranslatorPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTranslator)

@@ -20,6 +20,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Password Widget Private Object
+============================================================================*/
+
 BPasswordWidgetPrivateObject::BPasswordWidgetPrivateObject(BPasswordWidgetPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -48,7 +52,9 @@ void BPasswordWidgetPrivateObject::tbtnShowClicked()
     p_func()->resetShow();
 }
 
-//
+/*============================================================================
+================================ Password Widget Private
+============================================================================*/
 
 const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
 
@@ -113,7 +119,9 @@ BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget &q, BPasswordWidg
     //
 }
 
-//
+/*============================================================================
+================================ Password Widget
+============================================================================*/
 
 QByteArray BPasswordWidget::encrypt(const QString &string, QCryptographicHash::Algorithm method)
 {

@@ -21,6 +21,10 @@ class QString;
 #include <QObject>
 #include <QMap>
 
+/*============================================================================
+================================ Help Browser Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BHelpBrowserPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BHelpBrowser)
@@ -35,6 +39,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivateObject)
 };
+
+/*============================================================================
+================================ Help Browser Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
 {

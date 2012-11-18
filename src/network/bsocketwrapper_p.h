@@ -14,6 +14,10 @@ class BSocketWrapperPrivate;
 #include <QAbstractSocket>
 #include <QPointer>
 
+/*============================================================================
+================================ Socket Wrapper Private Object
+============================================================================*/
+
 class B_NETWORK_EXPORT BSocketWrapperPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BSocketWrapper)
@@ -29,6 +33,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BSocketWrapperPrivateObject)
 };
+
+/*============================================================================
+================================ Socket Wrapper Private
+============================================================================*/
 
 class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBasePrivate
 {

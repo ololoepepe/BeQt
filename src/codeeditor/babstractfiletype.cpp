@@ -6,7 +6,9 @@
 #include <QSyntaxHighlighter>
 #include <QList>
 
-/*========== Default File Type (declaration) ==========*/
+/*============================================================================
+================================ Default File Type (declaration)
+============================================================================*/
 
 class BDefaultFileType : public BAbstractFileType
 {
@@ -24,7 +26,9 @@ public:
     QList<BracketPair> brackets() const;
 };
 
-/*========== Default File Type (definition) ==========*/
+/*============================================================================
+================================ Default File Type (definition)
+============================================================================*/
 
 BDefaultFileType::BDefaultFileType()
 {
@@ -73,7 +77,9 @@ QList<BAbstractFileType::BracketPair> BDefaultFileType::brackets() const
     return QList<BracketPair>();
 }
 
-/*========== Abstract File Type ==========*/
+/*============================================================================
+================================ Abstract File Type
+============================================================================*/
 
 BAbstractFileType *BAbstractFileType::defaultFileType()
 {

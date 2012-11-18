@@ -22,6 +22,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Terminal Widget Private Object
+============================================================================*/
+
 BTerminalWidgetPrivateObject::BTerminalWidgetPrivateObject(BTerminalWidgetPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -65,7 +69,9 @@ void BTerminalWidgetPrivateObject::unblockTerminal()
     p_func()->unblockTerminal();
 }
 
-//
+/*============================================================================
+================================ Terminal Widget Private
+============================================================================*/
 
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
     BBasePrivate( *q, *new BTerminalWidgetPrivateObject(this) ), NormalMode(nmode)
@@ -239,7 +245,9 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget &q, BTerminalWidg
     //
 }
 
-//
+/*============================================================================
+================================ Terminal Widget
+============================================================================*/
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
     QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
@@ -324,7 +332,9 @@ void BTerminalWidget::terminalCommand(const QString &command, const QStringList 
         return;
     if ( command.isEmpty() )
         return d->appendLine( d->driver->prompt() );
-    QString ret = d->driver->terminalCommand(command, arguments);
+    bool fin = false;
+    int eCode = 0;
+    QString ret = d->driver->terminalCommand(command, arguments, &fin, &eCode);
     if ( !ret.isEmpty() )
     {
         d->appendLine(tr("Error:", "text") + " " + ret);
@@ -333,6 +343,8 @@ void BTerminalWidget::terminalCommand(const QString &command, const QStringList 
     else
     {
         d->appendLine();
+        if (fin)
+            d->finished(eCode);
     }
 }
 

@@ -21,6 +21,10 @@ class QDialogButtonBox;
 #include <QList>
 #include <QMap>
 
+/*============================================================================
+================================ About Dialog Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BAboutDialogPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BAboutDialog)
@@ -33,6 +37,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BAboutDialogPrivateObject)
 };
+
+/*============================================================================
+================================ About Dialog Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBasePrivate
 {

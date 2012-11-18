@@ -1,6 +1,12 @@
+class BCodeEdit;
+
 #include "babstractdocumentdriver.h"
 
 #include <QObject>
+
+/*============================================================================
+================================ Abstract Document Driver
+============================================================================*/
 
 BAbstractDocumentDriver::BAbstractDocumentDriver(QObject *parent) :
     QObject(parent)
@@ -15,12 +21,12 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
 
 //
 
-void BAbstractDocumentDriver::emitLoadingFinished(bool success, const QString &text)
+void BAbstractDocumentDriver::emitLoadingFinished(BCodeEdit *edit, bool success, const QString &text)
 {
-    emit loadingFinished(success, text);
+    emit loadingFinished(edit, success, text);
 }
 
-void BAbstractDocumentDriver::emitSavingFinished(bool success)
+void BAbstractDocumentDriver::emitSavingFinished(BCodeEdit *edit, bool success)
 {
-    emit savingFinished(success);
+    emit savingFinished(edit, success);
 }

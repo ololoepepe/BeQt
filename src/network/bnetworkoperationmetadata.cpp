@@ -5,6 +5,10 @@
 #include <QString>
 #include <QUuid>
 
+/*============================================================================
+================================ Network Operation Meta Data Private (declaration)
+============================================================================*/
+
 class BNetworkOperationMetaDataPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BNetworkOperationMetaData)
@@ -19,7 +23,9 @@ private:
     Q_DISABLE_COPY(BNetworkOperationMetaDataPrivate)
 };
 
-//
+/*============================================================================
+================================ Network Operation Meta Data Private (definition)
+============================================================================*/
 
 BNetworkOperationMetaDataPrivate::BNetworkOperationMetaDataPrivate(BNetworkOperationMetaData *q) :
     BBasePrivate(q)
@@ -32,7 +38,9 @@ BNetworkOperationMetaDataPrivate::~BNetworkOperationMetaDataPrivate()
     //
 }
 
-//
+/*============================================================================
+================================ Network Operation Meta Data
+============================================================================*/
 
 BNetworkOperationMetaData::BNetworkOperationMetaData() :
     BBase( *new BNetworkOperationMetaDataPrivate(this) )

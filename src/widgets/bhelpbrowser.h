@@ -11,6 +11,10 @@ class QStringList;
 
 #include <QWidget>
 
+/*============================================================================
+================================ Help Browser
+============================================================================*/
+
 class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBase
 {
     B_DECLARE_PRIVATE(BHelpBrowser)

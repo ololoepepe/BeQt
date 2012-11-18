@@ -16,6 +16,10 @@ class QString;
 #include <QObject>
 #include <QAbstractSocket>
 
+/*============================================================================
+================================ Generic Server
+============================================================================*/
+
 class B_NETWORK_EXPORT BGenericServer : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BGenericServer)

@@ -1,10 +1,14 @@
 #ifndef BABSTRACTDOCUMENTDRIVER_H
 #define BABSTRACTDOCUMENTDRIVER_H
 
-class QString;
-class QTextCodec;
+class BCodeEdit;
 
 #include <QObject>
+#include <QString>
+
+/*============================================================================
+================================ Abstract Document Driver
+============================================================================*/
 
 class BAbstractDocumentDriver : public QObject
 {
@@ -14,14 +18,15 @@ public:
     ~BAbstractDocumentDriver();
     //
     virtual QString id() const = 0;
-    virtual bool load(const QString &fileName, QTextCodec *codec = 0) = 0;
-    virtual bool save(const QString &fileName, const QString &text, QTextCodec *codec = 0) = 0;
+    virtual bool load( BCodeEdit *edit, const QString &fileName, const QString &codecName = QString() ) = 0;
+    virtual bool save( BCodeEdit *edit, const QString &fileName,
+                       const QString &text, const QString &codecName = QString() ) = 0;
 signals:
-    void loadingFinished(bool success, const QString &text);
-    void savingFinished(bool success);
+    void loadingFinished(BCodeEdit *edit, bool success, const QString &text);
+    void savingFinished(BCodeEdit *edit, bool success);
 protected:
-    void emitLoadingFinished(bool success, const QString &text);
-    void emitSavingFinished(bool success);
+    void emitLoadingFinished(BCodeEdit *edit, bool success, const QString &text);
+    void emitSavingFinished(BCodeEdit *edit, bool success);
 };
 
 #endif // BABSTRACTDOCUMENTDRIVER_H

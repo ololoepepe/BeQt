@@ -20,6 +20,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Generic Socket Private Object
+============================================================================*/
+
 BGenericSocketPrivateObject::BGenericSocketPrivateObject(BGenericSocketPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -83,7 +87,9 @@ void BGenericSocketPrivateObject::stateChanged(QAbstractSocket::SocketState sock
     p_func()->stateChanged(socketState);
 }
 
-//
+/*============================================================================
+================================ Generic Socket Private
+============================================================================*/
 
 BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type) :
     BBasePrivate( *q, *new BGenericSocketPrivateObject(this) )
@@ -230,7 +236,9 @@ BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket &q, BGenericSocketPr
     //
 }
 
-//
+/*============================================================================
+================================ Generic Socket
+============================================================================*/
 
 BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
     QObject(parent), BBase( *new BGenericSocketPrivate(this, type) )

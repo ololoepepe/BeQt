@@ -17,6 +17,10 @@
 #include <QLocalServer>
 #include <QScopedPointer>
 
+/*============================================================================
+================================ Application Server Private Object
+============================================================================*/
+
 BApplicationServerPrivateObject::BApplicationServerPrivateObject(BApplicationServerPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -35,7 +39,9 @@ void BApplicationServerPrivateObject::newPendingConnection()
     p_func()->newPendingConnection();
 }
 
-//
+/*============================================================================
+================================ Application Server Private
+============================================================================*/
 
 const int BApplicationServerPrivate::OperationTimeout = 5 * BeQt::Second;
 const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_4_8;
@@ -99,7 +105,9 @@ BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer &q, BApp
     //
 }
 
-//
+/*============================================================================
+================================ Application Server
+============================================================================*/
 
 BApplicationServer::BApplicationServer() :
     BBase( *new BApplicationServerPrivate(this) )

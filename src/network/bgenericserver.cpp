@@ -14,6 +14,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Local Server
+============================================================================*/
+
 BLocalServer::BLocalServer(QObject *parent) :
     QLocalServer(parent)
 {
@@ -26,7 +30,9 @@ void BLocalServer::incomingConnection(quintptr socketDescriptor)
     emit newConnection(socketDescriptor);
 }
 
-//
+/*============================================================================
+================================ Tcp Server
+============================================================================*/
 
 BTcpServer::BTcpServer(QObject *parent) :
     QTcpServer(parent)
@@ -40,7 +46,9 @@ void BTcpServer::incomingConnection(int handle)
     emit newConnection(handle);
 }
 
-//
+/*============================================================================
+================================ Generic Server Private Object
+============================================================================*/
 
 BGenericServerPrivateObject::BGenericServerPrivateObject(BGenericServerPrivate *p) :
     BBasePrivateObject(p)
@@ -60,7 +68,9 @@ void BGenericServerPrivateObject::newConnection(int socketDescriptor)
     p_func()->newConnection(socketDescriptor);
 }
 
-//
+/*============================================================================
+================================ Generic Server Private
+============================================================================*/
 
 BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type) :
     BBasePrivate( *q, *new BGenericServerPrivateObject(this) )
@@ -126,7 +136,9 @@ BGenericServerPrivate::BGenericServerPrivate(BGenericServer &q, BGenericServerPr
     //
 }
 
-//
+/*============================================================================
+================================ Generic Server
+============================================================================*/
 
 BGenericServer::BGenericServer(ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BGenericServerPrivate(this, type) )

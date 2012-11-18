@@ -32,6 +32,10 @@ class QWidget;
 
 #include <QDebug>
 
+/*============================================================================
+================================ About Dialog Private Object
+============================================================================*/
+
 BAboutDialogPrivateObject::BAboutDialogPrivateObject(BAboutDialogPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -50,7 +54,9 @@ void BAboutDialogPrivateObject::languageChanged()
     p_func()->retranslateUi();
 }
 
-//
+/*============================================================================
+================================ About Dialog Private
+============================================================================*/
 
 const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
 const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
@@ -283,7 +289,9 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog &q, BAboutDialogPrivateObj
     //
 }
 
-//
+/*============================================================================
+================================ About Dialog
+============================================================================*/
 
 BAboutDialog::BAboutDialog(QWidget *parent) :
     QDialog(parent), BBase( *new BAboutDialogPrivate( this, AboutOptions() ) )

@@ -17,6 +17,10 @@ class QUuid;
 #include <QByteArray>
 #include <QAbstractSocket>
 
+/*============================================================================
+================================ Network Connection
+============================================================================*/
+
 class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BNetworkConnection)

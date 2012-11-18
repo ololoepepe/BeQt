@@ -15,6 +15,10 @@ class QWidget;
 #include <QStyle>
 #include <QSize>
 
+/*============================================================================
+================================ Flow Layout
+============================================================================*/
+
 class B_WIDGETS_EXPORT BFlowLayout : public QLayout, public BBase
 {
     Q_OBJECT

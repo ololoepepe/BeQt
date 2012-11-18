@@ -158,7 +158,7 @@ bool BCodeEditorDocument::load(const QString &driverId)
     B_D(BCodeEditorDocument);
     d->buisy = true;
     emit buisyChanged(true);
-    bool b = dr->load(d->fileName, d->codec);
+    bool b;// = dr->load(d->fileName, d->codec);
     if (!b)
     {
         d->buisy = false;
@@ -177,7 +177,7 @@ bool BCodeEditorDocument::save(const QString &driverId)
     B_D(BCodeEditorDocument);
     d->buisy = true;
     emit buisyChanged(true);
-    bool b = dr->save(d->fileName, text(), d->codec);
+    bool b;// = dr->save(d->fileName, text(), d->codec);
     if (!b)
     {
         d->buisy = false;

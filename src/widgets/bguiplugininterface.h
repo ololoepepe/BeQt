@@ -10,6 +10,10 @@ class QPixmap;
 #include <QtPlugin>
 #include <QVariantMap>
 
+/*============================================================================
+================================ Gui Plugin Interface
+============================================================================*/
+
 class B_WIDGETS_EXPORT BGuiPluginInterface
 {
 public:

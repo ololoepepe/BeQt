@@ -12,6 +12,10 @@ class QStringList;
 
 #include <QString>
 
+/*============================================================================
+================================ Application Private
+============================================================================*/
+
 class B_WIDGETS_EXPORT BApplicationPrivate : public BCoreApplicationPrivate
 {
     B_DECLARE_PUBLIC(BApplication)

@@ -24,6 +24,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Core Application Private
+============================================================================*/
+
 #if defined(B_OS_MAC)
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dylib");
 #elif defined(B_OS_UNIX)
@@ -280,7 +284,9 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication &q, BBasePriva
     //
 }
 
-//
+/*============================================================================
+================================ Core Application
+============================================================================*/
 
 BCoreApplication *BCoreApplication::instance()
 {

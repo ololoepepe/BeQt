@@ -14,6 +14,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Translator Private
+============================================================================*/
+
 BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
     BBasePrivate(q)
 {
@@ -77,7 +81,9 @@ BTranslatorPrivate::BTranslatorPrivate(BTranslator &q, BBasePrivateObject &o) :
     //
 }
 
-//
+/*============================================================================
+================================ Translator
+============================================================================*/
 
 BTranslator::BTranslator(QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )

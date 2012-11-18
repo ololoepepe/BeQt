@@ -24,6 +24,10 @@ class QByteArray;
 #include <QMap>
 #include <QUuid>
 
+/*============================================================================
+================================ Network Connection Private Object
+============================================================================*/
+
 class B_NETWORK_EXPORT BNetworkConnectionPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BNetworkConnection)
@@ -43,6 +47,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BNetworkConnectionPrivateObject)
 };
+
+/*============================================================================
+================================ Network Connection Private
+============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
 {

@@ -33,6 +33,10 @@
 #include <QDebug>
 #include <QPointer>
 
+/*============================================================================
+================================ Application Private
+============================================================================*/
+
 BApplicationPrivate::BApplicationPrivate(BApplication *q) :
     BCoreApplicationPrivate(q)
 {
@@ -119,7 +123,9 @@ BApplicationPrivate::BApplicationPrivate(BApplication &q, BBasePrivateObject &o)
     //
 }
 
-//
+/*============================================================================
+================================ Application
+============================================================================*/
 
 QIcon BApplication::beqtIcon(const QString &name)
 {

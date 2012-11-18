@@ -13,6 +13,10 @@ class QLocale;
 #include <QList>
 #include <QString>
 
+/*============================================================================
+================================ Translator
+============================================================================*/
+
 class B_CORE_EXPORT BTranslator : public QObject, public BBase
 {
     Q_OBJECT

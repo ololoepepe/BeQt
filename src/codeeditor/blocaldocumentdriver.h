@@ -1,11 +1,17 @@
 #ifndef BLOCALDOCUMENTDRIVER_H
 #define BLOCALDOCUMENTDRIVER_H
 
+class BCodeEdit;
+
 class QObject;
-class QString;
-class QTextCodec;
 
 #include "babstractdocumentdriver.h"
+
+#include <QString>
+
+/*============================================================================
+================================ Local Document Driver
+============================================================================*/
 
 class BLocalDocumentDriver : public BAbstractDocumentDriver
 {
@@ -14,8 +20,8 @@ public:
     ~BLocalDocumentDriver();
     //
     QString id() const;
-    bool load(const QString &fileName, QTextCodec *codec = 0);
-    bool save(const QString &fileName, const QString &text, QTextCodec *codec = 0);
+    bool load( BCodeEdit *edit, const QString &fileName, const QString &codecName = QString() );
+    bool save( BCodeEdit *edit, const QString &fileName, const QString &text, const QString &codecName = QString() );
 };
 
 #endif // BLOCALDOCUMENTDRIVER_H

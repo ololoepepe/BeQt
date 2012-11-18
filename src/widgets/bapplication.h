@@ -22,6 +22,10 @@ class QAction;
 #endif
 #define bApp ( static_cast<BApplication *>( BCoreApplication::instance() ) )
 
+/*============================================================================
+================================ Application
+============================================================================*/
+
 class B_WIDGETS_EXPORT BApplication : public BCoreApplication
 {
     B_DECLARE_PRIVATE(BApplication)

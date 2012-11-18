@@ -15,6 +15,10 @@ class QLocalSocket;
 #include <QPointer>
 #include <QAbstractSocket>
 
+/*============================================================================
+================================ Generic Socket Private Object
+============================================================================*/
+
 class B_NETWORK_EXPORT BGenericSocketPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BGenericSocket)
@@ -36,6 +40,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BGenericSocketPrivateObject)
 };
+
+/*============================================================================
+================================ Generic Socket Private
+============================================================================*/
 
 class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
 {

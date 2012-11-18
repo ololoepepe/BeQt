@@ -10,12 +10,16 @@ class QString;
 class QPoint;
 class QFont;
 
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
 #include <QWidget>
 #include <QList>
 #include <QTextDocument>
+
+/*============================================================================
+================================ Code Edit
+============================================================================*/
 
 class BCodeEdit : public QWidget, public BBase
 {
@@ -83,7 +87,7 @@ public:
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
 public slots:
-    void setText(const QString &txt);
+    QList<SplittedLinesRange> setText(const QString &txt, int processIfLongerThan = 100 * BeQt::Kilobyte);
     void switchMode();
     QList<SplittedLinesRange> insertText(const QString &txt);
     void moveCursor(const QPoint &pos);

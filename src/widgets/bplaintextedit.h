@@ -13,6 +13,10 @@ class QPaintEvent;
 #include <QPlainTextEdit>
 #include <QVector>
 
+/*============================================================================
+================================ Plain Text Edit
+============================================================================*/
+
 class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBase
 {
     B_DECLARE_PRIVATE(BPlainTextEdit)

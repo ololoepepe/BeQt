@@ -8,6 +8,10 @@
 #include <QObject>
 #include <QWidget>
 
+/*============================================================================
+================================ Code Editor Private Object
+============================================================================*/
+
 BCodeEditorPrivateObject::BCodeEditorPrivateObject(BCodeEditorPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -19,7 +23,9 @@ BCodeEditorPrivateObject::~BCodeEditorPrivateObject()
     //
 }
 
-//
+/*============================================================================
+================================ Code Editor Private
+============================================================================*/
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
     BBasePrivate( *q, * new BCodeEditorPrivateObject(this) )
@@ -40,7 +46,9 @@ BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor &q, BCodeEditorPrivateObject 
     //
 }
 
-//
+/*============================================================================
+================================ Code Editor
+============================================================================*/
 
 BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )

@@ -14,6 +14,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Locale Combo Box Private (declaration)
+============================================================================*/
+
 class BLocaleComboBoxPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocaleComboBox)
@@ -32,7 +36,9 @@ private:
     Q_DISABLE_COPY(BLocaleComboBoxPrivate)
 };
 
-//
+/*============================================================================
+================================ Locale Combo Box Private (definition)
+============================================================================*/
 
 QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupportInfo &info)
 {
@@ -72,7 +78,9 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
         q->addItem(iconForLocale(info), localeToString(info), info.locale);
 }
 
-//
+/*============================================================================
+================================ Locale Combo Box
+============================================================================*/
 
 BLocaleComboBox::BLocaleComboBox(bool alwaysIncludeEnglish, QWidget *parent) :
     QComboBox(parent), BBase( *new BLocaleComboBoxPrivate(this, alwaysIncludeEnglish) )

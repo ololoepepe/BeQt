@@ -9,6 +9,10 @@ class BApplicationServerPrivate;
 #include <QString>
 #include <QStringList>
 
+/*============================================================================
+================================ Application server
+============================================================================*/
+
 class BApplicationServer : public BBase
 {
     B_DECLARE_PRIVATE(BApplicationServer)

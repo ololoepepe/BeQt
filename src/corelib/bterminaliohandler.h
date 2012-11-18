@@ -10,6 +10,10 @@ class BTerminalIOHandlerPrivate;
 #include <QString>
 #include <QStringList>
 
+/*============================================================================
+================================ Terminal IO Handler
+============================================================================*/
+
 class B_CORE_EXPORT BTerminalIOHandler : public QThread, public BBase
 {
     Q_OBJECT

@@ -23,7 +23,9 @@ class BNetworkServer;
 #include <QThread>
 #include <QMutex>
 
-/*========== Network Server Worker ==========*/
+/*============================================================================
+================================ Network Server Worker
+============================================================================*/
 
 class BNetworkServerWorker : public QObject
 {
@@ -50,7 +52,9 @@ private slots:
     void disconnected();
 };
 
-/*========== Network Server Thread ==========*/
+/*============================================================================
+================================ Network Server Thread
+============================================================================*/
 
 class BNetworkServerThread : public QThread
 {
@@ -69,7 +73,9 @@ private:
     BNetworkServerWorker *const worker;
 };
 
-/*========== Network Server Private Object ==========*/
+/*============================================================================
+================================ Network Server Private Object
+============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServerPrivateObject : public BBasePrivateObject
 {
@@ -85,7 +91,9 @@ private:
     Q_DISABLE_COPY(BNetworkServerPrivateObject)
 };
 
-/*========== Network Server Private ==========*/
+/*============================================================================
+================================ Network Server Private
+============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServerPrivate : public BBasePrivate
 {

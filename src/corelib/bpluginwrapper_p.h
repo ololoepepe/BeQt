@@ -17,6 +17,10 @@ class QSettings;
 #include <QMap>
 #include <QPointer>
 
+/*============================================================================
+================================ Plugin Wrapper Private
+============================================================================*/
+
 class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPluginWrapper)

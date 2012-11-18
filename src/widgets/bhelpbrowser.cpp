@@ -19,6 +19,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Help Browser Private Object
+============================================================================*/
+
 BHelpBrowserPrivateObject::BHelpBrowserPrivateObject(BHelpBrowserPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -47,7 +51,9 @@ void BHelpBrowserPrivateObject::ledtSearchReturnPressed()
     p_func()->search();
 }
 
-//
+/*============================================================================
+================================ Help Browser Private
+============================================================================*/
 
 QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
 
@@ -169,7 +175,9 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser &q, BHelpBrowserPrivateObj
     //
 }
 
-//
+/*============================================================================
+================================ Help Browser
+============================================================================*/
 
 void BHelpBrowser::clearSearchCache()
 {

@@ -8,8 +8,11 @@ class BBasePrivate;
 
 #include <QtGlobal>
 #include <QObject>
+#include <QPointer>
 
-/*========== Base Private Object ==========*/
+/*============================================================================
+================================ Base Private Object
+============================================================================*/
 
 class B_CORE_EXPORT BBasePrivateObject : public QObject
 {
@@ -24,7 +27,9 @@ private:
     Q_DISABLE_COPY(BBasePrivateObject)
 };
 
-/*========== Base Private ==========*/
+/*============================================================================
+================================ Base Private
+============================================================================*/
 
 class B_CORE_EXPORT BBasePrivate
 {

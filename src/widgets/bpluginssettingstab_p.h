@@ -18,6 +18,10 @@ class QListWidgetItem;
 #include <QList>
 #include <QObject>
 
+/*============================================================================
+================================ Plugins Settings Tab Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BPluginsSettingsTabPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BPluginsSettingsTab)
@@ -33,6 +37,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BPluginsSettingsTabPrivateObject)
 };
+
+/*============================================================================
+================================ Plugins Settings Tab Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBasePrivate
 {

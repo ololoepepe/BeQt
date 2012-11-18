@@ -11,6 +11,10 @@
 #include <QWidget>
 #include <QObject>
 
+/*============================================================================
+================================ Flow Layout Private (declaration)
+============================================================================*/
+
 class BFlowLayoutPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BFlowLayout)
@@ -28,7 +32,9 @@ private:
     Q_DISABLE_COPY(BFlowLayoutPrivate)
 };
 
-//
+/*============================================================================
+================================ Flow Layout Private (definition)
+============================================================================*/
 
 BFlowLayoutPrivate::BFlowLayoutPrivate(BFlowLayout *q) :
     BBasePrivate(q)
@@ -96,7 +102,9 @@ int BFlowLayoutPrivate::smartSpacing(QStyle::PixelMetric pm) const
     }
 }
 
-//
+/*============================================================================
+================================ Flow Layout
+============================================================================*/
 
 BFlowLayout::BFlowLayout(QWidget *parent, int hSpacing, int vSpacing) :
     QLayout(parent), BBase( *new BFlowLayoutPrivate(this) )

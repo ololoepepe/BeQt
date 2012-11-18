@@ -11,6 +11,10 @@ class QLocale;
 
 #include <QComboBox>
 
+/*============================================================================
+================================ Locale Combo Box
+============================================================================*/
+
 class B_WIDGETS_EXPORT BLocaleComboBox : public QComboBox, public BBase
 {
     Q_OBJECT

@@ -16,6 +16,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Plugin Wrapper Private
+============================================================================*/
+
 QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
 
 //
@@ -155,7 +159,9 @@ BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper &q, BBasePrivateObje
     //
 }
 
-//
+/*============================================================================
+================================ Plugin Wrapper
+============================================================================*/
 
 QSettings *BPluginWrapper::createPluginSettingsInstance(const QString &pluginName, bool createFile)
 {

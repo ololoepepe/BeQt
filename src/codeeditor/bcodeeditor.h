@@ -8,6 +8,10 @@ class BCodeEditorPrivate;
 
 #include <QWidget>
 
+/*============================================================================
+================================ Code Editor
+============================================================================*/
+
 class BCodeEditor : public QWidget, public BBase
 {
     B_DECLARE_PRIVATE(BCodeEditor)

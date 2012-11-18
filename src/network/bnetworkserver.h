@@ -13,6 +13,10 @@ class QString;
 
 #include <QObject>
 
+/*============================================================================
+================================ Network Server
+============================================================================*/
+
 class B_NETWORK_EXPORT BNetworkServer : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BNetworkServer)

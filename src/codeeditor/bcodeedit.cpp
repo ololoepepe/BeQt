@@ -39,7 +39,9 @@
 #include <QBrush>
 #include <QColor>
 
-/*========== Code Edit Clipboard Notifier ==========*/
+/*============================================================================
+================================ Code Edit Clipboard Notifier
+============================================================================*/
 
 BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::instance()
 {
@@ -86,7 +88,9 @@ BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
 
 //
 
-/*========== Code Edit Private Object ==========*/
+/*============================================================================
+================================ Code Edit Private Object
+============================================================================*/
 
 BCodeEditPrivateObject::BCodeEditPrivateObject(BCodeEditPrivate *p) :
     BBasePrivateObject(p)
@@ -158,7 +162,9 @@ void BCodeEditPrivateObject::redoAvailableChanged(bool available)
     p_func()->updateRedoAvailable(available);
 }
 
-/*========== Code Edit Private ==========*/
+/*============================================================================
+================================ Code Edit Private
+============================================================================*/
 
 QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit::TabWidth tw)
 {
@@ -1285,7 +1291,9 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit &q, BCodeEditPrivateObject &o) :
     //
 }
 
-/*========== Code Edit ==========*/
+/*============================================================================
+================================ Code Edit
+============================================================================*/
 
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
@@ -1588,20 +1596,41 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
 
 //
 
-void BCodeEdit::setText(const QString &txt)
+QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int processIfLongerThan)
 {
     B_D(BCodeEdit);
     if ( isReadOnly() )
-        return;
+        return QList<SplittedLinesRange>();
     if ( txt.isEmpty() )
-        return d->setTextToEmptyLine();
-    d->ptedt->setEnabled(false);
-    d->ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
-    BCodeEditPrivate::ProcessTextFuture fut = QtConcurrent::run(&BCodeEditPrivate::processText,
-                                                                txt, d->lineLength, d->tabWidth);
-    BCodeEditPrivate::ProcessTextFutureWatcher *watcher = new BCodeEditPrivate::ProcessTextFutureWatcher(this);
-    watcher->setFuture(fut);
-    connect( watcher, SIGNAL( finished() ), d->_m_o, SLOT( futureWatcherFinished() ) );
+    {
+        d->setTextToEmptyLine();
+        return QList<SplittedLinesRange>();
+    }
+    if (processIfLongerThan > 0 && txt.length() > processIfLongerThan)
+    {
+        d->ptedt->setEnabled(false);
+        d->ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
+        BCodeEditPrivate::ProcessTextFuture fut = QtConcurrent::run(&BCodeEditPrivate::processText,
+                                                                    txt, d->lineLength, d->tabWidth);
+        BCodeEditPrivate::ProcessTextFutureWatcher *watcher = new BCodeEditPrivate::ProcessTextFutureWatcher(this);
+        watcher->setFuture(fut);
+        connect( watcher, SIGNAL( finished() ), d->o_func(), SLOT( futureWatcherFinished() ) );
+        return QList<SplittedLinesRange>();
+    }
+    else
+    {
+        BCodeEditPrivate::ProcessTextResult res = BCodeEditPrivate::processText(txt, d->lineLength, d->tabWidth);
+        if (d->highlighter)
+            d->highlighter->setDocument(0);
+        d->ptedt->setPlainText(res.newText);
+        if (d->highlighter)
+            d->highlighter->setDocument( d->ptedt->document() );
+        d->ptedt->document()->setModified(false);
+        d->ptedt->setFocus();
+        d->emitLinesSplitted(res.splittedLinesRanges);
+        return res.splittedLinesRanges;
+    }
+
 }
 
 void BCodeEdit::switchMode()

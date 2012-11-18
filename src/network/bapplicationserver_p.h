@@ -13,6 +13,10 @@ class BGenericServer;
 #include <QCoreApplication>
 #include <QDataStream>
 
+/*============================================================================
+================================ Application Server Private Object
+============================================================================*/
+
 class BApplicationServerPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BApplicationServer)
@@ -25,6 +29,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BApplicationServerPrivateObject)
 };
+
+/*============================================================================
+================================ Application Server Private
+============================================================================*/
 
 class BApplicationServerPrivate : public BBasePrivate
 {

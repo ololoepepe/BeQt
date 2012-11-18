@@ -8,6 +8,10 @@ class QSyntaxHighlighter;
 #include <QList>
 #include <QApplication>
 
+/*============================================================================
+================================ Abstract File Type
+============================================================================*/
+
 class BAbstractFileType
 {
 public:

@@ -12,6 +12,10 @@ class QString;
 
 #include <QObject>
 
+/*============================================================================
+================================ Local Terminal Driver
+============================================================================*/
+
 class B_WIDGETS_EXPORT BLocalTerminalDriver : public BAbstractTerminalDriver, public BBase
 {
     B_DECLARE_PRIVATE(BLocalTerminalDriver)
@@ -27,7 +31,8 @@ public:
     void terminate();
     void kill();
     QString prompt() const;
-    QString terminalCommand(const QString &command, const QStringList &arguments);
+    QString terminalCommand(const QString &command, const QStringList &arguments,
+                            bool *finished = 0, int *exitCode = 0);
     void setWorkingDirectory(const QString &path);
     QString workingDirectory() const;
 protected:

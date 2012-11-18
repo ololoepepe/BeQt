@@ -25,6 +25,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Plugins Settings Tab Private Object
+============================================================================*/
+
 BPluginsSettingsTabPrivateObject::BPluginsSettingsTabPrivateObject(BPluginsSettingsTabPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -56,7 +60,9 @@ void BPluginsSettingsTabPrivateObject::btnAboutClicked()
     p_func()->btnAboutClicked();
 }
 
-//
+/*============================================================================
+================================ Plugins Settings Tab Private
+============================================================================*/
 
 BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
     BBasePrivate( *q, *new BPluginsSettingsTabPrivateObject(this) )
@@ -168,7 +174,9 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab &q, B
     //
 }
 
-//
+/*============================================================================
+================================ Plugins Settings Tab
+============================================================================*/
 
 BPluginsSettingsTab::BPluginsSettingsTab() :
     BBase( *new BPluginsSettingsTabPrivate(this) )

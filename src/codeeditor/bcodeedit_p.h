@@ -28,7 +28,9 @@ class QPoint;
 #include <QTextBlock>
 #include <QTextEdit>
 
-/*========== Code Edit Clipboard Notifier ==========*/
+/*============================================================================
+================================ Code Edit Clipboard Notifier
+============================================================================*/
 
 class BCodeEditClipboardNotifier : public QObject
 {
@@ -52,7 +54,9 @@ public slots:
     void dataChanged();
 };
 
-/*========== Code Edit Private Object ==========*/
+/*============================================================================
+================================ Code Edit Private Object
+============================================================================*/
 
 class BCodeEditPrivateObject : public BBasePrivateObject
 {
@@ -76,7 +80,9 @@ private:
     Q_DISABLE_COPY(BCodeEditPrivateObject)
 };
 
-/*========== Code Edit Private ==========*/
+/*============================================================================
+================================ Code Edit Private
+============================================================================*/
 
 class BCodeEditPrivate : public BBasePrivate
 {

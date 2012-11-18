@@ -12,6 +12,10 @@ class QString;
 #include <QWidget>
 #include <QCryptographicHash>
 
+/*============================================================================
+================================ Password Widget
+============================================================================*/
+
 class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBase
 {
     B_DECLARE_PRIVATE(BPasswordWidget)

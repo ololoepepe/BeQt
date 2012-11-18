@@ -22,6 +22,10 @@ class QSettings;
 
 #define bApp BCoreApplication::instance()
 
+/*============================================================================
+================================ Core Application
+============================================================================*/
+
 class B_CORE_EXPORT BCoreApplication : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BCoreApplication)

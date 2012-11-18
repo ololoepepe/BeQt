@@ -16,6 +16,10 @@
 #include <QDateTime>
 #include <QMetaObject>
 
+/*============================================================================
+================================ Network Connection Private Object
+============================================================================*/
+
 BNetworkConnectionPrivateObject::BNetworkConnectionPrivateObject(BNetworkConnectionPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -71,7 +75,9 @@ void BNetworkConnectionPrivateObject::operationDestroyed(const BNetworkOperation
     p_func()->operationDestroyed(metaData);
 }
 
-//
+/*============================================================================
+================================ Network Connection Private
+============================================================================*/
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket *s) :
     BBasePrivate( *q, *new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
@@ -293,7 +299,9 @@ BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection &q, BNet
     //
 }
 
-//
+/*============================================================================
+================================ Network Connection
+============================================================================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
     QObject(parent), BBase( *new BNetworkConnectionPrivate(this, socket) )

@@ -18,6 +18,10 @@ class QLocalServer;
 #include <QTcpServer>
 #include <QLocalServer>
 
+/*============================================================================
+================================ Local Server
+============================================================================*/
+
 class B_NETWORK_EXPORT BLocalServer : public QLocalServer
 {
     Q_OBJECT
@@ -29,6 +33,10 @@ protected:
     void incomingConnection(quintptr socketDescriptor);
 };
 
+/*============================================================================
+================================ Tcp Server
+============================================================================*/
+
 class B_NETWORK_EXPORT BTcpServer : public QTcpServer
 {
     Q_OBJECT
@@ -39,6 +47,10 @@ signals:
 protected:
     void incomingConnection(int handle);
 };
+
+/*============================================================================
+================================ Generic Server Private Object
+============================================================================*/
 
 class B_NETWORK_EXPORT BGenericServerPrivateObject : public BBasePrivateObject
 {
@@ -52,6 +64,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BGenericServerPrivateObject)
 };
+
+/*============================================================================
+================================ Generic Server Private
+============================================================================*/
 
 class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
 {

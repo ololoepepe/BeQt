@@ -11,7 +11,9 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-/*========== Network Server Worker ==========*/
+/*============================================================================
+================================ Network Server Worker
+============================================================================*/
 
 BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *sp) :
     QObject(0), serverPrivate(sp)
@@ -58,7 +60,9 @@ void BNetworkServerWorker::disconnected()
         emit ranOutOfConnections();
 }
 
-/*========== Network Server Thread ==========*/
+/*============================================================================
+================================ Network Server Thread
+============================================================================*/
 
 BNetworkServerThread::BNetworkServerThread(BNetworkServerPrivate *serverPrivate) :
     QThread(0), worker( new BNetworkServerWorker(serverPrivate) )
@@ -84,7 +88,9 @@ int BNetworkServerThread::connectionCount() const
     return worker->connectionCount();
 }
 
-/*========== Network Server Private Object ==========*/
+/*============================================================================
+================================ Network Server Private Object
+============================================================================*/
 
 BNetworkServerPrivateObject::BNetworkServerPrivateObject(BNetworkServerPrivate *p) :
     BBasePrivateObject(p)
@@ -107,7 +113,9 @@ void BNetworkServerPrivateObject::finished()
     p_func()->finished( static_cast<BNetworkServerThread *>( sender() ) );
 }
 
-/*========== Network Server Private ==========*/
+/*============================================================================
+================================ Network Server Private
+============================================================================*/
 
 BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
     BBasePrivate( *q, *new BNetworkServerPrivateObject(this) )
@@ -187,7 +195,9 @@ BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer &q, BNetworkServerPr
     //
 }
 
-/*========== Network Server ==========*/
+/*============================================================================
+================================ Network Server
+============================================================================*/
 
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BNetworkServerPrivate(this, type) )

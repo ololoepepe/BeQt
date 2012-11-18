@@ -19,6 +19,10 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 
+/*============================================================================
+================================ Settings Dialog Private (declaration)
+============================================================================*/
+
 class BSettingsDialogPrivate : public BBasePrivate
 {
     Q_DECLARE_TR_FUNCTIONS(BSettingsDialog)
@@ -42,7 +46,9 @@ private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };
 
-//
+/*============================================================================
+================================ Settings Dialog Private (definition)
+============================================================================*/
 
 BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
                                                BSettingsDialog::Navigation navigation) :
@@ -117,7 +123,9 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
     //
 }
 
-//
+/*============================================================================
+================================ Settings Dialog
+============================================================================*/
 
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation) )

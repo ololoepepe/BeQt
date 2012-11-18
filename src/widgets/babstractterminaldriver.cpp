@@ -3,6 +3,10 @@
 #include <QObject>
 #include <QMetaObject>
 
+/*============================================================================
+================================ Abstract Terminal Driver
+============================================================================*/
+
 BAbstractTerminalDriver::BAbstractTerminalDriver(QObject *parent) :
     QObject(parent)
 {
@@ -21,8 +25,13 @@ QString BAbstractTerminalDriver::prompt() const
     return "$";
 }
 
-QString BAbstractTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments)
+QString BAbstractTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments,
+                                                 bool *finished, int *exitCode)
 {
+    if (finished)
+        *finished = true;
+    if (exitCode)
+        *exitCode = 0;
     return "";
 }
 
@@ -43,12 +52,9 @@ void BAbstractTerminalDriver::emitReadyRead()
     emit readyRead();
 }
 
-void BAbstractTerminalDriver::emitFinished(int exitCode, bool delayed)
+void BAbstractTerminalDriver::emitFinished(int exitCode)
 {
-    if (delayed)
-        QMetaObject::invokeMethod( this, "finished", Qt::QueuedConnection, Q_ARG(int, exitCode) );
-    else
-        emit finished(exitCode);
+    emit finished(exitCode);
 }
 
 void BAbstractTerminalDriver::emitBlockTerminal()

@@ -12,6 +12,10 @@
 #include <QUuid>
 #include <QMetaObject>
 
+/*============================================================================
+================================ Socket Wrapper Private Object
+============================================================================*/
+
 BSocketWrapperPrivateObject::BSocketWrapperPrivateObject(BSocketWrapperPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -45,7 +49,9 @@ void BSocketWrapperPrivateObject::readyRead()
     p_func()->readyRead();
 }
 
-//
+/*============================================================================
+================================ Socket Wrapper Private
+============================================================================*/
 
 BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
     BBasePrivate( *q, *new BSocketWrapperPrivateObject(this) )
@@ -170,7 +176,9 @@ BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper &q, BSocketWrapperPr
     //
 }
 
-//
+/*============================================================================
+================================ Socket Wrapper
+============================================================================*/
 
 BSocketWrapper::BSocketWrapper(QObject *parent) :
     QObject(parent), BBase( *new BSocketWrapperPrivate(this) )

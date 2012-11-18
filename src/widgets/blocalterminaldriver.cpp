@@ -16,6 +16,10 @@
 
 #include <QDebug>
 
+/*============================================================================
+================================ Local Terminal Driver Private Object
+============================================================================*/
+
 BLocalTerminalDriverPrivateObject::BLocalTerminalDriverPrivateObject(BLocalTerminalDriverPrivate *p) :
     BBasePrivateObject(p)
 {
@@ -39,7 +43,9 @@ void BLocalTerminalDriverPrivateObject::readyRead()
     p_func()->readyRead();
 }
 
-//
+/*============================================================================
+================================ Local Terminal Driver Private
+============================================================================*/
 
 BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver *q) :
     BBasePrivate( *q, *new BLocalTerminalDriverPrivateObject(this) )
@@ -77,7 +83,9 @@ BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver &q
     //
 }
 
-//
+/*============================================================================
+================================ Local Terminal Driver
+============================================================================*/
 
 BLocalTerminalDriver::BLocalTerminalDriver(QObject *parent) :
     BAbstractTerminalDriver(parent), BBase( *new BLocalTerminalDriverPrivate(this) )
@@ -138,8 +146,13 @@ QString BLocalTerminalDriver::prompt() const
     return d_func()->workingDirectory + "$ ";
 }
 
-QString BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments)
+QString BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments,
+                                              bool *finished, int *exitCode)
 {
+    if (finished)
+        *finished = true;
+    if (exitCode)
+        *exitCode = 0;
     if ( isActive() )
         return tr("A process is running", "terminalCommand return");
     B_D(BLocalTerminalDriver);
@@ -147,16 +160,22 @@ QString BLocalTerminalDriver::terminalCommand(const QString &command, const QStr
     if ( !command.compare("cd", Qt::CaseInsensitive) && !arguments.isEmpty() && QDir( arguments.first() ).exists() )
     {
         d->workingDirectory = arguments.first();
-        emitFinished(0, true);
         return "";
     }
     //end test
     d->process->setWorkingDirectory(d->workingDirectory);
     d->process->start(command, arguments);
-    bool b = d->process->waitForStarted();
-    if (!b)
+    if ( d->process->waitForStarted() )
+    {
+        if (finished)
+            *finished = false;
+        return "";
+    }
+    else
+    {
         d->process->close();
-    return b ? QString() : tr("Could not find or start programm", "terminalCommand return");
+        return tr("Could not find or start programm", "terminalCommand return");
+    }
 }
 
 void BLocalTerminalDriver::setWorkingDirectory(const QString &path)

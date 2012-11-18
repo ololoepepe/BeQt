@@ -15,6 +15,10 @@ class BNetworkConnectionPrivate;
 #include <QUuid>
 #include <QByteArray>
 
+/*============================================================================
+================================ Network Operation
+============================================================================*/
+
 class B_NETWORK_EXPORT BNetworkOperation : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BNetworkOperation)

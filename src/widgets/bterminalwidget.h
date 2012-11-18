@@ -13,6 +13,10 @@ class QStringList;
 #include <QWidget>
 #include <QString>
 
+/*============================================================================
+================================ Terminal Widget
+============================================================================*/
+
 class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBase
 {
     Q_OBJECT

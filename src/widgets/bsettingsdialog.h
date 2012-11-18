@@ -13,6 +13,10 @@ class QWidget;
 #include <QMap>
 #include <QVariantMap>
 
+/*============================================================================
+================================ Settings Dialog
+============================================================================*/
+
 class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBase
 {
     Q_OBJECT

@@ -17,6 +17,10 @@ class QToolButton;
 #include <QApplication>
 #include <QDataStream>
 
+/*============================================================================
+================================ Password Widget Private Object
+============================================================================*/
+
 class B_WIDGETS_EXPORT BPasswordWidgetPrivateObject : public BBasePrivateObject
 {
     B_DECLARE_PRIVATE_O(BPasswordWidget)
@@ -31,6 +35,10 @@ public slots:
 private:
     Q_DISABLE_COPY(BPasswordWidgetPrivateObject)
 };
+
+/*============================================================================
+================================ Password Widget Private
+============================================================================*/
 
 class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
 {

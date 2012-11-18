@@ -14,6 +14,10 @@ class QByteArray;
 #include <QObject>
 #include <QDataStream>
 
+/*============================================================================
+================================ Socket Wrapper
+============================================================================*/
+
 class B_NETWORK_EXPORT BSocketWrapper : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BSocketWrapper)
