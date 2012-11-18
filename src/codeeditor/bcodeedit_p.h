@@ -69,6 +69,10 @@ public slots:
     void customContextMenuRequested(const QPoint &pos);
     void cursorPositionChanged();
     void clipboardDataAvailableChanged(bool available);
+    void selectionChanged();
+    void copyAvailableChanged(bool available);
+    void undoAvailableChanged(bool available);
+    void redoAvailableChanged(bool available);
 private:
     Q_DISABLE_COPY(BCodeEditPrivateObject)
 };
@@ -174,7 +178,12 @@ public:
     void futureWatcherFinished(ProcessTextFutureWatcher *watcher);
     void popupMenu(const QPoint &pos);
     void updateCursorPosition();
-    void updateClipboardDataAvailable(bool available);
+    void updateHasSelection();
+    void updateHasBookmarks();
+    void updateCopyAvailable(bool available);
+    void updatePasteAvailable(bool available);
+    void updateUndoAvailable(bool available);
+    void updateRedoAvailable(bool available);
     //
     static const QList<QChar> unsupportedSymbols;
     //
@@ -185,6 +194,12 @@ public:
     BCodeEdit::TabWidth tabWidth;
     QSyntaxHighlighter *highlighter;
     QPoint cursorPosition;
+    bool hasSelection;
+    bool hasBookmarks;
+    bool copyAvailable;
+    bool pasteAvailable;
+    bool undoAvailable;
+    bool redoAvailable;
     QList<Bookmark> bookmarks;
     int maxBookmarks;
     Bookmark currentBookmark;

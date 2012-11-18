@@ -6,6 +6,7 @@ class QSyntaxHighlighter;
 
 #include <QString>
 #include <QList>
+#include <QApplication>
 
 class BAbstractFileType
 {
@@ -32,11 +33,17 @@ public:
         }
     };
     //
+    static BAbstractFileType *defaultFileType();
+    //
     BAbstractFileType();
     virtual ~BAbstractFileType();
     //
+    QString createFileDialogFilter() const;
+    virtual QString id() const = 0;
     virtual QString name() const = 0;
+    virtual QString description() const = 0;
     virtual QStringList suffixes() const = 0;
+    virtual bool matchesFileName(const QString &fileName) const = 0;
     virtual QSyntaxHighlighter *createHighlighter() const = 0;
     virtual QList<BracketPair> brackets() const = 0;
 };

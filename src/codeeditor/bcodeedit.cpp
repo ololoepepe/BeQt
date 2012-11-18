@@ -135,7 +135,27 @@ void BCodeEditPrivateObject::cursorPositionChanged()
 
 void BCodeEditPrivateObject::clipboardDataAvailableChanged(bool available)
 {
-    _m_p->updateClipboardDataAvailable(available);
+    _m_p->updatePasteAvailable(available);
+}
+
+void BCodeEditPrivateObject::selectionChanged()
+{
+    _m_p->updateHasSelection();
+}
+
+void BCodeEditPrivateObject::copyAvailableChanged(bool available)
+{
+    _m_p->updateCopyAvailable(available);
+}
+
+void BCodeEditPrivateObject::undoAvailableChanged(bool available)
+{
+    _m_p->updateUndoAvailable(available);
+}
+
+void BCodeEditPrivateObject::redoAvailableChanged(bool available)
+{
+    _m_p->updateRedoAvailable(available);
 }
 
 /*========== Code Edit Private ==========*/
@@ -350,14 +370,24 @@ BCodeEditPrivate::FindBracketResult BCodeEditPrivate::findBracketPair(
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
     BBasePrivate(q), _m_o( new BCodeEditPrivateObject(this) )
 {
+    if ( !BCodeEditClipboardNotifier::instance() )
+        new BCodeEditClipboardNotifier;
+    QObject::connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
+                      _m_o, SLOT( clipboardDataAvailableChanged(bool) ) );
     blockMode = false;
     lineLength = 120;
     tabWidth = BCodeEdit::TabWidth4;
+    hasSelection = false;
+    hasBookmarks = false;
+    copyAvailable = false;
+    pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
+    undoAvailable = false;
+    redoAvailable = false;
     maxBookmarks = 4;
-    fileType = 0; //TODO: Set a default filetype
-    //brackets; //TODO: Set from default filetype
+    fileType = BAbstractFileType::defaultFileType();
+    brackets = fileType->brackets();
     bracketsHighlighting = true;
-    highlighter = 0; //TODO: Set from default filetype
+    highlighter = fileType->createHighlighter();
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -367,13 +397,16 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
         QObject::connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ),
                           _m_o, SLOT( customContextMenuRequested(QPoint) ) );
         QObject::connect( ptedt, SIGNAL( cursorPositionChanged() ), _m_o, SLOT( cursorPositionChanged() ) );
+        QObject::connect( ptedt->document(), SIGNAL( modificationChanged(bool) ),
+                          q, SIGNAL( modificationChanged(bool) ) );
+        QObject::connect( ptedt, SIGNAL( selectionChanged() ), _m_o, SLOT( selectionChanged() ) );
+        QObject::connect( ptedt, SIGNAL( copyAvailable(bool) ), _m_o, SLOT( copyAvailableChanged(bool) ) );
+        QObject::connect( ptedt, SIGNAL( undoAvailable(bool) ), _m_o, SLOT( undoAvailableChanged(bool) ) );
+        QObject::connect( ptedt, SIGNAL( redoAvailable(bool) ), _m_o, SLOT( redoAvailableChanged(bool) ) );
+        //
       vlt->addWidget(ptedt);
     //
     setTextToEmptyLine();
-    if ( !BCodeEditClipboardNotifier::instance() )
-        new BCodeEditClipboardNotifier;
-    QObject::connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
-                      _m_o, SLOT( clipboardDataAvailableChanged(bool) ) );
 }
 
 BCodeEditPrivate::~BCodeEditPrivate()
@@ -385,7 +418,7 @@ BCodeEditPrivate::~BCodeEditPrivate()
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
 {
-    /*if (_m_recorder)
+    /*if (_m_recorder) //Install external event filter
         _m_recorder->handleKeyPress(event);*/
     static const int ContorlShiftModifier = ( (int) Qt::ControlModifier | (int) Qt::ShiftModifier );
     static const int KeypadControlModifier = ( (int) Qt::KeypadModifier | (int) Qt::ControlModifier);
@@ -419,26 +452,26 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         switch (key)
         {
         case Qt::Key_Z:
-            //undo();
+            q_func()->undo();
             return true;
         case Qt::Key_X:
-            //cut();
+            q_func()->cut();
             return true;
         case Qt::Key_C:
-            //copy();
+            q_func()->copy();
             return true;
         case Qt::Key_V:
-            //paste();
+            q_func()->paste();
             return true;
         case Qt::Key_A:
-            //_m_selectAll();
+            seletAll();
             return true;
         case Qt::Key_End:
             handleEnd(true);
             return true;
-        case Qt::Key_Tab:
+        //case Qt::Key_Tab: //Install external event filter
             //emit requestSwitchDocument();
-            return true;
+            //return true;
         case Qt::Key_Backspace:
             handleCtrlBackspace();
             return true;
@@ -467,10 +500,10 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_End:
             handleShiftEnd();
             return true;
-        case Qt::Key_PageUp:
-        case Qt::Key_PageDown:
+        //case Qt::Key_PageUp: //Not needed (or Shift press emulation needed)
+        //case Qt::Key_PageDown:
             //QTimer::singleShot( 0, this, SLOT( _m_editSelectionChanged() ) );
-            return false;
+            //return false;
         default:
             break;
         }
@@ -492,7 +525,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         switch (key)
         {
         case Qt::Key_Z:
-            //redo();
+            q_func()->redo();
             return true;
         default:
             break;
@@ -1181,9 +1214,59 @@ void BCodeEditPrivate::updateCursorPosition()
     QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
 }
 
-void BCodeEditPrivate::updateClipboardDataAvailable(bool available)
+void BCodeEditPrivate::updateHasSelection()
 {
-    //
+    bool b = hasSelection;
+    hasSelection = ptedt->textCursor().hasSelection();
+    if (b != hasSelection)
+        QMetaObject::invokeMethod( q_func(), "selectionChanged", Q_ARG(bool, hasSelection) );
+}
+
+void BCodeEditPrivate::updateHasBookmarks()
+{
+    bool b = hasBookmarks;
+    hasBookmarks = bookmarks.isEmpty();
+    if (b != hasBookmarks)
+        QMetaObject::invokeMethod( q_func(), "selectionBookmarks", Q_ARG(bool, hasBookmarks) );
+}
+
+void BCodeEditPrivate::updateCopyAvailable(bool available)
+{
+    bool b1 = ptedt->isReadOnly() && copyAvailable;
+    bool b2 = copyAvailable;
+    copyAvailable = available;
+    if ( b1 != (ptedt->isReadOnly() && copyAvailable) )
+        QMetaObject::invokeMethod( q_func(), "copyAvailableChanged",
+                                   Q_ARG(bool, ptedt->isReadOnly() && copyAvailable) );
+    if (b2 != copyAvailable)
+        QMetaObject::invokeMethod( q_func(), "copyAvailableChanged", Q_ARG(bool, copyAvailable) );
+}
+
+void BCodeEditPrivate::updatePasteAvailable(bool available)
+{
+    bool b = ptedt->isReadOnly() && pasteAvailable;
+    pasteAvailable = available;
+    if (b != pasteAvailable)
+        QMetaObject::invokeMethod( q_func(), "pasteAvailableChanged",
+                                   Q_ARG(bool, ptedt->isReadOnly() && pasteAvailable) );
+}
+
+void BCodeEditPrivate::updateUndoAvailable(bool available)
+{
+    bool b = ptedt->isReadOnly() && undoAvailable;
+    undoAvailable = available;
+    if (b != undoAvailable)
+        QMetaObject::invokeMethod( q_func(), "undoAvailableChanged",
+                                   Q_ARG(bool, ptedt->isReadOnly() && undoAvailable) );
+}
+
+void BCodeEditPrivate::updateRedoAvailable(bool available)
+{
+    bool b = ptedt->isReadOnly() && redoAvailable;
+    redoAvailable = available;
+    if (b != redoAvailable)
+        QMetaObject::invokeMethod( q_func(), "redoAvailableChanged",
+                                   Q_ARG(bool, ptedt->isReadOnly() && redoAvailable) );
 }
 
 //
@@ -1213,11 +1296,10 @@ void BCodeEdit::setReadOnly(bool ro)
 {
     B_D(BCodeEdit);
     d->ptedt->setReadOnly(ro);
-    //_m_cutAvailableChanged( !_m_edit->isReadOnly() && _m_edit->textCursor().hasSelection() );
-    //_m_undoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isUndoAvailable() );
-    //_m_redoAvailableChanged( !_m_edit->isReadOnly() && _m_edit->document()->isRedoAvailable() );
-    //_m_modificationChanged( !_m_edit->isReadOnly() && _m_edit->document()->isModified() );
-    //setClipboardHasText( !QApplication::clipboard()->text().isEmpty() );
+    d->updateCopyAvailable(d->copyAvailable);
+    d->updatePasteAvailable(d->pasteAvailable);
+    d->updateUndoAvailable(d->undoAvailable);
+    d->updateRedoAvailable(d->redoAvailable);
 }
 
 void BCodeEdit::setEditFont(const QFont &fnt)
@@ -1312,40 +1394,41 @@ bool BCodeEdit::isModified() const
 
 bool BCodeEdit::hasSelection() const
 {
-    return d_func()->ptedt->textCursor().hasSelection();
+    return d_func()->hasSelection;
 }
 
 bool BCodeEdit::hasBookmarks() const
 {
-    return !d_func()->bookmarks.isEmpty();
+    return d_func()->hasBookmarks;
 }
 
 bool BCodeEdit::isCutAvailable() const
 {
     const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->ptedt->textCursor().hasSelection();
+    return !d->ptedt->isReadOnly() && d->copyAvailable;
 }
 
 bool BCodeEdit::isCopyAvailable() const
 {
-    return d_func()->ptedt->textCursor().hasSelection();
+    return d_func()->copyAvailable;
 }
 
 bool BCodeEdit::isPasteAvailable() const
 {
-    return !d_func()->ptedt->isReadOnly() && BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->pasteAvailable;
 }
 
 bool BCodeEdit::isUndoAvailable() const
 {
     const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->ptedt->document()->isUndoAvailable();
+    return !d->ptedt->isReadOnly() && d->undoAvailable;
 }
 
 bool BCodeEdit::isRedoAvailable() const
 {
     const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->ptedt->document()->isRedoAvailable();
+    return !d->ptedt->isReadOnly() && d->redoAvailable;
 }
 
 QFont BCodeEdit::editFont() const
@@ -1683,7 +1766,7 @@ void BCodeEdit::makeBookmark()
     d->bookmarks << bm;
     while (d->bookmarks.size() > d->maxBookmarks)
         d->bookmarks.removeFirst();
-    //emit hasBookmarkChanged( hasBookmarks() );
+    d->updateHasBookmarks();
 }
 
 void BCodeEdit::removeBookmark(int index)
@@ -1696,6 +1779,7 @@ void BCodeEdit::removeBookmark(int index)
         pind = 0;
     d->bookmarks.removeAt(index);
     d->currentBookmark = d->bookmarks.at(pind);
+    d->updateHasBookmarks();
 }
 
 void BCodeEdit::removeLastBookmark()

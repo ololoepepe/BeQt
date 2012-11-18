@@ -99,6 +99,14 @@ public slots:
     void undo();
     void redo();
 signals:
+    void modificationChanged(bool modified);
+    void selectionChanged(bool hasSelection);
+    void bookmarksChanged(bool hasBookmarks);
+    void cutAvailableChanged(bool available);
+    void copyAvailableChanged(bool available);
+    void pasteAvailableChanged(bool available);
+    void undoAvailableChanged(bool available);
+    void redoAvailableChanged(bool available);
     void editModeChanged(EditMode mode);
     void cursorPositionChanged(const QPoint &pos);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
