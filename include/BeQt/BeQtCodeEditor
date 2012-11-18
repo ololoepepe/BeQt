@@ -1,8 +1,11 @@
 #ifndef BEQT_BEQTCODEEDITOR_MODULE_H
 #define BEQT_BEQTCODEEDITOR_MODULE_H
 
+#include "babstractdocumentdriver.h"
 #include "babstractfiletype.h"
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
+#include "bcodeeditordocument.h"
+#include "blocaldocumentdriver.h"
 
 #endif //BEQT_BEQTCODEEDITOR_MODULE_H

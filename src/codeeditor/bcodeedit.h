@@ -4,6 +4,7 @@
 class BCodeEditPrivate;
 class BPlainTextEdit;
 class BAbstractFileType;
+class BCodeEditorDocumentPrivate;
 
 class QString;
 class QPoint;
@@ -117,6 +118,8 @@ protected:
     BPlainTextEdit *innerEdit() const;
 private:
     Q_DISABLE_COPY(BCodeEdit)
+    //
+    friend class BCodeEditorDocumentPrivate;
 };
 
 #endif // BCODEEDIT_H
