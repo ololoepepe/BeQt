@@ -20,7 +20,7 @@
 #include <QDebug>
 
 BHelpBrowserPrivateObject::BHelpBrowserPrivateObject(BHelpBrowserPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -34,17 +34,17 @@ BHelpBrowserPrivateObject::~BHelpBrowserPrivateObject()
 
 void BHelpBrowserPrivateObject::languageChanged()
 {
-    _m_p->retranslateUi();
+    p_func()->retranslateUi();
 }
 
 void BHelpBrowserPrivateObject::sourceChanged()
 {
-    _m_p->updateCaption();
+    p_func()->updateCaption();
 }
 
 void BHelpBrowserPrivateObject::ledtSearchReturnPressed()
 {
-    _m_p->search();
+    p_func()->search();
 }
 
 //
@@ -55,7 +55,7 @@ QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
 
 BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, const QString &file,
                                          const QStringList &searchPaths) :
-    BBasePrivate(q), _m_o( new BHelpBrowserPrivateObject(this) )
+    BBasePrivate( *q, *new BHelpBrowserPrivateObject(this) )
 {
     QVBoxLayout *vlt = new QVBoxLayout(q);
       tbar = new QToolBar(q);
@@ -75,7 +75,7 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, 
         lblSearch = new QLabel;
         tbar->addWidget(lblSearch);
         ledtSearch = new QLineEdit;
-          QObject::connect( ledtSearch, SIGNAL( returnPressed() ), _m_o, SLOT( ledtSearchReturnPressed() ) );
+          QObject::connect( ledtSearch, SIGNAL( returnPressed() ), o_func(), SLOT( ledtSearchReturnPressed() ) );
         tbar->addWidget(ledtSearch);
       vlt->addWidget(tbar);
       tbrsr = new QTextBrowser(q);
@@ -84,7 +84,7 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, 
         QObject::connect( tbtnHome, SIGNAL( clicked() ), tbrsr, SLOT( home() ) );
         QObject::connect( tbrsr, SIGNAL( backwardAvailable(bool) ), tbtnBackward, SLOT( setEnabled(bool) ) );
         QObject::connect( tbrsr, SIGNAL( forwardAvailable(bool) ), tbtnForward, SLOT( setEnabled(bool) ) );
-        QObject::connect( tbrsr, SIGNAL( sourceChanged(QUrl) ), _m_o, SLOT( sourceChanged() ) );
+        QObject::connect( tbrsr, SIGNAL( sourceChanged(QUrl) ), o_func(), SLOT( sourceChanged() ) );
       vlt->addWidget(tbrsr);
     //
     tbrsr->setSearchPaths(searchPaths);
@@ -94,12 +94,12 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, 
         tbrsr->setSource( QUrl(file) );
     tbrsr->setFocus();
     retranslateUi();
-    QObject::connect( bApp, SIGNAL( languageChanged() ), _m_o, SLOT( languageChanged() ) );
+    QObject::connect( bApp, SIGNAL( languageChanged() ), o_func(), SLOT( languageChanged() ) );
 }
 
 BHelpBrowserPrivate::~BHelpBrowserPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -159,6 +159,14 @@ void BHelpBrowserPrivate::search()
         source += "<a href=\"" + file + "\">" + file + "</a><br>";
     source += "<br><br><a href=\"" + tbrsr->source().toString() + "\">" + tr("Back", "tbrsr text") + "</a>";
     tbrsr->setHtml(source);
+}
+
+//
+
+BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser &q, BHelpBrowserPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

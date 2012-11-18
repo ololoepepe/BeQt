@@ -22,7 +22,7 @@
 /*========== Code Editor Document Private Object ==========*/
 
 BCodeEditorDocumentPrivateObject::BCodeEditorDocumentPrivateObject(BCodeEditorDocumentPrivate *p) :
-    QObject(0), _m_p(p)
+    BCodeEditPrivateObject(p)
 {
     //
 }
@@ -36,12 +36,12 @@ BCodeEditorDocumentPrivateObject::~BCodeEditorDocumentPrivateObject()
 
 void BCodeEditorDocumentPrivateObject::loadingFinished(bool success, const QString &text)
 {
-    _m_p->loadingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success, text);
+    p_func()->loadingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success, text);
 }
 
 void BCodeEditorDocumentPrivateObject::savingFinished(bool success)
 {
-    _m_p->savingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success);
+    p_func()->savingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success);
 }
 
 /*========== Code Editor Document Private ==========*/
@@ -63,12 +63,13 @@ QMap<QString, BAbstractDocumentDriver *> BCodeEditorDocumentPrivate::createDrive
 
 BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q,
                                                        const QList<BAbstractDocumentDriver *> &drs) :
-    BCodeEditPrivate(q), _m_oo( new BCodeEditorDocumentPrivateObject(this) ), Drivers( createDriverMap(drs) )
+    BCodeEditPrivate( *q, *new BCodeEditorDocumentPrivateObject(this) ), Drivers( createDriverMap(drs) )
 {
     foreach (BAbstractDocumentDriver *dr, drs)
     {
-        QObject::connect( dr, SIGNAL( loadingFinished(bool, QString) ), _m_o, SLOT( loadingFinished(bool, QString) ) );
-        QObject::connect( dr, SIGNAL( savingFinished(bool) ), _m_o, SLOT( savingFinished(bool) ) );
+        QObject::connect( dr, SIGNAL( loadingFinished(bool, QString) ),
+                          o_func(), SLOT( loadingFinished(bool, QString) ) );
+        QObject::connect( dr, SIGNAL( savingFinished(bool) ), o_func(), SLOT( savingFinished(bool) ) );
     }
     codec = QTextCodec::codecForName("UTF-8");
     buisy = false;
@@ -78,7 +79,6 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 {
     foreach (BAbstractDocumentDriver *drv, Drivers)
         delete drv;
-    _m_oo->deleteLater();
 }
 
 //

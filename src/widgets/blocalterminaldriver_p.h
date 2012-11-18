@@ -14,14 +14,13 @@ class QString;
 #include <QObject>
 #include <QMap>
 
-class B_WIDGETS_EXPORT BLocalTerminalDriverPrivateObject : public QObject
+class B_WIDGETS_EXPORT BLocalTerminalDriverPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BLocalTerminalDriver)
     Q_OBJECT
 public:
     explicit BLocalTerminalDriverPrivateObject(BLocalTerminalDriverPrivate *p);
     ~BLocalTerminalDriverPrivateObject();
-    //
-    BLocalTerminalDriverPrivate *const _m_p;
 public slots:
     void finished(int exitCode);
     void readyRead();
@@ -32,6 +31,7 @@ private:
 class B_WIDGETS_EXPORT BLocalTerminalDriverPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocalTerminalDriver)
+    B_DECLARE_OBJECT(BLocalTerminalDriver)
 public:
     explicit BLocalTerminalDriverPrivate(BLocalTerminalDriver *q);
     ~BLocalTerminalDriverPrivate();
@@ -39,14 +39,12 @@ public:
     void finished(int exitCode);
     void readyRead();
     //
-    BLocalTerminalDriverPrivateObject *const _m_o;
-    //
     QProcess *process;
     QString workingDirectory;
+protected:
+    BLocalTerminalDriverPrivate(BLocalTerminalDriver &q, BLocalTerminalDriverPrivateObject &o);
 private:
     Q_DISABLE_COPY(BLocalTerminalDriverPrivate)
-    //
-    friend class BLocalTerminalDriverPrivateObject;
 };
 
 #endif // BLOCALTERMINALDRIVER_P_H

@@ -18,14 +18,13 @@ class QBrush;
 #include <QAbstractTextDocumentLayout>
 #include <QVector>
 
-class B_WIDGETS_EXPORT BPlainTextEditPrivateObject : public QObject
+class B_WIDGETS_EXPORT BPlainTextEditPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BPlainTextEdit)
     Q_OBJECT
 public:
     explicit BPlainTextEditPrivateObject(BPlainTextEditPrivate *p);
     ~BPlainTextEditPrivateObject();
-    //
-    BPlainTextEditPrivate *const _m_p;
 public slots:
     void selectionChanged();
 private:
@@ -35,6 +34,7 @@ private:
 class B_WIDGETS_EXPORT BPlainTextEditPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPlainTextEdit)
+    B_DECLARE_OBJECT(BPlainTextEdit)
     Q_DECLARE_TR_FUNCTIONS(BPlainTextEdit)
 public:
     static inline void fillBackground( QPainter *painter, const QRectF &rect,
@@ -47,16 +47,14 @@ public:
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
     void emulateShiftPress();
     //
-    BPlainTextEditPrivateObject *const _m_o;
-    //
     bool drag;
     bool blockMode;
     bool hasSelection;
     QVector<BPlainTextEdit::SelectionRange> selectionRanges;
+protected:
+    BPlainTextEditPrivate(BPlainTextEdit &q, BPlainTextEditPrivateObject &o);
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivate)
-    //
-    friend class BPlainTextEditPrivateObject;
 };
 
 #endif // BPLAINTEXTEDIT_P_H

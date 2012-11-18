@@ -21,14 +21,13 @@ class QString;
 #include <QObject>
 #include <QMap>
 
-class B_WIDGETS_EXPORT BHelpBrowserPrivateObject : public QObject
+class B_WIDGETS_EXPORT BHelpBrowserPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BHelpBrowser)
     Q_OBJECT
 public:
     explicit BHelpBrowserPrivateObject(BHelpBrowserPrivate *p);
     ~BHelpBrowserPrivateObject();
-    //
-    BHelpBrowserPrivate *const _m_p;
 public slots:
     void languageChanged();
     void sourceChanged();
@@ -40,6 +39,7 @@ private:
 class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BHelpBrowser)
+    B_DECLARE_OBJECT(BHelpBrowser)
     Q_DECLARE_TR_FUNCTIONS(BHelpBrowser)
 public:
     static QMap<QString, QStringList> searchCache;
@@ -52,8 +52,6 @@ public:
     void updateCaption();
     void search();
     //
-    BHelpBrowserPrivateObject *const _m_o;
-    //
     QVBoxLayout *vlt;
       QToolBar *tbar;
         QToolButton *tbtnBackward;
@@ -64,10 +62,10 @@ public:
         QLabel *lblSearch;
         QLineEdit *ledtSearch;
       QTextBrowser *tbrsr;
+protected:
+    BHelpBrowserPrivate(BHelpBrowser &q, BHelpBrowserPrivateObject &o);
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivate)
-    //
-    friend class BHelpBrowserPrivateObject;
 };
 
 #endif // BHELPBROWSER_P_H

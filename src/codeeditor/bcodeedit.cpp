@@ -89,7 +89,7 @@ BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
 /*========== Code Edit Private Object ==========*/
 
 BCodeEditPrivateObject::BCodeEditPrivateObject(BCodeEditPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -106,11 +106,11 @@ bool BCodeEditPrivateObject::eventFilter(QObject *obj, QEvent *e)
     switch ( e->type() )
     {
     case QEvent::KeyPress:
-        return _m_p->keyPressEvent( static_cast<QKeyEvent *>(e) );
+        return p_func()->keyPressEvent( static_cast<QKeyEvent *>(e) );
     case QEvent::MouseButtonDblClick:
-        return _m_p->mouseDoubleClickEvent( static_cast<QMouseEvent *>(e) );
+        return p_func()->mouseDoubleClickEvent( static_cast<QMouseEvent *>(e) );
     case QEvent::MouseButtonPress:
-        return _m_p->mousePressEvent( static_cast<QMouseEvent *>(e) );
+        return p_func()->mousePressEvent( static_cast<QMouseEvent *>(e) );
     default:
         return QObject::eventFilter(obj, e);
     }
@@ -120,42 +120,42 @@ bool BCodeEditPrivateObject::eventFilter(QObject *obj, QEvent *e)
 
 void BCodeEditPrivateObject::futureWatcherFinished()
 {
-    _m_p->futureWatcherFinished( static_cast<BCodeEditPrivate::ProcessTextFutureWatcher *>( sender() ) );
+    p_func()->futureWatcherFinished( static_cast<BCodeEditPrivate::ProcessTextFutureWatcher *>( sender() ) );
 }
 
 void BCodeEditPrivateObject::customContextMenuRequested(const QPoint &pos)
 {
-    _m_p->popupMenu(pos);
+    p_func()->popupMenu(pos);
 }
 
 void BCodeEditPrivateObject::cursorPositionChanged()
 {
-    _m_p->updateCursorPosition();
+    p_func()->updateCursorPosition();
 }
 
 void BCodeEditPrivateObject::clipboardDataAvailableChanged(bool available)
 {
-    _m_p->updatePasteAvailable(available);
+    p_func()->updatePasteAvailable(available);
 }
 
 void BCodeEditPrivateObject::selectionChanged()
 {
-    _m_p->updateHasSelection();
+    p_func()->updateHasSelection();
 }
 
 void BCodeEditPrivateObject::copyAvailableChanged(bool available)
 {
-    _m_p->updateCopyAvailable(available);
+    p_func()->updateCopyAvailable(available);
 }
 
 void BCodeEditPrivateObject::undoAvailableChanged(bool available)
 {
-    _m_p->updateUndoAvailable(available);
+    p_func()->updateUndoAvailable(available);
 }
 
 void BCodeEditPrivateObject::redoAvailableChanged(bool available)
 {
-    _m_p->updateRedoAvailable(available);
+    p_func()->updateRedoAvailable(available);
 }
 
 /*========== Code Edit Private ==========*/
@@ -368,12 +368,12 @@ BCodeEditPrivate::FindBracketResult BCodeEditPrivate::findBracketPair(
 //
 
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
-    BBasePrivate(q), _m_o( new BCodeEditPrivateObject(this) )
+    BBasePrivate( *q, *new BCodeEditPrivateObject(this) )
 {
     if ( !BCodeEditClipboardNotifier::instance() )
         new BCodeEditClipboardNotifier;
     QObject::connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
-                      _m_o, SLOT( clipboardDataAvailableChanged(bool) ) );
+                      o_func(), SLOT( clipboardDataAvailableChanged(bool) ) );
     blockMode = false;
     lineLength = 120;
     tabWidth = BCodeEdit::TabWidth4;
@@ -392,17 +392,17 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
       ptedt = new BPlainTextEdit(q);
-        ptedt->installEventFilter(_m_o);
+        ptedt->installEventFilter( o_func() );
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
         QObject::connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ),
-                          _m_o, SLOT( customContextMenuRequested(QPoint) ) );
-        QObject::connect( ptedt, SIGNAL( cursorPositionChanged() ), _m_o, SLOT( cursorPositionChanged() ) );
+                          o_func(), SLOT( customContextMenuRequested(QPoint) ) );
+        QObject::connect( ptedt, SIGNAL( cursorPositionChanged() ), o_func(), SLOT( cursorPositionChanged() ) );
         QObject::connect( ptedt->document(), SIGNAL( modificationChanged(bool) ),
                           q, SIGNAL( modificationChanged(bool) ) );
-        QObject::connect( ptedt, SIGNAL( selectionChanged() ), _m_o, SLOT( selectionChanged() ) );
-        QObject::connect( ptedt, SIGNAL( copyAvailable(bool) ), _m_o, SLOT( copyAvailableChanged(bool) ) );
-        QObject::connect( ptedt, SIGNAL( undoAvailable(bool) ), _m_o, SLOT( undoAvailableChanged(bool) ) );
-        QObject::connect( ptedt, SIGNAL( redoAvailable(bool) ), _m_o, SLOT( redoAvailableChanged(bool) ) );
+        QObject::connect( ptedt, SIGNAL( selectionChanged() ), o_func(), SLOT( selectionChanged() ) );
+        QObject::connect( ptedt, SIGNAL( copyAvailable(bool) ), o_func(), SLOT( copyAvailableChanged(bool) ) );
+        QObject::connect( ptedt, SIGNAL( undoAvailable(bool) ), o_func(), SLOT( undoAvailableChanged(bool) ) );
+        QObject::connect( ptedt, SIGNAL( redoAvailable(bool) ), o_func(), SLOT( redoAvailableChanged(bool) ) );
         //
       vlt->addWidget(ptedt);
     //
@@ -411,7 +411,7 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
 
 BCodeEditPrivate::~BCodeEditPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -1276,6 +1276,14 @@ const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QCha
     << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21)
     << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26) << QChar(27) << QChar(28) << QChar(29)
     << QChar(30) << QChar(31);
+
+//
+
+BCodeEditPrivate::BCodeEditPrivate(BCodeEdit &q, BCodeEditPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
+}
 
 /*========== Code Edit ==========*/
 

@@ -113,6 +113,14 @@ void BApplicationPrivate::showHelp(const QString &file)
 
 //
 
+BApplicationPrivate::BApplicationPrivate(BApplication &q, BBasePrivateObject &o) :
+    BCoreApplicationPrivate(q, o)
+{
+    //
+}
+
+//
+
 QIcon BApplication::beqtIcon(const QString &name)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )

@@ -54,16 +54,15 @@ public slots:
 
 /*========== Code Edit Private Object ==========*/
 
-class BCodeEditPrivateObject : public QObject
+class BCodeEditPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BCodeEdit)
     Q_OBJECT
 public:
     explicit BCodeEditPrivateObject(BCodeEditPrivate *p);
     ~BCodeEditPrivateObject();
     //
     bool eventFilter(QObject *obj, QEvent *e);
-    //
-    BCodeEditPrivate *const _m_p;
 public slots:
     void futureWatcherFinished();
     void customContextMenuRequested(const QPoint &pos);
@@ -82,6 +81,7 @@ private:
 class BCodeEditPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEdit)
+    B_DECLARE_OBJECT(BCodeEdit)
     Q_DECLARE_TR_FUNCTIONS(BCodeEdit)
 public:
     struct ProcessTextResult
@@ -187,8 +187,6 @@ public:
     //
     static const QList<QChar> unsupportedSymbols;
     //
-    BCodeEditPrivateObject *const _m_o;
-    //
     bool blockMode;
     int lineLength;
     BCodeEdit::TabWidth tabWidth;
@@ -209,10 +207,10 @@ public:
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEdit *ptedt;
+protected:
+    BCodeEditPrivate(BCodeEdit &q, BCodeEditPrivateObject &o);
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)
-    //
-    friend class BCodeEditPrivateObject;
 };
 
 #endif // BCODEEDIT_P_H

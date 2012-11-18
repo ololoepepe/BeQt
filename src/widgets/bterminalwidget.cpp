@@ -23,7 +23,7 @@
 #include <QDebug>
 
 BTerminalWidgetPrivateObject::BTerminalWidgetPrivateObject(BTerminalWidgetPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -40,35 +40,35 @@ bool BTerminalWidgetPrivateObject::eventFilter(QObject *object, QEvent *event)
     if (event->type() != QEvent::KeyPress)
         return QObject::eventFilter(object, event);
     QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-    return _m_p->handleKeyPress( ke->key(), ke->modifiers() );
+    return p_func()->handleKeyPress( ke->key(), ke->modifiers() );
 }
 
 //
 
 void BTerminalWidgetPrivateObject::readyRead()
 {
-    _m_p->read();
+    p_func()->read();
 }
 
 void BTerminalWidgetPrivateObject::finished(int exitCode)
 {
-    _m_p->finished(exitCode);
+    p_func()->finished(exitCode);
 }
 
 void BTerminalWidgetPrivateObject::blockTerminal()
 {
-    _m_p->blockTerminal();
+    p_func()->blockTerminal();
 }
 
 void BTerminalWidgetPrivateObject::unblockTerminal()
 {
-    _m_p->unblockTerminal();
+    p_func()->unblockTerminal();
 }
 
 //
 
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
-    BBasePrivate(q), _m_o( new BTerminalWidgetPrivateObject(this) ), NormalMode(nmode)
+    BBasePrivate( *q, *new BTerminalWidgetPrivateObject(this) ), NormalMode(nmode)
 {
     driver = 0;
     terminatingKey = Qt::Key_D;
@@ -81,14 +81,14 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
       ptedt = new BPlainTextEdit(q);
         ptedt->setDragEnabled(false);
         ptedt->setAcceptDrops(false);
-        ptedt->installEventFilter(_m_o);
+        ptedt->installEventFilter( o_func() );
         ptedt->setContextMenuPolicy(Qt::NoContextMenu);
       vlt->addWidget(ptedt);
 }
 
 BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -99,19 +99,19 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
     {
         if ( driver->isActive() )
             return;
-        QObject::disconnect( driver, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
-        QObject::disconnect( driver, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
-        QObject::disconnect( driver, SIGNAL( blockTerminal() ), _m_o, SLOT( blockTerminal() ) );
-        QObject::disconnect( driver, SIGNAL( unblockTerminal() ), _m_o, SLOT( unblockTerminal() ) );
+        QObject::disconnect( driver, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
+        QObject::disconnect( driver, SIGNAL( finished(int) ), o_func(), SLOT( finished(int) ) );
+        QObject::disconnect( driver, SIGNAL( blockTerminal() ), o_func(), SLOT( blockTerminal() ) );
+        QObject::disconnect( driver, SIGNAL( unblockTerminal() ), o_func(), SLOT( unblockTerminal() ) );
     }
     driver = drv;
     if (!driver)
         return;
     driver->setParent( q_func() );
-    QObject::connect( driver, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
-    QObject::connect( driver, SIGNAL( finished(int) ), _m_o, SLOT( finished(int) ) );
-    QObject::connect( driver, SIGNAL( blockTerminal() ), _m_o, SLOT( blockTerminal() ) );
-    QObject::connect( driver, SIGNAL( unblockTerminal() ), _m_o, SLOT( unblockTerminal() ) );
+    QObject::connect( driver, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
+    QObject::connect( driver, SIGNAL( finished(int) ), o_func(), SLOT( finished(int) ) );
+    QObject::connect( driver, SIGNAL( blockTerminal() ), o_func(), SLOT( blockTerminal() ) );
+    QObject::connect( driver, SIGNAL( unblockTerminal() ), o_func(), SLOT( unblockTerminal() ) );
     if (NormalMode)
     {
         QTextCursor tc = ptedt->textCursor();
@@ -229,6 +229,14 @@ void BTerminalWidgetPrivate::finished(int exitCode)
         else
             appendLine( driver->prompt() );
     }
+}
+
+//
+
+BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget &q, BTerminalWidgetPrivateObject &o, bool mode) :
+    BBasePrivate(q, o), NormalMode(mode)
+{
+    //
 }
 
 //

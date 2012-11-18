@@ -16,16 +16,15 @@ class QVBoxLayout;
 #include <QObject>
 #include <QCoreApplication>
 
-class B_WIDGETS_EXPORT BTerminalWidgetPrivateObject : public QObject
+class B_WIDGETS_EXPORT BTerminalWidgetPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BTerminalWidget)
     Q_OBJECT
 public:
     explicit BTerminalWidgetPrivateObject(BTerminalWidgetPrivate *p);
     ~BTerminalWidgetPrivateObject();
     //
     bool eventFilter(QObject *object, QEvent *event);
-    //
-    BTerminalWidgetPrivate *const _m_p;
 public slots:
     void readyRead();
     void finished(int exitCode);
@@ -38,6 +37,7 @@ private:
 class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTerminalWidget)
+    B_DECLARE_OBJECT(BTerminalWidget)
     Q_DECLARE_TR_FUNCTIONS(BTerminalWidget)
 public:
     explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
@@ -53,7 +53,6 @@ public:
     void blockTerminal();
     void unblockTerminal();
     //
-    BTerminalWidgetPrivateObject *const _m_o;
     const bool NormalMode;
     //
     BAbstractTerminalDriver *driver;
@@ -64,10 +63,10 @@ public:
     //
     QVBoxLayout *vlt;
       BPlainTextEdit *ptedt;
+protected:
+    BTerminalWidgetPrivate(BTerminalWidget &q, BTerminalWidgetPrivateObject &o, bool mode);
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivate)
-    //
-    friend class BTerminalWidgetPrivateObject;
 };
 
 #endif // BTERMINALWIDGET_P_H

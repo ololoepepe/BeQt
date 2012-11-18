@@ -33,7 +33,7 @@ class QWidget;
 #include <QDebug>
 
 BAboutDialogPrivateObject::BAboutDialogPrivateObject(BAboutDialogPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -47,7 +47,7 @@ BAboutDialogPrivateObject::~BAboutDialogPrivateObject()
 
 void BAboutDialogPrivateObject::languageChanged()
 {
-    _m_p->retranslateUi();
+    p_func()->retranslateUi();
 }
 
 //
@@ -77,7 +77,7 @@ BAboutDialog::PersonInfoList BAboutDialog::fromPluginPersonInfoList(const BPlugi
 //
 
 BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options) :
-    BBasePrivate(q), _m_o( new BAboutDialogPrivateObject(this) )
+    BBasePrivate( *q, *new BAboutDialogPrivateObject(this) )
 {
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
@@ -150,7 +150,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
       vlt->addWidget(dlgbbox);
     //
     retranslateUi();
-    QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), _m_o, SLOT( languageChanged() ) );
+    QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), o_func(), SLOT( languageChanged() ) );
 }
 
 BAboutDialogPrivate::~BAboutDialogPrivate()
@@ -273,6 +273,14 @@ void BAboutDialogPrivate::retranslateUi()
         aboutBeqtDlg->setTranslationInfos(BAboutDialog::PersonInfoList() << pi);
         aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
     }
+}
+
+//
+
+BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog &q, BAboutDialogPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

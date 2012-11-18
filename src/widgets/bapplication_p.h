@@ -32,10 +32,10 @@ public:
     BApplication::SettingsTabNavigation navigation;
     QString helpIndex;
     QStringList iconPaths;
+protected:
+    BApplicationPrivate(BApplication &q, BBasePrivateObject &o);
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
-    //
-    friend class BApplicationPrivateObject;
 };
 
 #endif // BAPPLICATION_P_H

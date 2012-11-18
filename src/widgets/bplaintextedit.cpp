@@ -36,7 +36,7 @@
 #include <QDebug>
 
 BPlainTextEditPrivateObject::BPlainTextEditPrivateObject(BPlainTextEditPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -50,7 +50,7 @@ BPlainTextEditPrivateObject::~BPlainTextEditPrivateObject()
 
 void BPlainTextEditPrivateObject::selectionChanged()
 {
-    _m_p->selectionChanged();
+    p_func()->selectionChanged();
 }
 
 //
@@ -80,17 +80,17 @@ void BPlainTextEditPrivate::fillBackground(QPainter *painter, const QRectF &rect
 //
 
 BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit *q) :
-    BBasePrivate(q), _m_o( new BPlainTextEditPrivateObject(this) )
+    BBasePrivate( *q, *new BPlainTextEditPrivateObject(this) )
 {
     drag = true;
     blockMode = false;
     hasSelection = false;
-    QObject::connect( q, SIGNAL( selectionChanged() ), _m_o, SLOT( selectionChanged() ) );
+    QObject::connect( q, SIGNAL( selectionChanged() ), o_func(), SLOT( selectionChanged() ) );
 }
 
 BPlainTextEditPrivate::~BPlainTextEditPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -153,6 +153,14 @@ void BPlainTextEditPrivate::emulateShiftPress()
 {
     QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
     QApplication::sendEvent(q_func(), &e);
+}
+
+//
+
+BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit &q, BPlainTextEditPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

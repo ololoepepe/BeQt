@@ -20,14 +20,13 @@ class QTextCodec;
 #include <QList>
 #include <QPointer>
 
-class BCodeEditorDocumentPrivateObject : public QObject
+class BCodeEditorDocumentPrivateObject : public BCodeEditPrivateObject
 {
+    B_DECLARE_PRIVATE_O(BCodeEditorDocument)
     Q_OBJECT
 public:
     explicit BCodeEditorDocumentPrivateObject(BCodeEditorDocumentPrivate *p);
     ~BCodeEditorDocumentPrivateObject();
-    //
-    BCodeEditorDocumentPrivate *const _m_p;
 public slots:
     void loadingFinished(bool success, const QString &text);
     void savingFinished(bool success);
@@ -38,6 +37,7 @@ private:
 class BCodeEditorDocumentPrivate : public BCodeEditPrivate
 {
     B_DECLARE_PUBLIC(BCodeEditorDocument)
+    B_DECLARE_OBJECT(BCodeEditorDocument)
     Q_DECLARE_TR_FUNCTIONS(BCodeEditorDocument)
 public:
     static QMap<QString, BAbstractDocumentDriver *> createDriverMap(const QList<BAbstractDocumentDriver *> &drs);
@@ -48,16 +48,15 @@ public:
     void loadingFinished(BAbstractDocumentDriver *driver, bool success, const QString &text);
     void savingFinished(BAbstractDocumentDriver *driver, bool success);
     //
-    BCodeEditorDocumentPrivateObject *const _m_oo;
     const QMap<QString, BAbstractDocumentDriver *> Drivers;
     //
     QString fileName;
     QTextCodec *codec;
     bool buisy;
+protected:
+    BCodeEditorDocumentPrivate(BCodeEditorDocument &q, BCodeEditorDocumentPrivateObject &o);
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)
-    //
-    friend class BCodeEditorDocumentPrivateObject;
 };
 
 #endif // BCODEEDITORDOCUMENT_P_H

@@ -9,7 +9,7 @@
 #include <QWidget>
 
 BCodeEditorPrivateObject::BCodeEditorPrivateObject(BCodeEditorPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -22,14 +22,22 @@ BCodeEditorPrivateObject::~BCodeEditorPrivateObject()
 //
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
-    BBasePrivate(q), _m_o( new BCodeEditorPrivateObject(this) )
+    BBasePrivate( *q, * new BCodeEditorPrivateObject(this) )
 {
     //
 }
 
 BCodeEditorPrivate::~BCodeEditorPrivate()
 {
-    _m_o->deleteLater();
+    //
+}
+
+//
+
+BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor &q, BCodeEditorPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

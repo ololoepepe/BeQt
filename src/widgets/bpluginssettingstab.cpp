@@ -18,7 +18,6 @@
 #include <QPushButton>
 #include <QApplication>
 #include <QList>
-//#include <QPixmap>
 #include <QObject>
 #include <QMessageBox>
 #include <QListWidgetItem>
@@ -27,7 +26,7 @@
 #include <QDebug>
 
 BPluginsSettingsTabPrivateObject::BPluginsSettingsTabPrivateObject(BPluginsSettingsTabPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -39,28 +38,28 @@ BPluginsSettingsTabPrivateObject::~BPluginsSettingsTabPrivateObject()
 
 void BPluginsSettingsTabPrivateObject::lstwgtCurrentRowChanged(int currentRow)
 {
-    _m_p->lstwgtCurrentRowChanged(currentRow);
+    p_func()->lstwgtCurrentRowChanged(currentRow);
 }
 
 void BPluginsSettingsTabPrivateObject::lstwgtItemChanged(QListWidgetItem *item)
 {
-    _m_p->lstwgtItemChanged(item);
+    p_func()->lstwgtItemChanged(item);
 }
 
 void BPluginsSettingsTabPrivateObject::btnSettingsClicked()
 {
-    _m_p->btnSettingsClicked();
+    p_func()->btnSettingsClicked();
 }
 
 void BPluginsSettingsTabPrivateObject::btnAboutClicked()
 {
-    _m_p->btnAboutClicked();
+    p_func()->btnAboutClicked();
 }
 
 //
 
 BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
-    BBasePrivate(q), _m_o( new BPluginsSettingsTabPrivateObject(this) )
+    BBasePrivate( *q, *new BPluginsSettingsTabPrivateObject(this) )
 {
     plugins = BApplication::pluginWrappers();
     //
@@ -77,20 +76,20 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
                 lwi->setIcon( QIcon( gpi->pixmap() ) );
             lstwgt->addItem(lwi);
         }
-        QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), _m_o, SLOT( lstwgtCurrentRowChanged(int) ) );
+        QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), o_func(), SLOT( lstwgtCurrentRowChanged(int) ) );
         QObject::connect( lstwgt, SIGNAL( itemChanged(QListWidgetItem *) ),
-                          _m_o, SLOT( lstwgtItemChanged(QListWidgetItem *) ) );
+                          o_func(), SLOT( lstwgtItemChanged(QListWidgetItem *) ) );
       hlt->addWidget(lstwgt);
       vlt = new QVBoxLayout;
         btnSettings = new QPushButton(q);
           btnSettings->setIcon( BApplication::beqtIcon("configure") );
           btnSettings->setText( tr("Configure plugin", "btn text") );
-          QObject::connect( btnSettings, SIGNAL( clicked() ), _m_o, SLOT( btnSettingsClicked() ) );
+          QObject::connect( btnSettings, SIGNAL( clicked() ), o_func(), SLOT( btnSettingsClicked() ) );
         vlt->addWidget(btnSettings);
         btnAbout = new QPushButton(q);
           btnAbout->setIcon( BApplication::beqtIcon("help_about") );
           btnAbout->setText( tr("About plugin", "btn text") );
-          QObject::connect( btnAbout, SIGNAL( clicked() ), _m_o, SLOT( btnAboutClicked() ) );
+          QObject::connect( btnAbout, SIGNAL( clicked() ), o_func(), SLOT( btnAboutClicked() ) );
         vlt->addWidget(btnAbout);
         vlt->addStretch();
       hlt->addLayout(vlt);
@@ -100,7 +99,7 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
 
 BPluginsSettingsTabPrivate::~BPluginsSettingsTabPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -159,6 +158,14 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
     if ( !pm.isNull() )
         ad.setPixmap(pm);
     ad.exec(); //Maybe use open() instead?
+}
+
+//
+
+BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab &q, BPluginsSettingsTabPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //
