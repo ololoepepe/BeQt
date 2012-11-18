@@ -65,6 +65,14 @@ void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
 
 //
 
+BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation &q, BBasePrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
+}
+
+//
+
 BNetworkOperation::~BNetworkOperation()
 {
     emit destroyed(d_func()->MetaData);

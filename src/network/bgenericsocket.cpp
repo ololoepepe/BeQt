@@ -21,7 +21,7 @@
 #include <QDebug>
 
 BGenericSocketPrivateObject::BGenericSocketPrivateObject(BGenericSocketPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -35,58 +35,58 @@ BGenericSocketPrivateObject::~BGenericSocketPrivateObject()
 
 void BGenericSocketPrivateObject::lsocketError(QLocalSocket::LocalSocketError socketError)
 {
-    _m_p->lsocketError(socketError);
+    p_func()->lsocketError(socketError);
 }
 
 void BGenericSocketPrivateObject::lsocketStateChanged(QLocalSocket::LocalSocketState socketState)
 {
-    _m_p->lsocketStateChanged(socketState);
+    p_func()->lsocketStateChanged(socketState);
 }
 
 void BGenericSocketPrivateObject::aboutToClose()
 {
-    _m_p->aboutToClose();
+    p_func()->aboutToClose();
 }
 
 void BGenericSocketPrivateObject::connected()
 {
-    _m_p->connected();
+    p_func()->connected();
 }
 
 void BGenericSocketPrivateObject::bytesWritten(qint64 bytes)
 {
-    _m_p->bytesWritten(bytes);
+    p_func()->bytesWritten(bytes);
 }
 
 void BGenericSocketPrivateObject::disconnected()
 {
-    _m_p->disconnected();
+    p_func()->disconnected();
 }
 
 void BGenericSocketPrivateObject::error(QAbstractSocket::SocketError socketError)
 {
-    _m_p->error(socketError);
+    p_func()->error(socketError);
 }
 
 void BGenericSocketPrivateObject::readChannelFinished()
 {
-    _m_p->readChannelFinished();
+    p_func()->readChannelFinished();
 }
 
 void BGenericSocketPrivateObject::readyRead()
 {
-    _m_p->readyRead();
+    p_func()->readyRead();
 }
 
 void BGenericSocketPrivateObject::stateChanged(QAbstractSocket::SocketState socketState)
 {
-    _m_p->stateChanged(socketState);
+    p_func()->stateChanged(socketState);
 }
 
 //
 
 BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type) :
-    BBasePrivate(q), _m_o( new BGenericSocketPrivateObject(this) )
+    BBasePrivate( *q, *new BGenericSocketPrivateObject(this) )
 {
     switch (type)
     {
@@ -110,7 +110,6 @@ BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::
 BGenericSocketPrivate::~BGenericSocketPrivate()
 {
     q_func()->close();
-    _m_o->deleteLater();
 }
 
 //
@@ -123,12 +122,12 @@ void BGenericSocketPrivate::setSocket(QAbstractSocket *socket)
     socket->setParent(q);
     asocket = socket;
     connectIODevice();
-    QObject::connect( socket, SIGNAL( connected() ), _m_o, SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), _m_o, SLOT( disconnected() ) );
+    QObject::connect( socket, SIGNAL( connected() ), o_func(), SLOT( connected() ) );
+    QObject::connect( socket, SIGNAL( disconnected() ), o_func(), SLOT( disconnected() ) );
     QObject::connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-                      _m_o, SLOT( error(QAbstractSocket::SocketError) ) );
+                      o_func(), SLOT( error(QAbstractSocket::SocketError) ) );
     QObject::connect( socket, SIGNAL( stateChanged(QAbstractSocket::SocketState) ),
-                      _m_o, SLOT( stateChanged(QAbstractSocket::SocketState) ) );
+                      o_func(), SLOT( stateChanged(QAbstractSocket::SocketState) ) );
 }
 
 void BGenericSocketPrivate::setSocket(QLocalSocket *socket)
@@ -139,12 +138,12 @@ void BGenericSocketPrivate::setSocket(QLocalSocket *socket)
     socket->setParent(q);
     lsocket = socket;
     connectIODevice();
-    QObject::connect( socket, SIGNAL( connected() ), _m_o, SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), _m_o, SLOT( disconnected() ) );
+    QObject::connect( socket, SIGNAL( connected() ), o_func(), SLOT( connected() ) );
+    QObject::connect( socket, SIGNAL( disconnected() ), o_func(), SLOT( disconnected() ) );
     QObject::connect( socket, SIGNAL( error(QLocalSocket::LocalSocketError) ),
-                      _m_o, SLOT( lsocketError(QLocalSocket::LocalSocketError) ) );
+                      o_func(), SLOT( lsocketError(QLocalSocket::LocalSocketError) ) );
     QObject::connect( socket, SIGNAL( stateChanged(QLocalSocket::LocalSocketState) ),
-                      _m_o, SLOT( lsocketStateChanged(QLocalSocket::LocalSocketState) ) );
+                      o_func(), SLOT( lsocketStateChanged(QLocalSocket::LocalSocketState) ) );
 }
 
 void BGenericSocketPrivate::connectIODevice()
@@ -152,10 +151,10 @@ void BGenericSocketPrivate::connectIODevice()
     QIODevice *device = !asocket.isNull() ? (QIODevice *) asocket.data() : (QIODevice *) lsocket.data();
     if (!device)
         return;
-    QObject::connect( device, SIGNAL( aboutToClose() ), _m_o, SLOT( aboutToClose() ) );
-    QObject::connect( device, SIGNAL( bytesWritten(qint64) ), _m_o, SLOT( bytesWritten(qint64) ) );
-    QObject::connect( device, SIGNAL( readChannelFinished() ), _m_o, SLOT( readChannelFinished() ) );
-    QObject::connect( device, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
+    QObject::connect( device, SIGNAL( aboutToClose() ), o_func(), SLOT( aboutToClose() ) );
+    QObject::connect( device, SIGNAL( bytesWritten(qint64) ), o_func(), SLOT( bytesWritten(qint64) ) );
+    QObject::connect( device, SIGNAL( readChannelFinished() ), o_func(), SLOT( readChannelFinished() ) );
+    QObject::connect( device, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
 }
 
 void BGenericSocketPrivate::disconnectIODevice()
@@ -164,10 +163,10 @@ void BGenericSocketPrivate::disconnectIODevice()
     QIODevice *device = q->ioDevice();
     if (!device)
         return;
-    QObject::disconnect( device, SIGNAL( aboutToClose() ), _m_o, SLOT( aboutToClose() ) );
-    QObject::disconnect( device, SIGNAL( bytesWritten(qint64) ), _m_o, SLOT( bytesWritten(qint64) ) );
-    QObject::disconnect( device, SIGNAL( readChannelFinished() ), _m_o, SLOT( readChannelFinished() ) );
-    QObject::disconnect( device, SIGNAL( readyRead() ), _m_o, SLOT( readyRead() ) );
+    QObject::disconnect( device, SIGNAL( aboutToClose() ), o_func(), SLOT( aboutToClose() ) );
+    QObject::disconnect( device, SIGNAL( bytesWritten(qint64) ), o_func(), SLOT( bytesWritten(qint64) ) );
+    QObject::disconnect( device, SIGNAL( readChannelFinished() ), o_func(), SLOT( readChannelFinished() ) );
+    QObject::disconnect( device, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
 }
 
 void BGenericSocketPrivate::lsocketError(QLocalSocket::LocalSocketError socketError)
@@ -221,6 +220,14 @@ void BGenericSocketPrivate::readyRead()
 void BGenericSocketPrivate::stateChanged(QAbstractSocket::SocketState socketState)
 {
     QMetaObject::invokeMethod( q_func(), "stateChanged", Q_ARG(QAbstractSocket::SocketState, socketState) );
+}
+
+//
+
+BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket &q, BGenericSocketPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

@@ -24,14 +24,13 @@ class QByteArray;
 #include <QMap>
 #include <QUuid>
 
-class B_NETWORK_EXPORT BNetworkConnectionPrivateObject : public QObject
+class B_NETWORK_EXPORT BNetworkConnectionPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BNetworkConnection)
     Q_OBJECT
 public:
     explicit BNetworkConnectionPrivateObject(BNetworkConnectionPrivate *p);
     ~BNetworkConnectionPrivateObject();
-    //
-    BNetworkConnectionPrivate *const _m_p;
 public slots:
     void connected();
     void disconnected();
@@ -48,6 +47,7 @@ private:
 class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BNetworkConnection)
+    B_DECLARE_OBJECT(BNetworkConnection)
     Q_DECLARE_TR_FUNCTIONS(BNetworkConnection)
 public:
     typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
@@ -69,8 +69,6 @@ public:
     void operationDestroyed(const BNetworkOperationMetaData &metaData);
     BNetworkOperation *createOperation(const BNetworkOperationMetaData &metaData);
     //
-    BNetworkConnectionPrivateObject *const _m_o;
-    //
     const QUuid UniqueId;
     //
     QPointer<BGenericSocket> socket;
@@ -80,6 +78,8 @@ public:
     QQueue<Data> dataQueue;
     bool detailedLog;
     bool autoDelete;
+protected:
+    BNetworkConnectionPrivate(BNetworkConnection &q, BNetworkConnectionPrivateObject &o);
 private:
     Q_DISABLE_COPY(BNetworkConnectionPrivate)
 };

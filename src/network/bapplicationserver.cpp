@@ -18,7 +18,7 @@
 #include <QScopedPointer>
 
 BApplicationServerPrivateObject::BApplicationServerPrivateObject(BApplicationServerPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -32,7 +32,7 @@ BApplicationServerPrivateObject::~BApplicationServerPrivateObject()
 
 void BApplicationServerPrivateObject::newPendingConnection()
 {
-    _m_p->newPendingConnection();
+    p_func()->newPendingConnection();
 }
 
 //
@@ -43,13 +43,13 @@ const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Q
 //
 
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
-    BBasePrivate(q), _m_o( new BApplicationServerPrivateObject(this) )
+    BBasePrivate( *q, *new BApplicationServerPrivateObject(this) )
 {
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
     server = new BGenericServer(BGenericServer::LocalServer);
     //TODO: On Qt5, set socket options
     //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
-    QObject::connect( server, SIGNAL( newPendingConnection() ), _m_o, SLOT( newPendingConnection() ) );
+    QObject::connect( server, SIGNAL( newPendingConnection() ), o_func(), SLOT( newPendingConnection() ) );
 }
 
 BApplicationServerPrivate::~BApplicationServerPrivate()
@@ -57,7 +57,6 @@ BApplicationServerPrivate::~BApplicationServerPrivate()
     if ( server->isListening() )
         server->close();
     server->deleteLater();
-    _m_o->deleteLater();
 }
 
 //
@@ -90,6 +89,14 @@ void BApplicationServerPrivate::newPendingConnection()
         s->waitForBytesWritten(OperationTimeout);
     }
     s->close();
+}
+
+//
+
+BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer &q, BApplicationServerPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

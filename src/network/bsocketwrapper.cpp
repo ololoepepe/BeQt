@@ -13,7 +13,7 @@
 #include <QMetaObject>
 
 BSocketWrapperPrivateObject::BSocketWrapperPrivateObject(BSocketWrapperPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -27,35 +27,35 @@ BSocketWrapperPrivateObject::~BSocketWrapperPrivateObject()
 
 void BSocketWrapperPrivateObject::bytesWritten(qint64 bytes)
 {
-    _m_p->bytesWritten(bytes);
+    p_func()->bytesWritten(bytes);
 }
 
 void BSocketWrapperPrivateObject::disconnected()
 {
-    _m_p->disconnected();
+    p_func()->disconnected();
 }
 
 void BSocketWrapperPrivateObject::error(QAbstractSocket::SocketError socketError)
 {
-    _m_p->error(socketError);
+    p_func()->error(socketError);
 }
 
 void BSocketWrapperPrivateObject::readyRead()
 {
-    _m_p->readyRead();
+    p_func()->readyRead();
 }
 
 //
 
 BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
-    BBasePrivate(q), _m_o( new BSocketWrapperPrivateObject(this) )
+    BBasePrivate( *q, *new BSocketWrapperPrivateObject(this) )
 {
     init();
 }
 
 BSocketWrapperPrivate::~BSocketWrapperPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -160,6 +160,14 @@ void BSocketWrapperPrivate::readyRead()
             resetIn();
         }
     }
+}
+
+//
+
+BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper &q, BSocketWrapperPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

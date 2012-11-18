@@ -274,6 +274,14 @@ void BCoreApplicationPrivate::saveSettings()
 
 //
 
+BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication &q, BBasePrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
+}
+
+//
+
 BCoreApplication *BCoreApplication::instance()
 {
     return _m_self;

@@ -87,7 +87,7 @@ int BNetworkServerThread::connectionCount() const
 /*========== Network Server Private Object ==========*/
 
 BNetworkServerPrivateObject::BNetworkServerPrivateObject(BNetworkServerPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -99,18 +99,18 @@ BNetworkServerPrivateObject::~BNetworkServerPrivateObject()
 
 void BNetworkServerPrivateObject::newConnection(int socketDescriptor)
 {
-    _m_p->newConnection(socketDescriptor);
+    p_func()->newConnection(socketDescriptor);
 }
 
 void BNetworkServerPrivateObject::finished()
 {
-    _m_p->finished( static_cast<BNetworkServerThread *>( sender() ) );
+    p_func()->finished( static_cast<BNetworkServerThread *>( sender() ) );
 }
 
 /*========== Network Server Private ==========*/
 
 BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
-    BBasePrivate(q), _m_o( new BNetworkServerPrivateObject(this) )
+    BBasePrivate( *q, *new BNetworkServerPrivateObject(this) )
 {
     maxConnectionCount = 0;
     maxThreadCount = 0;
@@ -118,18 +118,17 @@ BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::
     {
         server = new BGenericServer( type, q_func() );
         server->setMaxPendingConnections(0);
-        QObject::connect( server.data(), SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ) );
+        QObject::connect( server.data(), SIGNAL( newConnection(int) ), o_func(), SLOT( newConnection(int) ) );
     }
 }
 
 BNetworkServerPrivate::~BNetworkServerPrivate()
 {
-    _m_o->deleteLater();
     foreach (BNetworkServerThread *t, threads)
     {
         if (!t)
             continue;
-        QObject::disconnect( t, SIGNAL( finished() ), _m_o, SLOT( finished() ) );
+        QObject::disconnect( t, SIGNAL( finished() ), o_func(), SLOT( finished() ) );
         t->quit();
         t->wait(1000);
     }
@@ -160,7 +159,7 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
     else
     {
         BNetworkServerThread *t = new BNetworkServerThread(this);
-        QObject::connect( t, SIGNAL( finished() ), _m_o, SLOT( finished() ) );
+        QObject::connect( t, SIGNAL( finished() ), o_func(), SLOT( finished() ) );
         t->start();
         t->addConnection(socketDescriptor);
         threads << t;
@@ -178,6 +177,14 @@ void BNetworkServerPrivate::finished(BNetworkServerThread *t)
 BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor) const
 {
     return q_func()->createConnection(socketDescriptor);
+}
+
+//
+
+BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer &q, BNetworkServerPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 /*========== Network Server ==========*/

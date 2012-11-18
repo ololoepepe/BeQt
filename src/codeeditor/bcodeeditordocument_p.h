@@ -9,6 +9,7 @@ class QString;
 class QTextCodec;
 
 #include "bcodeeditordocument.h"
+#include "bcodeedit_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -34,7 +35,7 @@ private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivateObject)
 };
 
-class BCodeEditorDocumentPrivate : public BBasePrivate
+class BCodeEditorDocumentPrivate : public BCodeEditPrivate
 {
     B_DECLARE_PUBLIC(BCodeEditorDocument)
     Q_DECLARE_TR_FUNCTIONS(BCodeEditorDocument)
@@ -47,12 +48,11 @@ public:
     void loadingFinished(BAbstractDocumentDriver *driver, bool success, const QString &text);
     void savingFinished(BAbstractDocumentDriver *driver, bool success);
     //
-    BCodeEditorDocumentPrivateObject *const _m_o;
+    BCodeEditorDocumentPrivateObject *const _m_oo;
     const QMap<QString, BAbstractDocumentDriver *> Drivers;
     //
     QString fileName;
     QTextCodec *codec;
-    QPointer<BCodeEdit> cedt;
     bool buisy;
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)

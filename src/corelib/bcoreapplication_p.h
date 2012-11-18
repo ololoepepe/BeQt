@@ -62,6 +62,8 @@ public:
     QStringList deactivatedPlugins;
     QMap<QString, BTranslator *> translators;
     QList<BPluginWrapper *> plugins;
+protected:
+    BCoreApplicationPrivate(BCoreApplication &q, BBasePrivateObject &o);
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     //

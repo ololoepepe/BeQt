@@ -7,6 +7,9 @@ class BCodeEdit;
 
 class QTextCodec;
 class QString;
+class QWidget;
+
+#include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -14,12 +17,12 @@ class QString;
 #include <QObject>
 #include <QList>
 
-class BCodeEditorDocument : public QObject, public BBase
+class BCodeEditorDocument : public BCodeEdit
 {
     B_DECLARE_PRIVATE(BCodeEditorDocument)
     Q_OBJECT
 public:
-    explicit BCodeEditorDocument(const QList<BAbstractDocumentDriver *> &drivers, QObject *parent = 0);
+    explicit BCodeEditorDocument(const QList<BAbstractDocumentDriver *> &drivers, QWidget *parent = 0);
     ~BCodeEditorDocument();
     //
     void setFileName(const QString &fn);
@@ -29,18 +32,15 @@ public:
     bool save(const QString &driverId);
     QString fileName() const;
     QTextCodec *codec() const;
-    bool isModified() const;
     bool isBuisy() const;
-    BCodeEdit *editWidget() const;
 signals:
     void fileNameChanged(const QString &fn);
     void codecChanged(const QString &codecName);
-    void modificationChanged(bool modified);
     void loadingFinished(bool success);
     void savingFinished(bool success);
     void buisyChanged(bool buisy);
 protected:
-    BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QObject *parent = 0);
+    BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
 };

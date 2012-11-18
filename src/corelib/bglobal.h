@@ -46,6 +46,28 @@ inline const Class##Private *d_func() const \
 } \
 friend class Class##Private;
 
+#define B_DECLARE_OBJECT(Class) \
+inline Class##PrivateObject *o_func() \
+{ \
+    return qobject_cast<Class##PrivateObject *>( qGetPtrHelper(_m_o) ); \
+} \
+inline const Class##PrivateObject *o_func() const \
+{ \
+    return qobject_cast<const Class##PrivateObject *>( qGetPtrHelper(_m_o) ); \
+} \
+friend class Class##PrivateObject;
+
+#define B_DECLARE_PRIVATE_O(Class) \
+inline Class##Private *p_func() \
+{ \
+    return reinterpret_cast<Class##Private *>( qGetPtrHelper(_m_p) ); \
+} \
+inline const Class##Private *p_func() const \
+{ \
+    return reinterpret_cast<const Class##Private *>( qGetPtrHelper(_m_p) ); \
+} \
+friend class Class##Private;
+
 #define B_DECLARE_PUBLIC(Class) \
 inline Class *q_func() \
 { \
@@ -70,6 +92,10 @@ static Class *qs_func() \
 }
 
 #define B_D(Class) Class##Private *const d = d_func()
+
+#define B_O(Class) Class##PrivateObject *const o = o_func()
+
+#define B_P(Class) Class##Private *const p = p_func()
 
 #define B_Q(Class) Class *const q = q_func()
 

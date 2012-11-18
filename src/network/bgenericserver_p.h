@@ -40,14 +40,13 @@ protected:
     void incomingConnection(int handle);
 };
 
-class B_NETWORK_EXPORT BGenericServerPrivateObject : public QObject
+class B_NETWORK_EXPORT BGenericServerPrivateObject : public BBasePrivateObject
 {
+    B_DECLARE_PRIVATE_O(BGenericServer)
     Q_OBJECT
 public:
     explicit BGenericServerPrivateObject(BGenericServerPrivate *p);
     ~BGenericServerPrivateObject();
-    //
-    BGenericServerPrivate *const _m_p;
 public slots:
     void newConnection(int socketDescriptor);
 private:
@@ -57,18 +56,19 @@ private:
 class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BGenericServer)
+    B_DECLARE_OBJECT(BGenericServer)
 public:
     explicit BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type);
     ~BGenericServerPrivate();
     //
     void newConnection(int socketDescriptor);
     //
-    BGenericServerPrivateObject *const _m_o;
-    //
     QPointer<QTcpServer> tserver;
     QPointer<QLocalServer> lserver;
     QQueue<BGenericSocket *> socketQueue;
     int maxPending;
+protected:
+    BGenericServerPrivate(BGenericServer &q, BGenericServerPrivateObject &o);
 private:
     Q_DISABLE_COPY(BGenericServerPrivate)
 };

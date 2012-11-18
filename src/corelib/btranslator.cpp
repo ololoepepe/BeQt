@@ -71,6 +71,14 @@ void BTranslatorPrivate::emitLanguageChange()
 
 //
 
+BTranslatorPrivate::BTranslatorPrivate(BTranslator &q, BBasePrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
+}
+
+//
+
 BTranslator::BTranslator(QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )
 {

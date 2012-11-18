@@ -34,6 +34,8 @@ public:
     qint64 bytesOutTotal;
     bool isFinished;
     QByteArray data;
+protected:
+    BNetworkOperationPrivate(BNetworkOperation &q, BBasePrivateObject &o);
 private:
     Q_DISABLE_COPY(BNetworkOperationPrivate)
     //

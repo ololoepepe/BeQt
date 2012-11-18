@@ -63,7 +63,7 @@ QMap<QString, BAbstractDocumentDriver *> BCodeEditorDocumentPrivate::createDrive
 
 BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q,
                                                        const QList<BAbstractDocumentDriver *> &drs) :
-    BBasePrivate(q), _m_o( new BCodeEditorDocumentPrivateObject(this) ), Drivers( createDriverMap(drs) )
+    BCodeEditPrivate(q), _m_oo( new BCodeEditorDocumentPrivateObject(this) ), Drivers( createDriverMap(drs) )
 {
     foreach (BAbstractDocumentDriver *dr, drs)
     {
@@ -71,47 +71,45 @@ BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q,
         QObject::connect( dr, SIGNAL( savingFinished(bool) ), _m_o, SLOT( savingFinished(bool) ) );
     }
     codec = QTextCodec::codecForName("UTF-8");
-    cedt = new BCodeEdit;
     buisy = false;
-    QObject::connect( cedt.data(), SIGNAL( modificationChanged(bool) ), q, SIGNAL( modificationChanged(bool) ) );
 }
 
 BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 {
     foreach (BAbstractDocumentDriver *drv, Drivers)
         delete drv;
-    if ( !cedt.isNull() )
-        cedt->deleteLater();
-    _m_o->deleteLater();
+    _m_oo->deleteLater();
 }
 
 //
 
 void BCodeEditorDocumentPrivate::loadingFinished(BAbstractDocumentDriver *driver, bool success, const QString &text)
 {
+    B_Q(BCodeEditorDocument);
     if (success)
     {
-        cedt->setText(text);
-        cedt->innerEdit()->document()->setModified(false);
+        q->setText(text);
+        q->innerEdit()->document()->setModified(false);
     }
-    QMetaObject::invokeMethod( q_func(), "loadingFinished", Q_ARG(bool, success) );
+    QMetaObject::invokeMethod( q, "loadingFinished", Q_ARG(bool, success) );
     buisy = false;
-    QMetaObject::invokeMethod( q_func(), "buisyChanged", Q_ARG(bool, false) );
+    QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
 }
 
 void BCodeEditorDocumentPrivate::savingFinished(BAbstractDocumentDriver *driver, bool success)
 {
+    B_Q(BCodeEditorDocument);
     if (success)
-        cedt->innerEdit()->document()->setModified(false);
-    QMetaObject::invokeMethod( q_func(), "savingFinished", Q_ARG(bool, success) );
+        q->innerEdit()->document()->setModified(false);
+    QMetaObject::invokeMethod( q, "savingFinished", Q_ARG(bool, success) );
     buisy = false;
-    QMetaObject::invokeMethod( q_func(), "buisyChanged", Q_ARG(bool, false) );
+    QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
 }
 
 /*========== Code Editor Document ==========*/
 
-BCodeEditorDocument::BCodeEditorDocument(const QList<BAbstractDocumentDriver *> &drivers, QObject *parent) :
-    QObject(parent), BBase( *new BCodeEditorDocumentPrivate(this, drivers) )
+BCodeEditorDocument::BCodeEditorDocument(const QList<BAbstractDocumentDriver *> &drivers, QWidget *parent) :
+    BCodeEdit(*new BCodeEditorDocumentPrivate(this, drivers), parent)
 {
     //
 }
@@ -162,7 +160,10 @@ bool BCodeEditorDocument::load(const QString &driverId)
     emit buisyChanged(true);
     bool b = dr->load(d->fileName, d->codec);
     if (!b)
+    {
         d->buisy = false;
+        emit buisyChanged(false);
+    }
     return b;
 }
 
@@ -176,9 +177,12 @@ bool BCodeEditorDocument::save(const QString &driverId)
     B_D(BCodeEditorDocument);
     d->buisy = true;
     emit buisyChanged(true);
-    bool b = dr->save(d->fileName, d->cedt->text(), d->codec);
+    bool b = dr->save(d->fileName, text(), d->codec);
     if (!b)
+    {
         d->buisy = false;
+        emit buisyChanged(false);
+    }
     return b;
 }
 
@@ -192,25 +196,15 @@ QTextCodec *BCodeEditorDocument::codec() const
     return d_func()->codec;
 }
 
-bool BCodeEditorDocument::isModified() const
-{
-    return d_func()->cedt->isModified();
-}
-
 bool BCodeEditorDocument::isBuisy() const
 {
     return d_func()->buisy;
 }
 
-BCodeEdit *BCodeEditorDocument::editWidget() const
-{
-   return d_func()->cedt;
-}
-
 //
 
-BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent) :
+    BCodeEdit(d, parent)
 {
     //
 }

@@ -149,6 +149,14 @@ void BPluginWrapperPrivate::deleteLoader()
 
 //
 
+BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper &q, BBasePrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
+}
+
+//
+
 QSettings *BPluginWrapper::createPluginSettingsInstance(const QString &pluginName, bool createFile)
 {
     return BPluginWrapperPrivate::createPluginSettingsInstance(pluginName, createFile);

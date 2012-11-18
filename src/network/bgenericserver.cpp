@@ -43,7 +43,7 @@ void BTcpServer::incomingConnection(int handle)
 //
 
 BGenericServerPrivateObject::BGenericServerPrivateObject(BGenericServerPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -57,13 +57,13 @@ BGenericServerPrivateObject::~BGenericServerPrivateObject()
 
 void BGenericServerPrivateObject::newConnection(int socketDescriptor)
 {
-    _m_p->newConnection(socketDescriptor);
+    p_func()->newConnection(socketDescriptor);
 }
 
 //
 
 BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type) :
-    BBasePrivate(q), _m_o( new BGenericServerPrivateObject(this) )
+    BBasePrivate( *q, *new BGenericServerPrivateObject(this) )
 {
     maxPending = 10;
     switch (type)
@@ -71,14 +71,14 @@ BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::
     case BGenericServer::LocalServer:
     {
         BLocalServer *server = new BLocalServer( q_func() );
-        QObject::connect( server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ) );
+        QObject::connect( server, SIGNAL( newConnection(int) ), o_func(), SLOT( newConnection(int) ) );
         lserver = server;
         break;
     }
     case BGenericServer::TcpServer:
     {
         BTcpServer *server = new BTcpServer( q_func() );
-        QObject::connect( server, SIGNAL( newConnection(int) ), _m_o, SLOT( newConnection(int) ) );
+        QObject::connect( server, SIGNAL( newConnection(int) ), o_func(), SLOT( newConnection(int) ) );
         tserver = server;
     }
     default:
@@ -88,7 +88,7 @@ BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::
 
 BGenericServerPrivate::~BGenericServerPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -116,6 +116,14 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
     {
         QMetaObject::invokeMethod( q, "newConnection", Q_ARG(int, socketDescriptor) );
     }
+}
+
+//
+
+BGenericServerPrivate::BGenericServerPrivate(BGenericServer &q, BGenericServerPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //

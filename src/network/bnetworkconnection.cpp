@@ -17,7 +17,7 @@
 #include <QMetaObject>
 
 BNetworkConnectionPrivateObject::BNetworkConnectionPrivateObject(BNetworkConnectionPrivate *p) :
-    QObject(0), _m_p(p)
+    BBasePrivateObject(p)
 {
     //
 }
@@ -31,50 +31,50 @@ BNetworkConnectionPrivateObject::~BNetworkConnectionPrivateObject()
 
 void BNetworkConnectionPrivateObject::connected()
 {
-    _m_p->connected();
+    p_func()->connected();
 }
 
 void BNetworkConnectionPrivateObject::disconnected()
 {
-    _m_p->disconnected();
+    p_func()->disconnected();
 }
 
 void BNetworkConnectionPrivateObject::error(QAbstractSocket::SocketError socketError)
 {
-    _m_p->error(socketError);
+    p_func()->error(socketError);
 }
 
 void BNetworkConnectionPrivateObject::downloadProgress(const BNetworkOperationMetaData &metaData,
                                                        qint64 bytesReady, qint64 bytesTotal)
 {
-    _m_p->downloadProgress(metaData, bytesReady, bytesTotal);
+    p_func()->downloadProgress(metaData, bytesReady, bytesTotal);
 }
 
 void BNetworkConnectionPrivateObject::uploadProgress(const BNetworkOperationMetaData &metaData,
                                                      qint64 bytesReady, qint64 bytesTotal)
 {
-    _m_p->uploadProgress(metaData, bytesReady, bytesTotal);
+    p_func()->uploadProgress(metaData, bytesReady, bytesTotal);
 }
 
 void BNetworkConnectionPrivateObject::dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData)
 {
-    _m_p->dataReceived(data, metaData);
+    p_func()->dataReceived(data, metaData);
 }
 
 void BNetworkConnectionPrivateObject::dataSent(const BNetworkOperationMetaData &metaData)
 {
-    _m_p->dataSent(metaData);
+    p_func()->dataSent(metaData);
 }
 
 void BNetworkConnectionPrivateObject::operationDestroyed(const BNetworkOperationMetaData &metaData)
 {
-    _m_p->operationDestroyed(metaData);
+    p_func()->operationDestroyed(metaData);
 }
 
 //
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket *s) :
-    BBasePrivate(q), _m_o( new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
+    BBasePrivate( *q, *new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
 {
     init();
     if ( !s || s->thread() != q_func()->thread() || !s->isOpen() )
@@ -84,7 +84,7 @@ BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGen
 }
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket::SocketType type) :
-    BBasePrivate(q), _m_o( new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
+    BBasePrivate( *q, *new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
 {
     init();
     BGenericSocket *s = new BGenericSocket(type);
@@ -96,7 +96,7 @@ BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGen
 
 BNetworkConnectionPrivate::~BNetworkConnectionPrivate()
 {
-    _m_o->deleteLater();
+    //
 }
 
 //
@@ -107,15 +107,15 @@ void BNetworkConnectionPrivate::init()
     autoDelete = true;
     socketWrapper = new BSocketWrapper( q_func() );
     QObject::connect( socketWrapper, SIGNAL( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ),
-                      _m_o, SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
+                      o_func(), SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
     QObject::connect( socketWrapper, SIGNAL( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ),
-                      _m_o, SLOT( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
+                      o_func(), SLOT( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
     QObject::connect( socketWrapper, SIGNAL( dataReceived(QByteArray, BNetworkOperationMetaData) ),
-                      _m_o, SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
+                      o_func(), SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
     QObject::connect( socketWrapper, SIGNAL( dataSent(BNetworkOperationMetaData) ),
-                      _m_o, SLOT( dataSent(BNetworkOperationMetaData) ) );
+                      o_func(), SLOT( dataSent(BNetworkOperationMetaData) ) );
     QObject::connect( socketWrapper, SIGNAL( criticalBufferSizeReached() ),
-                      _m_o, SIGNAL( criticalBufferSizeReached() ) );
+                      o_func(), SIGNAL( criticalBufferSizeReached() ) );
 }
 
 void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
@@ -125,10 +125,10 @@ void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
     socket = s;
     socketWrapper->setSocket(s);
     socket->setParent( q_func() );
-    QObject::connect( socket, SIGNAL( connected() ), _m_o, SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), _m_o, SLOT( disconnected() ) );
+    QObject::connect( socket, SIGNAL( connected() ), o_func(), SLOT( connected() ) );
+    QObject::connect( socket, SIGNAL( disconnected() ), o_func(), SLOT( disconnected() ) );
     QObject::connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-                      _m_o, SLOT( error(QAbstractSocket::SocketError) ) );
+                      o_func(), SLOT( error(QAbstractSocket::SocketError) ) );
 }
 
 void BNetworkConnectionPrivate::sendNext()
@@ -283,6 +283,14 @@ void BNetworkConnectionPrivate::operationDestroyed(const BNetworkOperationMetaDa
 BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOperationMetaData &metaData)
 {
     return new BNetworkOperation( metaData, q_func() );
+}
+
+//
+
+BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection &q, BNetworkConnectionPrivateObject &o) :
+    BBasePrivate(q, o)
+{
+    //
 }
 
 //
