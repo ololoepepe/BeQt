@@ -15,33 +15,13 @@ class BSocketWrapperPrivate;
 #include <QPointer>
 
 /*============================================================================
-================================ Socket Wrapper Private Object
-============================================================================*/
-
-class B_NETWORK_EXPORT BSocketWrapperPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BSocketWrapper)
-    Q_OBJECT
-public:
-    explicit BSocketWrapperPrivateObject(BSocketWrapperPrivate *p);
-    ~BSocketWrapperPrivateObject();
-public slots:
-    void bytesWritten(qint64 bytes);
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-    void readyRead();
-private:
-    Q_DISABLE_COPY(BSocketWrapperPrivateObject)
-};
-
-/*============================================================================
 ================================ Socket Wrapper Private
 ============================================================================*/
 
 class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSocketWrapper)
-    B_DECLARE_OBJECT(BSocketWrapper)
+    Q_OBJECT
 public:
     explicit BSocketWrapperPrivate(BSocketWrapper *q);
     ~BSocketWrapperPrivate();
@@ -49,10 +29,6 @@ public:
     void init();
     void resetIn();
     void resetOut();
-    void bytesWritten(qint64 bytes);
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-    void readyRead();
     //
     QPointer<BGenericSocket> socket;
     qint64 bytesInTotal;
@@ -63,8 +39,11 @@ public:
     int comprLvl;
     qint64 criticalBufferSize;
     bool closeOnCriticalBufferSize;
-protected:
-    BSocketWrapperPrivate(BSocketWrapper &q, BSocketWrapperPrivateObject &o);
+public slots:
+    void bytesWritten(qint64 bytes);
+    void disconnected();
+    void error(QAbstractSocket::SocketError socketError);
+    void readyRead();
 private:
     Q_DISABLE_COPY(BSocketWrapperPrivate)
 };

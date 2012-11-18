@@ -67,14 +67,6 @@ void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
     QMetaObject::invokeMethod(q_func(), "finished");
 }
 
-//
-
-BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation &q, BBasePrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
-}
-
 /*============================================================================
 ================================ Network Operation
 ============================================================================*/

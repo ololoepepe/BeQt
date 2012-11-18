@@ -14,31 +14,13 @@ class BGenericServer;
 #include <QDataStream>
 
 /*============================================================================
-================================ Application Server Private Object
-============================================================================*/
-
-class BApplicationServerPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BApplicationServer)
-    Q_OBJECT
-public:
-    explicit BApplicationServerPrivateObject(BApplicationServerPrivate *p);
-    ~BApplicationServerPrivateObject();
-public slots:
-    void newPendingConnection();
-private:
-    Q_DISABLE_COPY(BApplicationServerPrivateObject)
-};
-
-/*============================================================================
 ================================ Application Server Private
 ============================================================================*/
 
 class BApplicationServerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BApplicationServer)
-    B_DECLARE_OBJECT(BApplicationServer)
-    Q_DECLARE_TR_FUNCTIONS(BApplicationServer)
+    Q_OBJECT
 public:
     static const int OperationTimeout;
     static const QDataStream::Version DSVersion;
@@ -46,11 +28,9 @@ public:
     explicit BApplicationServerPrivate(BApplicationServer *q);
     ~BApplicationServerPrivate();
     //
-    void newPendingConnection();
-    //
     BGenericServer *server;
-protected:
-    BApplicationServerPrivate(BApplicationServer &q, BApplicationServerPrivateObject &o);
+public slots:
+    void newPendingConnection();
 private:
     Q_DISABLE_COPY(BApplicationServerPrivate)
 };

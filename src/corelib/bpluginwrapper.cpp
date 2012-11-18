@@ -151,14 +151,6 @@ void BPluginWrapperPrivate::deleteLoader()
     loader->deleteLater();
 }
 
-//
-
-BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper &q, BBasePrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
-}
-
 /*============================================================================
 ================================ Plugin Wrapper
 ============================================================================*/

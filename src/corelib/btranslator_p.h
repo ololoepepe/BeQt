@@ -31,8 +31,6 @@ public:
     QString fileName;
     QList<QTranslator *> translators;
     bool installed;
-protected:
-    BTranslatorPrivate(BTranslator &q, BBasePrivateObject &o);
 private:
     Q_DISABLE_COPY(BTranslatorPrivate)
 };

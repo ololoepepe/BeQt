@@ -47,33 +47,11 @@ void BTcpServer::incomingConnection(int handle)
 }
 
 /*============================================================================
-================================ Generic Server Private Object
-============================================================================*/
-
-BGenericServerPrivateObject::BGenericServerPrivateObject(BGenericServerPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BGenericServerPrivateObject::~BGenericServerPrivateObject()
-{
-    //
-}
-
-//
-
-void BGenericServerPrivateObject::newConnection(int socketDescriptor)
-{
-    p_func()->newConnection(socketDescriptor);
-}
-
-/*============================================================================
 ================================ Generic Server Private
 ============================================================================*/
 
 BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type) :
-    BBasePrivate( *q, *new BGenericServerPrivateObject(this) )
+    BBasePrivate(q)
 {
     maxPending = 10;
     switch (type)
@@ -81,14 +59,14 @@ BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::
     case BGenericServer::LocalServer:
     {
         BLocalServer *server = new BLocalServer( q_func() );
-        QObject::connect( server, SIGNAL( newConnection(int) ), o_func(), SLOT( newConnection(int) ) );
+        QObject::connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
         lserver = server;
         break;
     }
     case BGenericServer::TcpServer:
     {
         BTcpServer *server = new BTcpServer( q_func() );
-        QObject::connect( server, SIGNAL( newConnection(int) ), o_func(), SLOT( newConnection(int) ) );
+        QObject::connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
         tserver = server;
     }
     default:
@@ -126,14 +104,6 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
     {
         QMetaObject::invokeMethod( q, "newConnection", Q_ARG(int, socketDescriptor) );
     }
-}
-
-//
-
-BGenericServerPrivate::BGenericServerPrivate(BGenericServer &q, BGenericServerPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

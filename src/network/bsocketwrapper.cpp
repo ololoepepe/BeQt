@@ -13,48 +13,11 @@
 #include <QMetaObject>
 
 /*============================================================================
-================================ Socket Wrapper Private Object
-============================================================================*/
-
-BSocketWrapperPrivateObject::BSocketWrapperPrivateObject(BSocketWrapperPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BSocketWrapperPrivateObject::~BSocketWrapperPrivateObject()
-{
-    //
-}
-
-//
-
-void BSocketWrapperPrivateObject::bytesWritten(qint64 bytes)
-{
-    p_func()->bytesWritten(bytes);
-}
-
-void BSocketWrapperPrivateObject::disconnected()
-{
-    p_func()->disconnected();
-}
-
-void BSocketWrapperPrivateObject::error(QAbstractSocket::SocketError socketError)
-{
-    p_func()->error(socketError);
-}
-
-void BSocketWrapperPrivateObject::readyRead()
-{
-    p_func()->readyRead();
-}
-
-/*============================================================================
 ================================ Socket Wrapper Private
 ============================================================================*/
 
 BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
-    BBasePrivate( *q, *new BSocketWrapperPrivateObject(this) )
+    BBasePrivate(q)
 {
     init();
 }
@@ -87,6 +50,8 @@ void BSocketWrapperPrivate::resetOut()
     bytesOutReady = 0;
     metaOut.invalidate();
 }
+
+//
 
 void BSocketWrapperPrivate::bytesWritten(qint64 bytes)
 {
@@ -168,14 +133,6 @@ void BSocketWrapperPrivate::readyRead()
     }
 }
 
-//
-
-BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper &q, BSocketWrapperPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
-}
-
 /*============================================================================
 ================================ Socket Wrapper
 ============================================================================*/
@@ -206,11 +163,11 @@ void BSocketWrapper::setSocket(BGenericSocket *socket)
     if ( !socket || socket->thread() != thread() || !socket->isSocketSet() || !unsetSocket() )
         return;
     d->socket = socket;
-    connect( socket, SIGNAL( bytesWritten(qint64) ), d->_m_o, SLOT( bytesWritten(qint64) ) );
-    connect( socket, SIGNAL( disconnected() ), d->_m_o, SLOT( disconnected() ) );
+    connect( socket, SIGNAL( bytesWritten(qint64) ), d, SLOT( bytesWritten(qint64) ) );
+    connect( socket, SIGNAL( disconnected() ), d, SLOT( disconnected() ) );
     connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-             d->_m_o, SLOT( error(QAbstractSocket::SocketError) ) );
-    connect( socket, SIGNAL( readyRead() ), d->_m_o, SLOT( readyRead() ) );
+             d, SLOT( error(QAbstractSocket::SocketError) ) );
+    connect( socket, SIGNAL( readyRead() ), d, SLOT( readyRead() ) );
 }
 
 void BSocketWrapper::setCompressionLevel(int level)
@@ -239,11 +196,11 @@ bool BSocketWrapper::unsetSocket()
         return true;
     if ( isBuisy() )
         return false;
-    disconnect( d->socket, SIGNAL( bytesWritten(qint64) ), d->_m_o, SLOT( bytesWritten(qint64) ) );
+    disconnect( d->socket, SIGNAL( bytesWritten(qint64) ), d, SLOT( bytesWritten(qint64) ) );
     disconnect( d->socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
     disconnect( d->socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-                d->_m_o, SLOT( error(QAbstractSocket::SocketError) ) );
-    disconnect( d->socket, SIGNAL( readyRead() ), d->_m_o, SLOT( readyRead() ) );
+                d, SLOT( error(QAbstractSocket::SocketError) ) );
+    disconnect( d->socket, SIGNAL( readyRead() ), d, SLOT( readyRead() ) );
     d->socket = 0;
     d->resetIn();
     d->resetOut();

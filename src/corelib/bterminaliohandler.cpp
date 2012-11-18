@@ -41,6 +41,8 @@ public:
     static QMutex echoMutex;
     static bool prefereReadLine;
     static QString lastLine;
+private:
+    Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
 };
 
 /*============================================================================

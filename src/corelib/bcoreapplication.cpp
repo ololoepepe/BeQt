@@ -276,14 +276,6 @@ void BCoreApplicationPrivate::saveSettings()
     s->deleteLater();
 }
 
-//
-
-BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication &q, BBasePrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
-}
-
 /*============================================================================
 ================================ Core Application
 ============================================================================*/

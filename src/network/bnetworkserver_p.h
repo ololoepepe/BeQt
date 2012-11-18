@@ -74,45 +74,26 @@ private:
 };
 
 /*============================================================================
-================================ Network Server Private Object
-============================================================================*/
-
-class B_NETWORK_EXPORT BNetworkServerPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BNetworkServer)
-    Q_OBJECT
-public:
-    explicit BNetworkServerPrivateObject(BNetworkServerPrivate *p);
-    ~BNetworkServerPrivateObject();
-public slots:
-    void newConnection(int socketDescriptor);
-    void finished();
-private:
-    Q_DISABLE_COPY(BNetworkServerPrivateObject)
-};
-
-/*============================================================================
 ================================ Network Server Private
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BNetworkServer)
-    B_DECLARE_OBJECT(BNetworkServer)
+    Q_OBJECT
 public:
     explicit BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type);
     ~BNetworkServerPrivate();
     //
-    void newConnection(int socketDescriptor);
-    void finished(BNetworkServerThread *t);
     BNetworkConnection *createConnection(int socketDescriptor) const;
     //
     QPointer<BGenericServer> server;
     QList<BNetworkServerThread *> threads;
     int maxConnectionCount;
     int maxThreadCount;
-protected:
-    BNetworkServerPrivate(BNetworkServer &q, BNetworkServerPrivateObject &o);
+public slots:
+    void newConnection(int socketDescriptor);
+    void finished();
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)
     //

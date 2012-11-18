@@ -73,14 +73,6 @@ void BTranslatorPrivate::emitLanguageChange()
     BCoreApplication::instance()->d_func()->emitLanguageChange();
 }
 
-//
-
-BTranslatorPrivate::BTranslatorPrivate(BTranslator &q, BBasePrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
-}
-
 /*============================================================================
 ================================ Translator
 ============================================================================*/

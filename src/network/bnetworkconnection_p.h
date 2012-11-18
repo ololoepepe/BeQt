@@ -25,38 +25,13 @@ class QByteArray;
 #include <QUuid>
 
 /*============================================================================
-================================ Network Connection Private Object
-============================================================================*/
-
-class B_NETWORK_EXPORT BNetworkConnectionPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BNetworkConnection)
-    Q_OBJECT
-public:
-    explicit BNetworkConnectionPrivateObject(BNetworkConnectionPrivate *p);
-    ~BNetworkConnectionPrivateObject();
-public slots:
-    void connected();
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-    void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
-    void dataSent(const BNetworkOperationMetaData &metaData);
-    void operationDestroyed(const BNetworkOperationMetaData &metaData);
-private:
-    Q_DISABLE_COPY(BNetworkConnectionPrivateObject)
-};
-
-/*============================================================================
 ================================ Network Connection Private
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BNetworkConnection)
-    B_DECLARE_OBJECT(BNetworkConnection)
-    Q_DECLARE_TR_FUNCTIONS(BNetworkConnection)
+    Q_OBJECT
 public:
     typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
     //
@@ -67,14 +42,6 @@ public:
     void init();
     void setSocket(BGenericSocket *s);
     void sendNext();
-    void connected();
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-    void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
-    void dataSent(const BNetworkOperationMetaData &metaData);
-    void operationDestroyed(const BNetworkOperationMetaData &metaData);
     BNetworkOperation *createOperation(const BNetworkOperationMetaData &metaData);
     //
     const QUuid UniqueId;
@@ -86,8 +53,15 @@ public:
     QQueue<Data> dataQueue;
     bool detailedLog;
     bool autoDelete;
-protected:
-    BNetworkConnectionPrivate(BNetworkConnection &q, BNetworkConnectionPrivateObject &o);
+public slots:
+    void connected();
+    void disconnected();
+    void error(QAbstractSocket::SocketError socketError);
+    void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
+    void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
+    void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
+    void dataSent(const BNetworkOperationMetaData &metaData);
+    void operationDestroyed(const BNetworkOperationMetaData &metaData);
 private:
     Q_DISABLE_COPY(BNetworkConnectionPrivate)
 };

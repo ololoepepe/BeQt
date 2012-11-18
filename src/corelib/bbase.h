@@ -6,7 +6,6 @@ class BBasePrivate;
 #include "bglobal.h"
 
 #include <QtGlobal>
-#include <QPointer>
 
 /*============================================================================
 ================================ Base

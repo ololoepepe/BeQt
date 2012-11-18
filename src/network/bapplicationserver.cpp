@@ -18,28 +18,6 @@
 #include <QScopedPointer>
 
 /*============================================================================
-================================ Application Server Private Object
-============================================================================*/
-
-BApplicationServerPrivateObject::BApplicationServerPrivateObject(BApplicationServerPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BApplicationServerPrivateObject::~BApplicationServerPrivateObject()
-{
-    //
-}
-
-//
-
-void BApplicationServerPrivateObject::newPendingConnection()
-{
-    p_func()->newPendingConnection();
-}
-
-/*============================================================================
 ================================ Application Server Private
 ============================================================================*/
 
@@ -49,13 +27,13 @@ const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Q
 //
 
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
-    BBasePrivate( *q, *new BApplicationServerPrivateObject(this) )
+    BBasePrivate(q)
 {
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
     server = new BGenericServer(BGenericServer::LocalServer);
     //TODO: On Qt5, set socket options
     //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
-    QObject::connect( server, SIGNAL( newPendingConnection() ), o_func(), SLOT( newPendingConnection() ) );
+    QObject::connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
 BApplicationServerPrivate::~BApplicationServerPrivate()
@@ -95,14 +73,6 @@ void BApplicationServerPrivate::newPendingConnection()
         s->waitForBytesWritten(OperationTimeout);
     }
     s->close();
-}
-
-//
-
-BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer &q, BApplicationServerPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

@@ -16,16 +16,24 @@ class QLocalSocket;
 #include <QAbstractSocket>
 
 /*============================================================================
-================================ Generic Socket Private Object
+================================ Generic Socket Private
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericSocketPrivateObject : public BBasePrivateObject
+class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
 {
-    B_DECLARE_PRIVATE_O(BGenericSocket)
+    B_DECLARE_PUBLIC(BGenericSocket)
     Q_OBJECT
 public:
-    explicit BGenericSocketPrivateObject(BGenericSocketPrivate *p);
-    ~BGenericSocketPrivateObject();
+    explicit BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type);
+    ~BGenericSocketPrivate();
+    //
+    void setSocket(QAbstractSocket *socket);
+    void setSocket(QLocalSocket *socket);
+    void connectIODevice();
+    void disconnectIODevice();
+    //
+    QPointer<QAbstractSocket> asocket;
+    QPointer<QLocalSocket> lsocket;
 public slots:
     void lsocketError(QLocalSocket::LocalSocketError socketError);
     void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
@@ -37,41 +45,6 @@ public slots:
     void readChannelFinished();
     void readyRead();
     void stateChanged(QAbstractSocket::SocketState socketState);
-private:
-    Q_DISABLE_COPY(BGenericSocketPrivateObject)
-};
-
-/*============================================================================
-================================ Generic Socket Private
-============================================================================*/
-
-class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BGenericSocket)
-    B_DECLARE_OBJECT(BGenericSocket)
-public:
-    explicit BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type);
-    ~BGenericSocketPrivate();
-    //
-    void setSocket(QAbstractSocket *socket);
-    void setSocket(QLocalSocket *socket);
-    void connectIODevice();
-    void disconnectIODevice();
-    void lsocketError(QLocalSocket::LocalSocketError socketError);
-    void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
-    void aboutToClose();
-    void connected();
-    void bytesWritten(qint64 bytes);
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-    void readChannelFinished();
-    void readyRead();
-    void stateChanged(QAbstractSocket::SocketState socketState);
-    //
-    QPointer<QAbstractSocket> asocket;
-    QPointer<QLocalSocket> lsocket;
-protected:
-    BGenericSocketPrivate(BGenericSocket &q, BGenericSocketPrivateObject &o);
 private:
     Q_DISABLE_COPY(BGenericSocketPrivate)
 };

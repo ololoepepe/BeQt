@@ -17,70 +17,11 @@
 #include <QMetaObject>
 
 /*============================================================================
-================================ Network Connection Private Object
-============================================================================*/
-
-BNetworkConnectionPrivateObject::BNetworkConnectionPrivateObject(BNetworkConnectionPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BNetworkConnectionPrivateObject::~BNetworkConnectionPrivateObject()
-{
-    //
-}
-
-//
-
-void BNetworkConnectionPrivateObject::connected()
-{
-    p_func()->connected();
-}
-
-void BNetworkConnectionPrivateObject::disconnected()
-{
-    p_func()->disconnected();
-}
-
-void BNetworkConnectionPrivateObject::error(QAbstractSocket::SocketError socketError)
-{
-    p_func()->error(socketError);
-}
-
-void BNetworkConnectionPrivateObject::downloadProgress(const BNetworkOperationMetaData &metaData,
-                                                       qint64 bytesReady, qint64 bytesTotal)
-{
-    p_func()->downloadProgress(metaData, bytesReady, bytesTotal);
-}
-
-void BNetworkConnectionPrivateObject::uploadProgress(const BNetworkOperationMetaData &metaData,
-                                                     qint64 bytesReady, qint64 bytesTotal)
-{
-    p_func()->uploadProgress(metaData, bytesReady, bytesTotal);
-}
-
-void BNetworkConnectionPrivateObject::dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData)
-{
-    p_func()->dataReceived(data, metaData);
-}
-
-void BNetworkConnectionPrivateObject::dataSent(const BNetworkOperationMetaData &metaData)
-{
-    p_func()->dataSent(metaData);
-}
-
-void BNetworkConnectionPrivateObject::operationDestroyed(const BNetworkOperationMetaData &metaData)
-{
-    p_func()->operationDestroyed(metaData);
-}
-
-/*============================================================================
 ================================ Network Connection Private
 ============================================================================*/
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket *s) :
-    BBasePrivate( *q, *new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
+    BBasePrivate(q), UniqueId( QUuid::createUuid() )
 {
     init();
     if ( !s || s->thread() != q_func()->thread() || !s->isOpen() )
@@ -90,7 +31,7 @@ BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGen
 }
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket::SocketType type) :
-    BBasePrivate( *q, *new BNetworkConnectionPrivateObject(this) ), UniqueId( QUuid::createUuid() )
+    BBasePrivate(q), UniqueId( QUuid::createUuid() )
 {
     init();
     BGenericSocket *s = new BGenericSocket(type);
@@ -113,15 +54,15 @@ void BNetworkConnectionPrivate::init()
     autoDelete = true;
     socketWrapper = new BSocketWrapper( q_func() );
     QObject::connect( socketWrapper, SIGNAL( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ),
-                      o_func(), SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
+                      this, SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
     QObject::connect( socketWrapper, SIGNAL( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ),
-                      o_func(), SLOT( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
+                      this, SLOT( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
     QObject::connect( socketWrapper, SIGNAL( dataReceived(QByteArray, BNetworkOperationMetaData) ),
-                      o_func(), SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
+                      this, SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
     QObject::connect( socketWrapper, SIGNAL( dataSent(BNetworkOperationMetaData) ),
-                      o_func(), SLOT( dataSent(BNetworkOperationMetaData) ) );
+                      this, SLOT( dataSent(BNetworkOperationMetaData) ) );
     QObject::connect( socketWrapper, SIGNAL( criticalBufferSizeReached() ),
-                      o_func(), SIGNAL( criticalBufferSizeReached() ) );
+                      this, SIGNAL( criticalBufferSizeReached() ) );
 }
 
 void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
@@ -131,10 +72,10 @@ void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
     socket = s;
     socketWrapper->setSocket(s);
     socket->setParent( q_func() );
-    QObject::connect( socket, SIGNAL( connected() ), o_func(), SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), o_func(), SLOT( disconnected() ) );
+    QObject::connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
+    QObject::connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
     QObject::connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-                      o_func(), SLOT( error(QAbstractSocket::SocketError) ) );
+                      this, SLOT( error(QAbstractSocket::SocketError) ) );
 }
 
 void BNetworkConnectionPrivate::sendNext()
@@ -151,6 +92,13 @@ void BNetworkConnectionPrivate::sendNext()
         socketWrapper->sendData(data.first, data.second) ? opd->setStarted() : opd->setError();
     }
 }
+
+BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOperationMetaData &metaData)
+{
+    return new BNetworkOperation( metaData, q_func() );
+}
+
+//
 
 void BNetworkConnectionPrivate::connected()
 {
@@ -284,19 +232,6 @@ void BNetworkConnectionPrivate::operationDestroyed(const BNetworkOperationMetaDa
         requests.remove(metaData);
     else
         replies.remove(metaData);
-}
-
-BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOperationMetaData &metaData)
-{
-    return new BNetworkOperation( metaData, q_func() );
-}
-
-//
-
-BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection &q, BNetworkConnectionPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

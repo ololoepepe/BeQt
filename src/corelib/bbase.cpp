@@ -2,40 +2,16 @@
 #include "bbase_p.h"
 
 /*============================================================================
-================================ Base Private Object
-============================================================================*/
-
-BBasePrivateObject::BBasePrivateObject(BBasePrivate *p) :
-    _m_p(p)
-{
-    //
-}
-
-BBasePrivateObject::~BBasePrivateObject()
-{
-    //
-}
-
-/*============================================================================
 ================================ Base Private
 ============================================================================*/
 
 BBasePrivate::BBasePrivate(BBase *q) :
-    _m_q(q), _m_o( new BBasePrivateObject(this) )
+    _m_q(q)
 {
     //
 }
 
 BBasePrivate::~BBasePrivate()
-{
-    if (_m_o)
-        _m_o->deleteLater();
-}
-
-//
-
-BBasePrivate::BBasePrivate(BBase &q, BBasePrivateObject &o) :
-    _m_q(&q), _m_o(&o)
 {
     //
 }
@@ -52,7 +28,7 @@ BBase::BBase() :
 
 BBase::~BBase()
 {
-    delete _m_d;
+    _m_d->deleteLater();
 }
 
 //

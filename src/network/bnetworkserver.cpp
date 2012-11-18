@@ -89,36 +89,11 @@ int BNetworkServerThread::connectionCount() const
 }
 
 /*============================================================================
-================================ Network Server Private Object
-============================================================================*/
-
-BNetworkServerPrivateObject::BNetworkServerPrivateObject(BNetworkServerPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BNetworkServerPrivateObject::~BNetworkServerPrivateObject()
-{
-    //
-}
-
-void BNetworkServerPrivateObject::newConnection(int socketDescriptor)
-{
-    p_func()->newConnection(socketDescriptor);
-}
-
-void BNetworkServerPrivateObject::finished()
-{
-    p_func()->finished( static_cast<BNetworkServerThread *>( sender() ) );
-}
-
-/*============================================================================
 ================================ Network Server Private
 ============================================================================*/
 
 BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
-    BBasePrivate( *q, *new BNetworkServerPrivateObject(this) )
+    BBasePrivate(q)
 {
     maxConnectionCount = 0;
     maxThreadCount = 0;
@@ -126,7 +101,7 @@ BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::
     {
         server = new BGenericServer( type, q_func() );
         server->setMaxPendingConnections(0);
-        QObject::connect( server.data(), SIGNAL( newConnection(int) ), o_func(), SLOT( newConnection(int) ) );
+        QObject::connect( server.data(), SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
     }
 }
 
@@ -136,10 +111,17 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
     {
         if (!t)
             continue;
-        QObject::disconnect( t, SIGNAL( finished() ), o_func(), SLOT( finished() ) );
+        QObject::disconnect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
         t->quit();
         t->wait(1000);
     }
+}
+
+//
+
+BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor) const
+{
+    return q_func()->createConnection(socketDescriptor);
 }
 
 //
@@ -167,32 +149,20 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
     else
     {
         BNetworkServerThread *t = new BNetworkServerThread(this);
-        QObject::connect( t, SIGNAL( finished() ), o_func(), SLOT( finished() ) );
+        QObject::connect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
         t->start();
         t->addConnection(socketDescriptor);
         threads << t;
     }
 }
 
-void BNetworkServerPrivate::finished(BNetworkServerThread *t)
+void BNetworkServerPrivate::finished()
 {
+    BNetworkServerThread *t = static_cast<BNetworkServerThread *>( sender() );
     if (!t)
         return;
     threads.removeAll(t);
     t->deleteLater();
-}
-
-BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor) const
-{
-    return q_func()->createConnection(socketDescriptor);
-}
-
-//
-
-BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer &q, BNetworkServerPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

@@ -50,8 +50,6 @@ public:
     QString type;
     QString name;
     BPluginInterface::PluginInfo info;
-protected:
-    BPluginWrapperPrivate(BPluginWrapper &q, BBasePrivateObject &o);
 private:
     Q_DISABLE_COPY(BPluginWrapperPrivate)
     //
