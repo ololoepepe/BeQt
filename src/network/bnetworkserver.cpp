@@ -101,7 +101,7 @@ BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::
     {
         server = new BGenericServer( type, q_func() );
         server->setMaxPendingConnections(0);
-        QObject::connect( server.data(), SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
+        connect( server.data(), SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
     }
 }
 
@@ -111,7 +111,7 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
     {
         if (!t)
             continue;
-        QObject::disconnect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
+        disconnect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
         t->quit();
         t->wait(1000);
     }

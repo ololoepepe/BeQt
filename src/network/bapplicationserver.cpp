@@ -33,7 +33,7 @@ BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
     server = new BGenericServer(BGenericServer::LocalServer);
     //TODO: On Qt5, set socket options
     //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
-    QObject::connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
+    connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
 BApplicationServerPrivate::~BApplicationServerPrivate()

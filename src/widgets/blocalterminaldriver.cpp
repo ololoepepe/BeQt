@@ -17,44 +17,17 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Local Terminal Driver Private Object
-============================================================================*/
-
-BLocalTerminalDriverPrivateObject::BLocalTerminalDriverPrivateObject(BLocalTerminalDriverPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BLocalTerminalDriverPrivateObject::~BLocalTerminalDriverPrivateObject()
-{
-    //
-}
-
-//
-
-void BLocalTerminalDriverPrivateObject::finished(int exitCode)
-{
-    p_func()->finished(exitCode);
-}
-
-void BLocalTerminalDriverPrivateObject::readyRead()
-{
-    p_func()->readyRead();
-}
-
-/*============================================================================
 ================================ Local Terminal Driver Private
 ============================================================================*/
 
 BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver *q) :
-    BBasePrivate( *q, *new BLocalTerminalDriverPrivateObject(this) )
+    BBasePrivate(q)
 {
     process = new QProcess(q);
     workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
-    QObject::connect( process, SIGNAL( finished(int) ), o_func(), SLOT( finished(int) ) );
-    QObject::connect( process, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
+    connect( process, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
+    connect( process, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
 }
 
 BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
@@ -72,15 +45,6 @@ void BLocalTerminalDriverPrivate::finished(int exitCode)
 void BLocalTerminalDriverPrivate::readyRead()
 {
     q_func()->emitReadyRead();
-}
-
-//
-
-BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver &q,
-                                                         BLocalTerminalDriverPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

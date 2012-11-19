@@ -53,16 +53,15 @@ void BNetworkConnectionPrivate::init()
     detailedLog = false;
     autoDelete = true;
     socketWrapper = new BSocketWrapper( q_func() );
-    QObject::connect( socketWrapper, SIGNAL( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ),
-                      this, SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
-    QObject::connect( socketWrapper, SIGNAL( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ),
-                      this, SLOT( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
-    QObject::connect( socketWrapper, SIGNAL( dataReceived(QByteArray, BNetworkOperationMetaData) ),
-                      this, SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
-    QObject::connect( socketWrapper, SIGNAL( dataSent(BNetworkOperationMetaData) ),
-                      this, SLOT( dataSent(BNetworkOperationMetaData) ) );
-    QObject::connect( socketWrapper, SIGNAL( criticalBufferSizeReached() ),
-                      this, SIGNAL( criticalBufferSizeReached() ) );
+    connect( socketWrapper, SIGNAL( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ),
+             this, SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
+    connect( socketWrapper, SIGNAL( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ),
+             this, SLOT( uploadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
+    connect( socketWrapper, SIGNAL( dataReceived(QByteArray, BNetworkOperationMetaData) ),
+             this, SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
+    connect( socketWrapper, SIGNAL( dataSent(BNetworkOperationMetaData) ),
+             this, SLOT( dataSent(BNetworkOperationMetaData) ) );
+    connect( socketWrapper, SIGNAL( criticalBufferSizeReached() ), this, SIGNAL( criticalBufferSizeReached() ) );
 }
 
 void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
@@ -72,10 +71,10 @@ void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
     socket = s;
     socketWrapper->setSocket(s);
     socket->setParent( q_func() );
-    QObject::connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
-    QObject::connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-                      this, SLOT( error(QAbstractSocket::SocketError) ) );
+    connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
+    connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+    connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
+             this, SLOT( error(QAbstractSocket::SocketError) ) );
 }
 
 void BNetworkConnectionPrivate::sendNext()

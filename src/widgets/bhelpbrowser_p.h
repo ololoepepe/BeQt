@@ -22,43 +22,19 @@ class QString;
 #include <QMap>
 
 /*============================================================================
-================================ Help Browser Private Object
-============================================================================*/
-
-class B_WIDGETS_EXPORT BHelpBrowserPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BHelpBrowser)
-    Q_OBJECT
-public:
-    explicit BHelpBrowserPrivateObject(BHelpBrowserPrivate *p);
-    ~BHelpBrowserPrivateObject();
-public slots:
-    void languageChanged();
-    void sourceChanged();
-    void ledtSearchReturnPressed();
-private:
-    Q_DISABLE_COPY(BHelpBrowserPrivateObject)
-};
-
-/*============================================================================
 ================================ Help Browser Private
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BHelpBrowser)
-    B_DECLARE_OBJECT(BHelpBrowser)
-    Q_DECLARE_TR_FUNCTIONS(BHelpBrowser)
+    Q_OBJECT
 public:
     static QMap<QString, QStringList> searchCache;
     //
     BHelpBrowserPrivate( BHelpBrowser *q, const QString &index, const QString &file,
                          const QStringList &searchPaths = QStringList() );
     ~BHelpBrowserPrivate();
-    //
-    void retranslateUi();
-    void updateCaption();
-    void search();
     //
     QVBoxLayout *vlt;
       QToolBar *tbar;
@@ -70,8 +46,10 @@ public:
         QLabel *lblSearch;
         QLineEdit *ledtSearch;
       QTextBrowser *tbrsr;
-protected:
-    BHelpBrowserPrivate(BHelpBrowser &q, BHelpBrowserPrivateObject &o);
+public slots:
+    void retranslateUi();
+    void updateCaption();
+    void search();
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivate)
 };

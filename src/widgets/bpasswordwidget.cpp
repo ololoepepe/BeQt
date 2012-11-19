@@ -21,38 +21,6 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Password Widget Private Object
-============================================================================*/
-
-BPasswordWidgetPrivateObject::BPasswordWidgetPrivateObject(BPasswordWidgetPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BPasswordWidgetPrivateObject::~BPasswordWidgetPrivateObject()
-{
-    //
-}
-
-//
-
-void BPasswordWidgetPrivateObject::languageChanged()
-{
-    p_func()->retranslateUi();
-}
-
-void BPasswordWidgetPrivateObject::tbtnSaveClicked()
-{
-    p_func()->resetSave();
-}
-
-void BPasswordWidgetPrivateObject::tbtnShowClicked()
-{
-    p_func()->resetShow();
-}
-
-/*============================================================================
 ================================ Password Widget Private
 ============================================================================*/
 
@@ -61,7 +29,7 @@ const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4
 //
 
 BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
-    BBasePrivate( *q, *new BPasswordWidgetPrivateObject(this) )
+    BBasePrivate(q)
 {
     save = true; //Is reset to false, so it's false by default
     show = true; //Is reset to false, so it's false by default
@@ -72,17 +40,17 @@ BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
       tbtnSave->setIcon( BApplication::beqtIcon("password_save") );
-      QObject::connect( tbtnSave, SIGNAL( clicked() ), o_func(), SLOT( tbtnSaveClicked() ) );
+      connect( tbtnSave, SIGNAL( clicked() ), this, SLOT( resetSave() ) );
       resetSave();
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
       tbtnShow->setIcon( BApplication::beqtIcon("decrypted") );
-      QObject::connect( tbtnShow, SIGNAL( clicked() ), o_func(), SLOT( tbtnShowClicked() ) );
+      connect( tbtnShow, SIGNAL( clicked() ), this, SLOT( resetShow() ) );
       resetShow();
     hlt->addWidget(tbtnShow);
     //
     retranslateUi();
-    QObject::connect( bApp, SIGNAL( languageChanged() ), o_func(), SLOT( languageChanged() ) );
+    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
 BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
@@ -109,14 +77,6 @@ void BPasswordWidgetPrivate::resetShow()
     show = !show;
     tbtnShow->setDown(show);
     ledt->setEchoMode(show ? QLineEdit::Normal : QLineEdit::Password);
-}
-
-//
-
-BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget &q, BPasswordWidgetPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

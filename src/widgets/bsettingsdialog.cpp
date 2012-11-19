@@ -66,7 +66,7 @@ BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettin
             lstwgt = new QListWidget(q);
             hspltr->addWidget(lstwgt);
             stkdwgt = new QStackedWidget(q);
-              QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), stkdwgt, SLOT( setCurrentIndex(int) ) );
+              connect( lstwgt, SIGNAL( currentRowChanged(int) ), stkdwgt, SLOT( setCurrentIndex(int) ) );
             hspltr->addWidget(stkdwgt);
             vlt->addWidget(hspltr);
             twgt = 0;
@@ -113,8 +113,8 @@ BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettin
     }
     dlgbbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, q);
       dlgbbox->button(QDialogButtonBox::Ok)->setDefault(true);
-      QObject::connect( dlgbbox, SIGNAL( accepted() ), q, SLOT( accept() ) );
-      QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
+      connect( dlgbbox, SIGNAL( accepted() ), q, SLOT( accept() ) );
+      connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
     vlt->addWidget(dlgbbox);
 }
 

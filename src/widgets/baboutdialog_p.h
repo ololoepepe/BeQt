@@ -22,31 +22,13 @@ class QDialogButtonBox;
 #include <QMap>
 
 /*============================================================================
-================================ About Dialog Private Object
-============================================================================*/
-
-class B_WIDGETS_EXPORT BAboutDialogPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BAboutDialog)
-    Q_OBJECT
-public:
-    explicit BAboutDialogPrivateObject(BAboutDialogPrivate *p);
-    ~BAboutDialogPrivateObject();
-public slots:
-    void languageChanged();
-private:
-    Q_DISABLE_COPY(BAboutDialogPrivateObject)
-};
-
-/*============================================================================
 ================================ About Dialog Private
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BAboutDialog)
-    B_DECLARE_OBJECT(BAboutDialog)
-    Q_DECLARE_TR_FUNCTIONS(BAboutDialog)
+    Q_OBJECT
 public:
     enum DialogTab
     {
@@ -71,7 +53,7 @@ public:
     void removeTab(DialogTab t);
     void fillTab(DialogTab t, const QString &text, bool html);
     void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
-    void retranslateUi();
+
     //
     QString appName;
     QMap<DialogTab, QTextBrowser *> tbrsrs;
@@ -91,8 +73,7 @@ public:
         //text browsers
       QDialogButtonBox *dlgbbox;
         //Close
-protected:
-    BAboutDialogPrivate(BAboutDialog &q, BAboutDialogPrivateObject &o);
+   void retranslateUi();
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
 };

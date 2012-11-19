@@ -9,39 +9,16 @@
 #include <QWidget>
 
 /*============================================================================
-================================ Code Editor Private Object
-============================================================================*/
-
-BCodeEditorPrivateObject::BCodeEditorPrivateObject(BCodeEditorPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BCodeEditorPrivateObject::~BCodeEditorPrivateObject()
-{
-    //
-}
-
-/*============================================================================
 ================================ Code Editor Private
 ============================================================================*/
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
-    BBasePrivate( *q, * new BCodeEditorPrivateObject(this) )
+    BBasePrivate(q)
 {
     //
 }
 
 BCodeEditorPrivate::~BCodeEditorPrivate()
-{
-    //
-}
-
-//
-
-BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor &q, BCodeEditorPrivateObject &o) :
-    BBasePrivate(q, o)
 {
     //
 }

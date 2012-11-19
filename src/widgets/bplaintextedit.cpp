@@ -36,28 +36,6 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Plain Text Edit Private Object
-============================================================================*/
-
-BPlainTextEditPrivateObject::BPlainTextEditPrivateObject(BPlainTextEditPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BPlainTextEditPrivateObject::~BPlainTextEditPrivateObject()
-{
-    //
-}
-
-//
-
-void BPlainTextEditPrivateObject::selectionChanged()
-{
-    p_func()->selectionChanged();
-}
-
-/*============================================================================
 ================================ Plain Text Edit Private
 ============================================================================*/
 
@@ -86,17 +64,41 @@ void BPlainTextEditPrivate::fillBackground(QPainter *painter, const QRectF &rect
 //
 
 BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit *q) :
-    BBasePrivate( *q, *new BPlainTextEditPrivateObject(this) )
+    BBasePrivate(q)
 {
     drag = true;
     blockMode = false;
     hasSelection = false;
-    QObject::connect( q, SIGNAL( selectionChanged() ), o_func(), SLOT( selectionChanged() ) );
+    connect( q, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
 }
 
 BPlainTextEditPrivate::~BPlainTextEditPrivate()
 {
     //
+}
+
+//
+
+QAbstractTextDocumentLayout::PaintContext BPlainTextEditPrivate::getPaintContext() const
+{
+    QAbstractTextDocumentLayout::PaintContext context = q_func()->getPaintContext();
+    if (!blockMode || !hasSelection)
+        return context;
+    QAbstractTextDocumentLayout::Selection sel = context.selections.last();
+    context.selections.remove(context.selections.size() - 1);
+    foreach (const BPlainTextEdit::SelectionRange &sr, selectionRanges)
+    {
+        sel.cursor.setPosition(sr.start);
+        sel.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        context.selections.append(sel);
+    }
+    return context;
+}
+
+void BPlainTextEditPrivate::emulateShiftPress()
+{
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
+    QApplication::sendEvent(q_func(), &e);
 }
 
 //
@@ -137,36 +139,6 @@ void BPlainTextEditPrivate::selectionChanged()
     }
     //Workaround to update the selection
     emulateShiftPress();
-}
-
-QAbstractTextDocumentLayout::PaintContext BPlainTextEditPrivate::getPaintContext() const
-{
-    QAbstractTextDocumentLayout::PaintContext context = q_func()->getPaintContext();
-    if (!blockMode || !hasSelection)
-        return context;
-    QAbstractTextDocumentLayout::Selection sel = context.selections.last();
-    context.selections.remove(context.selections.size() - 1);
-    foreach (const BPlainTextEdit::SelectionRange &sr, selectionRanges)
-    {
-        sel.cursor.setPosition(sr.start);
-        sel.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
-        context.selections.append(sel);
-    }
-    return context;
-}
-
-void BPlainTextEditPrivate::emulateShiftPress()
-{
-    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
-    QApplication::sendEvent(q_func(), &e);
-}
-
-//
-
-BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit &q, BPlainTextEditPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

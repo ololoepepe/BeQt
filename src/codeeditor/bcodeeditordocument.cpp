@@ -20,44 +20,11 @@
 #include <QTextDocument>
 
 /*============================================================================
-================================ Code Editor Document Private Object
-============================================================================*/
-
-BCodeEditorDocumentPrivateObject::BCodeEditorDocumentPrivateObject(BCodeEditorDocumentPrivate *p) :
-    BCodeEditPrivateObject(p)
-{
-    //
-}
-
-BCodeEditorDocumentPrivateObject::~BCodeEditorDocumentPrivateObject()
-{
-    //
-}
-
-//
-
-void BCodeEditorDocumentPrivateObject::loadingFinished(BCodeEditorDocument *doc, bool success, const QString &text)
-{
-    B_P(BCodeEditorDocument);
-    if ( doc != p->q_func() )
-        return;
-    p->loadingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success, text);
-}
-
-void BCodeEditorDocumentPrivateObject::savingFinished(BCodeEditorDocument *doc, bool success)
-{
-    B_P(BCodeEditorDocument);
-    if ( doc != p->q_func() )
-        return;
-    p->savingFinished(static_cast<BAbstractDocumentDriver *>( sender() ), success);
-}
-
-/*============================================================================
 ================================ Code Editor Document Private
 ============================================================================*/
 
 BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q) :
-    BCodeEditPrivate( *q, *new BCodeEditorDocumentPrivateObject(this) )
+    BCodeEditPrivate(q)
 {
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
@@ -71,10 +38,13 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 
 //
 
-void BCodeEditorDocumentPrivate::loadingFinished(BAbstractDocumentDriver *driver, bool success, const QString &text)
+void BCodeEditorDocumentPrivate::loadingFinished(BCodeEditorDocument *doc, bool success, const QString &text)
 {
-    QObject::disconnect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
-                         o_func(), SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
+    if ( doc != q_func() )
+        return;
+    BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
+    disconnect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
+                this, SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
     B_Q(BCodeEditorDocument);
     if (success)
     {
@@ -86,10 +56,13 @@ void BCodeEditorDocumentPrivate::loadingFinished(BAbstractDocumentDriver *driver
     QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
 }
 
-void BCodeEditorDocumentPrivate::savingFinished(BAbstractDocumentDriver *driver, bool success)
+void BCodeEditorDocumentPrivate::savingFinished(BCodeEditorDocument *doc, bool success)
 {
-    QObject::disconnect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
-                         o_func(), SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
+    if ( doc != q_func() )
+        return;
+    BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
+    disconnect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
+                this, SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
     B_Q(BCodeEditorDocument);
     if (success)
         q->innerEdit()->document()->setModified(false);
@@ -160,7 +133,7 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver)
         if (!fin)
         {
             connect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
-                     d->o_func(), SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
+                     d, SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
             d->buisy = true;
             emit buisyChanged(true);
         }
@@ -183,7 +156,7 @@ bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver)
         if (!fin)
         {
             connect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
-                     d->o_func(), SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
+                     d, SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
             d->buisy = true;
             emit buisyChanged(true);
         }

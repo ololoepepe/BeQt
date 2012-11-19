@@ -61,12 +61,12 @@ void BGenericSocketPrivate::setSocket(QAbstractSocket *socket)
     socket->setParent(q);
     asocket = socket;
     connectIODevice();
-    QObject::connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
-    QObject::connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
+    connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
+    connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+    connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
                       this, SLOT( error(QAbstractSocket::SocketError) ) );
-    QObject::connect( socket, SIGNAL( stateChanged(QAbstractSocket::SocketState) ),
-                      this, SLOT( stateChanged(QAbstractSocket::SocketState) ) );
+   connect( socket, SIGNAL( stateChanged(QAbstractSocket::SocketState) ),
+            this, SLOT( stateChanged(QAbstractSocket::SocketState) ) );
 }
 
 void BGenericSocketPrivate::setSocket(QLocalSocket *socket)
@@ -77,12 +77,12 @@ void BGenericSocketPrivate::setSocket(QLocalSocket *socket)
     socket->setParent(q);
     lsocket = socket;
     connectIODevice();
-    QObject::connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
-    QObject::connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
-    QObject::connect( socket, SIGNAL( error(QLocalSocket::LocalSocketError) ),
-                      this, SLOT( lsocketError(QLocalSocket::LocalSocketError) ) );
-    QObject::connect( socket, SIGNAL( stateChanged(QLocalSocket::LocalSocketState) ),
-                      this, SLOT( lsocketStateChanged(QLocalSocket::LocalSocketState) ) );
+    connect( socket, SIGNAL( connected() ), this, SLOT( connected() ) );
+    connect( socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+    connect( socket, SIGNAL( error(QLocalSocket::LocalSocketError) ),
+             this, SLOT( lsocketError(QLocalSocket::LocalSocketError) ) );
+    connect( socket, SIGNAL( stateChanged(QLocalSocket::LocalSocketState) ),
+             this, SLOT( lsocketStateChanged(QLocalSocket::LocalSocketState) ) );
 }
 
 void BGenericSocketPrivate::connectIODevice()
@@ -90,10 +90,10 @@ void BGenericSocketPrivate::connectIODevice()
     QIODevice *device = !asocket.isNull() ? (QIODevice *) asocket.data() : (QIODevice *) lsocket.data();
     if (!device)
         return;
-    QObject::connect( device, SIGNAL( aboutToClose() ), this, SLOT( aboutToClose() ) );
-    QObject::connect( device, SIGNAL( bytesWritten(qint64) ), this, SLOT( bytesWritten(qint64) ) );
-    QObject::connect( device, SIGNAL( readChannelFinished() ), this, SLOT( readChannelFinished() ) );
-    QObject::connect( device, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+    connect( device, SIGNAL( aboutToClose() ), this, SLOT( aboutToClose() ) );
+    connect( device, SIGNAL( bytesWritten(qint64) ), this, SLOT( bytesWritten(qint64) ) );
+    connect( device, SIGNAL( readChannelFinished() ), this, SLOT( readChannelFinished() ) );
+    connect( device, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
 }
 
 void BGenericSocketPrivate::disconnectIODevice()
@@ -102,10 +102,10 @@ void BGenericSocketPrivate::disconnectIODevice()
     QIODevice *device = q->ioDevice();
     if (!device)
         return;
-    QObject::disconnect( device, SIGNAL( aboutToClose() ), this, SLOT( aboutToClose() ) );
-    QObject::disconnect( device, SIGNAL( bytesWritten(qint64) ), this, SLOT( bytesWritten(qint64) ) );
-    QObject::disconnect( device, SIGNAL( readChannelFinished() ), this, SLOT( readChannelFinished() ) );
-    QObject::disconnect( device, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+    disconnect( device, SIGNAL( aboutToClose() ), this, SLOT( aboutToClose() ) );
+    disconnect( device, SIGNAL( bytesWritten(qint64) ), this, SLOT( bytesWritten(qint64) ) );
+    disconnect( device, SIGNAL( readChannelFinished() ), this, SLOT( readChannelFinished() ) );
+    disconnect( device, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
 }
 
 //

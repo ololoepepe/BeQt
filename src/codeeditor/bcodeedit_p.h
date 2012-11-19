@@ -55,40 +55,13 @@ public slots:
 };
 
 /*============================================================================
-================================ Code Edit Private Object
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BCodeEditPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BCodeEdit)
-    Q_OBJECT
-public:
-    explicit BCodeEditPrivateObject(BCodeEditPrivate *p);
-    ~BCodeEditPrivateObject();
-    //
-    bool eventFilter(QObject *obj, QEvent *e);
-public slots:
-    void futureWatcherFinished();
-    void customContextMenuRequested(const QPoint &pos);
-    void cursorPositionChanged();
-    void clipboardDataAvailableChanged(bool available);
-    void selectionChanged();
-    void copyAvailableChanged(bool available);
-    void undoAvailableChanged(bool available);
-    void redoAvailableChanged(bool available);
-private:
-    Q_DISABLE_COPY(BCodeEditPrivateObject)
-};
-
-/*============================================================================
 ================================ Code Edit Private
 ============================================================================*/
 
 class BCodeEditPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEdit)
-    B_DECLARE_OBJECT(BCodeEdit)
-    Q_DECLARE_TR_FUNCTIONS(BCodeEdit)
+    Q_OBJECT
 public:
     struct ProcessTextResult
     {
@@ -159,6 +132,7 @@ public:
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
     //
+    bool eventFilter(QObject *obj, QEvent *e);
     inline bool keyPressEvent(QKeyEvent *e);
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);
@@ -180,16 +154,7 @@ public:
     void handleCtrlLeft();
     void handleCtrlRight();
     void move(int key);
-    //Called from BCodeEditPrivate
-    void futureWatcherFinished(ProcessTextFutureWatcher *watcher);
-    void popupMenu(const QPoint &pos);
-    void updateCursorPosition();
-    void updateHasSelection();
     void updateHasBookmarks();
-    void updateCopyAvailable(bool available);
-    void updatePasteAvailable(bool available);
-    void updateUndoAvailable(bool available);
-    void updateRedoAvailable(bool available);
     //
     static const QList<QChar> unsupportedSymbols;
     //
@@ -213,8 +178,15 @@ public:
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEdit *ptedt;
-protected:
-    BCodeEditPrivate(BCodeEdit &q, BCodeEditPrivateObject &o);
+public slots:
+    void futureWatcherFinished();
+    void popupMenu(const QPoint &pos);
+    void updateCursorPosition();
+    void updateHasSelection();
+    void updateCopyAvailable(bool available);
+    void updatePasteAvailable(bool available);
+    void updateUndoAvailable(bool available);
+    void updateRedoAvailable(bool available);
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)
 };

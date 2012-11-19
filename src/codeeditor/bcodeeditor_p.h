@@ -12,37 +12,17 @@ class BCodeEditorPrivate;
 #include <QCoreApplication>
 
 /*============================================================================
-================================ Code Editor Private Object
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BCodeEditorPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BCodeEditor)
-    Q_OBJECT
-public:
-    explicit BCodeEditorPrivateObject(BCodeEditorPrivate *p);
-    ~BCodeEditorPrivateObject();
-public slots:
-    //
-private:
-    Q_DISABLE_COPY(BCodeEditorPrivateObject)
-};
-
-/*============================================================================
 ================================ Code Editor Private
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEditor)
-    B_DECLARE_OBJECT(BCodeEditor)
-    Q_DECLARE_TR_FUNCTIONS(BCodeEditor)
+    Q_OBJECT
 public:
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
     //
-protected:
-    BCodeEditorPrivate(BCodeEditor &q, BCodeEditorPrivateObject &o);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
 };

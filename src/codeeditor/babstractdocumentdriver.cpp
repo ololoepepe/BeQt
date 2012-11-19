@@ -21,8 +21,6 @@ public:
     //
     QQueue<BCodeEditorDocument *> loadOps;
     QQueue<BCodeEditorDocument *> saveOps;
-protected:
-    BAbstractDocumentDriverPrivate(BAbstractDocumentDriver &q, BBasePrivateObject &o);
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriverPrivate)
 };
@@ -38,14 +36,6 @@ BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocument
 }
 
 BAbstractDocumentDriverPrivate::~BAbstractDocumentDriverPrivate()
-{
-    //
-}
-
-//
-
-BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocumentDriver &q, BBasePrivateObject &o) :
-    BBasePrivate(q, o)
 {
     //
 }

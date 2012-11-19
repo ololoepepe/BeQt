@@ -15,42 +15,22 @@ class QString;
 #include <QMap>
 
 /*============================================================================
-================================ Local Terminal Driver Private Object
-============================================================================*/
-
-class B_WIDGETS_EXPORT BLocalTerminalDriverPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BLocalTerminalDriver)
-    Q_OBJECT
-public:
-    explicit BLocalTerminalDriverPrivateObject(BLocalTerminalDriverPrivate *p);
-    ~BLocalTerminalDriverPrivateObject();
-public slots:
-    void finished(int exitCode);
-    void readyRead();
-private:
-    Q_DISABLE_COPY(BLocalTerminalDriverPrivateObject)
-};
-
-/*============================================================================
 ================================ Local Terminal Driver Private
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BLocalTerminalDriverPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocalTerminalDriver)
-    B_DECLARE_OBJECT(BLocalTerminalDriver)
+    Q_OBJECT
 public:
     explicit BLocalTerminalDriverPrivate(BLocalTerminalDriver *q);
     ~BLocalTerminalDriverPrivate();
     //
-    void finished(int exitCode);
-    void readyRead();
-    //
     QProcess *process;
     QString workingDirectory;
-protected:
-    BLocalTerminalDriverPrivate(BLocalTerminalDriver &q, BLocalTerminalDriverPrivateObject &o);
+public slots:
+    void finished(int exitCode);
+    void readyRead();
 private:
     Q_DISABLE_COPY(BLocalTerminalDriverPrivate)
 };

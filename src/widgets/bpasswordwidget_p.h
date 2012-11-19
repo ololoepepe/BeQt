@@ -18,42 +18,18 @@ class QToolButton;
 #include <QDataStream>
 
 /*============================================================================
-================================ Password Widget Private Object
-============================================================================*/
-
-class B_WIDGETS_EXPORT BPasswordWidgetPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BPasswordWidget)
-    Q_OBJECT
-public:
-    explicit BPasswordWidgetPrivateObject(BPasswordWidgetPrivate *p);
-    ~BPasswordWidgetPrivateObject();
-public slots:
-    void languageChanged();
-    void tbtnSaveClicked();
-    void tbtnShowClicked();
-private:
-    Q_DISABLE_COPY(BPasswordWidgetPrivateObject)
-};
-
-/*============================================================================
 ================================ Password Widget Private
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPasswordWidget)
-    B_DECLARE_OBJECT(BPasswordWidget)
-    Q_DECLARE_TR_FUNCTIONS(BPasswordWidget)
+    Q_OBJECT
 public:
     static const QDataStream::Version DSVersion;
     //
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);
     ~BPasswordWidgetPrivate();
-    //
-    void retranslateUi();
-    void resetSave();
-    void resetShow();
     //
     QByteArray encPassword;
     bool save;
@@ -63,8 +39,10 @@ public:
       QLineEdit *ledt;
       QToolButton *tbtnSave;
       QToolButton *tbtnShow;
-protected:
-    BPasswordWidgetPrivate(BPasswordWidget &q, BPasswordWidgetPrivateObject &o);
+public slots:
+    void retranslateUi();
+    void resetSave();
+    void resetShow();
 private:
     Q_DISABLE_COPY(BPasswordWidgetPrivate)
 };

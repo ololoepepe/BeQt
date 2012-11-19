@@ -19,42 +19,16 @@ class QListWidgetItem;
 #include <QObject>
 
 /*============================================================================
-================================ Plugins Settings Tab Private Object
-============================================================================*/
-
-class B_WIDGETS_EXPORT BPluginsSettingsTabPrivateObject : public BBasePrivateObject
-{
-    B_DECLARE_PRIVATE_O(BPluginsSettingsTab)
-    Q_OBJECT
-public:
-    explicit BPluginsSettingsTabPrivateObject(BPluginsSettingsTabPrivate *p);
-    ~BPluginsSettingsTabPrivateObject();
-public slots:
-    void lstwgtCurrentRowChanged(int currentRow);
-    void lstwgtItemChanged(QListWidgetItem *item);
-    void btnSettingsClicked();
-    void btnAboutClicked();
-private:
-    Q_DISABLE_COPY(BPluginsSettingsTabPrivateObject)
-};
-
-/*============================================================================
 ================================ Plugins Settings Tab Private
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPluginsSettingsTab)
-    B_DECLARE_OBJECT(BPluginsSettingsTab)
-    Q_DECLARE_TR_FUNCTIONS(BPluginsSettingsTab)
+    Q_OBJECT
 public:
     explicit BPluginsSettingsTabPrivate(BPluginsSettingsTab *q);
     ~BPluginsSettingsTabPrivate();
-    //
-    void lstwgtCurrentRowChanged(int currentRow);
-    void lstwgtItemChanged(QListWidgetItem *item);
-    void btnSettingsClicked();
-    void btnAboutClicked();
     //
     QList<BPluginWrapper *> plugins;
     QHBoxLayout *hlt;
@@ -62,8 +36,11 @@ public:
       QVBoxLayout *vlt;
         QPushButton *btnSettings;
         QPushButton *btnAbout;
-protected:
-    BPluginsSettingsTabPrivate(BPluginsSettingsTab &q, BPluginsSettingsTabPrivateObject &o);
+public slots:
+    void lstwgtCurrentRowChanged(int currentRow);
+    void lstwgtItemChanged(QListWidgetItem *item);
+    void btnSettingsClicked();
+    void btnAboutClicked();
 private:
     Q_DISABLE_COPY(BPluginsSettingsTabPrivate)
 };

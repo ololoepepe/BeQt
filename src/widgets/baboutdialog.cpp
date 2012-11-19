@@ -33,28 +33,6 @@ class QWidget;
 #include <QDebug>
 
 /*============================================================================
-================================ About Dialog Private Object
-============================================================================*/
-
-BAboutDialogPrivateObject::BAboutDialogPrivateObject(BAboutDialogPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BAboutDialogPrivateObject::~BAboutDialogPrivateObject()
-{
-    //
-}
-
-//
-
-void BAboutDialogPrivateObject::languageChanged()
-{
-    p_func()->retranslateUi();
-}
-
-/*============================================================================
 ================================ About Dialog Private
 ============================================================================*/
 
@@ -83,7 +61,7 @@ BAboutDialog::PersonInfoList BAboutDialog::fromPluginPersonInfoList(const BPlugi
 //
 
 BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options) :
-    BBasePrivate( *q, *new BAboutDialogPrivateObject(this) )
+    BBasePrivate(q)
 {
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
@@ -121,7 +99,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         {
             tbtnAboutQt = new QToolButton(q);
               tbtnAboutQt->setIcon( BApplication::beqtIcon("qt_logo") );
-              QObject::connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
+              connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
             hltHeader->addWidget(tbtnAboutQt);
         }
         else
@@ -140,7 +118,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
             aboutBeqtDlg = new BAboutDialog( opt, q_func() );
             aboutBeqtDlg->setWindowModality(Qt::NonModal);
             aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
-            QObject::connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
+            connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
         }
         else
         {
@@ -156,7 +134,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
       vlt->addWidget(dlgbbox);
     //
     retranslateUi();
-    QObject::connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), o_func(), SLOT( languageChanged() ) );
+    connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
 BAboutDialogPrivate::~BAboutDialogPrivate()
@@ -254,6 +232,8 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BAboutDialog::PersonInfoLis
     fillTab(t, s, true);
 }
 
+//
+
 void BAboutDialogPrivate::retranslateUi()
 {
     q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
@@ -279,14 +259,6 @@ void BAboutDialogPrivate::retranslateUi()
         aboutBeqtDlg->setTranslationInfos(BAboutDialog::PersonInfoList() << pi);
         aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
     }
-}
-
-//
-
-BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog &q, BAboutDialogPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

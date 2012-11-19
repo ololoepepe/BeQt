@@ -59,14 +59,14 @@ BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::
     case BGenericServer::LocalServer:
     {
         BLocalServer *server = new BLocalServer( q_func() );
-        QObject::connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
+        connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
         lserver = server;
         break;
     }
     case BGenericServer::TcpServer:
     {
         BTcpServer *server = new BTcpServer( q_func() );
-        QObject::connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
+        connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
         tserver = server;
     }
     default:

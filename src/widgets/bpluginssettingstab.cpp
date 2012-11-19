@@ -26,46 +26,11 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Plugins Settings Tab Private Object
-============================================================================*/
-
-BPluginsSettingsTabPrivateObject::BPluginsSettingsTabPrivateObject(BPluginsSettingsTabPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BPluginsSettingsTabPrivateObject::~BPluginsSettingsTabPrivateObject()
-{
-    //
-}
-
-void BPluginsSettingsTabPrivateObject::lstwgtCurrentRowChanged(int currentRow)
-{
-    p_func()->lstwgtCurrentRowChanged(currentRow);
-}
-
-void BPluginsSettingsTabPrivateObject::lstwgtItemChanged(QListWidgetItem *item)
-{
-    p_func()->lstwgtItemChanged(item);
-}
-
-void BPluginsSettingsTabPrivateObject::btnSettingsClicked()
-{
-    p_func()->btnSettingsClicked();
-}
-
-void BPluginsSettingsTabPrivateObject::btnAboutClicked()
-{
-    p_func()->btnAboutClicked();
-}
-
-/*============================================================================
 ================================ Plugins Settings Tab Private
 ============================================================================*/
 
 BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
-    BBasePrivate( *q, *new BPluginsSettingsTabPrivateObject(this) )
+    BBasePrivate(q)
 {
     plugins = BApplication::pluginWrappers();
     //
@@ -82,20 +47,20 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
                 lwi->setIcon( QIcon( gpi->pixmap() ) );
             lstwgt->addItem(lwi);
         }
-        QObject::connect( lstwgt, SIGNAL( currentRowChanged(int) ), o_func(), SLOT( lstwgtCurrentRowChanged(int) ) );
-        QObject::connect( lstwgt, SIGNAL( itemChanged(QListWidgetItem *) ),
-                          o_func(), SLOT( lstwgtItemChanged(QListWidgetItem *) ) );
+        connect( lstwgt, SIGNAL( currentRowChanged(int) ), this, SLOT( lstwgtCurrentRowChanged(int) ) );
+        connect( lstwgt, SIGNAL( itemChanged(QListWidgetItem *) ),
+                 this, SLOT( lstwgtItemChanged(QListWidgetItem *) ) );
       hlt->addWidget(lstwgt);
       vlt = new QVBoxLayout;
         btnSettings = new QPushButton(q);
           btnSettings->setIcon( BApplication::beqtIcon("configure") );
           btnSettings->setText( tr("Configure plugin", "btn text") );
-          QObject::connect( btnSettings, SIGNAL( clicked() ), o_func(), SLOT( btnSettingsClicked() ) );
+          connect( btnSettings, SIGNAL( clicked() ), this, SLOT( btnSettingsClicked() ) );
         vlt->addWidget(btnSettings);
         btnAbout = new QPushButton(q);
           btnAbout->setIcon( BApplication::beqtIcon("help_about") );
           btnAbout->setText( tr("About plugin", "btn text") );
-          QObject::connect( btnAbout, SIGNAL( clicked() ), o_func(), SLOT( btnAboutClicked() ) );
+          connect( btnAbout, SIGNAL( clicked() ), this, SLOT( btnAboutClicked() ) );
         vlt->addWidget(btnAbout);
         vlt->addStretch();
       hlt->addLayout(vlt);
@@ -164,14 +129,6 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
     if ( !pm.isNull() )
         ad.setPixmap(pm);
     ad.exec(); //Maybe use open() instead?
-}
-
-//
-
-BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab &q, BPluginsSettingsTabPrivateObject &o) :
-    BBasePrivate(q, o)
-{
-    //
 }
 
 /*============================================================================

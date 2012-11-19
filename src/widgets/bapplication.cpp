@@ -115,14 +115,6 @@ void BApplicationPrivate::showHelp(const QString &file)
     hb->show();
 }
 
-//
-
-BApplicationPrivate::BApplicationPrivate(BApplication &q, BBasePrivateObject &o) :
-    BCoreApplicationPrivate(q, o)
-{
-    //
-}
-
 /*============================================================================
 ================================ Application
 ============================================================================*/

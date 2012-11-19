@@ -23,58 +23,11 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Terminal Widget Private Object
-============================================================================*/
-
-BTerminalWidgetPrivateObject::BTerminalWidgetPrivateObject(BTerminalWidgetPrivate *p) :
-    BBasePrivateObject(p)
-{
-    //
-}
-
-BTerminalWidgetPrivateObject::~BTerminalWidgetPrivateObject()
-{
-    //
-}
-
-//
-
-bool BTerminalWidgetPrivateObject::eventFilter(QObject *object, QEvent *event)
-{
-    if (event->type() != QEvent::KeyPress)
-        return QObject::eventFilter(object, event);
-    QKeyEvent *ke = static_cast<QKeyEvent *>(event);
-    return p_func()->handleKeyPress( ke->key(), ke->modifiers() );
-}
-
-//
-
-void BTerminalWidgetPrivateObject::readyRead()
-{
-    p_func()->read();
-}
-
-void BTerminalWidgetPrivateObject::finished(int exitCode)
-{
-    p_func()->finished(exitCode);
-}
-
-void BTerminalWidgetPrivateObject::blockTerminal()
-{
-    p_func()->blockTerminal();
-}
-
-void BTerminalWidgetPrivateObject::unblockTerminal()
-{
-    p_func()->unblockTerminal();
-}
-
-/*============================================================================
 ================================ Terminal Widget Private
 ============================================================================*/
 
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
-    BBasePrivate( *q, *new BTerminalWidgetPrivateObject(this) ), NormalMode(nmode)
+    BBasePrivate(q), NormalMode(nmode)
 {
     driver = 0;
     terminatingKey = Qt::Key_D;
@@ -87,7 +40,7 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
       ptedt = new BPlainTextEdit(q);
         ptedt->setDragEnabled(false);
         ptedt->setAcceptDrops(false);
-        ptedt->installEventFilter( o_func() );
+        ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::NoContextMenu);
       vlt->addWidget(ptedt);
 }
@@ -99,25 +52,33 @@ BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 
 //
 
+bool BTerminalWidgetPrivate::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() != QEvent::KeyPress)
+        return QObject::eventFilter(object, event);
+    QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+    return handleKeyPress( ke->key(), ke->modifiers() );
+}
+
 void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
 {
     if (driver)
     {
         if ( driver->isActive() )
             return;
-        QObject::disconnect( driver, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
-        QObject::disconnect( driver, SIGNAL( finished(int) ), o_func(), SLOT( finished(int) ) );
-        QObject::disconnect( driver, SIGNAL( blockTerminal() ), o_func(), SLOT( blockTerminal() ) );
-        QObject::disconnect( driver, SIGNAL( unblockTerminal() ), o_func(), SLOT( unblockTerminal() ) );
+        disconnect( driver, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+        disconnect( driver, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
+        disconnect( driver, SIGNAL( blockTerminal() ), this, SLOT( blockTerminal() ) );
+        disconnect( driver, SIGNAL( unblockTerminal() ), this, SLOT( unblockTerminal() ) );
     }
     driver = drv;
     if (!driver)
         return;
     driver->setParent( q_func() );
-    QObject::connect( driver, SIGNAL( readyRead() ), o_func(), SLOT( readyRead() ) );
-    QObject::connect( driver, SIGNAL( finished(int) ), o_func(), SLOT( finished(int) ) );
-    QObject::connect( driver, SIGNAL( blockTerminal() ), o_func(), SLOT( blockTerminal() ) );
-    QObject::connect( driver, SIGNAL( unblockTerminal() ), o_func(), SLOT( unblockTerminal() ) );
+    connect( driver, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+    connect( driver, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
+    connect( driver, SIGNAL( blockTerminal() ), this, SLOT( blockTerminal() ) );
+    connect( driver, SIGNAL( unblockTerminal() ), this, SLOT( unblockTerminal() ) );
     if (NormalMode)
     {
         QTextCursor tc = ptedt->textCursor();
@@ -199,16 +160,6 @@ void BTerminalWidgetPrivate::appendLine(const QString &text)
     len = ptedt->textCursor().block().length();
 }
 
-void BTerminalWidgetPrivate::blockTerminal()
-{
-    ptedt->setReadOnly(true);
-}
-
-void BTerminalWidgetPrivate::unblockTerminal()
-{
-    ptedt->setReadOnly(false);
-}
-
 void BTerminalWidgetPrivate::read()
 {
     scrollDown();
@@ -237,12 +188,14 @@ void BTerminalWidgetPrivate::finished(int exitCode)
     }
 }
 
-//
-
-BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget &q, BTerminalWidgetPrivateObject &o, bool mode) :
-    BBasePrivate(q, o), NormalMode(mode)
+void BTerminalWidgetPrivate::blockTerminal()
 {
-    //
+    ptedt->setReadOnly(true);
+}
+
+void BTerminalWidgetPrivate::unblockTerminal()
+{
+    ptedt->setReadOnly(false);
 }
 
 /*============================================================================
