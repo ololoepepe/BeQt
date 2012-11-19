@@ -1,8 +1,6 @@
 #ifndef BCODEEDITOR_P_H
 #define BCODEEDITOR_P_H
 
-class BCodeEditorPrivate;
-
 #include "bcodeeditor.h"
 
 #include <BeQtCore/BeQtGlobal>

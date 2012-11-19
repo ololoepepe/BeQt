@@ -2,6 +2,7 @@
 #define BGLOBAL_H
 
 #include <QtGlobal>
+#include <QCoreApplication>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -76,6 +77,18 @@ static Class *qs_func() \
 #define B_DS(Class) Class##Private *const ds = ds_func()
 
 #define B_QS(Class) Class *const qs = qs_func()
+
+#define B_DECLARE_TR_FUNCTIONS(context) \
+public: \
+static inline QString trq(const char *sourceText, const char *disambiguation = 0, int n = -1) \
+{ \
+    return QCoreApplication::translate(#context, sourceText, disambiguation,  QCoreApplication::DefaultCodec, n); \
+} \
+static inline QString trqUtf8(const char *sourceText, const char *disambiguation = 0, int n = -1) \
+{ \
+    return QCoreApplication::translate(#context, sourceText, disambiguation, QCoreApplication::UnicodeUTF8, n); \
+} \
+private:
 
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
