@@ -41,6 +41,7 @@ BApplicationPrivate::BApplicationPrivate(BApplication *q) :
     BCoreApplicationPrivate(q)
 {
     aboutDlg = 0;
+    iconCaching = false;
     navigation = BApplication::DefaultNavigation;
 }
 
@@ -123,6 +124,9 @@ QIcon BApplication::icon(const QString &name, const QString &theme)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
+    B_DS(BApplication);
+    if ( ds->iconCaching && ds->iconCache.contains(name) )
+        return ds->iconCache.value(name);
     QStringList pplist = QIcon::themeSearchPaths();
     QStringList plist = pplist;
     foreach ( const QString &path, locations("icons") )
@@ -130,6 +134,8 @@ QIcon BApplication::icon(const QString &name, const QString &theme)
     QIcon::setThemeSearchPaths(plist);
     QIcon icn = QIcon::fromTheme( !theme.isEmpty() ? theme : QIcon::themeName(), beqtIcon(name) );
     QIcon::setThemeSearchPaths(pplist);
+    if ( ds->iconCaching && !icn.isNull() )
+        ds->iconCache.insert(name, icn);
     return icn;
 }
 
@@ -160,6 +166,20 @@ QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
     if ( pm.isNull() )
         return QPixmap();
     return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
+}
+
+void BApplication::setIconCachingEnabled(bool enabled)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->iconCaching = enabled;
+}
+
+void BApplication::clearIconCache()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->iconCache.clear();
 }
 
 void BApplication::setAboutPixmap(const QPixmap &pixmap)

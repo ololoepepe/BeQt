@@ -11,6 +11,8 @@ class QStringList;
 #include <BeQtCore/private/bcoreapplication_p.h>
 
 #include <QString>
+#include <QMap>
+#include <QIcon>
 
 /*============================================================================
 ================================ Application Private
@@ -35,6 +37,8 @@ public:
     BAboutDialog *aboutDlg;
     BApplication::SettingsTabNavigation navigation;
     QString helpIndex;
+    QMap<QString, QIcon> iconCache;
+    bool iconCaching;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

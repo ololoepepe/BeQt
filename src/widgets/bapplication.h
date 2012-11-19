@@ -52,7 +52,8 @@ public:
     static QIcon icon( const QString &name, const QString &theme = QString() );
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
-    //static void clearIconSearchCache();
+    static void setIconCachingEnabled(bool enabled);
+    static void clearIconCache();
     static void setAboutPixmap(const QPixmap &pixmap);
     static void setAboutPixmap(const QString &fileName);
     static void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
