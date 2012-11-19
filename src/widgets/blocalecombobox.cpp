@@ -51,7 +51,7 @@ QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupport
 
 QIcon BLocaleComboBoxPrivate::iconForLocale(const BApplication::LocaleSupportInfo &info)
 {
-    return (info.supports == info.total) ? BApplication::beqtIcon("ok") : BApplication::beqtIcon("messagebox_warning");
+    return (info.supports == info.total) ? BApplication::icon("ok") : BApplication::icon("messagebox_warning");
 }
 
 //

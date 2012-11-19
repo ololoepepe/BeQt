@@ -5,7 +5,6 @@
         <file>ChangeLog.txt</file>
         <file>COPYING.txt</file>
         <file>icons/back.png</file>
-        <file>icons/beqt_logo.png</file>
         <file>icons/binary.png</file>
         <file>icons/configure.png</file>
         <file>icons/decrypted.png</file>
@@ -19,6 +18,7 @@
         <file>icons/ok.png</file>
         <file>icons/password_dont_save.png</file>
         <file>icons/password_save.png</file>
-        <file>icons/qt_logo.png</file>
+        <file>images/beqt_logo.png</file>
+        <file>images/qt_logo.png</file>
     </qresource>
 </RCC>

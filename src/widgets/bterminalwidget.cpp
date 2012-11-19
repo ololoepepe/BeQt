@@ -66,7 +66,7 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
     {
         if ( driver->isActive() )
             return;
-        disconnect( driver, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+        disconnect( driver, SIGNAL( readyRead() ), this, SLOT( read() ) );
         disconnect( driver, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
         disconnect( driver, SIGNAL( blockTerminal() ), this, SLOT( blockTerminal() ) );
         disconnect( driver, SIGNAL( unblockTerminal() ), this, SLOT( unblockTerminal() ) );
@@ -75,7 +75,7 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
     if (!driver)
         return;
     driver->setParent( q_func() );
-    connect( driver, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+    connect( driver, SIGNAL( readyRead() ), this, SLOT( read() ) );
     connect( driver, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
     connect( driver, SIGNAL( blockTerminal() ), this, SLOT( blockTerminal() ) );
     connect( driver, SIGNAL( unblockTerminal() ), this, SLOT( unblockTerminal() ) );

@@ -11,6 +11,7 @@
 #include <BLocalTerminalDriver>
 #include <BApplicationServer>
 #include <BPlainTextEdit>
+#include <BDirTools>
 
 #include <QApplication>
 #include <QString>
@@ -80,7 +81,7 @@ int main(int argc, char **argv)
     t = new BTranslator("beqt");
     BApplication::installTranslator(t);
     //Creating and initializing GUI
-    QApplication::setWindowIcon( BApplication::beqtIcon("apply") );
+    QApplication::setWindowIcon( QIcon( BDirTools::findResource("images/myapp.png", BDirTools::GlobalOnly) ) );
     //MainWindow
     MainWindow *mw = new MainWindow;
       QWidget *w = new QWidget(mw);
@@ -100,9 +101,9 @@ int main(int argc, char **argv)
     BApplication::loadSettings();
     BApplication::loadPlugins();
     //Showing widgets
-    //mw->show();
+    mw->show();
     //term->show();
-    pte->show();
+    //pte->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings
@@ -110,6 +111,7 @@ int main(int argc, char **argv)
     //Deleting objects
     delete mw;
     delete term;
+    delete pte;
     delete bapp;
     delete app;
     delete as;

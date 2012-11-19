@@ -35,7 +35,6 @@ public:
     BAboutDialog *aboutDlg;
     BApplication::SettingsTabNavigation navigation;
     QString helpIndex;
-    QStringList iconPaths;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

@@ -28,7 +28,7 @@ BBase::BBase() :
 
 BBase::~BBase()
 {
-    _m_d->deleteLater();
+    delete _m_d;
 }
 
 //

@@ -119,11 +119,31 @@ void BApplicationPrivate::showHelp(const QString &file)
 ================================ Application
 ============================================================================*/
 
+QIcon BApplication::icon(const QString &name)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return QIcon();
+    QStringList pplist = QIcon::themeSearchPaths();
+    QStringList plist = pplist;
+    foreach ( const QString &path, locations("icons") )
+        plist.insert(plist.size() - 1, path);
+    QIcon::setThemeSearchPaths(plist);
+    QIcon icn = QIcon::fromTheme( QIcon::themeName(), beqtIcon(name) );
+    QIcon::setThemeSearchPaths(pplist);
+    return icn;
+}
+
 QIcon BApplication::beqtIcon(const QString &name)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
-    return QIcon( beqtPixmap(name) );
+    if ( name.isEmpty() )
+        return QIcon();
+    QString nm = !QFileInfo(name).suffix().isEmpty() ? name : (name + ".png");
+    QString fn = BDirTools::findResource("beqt/icons/" + nm, BDirTools::GlobalOnly);
+    if ( fn.isEmpty() )
+        return QIcon();
+    return QIcon(fn);
 }
 
 QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
@@ -132,37 +152,14 @@ QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
         return QPixmap();
     if ( name.isEmpty() )
         return QPixmap();
-    B_DS(BApplication);
-    if ( ds->iconPaths.isEmpty() )
-    {
-
-        QStringList locs = locations(DataPath);
-        foreach (const QString &loc, locs)
-        {
-            QString path = loc + "/icons/beqt";
-            if ( QDir(path).exists() )
-                ds->iconPaths << path;
-            path = loc + "/beqt/icons";
-            if ( QDir(path).exists() )
-                ds->iconPaths << path;
-        }
-    }
-    QPixmap pm;
-    foreach (const QString &path, ds->iconPaths)
-    {
-        if ( pm.load(path + "/" + name) )
-            break;
-    }
+    QString nm = !QFileInfo(name).suffix().isEmpty() ? name : (name + ".png");
+    QString fn = BDirTools::findResource("beqt/images/" + nm, BDirTools::GlobalOnly);
+    if ( fn.isEmpty() )
+        return QPixmap();
+    QPixmap pm(fn);
     if ( pm.isNull() )
         return QPixmap();
     return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
-}
-
-void BApplication::clearIconSearchCache()
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    ds_func()->iconPaths.clear();
 }
 
 void BApplication::setAboutPixmap(const QPixmap &pixmap)
@@ -271,13 +268,13 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case SettingsAction:
         act = new QAction(parent);
         act->setObjectName("ActionSettings");
-        act->setIcon( beqtIcon("configure") );
+        act->setIcon( icon("configure") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showSettingsDialog() ) );
         break;
     case HomepageAction:
         act = new QAction(parent);
         act->setObjectName("ActionHomepage");
-        act->setIcon( beqtIcon("network") );
+        act->setIcon( icon("network") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( openHomepage() ) );
         break;
     case HelpContentsAction:
@@ -289,7 +286,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case ContextualHelpAction:
         act = new QAction(parent);
         act->setObjectName("ActionContextualHelp");
-        act->setIcon( beqtIcon("help_contextual") );
+        act->setIcon( icon("help_contextual") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showContextualHelp() ) );
         break;
     case WhatsThisAction:
@@ -300,7 +297,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case AboutAction:
         act = new QAction(parent);
         act->setObjectName("ActionAbout");
-        act->setIcon( beqtIcon("help_about") );
+        act->setIcon( icon("help_about") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showAboutDialog() ) );
         break;
     default:

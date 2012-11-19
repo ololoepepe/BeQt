@@ -73,6 +73,7 @@ public:
         //text browsers
       QDialogButtonBox *dlgbbox;
         //Close
+public slots:
    void retranslateUi();
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)

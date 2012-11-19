@@ -99,25 +99,20 @@ bool BApplicationServer::tryListen(const QString &serverName)
     if ( serverName.isEmpty() )
         return false;
     B_D(BApplicationServer);
-    if ( !d->server->listen(serverName) )
-    {
-        QByteArray data;
-        QDataStream out(&data, QIODevice::WriteOnly);
-        out.setVersion(BApplicationServerPrivate::DSVersion);
-        out << false;
-        BGenericSocket s(BGenericSocket::LocalSocket);
-        s.connectToHost(serverName);
-        if ( !s.waitForConnected(BApplicationServerPrivate::OperationTimeout) || !s.write(data) ||
-             !s.waitForBytesWritten(BApplicationServerPrivate::OperationTimeout) ||
-             !s.waitForReadyRead(BApplicationServerPrivate::OperationTimeout) )
-            return QLocalServer::removeServer(serverName) && d->server->listen(serverName);
-        else
-            return false;
-    }
-    else
-    {
+    if ( d->server->isListening() )
         return true;
-    }
+    if ( d->server->listen(serverName) )
+        return true;
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out.setVersion(BApplicationServerPrivate::DSVersion);
+    out << false;
+    BGenericSocket s(BGenericSocket::LocalSocket);
+    s.connectToHost(serverName);
+    bool b = s.waitForConnected(BApplicationServerPrivate::OperationTimeout) && s.write(data);
+    b = b && s.waitForBytesWritten(BApplicationServerPrivate::OperationTimeout);
+    b = b && s.waitForReadyRead(BApplicationServerPrivate::OperationTimeout);
+    return b ? false : QLocalServer::removeServer(serverName) && d->server->listen(serverName);
 }
 
 bool BApplicationServer::sendMessage(const QString &serverName, int &argc, char **argv)

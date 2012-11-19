@@ -98,7 +98,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         if (options.aboutQtButton)
         {
             tbtnAboutQt = new QToolButton(q);
-              tbtnAboutQt->setIcon( BApplication::beqtIcon("qt_logo") );
+              tbtnAboutQt->setIcon( QIcon( BApplication::beqtPixmap("qt_logo") ) );
               connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
             hltHeader->addWidget(tbtnAboutQt);
         }
@@ -109,7 +109,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         if (options.aboutBeQtButton)
         {
             tbtnAboutBeQt = new QToolButton(q);
-              tbtnAboutBeQt->setIcon( BApplication::beqtIcon("beqt_logo") );
+              tbtnAboutBeQt->setIcon( QIcon( BApplication::beqtPixmap("beqt_logo") ) );
             hltHeader->addWidget(tbtnAboutBeQt);
             //
             BAboutDialog::AboutOptions opt;
