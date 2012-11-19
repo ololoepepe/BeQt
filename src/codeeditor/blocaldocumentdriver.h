@@ -23,8 +23,8 @@ public:
     //
     QString id() const;
 protected:
-    bool load(BCodeEditorDocument *doc, bool *finished = 0);
-    bool save(BCodeEditorDocument *doc, bool *finished = 0);
+    bool load(BCodeEditorDocument *doc, bool *finished = 0, bool *success = 0, QString *text = 0);
+    bool save(BCodeEditorDocument *doc, bool *finished = 0, bool *success = 0);
 };
 
 #endif // BLOCALDOCUMENTDRIVER_H

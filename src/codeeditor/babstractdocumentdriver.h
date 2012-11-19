@@ -24,8 +24,8 @@ public:
     ~BAbstractDocumentDriver();
     //
     virtual QString id() const = 0;
-    bool enqueueLoadOperation(BCodeEditorDocument *doc, bool *finished = 0);
-    bool enqueueSaveOperation(BCodeEditorDocument *doc, bool *finished = 0);
+    virtual bool load(BCodeEditorDocument *doc, bool *finished = 0, bool *success = 0, QString *text = 0);
+    virtual bool save(BCodeEditorDocument *doc, bool *finished = 0, bool *success = 0);
     bool hasPendingLoadOperations() const;
     bool hasPendingSaveOperations() const;
 signals:
@@ -34,8 +34,6 @@ signals:
     void loadingFinished(BCodeEditorDocument *doc, bool success, const QString &text);
     void savingFinished(BCodeEditorDocument *doc, bool success);
 protected:
-    virtual bool load(BCodeEditorDocument *doc, bool *finished = 0);
-    virtual bool save(BCodeEditorDocument *doc, bool *finished = 0);
     BCodeEditorDocument *nextPendingLoadOperation();
     BCodeEditorDocument *nextPendingSaveOperation();
     void emitLoadingFinished(BCodeEditorDocument *doc, bool success, const QString &text);

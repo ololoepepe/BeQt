@@ -128,21 +128,22 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver)
         return false;
     B_D(BCodeEditorDocument);
     bool fin = false;
-    if ( driver->enqueueLoadOperation(this, &fin) )
+    bool success = false;
+    QString txt;
+    if ( !driver->load(this, &fin, &success, &txt) )
+        return false;
+    if (fin)
     {
-        if (!fin)
-        {
-            connect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
-                     d, SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
-            d->buisy = true;
-            emit buisyChanged(true);
-        }
-        return true;
+        d->loadingFinished(this, success, txt);
     }
     else
     {
-        return false;
+        connect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
+                 d, SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
+        d->buisy = true;
+        emit buisyChanged(true);
     }
+    return true;
 }
 
 bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver)
@@ -151,21 +152,21 @@ bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver)
         return false;
     B_D(BCodeEditorDocument);
     bool fin = false;
-    if ( driver->enqueueSaveOperation(this, &fin) )
+    bool success = false;
+    if ( !driver->save(this, &fin, &success) )
+        return false;
+    if (fin)
     {
-        if (!fin)
-        {
-            connect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
-                     d, SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
-            d->buisy = true;
-            emit buisyChanged(true);
-        }
-        return true;
+        d->savingFinished(this, success);
     }
     else
     {
-        return false;
+        connect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
+                 d, SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
+        d->buisy = true;
+        emit buisyChanged(true);
     }
+    return true;
 }
 
 QString BCodeEditorDocument::fileName() const
