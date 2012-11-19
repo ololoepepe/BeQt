@@ -49,7 +49,7 @@ public:
         AboutAction
     };
     //
-    static QIcon icon(const QString &name);
+    static QIcon icon( const QString &name, const QString &theme = QString() );
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
     //static void clearIconSearchCache();

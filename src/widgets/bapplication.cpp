@@ -119,7 +119,7 @@ void BApplicationPrivate::showHelp(const QString &file)
 ================================ Application
 ============================================================================*/
 
-QIcon BApplication::icon(const QString &name)
+QIcon BApplication::icon(const QString &name, const QString &theme)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
@@ -128,7 +128,7 @@ QIcon BApplication::icon(const QString &name)
     foreach ( const QString &path, locations("icons") )
         plist.insert(plist.size() - 1, path);
     QIcon::setThemeSearchPaths(plist);
-    QIcon icn = QIcon::fromTheme( QIcon::themeName(), beqtIcon(name) );
+    QIcon icn = QIcon::fromTheme( !theme.isEmpty() ? theme : QIcon::themeName(), beqtIcon(name) );
     QIcon::setThemeSearchPaths(pplist);
     return icn;
 }
