@@ -78,13 +78,13 @@ static Class *qs_func() \
 
 #define B_QS(Class) Class *const qs = qs_func()
 
-#define B_DECLARE_TR_FUNCTIONS(context) \
+#define B_DECLARE_TR_FUNCTIONS(context, suffix) \
 public: \
-static inline QString trq(const char *sourceText, const char *disambiguation = 0, int n = -1) \
+static inline QString tr##suffix(const char *sourceText, const char *disambiguation = 0, int n = -1) \
 { \
     return QCoreApplication::translate(#context, sourceText, disambiguation,  QCoreApplication::DefaultCodec, n); \
 } \
-static inline QString trqUtf8(const char *sourceText, const char *disambiguation = 0, int n = -1) \
+static inline QString tr##suffix##Utf8(const char *sourceText, const char *disambiguation = 0, int n = -1) \
 { \
     return QCoreApplication::translate(#context, sourceText, disambiguation, QCoreApplication::UnicodeUTF8, n); \
 } \
