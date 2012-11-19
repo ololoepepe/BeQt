@@ -1,5 +1,7 @@
 HEADERS += \
     $${PWD}/babstractdocumentdriver.h \
+    $${PWD}/babstracteditormodule.h \
+    $${PWD}/babstracteditormodule_p.h \
     $${PWD}/babstractfiletype.h \
     $${PWD}/bcodeedit_p.h \
     $${PWD}/bcodeedit.h \
@@ -13,6 +15,7 @@ HEADERS += \
 
 SOURCES += \
     $${PWD}/babstractdocumentdriver.cpp \
+    $${PWD}/babstracteditormodule.cpp \
     $${PWD}/babstractfiletype.cpp \
     $${PWD}/bcodeedit.cpp \
     $${PWD}/bcodeeditor.cpp \

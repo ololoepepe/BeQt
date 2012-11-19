@@ -2,6 +2,7 @@
 #define BEQT_BEQTCODEEDITOR_MODULE_H
 
 #include "babstractdocumentdriver.h"
+#include "babstracteditormodule.h"
 #include "babstractfiletype.h"
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
