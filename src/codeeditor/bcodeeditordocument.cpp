@@ -38,16 +38,19 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 
 //
 
-void BCodeEditorDocumentPrivate::loadingFinished(BCodeEditorDocument *doc, bool success, const QString &text)
+void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::Operation &operation,
+                                                 bool success, const QString &text)
 {
-    if ( doc != q_func() )
+    if ( operation.document != q_func() )
         return;
     BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
-    disconnect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
-                this, SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
+    disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
+                this, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
     B_Q(BCodeEditorDocument);
     if (success)
     {
+        if ( !operation.fileName.isEmpty() )
+            q->setFileName(operation.fileName);
         q->setText(text, asyncMin);
         q->innerEdit()->document()->setModified(false);
     }
@@ -56,16 +59,20 @@ void BCodeEditorDocumentPrivate::loadingFinished(BCodeEditorDocument *doc, bool 
     QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
 }
 
-void BCodeEditorDocumentPrivate::savingFinished(BCodeEditorDocument *doc, bool success)
+void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success)
 {
-    if ( doc != q_func() )
+    if ( operation.document != q_func() )
         return;
     BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
-    disconnect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
-                this, SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
+    disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
+                this, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
     B_Q(BCodeEditorDocument);
     if (success)
+    {
+        if ( !operation.fileName.isEmpty() )
+            q->setFileName(operation.fileName);
         q->innerEdit()->document()->setModified(false);
+    }
     QMetaObject::invokeMethod( q, "savingFinished", Q_ARG(bool, success) );
     buisy = false;
     QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
@@ -122,50 +129,39 @@ void BCodeEditorDocument::setAsyncProcessingMinimumLength(int length)
     d_func()->asyncMin = length;
 }
 
-bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver)
+bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
 {
     if ( !driver || isBuisy() )
         return false;
     B_D(BCodeEditorDocument);
-    bool fin = false;
-    bool success = false;
-    QString txt;
-    if ( !driver->load(this, &fin, &success, &txt) )
+    d->buisy = true;
+    emit buisyChanged(true);
+    if ( !driver->load(this, fileName) )
+    {
+        d->buisy = false;
+        emit buisyChanged(false);
         return false;
-    if (fin)
-    {
-        d->loadingFinished(this, success, txt);
     }
-    else
-    {
-        connect( driver, SIGNAL( loadingFinished(BCodeEditorDocument *, bool, QString) ),
-                 d, SLOT( loadingFinished(BCodeEditorDocument *, bool, QString) ) );
-        d->buisy = true;
-        emit buisyChanged(true);
-    }
+    connect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
+             d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
     return true;
 }
 
-bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver)
+bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &fileName)
 {
     if ( !driver || isBuisy() )
         return false;
     B_D(BCodeEditorDocument);
-    bool fin = false;
-    bool success = false;
-    if ( !driver->save(this, &fin, &success) )
+    d->buisy = true;
+    emit buisyChanged(true);
+    if ( !driver->save(this, fileName) )
+    {
+        d->buisy = false;
+        emit buisyChanged(false);
         return false;
-    if (fin)
-    {
-        d->savingFinished(this, success);
     }
-    else
-    {
-        connect( driver, SIGNAL( savingFinished(BCodeEditorDocument *, bool, QString) ),
-                 d, SLOT( savingFinished(BCodeEditorDocument *, bool, QString) ) );
-        d->buisy = true;
-        emit buisyChanged(true);
-    }
+    connect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
+             d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
     return true;
 }
 

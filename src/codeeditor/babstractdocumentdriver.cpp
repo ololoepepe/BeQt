@@ -7,6 +7,7 @@ class BCodeEdit;
 
 #include <QObject>
 #include <QQueue>
+#include <QList>
 
 /*============================================================================
 ================================ Abstract Document Driver Private (declaration)
@@ -19,8 +20,9 @@ public:
     explicit BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q);
     ~BAbstractDocumentDriverPrivate();
     //
-    QQueue<BCodeEditorDocument *> loadOps;
-    QQueue<BCodeEditorDocument *> saveOps;
+    QQueue<BAbstractDocumentDriver::Operation> loadOps;
+    QQueue<BAbstractDocumentDriver::Operation> saveOps;
+    QList<BCodeEditorDocument *> docs;
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriverPrivate)
 };
@@ -57,42 +59,20 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
 
 //
 
-bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, bool *finished, bool *success, QString *text)
+bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, const QString &fileName)
 {
-    if (finished)
-        *finished = true;
-    if (success)
-        *success = true;
-    if (!doc)
+    if ( !doc || isDocumentInList(doc) )
         return false;
-    B_D(BAbstractDocumentDriver);
-    if ( d->loadOps.contains(doc) || d->saveOps.contains(doc) )
-    {
-        if (success)
-            *success = false;
-        return false;
-    }
-    d_func()->loadOps.enqueue(doc);
+    d_func()->loadOps.enqueue( Operation(doc, fileName) );
     emit newPendingLoadOperation();
     return true;
 }
 
-bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, bool *finished, bool *success)
+bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &fileName)
 {
-    if (finished)
-        *finished = true;
-    if (success)
-        *success = true;
-    if (!doc)
+    if ( !doc || isDocumentInList(doc) )
         return false;
-    B_D(BAbstractDocumentDriver);
-    if ( d->saveOps.contains(doc) || d->saveOps.contains(doc) )
-    {
-        if (success)
-            *success = false;
-        return false;
-    }
-    d_func()->saveOps.enqueue(doc);
+    d_func()->saveOps.enqueue( Operation(doc, fileName) );
     emit newPendingSaveOperation();
     return true;
 }
@@ -107,26 +87,37 @@ bool BAbstractDocumentDriver::hasPendingSaveOperations() const
     return !d_func()->saveOps.isEmpty();
 }
 
+bool BAbstractDocumentDriver::isDocumentInList(BCodeEditorDocument *doc) const
+{
+    return doc && d_func()->docs.contains(doc);
+}
+
 //
 
-BCodeEditorDocument *BAbstractDocumentDriver::nextPendingLoadOperation()
+BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingLoadOperation()
 {
     B_D(BAbstractDocumentDriver);
-    return !d->loadOps.isEmpty() ? d->loadOps.dequeue() : 0;
+    return !d->loadOps.isEmpty() ? d->loadOps.dequeue() : Operation();
 }
 
-BCodeEditorDocument *BAbstractDocumentDriver::nextPendingSaveOperation()
+BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingSaveOperation()
 {
     B_D(BAbstractDocumentDriver);
-    return !d->saveOps.isEmpty() ? d->saveOps.dequeue() : 0;
+    return !d->saveOps.isEmpty() ? d->saveOps.dequeue() : Operation();
 }
 
-void BAbstractDocumentDriver::emitLoadingFinished(BCodeEditorDocument *doc, bool success, const QString &text)
+void BAbstractDocumentDriver::emitLoadingFinished(const Operation &operation, bool success, const QString &text)
 {
-    emit loadingFinished(doc, success, text);
+    if (!operation.document)
+        return;
+    d_func()->docs.removeAll(operation.document);
+    emit loadingFinished(operation, success, text);
 }
 
-void BAbstractDocumentDriver::emitSavingFinished(BCodeEditorDocument *doc, bool success)
+void BAbstractDocumentDriver::emitSavingFinished(const Operation &operation, bool success)
 {
-    emit savingFinished(doc, success);
+    if (!operation.document)
+        return;
+    d_func()->docs.removeAll(operation.document);
+    emit savingFinished(operation, success);
 }

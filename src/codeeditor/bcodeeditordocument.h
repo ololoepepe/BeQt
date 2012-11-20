@@ -6,7 +6,6 @@ class BAbstractDocumentDriver;
 class BCodeEdit;
 
 class QTextCodec;
-class QString;
 class QWidget;
 
 #include "bcodeedit.h"
@@ -16,6 +15,7 @@ class QWidget;
 
 #include <QObject>
 #include <QList>
+#include <QString>
 
 /*============================================================================
 ================================ Code Editor Document
@@ -33,8 +33,8 @@ public:
     void setCodec(QTextCodec *codec);
     void setCodec(const char *codecName);
     void setAsyncProcessingMinimumLength(int length);
-    bool load(BAbstractDocumentDriver *driver);
-    bool save(BAbstractDocumentDriver *driver);
+    bool load( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
+    bool save( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
     QString fileName() const;
     QTextCodec *codec() const;
     int asyncProcessingMinimumLength() const;

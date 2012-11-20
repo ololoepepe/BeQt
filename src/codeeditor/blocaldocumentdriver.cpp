@@ -29,40 +29,35 @@ QString BLocalDocumentDriver::id() const
     return "beqt/local";
 }
 
-bool BLocalDocumentDriver::load(BCodeEditorDocument *doc, bool *finished, bool *success, QString *text)
+bool BLocalDocumentDriver::load(BCodeEditorDocument *doc, const QString &fileName)
 {
-    if (finished)
-        *finished = true;
-    if (success)
-        *success = true;
-    QFile f( doc->fileName() );
+    if ( !doc || isDocumentInList(doc) )
+        return false;
+    Operation op(doc, fileName);
+    QFile f( !fileName.isEmpty() ? fileName : doc->fileName() );
     if ( !f.open(QFile::ReadOnly) )
     {
-        if (success)
-            *success = false;
-        return false;
+        emitLoadingFinished(op, false);
+        return true;
     }
     QTextStream in(&f);
     in.setCodec( doc->codec() );
-    QString txt = in.readAll();
-    if (text)
-        *text = txt;
+    QString text = in.readAll();
     f.close();
+    emitLoadingFinished(op, true, text);
     return true;
 }
 
-bool BLocalDocumentDriver::save(BCodeEditorDocument *doc, bool *finished, bool *success)
+bool BLocalDocumentDriver::save(BCodeEditorDocument *doc, const QString &fileName)
 {
-    if (finished)
-        *finished = true;
-    if (success)
-        *success = true;
-    QFile f( doc->fileName() );
+    if ( !doc || isDocumentInList(doc) )
+        return false;
+    Operation op(doc, fileName);
+    QFile f( !fileName.isEmpty() ? fileName : doc->fileName() );
     if ( !f.open(QFile::WriteOnly) )
     {
-        if (success)
-            *success = false;
-        return false;
+        emitSavingFinished(op, false);
+        return true;
     }
     QTextStream out(&f);
     out.setCodec( doc->codec() );

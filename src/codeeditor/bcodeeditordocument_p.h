@@ -10,6 +10,7 @@ class QTextCodec;
 
 #include "bcodeeditordocument.h"
 #include "bcodeedit_p.h"
+#include "babstractdocumentdriver.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -34,8 +35,8 @@ public:
     int asyncMin;
     bool buisy;
 public slots:
-    void loadingFinished(BCodeEditorDocument *doc, bool success, const QString &text);
-    void savingFinished(BCodeEditorDocument *doc, bool success);
+    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
+    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)
 };
