@@ -19,7 +19,7 @@ class QStringList;
 ================================ Search Dialog
 ============================================================================*/
 
-class BSearchDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSearchDialog : public QDialog, public BBase
 {
     B_DECLARE_PRIVATE(BSearchDialog)
     Q_OBJECT

@@ -4,6 +4,7 @@
 #include "babstractdocumentdriver.h"
 #include "babstracteditormodule.h"
 #include "babstractfiletype.h"
+#include "bbookmarkseditormodule.h"
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"

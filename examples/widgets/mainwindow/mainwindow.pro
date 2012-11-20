@@ -5,7 +5,7 @@ CONFIG += release
 
 QT = core network gui
 
-BEQT = core network widgets
+BEQT = core network widgets codeeditor
 BEQT_PART=example
 
 include(../../../depend.pri)

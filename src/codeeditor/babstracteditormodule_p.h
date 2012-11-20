@@ -1,6 +1,8 @@
 #ifndef BABSTRACTEDITORMODULE_P_H
 #define BABSTRACTEDITORMODULE_P_H
 
+class BCodeEditor;
+
 #include "babstracteditormodule.h"
 
 #include <BeQtCore/BeQtGlobal>
@@ -12,7 +14,7 @@
 ================================ Abstract Editor Module Private
 ============================================================================*/
 
-class BAbstractEditorModulePrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractEditorModulePrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BAbstractEditorModule)
     B_DECLARE_TR_FUNCTIONS(BAbstractEditorModule, q)
@@ -21,6 +23,9 @@ public:
     explicit BAbstractEditorModulePrivate(BAbstractEditorModule *q);
     ~BAbstractEditorModulePrivate();
     //
+    void setEditor(BCodeEditor *edr);
+    //
+    BCodeEditor *editor;
 private:
     Q_DISABLE_COPY(BAbstractEditorModulePrivate)
 };

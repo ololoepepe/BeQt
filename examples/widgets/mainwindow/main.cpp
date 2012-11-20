@@ -12,6 +12,7 @@
 #include <BApplicationServer>
 #include <BPlainTextEdit>
 #include <BDirTools>
+#include <BCodeEdit>
 
 #include <QApplication>
 #include <QString>
@@ -97,13 +98,16 @@ int main(int argc, char **argv)
     BPlainTextEdit *pte = new BPlainTextEdit;
     pte->setFont( QFont("DejaVu Sans Mono") );
     pte->setSelectionMode(BPlainTextEdit::BlockSelection);
+    //BCodeEdit
+    BCodeEdit *cedt = new BCodeEdit;
     //Loading settings and plugins
     BApplication::loadSettings();
     BApplication::loadPlugins();
     //Showing widgets
     //mw->show();
-    term->show();
+    //term->show();
     //pte->show();
+    cedt->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings

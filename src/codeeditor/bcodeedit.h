@@ -4,7 +4,6 @@
 class BCodeEditPrivate;
 class BPlainTextEdit;
 class BAbstractFileType;
-//class BCodeEditorDocumentPrivate;
 
 class QString;
 class QPoint;
@@ -58,14 +57,12 @@ public:
     void setEditMode(EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(TabWidth tw);
-    void setMaximumBookmarkCount(int count);
     void setBracketHighlightingEnabled(bool enabled);
     void setFileType(BAbstractFileType *type);
     //Getters
     bool isReadOnly() const;
     bool isModified() const;
     bool hasSelection() const;
-    bool hasBookmarks() const;
     bool isCutAvailable() const;
     bool isCopyAvailable() const;
     bool isPasteAvailable() const;
@@ -75,7 +72,6 @@ public:
     EditMode editMode() const;
     int editLineLength() const;
     TabWidth editTabWidth() const;
-    int maximumBookmarkCount() const;
     bool isBracketHighlightingEnabled() const;
     BAbstractFileType *fileType() const;
     QPoint cursorPosition() const;
@@ -93,11 +89,6 @@ public slots:
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
     void deselectText();
-    void makeBookmark();
-    void removeBookmark(int index);
-    void removeLastBookmark();
-    bool gotoBookmark(int index);
-    bool gotoNextBookmark();
     void cut();
     void copy();
     void paste();
@@ -105,14 +96,14 @@ public slots:
     void redo();
 signals:
     void modificationChanged(bool modified);
-    void selectionChanged(bool hasSelection);
-    void bookmarksChanged(bool hasBookmarks);
+    void selectionChanged();
+    void hasSelectionChanged(bool hasSelection);
     void cutAvailableChanged(bool available);
     void copyAvailableChanged(bool available);
     void pasteAvailableChanged(bool available);
     void undoAvailableChanged(bool available);
     void redoAvailableChanged(bool available);
-    void editModeChanged(EditMode mode);
+    void editModeChanged(BCodeEdit::EditMode mode);
     void cursorPositionChanged(const QPoint &pos);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
@@ -122,8 +113,6 @@ protected:
     BPlainTextEdit *innerEdit() const;
 private:
     Q_DISABLE_COPY(BCodeEdit)
-    //
-    //friend class BCodeEditorDocumentPrivate;
 };
 
 #endif // BCODEEDIT_H

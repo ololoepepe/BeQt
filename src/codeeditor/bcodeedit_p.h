@@ -58,7 +58,7 @@ public slots:
 ================================ Code Edit Private
 ============================================================================*/
 
-class BCodeEditPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BCodeEditPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEdit)
     B_DECLARE_TR_FUNCTIONS(BCodeEdit, q)
@@ -68,21 +68,6 @@ public:
     {
         QString newText;
         QList<BCodeEdit::SplittedLinesRange> splittedLinesRanges;
-    };
-    struct Bookmark
-    {
-        QTextBlock block;
-        int posInBlock;
-        //
-        Bookmark()
-        {
-            posInBlock = -1;
-        }
-        //
-        bool operator==(const Bookmark &other) const
-        {
-            return block == other.block && posInBlock == other.posInBlock;
-        }
     };
     struct TestBracketResult
     {
@@ -137,7 +122,6 @@ public:
     inline bool keyPressEvent(QKeyEvent *e);
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);
-    void setTextToEmptyLine();
     void deleteSelection();
     void seletAll();
     int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
@@ -155,7 +139,6 @@ public:
     void handleCtrlLeft();
     void handleCtrlRight();
     void move(int key);
-    void updateHasBookmarks();
     //
     static const QList<QChar> unsupportedSymbols;
     //
@@ -170,9 +153,6 @@ public:
     bool pasteAvailable;
     bool undoAvailable;
     bool redoAvailable;
-    QList<Bookmark> bookmarks;
-    int maxBookmarks;
-    Bookmark currentBookmark;
     BAbstractFileType *fileType;
     QList<BAbstractFileType::BracketPair> brackets;
     bool bracketsHighlighting;
@@ -188,6 +168,10 @@ public slots:
     void updatePasteAvailable(bool available);
     void updateUndoAvailable(bool available);
     void updateRedoAvailable(bool available);
+    //
+    void emitModificationChanged(bool modified);
+    void emitSelectionChanged();
+    void setTextToEmptyLine();
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)
 };

@@ -30,7 +30,7 @@ class QString;
 ================================ Search Dialog Private
 ============================================================================*/
 
-class BSearchDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSearchDialog)
     B_DECLARE_TR_FUNCTIONS(BSearchDialog, q)
@@ -76,8 +76,6 @@ public slots:
     void checkSearchReplace();
     void actSelectionTriggered();
     void actDocumentTriggered();
-    void btnReplaceClicked();
-    void btnFindClicked();
 private:
     Q_DISABLE_COPY(BSearchDialogPrivate)
 };

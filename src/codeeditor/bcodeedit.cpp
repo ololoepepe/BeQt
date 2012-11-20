@@ -38,6 +38,7 @@
 #include <QTextCharFormat>
 #include <QBrush>
 #include <QColor>
+#include <QTimer>
 
 /*============================================================================
 ================================ Code Edit Clipboard Notifier
@@ -313,7 +314,6 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
     pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
     undoAvailable = false;
     redoAvailable = false;
-    maxBookmarks = 4;
     fileType = BAbstractFileType::defaultFileType();
     brackets = fileType->brackets();
     bracketsHighlighting = true;
@@ -324,9 +324,13 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
       ptedt = new BPlainTextEdit(q);
         ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
+        //test
+        ptedt->setFont( QFont("DejaVu Sans Mono") );
+        //end test
         connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
-        connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( upadteCursorPosition() ) );
-        connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), q, SIGNAL( modificationChanged(bool) ) );
+        connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
+        connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
+        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( emitSelectionChanged() ) );
         connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( updateHasSelection() ) );
         connect( ptedt, SIGNAL( copyAvailable(bool) ), this, SLOT( updateCopyAvailable(bool) ) );
         connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
@@ -334,7 +338,8 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
         //
       vlt->addWidget(ptedt);
     //
-    setTextToEmptyLine();
+    QTimer::singleShot( 0, this, SLOT( setTextToEmptyLine() ) );
+
 }
 
 BCodeEditPrivate::~BCodeEditPrivate()
@@ -535,11 +540,6 @@ bool BCodeEditPrivate::mousePressEvent(QMouseEvent *e)
     tc.setPosition( tb.position() + text.length() );
     ptedt->setTextCursor(tc);
     return true;
-}
-
-void BCodeEditPrivate::setTextToEmptyLine()
-{
-    ptedt->setPlainText( QString().fill(' ', lineLength) );
 }
 
 void BCodeEditPrivate::deleteSelection()
@@ -1122,14 +1122,6 @@ void BCodeEditPrivate::move(int key)
     tc.endEditBlock();
 }
 
-void BCodeEditPrivate::updateHasBookmarks()
-{
-    bool b = hasBookmarks;
-    hasBookmarks = bookmarks.isEmpty();
-    if (b != hasBookmarks)
-        QMetaObject::invokeMethod( q_func(), "selectionBookmarks", Q_ARG(bool, hasBookmarks) );
-}
-
 //
 
 void BCodeEditPrivate::futureWatcherFinished()
@@ -1173,7 +1165,7 @@ void BCodeEditPrivate::updateHasSelection()
     bool b = hasSelection;
     hasSelection = ptedt->textCursor().hasSelection();
     if (b != hasSelection)
-        QMetaObject::invokeMethod( q_func(), "selectionChanged", Q_ARG(bool, hasSelection) );
+        QMetaObject::invokeMethod( q_func(), "hasSelectionChanged", Q_ARG(bool, hasSelection) );
 }
 
 void BCodeEditPrivate::updateCopyAvailable(bool available)
@@ -1213,6 +1205,23 @@ void BCodeEditPrivate::updateRedoAvailable(bool available)
     if (b != redoAvailable)
         QMetaObject::invokeMethod( q_func(), "redoAvailableChanged",
                                    Q_ARG(bool, ptedt->isReadOnly() && redoAvailable) );
+}
+
+//
+
+void BCodeEditPrivate::emitModificationChanged(bool modified)
+{
+    QMetaObject::invokeMethod( q_func(), "modificationChanged", Q_ARG(bool, modified) );
+}
+
+void BCodeEditPrivate::emitSelectionChanged()
+{
+    QMetaObject::invokeMethod(q_func(), "selectionChanged");
+}
+
+void BCodeEditPrivate::setTextToEmptyLine()
+{
+    ptedt->setPlainText( QString().fill(' ', lineLength) );
 }
 
 //
@@ -1290,24 +1299,6 @@ void BCodeEdit::setEditTabWidth(TabWidth tw)
     d->tabWidth = tw;
 }
 
-void BCodeEdit::setMaximumBookmarkCount(int count)
-{
-    B_D(BCodeEdit);
-    if (count == d->maxBookmarks)
-        return;
-    if (count < 0)
-    {
-        d->bookmarks.clear();
-        count = -1;
-    }
-    else
-    {
-        while (d->bookmarks.size() > count)
-            d->bookmarks.removeFirst();
-    }
-    d->maxBookmarks = count;
-}
-
 void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
 {
     B_D(BCodeEdit);
@@ -1343,11 +1334,6 @@ bool BCodeEdit::isModified() const
 bool BCodeEdit::hasSelection() const
 {
     return d_func()->hasSelection;
-}
-
-bool BCodeEdit::hasBookmarks() const
-{
-    return d_func()->hasBookmarks;
 }
 
 bool BCodeEdit::isCutAvailable() const
@@ -1397,11 +1383,6 @@ int BCodeEdit::editLineLength() const
 BCodeEdit::TabWidth BCodeEdit::editTabWidth() const
 {
     return d_func()->tabWidth;
-}
-
-int BCodeEdit::maximumBookmarkCount() const
-{
-    return d_func()->maxBookmarks;
 }
 
 bool BCodeEdit::isBracketHighlightingEnabled() const
@@ -1721,69 +1702,6 @@ void BCodeEdit::deselectText()
         return;
     tc.setPosition( tc.selectionEnd() );
     d->ptedt->setTextCursor(tc);
-}
-
-void BCodeEdit::makeBookmark()
-{
-    B_D(BCodeEdit);
-    QTextCursor tc = d->ptedt->textCursor();
-    BCodeEditPrivate::Bookmark bm;
-    bm.block = tc.block();
-    bm.posInBlock = tc.positionInBlock();
-    if ( d->bookmarks.contains(bm) )
-        d->bookmarks.removeAll(bm);
-    d->bookmarks << bm;
-    while (d->bookmarks.size() > d->maxBookmarks)
-        d->bookmarks.removeFirst();
-    d->updateHasBookmarks();
-}
-
-void BCodeEdit::removeBookmark(int index)
-{
-    B_D(BCodeEdit);
-    if ( index < 0 || index >= d->bookmarks.size() )
-        return;
-    int pind = d->bookmarks.indexOf(d->currentBookmark) - 1;
-    if (pind < 0)
-        pind = 0;
-    d->bookmarks.removeAt(index);
-    d->currentBookmark = d->bookmarks.at(pind);
-    d->updateHasBookmarks();
-}
-
-void BCodeEdit::removeLastBookmark()
-{
-    B_D(BCodeEdit);
-    if ( d->bookmarks.isEmpty() )
-        return;
-    removeBookmark( d->bookmarks.indexOf(d->currentBookmark) );
-}
-
-bool BCodeEdit::gotoBookmark(int index)
-{
-    B_D(BCodeEdit);
-    if ( index < 0 || index >= d->bookmarks.size() )
-        return false;
-    d->currentBookmark = d->bookmarks.at(index);
-    if ( !d->currentBookmark.block.isValid() )
-    {
-        removeBookmark(index);
-        d->currentBookmark = BCodeEditPrivate::Bookmark();
-        return false;
-    }
-    QTextCursor tc = d->ptedt->textCursor();
-    tc.setPosition(d->currentBookmark.block.position() + d->currentBookmark.posInBlock);
-    d->ptedt->setTextCursor(tc);
-    return true;
-}
-
-bool BCodeEdit::gotoNextBookmark()
-{
-    B_D(BCodeEdit);
-    if ( d->bookmarks.isEmpty() )
-        return false;
-    int ind = d->bookmarks.indexOf(d->currentBookmark) + 1;
-    return gotoBookmark(d->bookmarks.size() != ind ? ind : 0);
 }
 
 void BCodeEdit::cut()

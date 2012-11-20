@@ -6,8 +6,11 @@ class BAbstractEditorModule;
 
 class QVBoxLayout;
 class QTabWidget;
+class QString;
+class QPoint;
 
 #include "bcodeeditor.h"
+#include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -16,6 +19,7 @@ class QTabWidget;
 #include <QCoreApplication>
 #include <QMap>
 #include <QString>
+#include <QList>
 
 /*============================================================================
 ================================ Code Editor Private
@@ -30,8 +34,13 @@ public:
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
     //
+    bool closeDocument(BCodeEditorDocument *doc);
+    void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
+    void emitDocumentAdded(BCodeEditorDocument *doc);
+    void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
+    void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
+    //
     QMap<QString, BAbstractEditorModule *> modules;
-    QMap<BCodeEditor::EditorFeature, BAbstractEditorModule *> essentialModules;
     BCodeEditorDocument *document;
     //
     QVBoxLayout *vlt;
@@ -39,8 +48,29 @@ public:
 public slots:
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);
+    //BCodeEdit events
+    void documentModificationChanged(bool modified);
+    void documentSelectionChanged();
+    void documentHasSelectionChanged(bool hasSelection);
+    void documentCutAvailableChanged(bool available);
+    void documentCopyAvailableChanged(bool available);
+    void documentPasteAvailableChanged(bool available);
+    void documentUndoAvailableChanged(bool available);
+    void documentRedoAvailableChanged(bool available);
+    void documentEditModeChanged(BCodeEdit::EditMode mode);
+    void documentCursorPositionChanged(const QPoint &pos);
+    void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
+    void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
+    //BCodeEditorDocument events
+    void documentFileNameChanged(const QString &fn);
+    void documentCodecChanged(const QString &codecName);
+    void documentLoadingFinished(bool success);
+    void documentSavingFinished(bool success);
+    void documentBuisyChanged(bool buisy);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
+    //
+    friend class BAbstractEditorModule;
 };
 
 #endif // BCODEEDITOR_P_H

@@ -20,5 +20,7 @@
         <file>icons/password_save.png</file>
         <file>images/beqt_logo.png</file>
         <file>images/qt_logo.png</file>
+        <file>icons/bookmark.png</file>
+        <file>icons/bookmark_add.png</file>
     </qresource>
 </RCC>
