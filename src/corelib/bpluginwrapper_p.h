@@ -27,8 +27,6 @@ class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 public:
     static QSettings *createPluginSettingsInstance(const QString &pluginName, bool createFile);
     //
-    static QMap<QString, BPluginWrapper *> globalQMap;
-    //
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
     //
@@ -39,10 +37,12 @@ public:
     void createLoader();
     void deleteLoader();
     //
+    static QMap<QString, BPluginWrapper *> globalQMap;
+    static QStringList acctptableTypes;
+    static BPluginWrapper::InterfaceTestFunction testFunction;
+    //
     QString fileName;
     QPointer<QPluginLoader> loader;
-    QStringList acctptableTypes;
-    BPluginWrapper::InterfaceTestFunction testFunction;
     QObject *instance;
     BPluginInterface *interface;
     bool loaded;

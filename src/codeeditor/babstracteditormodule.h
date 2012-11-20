@@ -13,7 +13,7 @@ class QString;
 #include <QObject>
 
 /*============================================================================
-================================ BAbstractEditorModule
+================================ Abstract Editor Module
 ============================================================================*/
 
 class BAbstractEditorModule : public QObject, public BBase

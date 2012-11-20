@@ -9,7 +9,7 @@
 #include <QObject>
 
 /*============================================================================
-================================ BAbstractEditorModule Private
+================================ Abstract Editor Module Private
 ============================================================================*/
 
 class BAbstractEditorModulePrivate : public BBasePrivate

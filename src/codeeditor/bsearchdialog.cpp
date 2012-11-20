@@ -32,7 +32,7 @@
 #include <QMetaObject>
 
 /*============================================================================
-================================ BSearchDialog Private
+================================ Search Dialog Private
 ============================================================================*/
 
 BSearchDialogPrivate::BSearchDialogPrivate(BSearchDialog *q) :
@@ -218,7 +218,7 @@ const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
 const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_4_8;
 
 /*============================================================================
-================================ BSearchDialog
+================================ Search Dialog
 ============================================================================*/
 
 BSearchDialog::BSearchDialog(QWidget *parent) :

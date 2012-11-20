@@ -20,10 +20,6 @@
 ================================ Plugin Wrapper Private
 ============================================================================*/
 
-QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
-
-//
-
 QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName, bool createFile)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
@@ -151,13 +147,41 @@ void BPluginWrapperPrivate::deleteLoader()
     loader->deleteLater();
 }
 
+//
+
+QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
+QStringList BPluginWrapperPrivate::acctptableTypes;
+BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
+
 /*============================================================================
 ================================ Plugin Wrapper
 ============================================================================*/
 
-QSettings *BPluginWrapper::createPluginSettingsInstance(const QString &pluginName, bool createFile)
+QSettings *BPluginWrapper::createPluginSettingsInstance(BPluginInterface *iface, bool createFile)
 {
-    return BPluginWrapperPrivate::createPluginSettingsInstance(pluginName, createFile);
+    if (!iface)
+        return 0;
+    return BPluginWrapperPrivate::createPluginSettingsInstance(iface->name(), createFile);
+}
+
+void BPluginWrapper::setAcceptableTypes(const QStringList &list)
+{
+    BPluginWrapperPrivate::acctptableTypes = list;
+}
+
+void BPluginWrapper::setInterfaceTestFunction(InterfaceTestFunction function)
+{
+    BPluginWrapperPrivate::testFunction = function;
+}
+
+QStringList BPluginWrapper::acceptableFileTypes()
+{
+    return BPluginWrapperPrivate::acctptableTypes;
+}
+
+BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction()
+{
+    return BPluginWrapperPrivate::testFunction;
 }
 
 //
@@ -210,16 +234,6 @@ void BPluginWrapper::setFileName(const QString &fn)
     d->info = BPluginInterface::PluginInfo();
 }
 
-void BPluginWrapper::setAcceptableTypes(const QStringList &list)
-{
-    d_func()->acctptableTypes = list;
-}
-
-void BPluginWrapper::setInterfaceTestFunction(InterfaceTestFunction function)
-{
-    d_func()->testFunction = function;
-}
-
 bool BPluginWrapper::isLoaded() const
 {
     return d_func()->loaded;
@@ -233,16 +247,6 @@ bool BPluginWrapper::isActivated() const
 QString BPluginWrapper::fileName() const
 {
     return d_func()->fileName;
-}
-
-QStringList BPluginWrapper::acceptableFileTypes() const
-{
-    return d_func()->acctptableTypes;
-}
-
-BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction() const
-{
-    return d_func()->testFunction;
 }
 
 QString BPluginWrapper::type() const

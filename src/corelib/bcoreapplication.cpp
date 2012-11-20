@@ -370,6 +370,8 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     B_DS(BCoreApplication);
+    BPluginWrapper::setAcceptableTypes(acceptableTypes);
+    BPluginWrapper::setInterfaceTestFunction(function);
     //loading plugins
     //TODO: No means to determine from which dir the plugin is loaded.
     //Plugins from user dir should replace plugins from other dirs, even if they are already loaded
@@ -382,8 +384,6 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
         foreach (QString file, files)
         {
             BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
-            pw->setAcceptableTypes(acceptableTypes);
-            pw->setInterfaceTestFunction(function);
             if ( !pw->load() )
             {
                 pw->deleteLater();

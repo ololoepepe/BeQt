@@ -9,7 +9,7 @@
 #include <QObject>
 
 /*============================================================================
-================================ BAbstractEditorModule Private
+================================ Abstract Editor Module Private
 ============================================================================*/
 
 BAbstractEditorModulePrivate::BAbstractEditorModulePrivate(BAbstractEditorModule *q) :
@@ -24,7 +24,7 @@ BAbstractEditorModulePrivate::~BAbstractEditorModulePrivate()
 }
 
 /*============================================================================
-================================ BAbstractEditorModule
+================================ Abstract Editor Module
 ============================================================================*/
 
 BAbstractEditorModule::BAbstractEditorModule(QObject *parent) :

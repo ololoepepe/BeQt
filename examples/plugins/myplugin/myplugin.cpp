@@ -58,7 +58,7 @@ MyPlugin::PluginInfo MyPlugin::info() const
 
 void MyPlugin::activate()
 {
-    QSettings *s = BPluginWrapper::createPluginSettingsInstance( name() );
+    QSettings *s = BPluginWrapper::createPluginSettingsInstance(this);
     if (!s)
         return;
     s->beginGroup("Global");
@@ -69,7 +69,7 @@ void MyPlugin::activate()
 
 void MyPlugin::deactivate()
 {
-    QSettings *s = BPluginWrapper::createPluginSettingsInstance( name() );
+    QSettings *s = BPluginWrapper::createPluginSettingsInstance(this);
     if (!s)
         return;
     s->beginGroup("Global");
