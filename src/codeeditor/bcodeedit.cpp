@@ -39,6 +39,7 @@
 #include <QBrush>
 #include <QColor>
 #include <QTimer>
+#include <QRegExp>
 
 /*============================================================================
 ================================ Code Edit Clipboard Notifier
@@ -781,16 +782,17 @@ void BCodeEditPrivate::handleSpace()
         deleteSelection();
     QTextCursor tc = ptedt->textCursor();
     QString text = tc.block().text();
-    if (tc.positionInBlock() < text.length() && text.at( tc.positionInBlock() ) == ' ')
-    {
-        tc.setPosition(tc.position() + 1);
-        ptedt->setTextCursor(tc);
-    }
-    else if ( tc.positionInBlock() == text.length() )
+    static QRegExp rx("\\S");
+    if ( tc.positionInBlock() == text.length() )
     {
         tc.insertBlock();
         tc.insertText( QString().fill(' ', lineLength) );
         tc.movePosition(QTextCursor::StartOfBlock);
+        ptedt->setTextCursor(tc);
+    }
+    else if ( !text.mid( tc.positionInBlock() ).contains(rx) )
+    {
+        tc.setPosition(tc.position() + 1);
         ptedt->setTextCursor(tc);
     }
     else
