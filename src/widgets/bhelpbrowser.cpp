@@ -35,15 +35,15 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, 
       tbar = new QToolBar(q);
         tbtnBackward = new QToolButton;
           tbtnBackward->setEnabled(false);
-          tbtnBackward->setIcon( BApplication::beqtIcon("back") );
+          tbtnBackward->setIcon( BApplication::icon("back") );
         tbar->addWidget(tbtnBackward);
         tbtnForward = new QToolButton;
           tbtnForward->setEnabled(false);
-          tbtnForward->setIcon( BApplication::beqtIcon("forward") );
+          tbtnForward->setIcon( BApplication::icon("forward") );
         tbar->addWidget(tbtnForward);
         tbar->addSeparator();
         tbtnHome = new QToolButton;
-          tbtnHome->setIcon( BApplication::beqtIcon("gohome") );
+          tbtnHome->setIcon( BApplication::icon("gohome") );
         tbar->addWidget(tbtnHome);
         tbar->addSeparator();
         lblSearch = new QLabel;

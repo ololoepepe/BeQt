@@ -39,12 +39,12 @@ BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     ledt = new QLineEdit(q);
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
-      tbtnSave->setIcon( BApplication::beqtIcon("password_save") );
+      tbtnSave->setIcon( BApplication::icon("password_save") );
       connect( tbtnSave, SIGNAL( clicked() ), this, SLOT( resetSave() ) );
       resetSave();
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
-      tbtnShow->setIcon( BApplication::beqtIcon("decrypted") );
+      tbtnShow->setIcon( BApplication::icon("decrypted") );
       connect( tbtnShow, SIGNAL( clicked() ), this, SLOT( resetShow() ) );
       resetShow();
     hlt->addWidget(tbtnShow);
