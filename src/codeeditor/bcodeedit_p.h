@@ -130,6 +130,7 @@ public:
     void highlightBrackets();
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
     //KeyPress handlers
+    void handleSpace();
     void handleBackspace();
     void handleCtrlBackspace();
     void handleDelete();

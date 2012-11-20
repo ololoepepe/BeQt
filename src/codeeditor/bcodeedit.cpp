@@ -337,7 +337,6 @@ void BCodeEditPrivate::init()
       ptedt = new BPlainTextEdit(q);
         ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
-        //
         //Using such a construct to get default monospace font family name
         ptedt->setFont( QFont( QFontInfo( QFont("monospace") ).family() ) );
         connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
@@ -384,6 +383,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         {
         case Qt::Key_Return:
             q_func()->insertText("\n");
+            return true;
+        case Qt::Key_Space:
+            handleSpace();
             return true;
         case Qt::Key_Backspace:
             handleBackspace();
@@ -771,6 +773,30 @@ void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRan
     else if (ranges.size() == 1)
         QMetaObject::invokeMethod( q_func(), "lineSplitted",
                                    Q_ARG( const BCodeEdit::SplittedLinesRange &, ranges.first() ) );
+}
+
+void BCodeEditPrivate::handleSpace()
+{
+    if (hasSelection)
+        deleteSelection();
+    QTextCursor tc = ptedt->textCursor();
+    QString text = tc.block().text();
+    if (tc.positionInBlock() < text.length() && text.at( tc.positionInBlock() ) == ' ')
+    {
+        tc.setPosition(tc.position() + 1);
+        ptedt->setTextCursor(tc);
+    }
+    else if ( tc.positionInBlock() == text.length() )
+    {
+        tc.insertBlock();
+        tc.insertText( QString().fill(' ', lineLength) );
+        tc.movePosition(QTextCursor::StartOfBlock);
+        ptedt->setTextCursor(tc);
+    }
+    else
+    {
+        q_func()->insertText(" ");
+    }
 }
 
 void BCodeEditPrivate::handleBackspace()
