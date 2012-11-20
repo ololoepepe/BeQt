@@ -64,10 +64,13 @@ BLocalTerminalDriver::~BLocalTerminalDriver()
 
 //
 
-QString BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments)
+bool BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments, QString &error)
 {
     if ( !isActive() )
-        return tr("No process is running", "processCommand return");
+    {
+        error = tr("No process is running", "processCommand return");
+        return false;
+    }
     QTextStream out(d_func()->process);
     out.setCodec("UTF-8");
     QString cmd = command;
@@ -75,7 +78,7 @@ QString BLocalTerminalDriver::processCommand(const QString &command, const QStri
         cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
     cmd += "\n";
     out << (cmd);
-    return "";
+    return true;
 }
 
 bool BLocalTerminalDriver::isActive() const
@@ -110,36 +113,31 @@ QString BLocalTerminalDriver::prompt() const
     return d_func()->workingDirectory + "$ ";
 }
 
-QString BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments,
-                                              bool *finished, int *exitCode)
+bool BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments, QString &error)
 {
-    if (finished)
-        *finished = true;
-    if (exitCode)
-        *exitCode = 0;
     if ( isActive() )
-        return tr("A process is running", "terminalCommand return");
+    {
+        error = tr("A process is running", "terminalCommand return");
+        return false;
+    }
     B_D(BLocalTerminalDriver);
     //test
     if ( !command.compare("cd", Qt::CaseInsensitive) && !arguments.isEmpty() && QDir( arguments.first() ).exists() )
     {
         d->workingDirectory = arguments.first();
-        return "";
+        emitFinished(0);
+        return true;
     }
     //end test
     d->process->setWorkingDirectory(d->workingDirectory);
     d->process->start(command, arguments);
-    if ( d->process->waitForStarted() )
-    {
-        if (finished)
-            *finished = false;
-        return "";
-    }
-    else
+    if ( !d->process->waitForStarted() )
     {
         d->process->close();
-        return tr("Could not find or start programm", "terminalCommand return");
+        error = tr("Could not find or start programm", "terminalCommand return");
+        return false;
     }
+    return true;
 }
 
 void BLocalTerminalDriver::setWorkingDirectory(const QString &path)

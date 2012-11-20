@@ -34,6 +34,7 @@ public:
     void scrollDown();
     void appendText(const QString &text);
     void appendLine( const QString &text = QString() );
+    QString constructErrorString(const QString &error) const;
     //
     const bool NormalMode;
     //

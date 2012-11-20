@@ -24,15 +24,14 @@ public:
     explicit BLocalTerminalDriver(QObject *parent = 0);
     ~BLocalTerminalDriver();
     //
-    QString processCommand(const QString &command, const QStringList &arguments);
+    bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     bool isActive() const;
     QString read();
     void close();
     void terminate();
     void kill();
     QString prompt() const;
-    QString terminalCommand(const QString &command, const QStringList &arguments,
-                            bool *finished = 0, int *exitCode = 0);
+    bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
     void setWorkingDirectory(const QString &path);
     QString workingDirectory() const;
 protected:

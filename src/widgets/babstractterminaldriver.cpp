@@ -25,14 +25,10 @@ QString BAbstractTerminalDriver::prompt() const
     return "$";
 }
 
-QString BAbstractTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments,
-                                                 bool *finished, int *exitCode)
+bool BAbstractTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments, QString &error)
 {
-    if (finished)
-        *finished = true;
-    if (exitCode)
-        *exitCode = 0;
-    return "";
+    emitFinished(0);
+    return true;
 }
 
 void BAbstractTerminalDriver::setWorkingDirectory(const QString &path)

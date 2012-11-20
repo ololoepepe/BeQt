@@ -160,6 +160,13 @@ void BTerminalWidgetPrivate::appendLine(const QString &text)
     len = ptedt->textCursor().block().length();
 }
 
+QString BTerminalWidgetPrivate::constructErrorString(const QString &error) const
+{
+    return tr("Error:", "text") + " " + ( !error.isEmpty() ? error : tr("Unknown error", "text") );
+}
+
+//
+
 void BTerminalWidgetPrivate::read()
 {
     scrollDown();
@@ -285,19 +292,12 @@ void BTerminalWidget::terminalCommand(const QString &command, const QStringList 
         return;
     if ( command.isEmpty() )
         return d->appendLine( d->driver->prompt() );
-    bool fin = false;
-    int eCode = 0;
-    QString ret = d->driver->terminalCommand(command, arguments, &fin, &eCode);
-    if ( !ret.isEmpty() )
+    d->appendLine();
+    QString error;
+    if ( !d->driver->terminalCommand(command, arguments, error) )
     {
-        d->appendLine(tr("Error:", "text") + " " + ret);
+        d->appendText( d->constructErrorString(error) );
         d->appendLine( d->driver->prompt() );
-    }
-    else
-    {
-        d->appendLine();
-        if (fin)
-            d->finished(eCode);
     }
 }
 
@@ -313,12 +313,13 @@ void BTerminalWidget::processCommand(const QString &command, const QStringList &
     B_D(BTerminalWidget);
     if ( !d->driver || !d->driver->isActive() )
         return;
-    if ( command.isEmpty() )
-        return d->appendLine();
-    QString ret = d->driver->processCommand(command, arguments);
-    if ( !ret.isEmpty() )
-        d->appendLine(tr("Error:", "text") + " " + ret);
     d->appendLine();
+    if ( command.isEmpty() )
+        return ;
+    QString error;
+    if ( !d->driver->processCommand(command, arguments, error) )
+        d->appendText( d->constructErrorString(error) );
+
 }
 
 void BTerminalWidget::emulateUserInput(const QString &command)
