@@ -33,6 +33,20 @@
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
     BBasePrivate(q)
 {
+    //
+}
+
+BCodeEditorPrivate::~BCodeEditorPrivate()
+{
+    //
+}
+
+//
+
+void BCodeEditorPrivate::init()
+{
+    B_Q(BCodeEditor);
+    BBasePrivate::init();
     document = 0;
     editFont = QFont( QFontInfo( QFont("monospace") ).family() );
     editMode = BCodeEdit::NormalMode;
@@ -49,13 +63,6 @@ BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
         connect( twgt, SIGNAL( tabCloseRequested(int) ), this, SLOT( twgtTabCloseRequested(int) ) );
       vlt->addWidget(twgt);
 }
-
-BCodeEditorPrivate::~BCodeEditorPrivate()
-{
-    //
-}
-
-//
 
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {

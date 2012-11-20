@@ -44,6 +44,7 @@ public:
     BCoreApplicationPrivate(BCoreApplication *q);
     virtual ~BCoreApplicationPrivate();
     //
+    void init();
     QString confFileName(const QString &path, const QString &name) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);

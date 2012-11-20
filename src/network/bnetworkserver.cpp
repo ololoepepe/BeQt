@@ -92,17 +92,10 @@ int BNetworkServerThread::connectionCount() const
 ================================ Network Server Private
 ============================================================================*/
 
-BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
+BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q) :
     BBasePrivate(q)
 {
-    maxConnectionCount = 0;
-    maxThreadCount = 0;
-    if (BGenericServer::NoServer != type)
-    {
-        server = new BGenericServer( type, q_func() );
-        server->setMaxPendingConnections(0);
-        connect( server.data(), SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
-    }
+    //
 }
 
 BNetworkServerPrivate::~BNetworkServerPrivate()
@@ -118,6 +111,13 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
 }
 
 //
+
+void BNetworkServerPrivate::init()
+{
+    BBasePrivate::init();
+    maxConnectionCount = 0;
+    maxThreadCount = 0;
+}
 
 BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor) const
 {
@@ -170,9 +170,15 @@ void BNetworkServerPrivate::finished()
 ============================================================================*/
 
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkServerPrivate(this, type) )
+    QObject(parent), BBase( *new BNetworkServerPrivate(this) )
 {
-    //
+    B_D(BNetworkServer);
+    if (BGenericServer::NoServer != type)
+    {
+        d->server = new BGenericServer(type, this);
+        d->server->setMaxPendingConnections(0);
+        connect( d->server.data(), SIGNAL( newConnection(int) ), d, SLOT( newConnection(int) ) );
+    }
 }
 
 BNetworkServer::~BNetworkServer()

@@ -27,10 +27,23 @@ QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
 
 //
 
-BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, const QString &file,
-                                         const QStringList &searchPaths) :
+BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q) :
     BBasePrivate(q)
 {
+    //
+}
+
+BHelpBrowserPrivate::~BHelpBrowserPrivate()
+{
+    //
+}
+
+//
+
+void BHelpBrowserPrivate::init()
+{
+    B_Q(BHelpBrowser);
+    BBasePrivate::init();
     QVBoxLayout *vlt = new QVBoxLayout(q);
       tbar = new QToolBar(q);
         tbtnBackward = new QToolButton;
@@ -61,19 +74,9 @@ BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q, const QString &index, 
         connect( tbrsr, SIGNAL( sourceChanged(QUrl) ), this, SLOT( updateCaption() ) );
       vlt->addWidget(tbrsr);
     //
-    tbrsr->setSearchPaths(searchPaths);
-    if ( !index.isEmpty() )
-        tbrsr->setSource( QUrl(index) );
-    if (file != index)
-        tbrsr->setSource( QUrl(file) );
     tbrsr->setFocus();
     retranslateUi();
     QObject::connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
-}
-
-BHelpBrowserPrivate::~BHelpBrowserPrivate()
-{
-    //
 }
 
 //
@@ -147,40 +150,51 @@ void BHelpBrowser::clearSearchCache()
 //
 
 BHelpBrowser::BHelpBrowser(QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this, "", "") )
+    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
     //
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this, "", "", searchPaths) )
+    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
-    //
+    d_func()->tbrsr->setSearchPaths(searchPaths);
 }
 
 BHelpBrowser::BHelpBrowser(const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this, "", file) )
+    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
-    //
+    d_func()->tbrsr->setSource( QUrl(file) );
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this, "", file, searchPaths) )
+    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
-    //
+    B_D(BHelpBrowser);
+    d->tbrsr->setSearchPaths(searchPaths);
+    d->tbrsr->setSource( QUrl(file) );
 }
 
 BHelpBrowser::BHelpBrowser(const QString &index, const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this, index, file) )
+    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
-    //
+    B_D(BHelpBrowser);
+    if ( !index.isEmpty() )
+        d->tbrsr->setSource( QUrl(index) );
+    if (file != index)
+        d->tbrsr->setSource( QUrl(file) );
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &index, const QString &file,
                            QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this, index, file, searchPaths) )
+    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
-    //
+    B_D(BHelpBrowser);
+    d->tbrsr->setSearchPaths(searchPaths);
+    if ( !index.isEmpty() )
+        d->tbrsr->setSource( QUrl(index) );
+    if (file != index)
+        d->tbrsr->setSource( QUrl(file) );
 }
 
 BHelpBrowser::~BHelpBrowser()

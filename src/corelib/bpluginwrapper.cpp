@@ -30,11 +30,7 @@ QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pl
 BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper *q) :
     BBasePrivate(q)
 {
-    instance = 0;
-    interface = 0;
-    testFunction = 0;
-    loaded = false;
-    activated = false;
+    //
 }
 
 BPluginWrapperPrivate::~BPluginWrapperPrivate()
@@ -43,6 +39,16 @@ BPluginWrapperPrivate::~BPluginWrapperPrivate()
 }
 
 //
+
+void BPluginWrapperPrivate::init()
+{
+    BBasePrivate::init();
+    instance = 0;
+    interface = 0;
+    testFunction = 0;
+    loaded = false;
+    activated = false;
+}
 
 bool BPluginWrapperPrivate::load()
 {
@@ -298,5 +304,5 @@ void BPluginWrapper::deactivate()
 BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

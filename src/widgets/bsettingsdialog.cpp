@@ -32,7 +32,10 @@ public:
                            BSettingsDialog::Navigation navigation);
     ~BSettingsDialogPrivate();
     //
+    void init();
+    //
     const BSettingsDialog::SettingsTabMap TabMap;
+    const BSettingsDialog::Navigation Navigation;
     //
     QVBoxLayout *vlt;
       QSplitter *hspltr;
@@ -52,15 +55,29 @@ private:
 
 BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
                                                BSettingsDialog::Navigation navigation) :
-    BBasePrivate(q), TabMap(tabs)
+    BBasePrivate(q), TabMap(tabs), Navigation(navigation)
 {
+    //
+}
+
+BSettingsDialogPrivate::~BSettingsDialogPrivate()
+{
+    //
+}
+
+//
+
+void BSettingsDialogPrivate::init()
+{
+    B_Q(BSettingsDialog);
+    BBasePrivate::init();
     q->setWindowTitle( tr("Settings", "windowTitle") );
     q->setMinimumHeight(120);
     q->setMinimumWidth(240);
     vlt = new QVBoxLayout(q);
     if (TabMap.size() > 1)
     {
-        if (BSettingsDialog::ListNavigation == navigation)
+        if (BSettingsDialog::ListNavigation == Navigation)
         {
             hspltr = new QSplitter(Qt::Horizontal, q);
             lstwgt = new QListWidget(q);
@@ -116,11 +133,6 @@ BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettin
       connect( dlgbbox, SIGNAL( accepted() ), q, SLOT( accept() ) );
       connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
     vlt->addWidget(dlgbbox);
-}
-
-BSettingsDialogPrivate::~BSettingsDialogPrivate()
-{
-    //
 }
 
 /*============================================================================

@@ -20,6 +20,8 @@ class B_CORE_EXPORT BBasePrivate : public QObject
 public:
     explicit BBasePrivate(BBase *q);
     virtual ~BBasePrivate();
+    //
+    virtual void init();
 protected:
     BBase *const _m_q;
 private:

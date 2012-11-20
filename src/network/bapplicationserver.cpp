@@ -29,11 +29,7 @@ const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Q
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
     BBasePrivate(q)
 {
-    bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
-    server = new BGenericServer(BGenericServer::LocalServer);
-    //TODO: On Qt5, set socket options
-    //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
-    connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
+    //
 }
 
 BApplicationServerPrivate::~BApplicationServerPrivate()
@@ -41,6 +37,18 @@ BApplicationServerPrivate::~BApplicationServerPrivate()
     if ( server->isListening() )
         server->close();
     server->deleteLater();
+}
+
+//
+
+void BApplicationServerPrivate::init()
+{
+    BBasePrivate::init();
+    bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
+    server = new BGenericServer(BGenericServer::LocalServer);
+    //TODO: On Qt5, set socket options
+    //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
+    connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
 //

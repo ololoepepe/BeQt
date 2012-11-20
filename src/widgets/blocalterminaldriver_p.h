@@ -26,6 +26,8 @@ public:
     explicit BLocalTerminalDriverPrivate(BLocalTerminalDriver *q);
     ~BLocalTerminalDriverPrivate();
     //
+    void init();
+    //
     QProcess *process;
     QString workingDirectory;
 public slots:

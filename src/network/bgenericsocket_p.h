@@ -24,9 +24,10 @@ class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BGenericSocket)
     Q_OBJECT
 public:
-    explicit BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type);
+    explicit BGenericSocketPrivate(BGenericSocket *q);
     ~BGenericSocketPrivate();
     //
+    void init();
     void setSocket(QAbstractSocket *socket);
     void setSocket(QLocalSocket *socket);
     void connectIODevice();

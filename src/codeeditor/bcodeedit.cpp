@@ -311,23 +311,9 @@ BCodeEditPrivate::~BCodeEditPrivate()
 
 //
 
-bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
-{
-    switch ( e->type() )
-    {
-    case QEvent::KeyPress:
-        return keyPressEvent( static_cast<QKeyEvent *>(e) );
-    case QEvent::MouseButtonDblClick:
-        return mouseDoubleClickEvent( static_cast<QMouseEvent *>(e) );
-    case QEvent::MouseButtonPress:
-        return mousePressEvent( static_cast<QMouseEvent *>(e) );
-    default:
-        return QObject::eventFilter(obj, e);
-    }
-}
-
 void BCodeEditPrivate::init()
 {
+    BBasePrivate::init();
     if ( !BCodeEditClipboardNotifier::instance() )
         new BCodeEditClipboardNotifier;
     connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
@@ -351,6 +337,7 @@ void BCodeEditPrivate::init()
       ptedt = new BPlainTextEdit(q);
         ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
+        //
         //Using such a construct to get default monospace font family name
         ptedt->setFont( QFont( QFontInfo( QFont("monospace") ).family() ) );
         connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
@@ -365,6 +352,21 @@ void BCodeEditPrivate::init()
       vlt->addWidget(ptedt);
     //
     QTimer::singleShot( 0, this, SLOT( setTextToEmptyLine() ) );
+}
+
+bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
+{
+    switch ( e->type() )
+    {
+    case QEvent::KeyPress:
+        return keyPressEvent( static_cast<QKeyEvent *>(e) );
+    case QEvent::MouseButtonDblClick:
+        return mouseDoubleClickEvent( static_cast<QMouseEvent *>(e) );
+    case QEvent::MouseButtonPress:
+        return mousePressEvent( static_cast<QMouseEvent *>(e) );
+    default:
+        return QObject::eventFilter(obj, e);
+    }
 }
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
@@ -1242,7 +1244,7 @@ const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QCha
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
 {
-    d_func()->init();
+    //
 }
 
 BCodeEdit::~BCodeEdit()
@@ -1775,7 +1777,7 @@ void BCodeEdit::redo()
 BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    d_func()->init();
+    //
 }
 
 //

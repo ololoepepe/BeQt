@@ -19,7 +19,7 @@
 BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
     BBasePrivate(q)
 {
-    init();
+    //
 }
 
 BSocketWrapperPrivate::~BSocketWrapperPrivate()
@@ -31,6 +31,7 @@ BSocketWrapperPrivate::~BSocketWrapperPrivate()
 
 void BSocketWrapperPrivate::init()
 {
+    BBasePrivate::init();
     resetIn();
     resetOut();
     comprLvl = 0;

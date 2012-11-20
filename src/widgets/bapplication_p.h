@@ -26,6 +26,7 @@ public:
     BApplicationPrivate(BApplication *q);
     ~BApplicationPrivate();
     //
+    void init();
     void initAboutDlg();
     void showAbout();
     QString helpContext(QWidget *widget = 0) const;

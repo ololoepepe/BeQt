@@ -29,6 +29,20 @@
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
     BBasePrivate(q), NormalMode(nmode)
 {
+    //
+}
+
+BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
+{
+    //
+}
+
+//
+
+void BTerminalWidgetPrivate::init()
+{
+    B_Q(BTerminalWidget);
+    BBasePrivate::init();
     driver = 0;
     terminatingKey = Qt::Key_D;
     terminatingModifiers = Qt::ControlModifier;
@@ -44,13 +58,6 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
         ptedt->setContextMenuPolicy(Qt::NoContextMenu);
       vlt->addWidget(ptedt);
 }
-
-BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
-{
-    //
-}
-
-//
 
 bool BTerminalWidgetPrivate::eventFilter(QObject *object, QEvent *event)
 {

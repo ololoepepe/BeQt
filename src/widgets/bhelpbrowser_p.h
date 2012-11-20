@@ -32,9 +32,10 @@ class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
 public:
     static QMap<QString, QStringList> searchCache;
     //
-    BHelpBrowserPrivate( BHelpBrowser *q, const QString &index, const QString &file,
-                         const QStringList &searchPaths = QStringList() );
+    BHelpBrowserPrivate( BHelpBrowser *q);
     ~BHelpBrowserPrivate();
+    //
+    void init();
     //
     QVBoxLayout *vlt;
       QToolBar *tbar;

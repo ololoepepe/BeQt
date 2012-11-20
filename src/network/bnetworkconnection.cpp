@@ -20,25 +20,10 @@
 ================================ Network Connection Private
 ============================================================================*/
 
-BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket *s) :
+BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q) :
     BBasePrivate(q), UniqueId( QUuid::createUuid() )
 {
-    init();
-    if ( !s || s->thread() != q_func()->thread() || !s->isOpen() )
-        return;
-    setSocket(s);
-    q_func()->log( tr("Incoming connection", "log text") );
-}
-
-BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket::SocketType type) :
-    BBasePrivate(q), UniqueId( QUuid::createUuid() )
-{
-    init();
-    BGenericSocket *s = new BGenericSocket(type);
-    if ( s->isSocketSet() )
-        setSocket(s);
-    else
-        s->deleteLater();
+    //
 }
 
 BNetworkConnectionPrivate::~BNetworkConnectionPrivate()
@@ -50,6 +35,7 @@ BNetworkConnectionPrivate::~BNetworkConnectionPrivate()
 
 void BNetworkConnectionPrivate::init()
 {
+    BBasePrivate::init();
     detailedLog = false;
     autoDelete = true;
     socketWrapper = new BSocketWrapper( q_func() );
@@ -238,15 +224,22 @@ void BNetworkConnectionPrivate::operationDestroyed(const BNetworkOperationMetaDa
 ============================================================================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkConnectionPrivate(this, socket) )
+    QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
 {
-    //
+    if ( !socket || socket->thread() != thread() || !socket->isOpen() )
+        return;
+    d_func()->setSocket(socket);
+    log( tr("Incoming connection", "log text") );
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkConnectionPrivate(this, type) )
+    QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
 {
-    //
+    BGenericSocket *s = new BGenericSocket(type);
+    if ( s->isSocketSet() )
+        d_func()->setSocket(s);
+    else
+        s->deleteLater();
 }
 
 //

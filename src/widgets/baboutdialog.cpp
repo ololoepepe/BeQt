@@ -61,8 +61,22 @@ BAboutDialog::PersonInfoList BAboutDialog::fromPluginPersonInfoList(const BPlugi
 //
 
 BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options) :
-    BBasePrivate(q)
+    BBasePrivate(q), Options(options)
 {
+    //
+}
+
+BAboutDialogPrivate::~BAboutDialogPrivate()
+{
+    //
+}
+
+//
+
+void BAboutDialogPrivate::init()
+{
+    B_Q(BAboutDialog);
+    BBasePrivate::init();
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
     vlt = new QVBoxLayout(q);
@@ -76,8 +90,8 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
             font.setPointSize(12);
             font.setBold(true);
             lblName->setFont(font);
-            appName = !options.appName.isEmpty() ? options.appName : QApplication::applicationName();
-            QString appVersion = !options.appVersion.isEmpty() ? options.appVersion :
+            appName = !Options.appName.isEmpty() ? Options.appName : QApplication::applicationName();
+            QString appVersion = !Options.appVersion.isEmpty() ? Options.appVersion :
                                                                  QApplication::applicationVersion();
             lblName->setText(appName + " v" + appVersion);
           vltHeader->addWidget(lblName);
@@ -95,7 +109,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
           vltHeader->addLayout(hltCRWebsite);
         hltHeader->addLayout(vltHeader);
         hltHeader->addStretch();
-        if (options.aboutQtButton)
+        if (Options.aboutQtButton)
         {
             tbtnAboutQt = new QToolButton(q);
               tbtnAboutQt->setIcon( QIcon( BApplication::beqtPixmap("qt_logo") ) );
@@ -106,7 +120,7 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
         {
             tbtnAboutQt = 0;
         }
-        if (options.aboutBeQtButton)
+        if (Options.aboutBeQtButton)
         {
             tbtnAboutBeQt = new QToolButton(q);
               tbtnAboutBeQt->setIcon( QIcon( BApplication::beqtPixmap("beqt_logo") ) );
@@ -136,13 +150,6 @@ BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::Ab
     retranslateUi();
     connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
-
-BAboutDialogPrivate::~BAboutDialogPrivate()
-{
-    //
-}
-
-//
 
 QString BAboutDialogPrivate::tabTitle(DialogTab t) const
 {

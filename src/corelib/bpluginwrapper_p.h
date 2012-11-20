@@ -30,6 +30,7 @@ public:
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
     //
+    void init();
     bool load();
     void unload();
     bool activate();

@@ -24,26 +24,10 @@
 ================================ Generic Socket Private
 ============================================================================*/
 
-BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q, BGenericSocket::SocketType type) :
+BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q) :
     BBasePrivate(q)
 {
-    switch (type)
-    {
-    case BGenericSocket::LocalSocket:
-        setSocket(new QLocalSocket);
-        break;
-    case BGenericSocket::SslSocket:
-        setSocket(new QSslSocket);
-        break;
-    case BGenericSocket::TcpSocket:
-        setSocket(new QTcpSocket);
-        break;
-    case BGenericSocket::UdpSocket:
-        setSocket(new QUdpSocket);
-        break;
-    default:
-        break;
-    }
+    //
 }
 
 BGenericSocketPrivate::~BGenericSocketPrivate()
@@ -52,6 +36,11 @@ BGenericSocketPrivate::~BGenericSocketPrivate()
 }
 
 //
+
+void BGenericSocketPrivate::init()
+{
+    BBasePrivate::init();
+}
 
 void BGenericSocketPrivate::setSocket(QAbstractSocket *socket)
 {
@@ -168,9 +157,25 @@ void BGenericSocketPrivate::stateChanged(QAbstractSocket::SocketState socketStat
 ============================================================================*/
 
 BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
-    QObject(parent), BBase( *new BGenericSocketPrivate(this, type) )
+    QObject(parent), BBase( *new BGenericSocketPrivate(this) )
 {
-    //
+    switch (type)
+    {
+    case BGenericSocket::LocalSocket:
+        d_func()->setSocket(new QLocalSocket);
+        break;
+    case BGenericSocket::SslSocket:
+        d_func()->setSocket(new QSslSocket);
+        break;
+    case BGenericSocket::TcpSocket:
+        d_func()->setSocket(new QTcpSocket);
+        break;
+    case BGenericSocket::UdpSocket:
+        d_func()->setSocket(new QUdpSocket);
+        break;
+    default:
+        break;
+    }
 }
 
 //

@@ -63,6 +63,20 @@ QPoint BBookmarksEditorModulePrivate::currentBookmark(BCodeEditorDocument *doc)
 BBookmarksEditorModulePrivate::BBookmarksEditorModulePrivate(BBookmarksEditorModule *q) :
     BAbstractEditorModulePrivate(q)
 {
+    //
+}
+
+BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
+{
+    //
+}
+
+//
+
+void BBookmarksEditorModulePrivate::init()
+{
+    B_Q(BBookmarksEditorModule);
+    BAbstractEditorModulePrivate::init();
     maxBookmarks = 4;
     //
     actMakeBookmark = new QAction(this);
@@ -75,13 +89,6 @@ BBookmarksEditorModulePrivate::BBookmarksEditorModulePrivate(BBookmarksEditorMod
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
-
-BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
-{
-    //
-}
-
-//
 
 void BBookmarksEditorModulePrivate::checkBookmarks()
 {

@@ -26,10 +26,12 @@ class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BPasswordWidget)
     Q_OBJECT
 public:
-    static const QDataStream::Version DSVersion;
-    //
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);
     ~BPasswordWidgetPrivate();
+    //
+    void init();
+    //
+    static const QDataStream::Version DSVersion;
     //
     QByteArray encPassword;
     bool save;

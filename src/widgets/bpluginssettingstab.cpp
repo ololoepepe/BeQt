@@ -32,6 +32,20 @@
 BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
     BBasePrivate(q)
 {
+    //
+}
+
+BPluginsSettingsTabPrivate::~BPluginsSettingsTabPrivate()
+{
+    //
+}
+
+//
+
+void BPluginsSettingsTabPrivate::init()
+{
+    BBasePrivate::init();
+    B_Q(BPluginsSettingsTab);
     plugins = BApplication::pluginWrappers();
     //
     hlt = new QHBoxLayout(q);
@@ -66,11 +80,6 @@ BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
       hlt->addLayout(vlt);
     //
     lstwgtCurrentRowChanged( lstwgt->currentRow() );
-}
-
-BPluginsSettingsTabPrivate::~BPluginsSettingsTabPrivate()
-{
-    //
 }
 
 //

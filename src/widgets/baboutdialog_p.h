@@ -48,12 +48,14 @@ public:
     BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options);
     ~BAboutDialogPrivate();
     //
+    void init();
     QString tabTitle(DialogTab t) const;
     int tabIndex(DialogTab t) const;
     void removeTab(DialogTab t);
     void fillTab(DialogTab t, const QString &text, bool html);
     void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
-
+    //
+    const BAboutDialog::AboutOptions Options;
     //
     QString appName;
     QMap<DialogTab, QTextBrowser *> tbrsrs;

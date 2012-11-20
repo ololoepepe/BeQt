@@ -66,10 +66,7 @@ void BPlainTextEditPrivate::fillBackground(QPainter *painter, const QRectF &rect
 BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit *q) :
     BBasePrivate(q)
 {
-    drag = true;
-    blockMode = false;
-    hasSelection = false;
-    connect( q, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
+    //
 }
 
 BPlainTextEditPrivate::~BPlainTextEditPrivate()
@@ -78,6 +75,15 @@ BPlainTextEditPrivate::~BPlainTextEditPrivate()
 }
 
 //
+
+void BPlainTextEditPrivate::init()
+{
+    BBasePrivate::init();
+    drag = true;
+    blockMode = false;
+    hasSelection = false;
+    connect( q_func(), SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
+}
 
 QAbstractTextDocumentLayout::PaintContext BPlainTextEditPrivate::getPaintContext() const
 {

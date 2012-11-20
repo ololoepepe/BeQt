@@ -30,6 +30,8 @@ public:
     explicit BPluginsSettingsTabPrivate(BPluginsSettingsTab *q);
     ~BPluginsSettingsTabPrivate();
     //
+    void init();
+    //
     QList<BPluginWrapper *> plugins;
     QHBoxLayout *hlt;
       QListWidget *lstwgt;

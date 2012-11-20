@@ -39,6 +39,7 @@ public:
     explicit BSearchDialogPrivate(BSearchDialog *q);
     ~BSearchDialogPrivate();
     //
+    void init();
     bool eventFilter(QObject *o, QEvent *e);
     void appendHistory(QComboBox *cmbox);
     void emitTextReplaced(int count, const QString &oldText, const QString &newText);

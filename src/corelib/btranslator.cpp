@@ -21,7 +21,7 @@
 BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
     BBasePrivate(q)
 {
-    installed = false;
+    //
 }
 
 BTranslatorPrivate::~BTranslatorPrivate()
@@ -30,6 +30,12 @@ BTranslatorPrivate::~BTranslatorPrivate()
 }
 
 //
+
+void BTranslatorPrivate::init()
+{
+    BBasePrivate::init();
+    installed = false;
+}
 
 void BTranslatorPrivate::install()
 {

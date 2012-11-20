@@ -34,6 +34,7 @@ public:
     explicit BBookmarksEditorModulePrivate(BBookmarksEditorModule *q);
     ~BBookmarksEditorModulePrivate();
     //
+    void init();
     void checkBookmarks();
     //
     static const QPoint InvalidPos;

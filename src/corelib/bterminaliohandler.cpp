@@ -34,6 +34,8 @@ public:
     explicit BTerminalIOHandlerPrivate(BTerminalIOHandler *q);
     ~BTerminalIOHandlerPrivate();
     //
+    void init();
+    //
     static QMutex instMutex;
     static QMutex stdinMutex;
     static QMutex stdoutMutex;
@@ -52,13 +54,23 @@ private:
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
   BBasePrivate(q)
 {
-    prefereReadLine = false;
+    //
 }
 
 BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 {
     //
 }
+
+//
+
+void BTerminalIOHandlerPrivate::init()
+{
+    BBasePrivate::init();
+    prefereReadLine = false;
+}
+
+//
 
 QMutex BTerminalIOHandlerPrivate::instMutex;
 QMutex BTerminalIOHandlerPrivate::stdinMutex;

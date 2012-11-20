@@ -28,6 +28,8 @@ public:
     explicit BApplicationServerPrivate(BApplicationServer *q);
     ~BApplicationServerPrivate();
     //
+    void init();
+    //
     BGenericServer *server;
 public slots:
     void newPendingConnection();

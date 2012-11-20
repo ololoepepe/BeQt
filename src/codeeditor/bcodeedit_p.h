@@ -118,8 +118,8 @@ public:
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
     //
-    bool eventFilter(QObject *obj, QEvent *e);
     void init();
+    bool eventFilter(QObject *obj, QEvent *e);
     inline bool keyPressEvent(QKeyEvent *e);
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);

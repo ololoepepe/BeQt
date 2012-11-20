@@ -82,9 +82,10 @@ class B_NETWORK_EXPORT BNetworkServerPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BNetworkServer)
     Q_OBJECT
 public:
-    explicit BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type);
+    explicit BNetworkServerPrivate(BNetworkServer *q);
     ~BNetworkServerPrivate();
     //
+    void init();
     BNetworkConnection *createConnection(int socketDescriptor) const;
     //
     QPointer<BGenericServer> server;

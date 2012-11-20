@@ -20,6 +20,8 @@ public:
     explicit BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q);
     ~BAbstractDocumentDriverPrivate();
     //
+    void init();
+    //
     QQueue<BAbstractDocumentDriver::Operation> loadOps;
     QQueue<BAbstractDocumentDriver::Operation> saveOps;
     QList<BCodeEditorDocument *> docs;
@@ -40,6 +42,13 @@ BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocument
 BAbstractDocumentDriverPrivate::~BAbstractDocumentDriverPrivate()
 {
     //
+}
+
+//
+
+void BAbstractDocumentDriverPrivate::init()
+{
+    BBasePrivate::init();
 }
 
 /*============================================================================

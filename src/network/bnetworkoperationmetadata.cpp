@@ -16,6 +16,8 @@ public:
     explicit BNetworkOperationMetaDataPrivate(BNetworkOperationMetaData *q);
     ~BNetworkOperationMetaDataPrivate();
     //
+    void init();
+    //
     QUuid id;
     bool request;
     QString operation;
@@ -36,6 +38,13 @@ BNetworkOperationMetaDataPrivate::BNetworkOperationMetaDataPrivate(BNetworkOpera
 BNetworkOperationMetaDataPrivate::~BNetworkOperationMetaDataPrivate()
 {
     //
+}
+
+//
+
+void BNetworkOperationMetaDataPrivate::init()
+{
+    BBasePrivate::init();
 }
 
 /*============================================================================

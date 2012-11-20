@@ -22,6 +22,7 @@ public:
     explicit BFlowLayoutPrivate(BFlowLayout *q);
     ~BFlowLayoutPrivate();
     //
+    void init();
     int doLayout(const QRect &rect, bool testOnly) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
     //
@@ -48,6 +49,11 @@ BFlowLayoutPrivate::~BFlowLayoutPrivate()
 }
 
 //
+
+void BFlowLayoutPrivate::init()
+{
+    BBasePrivate::init();
+}
 
 int BFlowLayoutPrivate::doLayout(const QRect &rect, bool testOnly) const
 {

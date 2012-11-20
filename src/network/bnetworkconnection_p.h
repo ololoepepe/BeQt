@@ -35,8 +35,7 @@ class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
 public:
     typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
     //
-    BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket *s);
-    BNetworkConnectionPrivate(BNetworkConnection *q, BGenericSocket::SocketType type);
+    BNetworkConnectionPrivate(BNetworkConnection *q);
     ~BNetworkConnectionPrivate();
     //
     void init();

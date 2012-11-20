@@ -24,13 +24,23 @@
 ================================ Password Widget Private
 ============================================================================*/
 
-const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
-
-//
-
 BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     BBasePrivate(q)
 {
+    //
+}
+
+BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
+{
+    //
+}
+
+//
+
+void BPasswordWidgetPrivate::init()
+{
+    B_Q(BPasswordWidget);
+    BBasePrivate::init();
     save = true; //Is reset to false, so it's false by default
     show = true; //Is reset to false, so it's false by default
     charCount = -1;
@@ -53,10 +63,9 @@ BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
-BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
-{
-    //
-}
+//
+
+const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
 
 //
 

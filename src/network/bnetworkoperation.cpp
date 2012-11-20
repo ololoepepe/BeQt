@@ -17,13 +17,7 @@
 BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md) :
     BBasePrivate(q), MetaData(md)
 {
-    isStarted = false;
-    isError = false;
-    bytesInReady = 0;
-    bytesInTotal = -1;
-    bytesOutReady = 0;
-    bytesOutTotal = -1;
-    isFinished = false;
+    //
 }
 
 BNetworkOperationPrivate::~BNetworkOperationPrivate()
@@ -32,6 +26,18 @@ BNetworkOperationPrivate::~BNetworkOperationPrivate()
 }
 
 //
+
+void BNetworkOperationPrivate::init()
+{
+    BBasePrivate::init();
+    isStarted = false;
+    isError = false;
+    bytesInReady = 0;
+    bytesInTotal = -1;
+    bytesOutReady = 0;
+    bytesOutTotal = -1;
+    isFinished = false;
+}
 
 void BNetworkOperationPrivate::setStarted()
 {

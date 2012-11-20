@@ -23,16 +23,24 @@
 BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver *q) :
     BBasePrivate(q)
 {
-    process = new QProcess(q);
-    workingDirectory = QDir::homePath();
-    process->setProcessChannelMode(QProcess::MergedChannels);
-    connect( process, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
-    connect( process, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
+    //
 }
 
 BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
 {
     //
+}
+
+//
+
+void BLocalTerminalDriverPrivate::init()
+{
+    BBasePrivate::init();
+    process = new QProcess( q_func() );
+    workingDirectory = QDir::homePath();
+    process->setProcessChannelMode(QProcess::MergedChannels);
+    connect( process, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
+    connect( process, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
 }
 
 //

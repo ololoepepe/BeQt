@@ -40,9 +40,7 @@
 BApplicationPrivate::BApplicationPrivate(BApplication *q) :
     BCoreApplicationPrivate(q)
 {
-    aboutDlg = 0;
-    iconCaching = false;
-    navigation = BApplication::DefaultNavigation;
+    //
 }
 
 BApplicationPrivate::~BApplicationPrivate()
@@ -55,6 +53,14 @@ BApplicationPrivate::~BApplicationPrivate()
 }
 
 //
+
+void BApplicationPrivate::init()
+{
+    BCoreApplicationPrivate::init();
+    aboutDlg = 0;
+    iconCaching = false;
+    navigation = BApplication::DefaultNavigation;
+}
 
 void BApplicationPrivate::initAboutDlg()
 {

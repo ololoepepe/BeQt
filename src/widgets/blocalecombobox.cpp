@@ -29,6 +29,7 @@ public:
     BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
     ~BLocaleComboBoxPrivate();
     //
+    void init();
     void updateAvailableLocales();
     //
     const bool AlwaysIncludeEnglish;
@@ -59,7 +60,7 @@ QIcon BLocaleComboBoxPrivate::iconForLocale(const BApplication::LocaleSupportInf
 BLocaleComboBoxPrivate::BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish) :
     BBasePrivate(q), AlwaysIncludeEnglish(alwaysIncludeEnglish)
 {
-    updateAvailableLocales();
+    //
 }
 
 BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
@@ -68,6 +69,12 @@ BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
 }
 
 //
+
+void BLocaleComboBoxPrivate::init()
+{
+    BBasePrivate::init();
+    updateAvailableLocales();
+}
 
 void BLocaleComboBoxPrivate::updateAvailableLocales()
 {

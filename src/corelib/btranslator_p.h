@@ -23,6 +23,7 @@ public:
     explicit BTranslatorPrivate(BTranslator *q);
     ~BTranslatorPrivate();
     //
+    void init();
     void clear();
     void install();
     void remove();

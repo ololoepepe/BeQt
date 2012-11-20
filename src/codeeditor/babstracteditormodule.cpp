@@ -20,7 +20,7 @@
 BAbstractEditorModulePrivate::BAbstractEditorModulePrivate(BAbstractEditorModule *q) :
     BBasePrivate(q)
 {
-    editor = 0;
+    //
 }
 
 BAbstractEditorModulePrivate::~BAbstractEditorModulePrivate()
@@ -29,6 +29,12 @@ BAbstractEditorModulePrivate::~BAbstractEditorModulePrivate()
 }
 
 //
+
+void BAbstractEditorModulePrivate::init()
+{
+    BBasePrivate::init();
+    editor = 0;
+}
 
 void BAbstractEditorModulePrivate::setEditor(BCodeEditor *edr)
 {

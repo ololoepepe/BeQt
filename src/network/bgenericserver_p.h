@@ -57,8 +57,10 @@ class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BGenericServer)
     Q_OBJECT
 public:
-    explicit BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type);
+    explicit BGenericServerPrivate(BGenericServer *q);
     ~BGenericServerPrivate();
+    //
+    void init();
     //
     QPointer<QTcpServer> tserver;
     QPointer<QLocalServer> lserver;

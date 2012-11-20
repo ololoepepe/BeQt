@@ -35,6 +35,7 @@ public:
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
     //
+    void init();
     bool closeDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);

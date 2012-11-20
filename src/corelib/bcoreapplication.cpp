@@ -98,6 +98,22 @@ QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileNa
 BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
     BBasePrivate(q)
 {
+    //
+}
+
+BCoreApplicationPrivate::~BCoreApplicationPrivate()
+{
+    foreach (BTranslator *t, translators)
+        removeTranslator(t, false);
+    foreach (BPluginWrapper *pw, plugins)
+        pw->deleteLater();
+}
+
+//
+
+void BCoreApplicationPrivate::init()
+{
+    BBasePrivate::init();
     initialized = false;
     portable = false;
     //checks
@@ -157,16 +173,6 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
     //initialized
     initialized = true;
 }
-
-BCoreApplicationPrivate::~BCoreApplicationPrivate()
-{
-    foreach (BTranslator *t, translators)
-        removeTranslator(t, false);
-    foreach (BPluginWrapper *pw, plugins)
-        pw->deleteLater();
-}
-
-//
 
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name) const
 {

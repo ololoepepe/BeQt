@@ -33,6 +33,7 @@ public:
     explicit BPlainTextEditPrivate(BPlainTextEdit *q);
     ~BPlainTextEditPrivate();
     //
+    void init();
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
     void emulateShiftPress();
     //

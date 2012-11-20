@@ -50,33 +50,23 @@ void BTcpServer::incomingConnection(int handle)
 ================================ Generic Server Private
 ============================================================================*/
 
-BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q, BGenericServer::ServerType type) :
+BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q) :
     BBasePrivate(q)
 {
-    maxPending = 10;
-    switch (type)
-    {
-    case BGenericServer::LocalServer:
-    {
-        BLocalServer *server = new BLocalServer( q_func() );
-        connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
-        lserver = server;
-        break;
-    }
-    case BGenericServer::TcpServer:
-    {
-        BTcpServer *server = new BTcpServer( q_func() );
-        connect( server, SIGNAL( newConnection(int) ), this, SLOT( newConnection(int) ) );
-        tserver = server;
-    }
-    default:
-        break;
-    }
+    //
 }
 
 BGenericServerPrivate::~BGenericServerPrivate()
 {
     //
+}
+
+//
+
+void BGenericServerPrivate::init()
+{
+    BBasePrivate::init();
+    maxPending = 10;
 }
 
 //
@@ -111,9 +101,27 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
 ============================================================================*/
 
 BGenericServer::BGenericServer(ServerType type, QObject *parent) :
-    QObject(parent), BBase( *new BGenericServerPrivate(this, type) )
+    QObject(parent), BBase( *new BGenericServerPrivate(this) )
 {
-    //
+    B_D(BGenericServer);
+    switch (type)
+    {
+    case BGenericServer::LocalServer:
+    {
+        BLocalServer *server = new BLocalServer(this);
+        connect( server, SIGNAL( newConnection(int) ), d, SLOT( newConnection(int) ) );
+        d->lserver = server;
+        break;
+    }
+    case BGenericServer::TcpServer:
+    {
+        BTcpServer *server = new BTcpServer(this);
+        connect( server, SIGNAL( newConnection(int) ), d, SLOT( newConnection(int) ) );
+        d->tserver = server;
+    }
+    default:
+        break;
+    }
 }
 
 //

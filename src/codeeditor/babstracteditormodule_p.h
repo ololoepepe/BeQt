@@ -23,6 +23,7 @@ public:
     explicit BAbstractEditorModulePrivate(BAbstractEditorModule *q);
     ~BAbstractEditorModulePrivate();
     //
+    void init();
     void setEditor(BCodeEditor *edr);
     //
     BCodeEditor *editor;

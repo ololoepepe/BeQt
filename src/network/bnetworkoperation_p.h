@@ -22,6 +22,7 @@ public:
     explicit BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md);
     ~BNetworkOperationPrivate();
     //
+    void init();
     void setStarted();
     void setError();
     void setDownloadProgress(qint64 bytesReady, qint64 bytesTotal);

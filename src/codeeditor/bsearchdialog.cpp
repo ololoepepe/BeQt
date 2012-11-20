@@ -38,6 +38,20 @@
 BSearchDialogPrivate::BSearchDialogPrivate(BSearchDialog *q) :
     BBasePrivate(q)
 {
+    //
+}
+
+BSearchDialogPrivate::~BSearchDialogPrivate()
+{
+    //
+}
+
+//
+
+void BSearchDialogPrivate::init()
+{
+    B_Q(BSearchDialog);
+    BBasePrivate::init();
     document = 0;
     q->installEventFilter(this);
     //
@@ -104,13 +118,6 @@ BSearchDialogPrivate::BSearchDialogPrivate(BSearchDialog *q) :
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
-
-BSearchDialogPrivate::~BSearchDialogPrivate()
-{
-    //
-}
-
-//
 
 bool BSearchDialogPrivate::eventFilter(QObject *o, QEvent *e)
 {

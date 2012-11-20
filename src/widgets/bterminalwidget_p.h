@@ -28,6 +28,7 @@ public:
     explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
     ~BTerminalWidgetPrivate();
     //
+    void init();
     bool eventFilter(QObject *object, QEvent *event);
     void setDriver(BAbstractTerminalDriver *drv);
     bool handleKeyPress(int key, int modifiers);
