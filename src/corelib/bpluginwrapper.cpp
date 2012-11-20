@@ -20,12 +20,9 @@
 ================================ Plugin Wrapper Private
 ============================================================================*/
 
-QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName, bool createFile)
+QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return 0;
-    BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
-    return new QSettings( dapp->confFileName(dapp->userPrefix, pluginName, createFile), QSettings::IniFormat);
+    return BCoreApplicationPrivate::createSettingsInstance(pluginName);
 }
 
 //
@@ -157,11 +154,11 @@ BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
 ================================ Plugin Wrapper
 ============================================================================*/
 
-QSettings *BPluginWrapper::createPluginSettingsInstance(BPluginInterface *iface, bool createFile)
+QSettings *BPluginWrapper::createPluginSettingsInstance(BPluginInterface *iface)
 {
     if (!iface)
         return 0;
-    return BPluginWrapperPrivate::createPluginSettingsInstance(iface->name(), createFile);
+    return BPluginWrapperPrivate::createPluginSettingsInstance( iface->name() );
 }
 
 void BPluginWrapper::setAcceptableTypes(const QStringList &list)

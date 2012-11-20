@@ -76,7 +76,7 @@ public:
     static QString location(const QString &subdir, ResourcesType type);
     static QStringList locations(Location loc);
     static QStringList locations(const QString &subdir);
-    static QSettings *createAppSettingsInstance(bool createFile = true);
+    static QSettings *createAppSettingsInstance();
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(),

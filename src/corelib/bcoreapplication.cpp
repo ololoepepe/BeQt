@@ -85,6 +85,14 @@ bool BCoreApplicationPrivate::testCoreUnique()
                  "There must be only one instance of BCoreApplication");
 }
 
+QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
+        return 0;
+    B_QS(BCoreApplication);
+    return new QSettings(qs->d_func()->confFileName(qs->d_func()->userPrefix, fileName), QSettings::IniFormat);
+}
+
 //
 
 BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
@@ -135,7 +143,7 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
     sharedPrefix = appPath;
 #endif
     //app mode
-    portable = QFileInfo( confFileName(appPath, appName, false) ).isFile();
+    portable = QFileInfo( confFileName(appPath, appName) ).isFile();
     if (portable)
     {
         userPrefix = appPath;
@@ -160,7 +168,7 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
 
 //
 
-QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name, bool create) const
+QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name) const
 {
     if ( path.isEmpty() || name.isEmpty() )
         return QString();
@@ -168,20 +176,7 @@ QString BCoreApplicationPrivate::confFileName(const QString &path, const QString
 #if defined(B_OS_UNIX)
     bfn = toLowerNoSpaces(bfn);
 #endif
-    QString fn = path + "/settings/" + bfn + ".conf";
-    QFile f(fn);
-    bool exists = f.exists();
-    if (create)
-    {
-        if ( !exists && !f.open(QFile::WriteOnly) )
-            return QString();
-        f.close();
-    }
-    else if (!exists)
-    {
-        return QString();
-    }
-    return fn;
+    return path + "/settings/" + bfn + ".conf";
 }
 
 QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) const
@@ -242,7 +237,7 @@ void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool lan
 
 void BCoreApplicationPrivate::loadSettings()
 {
-    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance(true);
+    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance();
     if ( s.isNull() )
         return;
     s->beginGroup(SettingsGroupBeqt);
@@ -259,7 +254,7 @@ void BCoreApplicationPrivate::loadSettings()
 
 void BCoreApplicationPrivate::saveSettings()
 {
-    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance(true);
+    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance();
     if ( s.isNull() )
         return;
     s->beginGroup(SettingsGroupBeqt);
@@ -335,12 +330,11 @@ QStringList BCoreApplication::locations(const QString &subdir)
     return sl;
 }
 
-QSettings *BCoreApplication::createAppSettingsInstance(bool createFile)
+QSettings *BCoreApplication::createAppSettingsInstance()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return 0;
-    B_DS(BCoreApplication);
-    return new QSettings(ds->confFileName(ds->userPrefix, ds->appName, createFile), QSettings::IniFormat);
+    return BCoreApplicationPrivate::createSettingsInstance(ds_func()->appName);
 }
 
 void BCoreApplication::registerPluginWrapper(BPluginWrapper *plugin)

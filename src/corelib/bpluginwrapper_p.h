@@ -25,7 +25,7 @@ class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPluginWrapper)
 public:
-    static QSettings *createPluginSettingsInstance(const QString &pluginName, bool createFile);
+    static QSettings *createPluginSettingsInstance(const QString &pluginName);
     //
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();

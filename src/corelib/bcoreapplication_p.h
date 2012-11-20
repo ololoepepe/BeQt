@@ -9,6 +9,7 @@ class BDirTools;
 
 class QString;
 class QLocale;
+class QSettings;
 
 #include "bcoreapplication.h"
 #include "bglobal.h"
@@ -32,6 +33,7 @@ public:
     static QString subdir(BCoreApplication::Location loc);
     static bool testCoreInit(const char *where = 0);
     static bool testCoreUnique();
+    static QSettings *createSettingsInstance(const QString &fileName);
     //
     static const QStringList PluginSuffixes;
     static const QString SettingsGroupBeqt;
@@ -42,7 +44,7 @@ public:
     BCoreApplicationPrivate(BCoreApplication *q);
     virtual ~BCoreApplicationPrivate();
     //
-    QString confFileName(const QString &path, const QString &name, bool create = false) const;
+    QString confFileName(const QString &path, const QString &name) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);

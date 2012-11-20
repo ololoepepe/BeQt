@@ -25,7 +25,7 @@ class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
 public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
     //
-    static QSettings *createPluginSettingsInstance(BPluginInterface *iface, bool createFile = true);
+    static QSettings *createPluginSettingsInstance(BPluginInterface *iface);
     static void setAcceptableTypes(const QStringList &list);
     static void setInterfaceTestFunction(InterfaceTestFunction function);
     static QStringList acceptableFileTypes();
