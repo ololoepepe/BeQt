@@ -6,6 +6,8 @@ class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BCodeEditorDocument;
 
+#include "bcodeedit.h"
+
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
@@ -32,17 +34,27 @@ public:
     explicit BCodeEditor(QWidget *parent = 0);
     ~BCodeEditor();
     //
+    void setEditFont(const QFont &fnt);
+    void setEditMode(BCodeEdit::EditMode mode);
+    void setEditLineLength(int ll);
+    void setEditTabWidth(BCodeEdit::TabWidth tw);
+    void setBracketHighlightingEnabled(bool enabled);
     void addModule(BAbstractEditorModule *module);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *module);
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
+    QFont editFont() const;
+    BCodeEdit::EditMode editMode() const;
+    int editLineLength() const;
+    BCodeEdit::TabWidth editTabWidth() const;
+    bool isBracketHighlightingEnabled() const;
     BAbstractEditorModule *module(const QString &name) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;
 public slots:
-    void addDocument();
+    void addDocument(const QString &fileName);
     bool openDocument(const QString &fileName);
     bool saveCurrentDocument();
     bool saveCurrentDocumentAs(const QString &newFileName);

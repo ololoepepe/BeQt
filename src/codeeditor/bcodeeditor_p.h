@@ -8,6 +8,7 @@ class QVBoxLayout;
 class QTabWidget;
 class QString;
 class QPoint;
+class QFont;
 
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
@@ -35,6 +36,7 @@ public:
     ~BCodeEditorPrivate();
     //
     bool closeDocument(BCodeEditorDocument *doc);
+    void updateDocumentTab(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
@@ -42,6 +44,11 @@ public:
     //
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
+    QFont editFont;
+    BCodeEdit::EditMode editMode;
+    int editLineLength;
+    BCodeEdit::TabWidth editTabWidth;
+    bool bracketsHighlighting;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;

@@ -9,6 +9,7 @@
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtWidgets/BApplication>
 
 #include <QObject>
 #include <QWidget>
@@ -19,6 +20,11 @@
 #include <QString>
 #include <QMetaObject>
 #include <QAction>
+#include <QFont>
+#include <QFontInfo>
+#include <QFileInfo>
+
+#include <QDebug>
 
 /*============================================================================
 ================================ Code Editor Private
@@ -28,6 +34,11 @@ BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
     BBasePrivate(q)
 {
     document = 0;
+    editFont = QFont( QFontInfo( QFont("monospace") ).family() );
+    editMode = BCodeEdit::NormalMode;
+    editLineLength = 120;
+    editTabWidth = BCodeEdit::TabWidth4;
+    bracketsHighlighting = false;
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -51,6 +62,18 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
     if (!doc)
         return false;
     //TODO
+}
+
+void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
+{
+    if (!doc)
+        return;
+    int ind = twgt->indexOf(doc);
+    if (ind < 0)
+        return;
+    twgt->setTabText( ind, QFileInfo( doc->fileName() ).fileName() );
+    twgt->setTabIcon( ind, BApplication::icon(doc->isModified() ? "filesave" : "") );
+    twgt->setTabToolTip( ind, doc->fileName() );
 }
 
 void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
@@ -152,6 +175,7 @@ void BCodeEditorPrivate::twgtTabCloseRequested(int index)
 
 void BCodeEditorPrivate::documentModificationChanged(bool modified)
 {
+    updateDocumentTab(document);
     foreach (BAbstractEditorModule *module, modules)
         module->documentModificationChanged(modified);
 }
@@ -284,6 +308,60 @@ BCodeEditor::~BCodeEditor()
 
 //
 
+void BCodeEditor::setEditFont(const QFont &fnt)
+{
+    if ( !QFontInfo(fnt).fixedPitch() )
+        return;
+    if (fnt.pointSize() < 1 && fnt.pixelSize() < 1)
+        return;
+    B_D(BCodeEditor);
+    if (fnt == d->editFont)
+        return;
+    d->editFont = fnt;
+    foreach ( BCodeEditorDocument *doc, documents() )
+        doc->setEditFont(fnt);
+}
+
+void BCodeEditor::setEditMode(BCodeEdit::EditMode mode)
+{
+    B_D(BCodeEditor);
+    if (d->editMode == mode)
+        return;
+    d->editMode = mode;
+    foreach ( BCodeEditorDocument *doc, documents() )
+        doc->setEditMode(mode);
+}
+
+void BCodeEditor::setEditLineLength(int ll)
+{
+    if (ll < 1)
+        return;
+    B_D(BCodeEditor);
+    if (d->editLineLength == ll)
+        return;
+    foreach ( BCodeEditorDocument *doc, documents() )
+        doc->setEditLineLength(ll);
+}
+
+void BCodeEditor::setEditTabWidth(BCodeEdit::TabWidth tw)
+{
+    B_D(BCodeEditor);
+    if (d->editTabWidth == tw)
+        return;
+    foreach ( BCodeEditorDocument *doc, documents() )
+        doc->setEditTabWidth(tw);
+}
+
+void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
+{
+    B_D(BCodeEditor);
+    if (enabled == d->bracketsHighlighting)
+        return;
+    d->bracketsHighlighting = enabled;
+    foreach ( BCodeEditorDocument *doc, documents() )
+        doc->setBracketHighlightingEnabled(enabled);
+}
+
 void BCodeEditor::addModule(BAbstractEditorModule *module)
 {
     if (!module)
@@ -323,6 +401,31 @@ void BCodeEditor::setModules(const QList<BAbstractEditorModule *> &list)
         addModule(mdl);
 }
 
+QFont BCodeEditor::editFont() const
+{
+    return d_func()->editFont;
+}
+
+BCodeEdit::EditMode BCodeEditor::editMode() const
+{
+    return d_func()->editMode;
+}
+
+int BCodeEditor::editLineLength() const
+{
+    return d_func()->editLineLength;
+}
+
+BCodeEdit::TabWidth BCodeEditor::editTabWidth() const
+{
+    return d_func()->editTabWidth;
+}
+
+bool BCodeEditor::isBracketHighlightingEnabled() const
+{
+    return d_func()->bracketsHighlighting;
+}
+
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
 {
     return d_func()->modules.value(name);
@@ -349,9 +452,20 @@ QList<BCodeEditorDocument *> BCodeEditor::documents() const
 
 //
 
-void BCodeEditor::addDocument()
+void BCodeEditor::addDocument(const QString &fileName)
 {
-    //
+    B_D(BCodeEditor);
+    BCodeEditorDocument *doc = new BCodeEditorDocument;
+    doc->setFileName( !fileName.isEmpty() ? fileName : tr("New document", "fileName") );
+    doc->setEditFont(d->editFont);
+    doc->setEditMode(d->editMode);
+    doc->setEditLineLength(d->editLineLength);
+    doc->setEditTabWidth(d->editTabWidth);
+    doc->setBracketHighlightingEnabled(d->bracketsHighlighting);
+    emit documentAboutToBeAdded(doc);
+    d->twgt->addTab(doc, "");
+    d->updateDocumentTab(doc);
+    emit documentAdded(doc);
 }
 
 bool BCodeEditor::openDocument(const QString &fileName)

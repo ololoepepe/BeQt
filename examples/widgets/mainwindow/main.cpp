@@ -13,6 +13,7 @@
 #include <BPlainTextEdit>
 #include <BDirTools>
 #include <BCodeEdit>
+#include <BCodeEditor>
 
 #include <QApplication>
 #include <QString>
@@ -100,6 +101,9 @@ int main(int argc, char **argv)
     pte->setSelectionMode(BPlainTextEdit::BlockSelection);
     //BCodeEdit
     BCodeEdit *cedt = new BCodeEdit;
+    //BCodeEditor
+    BCodeEditor *cedtr = new BCodeEditor;
+    cedtr->addDocument("Test.txt");
     //Loading settings and plugins
     BApplication::loadSettings();
     BApplication::loadPlugins();
@@ -107,12 +111,15 @@ int main(int argc, char **argv)
     //mw->show();
     //term->show();
     //pte->show();
-    cedt->show();
+    //cedt->show();
+    cedtr->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings
     BApplication::saveSettings();
     //Deleting objects
+    delete cedtr;
+    delete cedt;
     delete mw;
     delete term;
     delete pte;

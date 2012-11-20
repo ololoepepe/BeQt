@@ -301,45 +301,7 @@ BCodeEditPrivate::FindBracketResult BCodeEditPrivate::findBracketPair(
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
     BBasePrivate(q)
 {
-    if ( !BCodeEditClipboardNotifier::instance() )
-        new BCodeEditClipboardNotifier;
-    connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
-             this, SLOT( updatePasteAvailable(bool) ) );
-    blockMode = false;
-    lineLength = 120;
-    tabWidth = BCodeEdit::TabWidth4;
-    hasSelection = false;
-    hasBookmarks = false;
-    copyAvailable = false;
-    pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
-    undoAvailable = false;
-    redoAvailable = false;
-    fileType = BAbstractFileType::defaultFileType();
-    brackets = fileType->brackets();
-    bracketsHighlighting = true;
-    highlighter = fileType->createHighlighter();
     //
-    vlt = new QVBoxLayout(q);
-      vlt->setContentsMargins(0, 0, 0, 0);
-      ptedt = new BPlainTextEdit(q);
-        ptedt->installEventFilter(this);
-        ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
-        //test
-        ptedt->setFont( QFont("DejaVu Sans Mono") );
-        //end test
-        connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
-        connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
-        connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
-        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( emitSelectionChanged() ) );
-        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( updateHasSelection() ) );
-        connect( ptedt, SIGNAL( copyAvailable(bool) ), this, SLOT( updateCopyAvailable(bool) ) );
-        connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
-        connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
-        //
-      vlt->addWidget(ptedt);
-    //
-    QTimer::singleShot( 0, this, SLOT( setTextToEmptyLine() ) );
-
 }
 
 BCodeEditPrivate::~BCodeEditPrivate()
@@ -362,6 +324,47 @@ bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
     default:
         return QObject::eventFilter(obj, e);
     }
+}
+
+void BCodeEditPrivate::init()
+{
+    if ( !BCodeEditClipboardNotifier::instance() )
+        new BCodeEditClipboardNotifier;
+    connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
+             this, SLOT( updatePasteAvailable(bool) ) );
+    blockMode = false;
+    lineLength = 120;
+    tabWidth = BCodeEdit::TabWidth4;
+    hasSelection = false;
+    hasBookmarks = false;
+    copyAvailable = false;
+    pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
+    undoAvailable = false;
+    redoAvailable = false;
+    fileType = BAbstractFileType::defaultFileType();
+    brackets = fileType->brackets();
+    bracketsHighlighting = true;
+    highlighter = fileType->createHighlighter();
+    B_Q(BCodeEdit);
+    vlt = new QVBoxLayout(q);
+      vlt->setContentsMargins(0, 0, 0, 0);
+      ptedt = new BPlainTextEdit(q);
+        ptedt->installEventFilter(this);
+        ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
+        //Using such a construct to get default monospace font family name
+        ptedt->setFont( QFont( QFontInfo( QFont("monospace") ).family() ) );
+        connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
+        connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
+        connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
+        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( emitSelectionChanged() ) );
+        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( updateHasSelection() ) );
+        connect( ptedt, SIGNAL( copyAvailable(bool) ), this, SLOT( updateCopyAvailable(bool) ) );
+        connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
+        connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
+        //
+      vlt->addWidget(ptedt);
+    //
+    QTimer::singleShot( 0, this, SLOT( setTextToEmptyLine() ) );
 }
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
@@ -1239,7 +1242,7 @@ const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QCha
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BCodeEdit::~BCodeEdit()
@@ -1772,7 +1775,7 @@ void BCodeEdit::redo()
 BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 //

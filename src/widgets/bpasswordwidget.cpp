@@ -39,7 +39,7 @@ BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     ledt = new QLineEdit(q);
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
-      tbtnSave->setIcon( BApplication::icon("password_save") );
+      tbtnSave->setIcon( BApplication::icon("filesave") );
       connect( tbtnSave, SIGNAL( clicked() ), this, SLOT( resetSave() ) );
       resetSave();
     hlt->addWidget(tbtnSave);

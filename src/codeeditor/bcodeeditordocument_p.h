@@ -30,6 +30,8 @@ public:
     explicit BCodeEditorDocumentPrivate(BCodeEditorDocument *q);
     ~BCodeEditorDocumentPrivate();
     //
+    void init();
+    //
     QString fileName;
     QTextCodec *codec;
     int asyncMin;

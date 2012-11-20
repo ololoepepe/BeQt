@@ -19,6 +19,8 @@
 #include <QMap>
 #include <QTextDocument>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ Code Editor Document Private
 ============================================================================*/
@@ -26,14 +28,21 @@
 BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q) :
     BCodeEditPrivate(q)
 {
-    codec = QTextCodec::codecForName("UTF-8");
-    asyncMin = 100 * BeQt::Kilobyte;
-    buisy = false;
+    //
 }
 
 BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 {
     //
+}
+
+//
+
+void BCodeEditorDocumentPrivate::init()
+{
+    codec = QTextCodec::codecForName("UTF-8");
+    asyncMin = 100 * BeQt::Kilobyte;
+    buisy = false;
 }
 
 //
@@ -85,7 +94,7 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
 BCodeEditorDocument::BCodeEditorDocument(QWidget *parent) :
     BCodeEdit(*new BCodeEditorDocumentPrivate(this), parent)
 {
-    //
+    d_func()->init();
 }
 
 BCodeEditorDocument::~BCodeEditorDocument()
@@ -190,6 +199,6 @@ bool BCodeEditorDocument::isBuisy() const
 BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent) :
     BCodeEdit(d, parent)
 {
-    //
+    d_func()->init();
 }
 

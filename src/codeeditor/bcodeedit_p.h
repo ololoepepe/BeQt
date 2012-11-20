@@ -119,6 +119,7 @@ public:
     ~BCodeEditPrivate();
     //
     bool eventFilter(QObject *obj, QEvent *e);
+    void init();
     inline bool keyPressEvent(QKeyEvent *e);
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);
@@ -145,6 +146,7 @@ public:
     bool blockMode;
     int lineLength;
     BCodeEdit::TabWidth tabWidth;
+    bool bracketsHighlighting;
     QSyntaxHighlighter *highlighter;
     QPoint cursorPosition;
     bool hasSelection;
@@ -155,7 +157,7 @@ public:
     bool redoAvailable;
     BAbstractFileType *fileType;
     QList<BAbstractFileType::BracketPair> brackets;
-    bool bracketsHighlighting;
+
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEdit *ptedt;
