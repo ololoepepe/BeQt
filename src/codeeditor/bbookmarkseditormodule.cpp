@@ -107,15 +107,15 @@ void BBookmarksEditorModulePrivate::retranslateUi()
 {
     if ( !actMakeBookmark.isNull() )
     {
-        actMakeBookmark->setText( trq("", "act text") );
-        actMakeBookmark->setToolTip( trq("", "act toolTip") );
-        actMakeBookmark->setWhatsThis( trq("", "act whatsThis") );
+        actMakeBookmark->setText( trq("make bookmark", "act text") );
+        actMakeBookmark->setToolTip( trq("make bookmark", "act toolTip") );
+        actMakeBookmark->setWhatsThis( trq("make bookmark", "act whatsThis") );
     }
     if ( !actGotoNextBookmark.isNull() )
     {
-        actGotoNextBookmark->setText( trq("", "act text") );
-        actGotoNextBookmark->setToolTip( trq("", "act toolTip") );
-        actGotoNextBookmark->setWhatsThis( trq("", "act whatsThis") );
+        actGotoNextBookmark->setText( trq("go to next bookmark", "act text") );
+        actGotoNextBookmark->setToolTip( trq("go to next bookmark", "act toolTip") );
+        actGotoNextBookmark->setWhatsThis( trq("go to next bookmark", "act whatsThis") );
     }
 }
 
@@ -127,8 +127,8 @@ const QPoint BBookmarksEditorModulePrivate::InvalidPos = QPoint(-1, -1);
 ================================ Bookmarks Editor Module
 ============================================================================*/
 
-BBookmarksEditorModule::BBookmarksEditorModule(BCodeEditor *edr) :
-    BAbstractEditorModule(*new BBookmarksEditorModulePrivate(this), edr)
+BBookmarksEditorModule::BBookmarksEditorModule(QObject *parent) :
+    BAbstractEditorModule(*new BBookmarksEditorModulePrivate(this), parent)
 {
     d_func()->init();
 }

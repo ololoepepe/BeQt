@@ -30,7 +30,7 @@ public:
         GotoNextBookmarkAction
     };
     //
-    explicit BBookmarksEditorModule(BCodeEditor *edr = 0);
+    explicit BBookmarksEditorModule(QObject *parent = 0);
     ~BBookmarksEditorModule();
     //
     QString name() const;

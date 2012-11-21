@@ -2,6 +2,7 @@
 #define BABSTRACTEDITORMODULE_P_H
 
 class BCodeEditor;
+class BCodeEditorPrivate;
 
 #include "babstracteditormodule.h"
 
@@ -24,11 +25,12 @@ public:
     ~BAbstractEditorModulePrivate();
     //
     void init();
-    void setEditor(BCodeEditor *edr);
     //
     BCodeEditor *editor;
 private:
     Q_DISABLE_COPY(BAbstractEditorModulePrivate)
+    //
+    friend class BCodeEditorPrivate;
 };
 
 #endif // BABSTRACTEDITORMODULE_P_H

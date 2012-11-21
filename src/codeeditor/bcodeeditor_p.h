@@ -45,6 +45,7 @@ public:
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
+    void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     //
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
@@ -82,8 +83,6 @@ public slots:
     void documentBuisyChanged(bool buisy);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
-    //
-    friend class BAbstractEditorModule;
 };
 
 #endif // BCODEEDITOR_P_H

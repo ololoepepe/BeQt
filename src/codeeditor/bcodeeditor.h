@@ -40,9 +40,9 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
-    void addModule(BAbstractEditorModule *module);
+    void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
-    void removeModule(BAbstractEditorModule *module);
+    void removeModule(BAbstractEditorModule *mdl);
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
     void setDriver(BAbstractDocumentDriver *drv);

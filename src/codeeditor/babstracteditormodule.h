@@ -26,14 +26,14 @@ class B_CODEEDITOR_EXPORT BAbstractEditorModule : public QObject, public BBase
     B_DECLARE_PRIVATE(BAbstractEditorModule)
     Q_OBJECT
 public:
-    explicit BAbstractEditorModule(BCodeEditor *edr = 0);
+    explicit BAbstractEditorModule(QObject *parent = 0);
     ~BAbstractEditorModule();
     //
     virtual QString name() const = 0;
-    void setEditor(BCodeEditor *edr);
+    virtual bool isBuisy() const;
     BCodeEditor *editor() const;
 protected:
-    BAbstractEditorModule(BAbstractEditorModulePrivate &d, BCodeEditor *edr = 0);
+    BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent = 0);
     //
     virtual void editorSet(BCodeEditor *edr);
     virtual void editorUnset(BCodeEditor *edr);

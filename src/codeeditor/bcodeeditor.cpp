@@ -135,6 +135,13 @@ void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
     QMetaObject::invokeMethod( q_func(), "currentDocumentChanged", Q_ARG(BCodeEditorDocument *, doc) );
 }
 
+void BCodeEditorPrivate::setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr)
+{
+    if (!mdl)
+        return;
+    mdl->d_func()->editor = edr;
+}
+
 //
 
 void BCodeEditorPrivate::twgtCurrentChanged(int index)
@@ -318,13 +325,17 @@ void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
 
 BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BCodeEditor *parent)
 {
+    BAbstractEditorModule *mdl = 0;
     switch (type)
     {
     case BookmarksModule:
-        return new BBookmarksEditorModule(parent);
+        mdl = new BBookmarksEditorModule(parent);
     default:
-        return 0;
+        break;
     }
+    if (parent && mdl)
+        parent->addModule(mdl);
+    return mdl;
 }
 
 //
@@ -333,7 +344,7 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
     d_func()->init();
-    createStandardModule(BookmarksModule, this);
+    createStandardModule(BookmarksModule, this); //Just for test, remove, but add another modules in the future
 }
 
 BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
@@ -404,34 +415,41 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
         doc->setBracketHighlightingEnabled(enabled);
 }
 
-void BCodeEditor::addModule(BAbstractEditorModule *module)
+void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
-    if (!module)
+    if ( !mdl || mdl->isBuisy() )
         return;
-    module->setEditor(this);
+    B_D(BCodeEditor);
+    if ( d->modules.contains( mdl->name() ) )
+        return;
+    d->modules.insert(mdl->name(), mdl);
+    d->setModuleEditor(mdl, this);
 }
 
 void BCodeEditor::addModule(StandardModule type)
 {
     BAbstractEditorModule *mdl = createStandardModule(type, this);
-    if ( !mdl->editor() )
+    if (mdl->editor() != this)
         mdl->deleteLater();
 }
 
-void BCodeEditor::removeModule(BAbstractEditorModule *module)
+void BCodeEditor::removeModule(BAbstractEditorModule *mdl)
 {
-    if (!module)
+    if (!mdl)
         return;
-    module->setEditor(0);
+    removeModule( mdl->name() );
 }
 
 void BCodeEditor::removeModule(const QString &name)
 {
     if ( name.isEmpty() )
         return;
-    BAbstractEditorModule *mdl = d_func()->modules.value(name);
-    if (mdl)
-        mdl->setEditor(0);
+    B_D(BCodeEditor);
+    BAbstractEditorModule *mdl = d->modules.value(name);
+    if ( !mdl || mdl->isBuisy() )
+        return;
+    d->modules.remove(name);
+    d->setModuleEditor(mdl, 0);
 }
 
 void BCodeEditor::setModules(const QList<BAbstractEditorModule *> &list)

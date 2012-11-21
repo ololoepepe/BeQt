@@ -13,6 +13,8 @@
 #include <QList>
 #include <QString>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ Abstract Editor Module Private
 ============================================================================*/
@@ -35,31 +37,14 @@ void BAbstractEditorModulePrivate::init()
     editor = 0;
 }
 
-void BAbstractEditorModulePrivate::setEditor(BCodeEditor *edr)
-{
-    if (edr == editor)
-        return;
-    B_Q(BAbstractEditorModule);
-    if (editor)
-        editor->d_func()->modules.remove( q->name() );
-    q->editorUnset(editor);
-    if ( !editor || editor->d_func()->modules.contains( q->name() ) )
-        return;
-    if (editor)
-        editor->d_func()->modules.insert(q->name(), q);
-    editor = edr;
-    q->editorSet(edr);
-}
-
 /*============================================================================
 ================================ Abstract Editor Module
 ============================================================================*/
 
-BAbstractEditorModule::BAbstractEditorModule(BCodeEditor *edr) :
-    QObject(edr), BBase( *new BAbstractEditorModulePrivate(this) )
+BAbstractEditorModule::BAbstractEditorModule(QObject *parent) :
+    QObject(parent), BBase( *new BAbstractEditorModulePrivate(this) )
 {
     d_func()->init();
-    setEditor(edr);
 }
 
 BAbstractEditorModule::~BAbstractEditorModule()
@@ -69,9 +54,9 @@ BAbstractEditorModule::~BAbstractEditorModule()
 
 //
 
-void BAbstractEditorModule::setEditor(BCodeEditor *edr)
+bool BAbstractEditorModule::isBuisy() const
 {
-    d_func()->setEditor(edr);
+    return false;
 }
 
 BCodeEditor *BAbstractEditorModule::editor() const
@@ -81,11 +66,10 @@ BCodeEditor *BAbstractEditorModule::editor() const
 
 //
 
-BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, BCodeEditor *edr) :
-    QObject(edr), BBase(d)
+BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
 {
     d_func()->init();
-    setEditor(edr);
 }
 
 //

@@ -15,6 +15,8 @@
 #include <BCodeEdit>
 #include <BCodeEditor>
 #include <BCodeEditorDocument>
+#include <BAbstractEditorModule>
+#include <BBookmarksEditorModule>
 
 #include <QApplication>
 #include <QString>
@@ -30,6 +32,10 @@
 #include <QVBoxLayout>
 #include <QLocalServer>
 #include <QFont>
+#include <QMenu>
+#include <QList>
+#include <QAction>
+#include <QMenuBar>
 
 #include <QDir>
 #include <QEventLoop>
@@ -94,6 +100,7 @@ int main(int argc, char **argv)
           BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
           vlt->addWidget(lcb);
       mw->setCentralWidget(w);
+      QMenu *mnuBM = mw->menuBar()->addMenu("Bookmarks");
     mw->move(800, 400);
     //BTerminalWidget
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
@@ -107,11 +114,12 @@ int main(int argc, char **argv)
     cedtr->move(400, 200);
     cedtr->addDocument("Test.txt");
     cedtr->openDocument("/home/darkangel/tmp/texput.log");
+    mnuBM->addActions( static_cast<BBookmarksEditorModule *>( cedtr->modules().first() )->actions() );
     //Loading settings and plugins
     BApplication::loadSettings();
     BApplication::loadPlugins();
     //Showing widgets
-    //mw->show();
+    mw->show();
     //term->show();
     //cedt->show();
     cedtr->show();
