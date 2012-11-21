@@ -65,7 +65,6 @@ BGenericServerPrivate::~BGenericServerPrivate()
 
 void BGenericServerPrivate::init()
 {
-    BBasePrivate::init();
     maxPending = 10;
 }
 
@@ -103,6 +102,7 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
 BGenericServer::BGenericServer(ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BGenericServerPrivate(this) )
 {
+    d_func()->init();
     B_D(BGenericServer);
     switch (type)
     {
@@ -249,5 +249,5 @@ BGenericSocket *BGenericServer::createSocket(int socketDescriptor)
 BGenericServer::BGenericServer(BGenericServerPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

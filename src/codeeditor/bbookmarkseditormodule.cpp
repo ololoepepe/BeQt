@@ -18,6 +18,8 @@
 #include <QVariantList>
 #include <QPointer>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ Bookmarks Editor Module Private
 ============================================================================*/
@@ -76,7 +78,6 @@ BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
 void BBookmarksEditorModulePrivate::init()
 {
     B_Q(BBookmarksEditorModule);
-    BAbstractEditorModulePrivate::init();
     maxBookmarks = 4;
     //
     actMakeBookmark = new QAction(this);
@@ -129,7 +130,7 @@ const QPoint BBookmarksEditorModulePrivate::InvalidPos = QPoint(-1, -1);
 BBookmarksEditorModule::BBookmarksEditorModule(BCodeEditor *edr) :
     BAbstractEditorModule(*new BBookmarksEditorModulePrivate(this), edr)
 {
-    //
+    d_func()->init();
 }
 
 BBookmarksEditorModule::~BBookmarksEditorModule()

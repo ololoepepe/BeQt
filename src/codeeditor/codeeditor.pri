@@ -1,5 +1,6 @@
 HEADERS += \
     $${PWD}/babstractdocumentdriver.h \
+    $${PWD}/babstractdocumentdriver_p.h \
     $${PWD}/babstracteditormodule.h \
     $${PWD}/babstracteditormodule_p.h \
     $${PWD}/babstractfiletype.h \

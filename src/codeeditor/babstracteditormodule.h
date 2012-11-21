@@ -53,8 +53,6 @@ protected:
     //BCodeEditorDocument events
     virtual void documentFileNameChanged(const QString &fn);
     virtual void documentCodecChanged(const QString &codecName);
-    virtual void documentLoadingFinished(bool success);
-    virtual void documentSavingFinished(bool success);
     virtual void documentBuisyChanged(bool buisy);
     //BCodeEditor events
     virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);

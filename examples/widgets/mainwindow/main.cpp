@@ -14,6 +14,7 @@
 #include <BDirTools>
 #include <BCodeEdit>
 #include <BCodeEditor>
+#include <BCodeEditorDocument>
 
 #include <QApplication>
 #include <QString>
@@ -31,6 +32,8 @@
 #include <QFont>
 
 #include <QDir>
+#include <QEventLoop>
+#include <QTimer>
 #include <QSettings>
 
 #include <QDebug>
@@ -100,7 +103,10 @@ int main(int argc, char **argv)
     cedt->setRecognizedBrackets( QList<BCodeEdit::BracketPair>() << BCodeEdit::BracketPair("(", ")") );
     //BCodeEditor
     BCodeEditor *cedtr = new BCodeEditor;
+    cedtr->resize(1200, 800);
+    cedtr->move(400, 200);
     cedtr->addDocument("Test.txt");
+    cedtr->openDocument("/home/darkangel/tmp/texput.log");
     //Loading settings and plugins
     BApplication::loadSettings();
     BApplication::loadPlugins();

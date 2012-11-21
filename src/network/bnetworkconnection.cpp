@@ -35,7 +35,6 @@ BNetworkConnectionPrivate::~BNetworkConnectionPrivate()
 
 void BNetworkConnectionPrivate::init()
 {
-    BBasePrivate::init();
     detailedLog = false;
     autoDelete = true;
     socketWrapper = new BSocketWrapper( q_func() );
@@ -226,6 +225,7 @@ void BNetworkConnectionPrivate::operationDestroyed(const BNetworkOperationMetaDa
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
     QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
 {
+    d_func()->init();
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
     d_func()->setSocket(socket);
@@ -235,6 +235,7 @@ BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
     QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
 {
+    d_func()->init();
     BGenericSocket *s = new BGenericSocket(type);
     if ( s->isSocketSet() )
         d_func()->setSocket(s);
@@ -390,7 +391,7 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
 BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 //

@@ -51,7 +51,6 @@ BSearchDialogPrivate::~BSearchDialogPrivate()
 void BSearchDialogPrivate::init()
 {
     B_Q(BSearchDialog);
-    BBasePrivate::init();
     document = 0;
     q->installEventFilter(this);
     //
@@ -231,12 +230,13 @@ const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_4_8
 BSearchDialog::BSearchDialog(QWidget *parent) :
     QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BSearchDialog::BSearchDialog(bool replaceEnabled, QWidget *parent) :
     QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
 {
+    d_func()->init();
     setReplaceEnabled(replaceEnabled);
 }
 
@@ -444,5 +444,5 @@ void BSearchDialog::replaceNext()
 BSearchDialog::BSearchDialog(BSearchDialogPrivate &d, QWidget *parent) :
     QDialog(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

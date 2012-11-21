@@ -70,7 +70,6 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
 void BSettingsDialogPrivate::init()
 {
     B_Q(BSettingsDialog);
-    BBasePrivate::init();
     q->setWindowTitle( tr("Settings", "windowTitle") );
     q->setMinimumHeight(120);
     q->setMinimumWidth(240);
@@ -142,13 +141,13 @@ void BSettingsDialogPrivate::init()
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation) )
 {
-    //
+    d_func()->init();
 }
 
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation) )
 {
-    //
+    d_func()->init();
 }
 
 BSettingsDialog::~BSettingsDialog()
@@ -177,5 +176,5 @@ BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const
 BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
     QDialog(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

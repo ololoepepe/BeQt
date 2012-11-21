@@ -52,7 +52,7 @@ BFlowLayoutPrivate::~BFlowLayoutPrivate()
 
 void BFlowLayoutPrivate::init()
 {
-    BBasePrivate::init();
+    //
 }
 
 int BFlowLayoutPrivate::doLayout(const QRect &rect, bool testOnly) const
@@ -115,6 +115,7 @@ int BFlowLayoutPrivate::smartSpacing(QStyle::PixelMetric pm) const
 BFlowLayout::BFlowLayout(QWidget *parent, int hSpacing, int vSpacing) :
     QLayout(parent), BBase( *new BFlowLayoutPrivate(this) )
 {
+    d_func()->init();
     B_D(BFlowLayout);
     d->hSpace = hSpacing;
     d->vSpace = vSpacing;
@@ -123,6 +124,7 @@ BFlowLayout::BFlowLayout(QWidget *parent, int hSpacing, int vSpacing) :
 BFlowLayout::BFlowLayout(int hSpacing, int vSpacing) :
     QLayout(0), BBase( *new BFlowLayoutPrivate(this) )
 {
+    d_func()->init();
     B_D(BFlowLayout);
     d->hSpace = hSpacing;
     d->vSpace = vSpacing;
@@ -211,5 +213,5 @@ QSize BFlowLayout::sizeHint() const
 BFlowLayout::BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent) :
     QLayout(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

@@ -29,7 +29,6 @@ BNetworkOperationPrivate::~BNetworkOperationPrivate()
 
 void BNetworkOperationPrivate::init()
 {
-    BBasePrivate::init();
     isStarted = false;
     isError = false;
     bytesInReady = 0;
@@ -136,7 +135,7 @@ bool BNetworkOperation::isFinished() const
 BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 //
@@ -144,5 +143,5 @@ BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *paren
 BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent) :
     QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData) )
 {
-    //
+    d_func()->init();
 }

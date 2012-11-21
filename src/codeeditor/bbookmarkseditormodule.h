@@ -22,6 +22,7 @@ class QAction;
 class B_CODEEDITOR_EXPORT BBookmarksEditorModule : public BAbstractEditorModule
 {
     B_DECLARE_PRIVATE(BBookmarksEditorModule)
+    Q_OBJECT
 public:
     enum Action
     {

@@ -57,6 +57,8 @@
 #include <QScrollBar>
 #include <QVector>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ Code Edit Clipboard Notifier
 ============================================================================*/
@@ -148,7 +150,6 @@ BPlainTextEditExtendedPrivate::~BPlainTextEditExtendedPrivate()
 
 void BPlainTextEditExtendedPrivate::init()
 {
-    BPlainTextEditPrivate::init();
     blockMode = false;
     hasSelection = false;
     connect( q_func(), SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
@@ -223,7 +224,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
 BPlainTextEditExtended::BPlainTextEditExtended(QWidget *parent) :
     BPlainTextEdit(*new BPlainTextEditExtendedPrivate(this), parent)
 {
-    //
+    d_func()->init();
 }
 
 BPlainTextEditExtended::~BPlainTextEditExtended()
@@ -253,15 +254,10 @@ QVector<BPlainTextEditExtended::SelectionRange> BPlainTextEditExtended::selectio
 BPlainTextEditExtended::BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent) :
     BPlainTextEdit(d, parent)
 {
-    //
+    d_func()->init();
 }
 
 //
-
-/*QMimeData *BPlainTextEditExtended::createMimeDataFromSelection() const
-{
-    return d_func()->drag ? QPlainTextEdit::createMimeDataFromSelection() : 0;
-}*/
 
 void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
 {
@@ -598,7 +594,6 @@ BCodeEditPrivate::~BCodeEditPrivate()
 
 void BCodeEditPrivate::init()
 {
-    BBasePrivate::init();
     if ( !BCodeEditClipboardNotifier::instance() )
         new BCodeEditClipboardNotifier;
     connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
@@ -625,6 +620,8 @@ void BCodeEditPrivate::init()
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
         //Using such a construct to get default monospace font family name
         ptedt->setFont( QFont( QFontInfo( QFont("monospace") ).family() ) );
+        setTextToEmptyLine();
+        ptedt->document()->setModified(false);
         connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
         connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
         connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
@@ -635,8 +632,6 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
         //
       vlt->addWidget(ptedt);
-    //
-    QTimer::singleShot( 0, this, SLOT( setTextToEmptyLine() ) );
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -1558,7 +1553,7 @@ const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QCha
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BCodeEdit::~BCodeEdit()
@@ -1868,15 +1863,19 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int 
         BCodeEditPrivate::ProcessTextResult res = BCodeEditPrivate::processText(txt, d->lineLength, d->tabWidth);
         if (d->highlighter)
             d->highlighter->setDocument(0);
-        d->ptedt->setPlainText(res.newText);
+        QTextCursor tc = d->ptedt->textCursor();
+        tc.movePosition(QTextCursor::Start);
+        tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        tc.insertText(res.newText);
+        tc.movePosition(QTextCursor::Start);
+        d->ptedt->setTextCursor(tc);
         if (d->highlighter)
             d->highlighter->setDocument( d->ptedt->document() );
-        d->ptedt->document()->setModified(false);
+        d->ptedt->document()->setModified(true);
         d->ptedt->setFocus();
         d->emitLinesSplitted(res.splittedLinesRanges);
         return res.splittedLinesRanges;
     }
-
 }
 
 void BCodeEdit::switchMode()
@@ -2105,7 +2104,7 @@ void BCodeEdit::redo()
 BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 //

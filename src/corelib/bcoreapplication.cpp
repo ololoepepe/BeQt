@@ -113,7 +113,6 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
 
 void BCoreApplicationPrivate::init()
 {
-    BBasePrivate::init();
     initialized = false;
     portable = false;
     //checks
@@ -560,6 +559,7 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
 BCoreApplication::BCoreApplication() :
     QObject(0), BBase( *new BCoreApplicationPrivate(this) )
 {
+    d_func()->init();
     BCoreApplicationPrivate::testCoreUnique();
     _m_self = this;
 }
@@ -578,6 +578,7 @@ BCoreApplication *BCoreApplication::_m_self = 0;
 BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d) :
     BBase(d)
 {
+    d_func()->init();
     BCoreApplicationPrivate::testCoreUnique();
     _m_self = this;
 }

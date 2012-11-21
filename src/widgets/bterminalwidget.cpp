@@ -42,7 +42,6 @@ BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 void BTerminalWidgetPrivate::init()
 {
     B_Q(BTerminalWidget);
-    BBasePrivate::init();
     driver = 0;
     terminatingKey = Qt::Key_D;
     terminatingModifiers = Qt::ControlModifier;
@@ -219,12 +218,13 @@ void BTerminalWidgetPrivate::unblockTerminal()
 BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
     QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
-    //
+    d_func()->init();
 }
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent) :
     QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
+    d_func()->init();
     setDriver(driver);
 }
 
@@ -365,5 +365,5 @@ void BTerminalWidget::kill()
 BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

@@ -32,7 +32,6 @@ BAbstractEditorModulePrivate::~BAbstractEditorModulePrivate()
 
 void BAbstractEditorModulePrivate::init()
 {
-    BBasePrivate::init();
     editor = 0;
 }
 
@@ -59,6 +58,7 @@ void BAbstractEditorModulePrivate::setEditor(BCodeEditor *edr)
 BAbstractEditorModule::BAbstractEditorModule(BCodeEditor *edr) :
     QObject(edr), BBase( *new BAbstractEditorModulePrivate(this) )
 {
+    d_func()->init();
     setEditor(edr);
 }
 
@@ -84,6 +84,7 @@ BCodeEditor *BAbstractEditorModule::editor() const
 BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, BCodeEditor *edr) :
     QObject(edr), BBase(d)
 {
+    d_func()->init();
     setEditor(edr);
 }
 
@@ -169,16 +170,6 @@ void BAbstractEditorModule::documentFileNameChanged(const QString &fn)
 }
 
 void BAbstractEditorModule::documentCodecChanged(const QString &codecName)
-{
-    //
-}
-
-void BAbstractEditorModule::documentLoadingFinished(bool success)
-{
-    //
-}
-
-void BAbstractEditorModule::documentSavingFinished(bool success)
 {
     //
 }

@@ -44,7 +44,7 @@ BNetworkOperationMetaDataPrivate::~BNetworkOperationMetaDataPrivate()
 
 void BNetworkOperationMetaDataPrivate::init()
 {
-    BBasePrivate::init();
+    //
 }
 
 /*============================================================================
@@ -54,18 +54,20 @@ void BNetworkOperationMetaDataPrivate::init()
 BNetworkOperationMetaData::BNetworkOperationMetaData() :
     BBase( *new BNetworkOperationMetaDataPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BNetworkOperationMetaData::BNetworkOperationMetaData(const BNetworkOperationMetaData &other) :
     BBase( *new BNetworkOperationMetaDataPrivate(this) )
 {
+    d_func()->init();
     *this = other;
 }
 
 BNetworkOperationMetaData::BNetworkOperationMetaData(const QUuid &id, bool request, const QString &operation) :
     BBase( *new BNetworkOperationMetaDataPrivate(this) )
 {
+    d_func()->init();
     setId(id);
     setIsRequest(request);
     setOperation(operation);

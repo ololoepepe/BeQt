@@ -2,6 +2,7 @@
 #define BLOCALDOCUMENTDRIVER_P_H
 
 #include "blocaldocumentdriver.h"
+#include "babstractdocumentdriver_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -12,7 +13,7 @@
 ================================ Local Document Driver Private
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BLocalDocumentDriverPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BLocalDocumentDriverPrivate : public BAbstractDocumentDriverPrivate
 {
     B_DECLARE_PUBLIC(BLocalDocumentDriver)
     Q_OBJECT

@@ -66,7 +66,6 @@ BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 
 void BTerminalIOHandlerPrivate::init()
 {
-    BBasePrivate::init();
     prefereReadLine = false;
 }
 
@@ -226,7 +225,7 @@ BTerminalIOHandler *BTerminalIOHandler::_m_self = 0;
 BTerminalIOHandler::BTerminalIOHandler() :
     QThread(0), BBase( *new BTerminalIOHandlerPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BTerminalIOHandler::~BTerminalIOHandler()

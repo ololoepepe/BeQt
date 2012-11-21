@@ -72,7 +72,6 @@ BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
 
 void BLocaleComboBoxPrivate::init()
 {
-    BBasePrivate::init();
     updateAvailableLocales();
 }
 
@@ -92,13 +91,13 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
 BLocaleComboBox::BLocaleComboBox(bool alwaysIncludeEnglish, QWidget *parent) :
     QComboBox(parent), BBase( *new BLocaleComboBoxPrivate(this, alwaysIncludeEnglish) )
 {
-    //
+    d_func()->init();
 }
 
 BLocaleComboBox::BLocaleComboBox(QWidget *parent) :
     QComboBox(parent), BBase( *new BLocaleComboBoxPrivate(this, false) )
 {
-    //
+    d_func()->init();
 }
 
 BLocaleComboBox::~BLocaleComboBox()
@@ -133,5 +132,5 @@ void BLocaleComboBox::updateAvailableLocales()
 BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
     QComboBox(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

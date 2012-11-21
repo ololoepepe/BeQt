@@ -37,6 +37,8 @@ public:
     ~BCodeEditorPrivate();
     //
     void init();
+    BCodeEditorDocument *createDocument( const QString &fileName = QString() );
+    void addDocument(BCodeEditorDocument *doc);
     bool closeDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
@@ -46,6 +48,7 @@ public:
     //
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
+    QList<BCodeEditorDocument *> openingDocuments;
     QFont editFont;
     BCodeEdit::EditMode editMode;
     int editLineLength;

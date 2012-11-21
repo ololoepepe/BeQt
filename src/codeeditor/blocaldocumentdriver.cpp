@@ -9,12 +9,14 @@
 #include <QTextStream>
 #include <QTextCodec>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ Local Document Driver Private
 ============================================================================*/
 
 BLocalDocumentDriverPrivate::BLocalDocumentDriverPrivate(BLocalDocumentDriver *q) :
-    BBasePrivate(q)
+    BAbstractDocumentDriverPrivate(q)
 {
     //
 }
@@ -29,7 +31,6 @@ BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
 void BLocalDocumentDriverPrivate::init()
 {
     B_Q(BLocalDocumentDriver);
-    BBasePrivate::init();
     connect( q, SIGNAL( newPendingLoadOperation() ), this, SLOT( newPendingLoadOperation() ) );
     connect( q, SIGNAL( newPendingSaveOperation() ), this, SLOT( newPendingSaveOperation() ) );
 }
@@ -40,7 +41,6 @@ void BLocalDocumentDriverPrivate::newPendingLoadOperation()
 {
     B_Q(BLocalDocumentDriver);
     BLocalDocumentDriver::Operation op = q->nextPendingLoadOperation();
-    //
     QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
     if ( !f.open(QFile::ReadOnly) )
         return q->emitLoadingFinished(op, false);
@@ -55,7 +55,6 @@ void BLocalDocumentDriverPrivate::newPendingSaveOperation()
 {
     B_Q(BLocalDocumentDriver);
     BLocalDocumentDriver::Operation op = q->nextPendingLoadOperation();
-    //
     QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
     if ( !f.open(QFile::WriteOnly) )
         return q->emitSavingFinished(op, false);
@@ -71,9 +70,9 @@ void BLocalDocumentDriverPrivate::newPendingSaveOperation()
 ============================================================================*/
 
 BLocalDocumentDriver::BLocalDocumentDriver(QObject *parent) :
-    BAbstractDocumentDriver(parent)
+    BAbstractDocumentDriver(*new BLocalDocumentDriverPrivate(this), parent)
 {
-    //
+    d_func()->init();
 }
 
 BLocalDocumentDriver::~BLocalDocumentDriver()
@@ -86,4 +85,12 @@ BLocalDocumentDriver::~BLocalDocumentDriver()
 QString BLocalDocumentDriver::id() const
 {
     return "beqt/local";
+}
+
+//
+
+BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent) :
+    BAbstractDocumentDriver(d, parent)
+{
+    d_func()->init();
 }

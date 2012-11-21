@@ -21,7 +21,7 @@ public:
     explicit BBasePrivate(BBase *q);
     virtual ~BBasePrivate();
     //
-    virtual void init();
+    void init();
 protected:
     BBase *const _m_q;
 private:

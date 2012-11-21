@@ -43,7 +43,6 @@ BApplicationServerPrivate::~BApplicationServerPrivate()
 
 void BApplicationServerPrivate::init()
 {
-    BBasePrivate::init();
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
     server = new BGenericServer(BGenericServer::LocalServer);
     //TODO: On Qt5, set socket options
@@ -90,7 +89,7 @@ void BApplicationServerPrivate::newPendingConnection()
 BApplicationServer::BApplicationServer() :
     BBase( *new BApplicationServerPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BApplicationServer::~BApplicationServer()
@@ -161,7 +160,7 @@ bool BApplicationServer::sendMessage(const QString &serverName, const QStringLis
 BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
     BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 //

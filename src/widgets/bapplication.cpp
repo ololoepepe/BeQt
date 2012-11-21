@@ -56,7 +56,6 @@ BApplicationPrivate::~BApplicationPrivate()
 
 void BApplicationPrivate::init()
 {
-    BCoreApplicationPrivate::init();
     aboutDlg = 0;
     iconCaching = false;
     navigation = BApplication::DefaultNavigation;
@@ -388,7 +387,7 @@ void BApplication::retranslateStandardAction(QAction *action)
 BApplication::BApplication() :
     BCoreApplication( *new BApplicationPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BApplication::~BApplication()
@@ -455,7 +454,7 @@ void BApplication::openHomepage()
 BApplication::BApplication(BApplicationPrivate &d) :
     BCoreApplication(d)
 {
-    //
+    d_func()->init();
 }
 
 BSettingsDialog::SettingsTabMap BApplication::settingsTabMap() const

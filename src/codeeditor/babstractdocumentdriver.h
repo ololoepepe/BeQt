@@ -41,6 +41,8 @@ signals:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 protected:
+    BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent = 0);
+    //
     Operation nextPendingLoadOperation();
     Operation nextPendingSaveOperation();
     void emitLoadingFinished( const Operation &operation, bool success, const QString &text = QString() );

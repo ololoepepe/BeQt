@@ -39,7 +39,7 @@ BGenericSocketPrivate::~BGenericSocketPrivate()
 
 void BGenericSocketPrivate::init()
 {
-    BBasePrivate::init();
+    //
 }
 
 void BGenericSocketPrivate::setSocket(QAbstractSocket *socket)
@@ -159,6 +159,7 @@ void BGenericSocketPrivate::stateChanged(QAbstractSocket::SocketState socketStat
 BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
     QObject(parent), BBase( *new BGenericSocketPrivate(this) )
 {
+    d_func()->init();
     switch (type)
     {
     case BGenericSocket::LocalSocket:
@@ -457,5 +458,5 @@ qint64 BGenericSocket::write(const QByteArray &byteArray)
 BGenericSocket::BGenericSocket(BGenericSocketPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

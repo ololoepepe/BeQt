@@ -40,7 +40,6 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 
 void BCodeEditorDocumentPrivate::init()
 {
-    BCodeEditPrivate::init();
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
     buisy = false;
@@ -95,7 +94,7 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
 BCodeEditorDocument::BCodeEditorDocument(QWidget *parent) :
     BCodeEdit(*new BCodeEditorDocumentPrivate(this), parent)
 {
-    //
+    d_func()->init();
 }
 
 BCodeEditorDocument::~BCodeEditorDocument()
@@ -146,14 +145,16 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &f
     B_D(BCodeEditorDocument);
     d->buisy = true;
     emit buisyChanged(true);
+    connect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
+             d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
     if ( !driver->load(this, fileName) )
     {
+        disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
+                    d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
         d->buisy = false;
         emit buisyChanged(false);
         return false;
     }
-    connect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
-             d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
     return true;
 }
 
@@ -164,14 +165,16 @@ bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &f
     B_D(BCodeEditorDocument);
     d->buisy = true;
     emit buisyChanged(true);
+    connect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
+             d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
     if ( !driver->save(this, fileName) )
     {
+        disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
+                    d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
         d->buisy = false;
         emit buisyChanged(false);
         return false;
     }
-    connect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
-             d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
     return true;
 }
 
@@ -200,6 +203,6 @@ bool BCodeEditorDocument::isBuisy() const
 BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent) :
     BCodeEdit(d, parent)
 {
-    //
+    d_func()->init();
 }
 

@@ -19,11 +19,14 @@ class QObject;
 class B_CODEEDITOR_EXPORT BLocalDocumentDriver : public BAbstractDocumentDriver
 {
     B_DECLARE_PRIVATE(BLocalDocumentDriver)
+    Q_OBJECT
 public:
     explicit BLocalDocumentDriver(QObject *parent = 0);
     ~BLocalDocumentDriver();
     //
     QString id() const;
+protected:
+    BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BLocalDocumentDriver)
 };

@@ -33,7 +33,6 @@ BTranslatorPrivate::~BTranslatorPrivate()
 
 void BTranslatorPrivate::init()
 {
-    BBasePrivate::init();
     installed = false;
 }
 
@@ -86,12 +85,13 @@ void BTranslatorPrivate::emitLanguageChange()
 BTranslator::BTranslator(QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BTranslator::BTranslator(const QString &fileName, QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )
 {
+    d_func()->init();
     d_func()->fileName = fileName;
 }
 
@@ -167,5 +167,5 @@ QList<QLocale> BTranslator::availableLocales() const
 BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

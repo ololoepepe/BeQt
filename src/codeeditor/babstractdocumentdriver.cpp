@@ -1,6 +1,7 @@
 class BCodeEdit;
 
 #include "babstractdocumentdriver.h"
+#include "babstractdocumentdriver_p.h"
 #include "bcodeeditordocument.h"
 
 #include <BeQtCore/private/bbase_p.h>
@@ -9,28 +10,10 @@ class BCodeEdit;
 #include <QQueue>
 #include <QList>
 
-/*============================================================================
-================================ Abstract Document Driver Private (declaration)
-============================================================================*/
-
-class BAbstractDocumentDriverPrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BAbstractDocumentDriver)
-public:
-    explicit BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q);
-    ~BAbstractDocumentDriverPrivate();
-    //
-    void init();
-    //
-    QQueue<BAbstractDocumentDriver::Operation> loadOps;
-    QQueue<BAbstractDocumentDriver::Operation> saveOps;
-    QList<BCodeEditorDocument *> docs;
-private:
-    Q_DISABLE_COPY(BAbstractDocumentDriverPrivate)
-};
+#include <QDebug>
 
 /*============================================================================
-================================ Abstract Document Driver Private (definition)
+================================ Abstract Document Driver Private
 ============================================================================*/
 
 BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q) :
@@ -48,7 +31,7 @@ BAbstractDocumentDriverPrivate::~BAbstractDocumentDriverPrivate()
 
 void BAbstractDocumentDriverPrivate::init()
 {
-    BBasePrivate::init();
+    //
 }
 
 /*============================================================================
@@ -58,7 +41,7 @@ void BAbstractDocumentDriverPrivate::init()
 BAbstractDocumentDriver::BAbstractDocumentDriver(QObject *parent) :
     QObject(parent)
 {
-    //
+    d_func()->init();
 }
 
 BAbstractDocumentDriver::~BAbstractDocumentDriver()
@@ -72,6 +55,7 @@ bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, const QString &file
 {
     if ( !doc || isDocumentInList(doc) )
         return false;
+    d_func()->docs << doc;
     Operation op;
     op.document = doc;
     op.fileName = fileName;
@@ -84,6 +68,7 @@ bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &file
 {
     if ( !doc || isDocumentInList(doc) )
         return false;
+    d_func()->docs << doc;
     Operation op;
     op.document = doc;
     op.fileName = fileName;
@@ -108,6 +93,12 @@ bool BAbstractDocumentDriver::isDocumentInList(BCodeEditorDocument *doc) const
 }
 
 //
+
+BAbstractDocumentDriver::BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
 
 BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingLoadOperation()
 {

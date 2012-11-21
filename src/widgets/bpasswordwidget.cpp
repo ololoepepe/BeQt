@@ -40,7 +40,6 @@ BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
 void BPasswordWidgetPrivate::init()
 {
     B_Q(BPasswordWidget);
-    BBasePrivate::init();
     save = true; //Is reset to false, so it's false by default
     show = true; //Is reset to false, so it's false by default
     charCount = -1;
@@ -144,7 +143,7 @@ QByteArray BPasswordWidget::dataToState(const PasswordWidgetData &dt)
 BPasswordWidget::BPasswordWidget(QWidget *parent) :
     QWidget(parent), BBase( *new BPasswordWidgetPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BPasswordWidget::~BPasswordWidget()
@@ -276,6 +275,6 @@ QByteArray BPasswordWidget::saveStateEncrypted(QCryptographicHash::Algorithm met
 BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 

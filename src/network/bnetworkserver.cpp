@@ -114,7 +114,6 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
 
 void BNetworkServerPrivate::init()
 {
-    BBasePrivate::init();
     maxConnectionCount = 0;
     maxThreadCount = 0;
 }
@@ -172,6 +171,7 @@ void BNetworkServerPrivate::finished()
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BNetworkServerPrivate(this) )
 {
+    d_func()->init();
     B_D(BNetworkServer);
     if (BGenericServer::NoServer != type)
     {
@@ -258,5 +258,5 @@ int BNetworkServer::currentThreadCount() const
 BNetworkServer::BNetworkServer(BNetworkServerPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

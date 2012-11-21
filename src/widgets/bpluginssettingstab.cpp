@@ -44,7 +44,6 @@ BPluginsSettingsTabPrivate::~BPluginsSettingsTabPrivate()
 
 void BPluginsSettingsTabPrivate::init()
 {
-    BBasePrivate::init();
     B_Q(BPluginsSettingsTab);
     plugins = BApplication::pluginWrappers();
     //
@@ -147,7 +146,7 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
 BPluginsSettingsTab::BPluginsSettingsTab() :
     BBase( *new BPluginsSettingsTabPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BPluginsSettingsTab::~BPluginsSettingsTab()
@@ -177,5 +176,5 @@ QVariantMap BPluginsSettingsTab::valueMap() const
 BPluginsSettingsTab::BPluginsSettingsTab(BPluginsSettingsTabPrivate &d) :
     BBase(d)
 {
-    //
+    d_func()->init();
 }

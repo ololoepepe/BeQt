@@ -43,7 +43,6 @@ BHelpBrowserPrivate::~BHelpBrowserPrivate()
 void BHelpBrowserPrivate::init()
 {
     B_Q(BHelpBrowser);
-    BBasePrivate::init();
     QVBoxLayout *vlt = new QVBoxLayout(q);
       tbar = new QToolBar(q);
         tbtnBackward = new QToolButton;
@@ -152,43 +151,30 @@ void BHelpBrowser::clearSearchCache()
 BHelpBrowser::BHelpBrowser(QWidget *parent) :
     QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, QWidget *parent) :
     QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
+    d_func()->init();
     d_func()->tbrsr->setSearchPaths(searchPaths);
-}
-
-BHelpBrowser::BHelpBrowser(const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
-{
-    d_func()->tbrsr->setSource( QUrl(file) );
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &file, QWidget *parent) :
     QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
+    d_func()->init();
     B_D(BHelpBrowser);
     d->tbrsr->setSearchPaths(searchPaths);
     d->tbrsr->setSource( QUrl(file) );
-}
-
-BHelpBrowser::BHelpBrowser(const QString &index, const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
-{
-    B_D(BHelpBrowser);
-    if ( !index.isEmpty() )
-        d->tbrsr->setSource( QUrl(index) );
-    if (file != index)
-        d->tbrsr->setSource( QUrl(file) );
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &index, const QString &file,
                            QWidget *parent) :
     QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
 {
+    d_func()->init();
     B_D(BHelpBrowser);
     d->tbrsr->setSearchPaths(searchPaths);
     if ( !index.isEmpty() )
@@ -219,5 +205,5 @@ void BHelpBrowser::setFile(const QString &file)
 BHelpBrowser::BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

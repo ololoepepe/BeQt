@@ -42,7 +42,6 @@ BPluginWrapperPrivate::~BPluginWrapperPrivate()
 
 void BPluginWrapperPrivate::init()
 {
-    BBasePrivate::init();
     instance = 0;
     interface = 0;
     testFunction = 0;
@@ -192,12 +191,13 @@ BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction()
 BPluginWrapper::BPluginWrapper(QObject *parent) :
     QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BPluginWrapper::BPluginWrapper(const QString &fileName, QObject *parent) :
     QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
 {
+    d_func()->init();
     setFileName(fileName);
 }
 

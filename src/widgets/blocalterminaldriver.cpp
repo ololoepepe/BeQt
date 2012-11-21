@@ -35,7 +35,6 @@ BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
 
 void BLocalTerminalDriverPrivate::init()
 {
-    BBasePrivate::init();
     process = new QProcess( q_func() );
     workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
@@ -62,7 +61,7 @@ void BLocalTerminalDriverPrivate::readyRead()
 BLocalTerminalDriver::BLocalTerminalDriver(QObject *parent) :
     BAbstractTerminalDriver(parent), BBase( *new BLocalTerminalDriverPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BLocalTerminalDriver::~BLocalTerminalDriver()
@@ -165,5 +164,5 @@ QString BLocalTerminalDriver::workingDirectory() const
 BLocalTerminalDriver::BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent) :
     BAbstractTerminalDriver(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

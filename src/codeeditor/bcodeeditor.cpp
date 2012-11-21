@@ -46,7 +46,6 @@ BCodeEditorPrivate::~BCodeEditorPrivate()
 void BCodeEditorPrivate::init()
 {
     B_Q(BCodeEditor);
-    BBasePrivate::init();
     document = 0;
     editFont = QFont( QFontInfo( QFont("monospace") ).family() );
     editMode = BCodeEdit::NormalMode;
@@ -63,6 +62,30 @@ void BCodeEditorPrivate::init()
         connect( twgt, SIGNAL( currentChanged(int) ), this, SLOT( twgtCurrentChanged(int) ) );
         connect( twgt, SIGNAL( tabCloseRequested(int) ), this, SLOT( twgtTabCloseRequested(int) ) );
       vlt->addWidget(twgt);
+}
+
+BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName)
+{
+    BCodeEditorDocument *doc = new BCodeEditorDocument;
+    doc->setFileName( !fileName.isEmpty() ? fileName : tr("New document", "fileName") );
+    doc->setEditFont(editFont);
+    doc->setEditMode(editMode);
+    doc->setEditLineLength(editLineLength);
+    doc->setEditTabWidth(editTabWidth);
+    doc->setBracketHighlightingEnabled(bracketsHighlighting);
+    connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
+    connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
+    return doc;
+}
+
+void BCodeEditorPrivate::addDocument(BCodeEditorDocument *doc)
+{
+    if (!doc)
+        return;
+    emitDocumentAboutToBeAdded(doc);
+    twgt->addTab(doc, "");
+    updateDocumentTab(doc);
+    emitDocumentAdded(doc);
 }
 
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
@@ -140,8 +163,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                     this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
         disconnect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
-        disconnect( document, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
-        disconnect( document, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
         disconnect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
     }
     document = doc;
@@ -165,8 +186,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                  this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
         connect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
-        connect( document, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
-        connect( document, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
         connect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
     }
     emitCurrentDocumentChanged(document);
@@ -270,14 +289,21 @@ void BCodeEditorPrivate::documentCodecChanged(const QString &codecName)
 
 void BCodeEditorPrivate::documentLoadingFinished(bool success)
 {
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentLoadingFinished(success);
+    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    if ( !doc || !openingDocuments.contains(doc) )
+        return;
+    openingDocuments.removeAll(doc);
+    if (success)
+        addDocument(doc);
+    else
+        doc->deleteLater();
 }
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
 {
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentSavingFinished(success);
+    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    if (!doc)
+        return;
 }
 
 void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
@@ -306,12 +332,14 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
 BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
+    d_func()->init();
     createStandardModule(BookmarksModule, this);
 }
 
 BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
+    d_func()->init();
     setModules(moduleList);
 }
 
@@ -488,22 +516,21 @@ BAbstractDocumentDriver * BCodeEditor::driver() const
 void BCodeEditor::addDocument(const QString &fileName)
 {
     B_D(BCodeEditor);
-    BCodeEditorDocument *doc = new BCodeEditorDocument;
-    doc->setFileName( !fileName.isEmpty() ? fileName : tr("New document", "fileName") );
-    doc->setEditFont(d->editFont);
-    doc->setEditMode(d->editMode);
-    doc->setEditLineLength(d->editLineLength);
-    doc->setEditTabWidth(d->editTabWidth);
-    doc->setBracketHighlightingEnabled(d->bracketsHighlighting);
-    emit documentAboutToBeAdded(doc);
-    d->twgt->addTab(doc, "");
-    d->updateDocumentTab(doc);
-    emit documentAdded(doc);
+    d->addDocument( d->createDocument(fileName) );
 }
 
 bool BCodeEditor::openDocument(const QString &fileName)
 {
-    //
+    B_D(BCodeEditor);
+    BCodeEditorDocument *doc = d->createDocument(fileName);
+    d->openingDocuments.append(doc);
+    if ( !doc->load(driver(), fileName) )
+    {
+        d->openingDocuments.removeAll(doc);
+        doc->deleteLater();
+        return false;
+    }
+    return true;
 }
 
 bool BCodeEditor::saveCurrentDocument()
@@ -526,5 +553,5 @@ bool BCodeEditor::closeCurrentDocument()
 BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

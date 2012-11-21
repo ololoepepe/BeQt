@@ -31,7 +31,6 @@ BSocketWrapperPrivate::~BSocketWrapperPrivate()
 
 void BSocketWrapperPrivate::init()
 {
-    BBasePrivate::init();
     resetIn();
     resetOut();
     comprLvl = 0;
@@ -141,18 +140,20 @@ void BSocketWrapperPrivate::readyRead()
 BSocketWrapper::BSocketWrapper(QObject *parent) :
     QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BSocketWrapper::BSocketWrapper(BGenericSocket *socket, QObject *parent) :
     QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
 {
+    d_func()->init();
     setSocket(socket);
 }
 
 BSocketWrapper::BSocketWrapper(BGenericSocket::SocketType type, QObject *parent) :
     QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
 {
+    d_func()->init();
     setSocket( new BGenericSocket(type) );
 }
 
@@ -286,5 +287,5 @@ const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_4
 BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }

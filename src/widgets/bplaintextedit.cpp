@@ -31,7 +31,6 @@ BPlainTextEditPrivate::~BPlainTextEditPrivate()
 
 void BPlainTextEditPrivate::init()
 {
-    BBasePrivate::init();
     drag = true;
 }
 
@@ -42,7 +41,7 @@ void BPlainTextEditPrivate::init()
 BPlainTextEdit::BPlainTextEdit(QWidget *parent) :
     QPlainTextEdit(parent), BBase( *new BPlainTextEditPrivate(this) )
 {
-    //
+    d_func()->init();
 }
 
 BPlainTextEdit::~BPlainTextEdit()
@@ -67,7 +66,7 @@ bool BPlainTextEdit::dragEnabled() const
 BPlainTextEdit::BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent) :
     QPlainTextEdit(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 //

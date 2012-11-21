@@ -76,7 +76,6 @@ BAboutDialogPrivate::~BAboutDialogPrivate()
 void BAboutDialogPrivate::init()
 {
     B_Q(BAboutDialog);
-    BBasePrivate::init();
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
     vlt = new QVBoxLayout(q);
@@ -275,13 +274,13 @@ void BAboutDialogPrivate::retranslateUi()
 BAboutDialog::BAboutDialog(QWidget *parent) :
     QDialog(parent), BBase( *new BAboutDialogPrivate( this, AboutOptions() ) )
 {
-    //
+    d_func()->init();
 }
 
 BAboutDialog::BAboutDialog(const AboutOptions &options, QWidget *parent) :
     QDialog(parent), BBase( *new BAboutDialogPrivate(this, options) )
 {
-    //
+    d_func()->init();
 }
 
 BAboutDialog::~BAboutDialog()
@@ -444,5 +443,5 @@ void BAboutDialog::resetTabs()
 BAboutDialog::BAboutDialog(BAboutDialogPrivate &d, QWidget *parent) :
     QDialog(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
