@@ -44,6 +44,7 @@ public:
     void removeModule(BAbstractEditorModule *module);
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
+    void setDriver(BAbstractDocumentDriver *drv);
     QFont editFont() const;
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
@@ -53,6 +54,7 @@ public:
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;
+    BAbstractDocumentDriver *driver() const;
 public slots:
     void addDocument(const QString &fileName);
     bool openDocument(const QString &fileName);
@@ -66,9 +68,6 @@ signals:
     void currentDocumentChanged(BCodeEditorDocument *doc);
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
-    //
-    virtual BAbstractDocumentDriver *driverForLoad( BCodeEditorDocument *doc, const QString &newName = QString() );
-    virtual BAbstractDocumentDriver *driverForSave(BCodeEditorDocument *doc, QString *newName = 0);
 private:
     Q_DISABLE_COPY(BCodeEditor)
     //

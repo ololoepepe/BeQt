@@ -53,6 +53,7 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = false;
+    driver = new BLocalDocumentDriver(q);
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -408,6 +409,20 @@ void BCodeEditor::setModules(const QList<BAbstractEditorModule *> &list)
         addModule(mdl);
 }
 
+void BCodeEditor::setDriver(BAbstractDocumentDriver *drv)
+{
+    if (!drv)
+        return;
+    B_D(BCodeEditor);
+    if ( d->driver && ( d->driver->hasPendingLoadOperations() || d->driver->hasPendingSaveOperations() ) )
+        return;
+    if (d->driver && d->driver->parent() == (QObject *) this)
+        d->driver->deleteLater();
+    d->driver = drv;
+    if ( drv && !drv->parent() )
+        drv->setParent(this);
+}
+
 QFont BCodeEditor::editFont() const
 {
     return d_func()->editFont;
@@ -457,6 +472,11 @@ QList<BCodeEditorDocument *> BCodeEditor::documents() const
     return list;
 }
 
+BAbstractDocumentDriver * BCodeEditor::driver() const
+{
+    return d_func()->driver;
+}
+
 //
 
 void BCodeEditor::addDocument(const QString &fileName)
@@ -499,20 +519,6 @@ bool BCodeEditor::closeCurrentDocument()
 
 BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
-{
-    //
-}
-
-//
-
-BAbstractDocumentDriver *BCodeEditor::driverForLoad(BCodeEditorDocument *doc, const QString &newName)
-{
-    if (!doc)
-        return 0;
-    return new BLocalDocumentDriver(this);
-}
-
-BAbstractDocumentDriver *BCodeEditor::driverForSave(BCodeEditorDocument *doc, QString *newName)
 {
     //
 }

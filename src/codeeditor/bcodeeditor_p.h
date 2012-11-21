@@ -3,6 +3,7 @@
 
 class BCodeEditorDocument;
 class BAbstractEditorModule;
+class BAbstractDocumentDriver;
 
 class QVBoxLayout;
 class QTabWidget;
@@ -50,6 +51,7 @@ public:
     int editLineLength;
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
+    BAbstractDocumentDriver *driver;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;
