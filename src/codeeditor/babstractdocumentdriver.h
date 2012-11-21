@@ -24,24 +24,14 @@ public:
     {
         BCodeEditorDocument *document;
         QString fileName;
-        //
-        Operation()
-        {
-            document = 0;
-        }
-        Operation(BCodeEditorDocument *doc, const QString &fn)
-        {
-            document = doc;
-            fileName = fn;
-        }
     };
     //
     explicit BAbstractDocumentDriver(QObject *parent = 0);
     ~BAbstractDocumentDriver();
     //
     virtual QString id() const = 0;
-    virtual bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
-    virtual bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
+    bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
+    bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool hasPendingLoadOperations() const;
     bool hasPendingSaveOperations() const;
     bool isDocumentInList(BCodeEditorDocument *doc) const;

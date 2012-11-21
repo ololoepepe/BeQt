@@ -12,6 +12,7 @@ HEADERS += \
     $${PWD}/bcodeeditordocument.h \
     $${PWD}/bcodeeditordocument_p.h \
     $${PWD}/blocaldocumentdriver.h \
+    $${PWD}/blocaldocumentdriver_p.h \
     $${PWD}/bsearchdialog.h \
     $${PWD}/bsearchdialog_p.h
 

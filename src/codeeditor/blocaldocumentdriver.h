@@ -2,6 +2,7 @@
 #define BLOCALDOCUMENTDRIVER_H
 
 class BCodeEditorDocument;
+class BLocalDocumentDriverPrivate;
 
 class QObject;
 
@@ -17,13 +18,14 @@ class QObject;
 
 class B_CODEEDITOR_EXPORT BLocalDocumentDriver : public BAbstractDocumentDriver
 {
+    B_DECLARE_PRIVATE(BLocalDocumentDriver)
 public:
     explicit BLocalDocumentDriver(QObject *parent = 0);
     ~BLocalDocumentDriver();
     //
     QString id() const;
-    bool load(BCodeEditorDocument *doc, const QString &fileName);
-    bool save(BCodeEditorDocument *doc, const QString &fileName);
+private:
+    Q_DISABLE_COPY(BLocalDocumentDriver)
 };
 
 #endif // BLOCALDOCUMENTDRIVER_H

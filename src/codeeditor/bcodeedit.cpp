@@ -620,6 +620,7 @@ void BCodeEditPrivate::init()
       ptedt = new BPlainTextEditExtended(q);
         ptedt->setLineWrapMode(QPlainTextEdit::NoWrap);
         ptedt->setWordWrapMode(QTextOption::NoWrap);
+        ptedt->setDragEnabled(false);
         ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
         //Using such a construct to get default monospace font family name

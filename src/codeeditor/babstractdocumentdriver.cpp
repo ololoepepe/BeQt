@@ -72,7 +72,10 @@ bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, const QString &file
 {
     if ( !doc || isDocumentInList(doc) )
         return false;
-    d_func()->loadOps.enqueue( Operation(doc, fileName) );
+    Operation op;
+    op.document = doc;
+    op.fileName = fileName;
+    d_func()->loadOps.enqueue(op);
     emit newPendingLoadOperation();
     return true;
 }
@@ -81,7 +84,10 @@ bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &file
 {
     if ( !doc || isDocumentInList(doc) )
         return false;
-    d_func()->saveOps.enqueue( Operation(doc, fileName) );
+    Operation op;
+    op.document = doc;
+    op.fileName = fileName;
+    d_func()->saveOps.enqueue(op);
     emit newPendingSaveOperation();
     return true;
 }
@@ -106,27 +112,41 @@ bool BAbstractDocumentDriver::isDocumentInList(BCodeEditorDocument *doc) const
 BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingLoadOperation()
 {
     B_D(BAbstractDocumentDriver);
-    return !d->loadOps.isEmpty() ? d->loadOps.dequeue() : Operation();
+    if ( d->loadOps.isEmpty() )
+    {
+        Operation op;
+        op.document = 0;
+        return op;
+    }
+    return d->loadOps.dequeue();
 }
 
 BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingSaveOperation()
 {
     B_D(BAbstractDocumentDriver);
-    return !d->saveOps.isEmpty() ? d->saveOps.dequeue() : Operation();
+    if ( d->loadOps.isEmpty() )
+    {
+        Operation op;
+        op.document = 0;
+        return op;
+    }
+    return d->saveOps.dequeue();
 }
 
 void BAbstractDocumentDriver::emitLoadingFinished(const Operation &operation, bool success, const QString &text)
 {
-    if (!operation.document)
+    B_D(BAbstractDocumentDriver);
+    if ( !operation.document || !d->docs.contains(operation.document) )
         return;
-    d_func()->docs.removeAll(operation.document);
+    d->docs.removeAll(operation.document);
     emit loadingFinished(operation, success, text);
 }
 
 void BAbstractDocumentDriver::emitSavingFinished(const Operation &operation, bool success)
 {
-    if (!operation.document)
+    B_D(BAbstractDocumentDriver);
+    if ( !operation.document || !d->docs.contains(operation.document) )
         return;
-    d_func()->docs.removeAll(operation.document);
+    d->docs.removeAll(operation.document);
     emit savingFinished(operation, success);
 }
