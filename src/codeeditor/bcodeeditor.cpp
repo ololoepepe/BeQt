@@ -306,7 +306,13 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
 BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
-    //
+    createStandardModule(BookmarksModule, this);
+}
+
+BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    setModules(moduleList);
 }
 
 BCodeEditor::~BCodeEditor()
@@ -380,7 +386,7 @@ void BCodeEditor::addModule(BAbstractEditorModule *module)
 void BCodeEditor::addModule(StandardModule type)
 {
     BAbstractEditorModule *mdl = createStandardModule(type, this);
-    if (mdl->editor() != this)
+    if ( !mdl->editor() )
         mdl->deleteLater();
 }
 

@@ -32,6 +32,7 @@ public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
     //
     explicit BCodeEditor(QWidget *parent = 0);
+    explicit BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
     ~BCodeEditor();
     //
     void setEditFont(const QFont &fnt);
