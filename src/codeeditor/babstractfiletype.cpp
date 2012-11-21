@@ -1,4 +1,5 @@
 #include "babstractfiletype.h"
+#include "bcodeedit.h"
 
 #include <QApplication>
 #include <QString>
@@ -23,7 +24,7 @@ public:
     QStringList suffixes() const;
     bool matchesFileName(const QString &fileName) const;
     QSyntaxHighlighter *createHighlighter() const;
-    QList<BracketPair> brackets() const;
+    QList<BCodeEdit::BracketPair> brackets() const;
 };
 
 /*============================================================================
@@ -72,9 +73,9 @@ QSyntaxHighlighter *BDefaultFileType::createHighlighter() const
     return 0;
 }
 
-QList<BAbstractFileType::BracketPair> BDefaultFileType::brackets() const
+QList<BCodeEdit::BracketPair> BDefaultFileType::brackets() const
 {
-    return QList<BracketPair>();
+    return QList<BCodeEdit::BracketPair>();
 }
 
 /*============================================================================

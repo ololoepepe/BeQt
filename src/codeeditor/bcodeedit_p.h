@@ -19,7 +19,6 @@ class QTextCursor;
 class QPaintEvent;
 
 #include "bcodeedit.h"
-#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -151,7 +150,7 @@ public:
     struct TestBracketResult
     {
         bool valid;
-        BAbstractFileType::BracketPair bracket;
+        BCodeEdit::BracketPair bracket;
         bool opening;
         //
         TestBracketResult()
@@ -164,7 +163,7 @@ public:
     {
         bool valid;
         int pos;
-        BAbstractFileType::BracketPair bracket;
+        BCodeEdit::BracketPair bracket;
         //
         FindBracketResult()
         {
@@ -188,11 +187,9 @@ public:
     static void replaceTabs(QString &s, BCodeEdit::TabWidth tw);
     static void removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
                                       const QList<QTextEdit::ExtraSelection> &what);
-    static FindBracketResult findBracketPair(const BAbstractFileType::BracketPair &br,
-                                             bool opening, const QTextBlock &tb, int pos,
-                                             const QList<BAbstractFileType::BracketPair> &brlist);
-    static TestBracketResult testBracket(const QString &txt, int pos,
-                                         const QList<BAbstractFileType::BracketPair> &brlist);
+    static FindBracketResult findBracketPair(const BCodeEdit::BracketPair &br, bool opening, const QTextBlock &tb,
+                                             int pos, const QList<BCodeEdit::BracketPair> &brlist);
+    static TestBracketResult testBracket(const QString &txt, int pos, const QList<BCodeEdit::BracketPair> &brlist);
     //
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
@@ -226,8 +223,9 @@ public:
     bool blockMode;
     int lineLength;
     BCodeEdit::TabWidth tabWidth;
-    bool bracketsHighlighting;
     QSyntaxHighlighter *highlighter;
+    QList<BCodeEdit::BracketPair> recognizedBrackets;
+    bool bracketsHighlighting;
     QPoint cursorPosition;
     bool hasSelection;
     bool hasBookmarks;
@@ -235,9 +233,6 @@ public:
     bool pasteAvailable;
     bool undoAvailable;
     bool redoAvailable;
-    BAbstractFileType *fileType;
-    QList<BAbstractFileType::BracketPair> brackets;
-
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEditExtended *ptedt;

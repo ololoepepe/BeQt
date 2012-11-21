@@ -3,11 +3,11 @@
 
 class BCodeEditPrivate;
 class BPlainTextEdit;
-class BAbstractFileType;
 
 class QString;
 class QPoint;
 class QFont;
+class QSyntaxHighlighter;
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -37,6 +37,27 @@ public:
         TabWidth8 = 8
     };
     //
+    struct BracketPair
+    {
+        QString opening;
+        QString closing;
+        QString escape;
+        //
+        BracketPair()
+        {
+            //
+        }
+        BracketPair( const QString &op, const QString &cl, const QString &esc = QString() )
+        {
+            opening = op;
+            closing = cl;
+            escape = esc;
+        }
+        bool operator==(const BracketPair &other) const
+        {
+            return opening == other.opening && closing == other.closing && escape == other.escape;
+        }
+    };
     struct SplittedLinesRange
     {
         int firstLineNumber;
@@ -57,8 +78,9 @@ public:
     void setEditMode(EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(TabWidth tw);
+    void setHighlighter(QSyntaxHighlighter *hl);
+    void setRecognizedBrackets(const QList<BracketPair> &list);
     void setBracketHighlightingEnabled(bool enabled);
-    void setFileType(BAbstractFileType *type);
     //Getters
     bool isReadOnly() const;
     bool isModified() const;
@@ -72,8 +94,9 @@ public:
     EditMode editMode() const;
     int editLineLength() const;
     TabWidth editTabWidth() const;
+    QSyntaxHighlighter *highlighter() const;
+    QList<BracketPair> recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
-    BAbstractFileType *fileType() const;
     QPoint cursorPosition() const;
     QString text() const;
     QString selectedText() const;

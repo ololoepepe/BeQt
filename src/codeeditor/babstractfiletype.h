@@ -4,6 +4,8 @@
 class QStringList;
 class QSyntaxHighlighter;
 
+#include "bcodeedit.h"
+
 #include <BeQtCore/BeQtGlobal>
 
 #include <QString>
@@ -17,28 +19,6 @@ class QSyntaxHighlighter;
 class B_CODEEDITOR_EXPORT BAbstractFileType
 {
 public:
-    struct BracketPair
-    {
-        QString opening;
-        QString closing;
-        QString escape;
-        //
-        BracketPair()
-        {
-            //
-        }
-        BracketPair(const QString &op, const QString &cl, const QString &esc)
-        {
-            opening = op;
-            closing = cl;
-            escape = esc;
-        }
-        bool operator=(const BracketPair &other) const
-        {
-            return opening == other.opening && closing == other.closing && escape == other.escape;
-        }
-    };
-    //
     static BAbstractFileType *defaultFileType();
     //
     BAbstractFileType();
@@ -51,7 +31,7 @@ public:
     virtual QStringList suffixes() const = 0;
     virtual bool matchesFileName(const QString &fileName) const = 0;
     virtual QSyntaxHighlighter *createHighlighter() const = 0;
-    virtual QList<BracketPair> brackets() const = 0;
+    virtual QList<BCodeEdit::BracketPair> brackets() const = 0;
 };
 
 #endif // BABSTRACTFILETYPE_H

@@ -97,6 +97,7 @@ int main(int argc, char **argv)
     term->setDriver(new BLocalTerminalDriver);
     //BCodeEdit
     BCodeEdit *cedt = new BCodeEdit;
+    cedt->setRecognizedBrackets( QList<BCodeEdit::BracketPair>() << BCodeEdit::BracketPair("(", ")") );
     //BCodeEditor
     BCodeEditor *cedtr = new BCodeEditor;
     cedtr->addDocument("Test.txt");
