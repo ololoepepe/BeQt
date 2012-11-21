@@ -95,10 +95,6 @@ int main(int argc, char **argv)
     //BTerminalWidget
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
     term->setDriver(new BLocalTerminalDriver);
-    //BPlainTextEdit
-    BPlainTextEdit *pte = new BPlainTextEdit;
-    pte->setFont( QFont("DejaVu Sans Mono") );
-    pte->setSelectionMode(BPlainTextEdit::BlockSelection);
     //BCodeEdit
     BCodeEdit *cedt = new BCodeEdit;
     //BCodeEditor
@@ -110,7 +106,6 @@ int main(int argc, char **argv)
     //Showing widgets
     //mw->show();
     //term->show();
-    //pte->show();
     //cedt->show();
     cedtr->show();
     //Running main event loop
@@ -122,7 +117,6 @@ int main(int argc, char **argv)
     delete cedt;
     delete mw;
     delete term;
-    delete pte;
     delete bapp;
     delete app;
     delete as;

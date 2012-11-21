@@ -40,6 +40,23 @@
 #include <QColor>
 #include <QTimer>
 #include <QRegExp>
+#include <QPlainTextEdit>
+#include <QPainter>
+#include <QRectF>
+#include <QBrush>
+#include <QTransform>
+#include <QGradient>
+#include <QPaintEvent>
+#include <QPlainTextDocumentLayout>
+#include <QPointF>
+#include <QRect>
+#include <QAbstractTextDocumentLayout>
+#include <QTextLayout>
+#include <QTextBlockFormat>
+#include <QVector>
+#include <QTextLine>
+#include <QScrollBar>
+#include <QVector>
 
 /*============================================================================
 ================================ Code Edit Clipboard Notifier
@@ -87,6 +104,272 @@ void BCodeEditClipboardNotifier::dataChanged()
 //
 
 BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
+
+/*============================================================================
+================================ Plain Text Edit Extended Private
+============================================================================*/
+
+void BPlainTextEditExtendedPrivate::fillBackground(QPainter *painter, const QRectF &rect,
+                                                   QBrush brush, QRectF gradientRect)
+{
+    painter->save();
+    Qt::BrushStyle bs = brush.style();
+    if (bs >= Qt::LinearGradientPattern && bs <= Qt::ConicalGradientPattern)
+    {
+        if ( !gradientRect.isNull() )
+        {
+            QTransform t = QTransform::fromTranslate( gradientRect.left(), gradientRect.top() );
+            t.scale( gradientRect.width(), gradientRect.height() );
+            brush.setTransform(t);
+            const_cast<QGradient *>( brush.gradient() )->setCoordinateMode(QGradient::LogicalMode);
+        }
+    }
+    else
+    {
+        painter->setBrushOrigin( rect.topLeft() );
+    }
+    painter->fillRect(rect, brush);
+    painter->restore();
+}
+
+//
+
+BPlainTextEditExtendedPrivate::BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q) :
+    BPlainTextEditPrivate(q)
+{
+    //
+}
+
+BPlainTextEditExtendedPrivate::~BPlainTextEditExtendedPrivate()
+{
+    //
+}
+
+//
+
+void BPlainTextEditExtendedPrivate::init()
+{
+    BPlainTextEditPrivate::init();
+    blockMode = false;
+    hasSelection = false;
+    connect( q_func(), SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
+}
+
+QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPaintContext() const
+{
+    QAbstractTextDocumentLayout::PaintContext context = q_func()->getPaintContext();
+    if (!blockMode || !hasSelection)
+        return context;
+    QAbstractTextDocumentLayout::Selection sel = context.selections.last();
+    context.selections.remove(context.selections.size() - 1);
+    foreach (const BPlainTextEditExtended::SelectionRange &sr, selectionRanges)
+    {
+        sel.cursor.setPosition(sr.start);
+        sel.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        context.selections.append(sel);
+    }
+    return context;
+}
+
+void BPlainTextEditExtendedPrivate::emulateShiftPress()
+{
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
+    QApplication::sendEvent(q_func(), &e);
+}
+
+//
+
+void BPlainTextEditExtendedPrivate::selectionChanged()
+{
+    B_Q(BPlainTextEdit);
+    QTextCursor tc = q->textCursor();
+    hasSelection = tc.hasSelection();
+    if (!blockMode)
+        return;
+    selectionRanges.clear();
+    if (!hasSelection)
+        return;
+    //Assuming all lines have the same length
+    //It's also good to set a monospace font
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    int soffset = start - q->document()->findBlock(start).position();
+    int eoffset = end - q->document()->findBlock(end).position();
+    if (soffset == eoffset)
+        return emulateShiftPress(); //Workaround to update the selection
+    int minoffset = qMin<int>(soffset, eoffset);
+    int maxoffset = qMax<int>(soffset, eoffset);
+    int astart = qMin<int>(start, end);
+    int aend = qMax<int>(start, end);
+    QTextBlock tb = q->document()->findBlock(astart);
+    BPlainTextEditExtended::SelectionRange sr;
+    while ( tb.isValid() )
+    {
+        int bpos = tb.position();
+        if (bpos > aend)
+            break;
+        sr.start = bpos + minoffset;
+        sr.end = bpos + qMin(maxoffset, tb.length() - 1);
+        selectionRanges.append(sr);
+        tb = tb.next();
+    }
+    //Workaround to update the selection
+    emulateShiftPress();
+}
+
+/*============================================================================
+================================ Plain Text Edit Extended
+============================================================================*/
+
+BPlainTextEditExtended::BPlainTextEditExtended(QWidget *parent) :
+    BPlainTextEdit(*new BPlainTextEditExtendedPrivate(this), parent)
+{
+    //
+}
+
+BPlainTextEditExtended::~BPlainTextEditExtended()
+{
+    //
+}
+
+//
+
+void BPlainTextEditExtended::setBlockMode(bool enabled)
+{
+    d_func()->blockMode = enabled;
+}
+
+bool BPlainTextEditExtended::blockMode() const
+{
+    return d_func()->blockMode;
+}
+
+QVector<BPlainTextEditExtended::SelectionRange> BPlainTextEditExtended::selectionRanges() const
+{
+    return d_func()->selectionRanges;
+}
+
+//
+
+BPlainTextEditExtended::BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent) :
+    BPlainTextEdit(d, parent)
+{
+    //
+}
+
+//
+
+/*QMimeData *BPlainTextEditExtended::createMimeDataFromSelection() const
+{
+    return d_func()->drag ? QPlainTextEdit::createMimeDataFromSelection() : 0;
+}*/
+
+void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
+{
+    QPainter painter( viewport() );
+    Q_ASSERT( qobject_cast<QPlainTextDocumentLayout*>( document()->documentLayout() ) );
+    QPointF offset( contentOffset() );
+    QRect er = e->rect();
+    QRect viewportRect = viewport()->rect();
+    bool editable = !isReadOnly();
+    QTextBlock block = firstVisibleBlock();
+    qreal maximumWidth = document()->documentLayout()->documentSize().width();
+    painter.setBrushOrigin(offset);
+    int maxX = offset.x() + qMax( (qreal) viewportRect.width(), maximumWidth ) - document()->documentMargin();
+    er.setRight( qMin(er.right(), maxX) );
+    painter.setClipRect(er);
+    QAbstractTextDocumentLayout::PaintContext context = d_func()->getPaintContext(); //Custom paint context
+    while ( block.isValid() )
+    {
+        QRectF r = blockBoundingRect(block).translated(offset);
+        QTextLayout *layout = block.layout();
+        if ( !block.isVisible() )
+        {
+            offset.ry() += r.height();
+            block = block.next();
+            continue;
+        }
+        if ( r.bottom() >= er.top() && r.top() <= er.bottom() )
+        {
+            QTextBlockFormat blockFormat = block.blockFormat();
+            QBrush bg = blockFormat.background();
+            if (bg != Qt::NoBrush)
+            {
+                QRectF contentsRect = r;
+                contentsRect.setWidth( qMax(r.width(), maximumWidth) );
+                BPlainTextEditExtendedPrivate::fillBackground(&painter, contentsRect, bg);
+            }
+            QVector<QTextLayout::FormatRange> selections;
+            int blpos = block.position();
+            int bllen = block.length();
+            for (int i = 0; i < context.selections.size(); ++i)
+            {
+                const QAbstractTextDocumentLayout::Selection &range = context.selections.at(i);
+                const int selStart = range.cursor.selectionStart() - blpos;
+                const int selEnd = range.cursor.selectionEnd() - blpos;
+                if (selStart < bllen && selEnd > 0 && selEnd > selStart)
+                {
+                    QTextLayout::FormatRange o;
+                    o.start = selStart;
+                    o.length = selEnd - selStart;
+                    o.format = range.format;
+                    selections.append(o);
+                }
+                else if ( !range.cursor.hasSelection() &&
+                          range.format.hasProperty(QTextFormat::FullWidthSelection) &&
+                          block.contains( range.cursor.position() ) )
+                {
+                    QTextLayout::FormatRange o;
+                    QTextLine l = layout->lineForTextPosition(range.cursor.position() - blpos);
+                    o.start = l.textStart();
+                    o.length = l.textLength();
+                    if (o.start + o.length == bllen - 1)
+                        ++o.length;
+                    o.format = range.format;
+                    selections.append(o);
+                }
+            }
+            bool drawCursor = ( ( editable || (textInteractionFlags() & Qt::TextSelectableByKeyboard) ) &&
+                                context.cursorPosition >= blpos && context.cursorPosition < blpos + bllen );
+            bool drawCursorAsBlock = drawCursor && overwriteMode();
+            if (drawCursorAsBlock)
+            {
+                if (context.cursorPosition == blpos + bllen - 1)
+                {
+                    drawCursorAsBlock = false;
+                }
+                else
+                {
+                    QTextLayout::FormatRange o;
+                    o.start = context.cursorPosition - blpos;
+                    o.length = 1;
+                    o.format.setForeground( palette().base() );
+                    o.format.setBackground( palette().text() );
+                    selections.append(o);
+                }
+            }
+            layout->draw(&painter, offset, selections, er);
+            if ( (drawCursor && !drawCursorAsBlock) ||
+                 ( editable && context.cursorPosition < -1 && !layout->preeditAreaText().isEmpty() ) )
+            {
+                int cpos = context.cursorPosition;
+                if (cpos < -1)
+                    cpos = layout->preeditAreaPosition() - (cpos + 2);
+                else
+                    cpos -= blpos;
+                layout->drawCursor( &painter, offset, cpos, cursorWidth() );
+            }
+        }
+        offset.ry() += r.height();
+        if ( offset.y() > viewportRect.height() )
+            break;
+        block = block.next();
+    }
+    if ( backgroundVisible() && !block.isValid() && offset.y() <= er.bottom() &&
+         ( centerOnScroll() || verticalScrollBar()->maximum() == verticalScrollBar()->minimum() ) )
+        painter.fillRect( QRect( QPoint( (int) er.left(), (int) offset.y() ),
+                                 er.bottomRight() ), palette().background() );
+}
 
 /*============================================================================
 ================================ Code Edit Private
@@ -335,7 +618,9 @@ void BCodeEditPrivate::init()
     B_Q(BCodeEdit);
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
-      ptedt = new BPlainTextEdit(q);
+      ptedt = new BPlainTextEditExtended(q);
+        ptedt->setLineWrapMode(QPlainTextEdit::NoWrap);
+        ptedt->setWordWrapMode(QTextOption::NoWrap);
         ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
         //Using such a construct to get default monospace font family name
@@ -559,8 +844,8 @@ void BCodeEditPrivate::deleteSelection()
     int pos = tc.selectionStart();
     if (blockMode)
     {
-        QVector<BPlainTextEdit::SelectionRange> ranges = ptedt->selectionRanges();
-        foreach(const BPlainTextEdit::SelectionRange &range, ranges)
+        QVector<BPlainTextEditExtended::SelectionRange> ranges = ptedt->selectionRanges();
+        foreach(const BPlainTextEditExtended::SelectionRange &range, ranges)
         {
             tc.setPosition(range.start);
             tc.setPosition(range.end, QTextCursor::KeepAnchor);
@@ -646,8 +931,8 @@ int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QStrin
     int maxlen = 0;
     QStringList sl;
     QTextCursor tcr = ptedt->textCursor();
-    QVector<BPlainTextEdit::SelectionRange> ranges = ptedt->selectionRanges();
-    foreach (const BPlainTextEdit::SelectionRange &range, ranges)
+    QVector<BPlainTextEditExtended::SelectionRange> ranges = ptedt->selectionRanges();
+    foreach (const BPlainTextEditExtended::SelectionRange &range, ranges)
     {
         tcr.setPosition(range.start);
         tcr.setPosition(range.end, QTextCursor::KeepAnchor);
@@ -700,7 +985,7 @@ int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QStrin
     tc.endEditBlock();
     //Rehighlighting
     if (highlighter)
-        foreach (const BPlainTextEdit::SelectionRange &range, ranges)
+        foreach (const BPlainTextEditExtended::SelectionRange &range, ranges)
             highlighter->rehighlightBlock( ptedt->document()->findBlock(range.start) );
     return count;
 }
@@ -1087,11 +1372,11 @@ void BCodeEditPrivate::move(int key)
     int end = tc.selectionEnd();
     if (blockMode)
     {
-        QVector<BPlainTextEdit::SelectionRange> ranges = ptedt->selectionRanges();
+        QVector<BPlainTextEditExtended::SelectionRange> ranges = ptedt->selectionRanges();
         if (Qt::Key_Left == key || Qt::Key_Right == key)
         {
             QTextCursor tcr = tc;
-            foreach (const BPlainTextEdit::SelectionRange &range, ranges)
+            foreach (const BPlainTextEditExtended::SelectionRange &range, ranges)
             {
                 tcr.setPosition(range.start);
                 tcr.setPosition(range.end, QTextCursor::KeepAnchor);
@@ -1308,6 +1593,7 @@ void BCodeEdit::setEditMode(EditMode mode)
     if (b == d->blockMode)
         return;
     d->blockMode = b;
+    d->ptedt->setBlockMode(b);
     d->ptedt->update();
     emit editModeChanged(mode);
 }
@@ -1451,7 +1737,7 @@ QString BCodeEdit::selectedText() const
         return BCodeEditPrivate::removeTrailingSpaces(text);
     }
     QStringList lines;
-    foreach ( const BPlainTextEdit::SelectionRange &range, d->ptedt->selectionRanges() )
+    foreach ( const BPlainTextEditExtended::SelectionRange &range, d->ptedt->selectionRanges() )
     {
         QTextBlock tb = d->ptedt->document()->findBlock(range.start);
         int offset = tb.position();

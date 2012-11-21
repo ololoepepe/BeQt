@@ -2,7 +2,7 @@
 #define BCODEEDIT_P_H
 
 class BCodeEditPrivate;
-class BPlainTextEdit;
+class BPlainTextEditExtendedPrivate;
 
 class QVBoxLayout;
 class QEvent;
@@ -13,12 +13,18 @@ class QChar;
 class QStringList;
 class QSyntaxHighlighter;
 class QPoint;
+class QPainter;
+class QBrush;
+class QTextCursor;
+class QPaintEvent;
 
 #include "bcodeedit.h"
 #include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtWidgets/BPlainTextEdit>
+#include <BeQtWidgets/private/bplaintextedit_p.h>
 
 #include <QObject>
 #include <QCoreApplication>
@@ -27,6 +33,10 @@ class QPoint;
 #include <QFutureWatcher>
 #include <QTextBlock>
 #include <QTextEdit>
+#include <QPlainTextEdit>
+#include <QVector>
+#include <QRectF>
+#include <QAbstractTextDocumentLayout>
 
 /*============================================================================
 ================================ Code Edit Clipboard Notifier
@@ -52,6 +62,75 @@ private:
     bool dataAvailable;
 public slots:
     void dataChanged();
+};
+
+/*============================================================================
+================================ Plain Text Edit Extended
+============================================================================*/
+
+class B_WIDGETS_EXPORT BPlainTextEditExtended : public BPlainTextEdit
+{
+    B_DECLARE_PRIVATE(BPlainTextEditExtended)
+    Q_OBJECT
+public:
+    enum SelectionMode
+    {
+        NormalSelection,
+        BlockSelection
+    };
+    //
+    struct SelectionRange
+    {
+        int start;
+        int end;
+        //
+        SelectionRange()
+        {
+            start = -1;
+            end = -1;
+        }
+    };
+    //
+    explicit BPlainTextEditExtended(QWidget *parent = 0);
+    ~BPlainTextEditExtended();
+    //
+    void setBlockMode(bool enabled);
+    bool blockMode() const;
+    QVector<SelectionRange> selectionRanges() const;
+protected:
+    BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent = 0);
+    //
+    void paintEvent(QPaintEvent *e);
+private:
+    Q_DISABLE_COPY(BPlainTextEditExtended)
+};
+
+/*============================================================================
+================================ Plain Text Edit Extended Private
+============================================================================*/
+
+class B_WIDGETS_EXPORT BPlainTextEditExtendedPrivate : public BPlainTextEditPrivate
+{
+    B_DECLARE_PUBLIC(BPlainTextEditExtended)
+    Q_OBJECT
+public:
+    static inline void fillBackground( QPainter *painter, const QRectF &rect,
+                                       QBrush brush, QRectF gradientRect = QRectF() );
+    //
+    explicit BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q);
+    ~BPlainTextEditExtendedPrivate();
+    //
+    void init();
+    inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
+    void emulateShiftPress();
+    //
+    bool blockMode;
+    bool hasSelection;
+    QVector<BPlainTextEditExtended::SelectionRange> selectionRanges;
+public slots:
+    void selectionChanged();
+private:
+    Q_DISABLE_COPY(BPlainTextEditExtendedPrivate)
 };
 
 /*============================================================================
@@ -161,7 +240,7 @@ public:
 
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
-      BPlainTextEdit *ptedt;
+      BPlainTextEditExtended *ptedt;
 public slots:
     void futureWatcherFinished();
     void popupMenu(const QPoint &pos);

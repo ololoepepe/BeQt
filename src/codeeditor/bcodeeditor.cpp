@@ -52,7 +52,7 @@ void BCodeEditorPrivate::init()
     editMode = BCodeEdit::NormalMode;
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
-    bracketsHighlighting = false;
+    bracketsHighlighting = true;
     driver = new BLocalDocumentDriver(q);
     //
     vlt = new QVBoxLayout(q);
