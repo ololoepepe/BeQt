@@ -33,8 +33,6 @@
 #include <QListWidgetItem>
 #include <QEventLoop>
 #include <QTimer>
-#include <QFileDialog>
-#include <QDir>
 
 #include <QDebug>
 
@@ -300,13 +298,12 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     if ( !doc || savingDocuments.contains(doc) )
         return false;
     QString nfn = newFileName;
-    bool cancel = false;
-    bool ssa = !newFileName.isEmpty() || q_func()->shouldSaveAs(doc->fileName(), nfn, &cancel);
-    if (cancel)
-        return false;
+    bool ssa = !nfn.isEmpty() || driver->shouldSaveAs( doc->fileName() );
     if (ssa)
     {
-        if ( findDocument(nfn) )
+        if ( !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn) )
+            return false;
+        if ( nfn.isEmpty() || findDocument(nfn) )
             return false;
     }
     else
@@ -1054,19 +1051,4 @@ BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
     d_func()->init();
-}
-
-//
-
-bool BCodeEditor::shouldSaveAs(const QString &fileName, QString &newFileName, bool *cancel)
-{
-    bool b = !QFileInfo(fileName).isFile();
-    if (b)
-    {
-        //TODO: Improve (use another dialog)
-        newFileName = QFileDialog::getSaveFileName(this, "", QDir::homePath() + "/" + fileName);
-        if (newFileName.isEmpty() && cancel)
-            *cancel = true;
-    }
-    return b;
 }

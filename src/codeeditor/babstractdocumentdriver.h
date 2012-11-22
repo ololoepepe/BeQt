@@ -4,6 +4,8 @@
 class BCodeEditorDocument;
 class BAbstractDocumentDriverPrivate;
 
+class QWidget;
+
 #include <BeQtCore/BBase>
 #include <BeQtCore/BeQtGlobal>
 
@@ -30,6 +32,8 @@ public:
     ~BAbstractDocumentDriver();
     //
     virtual QString id() const = 0;
+    virtual bool shouldSaveAs(const QString &fileName) = 0;
+    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName) = 0;
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool hasPendingLoadOperations() const;

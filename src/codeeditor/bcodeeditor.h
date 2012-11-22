@@ -85,8 +85,6 @@ signals:
     void allDocumentsClosed();
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
-    //
-    virtual bool shouldSaveAs(const QString &fileName, QString &newFileName, bool *cancel);
 private:
     Q_DISABLE_COPY(BCodeEditor)
     //

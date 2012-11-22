@@ -5,6 +5,7 @@ class BCodeEditorDocument;
 class BLocalDocumentDriverPrivate;
 
 class QObject;
+class QWidget;
 
 #include "babstractdocumentdriver.h"
 
@@ -25,6 +26,8 @@ public:
     ~BLocalDocumentDriver();
     //
     QString id() const;
+    bool shouldSaveAs(const QString &fileName);
+    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName);
 protected:
     BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 private:
