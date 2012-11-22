@@ -165,12 +165,31 @@ void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
 
 void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
 {
-    //
+    if ( fileName.isEmpty() )
+        return;
+    QMessageBox msg( q_func() );
+    msg.setWindowTitle( trq("Failed to open file", "msgbox windowTitle") );
+    msg.setIcon(QMessageBox::Warning);
+    msg.setText(trq("Failed to open file:", "msgbox text") + "\n" + fileName);
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
 }
 
 void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QString &newFileName)
 {
-    //
+    if ( fileName.isEmpty() )
+        return;
+    QMessageBox msg( q_func() );
+    msg.setWindowTitle( trq("Failed to save file", "msgbox windowTitle") );
+    msg.setIcon(QMessageBox::Warning);
+    QString text = trq("Failed to open file:", "msgbox text") + "\n" + fileName;
+    if (!newFileName.isEmpty() && fileName != newFileName)
+        text += "\n" + trq("as:", "msgbox text") + "\n" + newFileName;
+    msg.setText(text);
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
 }
 
 //Signal emitting

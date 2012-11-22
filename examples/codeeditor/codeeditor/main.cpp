@@ -33,8 +33,8 @@ int main(int argc, char **argv)
     //MainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;
-        cedtr->addDocument("Test.txt");
         cedtr->openDocument("/home/darkangel/tmp/texput.log");
+        cedtr->addDocument("Test.txt");
         cedtr->openDocument("/home/darkangel/tmp/texput.log");
       mw->setCentralWidget(cedtr);
       //
