@@ -41,15 +41,20 @@ public:
     void addDocument(BCodeEditorDocument *doc);
     bool closeDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
+    //Messages
+    void failedToOpenMessage(const QString &fileName);
+    void failedToSaveMessage(const QString &fileName);
+    //Signal emitting
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
+    //External private class call
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     //
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
-    QList<BCodeEditorDocument *> openingDocuments;
+    QMap<BCodeEditorDocument *, QString> openingDocuments;
     QFont editFont;
     BCodeEdit::EditMode editMode;
     int editLineLength;

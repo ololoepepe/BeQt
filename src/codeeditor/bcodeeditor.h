@@ -58,10 +58,10 @@ public:
     BAbstractDocumentDriver *driver() const;
 public slots:
     void addDocument(const QString &fileName);
-    bool openDocument(const QString &fileName);
-    bool saveCurrentDocument();
-    bool saveCurrentDocumentAs(const QString &newFileName);
-    bool closeCurrentDocument();
+    void openDocument(const QString &fileName);
+    void saveCurrentDocument();
+    void saveCurrentDocumentAs(const QString &newFileName);
+    void closeCurrentDocument();
 signals:
     void documentAboutToBeAdded(BCodeEditorDocument *doc);
     void documentAdded(BCodeEditorDocument *doc);

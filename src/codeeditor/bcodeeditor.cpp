@@ -107,6 +107,20 @@ void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
     twgt->setTabToolTip( ind, doc->fileName() );
 }
 
+//Messages
+
+void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
+{
+    //
+}
+
+void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName)
+{
+    //
+}
+
+//Signal emitting
+
 void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -134,6 +148,8 @@ void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
         module->currentDocumentChanged(doc);
     QMetaObject::invokeMethod( q_func(), "currentDocumentChanged", Q_ARG(BCodeEditorDocument *, doc) );
 }
+
+//External private class call
 
 void BCodeEditorPrivate::setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr)
 {
@@ -299,11 +315,14 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
     BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
     if ( !doc || !openingDocuments.contains(doc) )
         return;
-    openingDocuments.removeAll(doc);
-    if (success)
-        addDocument(doc);
-    else
+    QString fn = openingDocuments.take(doc);
+    if (!success)
+    {
         doc->deleteLater();
+        failedToOpenMessage(fn);
+        return;
+    }
+    addDocument(doc);
 }
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
@@ -537,33 +556,32 @@ void BCodeEditor::addDocument(const QString &fileName)
     d->addDocument( d->createDocument(fileName) );
 }
 
-bool BCodeEditor::openDocument(const QString &fileName)
+void BCodeEditor::openDocument(const QString &fileName)
 {
     B_D(BCodeEditor);
     BCodeEditorDocument *doc = d->createDocument(fileName);
-    d->openingDocuments.append(doc);
+    d->openingDocuments.insert(doc, fileName);
     if ( !doc->load(driver(), fileName) )
     {
-        d->openingDocuments.removeAll(doc);
+        d->openingDocuments.remove(doc);
         doc->deleteLater();
-        return false;
+        d->failedToOpenMessage(fileName);
     }
-    return true;
 }
 
-bool BCodeEditor::saveCurrentDocument()
+void BCodeEditor::saveCurrentDocument()
 {
     //
 }
 
-bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName)
+void BCodeEditor::saveCurrentDocumentAs(const QString &newFileName)
 {
     //
 }
 
-bool BCodeEditor::closeCurrentDocument()
+void BCodeEditor::closeCurrentDocument()
 {
-    return d_func()->closeDocument( currentDocument() );
+    d_func()->closeDocument( currentDocument() );
 }
 
 //
