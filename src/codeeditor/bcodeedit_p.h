@@ -201,6 +201,7 @@ public:
     inline bool mousePressEvent(QMouseEvent *e);
     void deleteSelection();
     void seletAll();
+    void setBuisy(bool b);
     int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     void highlightBrackets();
@@ -233,6 +234,7 @@ public:
     bool pasteAvailable;
     bool undoAvailable;
     bool redoAvailable;
+    bool buisy;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEditExtended *ptedt;

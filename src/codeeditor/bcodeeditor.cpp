@@ -224,6 +224,12 @@ void BCodeEditorPrivate::twgtTabCloseRequested(int index)
 
 //BCodeEdit events
 
+void BCodeEditorPrivate::updateDocumentReadOnly(bool ro)
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->documentReadOnlyChanged(ro);
+}
+
 void BCodeEditorPrivate::documentModificationChanged(bool modified)
 {
     updateDocumentTab(document);
@@ -611,4 +617,12 @@ BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
     d_func()->init();
+}
+
+//
+
+bool BCodeEditor::acceptOpenFileName(const QString &fileName)
+{
+    //TODO
+    return true;
 }

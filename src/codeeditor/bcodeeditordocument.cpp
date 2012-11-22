@@ -42,7 +42,6 @@ void BCodeEditorDocumentPrivate::init()
 {
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
-    buisy = false;
 }
 
 //
@@ -143,16 +142,14 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &f
     if ( !driver || isBuisy() )
         return false;
     B_D(BCodeEditorDocument);
-    d->buisy = true;
-    emit buisyChanged(true);
+    d->setBuisy(true);
     connect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
              d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
     if ( !driver->load(this, fileName) )
     {
         disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
                     d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
-        d->buisy = false;
-        emit buisyChanged(false);
+        d->setBuisy(false);
         return false;
     }
     return true;
@@ -163,16 +160,14 @@ bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &f
     if ( !driver || isBuisy() )
         return false;
     B_D(BCodeEditorDocument);
-    d->buisy = true;
-    emit buisyChanged(true);
+    d->setBuisy(true);
     connect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
              d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
     if ( !driver->save(this, fileName) )
     {
         disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
                     d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
-        d->buisy = false;
-        emit buisyChanged(false);
+        d->setBuisy(false);
         return false;
     }
     return true;
@@ -191,11 +186,6 @@ QTextCodec *BCodeEditorDocument::codec() const
 int BCodeEditorDocument::asyncProcessingMinimumLength() const
 {
     return d_func()->asyncMin;
-}
-
-bool BCodeEditorDocument::isBuisy() const
-{
-    return d_func()->buisy;
 }
 
 //

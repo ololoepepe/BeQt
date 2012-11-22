@@ -38,6 +38,7 @@ protected:
     virtual void editorSet(BCodeEditor *edr);
     virtual void editorUnset(BCodeEditor *edr);
     //BCodeEdit events
+    virtual void documentReadOnlyChanged(bool ro);
     virtual void documentModificationChanged(bool modified);
     virtual void documentSelectionChanged();
     virtual void documentHasSelectionChanged(bool hasSelection);
@@ -48,12 +49,12 @@ protected:
     virtual void documentRedoAvailableChanged(bool available);
     virtual void documentEditModeChanged(BCodeEdit::EditMode mode);
     virtual void documentCursorPositionChanged(const QPoint &pos);
+    virtual void documentBuisyChanged(bool buisy);
     virtual void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     virtual void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
     //BCodeEditorDocument events
     virtual void documentFileNameChanged(const QString &fn);
     virtual void documentCodecChanged(const QString &codecName);
-    virtual void documentBuisyChanged(bool buisy);
     //BCodeEditor events
     virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);
     virtual void documentAdded(BCodeEditorDocument *doc);

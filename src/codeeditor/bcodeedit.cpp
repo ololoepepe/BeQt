@@ -607,6 +607,7 @@ void BCodeEditPrivate::init()
     pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
     undoAvailable = false;
     redoAvailable = false;
+    buisy = false;
     highlighter = 0;
     bracketsHighlighting = true;
     B_Q(BCodeEdit);
@@ -873,6 +874,14 @@ void BCodeEditPrivate::seletAll()
     //TODO: Don't select last line's trailing spaces in normal mode; don't select any trailing spaces in block mode
     ptedt->selectAll();
     //_m_editSelectionChanged();
+}
+
+void BCodeEditPrivate::setBuisy(bool b)
+{
+    if (b == buisy)
+        return;
+    buisy = b;
+    QMetaObject::invokeMethod( q_func(), "buisyChanged", Q_ARG(bool, b) );
 }
 
 int BCodeEditPrivate::replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
@@ -1453,6 +1462,7 @@ void BCodeEditPrivate::futureWatcherFinished()
         highlighter->setDocument( ptedt->document() );
     ptedt->document()->setModified(false);
     ptedt->setFocus();
+    setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
 }
 
@@ -1566,7 +1576,10 @@ BCodeEdit::~BCodeEdit()
 void BCodeEdit::setReadOnly(bool ro)
 {
     B_D(BCodeEdit);
+    if (d->ptedt->isReadOnly() == ro)
+        return;
     d->ptedt->setReadOnly(ro);
+    emit readOnlyChanged(ro);
     d->updateCopyAvailable(d->copyAvailable);
     d->updatePasteAvailable(d->pasteAvailable);
     d->updateUndoAvailable(d->undoAvailable);
@@ -1755,6 +1768,11 @@ QString BCodeEdit::selectedText() const
     return lines.join("\n");
 }
 
+bool BCodeEdit::isBuisy() const
+{
+    return d_func()->buisy;
+}
+
 //Operations
 
 bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
@@ -1837,16 +1855,14 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
 
 //
 
-QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
+void BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
 {
+    if ( isReadOnly() || isBuisy() )
+        return;
     B_D(BCodeEdit);
-    if ( isReadOnly() )
-        return QList<SplittedLinesRange>();
     if ( txt.isEmpty() )
-    {
-        d->setTextToEmptyLine();
-        return QList<SplittedLinesRange>();
-    }
+       return  d->setTextToEmptyLine();
+    d->setBuisy(true);
     if (asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
     {
         d->ptedt->setEnabled(false);
@@ -1856,7 +1872,6 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int 
         BCodeEditPrivate::ProcessTextFutureWatcher *watcher = new BCodeEditPrivate::ProcessTextFutureWatcher(this);
         watcher->setFuture(fut);
         connect( watcher, SIGNAL( finished() ), d, SLOT( futureWatcherFinished() ) );
-        return QList<SplittedLinesRange>();
     }
     else
     {
@@ -1874,7 +1889,8 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::setText(const QString &txt, int 
         d->ptedt->document()->setModified(true);
         d->ptedt->setFocus();
         d->emitLinesSplitted(res.splittedLinesRanges);
-        return res.splittedLinesRanges;
+        d->setBuisy(false);
+        d->emitLinesSplitted(res.splittedLinesRanges);
     }
 }
 
@@ -1883,18 +1899,19 @@ void BCodeEdit::switchMode()
     setEditMode(editMode() == NormalMode ? BlockMode : NormalMode);
 }
 
-QList<BCodeEdit::SplittedLinesRange> BCodeEdit::insertText(const QString &txt)
+void BCodeEdit::insertText(const QString &txt)
 {
+    if ( isReadOnly() || isBuisy() )
+        return;
     B_D(BCodeEdit);
-    if ( d->ptedt->isReadOnly() )
-        return QList<SplittedLinesRange>();
+    d->setBuisy(true);
     QTextCursor tc = d->ptedt->textCursor();
     tc.beginEditBlock();
-    d->deleteSelection();
+    d->deleteSelection(); //TODO: deleteSelection() must return a splitted lines list
     if ( txt.isEmpty() )
     {
         tc.endEditBlock();
-        return QList<SplittedLinesRange>(); //TODO: deleteSelection() must return a splitted lines list
+        return d->setBuisy(false);
     }
     tc = d->ptedt->textCursor();
     int posb = tc.positionInBlock();
@@ -1995,7 +2012,9 @@ QList<BCodeEdit::SplittedLinesRange> BCodeEdit::insertText(const QString &txt)
     if (d->highlighter)
         d->highlighter->rehighlight();
     tc.endEditBlock();
-    return ranges;
+    d->setBuisy(false);
+    if ( !ranges.isEmpty() )
+        d->emitLinesSplitted(ranges);
 }
 
 void BCodeEdit::moveCursor(const QPoint &pos)

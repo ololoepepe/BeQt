@@ -100,15 +100,16 @@ public:
     QPoint cursorPosition() const;
     QString text() const;
     QString selectedText() const;
+    bool isBuisy() const;
     //Operations
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
 public slots:
-    QList<SplittedLinesRange> setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
+    void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
     void switchMode();
-    QList<SplittedLinesRange> insertText(const QString &txt);
+    void insertText(const QString &txt);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
     void deselectText();
@@ -118,6 +119,7 @@ public slots:
     void undo();
     void redo();
 signals:
+    void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);
     void selectionChanged();
     void hasSelectionChanged(bool hasSelection);
@@ -128,6 +130,7 @@ signals:
     void redoAvailableChanged(bool available);
     void editModeChanged(BCodeEdit::EditMode mode);
     void cursorPositionChanged(const QPoint &pos);
+    void buisyChanged(bool buisy);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
 protected:

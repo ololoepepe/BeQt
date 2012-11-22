@@ -75,6 +75,8 @@ signals:
     void documentAvailableChanged(bool available);
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
+    //
+    virtual bool acceptOpenFileName(const QString &fileName);
 private:
     Q_DISABLE_COPY(BCodeEditor)
     //

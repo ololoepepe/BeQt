@@ -68,6 +68,7 @@ public slots:
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);
     //BCodeEdit events
+    void updateDocumentReadOnly(bool ro);
     void documentModificationChanged(bool modified);
     void documentSelectionChanged();
     void documentHasSelectionChanged(bool hasSelection);

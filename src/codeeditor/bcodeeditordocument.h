@@ -38,13 +38,11 @@ public:
     QString fileName() const;
     QTextCodec *codec() const;
     int asyncProcessingMinimumLength() const;
-    bool isBuisy() const;
 signals:
     void fileNameChanged(const QString &fn);
     void codecChanged(const QString &codecName);
     void loadingFinished(bool success);
     void savingFinished(bool success);
-    void buisyChanged(bool buisy);
 protected:
     BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 private:

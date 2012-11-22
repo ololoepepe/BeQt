@@ -86,6 +86,11 @@ void BAbstractEditorModule::editorUnset(BCodeEditor *edr)
 
 //BCodeEdit events
 
+void BAbstractEditorModule::documentReadOnlyChanged(bool ro)
+{
+    //
+}
+
 void BAbstractEditorModule::documentModificationChanged(bool modified)
 {
     //
@@ -136,6 +141,11 @@ void BAbstractEditorModule::documentCursorPositionChanged(const QPoint &pos)
     //
 }
 
+void BAbstractEditorModule::documentBuisyChanged(bool buisy)
+{
+    //
+}
+
 void BAbstractEditorModule::documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange)
 {
     //
@@ -154,11 +164,6 @@ void BAbstractEditorModule::documentFileNameChanged(const QString &fn)
 }
 
 void BAbstractEditorModule::documentCodecChanged(const QString &codecName)
-{
-    //
-}
-
-void BAbstractEditorModule::documentBuisyChanged(bool buisy)
 {
     //
 }

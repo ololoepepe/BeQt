@@ -35,7 +35,6 @@ public:
     QString fileName;
     QTextCodec *codec;
     int asyncMin;
-    bool buisy;
 public slots:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
