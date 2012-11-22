@@ -50,11 +50,12 @@ public:
     bool findDocument(const QString &fileName);
     BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BCodeEditorDocument *doc);
+    bool saveDocument(BCodeEditorDocument *doc);
     bool closeDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
     //Messages
     void failedToOpenMessage(const QString &fileName);
-    void failedToSaveMessage(const QString &fileName);
+    void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     //Signal emitting
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
@@ -66,6 +67,7 @@ public:
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
     QMap<BCodeEditorDocument *, QString> openingDocuments;
+    QMap<BCodeEditorDocument *, QString> savingDocuments;
     QFont editFont;
     BCodeEdit::EditMode editMode;
     int editLineLength;

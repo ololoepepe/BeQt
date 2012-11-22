@@ -91,6 +91,12 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
             return true;
         }
     }
+    foreach (const QString &fn, openingDocuments)
+        if (fn == fileName)
+            return true; //TODO: Show message
+    foreach (const QString &fn, savingDocuments)
+        if (fn == fileName)
+            return true; //TODO: Show message
     return false;
 }
 
@@ -121,6 +127,20 @@ void BCodeEditorPrivate::addDocument(BCodeEditorDocument *doc)
     emitDocumentAdded(doc);
 }
 
+bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc)
+{
+    if ( !doc || !doc->isModified() || doc->isReadOnly() )
+        return false;
+    savingDocuments.insert(doc, "");
+    bool b = doc->save(driver);
+    if (!b)
+    {
+        savingDocuments.remove(doc);
+        failedToSaveMessage( doc->fileName() );
+    }
+    return b;
+}
+
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
     if (!doc)
@@ -148,7 +168,7 @@ void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
     //
 }
 
-void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName)
+void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QString &newFileName)
 {
     //
 }
@@ -377,8 +397,11 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
 void BCodeEditorPrivate::documentSavingFinished(bool success)
 {
     BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
-    if (!doc)
+    if ( !doc || !savingDocuments.contains(doc) )
         return;
+    QString fn = savingDocuments.take(doc);
+    if (!success)
+        failedToSaveMessage( !fn.isEmpty() ? fn : doc->fileName() );
 }
 
 /*============================================================================
@@ -634,34 +657,66 @@ bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
 
 bool BCodeEditor::openDocument(const QString &fileName)
 {
+    if ( fileName.isEmpty() )
+        return false;
     B_D(BCodeEditor);
-    if ( d->findDocument( BCodeEditorPrivate::createFileName(fileName) ) )
+    if ( d->findDocument(fileName) )
         return false;
     BCodeEditorDocument *doc = d->createDocument(fileName);
     d->openingDocuments.insert(doc, fileName);
-    if ( !doc->load(driver(), fileName) )
+    bool b = doc->load(driver(), fileName);
+    if (!b)
     {
         d->openingDocuments.remove(doc);
         doc->deleteLater();
         d->failedToOpenMessage(fileName);
-        return false;
     }
+    return b;
+}
+
+bool BCodeEditor::saveCurrentDocument()
+{
+    return d_func()->saveDocument( currentDocument() );
+}
+
+bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName)
+{
+    if ( newFileName.isEmpty() )
+        return false;
+    B_D(BCodeEditor);
+    if (!d->document)
+        return false;
+    if ( d->findDocument(newFileName) )
+        return false;
+    d->savingDocuments.insert(d->document, newFileName);
+    bool b = d->document->save(driver(), newFileName);
+    if (!b)
+    {
+        d->savingDocuments.remove(d->document);
+        d->failedToSaveMessage(d->document->fileName(), newFileName);
+    }
+    return b;
+}
+
+bool BCodeEditor::saveAllDocuments()
+{
+    foreach ( BCodeEditorDocument *doc, documents() )
+        if ( doc->isModified() && !doc->isReadOnly() && !d_func()->saveDocument(doc) )
+            return false;
     return true;
 }
 
-void BCodeEditor::saveCurrentDocument()
+bool BCodeEditor::closeCurrentDocument()
 {
-    //
+    return d_func()->closeDocument( currentDocument() );
 }
 
-void BCodeEditor::saveCurrentDocumentAs(const QString &newFileName)
+bool BCodeEditor::closeAllDocuments()
 {
-    //
-}
-
-void BCodeEditor::closeCurrentDocument()
-{
-    d_func()->closeDocument( currentDocument() );
+    foreach ( BCodeEditorDocument *doc, documents() )
+        if ( !d_func()->closeDocument(doc) )
+            return false;
+    return true;
 }
 
 //

@@ -66,9 +66,11 @@ public slots:
     bool addDocument( const QString &fileName = QString() );
     bool addDocument(const QString &fileName, const QString &text);
     bool openDocument(const QString &fileName);
-    void saveCurrentDocument();
-    void saveCurrentDocumentAs(const QString &newFileName);
-    void closeCurrentDocument();
+    bool saveCurrentDocument();
+    bool saveCurrentDocumentAs(const QString &newFileName);
+    bool saveAllDocuments();
+    bool closeCurrentDocument();
+    bool closeAllDocuments();
 signals:
     void documentAboutToBeAdded(BCodeEditorDocument *doc);
     void documentAdded(BCodeEditorDocument *doc);
