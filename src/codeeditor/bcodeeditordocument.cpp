@@ -60,7 +60,8 @@ void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::
         if ( !operation.fileName.isEmpty() )
             q->setFileName(operation.fileName);
         setText(text, asyncMin);
-        q->innerEdit()->document()->setModified(false);
+        ptedt->document()->setModified(false);
+        ptedt->document()->clearUndoRedoStacks();
     }
     QMetaObject::invokeMethod( q, "loadingFinished", Q_ARG(bool, success) );
     setBuisy(false);
@@ -78,7 +79,7 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
     {
         if ( !operation.fileName.isEmpty() )
             q->setFileName(operation.fileName);
-        q->innerEdit()->document()->setModified(false);
+        ptedt->document()->setModified(false);
     }
     QMetaObject::invokeMethod( q, "savingFinished", Q_ARG(bool, success) );
     setBuisy(false);

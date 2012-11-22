@@ -1,6 +1,9 @@
-#include "bsearchdialog.h"
-#include "bsearchdialog_p.h"
+#include "bsearcheditormodule.h"
+#include "bsearcheditormodule_p.h"
 #include "bcodeeditordocument.h"
+#include "babstracteditormodule.h"
+#include "babstracteditormodule_p.h"
+#include "bcodeeditor.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -30,6 +33,10 @@
 #include <QShowEvent>
 #include <QTextDocument>
 #include <QMetaObject>
+#include <QPointer>
+#include <QList>
+
+#include <QDebug>
 
 /*============================================================================
 ================================ Search Dialog Private
@@ -306,12 +313,12 @@ void BSearchDialog::setDocument(BCodeEditorDocument *doc)
 {
     B_D(BSearchDialog);
     if (d->document)
-        disconnect( d->document, SIGNAL( selectionChanged(bool) ), d, SLOT( documentSelectionChanged(bool) ) );
+        disconnect( d->document, SIGNAL( hasSelectionChanged(bool) ), d, SLOT( checkSearchReplace() ) );
     if (doc)
     {
         d->cmboxSearch->lineEdit()->setMaxLength( doc->editLineLength() );
         d->cmboxReplace->lineEdit()->setMaxLength( doc->editLineLength() );
-        connect( doc, SIGNAL( selectionChanged(bool) ), d, SLOT( documentSelectionChanged(bool) ) );
+        connect( doc, SIGNAL( hasSelectionChanged(bool) ), d, SLOT( checkSearchReplace() ) );
     }
     d->document = doc;
     d->checkSearchReplace();
@@ -426,7 +433,13 @@ void BSearchDialog::findNext()
         return;
     B_D(BSearchDialog);
     QString text = d->cmboxSearch->lineEdit()->text();
-    emit textFound(d->document->findNext( text, d->createFindFlags(), cyclicSearch() ), text);
+    bool b = d->document->findNext( text, d->createFindFlags(), cyclicSearch() );
+    if (b)
+    {
+        d->document->window()->activateWindow();
+        d->document->setFocus();
+    }
+    emit textFound(b, text);
 }
 
 void BSearchDialog::replaceNext()
@@ -445,4 +458,153 @@ BSearchDialog::BSearchDialog(BSearchDialogPrivate &d, QWidget *parent) :
     QDialog(parent), BBase(d)
 {
     d_func()->init();
+}
+
+/*============================================================================
+================================ Search Editor Module Private
+============================================================================*/
+
+BSearchEditorModulePrivate::BSearchEditorModulePrivate(BSearchEditorModule *q) :
+    BAbstractEditorModulePrivate(q)
+{
+    //
+}
+
+BSearchEditorModulePrivate::~BSearchEditorModulePrivate()
+{
+    //
+}
+
+void BSearchEditorModulePrivate::init()
+{
+    sdlg = new BSearchDialog;
+    //sdlg->setModal(false);
+    //
+    B_Q(BSearchEditorModule);
+    actFind = new QAction(this);
+      actFind->setEnabled(false);
+      actFind->setIcon( BApplication::icon("find") );
+      connect( actFind.data(), SIGNAL( triggered() ), q, SLOT( find() ) );
+    actFindNext = new QAction(this);
+      actFindNext->setEnabled(false);
+      actFindNext->setIcon( BApplication::icon("next") );
+      connect( actFindNext.data(), SIGNAL( triggered() ), q, SLOT( findNext() ) );
+      connect( sdlg, SIGNAL( findNextAvailableChanged(bool) ), actFindNext.data(), SLOT( setEnabled(bool) ) );
+    //
+    retranslateUi();
+    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+}
+
+void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
+{
+    Qt::WindowFlags flags = sdlg->windowFlags();
+    sdlg->setParent(parent);
+    sdlg->setWindowFlags(flags);
+}
+
+//
+
+void BSearchEditorModulePrivate::retranslateUi()
+{
+    if ( !actFind.isNull() )
+    {
+        actFind->setText( trq("find", "act text") );
+        actFind->setToolTip( trq("find", "act toolTip") );
+        actFind->setWhatsThis( trq("find", "act whatsThis") );
+    }
+    if ( !actFindNext.isNull() )
+    {
+        actFindNext->setText( trq("find next", "act text") );
+        actFindNext->setToolTip( trq("find next", "act toolTip") );
+        actFindNext->setWhatsThis( trq("find next", "act whatsThis") );
+    }
+}
+
+/*============================================================================
+================================ Search Editor Module
+============================================================================*/
+
+BSearchEditorModule::BSearchEditorModule(QObject *parent) :
+    BAbstractEditorModule(*new BSearchEditorModulePrivate(this), parent)
+{
+    d_func()->init();
+}
+
+BSearchEditorModule::~BSearchEditorModule()
+{
+    //
+}
+
+//
+
+QString BSearchEditorModule::name() const
+{
+    return "beqt/search";
+}
+
+QAction *BSearchEditorModule::action(Action type) const
+{
+    switch (type)
+    {
+    case FindAction:
+        return d_func()->actFind.data();
+    case FindNextAction:
+        return d_func()->actFindNext.data();
+    default:
+        return 0;
+    }
+}
+
+QList<QAction *> BSearchEditorModule::actions() const
+{
+    const B_D(BSearchEditorModule);
+    QList<QAction *> list;
+    if ( !d->actFind.isNull() )
+        list << d->actFind.data();
+    if ( !d->actFindNext.isNull() )
+        list << d->actFindNext.data();
+    return list;
+}
+
+//
+
+void BSearchEditorModule::find()
+{
+    B_D(BSearchEditorModule);
+    if ( d->sdlg->isVisible() )
+        d->sdlg->activateWindow();
+    else
+        d->sdlg->show();
+}
+
+void BSearchEditorModule::findNext()
+{
+    find(); //Not sure if needed
+    d_func()->sdlg->findNext();
+}
+
+//
+
+void BSearchEditorModule::editorSet(BCodeEditor *edr)
+{
+    B_D(BSearchEditorModule);
+    BCodeEditorDocument *doc = edr ? edr->currentDocument() : 0;
+    d->setDialogParent(edr);
+    d->sdlg->setDocument(doc);
+    d->actFind->setEnabled(doc);
+}
+
+void BSearchEditorModule::editorUnset(BCodeEditor *edr)
+{
+    B_D(BSearchEditorModule);
+    d->setDialogParent(0);
+    d->sdlg->setDocument(0);
+    d->actFind->setEnabled(0);
+}
+
+void BSearchEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+{
+    B_D(BSearchEditorModule);
+    d->sdlg->setDocument(doc);
+    d->actFind->setEnabled(doc);
 }

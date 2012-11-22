@@ -9,6 +9,6 @@
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
 #include "blocaldocumentdriver.h"
-#include "bsearchdialog.h"
+#include "bsearcheditormodule.h"
 
 #endif //BEQT_BEQTCODEEDITOR_MODULE_H

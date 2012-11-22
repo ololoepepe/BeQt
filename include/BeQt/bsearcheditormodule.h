@@ -1,0 +1,1 @@
+#include "../BeQtCodeEditor/bsearcheditormodule.h"

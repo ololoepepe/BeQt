@@ -25,6 +25,7 @@ public:
     ~BAbstractEditorModulePrivate();
     //
     void init();
+    void setEditor(BCodeEditor *edr);
     //
     BCodeEditor *editor;
 private:

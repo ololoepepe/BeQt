@@ -17,6 +17,7 @@
 #include <BCodeEditorDocument>
 #include <BAbstractEditorModule>
 #include <BBookmarksEditorModule>
+#include <BSearchEditorModule>
 
 #include <QApplication>
 #include <QString>
@@ -100,7 +101,7 @@ int main(int argc, char **argv)
           BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
           vlt->addWidget(lcb);
       mw->setCentralWidget(w);
-      QMenu *mnuBM = mw->menuBar()->addMenu("Bookmarks");
+      QMenu *mnuBM = mw->menuBar()->addMenu("Find");
     mw->move(800, 400);
     //BTerminalWidget
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
@@ -115,7 +116,7 @@ int main(int argc, char **argv)
     cedtr->addDocument("Test.txt");
     cedtr->openDocument("/home/darkangel/tmp/texput.log");
     cedtr->openDocument("/home/darkangel/tmp/texput.log");
-    mnuBM->addActions( static_cast<BBookmarksEditorModule *>( cedtr->modules().first() )->actions() );
+    mnuBM->addActions( static_cast<BSearchEditorModule *>( cedtr->modules().first() )->actions() );
     //Loading settings and plugins
     BApplication::loadSettings();
     BApplication::loadPlugins();

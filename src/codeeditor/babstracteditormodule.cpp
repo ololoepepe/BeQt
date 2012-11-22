@@ -37,6 +37,16 @@ void BAbstractEditorModulePrivate::init()
     editor = 0;
 }
 
+void BAbstractEditorModulePrivate::setEditor(BCodeEditor *edr)
+{
+    if (edr == editor)
+        return;
+    B_Q(BAbstractEditorModule);
+    q->editorUnset(editor);
+    editor = edr;
+    q->editorSet(edr);
+}
+
 /*============================================================================
 ================================ Abstract Editor Module
 ============================================================================*/

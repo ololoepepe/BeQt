@@ -5,6 +5,7 @@
 #include "blocaldocumentdriver.h"
 #include "babstracteditormodule_p.h"
 #include "bbookmarkseditormodule.h"
+#include "bsearcheditormodule.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -189,7 +190,7 @@ void BCodeEditorPrivate::setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor
 {
     if (!mdl)
         return;
-    mdl->d_func()->editor = edr;
+    mdl->d_func()->setEditor(edr);
 }
 
 //
@@ -391,6 +392,9 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     {
     case BookmarksModule:
         mdl = new BBookmarksEditorModule(parent);
+    case SearchModule:
+        mdl = new BSearchEditorModule(parent);
+        break;
     default:
         break;
     }
@@ -405,6 +409,7 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
     d_func()->init();
+    createStandardModule(SearchModule, this);
     createStandardModule(BookmarksModule, this); //Just for test, remove, but add another modules in the future
 }
 

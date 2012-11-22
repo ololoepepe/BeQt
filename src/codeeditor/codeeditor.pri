@@ -14,8 +14,8 @@ HEADERS += \
     $${PWD}/bcodeeditordocument_p.h \
     $${PWD}/blocaldocumentdriver.h \
     $${PWD}/blocaldocumentdriver_p.h \
-    $${PWD}/bsearchdialog.h \
-    $${PWD}/bsearchdialog_p.h
+    $${PWD}/bsearcheditormodule.h \
+    $${PWD}/bsearcheditormodule_p.h
 
 SOURCES += \
     $${PWD}/babstractdocumentdriver.cpp \
@@ -26,4 +26,4 @@ SOURCES += \
     $${PWD}/bcodeeditor.cpp \
     $${PWD}/bcodeeditordocument.cpp \
     $${PWD}/blocaldocumentdriver.cpp \
-    $${PWD}/bsearchdialog.cpp
+    $${PWD}/bsearcheditormodule.cpp

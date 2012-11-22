@@ -28,6 +28,7 @@ class B_CODEEDITOR_EXPORT BCodeEditor : public QWidget, public BBase
 public:
     enum StandardModule
     {
+        SearchModule,
         BookmarksModule
     };
     //
