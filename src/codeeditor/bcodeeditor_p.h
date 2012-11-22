@@ -102,6 +102,8 @@ public:
     //
     static QString defaultFileName();
     static QString createFileName(const QString &fileName);
+    static bool waitForAll(const QMap<BCodeEditorDocument *, QString> &what, BCodeEditor *where,
+                           const char *untilSignal, int msecs);
     //
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
@@ -111,10 +113,12 @@ public:
     BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BCodeEditorDocument *doc);
     void removeDocument(BCodeEditorDocument *doc);
+    bool openDocument(const QString &fileName);
     bool saveDocument( BCodeEditorDocument *doc, const QString &newFileName = QString() );
-    bool saveDocuments(QList<BCodeEditorDocument *> &list);
+    bool saveDocuments(const QList<BCodeEditorDocument *> &list);
     bool closeDocument(BCodeEditorDocument *doc);
     bool closeAllDocuments();
+    bool tryCloseDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
     //Messages
     void failedToOpenMessage(const QString &fileName);
@@ -125,7 +129,9 @@ public:
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
-    void emitAllDocumentsClosed(bool success);
+    void emitAllDocumentsOpened();
+    void emitAllDocumentsSaved();
+    void emitAllDocumentsClosed();
     //External private class call
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     //
@@ -134,8 +140,6 @@ public:
     QMap<BCodeEditorDocument *, QString> openingDocuments;
     QMap<BCodeEditorDocument *, QString> savingDocuments;
     QMap<BCodeEditorDocument *, QString> closingDocuments;
-    bool closingAll;
-    bool savingAll;
     QFont editFont;
     BCodeEdit::EditMode editMode;
     int editLineLength;

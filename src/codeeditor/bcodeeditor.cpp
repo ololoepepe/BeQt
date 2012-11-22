@@ -33,6 +33,8 @@
 #include <QListWidgetItem>
 #include <QEventLoop>
 #include <QTimer>
+#include <QFileDialog>
+#include <QDir>
 
 #include <QDebug>
 
@@ -170,6 +172,20 @@ QString BCodeEditorPrivate::createFileName(const QString &fileName)
     return !fileName.isEmpty() ? fileName : defaultFileName();
 }
 
+bool BCodeEditorPrivate::waitForAll(const QMap<BCodeEditorDocument *, QString> &what, BCodeEditor *where,
+                                    const char *untilSignal, int msecs)
+{
+    if ( what.isEmpty() )
+        return true;
+    if (msecs <= 0)
+        return false;
+    QEventLoop el;
+    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
+    connect( where, untilSignal, &el, SLOT( quit() ) );
+    el.exec();
+    return !what.isEmpty();
+}
+
 //
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
@@ -194,8 +210,6 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
-    closingAll = false;
-    savingAll = false;
     driver = new BLocalDocumentDriver(q);
     //
     vlt = new QVBoxLayout(q);
@@ -265,70 +279,73 @@ void BCodeEditorPrivate::removeDocument(BCodeEditorDocument *doc)
     doc->deleteLater();
 }
 
-bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName)
+bool BCodeEditorPrivate::openDocument(const QString &fileName)
 {
-    if (!doc)
+    if ( fileName.isEmpty() || findDocument(fileName) )
         return false;
-    if ( newFileName.isEmpty() )
-    {
-        if ( !doc->isModified() || doc->isReadOnly() )
-            return false;
-    }
-    else
-    {
-        if ( findDocument(newFileName) )
-            return false;
-    }
-    savingDocuments.insert(doc, newFileName);
-    bool b = doc->save(driver, newFileName);
+    BCodeEditorDocument *doc = createDocument(fileName);
+    openingDocuments.insert(doc, fileName);
+    bool b = doc->load(driver, fileName);
     if (!b)
     {
-        savingDocuments.remove(doc);
-        failedToSaveMessage(doc->fileName(), newFileName);
+        openingDocuments.remove(doc);
+        doc->deleteLater();
+        failedToOpenMessage(fileName);
     }
     return b;
 }
 
-bool BCodeEditorPrivate::saveDocuments(QList<BCodeEditorDocument *> &list)
+bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName)
+{
+    if ( !doc || savingDocuments.contains(doc) )
+        return false;
+    QString nfn = newFileName;
+    bool cancel = false;
+    bool ssa = !newFileName.isEmpty() || q_func()->shouldSaveAs(doc->fileName(), nfn, &cancel);
+    if (cancel)
+        return false;
+    if (ssa)
+    {
+        if ( findDocument(nfn) )
+            return false;
+    }
+    else
+    {
+        if ( !doc->isModified() )
+            return true;
+        else if ( doc->isReadOnly() )
+            return false;
+    }
+    savingDocuments.insert(doc, nfn);
+    bool b = doc->save(driver, nfn);
+    if (!b)
+    {
+        savingDocuments.remove(doc);
+        failedToSaveMessage(doc->fileName(), nfn);
+    }
+    return b;
+}
+
+bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
 {
     if ( list.isEmpty() )
         return true;
     foreach (BCodeEditorDocument *doc, list)
-    {
-        if ( !doc->isModified() )
-            continue;
-        closingDocuments.insert(doc, "");
-        QString nfn;
-        bool sa = q_func()->shouldSaveAs(doc->fileName(), nfn);
-        if ( !saveDocument( doc, sa ? nfn : QString() ) )
-        {
-            closingDocuments.remove(doc);
-            if ( closingDocuments.isEmpty() )
-                closingAll = false;
+        if ( !saveDocument(doc) )
             return false;
-        }
-    }
     return true;
 }
 
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
-    if (!doc)
+    if ( !doc || closingDocuments.contains(doc) )
         return false;
     if ( doc->isModified() )
     {
         switch ( closeModifiedMessage( doc->fileName() ) )
         {
         case QMessageBox::Save:
-        {
-            closingDocuments.insert(doc, "");
-            QString nfn;
-            bool sa = q_func()->shouldSaveAs(doc->fileName(), nfn);
-            bool b = saveDocument( doc, sa ? nfn : QString() );
-            if (!b)
-                closingDocuments.remove(doc);
-            return b;
-        }
+            return tryCloseDocument(doc);
         case QMessageBox::Discard:
             removeDocument(doc);
             return true;
@@ -346,31 +363,28 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 
 bool BCodeEditorPrivate::closeAllDocuments()
 {
-    if (closingAll)
-        return false;
     QList<BCodeEditorDocument *> list = q_func()->documents();
     if ( list.isEmpty() )
         return true;
-    closingAll = true;
     QList<BCodeEditorDocument *> nslist;
     for (int i = list.size() - 1; i >= 0; --i)
-        if ( list.at(i)->isModified() )
-            nslist << list.takeAt(i);
+    {
+        BCodeEditorDocument *doc = list.at(i);
+        if ( savingDocuments.contains(doc) || closingDocuments.contains(doc) )
+        {
+            list.removeAt(i);
+            continue;
+        }
+        if ( doc->isModified() )
+        {
+            list.removeAt(i);
+            nslist << doc;
+        }
+    }
     if ( !nslist.isEmpty() )
     {
-        if (nslist.size() == 1)
-        {
-            BCodeEditorDocument *doc = nslist.first();
-            closingDocuments.insert(doc, "");
-            QString nfn;
-            bool sa = q_func()->shouldSaveAs(doc->fileName(), nfn);
-            bool b = saveDocument( doc, sa ? nfn : QString() );
-            if (!b)
-                closingDocuments.remove(doc);
-            closingAll = false;
-            emitAllDocumentsClosed(b);
-            return b;
-        }
+        if ( nslist.size() == 1 && !closeDocument( nslist.first() ) )
+            return false;
         BSelectDocumentsDialog sdlg(nslist);
         sdlg.exec();
         switch ( sdlg.decision() )
@@ -378,29 +392,23 @@ bool BCodeEditorPrivate::closeAllDocuments()
         case QMessageBox::Save:
         {
             QList<BCodeEditorDocument *> selected = sdlg.selectedDocuments();
-            foreach (BCodeEditorDocument *doc, nslist)
-                if ( !selected.contains(doc) )
-                    list << doc;
-            foreach (BCodeEditorDocument *doc, selected)
+            for (int i = nslist.size() - 1; i >= 0; --i)
             {
-                closingDocuments.insert(doc, "");
-                QString nfn;
-                bool sa = q_func()->shouldSaveAs(doc->fileName(), nfn);
-                bool b = saveDocument( doc, sa ? nfn : QString() );
-                if (!b)
+                BCodeEditorDocument *doc = nslist.at(i);
+                if ( !selected.contains(doc) )
                 {
-                    closingDocuments.remove(doc);
-                    closingAll = !closingDocuments.isEmpty();
-                    if (!closingAll)
-                        emitAllDocumentsClosed(false);
-                    return false;
+                    nslist.removeAt(i);
+                    list << doc;
                 }
             }
+            foreach (BCodeEditorDocument *doc, nslist)
+                if ( !tryCloseDocument(doc) )
+                    return false;
             break;
         }
         case QMessageBox::Discard:
             foreach (BCodeEditorDocument *doc, nslist)
-                removeDocument(doc);
+                list << doc;
             break;
         case QMessageBox::Cancel:
         default:
@@ -409,10 +417,23 @@ bool BCodeEditorPrivate::closeAllDocuments()
     }
     foreach (BCodeEditorDocument *doc, list)
         removeDocument(doc);
-    closingAll = !closingDocuments.isEmpty();
-    if (!closingAll)
-        emitAllDocumentsClosed(true);
     return true;
+}
+
+bool BCodeEditorPrivate::tryCloseDocument(BCodeEditorDocument *doc)
+{
+    if ( closingDocuments.contains(doc) )
+        return false;
+    closingDocuments.insert(doc, "");
+    if ( saveDocument(doc) )
+    {
+        return true;
+    }
+    else
+    {
+        closingDocuments.remove(doc);
+        return false;
+    }
 }
 
 void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
@@ -501,9 +522,19 @@ void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
     QMetaObject::invokeMethod( q_func(), "documentAvailableChanged", Q_ARG(bool, doc) );
 }
 
-void BCodeEditorPrivate::emitAllDocumentsClosed(bool success)
+void BCodeEditorPrivate::emitAllDocumentsOpened()
 {
-    QMetaObject::invokeMethod( q_func(), "allDocumentsClosed", Q_ARG(bool, success) );
+    QMetaObject::invokeMethod(q_func(), "allDocumentsOpened");
+}
+
+void BCodeEditorPrivate::emitAllDocumentsSaved()
+{
+    QMetaObject::invokeMethod(q_func(), "allDocumentsSaved");
+}
+
+void BCodeEditorPrivate::emitAllDocumentsClosed()
+{
+    QMetaObject::invokeMethod(q_func(), "allDocumentsClosed");
 }
 
 //External private class call
@@ -687,13 +718,17 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
     if ( !doc || !openingDocuments.contains(doc) )
         return;
     QString fn = openingDocuments.take(doc);
-    if (!success)
+    if (success)
+    {
+        addDocument(doc);
+    }
+    else
     {
         doc->deleteLater();
         failedToOpenMessage(fn);
-        return;
     }
-    addDocument(doc);
+    if ( openingDocuments.isEmpty() )
+        emitAllDocumentsOpened();
 }
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
@@ -703,16 +738,15 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
         return;
     QString fn = savingDocuments.take(doc);
     if (!success)
-        failedToSaveMessage( !fn.isEmpty() ? fn : doc->fileName() );
+        failedToSaveMessage(doc->fileName(), fn);
+    if ( savingDocuments.isEmpty() )
+        emitAllDocumentsSaved();
     if ( closingDocuments.contains(doc) )
     {
         closingDocuments.remove(doc);
         removeDocument(doc);
-        if ( closingAll && closingDocuments.isEmpty() )
-        {
-            closingAll = false;
-            emitAllDocumentsClosed(success);
-        }
+        if ( closingDocuments.isEmpty() )
+            emitAllDocumentsClosed();
     }
 }
 
@@ -876,18 +910,19 @@ void BCodeEditor::setDriver(BAbstractDocumentDriver *drv)
         drv->setParent(this);
 }
 
+bool BCodeEditor::waitForAllDocumentsOpened(int msecs)
+{
+    return BCodeEditorPrivate::waitForAll(d_func()->openingDocuments, this, SIGNAL( allDocumentsOpened(bool) ), msecs);
+}
+
+bool BCodeEditor::waitForAllDocumentsSaved(int msecs)
+{
+    return BCodeEditorPrivate::waitForAll(d_func()->savingDocuments, this, SIGNAL( allDocumentsSaved(bool) ), msecs);
+}
+
 bool BCodeEditor::waitForAllDocumentsClosed(int msecs)
 {
-    B_D(BCodeEditor);
-    if (!d->closingAll)
-        return true;
-    if (msecs <= 0)
-        return false;
-    QEventLoop el;
-    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
-    connect( this, SIGNAL( allDocumentsClosed() ), &el, SLOT( quit() ) );
-    el.exec();
-    return !d->closingAll;
+    return BCodeEditorPrivate::waitForAll(d_func()->closingDocuments, this, SIGNAL( allDocumentsClosed(bool) ), msecs);
 }
 
 QFont BCodeEditor::editFont() const
@@ -983,21 +1018,7 @@ bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
 
 bool BCodeEditor::openDocument(const QString &fileName)
 {
-    if ( fileName.isEmpty() )
-        return false;
-    B_D(BCodeEditor);
-    if ( d->findDocument(fileName) )
-        return false;
-    BCodeEditorDocument *doc = d->createDocument(fileName);
-    d->openingDocuments.insert(doc, fileName);
-    bool b = doc->load(driver(), fileName);
-    if (!b)
-    {
-        d->openingDocuments.remove(doc);
-        doc->deleteLater();
-        d->failedToOpenMessage(fileName);
-    }
-    return b;
+    return d_func()->openDocument(fileName);
 }
 
 bool BCodeEditor::saveCurrentDocument()
@@ -1014,10 +1035,7 @@ bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName)
 
 bool BCodeEditor::saveAllDocuments()
 {
-    foreach ( BCodeEditorDocument *doc, documents() )
-        if ( doc->isModified() && !doc->isReadOnly() && !d_func()->saveDocument(doc) )
-            return false;
-    return true;
+    return d_func()->saveDocuments( documents() );
 }
 
 bool BCodeEditor::closeCurrentDocument()
@@ -1040,8 +1058,15 @@ BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
 
 //
 
-bool BCodeEditor::shouldSaveAs(const QString &fileName, QString &newFileName)
+bool BCodeEditor::shouldSaveAs(const QString &fileName, QString &newFileName, bool *cancel)
 {
-    //TODO: Add possibility to choose local file name
-    return !QFileInfo(fileName).exists();
+    bool b = !QFileInfo(fileName).isFile();
+    if (b)
+    {
+        //TODO: Improve (use another dialog)
+        newFileName = QFileDialog::getSaveFileName(this, "", QDir::homePath() + "/" + fileName);
+        if (newFileName.isEmpty() && cancel)
+            *cancel = true;
+    }
+    return b;
 }

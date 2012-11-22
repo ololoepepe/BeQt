@@ -49,6 +49,8 @@ public:
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
     void setDriver(BAbstractDocumentDriver *drv);
+    bool waitForAllDocumentsOpened(int msecs = 30 * BeQt::Second);
+    bool waitForAllDocumentsSaved(int msecs = 30 * BeQt::Second);
     bool waitForAllDocumentsClosed(int msecs = 30 * BeQt::Second);
     QFont editFont() const;
     BCodeEdit::EditMode editMode() const;
@@ -78,11 +80,13 @@ signals:
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void documentAvailableChanged(bool available);
-    void allDocumentsClosed(bool success);
+    void allDocumentsOpened();
+    void allDocumentsSaved();
+    void allDocumentsClosed();
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
     //
-    virtual bool shouldSaveAs(const QString &fileName, QString &newFileName);
+    virtual bool shouldSaveAs(const QString &fileName, QString &newFileName, bool *cancel);
 private:
     Q_DISABLE_COPY(BCodeEditor)
     //
