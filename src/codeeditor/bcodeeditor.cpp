@@ -147,6 +147,7 @@ void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
     foreach (BAbstractEditorModule *module, modules)
         module->currentDocumentChanged(doc);
     QMetaObject::invokeMethod( q_func(), "currentDocumentChanged", Q_ARG(BCodeEditorDocument *, doc) );
+    QMetaObject::invokeMethod( q_func(), "documentAvailableChanged", Q_ARG(bool, doc) );
 }
 
 //External private class call
@@ -546,6 +547,26 @@ QList<BCodeEditorDocument *> BCodeEditor::documents() const
 BAbstractDocumentDriver * BCodeEditor::driver() const
 {
     return d_func()->driver;
+}
+
+bool BCodeEditor::documentAvailable() const
+{
+    return currentDocument();
+}
+
+QString BCodeEditor::currentFileName() const
+{
+    BCodeEditorDocument *doc = currentDocument();
+    return doc ? doc->fileName() : QString();
+}
+
+QStringList BCodeEditor::fileNames() const
+{
+    QStringList list;
+    foreach ( BCodeEditorDocument *doc, documents() )
+        if (doc)
+            list << doc->fileName();
+    return list;
 }
 
 //

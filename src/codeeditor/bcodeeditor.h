@@ -6,6 +6,8 @@ class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BCodeEditorDocument;
 
+class QStringList;
+
 #include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
@@ -56,6 +58,9 @@ public:
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;
     BAbstractDocumentDriver *driver() const;
+    bool documentAvailable() const;
+    QString currentFileName() const;
+    QStringList fileNames() const;
 public slots:
     void addDocument(const QString &fileName);
     void openDocument(const QString &fileName);
@@ -67,6 +72,7 @@ signals:
     void documentAdded(BCodeEditorDocument *doc);
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
+    void documentAvailableChanged(bool available);
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
 private:
