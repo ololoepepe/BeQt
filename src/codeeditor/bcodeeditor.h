@@ -10,7 +10,7 @@ class QStringList;
 
 #include "bcodeedit.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
 #include <QWidget>
@@ -49,6 +49,7 @@ public:
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
     void setDriver(BAbstractDocumentDriver *drv);
+    bool waitForAllDocumentsClosed(int msecs = 30 * BeQt::Second);
     QFont editFont() const;
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
@@ -77,8 +78,11 @@ signals:
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void documentAvailableChanged(bool available);
+    void allDocumentsClosed(bool success);
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
+    //
+    virtual bool shouldSaveAs(const QString &fileName, QString &newFileName);
 private:
     Q_DISABLE_COPY(BCodeEditor)
     //

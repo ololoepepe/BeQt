@@ -115,7 +115,7 @@ BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingLoadOpera
 BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingSaveOperation()
 {
     B_D(BAbstractDocumentDriver);
-    if ( d->loadOps.isEmpty() )
+    if ( d->saveOps.isEmpty() )
     {
         Operation op;
         op.document = 0;

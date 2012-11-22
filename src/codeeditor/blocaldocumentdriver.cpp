@@ -54,7 +54,7 @@ void BLocalDocumentDriverPrivate::newPendingLoadOperation()
 void BLocalDocumentDriverPrivate::newPendingSaveOperation()
 {
     B_Q(BLocalDocumentDriver);
-    BLocalDocumentDriver::Operation op = q->nextPendingLoadOperation();
+    BLocalDocumentDriver::Operation op = q->nextPendingSaveOperation();
     QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
     if ( !f.open(QFile::WriteOnly) )
         return q->emitSavingFinished(op, false);

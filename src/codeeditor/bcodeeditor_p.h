@@ -4,17 +4,23 @@
 class BCodeEditorDocument;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
+class BSelectDocumentsDialogPrivate;
 
 class QVBoxLayout;
 class QTabWidget;
 class QString;
 class QPoint;
 class QFont;
+class QLabel;
+class QListWidget;
+class QDialogButtonBox;
+class QAbstractButton;
 
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
@@ -22,6 +28,60 @@ class QFont;
 #include <QMap>
 #include <QString>
 #include <QList>
+#include <QDialog>
+
+/*============================================================================
+================================ Select Documents Dialog
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBase
+{
+    B_DECLARE_PRIVATE(BSelectDocumentsDialog)
+    Q_OBJECT
+public:
+    explicit BSelectDocumentsDialog(const QList<BCodeEditorDocument *> &documents, QWidget *parent = 0);
+    ~BSelectDocumentsDialog();
+    //
+    int decision() const;
+    QList<BCodeEditorDocument *> selectedDocuments() const;
+protected:
+    BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent = 0);
+private:
+    Q_DISABLE_COPY(BSelectDocumentsDialog)
+};
+
+/*============================================================================
+================================ Select Documents Dialog Private
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BSelectDocumentsDialog)
+    B_DECLARE_TR_FUNCTIONS(BSelectDocumentsDialog, q)
+    Q_OBJECT
+public:
+    explicit BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q, const QList<BCodeEditorDocument *> &list);
+    ~BSelectDocumentsDialogPrivate();
+    //
+    void init();
+    //
+    const QList<BCodeEditorDocument *> Documents;
+    //
+    int decision;
+    QVBoxLayout *vlt;
+      QLabel *lblText;
+      QLabel *lblInformativeTextUpper;
+      QListWidget *lstwgt;
+      QLabel *lblInformativeTextLower;
+      QDialogButtonBox *dlgbbox;
+        //Save
+        //Discard
+        //Cancel
+private slots:
+    void dlgbboxClicked(QAbstractButton *button);
+private:
+    Q_DISABLE_COPY(BSelectDocumentsDialogPrivate)
+};
 
 /*============================================================================
 ================================ Code Editor Private
@@ -50,17 +110,22 @@ public:
     bool findDocument(const QString &fileName);
     BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BCodeEditorDocument *doc);
-    bool saveDocument(BCodeEditorDocument *doc);
+    void removeDocument(BCodeEditorDocument *doc);
+    bool saveDocument( BCodeEditorDocument *doc, const QString &newFileName = QString() );
+    bool saveDocuments(QList<BCodeEditorDocument *> &list);
     bool closeDocument(BCodeEditorDocument *doc);
+    bool closeAllDocuments();
     void updateDocumentTab(BCodeEditorDocument *doc);
     //Messages
     void failedToOpenMessage(const QString &fileName);
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
+    int closeModifiedMessage(const QString &fileName);
     //Signal emitting
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
+    void emitAllDocumentsClosed(bool success);
     //External private class call
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     //
@@ -68,6 +133,9 @@ public:
     BCodeEditorDocument *document;
     QMap<BCodeEditorDocument *, QString> openingDocuments;
     QMap<BCodeEditorDocument *, QString> savingDocuments;
+    QMap<BCodeEditorDocument *, QString> closingDocuments;
+    bool closingAll;
+    bool savingAll;
     QFont editFont;
     BCodeEdit::EditMode editMode;
     int editLineLength;
