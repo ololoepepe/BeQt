@@ -59,12 +59,11 @@ void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::
     {
         if ( !operation.fileName.isEmpty() )
             q->setFileName(operation.fileName);
-        q->setText(text, asyncMin);
+        setText(text, asyncMin);
         q->innerEdit()->document()->setModified(false);
     }
     QMetaObject::invokeMethod( q, "loadingFinished", Q_ARG(bool, success) );
-    buisy = false;
-    QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
+    setBuisy(false);
 }
 
 void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success)
@@ -82,8 +81,7 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
         q->innerEdit()->document()->setModified(false);
     }
     QMetaObject::invokeMethod( q, "savingFinished", Q_ARG(bool, success) );
-    buisy = false;
-    QMetaObject::invokeMethod( q, "buisyChanged", Q_ARG(bool, false) );
+    setBuisy(false);
 }
 
 /*============================================================================

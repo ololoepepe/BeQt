@@ -201,6 +201,7 @@ public:
     inline bool mousePressEvent(QMouseEvent *e);
     void deleteSelection();
     void seletAll();
+    void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);
     int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);

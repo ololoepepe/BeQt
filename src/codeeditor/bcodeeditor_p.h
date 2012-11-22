@@ -71,7 +71,7 @@ public slots:
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);
     //BCodeEdit events
-    void updateDocumentReadOnly(bool ro);
+    void documentReadOnlyChanged(bool ro);
     void documentModificationChanged(bool modified);
     void documentSelectionChanged();
     void documentHasSelectionChanged(bool hasSelection);
@@ -82,6 +82,7 @@ public slots:
     void documentRedoAvailableChanged(bool available);
     void documentEditModeChanged(BCodeEdit::EditMode mode);
     void documentCursorPositionChanged(const QPoint &pos);
+    void documentBuisyChanged(bool buisy);
     void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
     //BCodeEditorDocument events
@@ -89,7 +90,6 @@ public slots:
     void documentCodecChanged(const QString &codecName);
     void documentLoadingFinished(bool success);
     void documentSavingFinished(bool success);
-    void documentBuisyChanged(bool buisy);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
 };

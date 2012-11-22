@@ -183,6 +183,7 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
         return;
     if (document)
     {
+        disconnect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
         disconnect( document, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
         disconnect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
         disconnect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
@@ -196,17 +197,18 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                     this, SLOT( documentEditModeChanged(BCodeEdit::EditMode) ) );
         disconnect( document, SIGNAL( cursorPositionChanged(QPoint) ),
                     this, SLOT( documentCursorPositionChanged(QPoint) ) );
+        disconnect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
         disconnect( document, SIGNAL( lineSplitted(BCodeEdit::SplittedLinesRange) ),
                     this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
         disconnect( document, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
                     this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
         disconnect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
-        disconnect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
     }
     document = doc;
     if (document)
     {
+        connect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
         connect( document, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
         connect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
         connect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
@@ -219,13 +221,13 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                  this, SLOT( documentEditModeChanged(BCodeEdit::EditMode) ) );
         connect( document, SIGNAL( cursorPositionChanged(QPoint) ),
                  this, SLOT( documentCursorPositionChanged(QPoint) ) );
+        connect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
         connect( document, SIGNAL( lineSplitted(BCodeEdit::SplittedLinesRange) ),
                  this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
         connect( document, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
                  this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
         connect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
-        connect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
     }
     emitCurrentDocumentChanged(document);
 }
@@ -239,7 +241,7 @@ void BCodeEditorPrivate::twgtTabCloseRequested(int index)
 
 //BCodeEdit events
 
-void BCodeEditorPrivate::updateDocumentReadOnly(bool ro)
+void BCodeEditorPrivate::documentReadOnlyChanged(bool ro)
 {
     foreach (BAbstractEditorModule *module, modules)
         module->documentReadOnlyChanged(ro);
@@ -306,6 +308,12 @@ void BCodeEditorPrivate::documentCursorPositionChanged(const QPoint &pos)
         module->documentCursorPositionChanged(pos);
 }
 
+void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->documentBuisyChanged(buisy);
+}
+
 void BCodeEditorPrivate::documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -352,12 +360,6 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
     BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
     if (!doc)
         return;
-}
-
-void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
-{
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentBuisyChanged(buisy);
 }
 
 /*============================================================================

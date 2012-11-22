@@ -876,6 +876,40 @@ void BCodeEditPrivate::seletAll()
     //_m_editSelectionChanged();
 }
 
+void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
+{
+    if ( txt.isEmpty() )
+       return setTextToEmptyLine();
+    setBuisy(true);
+    if (asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
+    {
+        ptedt->setEnabled(false);
+        ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
+        ProcessTextFuture fut = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
+        ProcessTextFutureWatcher *watcher = new ProcessTextFutureWatcher(this);
+        watcher->setFuture(fut);
+        connect( watcher, SIGNAL( finished() ), this, SLOT( futureWatcherFinished() ) );
+    }
+    else
+    {
+        ProcessTextResult res = processText(txt, lineLength, tabWidth);
+        if (highlighter)
+            highlighter->setDocument(0);
+        QTextCursor tc = ptedt->textCursor();
+        tc.movePosition(QTextCursor::Start);
+        tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
+        tc.insertText(res.newText);
+        tc.movePosition(QTextCursor::Start);
+        ptedt->setTextCursor(tc);
+        if (highlighter)
+            highlighter->setDocument( ptedt->document() );
+        ptedt->document()->setModified(true);
+        ptedt->setFocus();
+        setBuisy(false);
+        emitLinesSplitted(res.splittedLinesRanges);
+    }
+}
+
 void BCodeEditPrivate::setBuisy(bool b)
 {
     if (b == buisy)
@@ -1859,39 +1893,7 @@ void BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
 {
     if ( isBuisy() )
         return;
-    B_D(BCodeEdit);
-    if ( txt.isEmpty() )
-       return  d->setTextToEmptyLine();
-    d->setBuisy(true);
-    if (asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
-    {
-        d->ptedt->setEnabled(false);
-        d->ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
-        BCodeEditPrivate::ProcessTextFuture fut = QtConcurrent::run(&BCodeEditPrivate::processText,
-                                                                    txt, d->lineLength, d->tabWidth);
-        BCodeEditPrivate::ProcessTextFutureWatcher *watcher = new BCodeEditPrivate::ProcessTextFutureWatcher(this);
-        watcher->setFuture(fut);
-        connect( watcher, SIGNAL( finished() ), d, SLOT( futureWatcherFinished() ) );
-    }
-    else
-    {
-        BCodeEditPrivate::ProcessTextResult res = BCodeEditPrivate::processText(txt, d->lineLength, d->tabWidth);
-        if (d->highlighter)
-            d->highlighter->setDocument(0);
-        QTextCursor tc = d->ptedt->textCursor();
-        tc.movePosition(QTextCursor::Start);
-        tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-        tc.insertText(res.newText);
-        tc.movePosition(QTextCursor::Start);
-        d->ptedt->setTextCursor(tc);
-        if (d->highlighter)
-            d->highlighter->setDocument( d->ptedt->document() );
-        d->ptedt->document()->setModified(true);
-        d->ptedt->setFocus();
-        d->emitLinesSplitted(res.splittedLinesRanges);
-        d->setBuisy(false);
-        d->emitLinesSplitted(res.splittedLinesRanges);
-    }
+    d_func()->setText(txt, asyncIfLongerThan);
 }
 
 void BCodeEdit::switchMode()
