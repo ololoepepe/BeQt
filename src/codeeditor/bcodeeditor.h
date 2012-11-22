@@ -30,14 +30,6 @@ public:
     {
         BookmarksModule
     };
-    enum DuplicateAcceptMode
-    {
-        InteractiveMode,
-        InteractiveNoReadOnlyMode,
-        AcceptMode,
-        AcceptAsReadOnlyMode,
-        DontAcceptMode
-    };
     //
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
     //
@@ -50,7 +42,6 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
-    void setDuplicateFileNameAcceptMode(DuplicateAcceptMode mode);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -62,7 +53,6 @@ public:
     int editLineLength() const;
     BCodeEdit::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
-    DuplicateAcceptMode duplicateFileNameAcceptMode() const;
     BAbstractEditorModule *module(const QString &name) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
@@ -72,9 +62,9 @@ public:
     QString currentFileName() const;
     QStringList fileNames() const;
 public slots:
-    void addDocument( const QString &fileName = QString() );
-    void addDocument(const QString &fileName, const QString &text);
-    void openDocument(const QString &fileName);
+    bool addDocument( const QString &fileName = QString() );
+    bool addDocument(const QString &fileName, const QString &text);
+    bool openDocument(const QString &fileName);
     void saveCurrentDocument();
     void saveCurrentDocumentAs(const QString &newFileName);
     void closeCurrentDocument();

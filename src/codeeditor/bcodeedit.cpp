@@ -2060,6 +2060,7 @@ void BCodeEdit::deselectText()
 void BCodeEdit::cut()
 {
     if ( isReadOnly() || !hasSelection() )
+        return;
     copy();
     d_func()->deleteSelection();
 }

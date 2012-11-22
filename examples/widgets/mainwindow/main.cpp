@@ -114,6 +114,7 @@ int main(int argc, char **argv)
     cedtr->move(400, 200);
     cedtr->addDocument("Test.txt");
     cedtr->openDocument("/home/darkangel/tmp/texput.log");
+    cedtr->openDocument("/home/darkangel/tmp/texput.log");
     mnuBM->addActions( static_cast<BBookmarksEditorModule *>( cedtr->modules().first() )->actions() );
     //Loading settings and plugins
     BApplication::loadSettings();

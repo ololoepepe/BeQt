@@ -23,12 +23,26 @@
 #include <QFont>
 #include <QFontInfo>
 #include <QFileInfo>
+#include <QMessageBox>
+#include <QPushButton>
 
 #include <QDebug>
 
 /*============================================================================
 ================================ Code Editor Private
 ============================================================================*/
+
+QString BCodeEditorPrivate::defaultFileName()
+{
+    return trq("New document", "fileName");
+}
+
+QString BCodeEditorPrivate::createFileName(const QString &fileName)
+{
+    return !fileName.isEmpty() ? fileName : defaultFileName();
+}
+
+//
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
     BBasePrivate(q)
@@ -52,7 +66,6 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
-    acceptMode = BCodeEditor::InteractiveMode;
     driver = new BLocalDocumentDriver(q);
     //
     vlt = new QVBoxLayout(q);
@@ -65,21 +78,25 @@ void BCodeEditorPrivate::init()
       vlt->addWidget(twgt);
 }
 
-bool BCodeEditorPrivate::acceptFileName(const QString &fileName, bool *readOnly) const
+bool BCodeEditorPrivate::findDocument(const QString &fileName)
 {
-    //TODO
-    return true;
-}
-
-QString BCodeEditorPrivate::defaultFileName() const
-{
-    return tr("New document", "fileName");
+    if ( fileName.isEmpty() )
+        return false;
+    foreach ( BCodeEditorDocument *doc, q_func()->documents() )
+    {
+        if (doc->fileName() == fileName)
+        {
+            twgt->setCurrentWidget(doc);
+            return true;
+        }
+    }
+    return false;
 }
 
 BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
     BCodeEditorDocument *doc = new BCodeEditorDocument;
-    doc->setFileName( !fileName.isEmpty() ? fileName : defaultFileName() );
+    doc->setFileName( createFileName(fileName) );
     if ( !text.isEmpty() )
         doc->setText(text);
     doc->setEditFont(editFont);
@@ -98,6 +115,7 @@ void BCodeEditorPrivate::addDocument(BCodeEditorDocument *doc)
         return;
     emitDocumentAboutToBeAdded(doc);
     twgt->addTab(doc, "");
+    twgt->setCurrentWidget(doc);
     updateDocumentTab(doc);
     emitDocumentAdded(doc);
 }
@@ -458,11 +476,6 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
         doc->setBracketHighlightingEnabled(enabled);
 }
 
-void BCodeEditor::setDuplicateFileNameAcceptMode(DuplicateAcceptMode mode)
-{
-    d_func()->acceptMode = mode;
-}
-
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
     if ( !mdl || mdl->isBuisy() )
@@ -548,11 +561,6 @@ bool BCodeEditor::isBracketHighlightingEnabled() const
     return d_func()->bracketsHighlighting;
 }
 
-BCodeEditor::DuplicateAcceptMode BCodeEditor::duplicateFileNameAcceptMode() const
-{
-    return d_func()->acceptMode;
-}
-
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
 {
     return d_func()->modules.value(name);
@@ -599,31 +607,31 @@ QStringList BCodeEditor::fileNames() const
     foreach ( BCodeEditorDocument *doc, documents() )
         if (doc)
             list << doc->fileName();
+    list.removeDuplicates();
     return list;
 }
 
 //
 
-void BCodeEditor::addDocument(const QString &fileName)
+bool BCodeEditor::addDocument(const QString &fileName)
 {
-    addDocument(fileName, "");
+    return addDocument(fileName, "");
 }
 
-void BCodeEditor::addDocument(const QString &fileName, const QString &text)
+bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
 {
     B_D(BCodeEditor);
-    bool ro = false;
-    if ( !d->acceptFileName(fileName, &ro) )
-        return;
-    BCodeEditorDocument *doc = d->createDocument(fileName, text);
-    if (ro)
-        doc->setReadOnly(true);
-    d->addDocument(doc);
+    if ( d->findDocument( BCodeEditorPrivate::createFileName(fileName) ) )
+        return false;
+    d->addDocument( d->createDocument(fileName, text) );
+    return true;
 }
 
-void BCodeEditor::openDocument(const QString &fileName)
+bool BCodeEditor::openDocument(const QString &fileName)
 {
     B_D(BCodeEditor);
+    if ( d->findDocument( BCodeEditorPrivate::createFileName(fileName) ) )
+        return false;
     BCodeEditorDocument *doc = d->createDocument(fileName);
     d->openingDocuments.insert(doc, fileName);
     if ( !doc->load(driver(), fileName) )
@@ -631,7 +639,9 @@ void BCodeEditor::openDocument(const QString &fileName)
         d->openingDocuments.remove(doc);
         doc->deleteLater();
         d->failedToOpenMessage(fileName);
+        return false;
     }
+    return true;
 }
 
 void BCodeEditor::saveCurrentDocument()

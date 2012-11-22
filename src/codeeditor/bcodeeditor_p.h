@@ -33,12 +33,21 @@ class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
     B_DECLARE_TR_FUNCTIONS(BCodeEditor, q)
     Q_OBJECT
 public:
+    enum Operation
+    {
+        AddOperation,
+        OpenOperation,
+        SaveOperation
+    };
+    //
+    static QString defaultFileName();
+    static QString createFileName(const QString &fileName);
+    //
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
     //
     void init();
-    bool acceptFileName(const QString &fileName, bool *readOnly) const;
-    QString defaultFileName() const;
+    bool findDocument(const QString &fileName);
     BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BCodeEditorDocument *doc);
     bool closeDocument(BCodeEditorDocument *doc);
@@ -62,7 +71,6 @@ public:
     int editLineLength;
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
-    BCodeEditor::DuplicateAcceptMode acceptMode;
     BAbstractDocumentDriver *driver;
     //
     QVBoxLayout *vlt;
