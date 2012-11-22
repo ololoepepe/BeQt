@@ -895,15 +895,12 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
         ProcessTextResult res = processText(txt, lineLength, tabWidth);
         if (highlighter)
             highlighter->setDocument(0);
+        ptedt->setPlainText(res.newText);
         QTextCursor tc = ptedt->textCursor();
-        tc.movePosition(QTextCursor::Start);
-        tc.movePosition(QTextCursor::End, QTextCursor::KeepAnchor);
-        tc.insertText(res.newText);
         tc.movePosition(QTextCursor::Start);
         ptedt->setTextCursor(tc);
         if (highlighter)
             highlighter->setDocument( ptedt->document() );
-        ptedt->document()->setModified(true);
         ptedt->setFocus();
         setBuisy(false);
         emitLinesSplitted(res.splittedLinesRanges);
@@ -1102,9 +1099,11 @@ void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRan
 
 void BCodeEditPrivate::handleSpace()
 {
+    QTextCursor tc = ptedt->textCursor();
+    tc.beginEditBlock();
     if (hasSelection)
         deleteSelection();
-    QTextCursor tc = ptedt->textCursor();
+    tc = ptedt->textCursor();
     QString text = tc.block().text();
     static QRegExp rx("\\S");
     if ( tc.positionInBlock() == text.length() )
@@ -1123,6 +1122,7 @@ void BCodeEditPrivate::handleSpace()
     {
         q_func()->insertText(" ");
     }
+    tc.endEditBlock();
 }
 
 void BCodeEditPrivate::handleBackspace()
@@ -1492,9 +1492,11 @@ void BCodeEditPrivate::futureWatcherFinished()
     if (highlighter)
         highlighter->setDocument(0);
     ptedt->setPlainText(res.newText);
+    QTextCursor tc = ptedt->textCursor();
+    tc.movePosition(QTextCursor::Start);
+    ptedt->setTextCursor(tc);
     if (highlighter)
         highlighter->setDocument( ptedt->document() );
-    ptedt->document()->setModified(false);
     ptedt->setFocus();
     setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
@@ -1580,6 +1582,9 @@ void BCodeEditPrivate::emitSelectionChanged()
 void BCodeEditPrivate::setTextToEmptyLine()
 {
     ptedt->setPlainText( QString().fill(' ', lineLength) );
+    QTextCursor tc = ptedt->textCursor();
+    tc.movePosition(QTextCursor::Start);
+    ptedt->setTextCursor(tc);
 }
 
 //
