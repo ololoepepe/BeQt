@@ -30,6 +30,14 @@ public:
     {
         BookmarksModule
     };
+    enum DuplicateAcceptMode
+    {
+        InteractiveMode,
+        InteractiveNoReadOnlyMode,
+        AcceptMode,
+        AcceptAsReadOnlyMode,
+        DontAcceptMode
+    };
     //
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
     //
@@ -42,7 +50,7 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
-    void setAcceptDuplicateFileNames(bool accept);
+    void setDuplicateFileNameAcceptMode(DuplicateAcceptMode mode);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -54,7 +62,7 @@ public:
     int editLineLength() const;
     BCodeEdit::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
-    bool acceptDuplicateFileNames() const;
+    DuplicateAcceptMode duplicateFileNameAcceptMode() const;
     BAbstractEditorModule *module(const QString &name) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;

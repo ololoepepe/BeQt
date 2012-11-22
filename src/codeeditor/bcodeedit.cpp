@@ -1857,7 +1857,7 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
 
 void BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
 {
-    if ( isReadOnly() || isBuisy() )
+    if ( isBuisy() )
         return;
     B_D(BCodeEdit);
     if ( txt.isEmpty() )
@@ -1901,7 +1901,7 @@ void BCodeEdit::switchMode()
 
 void BCodeEdit::insertText(const QString &txt)
 {
-    if ( isReadOnly() || isBuisy() )
+    if ( isBuisy() )
         return;
     B_D(BCodeEdit);
     d->setBuisy(true);

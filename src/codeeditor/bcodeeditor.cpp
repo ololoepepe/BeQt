@@ -52,7 +52,7 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
-    acceptDuplicate = false;
+    acceptMode = BCodeEditor::InteractiveMode;
     driver = new BLocalDocumentDriver(q);
     //
     vlt = new QVBoxLayout(q);
@@ -65,7 +65,7 @@ void BCodeEditorPrivate::init()
       vlt->addWidget(twgt);
 }
 
-bool BCodeEditorPrivate::acceptFileName(const QString &fileName) const
+bool BCodeEditorPrivate::acceptFileName(const QString &fileName, bool *readOnly) const
 {
     //TODO
     return true;
@@ -107,6 +107,7 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
     if (!doc)
         return false;
     //TODO
+    return true;
 }
 
 void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
@@ -455,9 +456,9 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
         doc->setBracketHighlightingEnabled(enabled);
 }
 
-void BCodeEditor::setAcceptDuplicateFileNames(bool accept)
+void BCodeEditor::setDuplicateFileNameAcceptMode(DuplicateAcceptMode mode)
 {
-    d_func()->acceptDuplicate = accept;
+    d_func()->acceptMode = mode;
 }
 
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
@@ -545,9 +546,9 @@ bool BCodeEditor::isBracketHighlightingEnabled() const
     return d_func()->bracketsHighlighting;
 }
 
-bool BCodeEditor::acceptDuplicateFileNames() const
+BCodeEditor::DuplicateAcceptMode BCodeEditor::duplicateFileNameAcceptMode() const
 {
-    return d_func()->acceptDuplicate;
+    return d_func()->acceptMode;
 }
 
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
@@ -609,9 +610,13 @@ void BCodeEditor::addDocument(const QString &fileName)
 void BCodeEditor::addDocument(const QString &fileName, const QString &text)
 {
     B_D(BCodeEditor);
-    if ( !d->acceptDuplicate && !d->acceptFileName(fileName) )
+    bool ro = false;
+    if ( !d->acceptFileName(fileName, &ro) )
         return;
-    d->addDocument( d->createDocument(fileName, text) );
+    BCodeEditorDocument *doc = d->createDocument(fileName, text);
+    if (ro)
+        doc->setReadOnly(true);
+    d->addDocument(doc);
 }
 
 void BCodeEditor::openDocument(const QString &fileName)
