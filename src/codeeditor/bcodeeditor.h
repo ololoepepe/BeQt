@@ -42,6 +42,7 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
+    void setAcceptDuplicateFileNames(bool accept);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -53,6 +54,7 @@ public:
     int editLineLength() const;
     BCodeEdit::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
+    bool acceptDuplicateFileNames() const;
     BAbstractEditorModule *module(const QString &name) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
@@ -62,7 +64,8 @@ public:
     QString currentFileName() const;
     QStringList fileNames() const;
 public slots:
-    void addDocument(const QString &fileName);
+    void addDocument( const QString &fileName = QString() );
+    void addDocument(const QString &fileName, const QString &text);
     void openDocument(const QString &fileName);
     void saveCurrentDocument();
     void saveCurrentDocumentAs(const QString &newFileName);
@@ -75,8 +78,6 @@ signals:
     void documentAvailableChanged(bool available);
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
-    //
-    virtual bool acceptOpenFileName(const QString &fileName);
 private:
     Q_DISABLE_COPY(BCodeEditor)
     //

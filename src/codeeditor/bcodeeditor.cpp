@@ -52,6 +52,7 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
+    acceptDuplicate = false;
     driver = new BLocalDocumentDriver(q);
     //
     vlt = new QVBoxLayout(q);
@@ -64,10 +65,23 @@ void BCodeEditorPrivate::init()
       vlt->addWidget(twgt);
 }
 
-BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName)
+bool BCodeEditorPrivate::acceptFileName(const QString &fileName) const
+{
+    //TODO
+    return true;
+}
+
+QString BCodeEditorPrivate::defaultFileName() const
+{
+    return tr("New document", "fileName");
+}
+
+BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
     BCodeEditorDocument *doc = new BCodeEditorDocument;
-    doc->setFileName( !fileName.isEmpty() ? fileName : tr("New document", "fileName") );
+    doc->setFileName( !fileName.isEmpty() ? fileName : defaultFileName() );
+    if ( !text.isEmpty() )
+        doc->setText(text);
     doc->setEditFont(editFont);
     doc->setEditMode(editMode);
     doc->setEditLineLength(editLineLength);
@@ -441,6 +455,11 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
         doc->setBracketHighlightingEnabled(enabled);
 }
 
+void BCodeEditor::setAcceptDuplicateFileNames(bool accept)
+{
+    d_func()->acceptDuplicate = accept;
+}
+
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
     if ( !mdl || mdl->isBuisy() )
@@ -526,6 +545,11 @@ bool BCodeEditor::isBracketHighlightingEnabled() const
     return d_func()->bracketsHighlighting;
 }
 
+bool BCodeEditor::acceptDuplicateFileNames() const
+{
+    return d_func()->acceptDuplicate;
+}
+
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
 {
     return d_func()->modules.value(name);
@@ -579,8 +603,15 @@ QStringList BCodeEditor::fileNames() const
 
 void BCodeEditor::addDocument(const QString &fileName)
 {
+    addDocument(fileName, "");
+}
+
+void BCodeEditor::addDocument(const QString &fileName, const QString &text)
+{
     B_D(BCodeEditor);
-    d->addDocument( d->createDocument(fileName) );
+    if ( !d->acceptDuplicate && !d->acceptFileName(fileName) )
+        return;
+    d->addDocument( d->createDocument(fileName, text) );
 }
 
 void BCodeEditor::openDocument(const QString &fileName)
@@ -617,12 +648,4 @@ BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
     d_func()->init();
-}
-
-//
-
-bool BCodeEditor::acceptOpenFileName(const QString &fileName)
-{
-    //TODO
-    return true;
 }

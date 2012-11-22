@@ -37,7 +37,9 @@ public:
     ~BCodeEditorPrivate();
     //
     void init();
-    BCodeEditorDocument *createDocument( const QString &fileName = QString() );
+    bool acceptFileName(const QString &fileName) const;
+    QString defaultFileName() const;
+    BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BCodeEditorDocument *doc);
     bool closeDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
@@ -60,6 +62,7 @@ public:
     int editLineLength;
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
+    bool acceptDuplicate;
     BAbstractDocumentDriver *driver;
     //
     QVBoxLayout *vlt;
