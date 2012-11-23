@@ -27,9 +27,9 @@ class BIndicatorsEditorModule : public BAbstractEditorModule
 public:
     enum Indicator
     {
-        FileTypeIndicator,
         CursorPositionIndicator,
-        EncodingIndicator
+        EncodingIndicator,
+        FileTypeIndicator
     };
     //
     explicit BIndicatorsEditorModule(QObject *parent = 0);
@@ -44,6 +44,7 @@ protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
     void documentCursorPositionChanged(const QPoint &pos);
+    void documentCodecChanged(const QString &codecName);
     void currentDocumentChanged(BCodeEditorDocument *doc);
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModule)

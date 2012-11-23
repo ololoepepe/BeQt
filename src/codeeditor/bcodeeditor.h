@@ -58,6 +58,8 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
+    void setDefaultCodec(QTextCodec *codec);
+    void setDefaultCodec(const QString &codecName);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -74,6 +76,8 @@ public:
     int editLineLength() const;
     BCodeEdit::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
+    QTextCodec *defaultCodec() const;
+    QString defaultCodecName() const;
     BAbstractEditorModule *module(const QString &name) const;
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;

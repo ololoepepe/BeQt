@@ -30,13 +30,18 @@ public:
     //
     void init();
     QLabel *createCursorPosIndicator(QWidget *parent = 0);
-    QString createCursorPosIndicatorText();
+    QLabel *createEncodingIndicator(QWidget *parent = 0);
+    QString createCursorPosIndicatorText() const;
+    QString createEncodingIndicatorText() const;
     void updateCursorPosIndicators();
+    void updateEncodingIndicators();
     //
     QMap<QObject *, QLabel *> cursorPosIndicators;
+    QMap<QObject *, QLabel *> encodingIndicators;
 public slots:
     void retranslateUi();
     void cursorPosIndicatorDestroyed(QObject *obj);
+    void encodingIndicatorDestroyed(QObject *obj);
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModulePrivate)
 };

@@ -204,6 +204,11 @@ QTextCodec *BCodeEditorDocument::codec() const
     return d_func()->codec;
 }
 
+QString BCodeEditorDocument::codecName() const
+{
+    return d_func()->codec ? QString::fromAscii( d_func()->codec->name().data() ) : QString();
+}
+
 int BCodeEditorDocument::asyncProcessingMinimumLength() const
 {
     return d_func()->asyncMin;

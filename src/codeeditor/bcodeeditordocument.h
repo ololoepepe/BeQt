@@ -38,6 +38,7 @@ public:
     bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString(), QTextCodec *codec = 0);
     QString fileName() const;
     QTextCodec *codec() const;
+    QString codecName() const;
     int asyncProcessingMinimumLength() const;
     BAbstractFileType *fileType() const;
 signals:

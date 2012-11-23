@@ -49,9 +49,10 @@ int main(int argc, char **argv)
         tbar->addActions( mnuBM->actions() );
       mw->addToolBar(tbar);
       //
-      mw->statusBar()->addPermanentWidget( static_cast<BIndicatorsEditorModule *>(
-                                               cedtr->module(BCodeEditor::IndicatorsModule) )->createIndicator(
-                                               BIndicatorsEditorModule::CursorPositionIndicator) );
+      BIndicatorsEditorModule *imdl = static_cast<BIndicatorsEditorModule *>(
+                  cedtr->module(BCodeEditor::IndicatorsModule) );
+      mw->statusBar()->addPermanentWidget( imdl->createIndicator(BIndicatorsEditorModule::CursorPositionIndicator) );
+      mw->statusBar()->addPermanentWidget( imdl->createIndicator(BIndicatorsEditorModule::EncodingIndicator) );
     mw->resize(1200, 800);
     mw->move(400, 200);
     //Showing widgets

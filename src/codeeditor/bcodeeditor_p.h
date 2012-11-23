@@ -158,6 +158,7 @@ public:
     int editLineLength;
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
+    QTextCodec *defaultCodec;
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;

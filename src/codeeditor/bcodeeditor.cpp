@@ -270,6 +270,7 @@ void BCodeEditorPrivate::init()
     //Supported codecs
     foreach (const QString &cn, SupportedCodecs)
         populateSupportedCodecs(cn);
+    defaultCodec = supportedCodecs.value("UTF-8");
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -345,6 +346,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     doc->setEditLineLength(editLineLength);
     doc->setEditTabWidth(editTabWidth);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
+    doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
     //
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
@@ -1009,6 +1011,18 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
         doc->setBracketHighlightingEnabled(enabled);
 }
 
+void BCodeEditor::setDefaultCodec(QTextCodec *codec)
+{
+    setDefaultCodec( codec ? QString::fromLatin1( codec->name().data() ) : QString() );
+}
+
+void BCodeEditor::setDefaultCodec(const QString &codecName)
+{
+    if ( !supportsCodec(codecName) )
+        return;
+    d_func()->defaultCodec = d_func()->supportedCodecs.value(codecName);
+}
+
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
     if ( !mdl || mdl->isBuisy() )
@@ -1136,6 +1150,16 @@ BCodeEdit::TabWidth BCodeEditor::editTabWidth() const
 bool BCodeEditor::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
+}
+
+QTextCodec *BCodeEditor::defaultCodec() const
+{
+    return d_func()->defaultCodec;
+}
+
+QString BCodeEditor::defaultCodecName() const
+{
+    return QString::fromAscii( d_func()->defaultCodec->name().data() );
 }
 
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const

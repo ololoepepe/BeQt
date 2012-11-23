@@ -30,7 +30,12 @@ BIndicatorsEditorModulePrivate::BIndicatorsEditorModulePrivate(BIndicatorsEditor
 
 BIndicatorsEditorModulePrivate::~BIndicatorsEditorModulePrivate()
 {
-    //
+    foreach (QLabel *lbl, cursorPosIndicators)
+        if ( !lbl->parent() )
+            lbl->deleteLater();
+    foreach (QLabel *lbl, encodingIndicators)
+        if ( !lbl->parent() )
+            lbl->deleteLater();
 }
 
 //
@@ -50,7 +55,17 @@ QLabel *BIndicatorsEditorModulePrivate::createCursorPosIndicator(QWidget *parent
     return lbl;
 }
 
-QString BIndicatorsEditorModulePrivate::createCursorPosIndicatorText()
+QLabel *BIndicatorsEditorModulePrivate::createEncodingIndicator(QWidget *parent)
+{
+    QLabel *lbl = new QLabel(parent);
+    lbl->setFont( BApplication::createMonospaceFont() );
+    lbl->setText( createEncodingIndicatorText() );
+    connect( lbl, SIGNAL( destroyed(QObject *) ), this, SLOT( encodingIndicatorDestroyed(QObject *) ) );
+    encodingIndicators.insert(lbl, lbl);
+    return lbl;
+}
+
+QString BIndicatorsEditorModulePrivate::createCursorPosIndicatorText() const
 {
     QPoint pos = q_func()->currentDocument() ? q_func()->currentDocument()->cursorPosition() : QPoint(-1, -1);
     QString rowVal = (pos.y() >= 0) ? QString::number(pos.y() + 1) : QString();
@@ -72,10 +87,28 @@ QString BIndicatorsEditorModulePrivate::createCursorPosIndicatorText()
     return trq("Row:", "lbl text") + " " + rowVal + ", " + trq("Column:", "lbl text") + " " + columnVal;
 }
 
+QString BIndicatorsEditorModulePrivate::createEncodingIndicatorText() const
+{
+    if (!editor)
+        return trq("----------", "lbl text");
+    QString cn = q_func()->currentDocument() ? q_func()->currentDocument()->codecName() : editor->defaultCodecName();
+    QString fcn = editor->fullCodecName(cn);
+    if ( fcn.isEmpty() )
+        fcn = trq("Unknown encoding", "lbl text");
+    return fcn;
+}
+
 void BIndicatorsEditorModulePrivate::updateCursorPosIndicators()
 {
     QString text = createCursorPosIndicatorText();
     foreach (QLabel *lbl, cursorPosIndicators)
+        lbl->setText(text);
+}
+
+void BIndicatorsEditorModulePrivate::updateEncodingIndicators()
+{
+    QString text = createEncodingIndicatorText();
+    foreach (QLabel *lbl, encodingIndicators)
         lbl->setText(text);
 }
 
@@ -84,11 +117,17 @@ void BIndicatorsEditorModulePrivate::updateCursorPosIndicators()
 void BIndicatorsEditorModulePrivate::retranslateUi()
 {
     updateCursorPosIndicators();
+    updateEncodingIndicators();
 }
 
 void BIndicatorsEditorModulePrivate::cursorPosIndicatorDestroyed(QObject *obj)
 {
     cursorPosIndicators.remove(obj);
+}
+
+void BIndicatorsEditorModulePrivate::encodingIndicatorDestroyed(QObject *obj)
+{
+    encodingIndicators.remove(obj);
 }
 
 /*============================================================================
@@ -119,6 +158,9 @@ QWidget *BIndicatorsEditorModule::createIndicator(Indicator type, QWidget *paren
     {
     case CursorPositionIndicator:
         return d_func()->createCursorPosIndicator(parent);
+    case EncodingIndicator:
+        return d_func()->createEncodingIndicator(parent);
+    //TODO: FileType
     default:
         return 0;
     }
@@ -127,6 +169,9 @@ QWidget *BIndicatorsEditorModule::createIndicator(Indicator type, QWidget *paren
 QList<QWidget *> BIndicatorsEditorModule::createIndicators(QWidget *parent)
 {
     QList<QWidget *> list;
+    list << createIndicator(CursorPositionIndicator, parent);
+    list << createIndicator(EncodingIndicator, parent);
+    //TODO: FileType
     return list;
 }
 
@@ -143,11 +188,13 @@ BIndicatorsEditorModule::BIndicatorsEditorModule(BIndicatorsEditorModulePrivate 
 void BIndicatorsEditorModule::editorSet(BCodeEditor *edr)
 {
     d_func()->updateCursorPosIndicators();
+    d_func()->updateEncodingIndicators();
 }
 
 void BIndicatorsEditorModule::editorUnset(BCodeEditor *edr)
 {
     d_func()->updateCursorPosIndicators();
+    d_func()->updateEncodingIndicators();
 }
 
 void BIndicatorsEditorModule::documentCursorPositionChanged(const QPoint &pos)
@@ -155,7 +202,13 @@ void BIndicatorsEditorModule::documentCursorPositionChanged(const QPoint &pos)
     d_func()->updateCursorPosIndicators();
 }
 
+void BIndicatorsEditorModule::documentCodecChanged(const QString &codecName)
+{
+    d_func()->updateEncodingIndicators();
+}
+
 void BIndicatorsEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
 {
     d_func()->updateCursorPosIndicators();
+    d_func()->updateEncodingIndicators();
 }
