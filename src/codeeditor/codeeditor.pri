@@ -12,6 +12,8 @@ HEADERS += \
     $${PWD}/bcodeeditor.h \
     $${PWD}/bcodeeditordocument.h \
     $${PWD}/bcodeeditordocument_p.h \
+    $${PWD}/bfiledialog.h \
+    $${PWD}/bfiledialog_p.h \
     $${PWD}/bindicatorseditormodule.h \
     $${PWD}/bindicatorseditormodule_p.h \
     $${PWD}/blocaldocumentdriver.h \
@@ -27,6 +29,7 @@ SOURCES += \
     $${PWD}/bcodeedit.cpp \
     $${PWD}/bcodeeditor.cpp \
     $${PWD}/bcodeeditordocument.cpp \
+    $${PWD}/bfiledialog.cpp \
     $${PWD}/bindicatorseditormodule.cpp \
     $${PWD}/blocaldocumentdriver.cpp \
     $${PWD}/bsearcheditormodule.cpp

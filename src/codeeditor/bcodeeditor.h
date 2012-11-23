@@ -91,6 +91,8 @@ public:
     QStringList fileNames() const;
     bool supportsCodec(QTextCodec *codec) const;
     bool supportsCodec(const QString &codecName) const;
+    QList<QTextCodec *> supportedCodecs() const;
+    QStringList supportedCodecNames() const;
     QString fullCodecName(QTextCodec *codec) const;
     QString fullCodecName(const QString &codecName) const;
     QString encodingGroupName(EncodingGroup group) const;

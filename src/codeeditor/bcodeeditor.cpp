@@ -1215,7 +1215,7 @@ BAbstractFileType *BCodeEditor::fileType(const QString &id) const
 QList<BAbstractFileType *> BCodeEditor::fileTypes() const
 {
     QList<BAbstractFileType *> list = d_func()->fileTypes.values();
-    list.prepend(d_func()->defaultFileType);
+    list << d_func()->defaultFileType;
     return list;
 }
 
@@ -1250,6 +1250,18 @@ bool BCodeEditor::supportsCodec(const QString &codecName) const
     if ( codecName.isEmpty() )
         return false;
     return d_func()->supportedCodecs.contains(codecName);
+}
+
+QList<QTextCodec *> BCodeEditor::supportedCodecs() const
+{
+    QList<QTextCodec *> list;
+    foreach ( const QString &name, supportedCodecNames() )
+        list << d_func()->supportedCodecs.value(name);
+}
+
+QStringList BCodeEditor::supportedCodecNames() const
+{
+    return BCodeEditorPrivate::SupportedCodecs;
 }
 
 QString BCodeEditor::fullCodecName(QTextCodec *codec) const
