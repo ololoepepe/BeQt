@@ -41,8 +41,6 @@ BFileDialogPrivate::~BFileDialogPrivate()
 void BFileDialogPrivate::init()
 {
     B_Q(BFileDialog);
-    q->setOption(QFileDialog::DontUseNativeDialog);
-    q->setFileMode(QFileDialog::AnyFile);
     lt = q->layout();
       lblEncodings = new QLabel(q);
         lblEncodings->setText(trq("Encoding", "lbl text") + ":");
@@ -89,8 +87,12 @@ BFileDialog::BFileDialog(BFileDialogPrivate &d, QWidget *parent) :
 
 void BFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
 {
+    d_func()->fileTypes = list;
     if ( list.isEmpty() )
+    {
+        setNameFilter("");
         return;
+    }
     QStringList filters;
     foreach (BAbstractFileType *ft, list)
         filters += ft->createFileDialogFilter();
@@ -108,7 +110,23 @@ void BFileDialog::setCodecs(const QList<QTextCodec *> &list)
         d->addEncoding(c);
 }
 
-void BFileDialog::setSelectedCodec(QTextCodec *codec)
+void BFileDialog::selectFileType(BAbstractFileType *ft)
+{
+    if (!ft)
+        return;
+    selectFilter( ft->createFileDialogFilter() );
+}
+
+void BFileDialog::selectFileType(const QString &id)
+{
+    if ( id.isEmpty() )
+        return;
+    foreach (BAbstractFileType *ft, d_func()->fileTypes)
+        if (ft->id() == id)
+            return selectFilter( ft->createFileDialogFilter() );
+}
+
+void BFileDialog::selectCodec(QTextCodec *codec)
 {
     if (!codec)
         return;
@@ -118,11 +136,11 @@ void BFileDialog::setSelectedCodec(QTextCodec *codec)
     d->cmboxEncodings->setCurrentIndex( d->codecIndexes.value(codec) );
 }
 
-void BFileDialog::setSelectedCodec(const QString &codecName)
+void BFileDialog::selectCodec(const QString &codecName)
 {
     if ( codecName.isEmpty() )
         return;
-    setSelectedCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
+    selectCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
 QTextCodec *BFileDialog::selectedCodec() const
@@ -135,4 +153,21 @@ QString BFileDialog::selectedCodecName() const
 {
     int ind = d_func()->cmboxEncodings->currentIndex();
     return (ind >= 0 ) ? d_func()->cmboxEncodings->itemData(ind).toString() : QString();
+}
+
+BAbstractFileType *BFileDialog::selectedFileType() const
+{
+    QString sf = selectedFilter();
+    if ( sf.isEmpty() )
+        return 0;
+    foreach (BAbstractFileType *ft, d_func()->fileTypes)
+        if (ft->createFileDialogFilter() == sf)
+            return ft;
+    return 0;
+}
+
+QString BFileDialog::selectedFileTypeId() const
+{
+    BAbstractFileType *ft = selectedFileType();
+    return ft ? ft->id() : QString();
 }

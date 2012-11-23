@@ -1,6 +1,8 @@
 #ifndef BFILEDIALOG_P_H
 #define BFILEDIALOG_P_H
 
+class BAbstractFileType;
+
 class QLayout;
 class QComboBox;
 class QLabel;
@@ -31,6 +33,7 @@ public:
     void addEncoding(QTextCodec *codec);
     //
     QMap<QTextCodec *, int> codecIndexes;
+    QList<BAbstractFileType *> fileTypes;
     //
     QLayout *lt;
       QLabel *lblEncodings;

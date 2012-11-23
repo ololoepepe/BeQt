@@ -29,10 +29,14 @@ protected:
 public:
     void setFileTypes(const QList<BAbstractFileType *> &list);
     void setCodecs(const QList<QTextCodec *> &list);
-    void setSelectedCodec(QTextCodec *codec);
-    void setSelectedCodec(const QString &codecName);
+    void selectFileType(BAbstractFileType *ft);
+    void selectFileType(const QString &id);
+    void selectCodec(QTextCodec *codec);
+    void selectCodec(const QString &codecName);
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
+    BAbstractFileType *selectedFileType() const;
+    QString selectedFileTypeId() const;
 private:
     Q_DISABLE_COPY(BFileDialog)
 };

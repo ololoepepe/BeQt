@@ -61,7 +61,7 @@ int main(int argc, char **argv)
     BFileDialog *fd = new BFileDialog;
     fd->setFileTypes( cedtr->fileTypes() );
     fd->setCodecs( cedtr->supportedCodecs() );
-    fd->setSelectedCodec("Windows-1251");
+    fd->selectCodec("Windows-1251");
     fd->exec();
     //Showing widgets
     mw->show();
