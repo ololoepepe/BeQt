@@ -6,6 +6,7 @@
 #include "babstracteditormodule_p.h"
 #include "bbookmarkseditormodule.h"
 #include "bsearcheditormodule.h"
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -194,7 +195,9 @@ BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
 
 BCodeEditorPrivate::~BCodeEditorPrivate()
 {
-    //
+    foreach (BAbstractFileType *ft, fileTypes)
+        delete ft;
+    delete defaultFileType;
 }
 
 //
@@ -209,6 +212,7 @@ void BCodeEditorPrivate::init()
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
     driver = new BLocalDocumentDriver(q);
+    defaultFileType = BAbstractFileType::defaultFileType();
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -218,6 +222,28 @@ void BCodeEditorPrivate::init()
         connect( twgt, SIGNAL( currentChanged(int) ), this, SLOT( twgtCurrentChanged(int) ) );
         connect( twgt, SIGNAL( tabCloseRequested(int) ), this, SLOT( twgtTabCloseRequested(int) ) );
       vlt->addWidget(twgt);
+}
+
+bool BCodeEditorPrivate::tryAddFileType(BAbstractFileType *ft)
+{
+    if ( !ft || ft->id() == defaultFileType->id() || fileTypes.contains( ft->id() ) )
+        return false;
+    fileTypes.insert(ft->id(), ft);
+    return true;
+}
+
+bool BCodeEditorPrivate::tryRemoveFileType(const QString &id)
+{
+    if ( id.isEmpty() )
+        return false;
+    BAbstractFileType *ft = fileTypes.take(id);
+    if (!ft)
+        return false;
+    foreach ( BCodeEditorDocument *doc, q_func()->documents() )
+        if (doc->fileType() == ft)
+            doc->setFileType( selectDocumentFileType(doc) );
+    delete ft;
+    return true;
 }
 
 bool BCodeEditorPrivate::findDocument(const QString &fileName)
@@ -252,6 +278,8 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     doc->setEditLineLength(editLineLength);
     doc->setEditTabWidth(editTabWidth);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
+    doc->setFileType( selectDocumentFileType(doc) );
+    //
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
     return doc;
@@ -275,6 +303,17 @@ void BCodeEditorPrivate::removeDocument(BCodeEditorDocument *doc)
     emitDocumentAboutToBeRemoved(doc);
     twgt->removeTab( twgt->indexOf(doc) );
     doc->deleteLater();
+}
+
+BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocument *doc)
+{
+    if (!doc)
+        return 0;
+    QString fn = doc->fileName();
+    foreach (BAbstractFileType *ft, fileTypes)
+        if ( ft->matchesFileName(fn) )
+            return ft;
+    return defaultFileType;
 }
 
 bool BCodeEditorPrivate::openDocument(const QString &fileName)
@@ -519,6 +558,13 @@ void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
     QMetaObject::invokeMethod( q_func(), "documentAvailableChanged", Q_ARG(bool, doc) );
 }
 
+void BCodeEditorPrivate::emitFileTypesChanged()
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->fileTypesChanged();
+    QMetaObject::invokeMethod(q_func(), "fileTypesChanged");
+}
+
 void BCodeEditorPrivate::emitAllDocumentsOpened()
 {
     QMetaObject::invokeMethod(q_func(), "allDocumentsOpened");
@@ -573,6 +619,8 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                     this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
         disconnect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
+        disconnect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
+                    this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
     }
     document = doc;
     if (document)
@@ -597,6 +645,8 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                  this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
         connect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
+        connect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
+                 this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
     }
     emitCurrentDocumentChanged(document);
 }
@@ -709,6 +759,12 @@ void BCodeEditorPrivate::documentCodecChanged(const QString &codecName)
         module->documentCodecChanged(codecName);
 }
 
+void BCodeEditorPrivate::documentFileTypeChanged(BAbstractFileType *ft)
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->documentFileTypeChanged(ft);
+}
+
 void BCodeEditorPrivate::documentLoadingFinished(bool success)
 {
     BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
@@ -779,10 +835,30 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     createStandardModule(BookmarksModule, this); //Just for test, remove, but add another modules in the future
 }
 
+BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    d_func()->init();
+    foreach (BAbstractFileType *ft, fileTypes)
+        d_func()->tryAddFileType(ft);
+    createStandardModule(SearchModule, this);
+    createStandardModule(BookmarksModule, this); //Just for test, remove, but add another modules in the future
+}
+
 BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
     d_func()->init();
+    setModules(moduleList);
+}
+
+BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
+                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    d_func()->init();
+    foreach (BAbstractFileType *ft, fileTypes)
+        d_func()->tryAddFileType(ft);
     setModules(moduleList);
 }
 
@@ -907,6 +983,36 @@ void BCodeEditor::setDriver(BAbstractDocumentDriver *drv)
         drv->setParent(this);
 }
 
+void BCodeEditor::addFileType(BAbstractFileType *ft)
+{
+    if ( d_func()->tryAddFileType(ft) )
+        d_func()->emitFileTypesChanged();
+}
+
+void BCodeEditor::removeFileType(BAbstractFileType *ft)
+{
+    if (!ft)
+        return;
+    removeFileType( ft->id() );
+}
+
+void BCodeEditor::removeFileType(const QString &id)
+{
+    if ( d_func()->tryRemoveFileType(id) )
+        d_func()->emitFileTypesChanged();
+}
+
+void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
+{
+    bool b = false;
+    foreach ( BAbstractFileType *ft, fileTypes() )
+        b = ( b || d_func()->tryRemoveFileType( ft->id() ) );
+    foreach (BAbstractFileType *ft, list)
+        b = ( b || d_func()->tryAddFileType(ft) );
+    if (b)
+        d_func()->emitFileTypesChanged();
+}
+
 bool BCodeEditor::waitForAllDocumentsOpened(int msecs)
 {
     return BCodeEditorPrivate::waitForAll(d_func()->openingDocuments, this, SIGNAL( allDocumentsOpened(bool) ), msecs);
@@ -974,6 +1080,21 @@ QList<BCodeEditorDocument *> BCodeEditor::documents() const
 BAbstractDocumentDriver * BCodeEditor::driver() const
 {
     return d_func()->driver;
+}
+
+BAbstractFileType *BCodeEditor::fileType(const QString &id) const
+{
+    BAbstractFileType *ft = d_func()->defaultFileType;
+    if (ft->id() != id)
+        ft = d_func()->fileTypes.value(id);
+    return ft;
+}
+
+QList<BAbstractFileType *> BCodeEditor::fileTypes() const
+{
+    QList<BAbstractFileType *> list = d_func()->fileTypes.values();
+    list.prepend(d_func()->defaultFileType);
+    return list;
 }
 
 bool BCodeEditor::documentAvailable() const

@@ -5,6 +5,7 @@ class BCodeEditorPrivate;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BCodeEditorDocument;
+class BAbstractFileType;
 
 class QStringList;
 
@@ -35,7 +36,10 @@ public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
     //
     explicit BCodeEditor(QWidget *parent = 0);
+    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent = 0);
     explicit BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
+    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
+                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
     ~BCodeEditor();
     //
     void setEditFont(const QFont &fnt);
@@ -49,6 +53,10 @@ public:
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
     void setDriver(BAbstractDocumentDriver *drv);
+    void addFileType(BAbstractFileType *ft);
+    void removeFileType(BAbstractFileType *ft);
+    void removeFileType(const QString &id);
+    void setFileTypes(const QList<BAbstractFileType *> &list);
     bool waitForAllDocumentsOpened(int msecs = 30 * BeQt::Second);
     bool waitForAllDocumentsSaved(int msecs = 30 * BeQt::Second);
     bool waitForAllDocumentsClosed(int msecs = 30 * BeQt::Second);
@@ -62,6 +70,8 @@ public:
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;
     BAbstractDocumentDriver *driver() const;
+    BAbstractFileType *fileType(const QString &id) const;
+    QList<BAbstractFileType *> fileTypes() const;
     bool documentAvailable() const;
     QString currentFileName() const;
     QStringList fileNames() const;
@@ -80,6 +90,7 @@ signals:
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void documentAvailableChanged(bool available);
+    void fileTypesChanged();
     void allDocumentsOpened();
     void allDocumentsSaved();
     void allDocumentsClosed();

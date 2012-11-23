@@ -5,6 +5,7 @@ class BCodeEditorDocument;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BSelectDocumentsDialogPrivate;
+class BAbstractFileType;
 
 class QVBoxLayout;
 class QTabWidget;
@@ -109,10 +110,13 @@ public:
     ~BCodeEditorPrivate();
     //
     void init();
+    bool tryAddFileType(BAbstractFileType *ft);
+    bool tryRemoveFileType(const QString &id);
     bool findDocument(const QString &fileName);
     BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BCodeEditorDocument *doc);
     void removeDocument(BCodeEditorDocument *doc);
+    BAbstractFileType *selectDocumentFileType(BCodeEditorDocument *doc);
     bool openDocument(const QString &fileName);
     bool saveDocument( BCodeEditorDocument *doc, const QString &newFileName = QString() );
     bool saveDocuments(const QList<BCodeEditorDocument *> &list);
@@ -129,6 +133,7 @@ public:
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
+    void emitFileTypesChanged();
     void emitAllDocumentsOpened();
     void emitAllDocumentsSaved();
     void emitAllDocumentsClosed();
@@ -146,6 +151,8 @@ public:
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
     BAbstractDocumentDriver *driver;
+    QMap<QString, BAbstractFileType *> fileTypes;
+    BAbstractFileType *defaultFileType;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;
@@ -170,6 +177,7 @@ public slots:
     //BCodeEditorDocument events
     void documentFileNameChanged(const QString &fn);
     void documentCodecChanged(const QString &codecName);
+    void documentFileTypeChanged(BAbstractFileType *ft);
     void documentLoadingFinished(bool success);
     void documentSavingFinished(bool success);
 private:

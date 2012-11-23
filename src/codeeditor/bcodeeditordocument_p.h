@@ -3,7 +3,7 @@
 
 class BCodeEditorDocumentPrivate;
 class BAbstractDocumentDriver;
-class BCodeEdit;
+class BAbstractFileType;
 
 class QString;
 class QTextCodec;
@@ -35,6 +35,7 @@ public:
     QString fileName;
     QTextCodec *codec;
     int asyncMin;
+    BAbstractFileType *fileType;
 public slots:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);

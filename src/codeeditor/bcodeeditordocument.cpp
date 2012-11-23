@@ -4,6 +4,7 @@
 #include "bcodeedit.h"
 #include "bcodeedit_p.h"
 #include "bplaintextedit.h"
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -42,6 +43,9 @@ void BCodeEditorDocumentPrivate::init()
 {
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
+    fileType = BAbstractFileType::defaultFileType();
+    q_func()->setHighlighter( fileType->createHighlighter() );
+    q_func()->setRecognizedBrackets( fileType->brackets() );
 }
 
 //
@@ -136,6 +140,20 @@ void BCodeEditorDocument::setAsyncProcessingMinimumLength(int length)
     d_func()->asyncMin = length;
 }
 
+void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
+{
+    B_D(BCodeEditorDocument);
+    if (ft == d->fileType)
+        return;
+    d->fileType = ft;
+    if (ft)
+    {
+        setHighlighter( ft->createHighlighter() );
+        setRecognizedBrackets( ft->brackets() );
+    }
+    emit fileTypeChanged(ft);
+}
+
 bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
 {
     if ( !driver || isBuisy() )
@@ -185,6 +203,11 @@ QTextCodec *BCodeEditorDocument::codec() const
 int BCodeEditorDocument::asyncProcessingMinimumLength() const
 {
     return d_func()->asyncMin;
+}
+
+BAbstractFileType *BCodeEditorDocument::fileType() const
+{
+    return d_func()->fileType;
 }
 
 //

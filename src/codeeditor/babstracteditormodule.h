@@ -5,6 +5,7 @@ class BAbstractEditorModulePrivate;
 class BCodeEditor;
 class BCodeEditorPrivate;
 class BCodeEditorDocument;
+class BAbstractFileType;
 
 class QString;
 
@@ -55,11 +56,13 @@ protected:
     //BCodeEditorDocument events
     virtual void documentFileNameChanged(const QString &fn);
     virtual void documentCodecChanged(const QString &codecName);
+    virtual void documentFileTypeChanged(BAbstractFileType *ft);
     //BCodeEditor events
     virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);
     virtual void documentAdded(BCodeEditorDocument *doc);
     virtual void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     virtual void currentDocumentChanged(BCodeEditorDocument *doc);
+    virtual void fileTypesChanged();
     //
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;

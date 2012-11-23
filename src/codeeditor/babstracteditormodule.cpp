@@ -178,6 +178,11 @@ void BAbstractEditorModule::documentCodecChanged(const QString &codecName)
     //
 }
 
+void BAbstractEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
+{
+    //
+}
+
 //BCodeEditor events
 
 void BAbstractEditorModule::documentAboutToBeAdded(BCodeEditorDocument *doc)
@@ -196,6 +201,11 @@ void BAbstractEditorModule::documentAboutToBeRemoved(BCodeEditorDocument *doc)
 }
 
 void BAbstractEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+{
+    //
+}
+
+void BAbstractEditorModule::fileTypesChanged()
 {
     //
 }
