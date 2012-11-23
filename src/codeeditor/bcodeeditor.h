@@ -59,9 +59,7 @@ public:
     void removeFileType(BAbstractFileType *ft);
     void removeFileType(const QString &id);
     void setFileTypes(const QList<BAbstractFileType *> &list);
-    bool waitForAllDocumentsOpened(int msecs = 30 * BeQt::Second);
-    bool waitForAllDocumentsSaved(int msecs = 30 * BeQt::Second);
-    bool waitForAllDocumentsClosed(int msecs = 30 * BeQt::Second);
+    bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
     QFont editFont() const;
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
@@ -94,9 +92,7 @@ signals:
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void documentAvailableChanged(bool available);
     void fileTypesChanged();
-    void allDocumentsOpened();
-    void allDocumentsSaved();
-    void allDocumentsClosed();
+    void allDocumentsProcessed();
 protected:
     BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
 private:

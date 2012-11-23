@@ -172,20 +172,6 @@ QString BCodeEditorPrivate::createFileName(const QString &fileName)
     return !fileName.isEmpty() ? fileName : defaultFileName();
 }
 
-bool BCodeEditorPrivate::waitForAll(const QMap<BCodeEditorDocument *, QString> &what, BCodeEditor *where,
-                                    const char *untilSignal, int msecs)
-{
-    if ( what.isEmpty() )
-        return true;
-    if (msecs <= 0)
-        return false;
-    QEventLoop el;
-    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
-    connect( where, untilSignal, &el, SLOT( quit() ) );
-    el.exec();
-    return !what.isEmpty();
-}
-
 //
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
@@ -375,7 +361,7 @@ bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
 
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
-    if ( !doc || closingDocuments.contains(doc) )
+    if ( !doc || openingDocuments.contains(doc) || savingDocuments.contains(doc) )
         return false;
     if ( doc->isModified() )
     {
@@ -407,7 +393,7 @@ bool BCodeEditorPrivate::closeAllDocuments()
     for (int i = list.size() - 1; i >= 0; --i)
     {
         BCodeEditorDocument *doc = list.at(i);
-        if ( savingDocuments.contains(doc) || closingDocuments.contains(doc) )
+        if ( openingDocuments.contains(doc) || savingDocuments.contains(doc) )
         {
             list.removeAt(i);
             continue;
@@ -459,16 +445,16 @@ bool BCodeEditorPrivate::closeAllDocuments()
 
 bool BCodeEditorPrivate::tryCloseDocument(BCodeEditorDocument *doc)
 {
-    if ( closingDocuments.contains(doc) )
+    if ( !doc || openingDocuments.contains(doc) || savingDocuments.contains(doc) || closingDocuments.contains(doc) )
         return false;
-    closingDocuments.insert(doc, "");
+    closingDocuments << doc;
     if ( saveDocument(doc) )
     {
         return true;
     }
     else
     {
-        closingDocuments.remove(doc);
+        closingDocuments.removeAll(doc);
         return false;
     }
 }
@@ -530,6 +516,13 @@ int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
 
 //Signal emitting
 
+void BCodeEditorPrivate::checkAllDocumentsProcessed()
+{
+    if ( !openingDocuments.isEmpty() || !savingDocuments.isEmpty() )
+        return;
+    QMetaObject::invokeMethod(q_func(), "allDocumentsProcessed");
+}
+
 void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -564,21 +557,6 @@ void BCodeEditorPrivate::emitFileTypesChanged()
     foreach (BAbstractEditorModule *module, modules)
         module->fileTypesChanged();
     QMetaObject::invokeMethod(q_func(), "fileTypesChanged");
-}
-
-void BCodeEditorPrivate::emitAllDocumentsOpened()
-{
-    QMetaObject::invokeMethod(q_func(), "allDocumentsOpened");
-}
-
-void BCodeEditorPrivate::emitAllDocumentsSaved()
-{
-    QMetaObject::invokeMethod(q_func(), "allDocumentsSaved");
-}
-
-void BCodeEditorPrivate::emitAllDocumentsClosed()
-{
-    QMetaObject::invokeMethod(q_func(), "allDocumentsClosed");
 }
 
 //External private class call
@@ -781,8 +759,7 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
         doc->deleteLater();
         failedToOpenMessage(fn);
     }
-    if ( openingDocuments.isEmpty() )
-        emitAllDocumentsOpened();
+    checkAllDocumentsProcessed();
 }
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
@@ -793,15 +770,12 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
     QString fn = savingDocuments.take(doc);
     if (!success)
         failedToSaveMessage(doc->fileName(), fn);
-    if ( savingDocuments.isEmpty() )
-        emitAllDocumentsSaved();
     if ( closingDocuments.contains(doc) )
     {
-        closingDocuments.remove(doc);
+        closingDocuments.removeAll(doc);
         removeDocument(doc);
-        if ( closingDocuments.isEmpty() )
-            emitAllDocumentsClosed();
     }
+    checkAllDocumentsProcessed();
 }
 
 /*============================================================================
@@ -1019,19 +993,18 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
         d_func()->emitFileTypesChanged();
 }
 
-bool BCodeEditor::waitForAllDocumentsOpened(int msecs)
+bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 {
-    return BCodeEditorPrivate::waitForAll(d_func()->openingDocuments, this, SIGNAL( allDocumentsOpened(bool) ), msecs);
-}
-
-bool BCodeEditor::waitForAllDocumentsSaved(int msecs)
-{
-    return BCodeEditorPrivate::waitForAll(d_func()->savingDocuments, this, SIGNAL( allDocumentsSaved(bool) ), msecs);
-}
-
-bool BCodeEditor::waitForAllDocumentsClosed(int msecs)
-{
-    return BCodeEditorPrivate::waitForAll(d_func()->closingDocuments, this, SIGNAL( allDocumentsClosed(bool) ), msecs);
+    B_D(BCodeEditor);
+    if ( d->openingDocuments.isEmpty() && d->savingDocuments.isEmpty() && d->closingDocuments.isEmpty() )
+        return true;
+    if (msecs <= 0)
+        return false;
+    QEventLoop el;
+    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
+    connect( this, SIGNAL( allDocumentsProcessed() ), &el, SLOT( quit() ) );
+    el.exec();
+    return ( d->openingDocuments.isEmpty() && d->savingDocuments.isEmpty() && d->closingDocuments.isEmpty() );
 }
 
 QFont BCodeEditor::editFont() const
