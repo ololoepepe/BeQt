@@ -87,6 +87,29 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
     }
 }
 
+QString BApplicationPrivate::findImage(const QString &subdir, const QString &name)
+{
+    if ( !testCoreInit("BApplication") )
+        return "";
+    if ( subdir.isEmpty() || name.isEmpty() )
+        return "";
+    QString bfn = QFileInfo(name).baseName();
+    QStringList suffixes;
+    suffixes << QFileInfo(name).suffix();
+    if ( QImageReader::supportedImageFormats().contains( QByteArray("svg") ) )
+        suffixes << "svg" << "svgz";
+    suffixes << "png";
+    foreach (const QString &suff, suffixes)
+    {
+        if ( suff.isEmpty() )
+            continue;
+        QString fn = BDirTools::findResource(subdir + "/" + bfn + "." + suff, BDirTools::GlobalOnly);
+        if ( !fn.isEmpty() )
+            return fn;
+    }
+    return "";
+}
+
 BApplicationPrivate::BApplicationPrivate(BApplication *q) :
     BCoreApplicationPrivate(q)
 {
@@ -214,10 +237,7 @@ QIcon BApplication::beqtIcon(const QString &name)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
-    if ( name.isEmpty() )
-        return QIcon();
-    QString nm = !QFileInfo(name).suffix().isEmpty() ? name : (name + ".png");
-    QString fn = BDirTools::findResource("beqt/icons/" + nm, BDirTools::GlobalOnly);
+    QString fn = BApplicationPrivate::findImage("beqt/icons", name);
     if ( fn.isEmpty() )
         return QIcon();
     return QIcon(fn);
@@ -227,15 +247,10 @@ QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QPixmap();
+    QString fn = BApplicationPrivate::findImage("beqt/images", name);
     if ( name.isEmpty() )
         return QPixmap();
-    QString nm = !QFileInfo(name).suffix().isEmpty() ? name : (name + ".png");
-    QString fn = BDirTools::findResource("beqt/images/" + nm, BDirTools::GlobalOnly);
-    if ( fn.isEmpty() )
-        return QPixmap();
     QPixmap pm(fn);
-    if ( pm.isNull() )
-        return QPixmap();
     return scale.isEmpty() ? pm : pm.scaled(scale, Qt::KeepAspectRatio, Qt::SmoothTransformation);
 }
 
@@ -371,7 +386,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case HelpContentsAction:
         act = new QAction(parent);
         act->setObjectName("ActionHelpContents");
-        //act->setIcon( beqtIcon("") );
+        act->setIcon( beqtIcon("help_contents") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showHelpContents() ) );
         break;
     case ContextualHelpAction:
@@ -383,7 +398,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case WhatsThisAction:
         act = QWhatsThis::createAction(parent);
         act->setObjectName("ActionWhatsThis");
-        //act->setIcon( beqtIcon("") );
+        act->setIcon( beqtIcon("help_hint") );
         break;
     case AboutAction:
         act = new QAction(parent);

@@ -27,6 +27,7 @@ class B_WIDGETS_EXPORT BApplicationPrivate : public BCoreApplicationPrivate
     B_DECLARE_TR_FUNCTIONS(BApplication, q)
 public:
     static void retranslateStandardAction(QAction *act);
+    static QString findImage(const QString &subdir, const QString &name);
     //
     BApplicationPrivate(BApplication *q);
     ~BApplicationPrivate();
