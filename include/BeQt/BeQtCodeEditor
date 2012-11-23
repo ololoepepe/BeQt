@@ -8,6 +8,7 @@
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
+#include "bindicatorseditormodule.h"
 #include "blocaldocumentdriver.h"
 #include "bsearcheditormodule.h"
 

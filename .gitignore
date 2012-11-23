@@ -65,4 +65,5 @@ codeeditor
 !include/BeQtNetwork
 !include/BeQtWidgets
 !examples/widgets/mainwindow
+!src/codeeditor
 !examples/codeeditor/codeeditor

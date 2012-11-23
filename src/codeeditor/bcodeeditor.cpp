@@ -7,6 +7,7 @@
 #include "bbookmarkseditormodule.h"
 #include "bsearcheditormodule.h"
 #include "babstractfiletype.h"
+#include "bindicatorseditormodule.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -814,6 +815,8 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     {
     case BookmarksModule:
         mdl = new BBookmarksEditorModule(parent);
+    case IndicatorsModule:
+        mdl = new BIndicatorsEditorModule(parent);
     case SearchModule:
         mdl = new BSearchEditorModule(parent);
         break;
