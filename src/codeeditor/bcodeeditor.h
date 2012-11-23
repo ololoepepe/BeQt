@@ -34,6 +34,15 @@ public:
         IndicatorsModule,
         SearchModule
     };
+    enum EncodingGroup
+    {
+        UnicodeGroup,
+        EastEuropeanGroup,
+        WestEuropeanGroup,
+        EastAsianGroup,
+        SouthEastSouthWestAsianGroup,
+        MiddleEastGroup
+    };
     //
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
     //
@@ -76,6 +85,13 @@ public:
     bool documentAvailable() const;
     QString currentFileName() const;
     QStringList fileNames() const;
+    bool supportsCodec(QTextCodec *codec) const;
+    bool supportsCodec(const QString &codecName) const;
+    QString fullCodecName(QTextCodec *codec) const;
+    QString fullCodecName(const QString &codecName) const;
+    QString encodingGroupName(EncodingGroup group) const;
+    QList<QTextCodec *> codecsForGroup(EncodingGroup group) const;
+    QStringList codecNamesForGroup(EncodingGroup group) const;
 public slots:
     bool addDocument( const QString &fileName = QString() );
     bool addDocument(const QString &fileName, const QString &text);
