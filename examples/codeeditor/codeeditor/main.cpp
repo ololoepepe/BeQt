@@ -51,6 +51,7 @@ int main(int argc, char **argv)
       //
       BIndicatorsEditorModule *imdl = static_cast<BIndicatorsEditorModule *>(
                   cedtr->module(BCodeEditor::IndicatorsModule) );
+      mw->statusBar()->addPermanentWidget( imdl->createIndicator(BIndicatorsEditorModule::FileTypeIndicator) );
       mw->statusBar()->addPermanentWidget( imdl->createIndicator(BIndicatorsEditorModule::CursorPositionIndicator) );
       mw->statusBar()->addPermanentWidget( imdl->createIndicator(BIndicatorsEditorModule::EncodingIndicator) );
     mw->resize(1200, 800);

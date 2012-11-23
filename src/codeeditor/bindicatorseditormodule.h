@@ -4,6 +4,7 @@
 class BIndicatorsEditorModulePrivate;
 class BCodeEditor;
 class BCodeEditorDocument;
+class BAbstractFileType;
 
 class QString;
 class QWidget;
@@ -45,7 +46,9 @@ protected:
     void editorUnset(BCodeEditor *edr);
     void documentCursorPositionChanged(const QPoint &pos);
     void documentCodecChanged(const QString &codecName);
+    void documentFileTypeChanged(BAbstractFileType *ft);
     void currentDocumentChanged(BCodeEditorDocument *doc);
+    void fileTypesChanged();
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModule)
 };

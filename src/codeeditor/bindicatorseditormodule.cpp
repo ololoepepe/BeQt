@@ -2,6 +2,7 @@
 #include "bindicatorseditormodule_p.h"
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -15,6 +16,9 @@
 #include <QLabel>
 #include <QPoint>
 #include <QFont>
+#include <QComboBox>
+#include <QStringList>
+#include <QVariant>
 
 #include <QDebug>
 
@@ -36,6 +40,9 @@ BIndicatorsEditorModulePrivate::~BIndicatorsEditorModulePrivate()
     foreach (QLabel *lbl, encodingIndicators)
         if ( !lbl->parent() )
             lbl->deleteLater();
+    foreach (QComboBox *cmbox, fileTypeIndicators)
+        if ( !cmbox->parent() )
+            cmbox->deleteLater();
 }
 
 //
@@ -63,6 +70,17 @@ QLabel *BIndicatorsEditorModulePrivate::createEncodingIndicator(QWidget *parent)
     connect( lbl, SIGNAL( destroyed(QObject *) ), this, SLOT( encodingIndicatorDestroyed(QObject *) ) );
     encodingIndicators.insert(lbl, lbl);
     return lbl;
+}
+
+QComboBox *BIndicatorsEditorModulePrivate::createFileTypeIndicator(QWidget *parent)
+{
+    QComboBox *cmbox = new QComboBox(parent);
+    cmbox->setMinimumWidth(150);
+    processFileTypeIndicator( cmbox, createFileTypeInfos(), createFileTypeIndicatorIndex() );
+    connect( cmbox, SIGNAL( destroyed(QObject *) ), this, SLOT( fileTypeIndicatorDestroyed(QObject *) ) );
+    connect( cmbox, SIGNAL( currentIndexChanged(int) ), this, SLOT( cmboxCurrentIndexChanged(int) ) );
+    fileTypeIndicators.insert(cmbox, cmbox);
+    return cmbox;
 }
 
 QString BIndicatorsEditorModulePrivate::createCursorPosIndicatorText() const
@@ -98,6 +116,46 @@ QString BIndicatorsEditorModulePrivate::createEncodingIndicatorText() const
     return fcn;
 }
 
+QList<BIndicatorsEditorModulePrivate::FileTypeInfo> BIndicatorsEditorModulePrivate::createFileTypeInfos() const
+{
+    if (!editor)
+        return QList<FileTypeInfo>();
+    QList<FileTypeInfo> list;
+    foreach ( BAbstractFileType *ft, editor->fileTypes() )
+    {
+        FileTypeInfo fti;
+        fti.id = ft->id();
+        fti.name = ft->name();
+        list << fti;
+    }
+    return list;
+}
+
+int BIndicatorsEditorModulePrivate::createFileTypeIndicatorIndex() const
+{
+    if ( !editor || !q_func()->currentDocument() )
+        return -1;
+    QString id = q_func()->currentDocument()->fileType()->id();
+    QList<BAbstractFileType *> types = editor->fileTypes();
+    for (int i = 0; i < types.size(); ++i)
+        if (types.at(i)->id() == id)
+            return i;
+    return -1;
+}
+
+void BIndicatorsEditorModulePrivate::processFileTypeIndicator(QComboBox *cmbox, const QList<FileTypeInfo> &infos,
+                                                              int index)
+{
+    cmbox->blockSignals(true);
+    cmbox->clear();
+    foreach (const FileTypeInfo &info, infos)
+        cmbox->addItem(info.name, info.id);
+    cmbox->setEnabled(index >= 0);
+    if (index >= 0)
+        cmbox->setCurrentIndex(index);
+    cmbox->blockSignals(false);
+}
+
 void BIndicatorsEditorModulePrivate::updateCursorPosIndicators()
 {
     QString text = createCursorPosIndicatorText();
@@ -112,12 +170,21 @@ void BIndicatorsEditorModulePrivate::updateEncodingIndicators()
         lbl->setText(text);
 }
 
+void BIndicatorsEditorModulePrivate::updateFileTypeIndicators()
+{
+    QList<FileTypeInfo> list = createFileTypeInfos();
+    int index = createFileTypeIndicatorIndex();
+    foreach (QComboBox *cmbox, fileTypeIndicators)
+        processFileTypeIndicator(cmbox, list, index);
+}
+
 //
 
 void BIndicatorsEditorModulePrivate::retranslateUi()
 {
     updateCursorPosIndicators();
     updateEncodingIndicators();
+    updateFileTypeIndicators();
 }
 
 void BIndicatorsEditorModulePrivate::cursorPosIndicatorDestroyed(QObject *obj)
@@ -128,6 +195,30 @@ void BIndicatorsEditorModulePrivate::cursorPosIndicatorDestroyed(QObject *obj)
 void BIndicatorsEditorModulePrivate::encodingIndicatorDestroyed(QObject *obj)
 {
     encodingIndicators.remove(obj);
+}
+
+void BIndicatorsEditorModulePrivate::fileTypeIndicatorDestroyed(QObject *obj)
+{
+    fileTypeIndicators.remove(obj);
+}
+
+void BIndicatorsEditorModulePrivate::cmboxCurrentIndexChanged(int index)
+{
+    QComboBox *cmbox = static_cast<QComboBox *>( sender() );
+    if ( !editor || !cmbox || index < 0 || index >= cmbox->count() || !q_func()->currentDocument() )
+        return;
+    q_func()->currentDocument()->blockSignals(true);
+    QString id = cmbox->itemData(index).toString();
+    foreach ( BAbstractFileType *ft, editor->fileTypes() )
+    {
+        if (ft->id() == id)
+        {
+            q_func()->currentDocument()->setFileType(ft);
+            q_func()->currentDocument()->setFocus();
+            break;
+        }
+    }
+    q_func()->currentDocument()->blockSignals(false);
 }
 
 /*============================================================================
@@ -160,7 +251,8 @@ QWidget *BIndicatorsEditorModule::createIndicator(Indicator type, QWidget *paren
         return d_func()->createCursorPosIndicator(parent);
     case EncodingIndicator:
         return d_func()->createEncodingIndicator(parent);
-    //TODO: FileType
+    case FileTypeIndicator:
+        return d_func()->createFileTypeIndicator(parent);
     default:
         return 0;
     }
@@ -169,9 +261,9 @@ QWidget *BIndicatorsEditorModule::createIndicator(Indicator type, QWidget *paren
 QList<QWidget *> BIndicatorsEditorModule::createIndicators(QWidget *parent)
 {
     QList<QWidget *> list;
-    list << createIndicator(CursorPositionIndicator, parent);
-    list << createIndicator(EncodingIndicator, parent);
-    //TODO: FileType
+    list << d_func()->createCursorPosIndicator(parent);
+    list << d_func()->createEncodingIndicator(parent);
+    list << d_func()->createFileTypeIndicator(parent);
     return list;
 }
 
@@ -189,12 +281,14 @@ void BIndicatorsEditorModule::editorSet(BCodeEditor *edr)
 {
     d_func()->updateCursorPosIndicators();
     d_func()->updateEncodingIndicators();
+    d_func()->updateFileTypeIndicators();
 }
 
 void BIndicatorsEditorModule::editorUnset(BCodeEditor *edr)
 {
     d_func()->updateCursorPosIndicators();
     d_func()->updateEncodingIndicators();
+    d_func()->updateFileTypeIndicators();
 }
 
 void BIndicatorsEditorModule::documentCursorPositionChanged(const QPoint &pos)
@@ -207,8 +301,19 @@ void BIndicatorsEditorModule::documentCodecChanged(const QString &codecName)
     d_func()->updateEncodingIndicators();
 }
 
+void BIndicatorsEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
+{
+    d_func()->updateFileTypeIndicators();
+}
+
 void BIndicatorsEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
 {
     d_func()->updateCursorPosIndicators();
     d_func()->updateEncodingIndicators();
+    d_func()->updateFileTypeIndicators();
+}
+
+void BIndicatorsEditorModule::fileTypesChanged()
+{
+    d_func()->updateFileTypeIndicators();
 }
