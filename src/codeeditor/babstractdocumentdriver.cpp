@@ -1,5 +1,7 @@
 class BCodeEdit;
 
+class QTextCodec;
+
 #include "babstractdocumentdriver.h"
 #include "babstractdocumentdriver_p.h"
 #include "bcodeeditordocument.h"
@@ -53,18 +55,10 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
 
 bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, const QString &fileName)
 {
-    if ( !doc || isDocumentInList(doc) )
-        return false;
-    d_func()->docs << doc;
-    Operation op;
-    op.document = doc;
-    op.fileName = fileName;
-    d_func()->loadOps.enqueue(op);
-    emit newPendingLoadOperation();
-    return true;
+    return load(doc, 0, fileName);
 }
 
-bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &fileName)
+bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
 {
     if ( !doc || isDocumentInList(doc) )
         return false;
@@ -72,6 +66,26 @@ bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &file
     Operation op;
     op.document = doc;
     op.fileName = fileName;
+    op.codec = codec;
+    d_func()->loadOps.enqueue(op);
+    emit newPendingLoadOperation();
+    return true;
+}
+
+bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &fileName)
+{
+    return save(doc, 0, fileName);
+}
+
+bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
+{
+    if ( !doc || isDocumentInList(doc) )
+        return false;
+    d_func()->docs << doc;
+    Operation op;
+    op.document = doc;
+    op.fileName = fileName;
+    op.codec = codec;
     d_func()->saveOps.enqueue(op);
     emit newPendingSaveOperation();
     return true;
@@ -107,6 +121,7 @@ BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingLoadOpera
     {
         Operation op;
         op.document = 0;
+        op.codec = 0;
         return op;
     }
     return d->loadOps.dequeue();
@@ -119,6 +134,7 @@ BAbstractDocumentDriver::Operation BAbstractDocumentDriver::nextPendingSaveOpera
     {
         Operation op;
         op.document = 0;
+        op.codec = 0;
         return op;
     }
     return d->saveOps.dequeue();

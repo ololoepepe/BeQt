@@ -34,8 +34,8 @@ public:
     void setCodec(const char *codecName);
     void setAsyncProcessingMinimumLength(int length);
     void setFileType(BAbstractFileType *ft);
-    bool load( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
-    bool save( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
+    bool load(BAbstractDocumentDriver *driver, const QString &fileName = QString(), QTextCodec *codec = 0);
+    bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString(), QTextCodec *codec = 0);
     QString fileName() const;
     QTextCodec *codec() const;
     int asyncProcessingMinimumLength() const;

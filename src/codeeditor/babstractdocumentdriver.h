@@ -5,6 +5,7 @@ class BCodeEditorDocument;
 class BAbstractDocumentDriverPrivate;
 
 class QWidget;
+class QTextCodec;
 
 #include <BeQtCore/BBase>
 #include <BeQtCore/BeQtGlobal>
@@ -26,6 +27,7 @@ public:
     {
         BCodeEditorDocument *document;
         QString fileName;
+        QTextCodec *codec;
     };
     //
     explicit BAbstractDocumentDriver(QObject *parent = 0);
@@ -35,7 +37,9 @@ public:
     virtual bool shouldSaveAs(const QString &fileName) = 0;
     virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName) = 0;
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
+    bool load( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
+    bool save( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
     bool hasPendingLoadOperations() const;
     bool hasPendingSaveOperations() const;
     bool isDocumentInList(BCodeEditorDocument *doc) const;

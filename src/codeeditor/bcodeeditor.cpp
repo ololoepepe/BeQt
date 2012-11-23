@@ -317,13 +317,13 @@ BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocumen
     return defaultFileType;
 }
 
-bool BCodeEditorPrivate::openDocument(const QString &fileName)
+bool BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec)
 {
     if ( fileName.isEmpty() || findDocument(fileName) )
         return false;
     BCodeEditorDocument *doc = createDocument(fileName);
     openingDocuments.insert(doc, fileName);
-    bool b = doc->load(driver, fileName);
+    bool b = doc->load(driver, fileName, codec);
     if (!b)
     {
         openingDocuments.remove(doc);
@@ -333,7 +333,7 @@ bool BCodeEditorPrivate::openDocument(const QString &fileName)
     return b;
 }
 
-bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName)
+bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
 {
     if ( !doc || savingDocuments.contains(doc) )
         return false;
@@ -354,7 +354,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
             return false;
     }
     savingDocuments.insert(doc, nfn);
-    bool b = doc->save(driver, nfn);
+    bool b = doc->save(driver, nfn, codec);
     if (!b)
     {
         savingDocuments.remove(doc);
@@ -1153,7 +1153,7 @@ bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
     return true;
 }
 
-bool BCodeEditor::openDocument(const QString &fileName)
+bool BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
 {
     return d_func()->openDocument(fileName);
 }
@@ -1163,7 +1163,7 @@ bool BCodeEditor::saveCurrentDocument()
     return d_func()->saveDocument( currentDocument() );
 }
 
-bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName)
+bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec)
 {
     if ( newFileName.isEmpty() )
         return false;

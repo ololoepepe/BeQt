@@ -49,7 +49,7 @@ void BLocalDocumentDriverPrivate::newPendingLoadOperation()
     if ( !f.open(QFile::ReadOnly) )
         return q->emitLoadingFinished(op, false);
     QTextStream in(&f);
-    in.setCodec( op.document->codec() );
+    in.setCodec( op.codec ? op.codec : op.document->codec() );
     QString text = in.readAll();
     f.close();
     q->emitLoadingFinished(op, true, text);
@@ -63,7 +63,7 @@ void BLocalDocumentDriverPrivate::newPendingSaveOperation()
     if ( !f.open(QFile::WriteOnly) )
         return q->emitSavingFinished(op, false);
     QTextStream out(&f);
-    out.setCodec( op.document->codec() );
+    out.setCodec( op.codec ? op.codec : op.document->codec() );
     out << op.document->text();
     f.close();
     q->emitSavingFinished(op, true);

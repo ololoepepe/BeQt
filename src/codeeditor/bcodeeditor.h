@@ -8,6 +8,7 @@ class BCodeEditorDocument;
 class BAbstractFileType;
 
 class QStringList;
+class QTextCodec;
 
 #include "bcodeedit.h"
 
@@ -80,9 +81,9 @@ public:
 public slots:
     bool addDocument( const QString &fileName = QString() );
     bool addDocument(const QString &fileName, const QString &text);
-    bool openDocument(const QString &fileName);
+    bool openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool saveCurrentDocument();
-    bool saveCurrentDocumentAs(const QString &newFileName);
+    bool saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec = 0);
     bool saveAllDocuments();
     bool closeCurrentDocument();
     bool closeAllDocuments();

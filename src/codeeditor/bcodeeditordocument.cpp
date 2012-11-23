@@ -63,6 +63,8 @@ void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::
     {
         if ( !operation.fileName.isEmpty() )
             q->setFileName(operation.fileName);
+        if (operation.codec)
+            q->setCodec(operation.codec);
         setText(text, asyncMin);
         ptedt->document()->setModified(false);
         ptedt->document()->clearUndoRedoStacks();
@@ -83,6 +85,8 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
     {
         if ( !operation.fileName.isEmpty() )
             q->setFileName(operation.fileName);
+        if (operation.codec)
+            q->setCodec(operation.codec);
         ptedt->document()->setModified(false);
     }
     QMetaObject::invokeMethod( q, "savingFinished", Q_ARG(bool, success) );
@@ -154,7 +158,7 @@ void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
     emit fileTypeChanged(ft);
 }
 
-bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
+bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName, QTextCodec *codec)
 {
     if ( !driver || isBuisy() )
         return false;
@@ -162,7 +166,7 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &f
     d->setBuisy(true);
     connect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
              d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
-    if ( !driver->load(this, fileName) )
+    if ( !driver->load(this, codec, fileName) )
     {
         disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
                     d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
@@ -172,7 +176,7 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &f
     return true;
 }
 
-bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &fileName)
+bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &fileName, QTextCodec *codec)
 {
     if ( !driver || isBuisy() )
         return false;
@@ -180,7 +184,7 @@ bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &f
     d->setBuisy(true);
     connect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
              d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
-    if ( !driver->save(this, fileName) )
+    if ( !driver->save(this, codec, fileName) )
     {
         disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
                     d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
