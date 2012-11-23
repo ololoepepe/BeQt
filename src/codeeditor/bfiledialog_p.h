@@ -15,6 +15,7 @@ class QTextCodec;
 
 #include <QObject>
 #include <QMap>
+#include <QDataStream>
 
 /*============================================================================
 ================================ File Dialog Private
@@ -31,6 +32,8 @@ public:
     //
     void init();
     void addEncoding(QTextCodec *codec);
+    //
+    static const QDataStream::Version DSVersion;
     //
     QMap<QTextCodec *, int> codecIndexes;
     QList<BAbstractFileType *> fileTypes;

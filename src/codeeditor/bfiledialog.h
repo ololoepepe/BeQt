@@ -6,6 +6,7 @@ class BAbstractFileType;
 
 class QString;
 class QTextCodec;
+class QByteArray;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -33,10 +34,12 @@ public:
     void selectFileType(const QString &id);
     void selectCodec(QTextCodec *codec);
     void selectCodec(const QString &codecName);
+    void restoreState(const QByteArray &ba);
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
     BAbstractFileType *selectedFileType() const;
     QString selectedFileTypeId() const;
+    QByteArray saveState() const;
 private:
     Q_DISABLE_COPY(BFileDialog)
 };

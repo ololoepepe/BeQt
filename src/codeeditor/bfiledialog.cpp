@@ -18,6 +18,8 @@
 #include <QStringList>
 #include <QVariant>
 #include <QByteArray>
+#include <QDataStream>
+#include <QIODevice>
 
 #include <QDebug>
 
@@ -59,6 +61,10 @@ void BFileDialogPrivate::addEncoding(QTextCodec *codec)
     QString cn = BCodeEditor::codecName(codec);
     cmboxEncodings->addItem(!fcn.isEmpty() ? fcn : cn, cn);
 }
+
+//
+
+const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_4_8;
 
 /*============================================================================
 ================================ File Dialog
@@ -143,6 +149,21 @@ void BFileDialog::selectCodec(const QString &codecName)
     selectCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
+void BFileDialog::restoreState(const QByteArray &ba)
+{
+    QDataStream in(ba);
+    in.setVersion(BFileDialogPrivate::DSVersion);
+    QByteArray fdstate;
+    QString scn;
+    QString sft;
+    in >> fdstate;
+    in >> scn;
+    in >> sft;
+    QFileDialog::restoreState(fdstate);
+    selectCodec(scn);
+    selectFileType(sft);
+}
+
 QTextCodec *BFileDialog::selectedCodec() const
 {
     int ind = d_func()->cmboxEncodings->currentIndex();
@@ -170,4 +191,15 @@ QString BFileDialog::selectedFileTypeId() const
 {
     BAbstractFileType *ft = selectedFileType();
     return ft ? ft->id() : QString();
+}
+
+QByteArray BFileDialog::saveState() const
+{
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::ReadOnly);
+    out.setVersion(BFileDialogPrivate::DSVersion);
+    out << QFileDialog::saveState();
+    out << selectedCodecName();
+    out << selectedFileTypeId();
+    return ba;
 }
