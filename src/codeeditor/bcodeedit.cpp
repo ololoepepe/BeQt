@@ -619,8 +619,7 @@ void BCodeEditPrivate::init()
         ptedt->setDragEnabled(false);
         ptedt->installEventFilter(this);
         ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
-        //Using such a construct to get default monospace font family name
-        ptedt->setFont( QFont( QFontInfo( QFont("monospace") ).family() ) );
+        ptedt->setFont( BApplication::createMonospaceFont() );
         setTextToEmptyLine();
         ptedt->document()->setModified(false);
         connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );

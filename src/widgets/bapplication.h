@@ -6,6 +6,7 @@ class BApplicationPrivate;
 class QIcon;
 class QPixmap;
 class QAction;
+class QFont;
 
 #include "baboutdialog.h"
 #include "bsettingsdialog.h"
@@ -65,6 +66,7 @@ public:
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
+    static QFont createMonospaceFont();
     //
     explicit BApplication();
     ~BApplication();

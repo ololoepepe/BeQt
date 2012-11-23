@@ -67,6 +67,7 @@ public:
     BCodeEdit::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
     BAbstractEditorModule *module(const QString &name) const;
+    BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;

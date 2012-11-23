@@ -1,6 +1,11 @@
 #ifndef BINDICATORSEDITORMODULE_P_H
 #define BINDICATORSEDITORMODULE_P_H
 
+class QLabel;
+class QWidget;
+class QPoint;
+class QString;
+
 #include "bindicatorseditormodule.h"
 #include "babstracteditormodule_p.h"
 
@@ -8,6 +13,7 @@
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
+#include <QMap>
 
 /*============================================================================
 ================================ Indicators Editor Module Private
@@ -23,6 +29,14 @@ public:
     ~BIndicatorsEditorModulePrivate();
     //
     void init();
+    QLabel *createCursorPosIndicator(QWidget *parent = 0);
+    QString createCursorPosIndicatorText();
+    void updateCursorPosIndicators();
+    //
+    QMap<QObject *, QLabel *> cursorPosIndicators;
+public slots:
+    void retranslateUi();
+    void cursorPosIndicatorDestroyed(QObject *obj);
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModulePrivate)
 };

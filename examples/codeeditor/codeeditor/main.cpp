@@ -2,6 +2,7 @@
 #include <BCodeEditor>
 #include <BAbstractEditorModule>
 #include <BBookmarksEditorModule>
+#include <BIndicatorsEditorModule>
 #include <BSearchEditorModule>
 
 #include <QApplication>
@@ -12,6 +13,7 @@
 #include <QAction>
 #include <QMenuBar>
 #include <QToolBar>
+#include <QStatusBar>
 
 #include <QDebug>
 
@@ -40,12 +42,16 @@ int main(int argc, char **argv)
       mw->setCentralWidget(cedtr);
       //
       QMenu *mnuBM = mw->menuBar()->addMenu("Find");
-        mnuBM->addActions( static_cast<BSearchEditorModule *>( cedtr->modules().first() )->actions() );
+        mnuBM->addActions( static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) )->actions() );
       //
       QToolBar *tbar = new QToolBar;
         tbar->setWindowTitle("Search");
         tbar->addActions( mnuBM->actions() );
       mw->addToolBar(tbar);
+      //
+      mw->statusBar()->addPermanentWidget( static_cast<BIndicatorsEditorModule *>(
+                                               cedtr->module(BCodeEditor::IndicatorsModule) )->createIndicator(
+                                               BIndicatorsEditorModule::CursorPositionIndicator) );
     mw->resize(1200, 800);
     mw->move(400, 200);
     //Showing widgets

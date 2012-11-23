@@ -29,6 +29,8 @@
 #include <QList>
 #include <QImageReader>
 #include <QByteArray>
+#include <QFont>
+#include <QFontInfo>
 
 #include <QDebug>
 #include <QPointer>
@@ -41,12 +43,10 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
 {
     if (!act)
         return;
-    bool ok = false;
-    BApplication::StandardAction type = static_cast<BApplication::StandardAction>(
-                act->property("standard_action_type").toInt(&ok) );
-    if (!ok)
+    QVariant v = act->property("beqt/standard_action_type");
+    if ( v.isNull() )
         return;
-    switch (type)
+    switch ( static_cast<BApplication::StandardAction>( v.toInt() ) )
     {
     case BApplication::SettingsAction:
         act->setText( trq("Settings...", "act text") );
@@ -409,11 +409,17 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     default:
         return 0;
     }
-    act->setProperty("standard_action_type", type);
+    act->setProperty("beqt/standard_action_type", type);
     ds_func()->actions.insert(act, act);
     connect( act, SIGNAL( destroyed(QObject *) ), ds_func(), SLOT( actionDestroyed(QObject *) ) );
     BApplicationPrivate::retranslateStandardAction(act);
     return act;
+}
+
+QFont BApplication::createMonospaceFont()
+{
+    //Using such a construct to get default monospace font family name
+    return QFont( QFontInfo( QFont("monospace") ).family() );
 }
 
 //

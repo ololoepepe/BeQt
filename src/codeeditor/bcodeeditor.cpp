@@ -207,7 +207,7 @@ void BCodeEditorPrivate::init()
 {
     B_Q(BCodeEditor);
     document = 0;
-    editFont = QFont( QFontInfo( QFont("monospace") ).family() );
+    editFont = BApplication::createMonospaceFont();
     editMode = BCodeEdit::NormalMode;
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
@@ -815,15 +815,18 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     {
     case BookmarksModule:
         mdl = new BBookmarksEditorModule(parent);
+        break;
     case IndicatorsModule:
         mdl = new BIndicatorsEditorModule(parent);
+        break;
     case SearchModule:
         mdl = new BSearchEditorModule(parent);
         break;
     default:
-        break;
+        return 0;
     }
-    if (parent && mdl)
+    mdl->setProperty("beqt/standard_module_type", type);
+    if (parent)
         parent->addModule(mdl);
     return mdl;
 }
@@ -834,8 +837,8 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
     d_func()->init();
-    createStandardModule(SearchModule, this);
-    createStandardModule(BookmarksModule, this); //Just for test, remove, but add another modules in the future
+    addModule(IndicatorsModule);
+    addModule(SearchModule);
 }
 
 BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent) :
@@ -844,8 +847,8 @@ BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *p
     d_func()->init();
     foreach (BAbstractFileType *ft, fileTypes)
         d_func()->tryAddFileType(ft);
-    createStandardModule(SearchModule, this);
-    createStandardModule(BookmarksModule, this); //Just for test, remove, but add another modules in the future
+    addModule(IndicatorsModule);
+    addModule(SearchModule);
 }
 
 BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
@@ -1059,6 +1062,19 @@ bool BCodeEditor::isBracketHighlightingEnabled() const
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
 {
     return d_func()->modules.value(name);
+}
+
+BAbstractEditorModule *BCodeEditor::module(StandardModule type) const
+{
+    foreach (BAbstractEditorModule *mdl, d_func()->modules)
+    {
+        QVariant v = mdl->property("beqt/standard_module_type");
+        if ( v.isNull() )
+            continue;
+        if (static_cast<StandardModule>( v.toInt() ) == type)
+            return mdl;
+    }
+    return 0;
 }
 
 QList<BAbstractEditorModule *> BCodeEditor::modules() const
