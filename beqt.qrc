@@ -5,39 +5,39 @@
         <file>ChangeLog.txt</file>
         <file>COPYING.txt</file>
         <file>icons/back.png</file>
-        <file>icons/binary.png</file>
-        <file>icons/configure.png</file>
-        <file>icons/decrypted.png</file>
-        <file>icons/forward.png</file>
-        <file>icons/gohome.png</file>
-        <file>icons/help_about.png</file>
-        <file>icons/help_contextual.png</file>
-        <file>icons/messagebox_warning.png</file>
-        <file>icons/network.png</file>
-        <file>icons/ok.png</file>
-        <file>images/beqt_logo.png</file>
-        <file>images/qt_logo.png</file>
-        <file>icons/bookmark.png</file>
-        <file>icons/bookmark_add.png</file>
-        <file>icons/filesave.png</file>
         <file>icons/back.svgz</file>
-        <file>icons/bookmark.svg</file>
-        <file>icons/bookmark_add.svg</file>
-        <file>icons/configure.svg</file>
-        <file>icons/decrypted.svg</file>
+        <file>icons/binary.png</file>
+        <file>icons/bookmark.png</file>
+        <file>icons/bookmark.svgz</file>
+        <file>icons/bookmark_add.png</file>
+        <file>icons/bookmark_add.svgz</file>
+        <file>icons/configure.png</file>
+        <file>icons/configure.svgz</file>
+        <file>icons/decrypted.png</file>
+        <file>icons/decrypted.svgz</file>
+        <file>icons/filesave.png</file>
         <file>icons/filesave.svgz</file>
         <file>icons/find.png</file>
         <file>icons/find.svgz</file>
+        <file>icons/forward.png</file>
         <file>icons/forward.svgz</file>
-        <file>icons/gohome.svg</file>
+        <file>icons/gohome.png</file>
+        <file>icons/gohome.svgz</file>
+        <file>icons/help_about.png</file>
         <file>icons/help_about.svgz</file>
         <file>icons/help_contents.svgz</file>
+        <file>icons/help_contextual.png</file>
         <file>icons/help_contextual.svgz</file>
         <file>icons/help_hint.svgz</file>
-        <file>icons/messagebox_warning.svg</file>
+        <file>icons/messagebox_warning.png</file>
+        <file>icons/messagebox_warning.svgz</file>
+        <file>icons/network.png</file>
         <file>icons/network.svgz</file>
         <file>icons/next.png</file>
-        <file>icons/next.svg</file>
+        <file>icons/next.svgz</file>
+        <file>icons/ok.png</file>
         <file>icons/ok.svgz</file>
+        <file>images/beqt_logo.png</file>
+        <file>images/qt_logo.png</file>
     </qresource>
 </RCC>

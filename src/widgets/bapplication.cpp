@@ -97,7 +97,7 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
     QStringList suffixes;
     suffixes << QFileInfo(name).suffix();
     if ( QImageReader::supportedImageFormats().contains( QByteArray("svg") ) )
-        suffixes << "svg" << "svgz";
+        suffixes << "svgz";
     suffixes << "png";
     foreach (const QString &suff, suffixes)
     {
