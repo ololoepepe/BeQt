@@ -149,7 +149,7 @@ void BFileDialog::selectCodec(const QString &codecName)
     selectCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
-void BFileDialog::restoreState(const QByteArray &ba)
+void BFileDialog::restoreState(const QByteArray &ba, bool includeGeometry)
 {
     QDataStream in(ba);
     in.setVersion(BFileDialogPrivate::DSVersion);
@@ -162,6 +162,12 @@ void BFileDialog::restoreState(const QByteArray &ba)
     QFileDialog::restoreState(fdstate);
     selectCodec(scn);
     selectFileType(sft);
+    if (includeGeometry)
+    {
+        QByteArray geom;
+        in >> geom;
+        restoreGeometry(geom);
+    }
 }
 
 QTextCodec *BFileDialog::selectedCodec() const
@@ -193,7 +199,7 @@ QString BFileDialog::selectedFileTypeId() const
     return ft ? ft->id() : QString();
 }
 
-QByteArray BFileDialog::saveState() const
+QByteArray BFileDialog::saveState(bool includeGeometry) const
 {
     QByteArray ba;
     QDataStream out(&ba, QIODevice::ReadOnly);
@@ -201,5 +207,7 @@ QByteArray BFileDialog::saveState() const
     out << QFileDialog::saveState();
     out << selectedCodecName();
     out << selectedFileTypeId();
+    if (includeGeometry)
+        out << saveGeometry();
     return ba;
 }

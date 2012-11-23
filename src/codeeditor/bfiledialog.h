@@ -34,12 +34,12 @@ public:
     void selectFileType(const QString &id);
     void selectCodec(QTextCodec *codec);
     void selectCodec(const QString &codecName);
-    void restoreState(const QByteArray &ba);
+    void restoreState(const QByteArray &ba, bool includeGeometry = true);
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
     BAbstractFileType *selectedFileType() const;
     QString selectedFileTypeId() const;
-    QByteArray saveState() const;
+    QByteArray saveState(bool includeGeometry = true) const;
 private:
     Q_DISABLE_COPY(BFileDialog)
 };
