@@ -105,13 +105,13 @@ public:
     //
     static QString defaultFileName();
     static QString createFileName(const QString &fileName);
+    static QMap<QTextCodec *, QString> createCodecNamesMap();
     static QString codecDescriptiveName(const QString &codecName);
     //
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
     //
     void init();
-    void populateSupportedCodecs(const QString &codecName);
     bool tryAddFileType(BAbstractFileType *ft);
     bool tryRemoveFileType(const QString &id);
     bool findDocument(const QString &fileName);
@@ -146,6 +146,7 @@ public:
     static const QStringList SouthEastSouthWestAsianCodecs;
     static const QStringList MiddleEastCodecs;
     static const QStringList SupportedCodecs;
+    static const QMap<QTextCodec *, QString> CodecNames;
     //
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
@@ -162,7 +163,6 @@ public:
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;
-    QMap<QString, QTextCodec *> supportedCodecs;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;

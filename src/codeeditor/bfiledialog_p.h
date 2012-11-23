@@ -1,8 +1,6 @@
 #ifndef BFILEDIALOG_P_H
 #define BFILEDIALOG_P_H
 
-class BCodeEditor;
-
 class QLayout;
 class QComboBox;
 class QLabel;
@@ -30,9 +28,9 @@ public:
     ~BFileDialogPrivate();
     //
     void init();
-    void addEncoding(QTextCodec *codec, BCodeEditor *editor = 0);
+    void addEncoding(QTextCodec *codec);
     //
-    QMap<QString, QTextCodec *> encodings;
+    QMap<QTextCodec *, int> codecIndexes;
     //
     QLayout *lt;
       QLabel *lblEncodings;

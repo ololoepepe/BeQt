@@ -34,7 +34,7 @@ public:
         IndicatorsModule,
         SearchModule
     };
-    enum EncodingGroup
+    enum CodecGroup
     {
         UnicodeGroup,
         EastEuropeanGroup,
@@ -45,6 +45,16 @@ public:
     };
     //
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
+    static bool supportsCodec(QTextCodec *codec);
+    static bool supportsCodec(const QString &codecName);
+    static QList<QTextCodec *> supportedCodecs();
+    static QStringList supportedCodecNames();
+    static QString codecName(QTextCodec *codec);
+    static QString fullCodecName(QTextCodec *codec);
+    static QString fullCodecName(const QString &codecName);
+    static QString codecGroupName(CodecGroup group);
+    static QList<QTextCodec *> codecsForGroup(CodecGroup group);
+    static QStringList codecNamesForGroup(CodecGroup group);
     //
     explicit BCodeEditor(QWidget *parent = 0);
     explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent = 0);
@@ -89,15 +99,6 @@ public:
     bool documentAvailable() const;
     QString currentFileName() const;
     QStringList fileNames() const;
-    bool supportsCodec(QTextCodec *codec) const;
-    bool supportsCodec(const QString &codecName) const;
-    QList<QTextCodec *> supportedCodecs() const;
-    QStringList supportedCodecNames() const;
-    QString fullCodecName(QTextCodec *codec) const;
-    QString fullCodecName(const QString &codecName) const;
-    QString encodingGroupName(EncodingGroup group) const;
-    QList<QTextCodec *> codecsForGroup(EncodingGroup group) const;
-    QStringList codecNamesForGroup(EncodingGroup group) const;
 public slots:
     bool addDocument( const QString &fileName = QString() );
     bool addDocument(const QString &fileName, const QString &text);

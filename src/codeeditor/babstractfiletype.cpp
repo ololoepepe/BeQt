@@ -7,6 +7,8 @@
 #include <QSyntaxHighlighter>
 #include <QList>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ Default File Type (declaration)
 ============================================================================*/
@@ -104,20 +106,18 @@ QString BAbstractFileType::createFileDialogFilter() const
 {
     QString desc = description();
     QStringList sl = suffixes();
-    if ( !desc.isEmpty() || suffixes().isEmpty() )
+    if ( desc.isEmpty() || sl.isEmpty() )
         return "";
     QString filter;
     filter += desc + " (";
+    if ( sl.contains("*") )
+        sl.clear();
+    sl.removeDuplicates();
     if ( !sl.isEmpty() )
-    {
-        sl.removeDuplicates();
         for (int i = 0; i < sl.size(); ++i)
             filter += "*." + sl.at(i) + (i < sl.size() - 1 ? " " : "");
-    }
     else
-    {
         filter += "*";
-    }
     filter += ")";
     return filter;
 }

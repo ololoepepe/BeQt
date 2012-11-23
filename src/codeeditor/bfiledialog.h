@@ -3,7 +3,6 @@
 
 class BFileDialogPrivate;
 class BAbstractFileType;
-class BCodeEditor;
 
 class QString;
 class QTextCodec;
@@ -29,10 +28,10 @@ protected:
     BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
     void setFileTypes(const QList<BAbstractFileType *> &list);
-    void setEncodings(const QList<QTextCodec *> &list, BCodeEditor *editor = 0);
-    void setSelectedEncoding(QTextCodec *codec);
-    void setSelectedEncoding(const QString &codecName);
-    QTextCodec *selectedEncoding() const;
+    void setCodecs(const QList<QTextCodec *> &list);
+    void setSelectedCodec(QTextCodec *codec);
+    void setSelectedCodec(const QString &codecName);
+    QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
 private:
     Q_DISABLE_COPY(BFileDialog)

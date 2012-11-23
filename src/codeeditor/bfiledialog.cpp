@@ -19,6 +19,8 @@
 #include <QVariant>
 #include <QByteArray>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ File Dialog Private
 ============================================================================*/
@@ -50,16 +52,14 @@ void BFileDialogPrivate::init()
       lt->addWidget(cmboxEncodings);
 }
 
-void BFileDialogPrivate::addEncoding(QTextCodec *codec, BCodeEditor *editor)
+void BFileDialogPrivate::addEncoding(QTextCodec *codec)
 {
-    if (!codec )
+    if ( !codec || codecIndexes.contains(codec) )
         return;
-    QString cn = QString::fromLatin1( codec->name().data() );
-    if ( encodings.contains(cn) )
-        return;
-    encodings.insert(cn, codec);
-    QString text = editor ? editor->fullCodecName(codec) : QString();
-    cmboxEncodings->addItem(!text.isEmpty() ? text : cn, cn);
+    codecIndexes.insert( codec, cmboxEncodings->count() );
+    QString fcn = BCodeEditor::fullCodecName(codec);
+    QString cn = BCodeEditor::codecName(codec);
+    cmboxEncodings->addItem(!fcn.isEmpty() ? fcn : cn, cn);
 }
 
 /*============================================================================
@@ -97,43 +97,42 @@ void BFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
     setNameFilters(filters);
 }
 
-void BFileDialog::setEncodings(const QList<QTextCodec *> &list, BCodeEditor *editor)
+void BFileDialog::setCodecs(const QList<QTextCodec *> &list)
 {
     if ( list.isEmpty() )
         return;
     B_D(BFileDialog);
     d->cmboxEncodings->clear();
-    d->encodings.clear();
+    d->codecIndexes.clear();
     foreach (QTextCodec *c, list)
-        d->addEncoding(c, editor);
+        d->addEncoding(c);
 }
 
-void BFileDialog::setSelectedEncoding(QTextCodec *codec)
+void BFileDialog::setSelectedCodec(QTextCodec *codec)
 {
     if (!codec)
         return;
-    setSelectedEncoding( QString::fromLatin1( codec->name().data() ) );
-}
-
-void BFileDialog::setSelectedEncoding(const QString &codecName)
-{
     B_D(BFileDialog);
-    int ind = d->cmboxEncodings->findData(codecName);
-    if (ind < 0)
-        return
-    d->cmboxEncodings->setCurrentIndex(ind);
+    if ( !d->codecIndexes.contains(codec) )
+        return;
+    d->cmboxEncodings->setCurrentIndex( d->codecIndexes.value(codec) );
 }
 
-QTextCodec *BFileDialog::selectedEncoding() const
+void BFileDialog::setSelectedCodec(const QString &codecName)
 {
-    QString scn = selectedCodecName();
-    return !scn.isEmpty() ? d_func()->encodings.value(scn) : 0;
+    if ( codecName.isEmpty() )
+        return;
+    setSelectedCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
+}
+
+QTextCodec *BFileDialog::selectedCodec() const
+{
+    int ind = d_func()->cmboxEncodings->currentIndex();
+    return (ind >= 0) ? QTextCodec::codecForName( selectedCodecName().toLatin1() ) : 0;
 }
 
 QString BFileDialog::selectedCodecName() const
 {
     int ind = d_func()->cmboxEncodings->currentIndex();
-    if (ind < 0)
-        return "";
-    return d_func()->cmboxEncodings->itemData(ind).toString();
+    return (ind >= 0 ) ? d_func()->cmboxEncodings->itemData(ind).toString() : QString();
 }
