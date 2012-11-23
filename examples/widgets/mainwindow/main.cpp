@@ -101,37 +101,21 @@ int main(int argc, char **argv)
           BLocaleComboBox *lcb = new BLocaleComboBox(false, w);
           vlt->addWidget(lcb);
       mw->setCentralWidget(w);
-      QMenu *mnuBM = mw->menuBar()->addMenu("Find");
     mw->move(800, 400);
     //BTerminalWidget
     BTerminalWidget *term = new BTerminalWidget(BTerminalWidget::NormalMode);
     term->setDriver(new BLocalTerminalDriver);
-    //BCodeEdit
-    BCodeEdit *cedt = new BCodeEdit;
-    cedt->setRecognizedBrackets( QList<BCodeEdit::BracketPair>() << BCodeEdit::BracketPair("(", ")") );
-    //BCodeEditor
-    BCodeEditor *cedtr = new BCodeEditor;
-    cedtr->resize(1200, 800);
-    cedtr->move(400, 200);
-    cedtr->addDocument("Test.txt");
-    cedtr->openDocument("/home/darkangel/tmp/texput.log");
-    cedtr->openDocument("/home/darkangel/tmp/texput.log");
-    mnuBM->addActions( static_cast<BSearchEditorModule *>( cedtr->modules().first() )->actions() );
     //Loading settings and plugins
     BApplication::loadSettings();
     BApplication::loadPlugins();
     //Showing widgets
     mw->show();
     //term->show();
-    //cedt->show();
-    cedtr->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings
     BApplication::saveSettings();
     //Deleting objects
-    delete cedtr;
-    delete cedt;
     delete mw;
     delete term;
     delete bapp;

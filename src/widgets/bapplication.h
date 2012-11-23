@@ -40,7 +40,6 @@ public:
     };
     enum StandardAction
     {
-        InvalidAction = 0,
         SettingsAction,
         HomepageAction,
         HelpContentsAction,
@@ -66,7 +65,6 @@ public:
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
-    static void retranslateStandardAction(QAction *action);
     //
     explicit BApplication();
     ~BApplication();

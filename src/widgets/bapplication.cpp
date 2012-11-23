@@ -37,6 +37,56 @@
 ================================ Application Private
 ============================================================================*/
 
+void BApplicationPrivate::retranslateStandardAction(QAction *act)
+{
+    if (!act)
+        return;
+    bool ok = false;
+    BApplication::StandardAction type = static_cast<BApplication::StandardAction>(
+                act->property("standard_action_type").toInt(&ok) );
+    if (!ok)
+        return;
+    switch (type)
+    {
+    case BApplication::SettingsAction:
+        act->setText( trq("Settings...", "act text") );
+        act->setToolTip( trq("Show Settings dialog", "act toolTip") );
+        act->setWhatsThis( trq("Use this action to show application settings dialog", "act whatsThis") );
+        break;
+    case BApplication::HomepageAction:
+        act->setText( trq("Homepage", "act text") );
+        act->setToolTip( trq("Go to homepage", "act toolTip") );
+        act->setWhatsThis( trq("Use this action to show application homepage with your browser", "act whatsThis") );
+        break;
+    case BApplication::HelpContentsAction:
+        act->setText( trq("Help contents", "act text") );
+        act->setToolTip( trq("Show Help contents", "act toolTip") );
+        act->setWhatsThis( trq("Use this action to show Help contents (index)", "act whatsThis") );
+        break;
+    case BApplication::ContextualHelpAction:
+        act->setText( trq("Contextual Help", "act text") );
+        act->setToolTip( trq("Show contextual Help", "act toolTip") );
+        act->setWhatsThis( trq("Use this action to open context-specific Help page", "act whatsThis") );
+        break;
+    case BApplication::WhatsThisAction:
+    {
+        QAction *wta = QWhatsThis::createAction();
+        act->setText( wta->text() );
+        act->setToolTip( wta->toolTip() );
+        wta->deleteLater();
+        break;
+    }
+    case BApplication::AboutAction:
+        act->setText( trq("About", "act text") );
+        act->setToolTip( trq("Show About dialog", "act toolTip") );
+        act->setWhatsThis( trq("Use this action to show information about application, it's authors, etc.",
+                               "act whatsThis") );
+        break;
+    default:
+        break;
+    }
+}
+
 BApplicationPrivate::BApplicationPrivate(BApplication *q) :
     BCoreApplicationPrivate(q)
 {
@@ -59,6 +109,7 @@ void BApplicationPrivate::init()
     aboutDlg = 0;
     iconCaching = false;
     navigation = BApplication::DefaultNavigation;
+    connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
 void BApplicationPrivate::initAboutDlg()
@@ -119,6 +170,21 @@ void BApplicationPrivate::showHelp(const QString &file)
     BHelpBrowser *hb = new BHelpBrowser(helpSearchPaths(), index, fn);
     hb->setAttribute(Qt::WA_DeleteOnClose, true);
     hb->show();
+}
+
+//
+
+void BApplicationPrivate::retranslateUi()
+{
+    foreach (QAction *act, actions)
+        retranslateStandardAction(act);
+}
+
+void BApplicationPrivate::actionDestroyed(QObject *act)
+{
+    if (!act)
+        return;
+    actions.remove(act);
 }
 
 /*============================================================================
@@ -329,57 +395,10 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
         return 0;
     }
     act->setProperty("standard_action_type", type);
-    retranslateStandardAction(act);
+    ds_func()->actions.insert(act, act);
+    connect( act, SIGNAL( destroyed(QObject *) ), ds_func(), SLOT( actionDestroyed(QObject *) ) );
+    BApplicationPrivate::retranslateStandardAction(act);
     return act;
-}
-
-void BApplication::retranslateStandardAction(QAction *action)
-{
-    if (!action)
-        return;
-    bool ok = false;
-    StandardAction type = static_cast<StandardAction>( action->property("standard_action_type").toInt(&ok) );
-    if (!ok || InvalidAction == type)
-        return;
-    switch (type)
-    {
-    case SettingsAction:
-        action->setText( tr("Settings...", "act text") );
-        action->setToolTip( tr("Show Settings dialog", "act toolTip") );
-        action->setWhatsThis( tr("Use this action to show application settings dialog", "act whatsThis") );
-        break;
-    case HomepageAction:
-        action->setText( tr("Homepage", "act text") );
-        action->setToolTip( tr("Go to homepage", "act toolTip") );
-        action->setWhatsThis( tr("Use this action to show application homepage with your browser", "act whatsThis") );
-        break;
-    case HelpContentsAction:
-        action->setText( tr("Help contents", "act text") );
-        action->setToolTip( tr("Show Help contents", "act toolTip") );
-        action->setWhatsThis( tr("Use this action to show Help contents (index)", "act whatsThis") );
-        break;
-    case ContextualHelpAction:
-        action->setText( tr("Contextual Help", "act text") );
-        action->setToolTip( tr("Show contextual Help", "act toolTip") );
-        action->setWhatsThis( tr("Use this action to open context-specific Help page", "act whatsThis") );
-        break;
-    case WhatsThisAction:
-    {
-        QAction *wta = QWhatsThis::createAction();
-        action->setText( wta->text() );
-        action->setToolTip( wta->toolTip() );
-        wta->deleteLater();
-        break;
-    }
-    case AboutAction:
-        action->setText( tr("About", "act text") );
-        action->setToolTip( tr("Show About dialog", "act toolTip") );
-        action->setWhatsThis( tr("Use this action to show information about application, it's authors, etc.",
-                                 "act whatsThis") );
-        break;
-    default:
-        break;
-    }
 }
 
 //

@@ -4,12 +4,14 @@
 class BApplicationPrivate;
 
 class QStringList;
+class QAction;
 
 #include "bapplication.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bcoreapplication_p.h>
 
+#include <QObject>
 #include <QString>
 #include <QMap>
 #include <QIcon>
@@ -21,8 +23,11 @@ class QStringList;
 class B_WIDGETS_EXPORT BApplicationPrivate : public BCoreApplicationPrivate
 {
     B_DECLARE_PUBLIC(BApplication)
-    Q_DECLARE_TR_FUNCTIONS(BApplication)
+    Q_OBJECT
+    B_DECLARE_TR_FUNCTIONS(BApplication, q)
 public:
+    static void retranslateStandardAction(QAction *act);
+    //
     BApplicationPrivate(BApplication *q);
     ~BApplicationPrivate();
     //
@@ -40,6 +45,10 @@ public:
     QString helpIndex;
     QMap<QString, QIcon> iconCache;
     bool iconCaching;
+    QMap<QObject *, QAction *> actions;
+public slots:
+    void retranslateUi();
+    void actionDestroyed(QObject *act);
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };
