@@ -128,7 +128,6 @@ public:
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     int closeModifiedMessage(const QString &fileName);
     //Signal emitting
-    void checkAllDocumentsProcessed();
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);

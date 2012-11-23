@@ -516,13 +516,6 @@ int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
 
 //Signal emitting
 
-void BCodeEditorPrivate::checkAllDocumentsProcessed()
-{
-    if ( !openingDocuments.isEmpty() || !savingDocuments.isEmpty() )
-        return;
-    QMetaObject::invokeMethod(q_func(), "allDocumentsProcessed");
-}
-
 void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -708,6 +701,20 @@ void BCodeEditorPrivate::documentCursorPositionChanged(const QPoint &pos)
 
 void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
 {
+    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    if (!doc)
+        return;
+    if (buisy)
+    {
+        if ( !processedDocuments.contains(doc) )
+            processedDocuments << doc;
+    }
+    else
+    {
+        processedDocuments.removeAll(doc);
+        if ( processedDocuments.isEmpty() )
+            QMetaObject::invokeMethod(q_func(), "allDocumentsProcessed");
+    }
     foreach (BAbstractEditorModule *module, modules)
         module->documentBuisyChanged(buisy);
 }
@@ -759,7 +766,6 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
         doc->deleteLater();
         failedToOpenMessage(fn);
     }
-    checkAllDocumentsProcessed();
 }
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
@@ -775,7 +781,6 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
         closingDocuments.removeAll(doc);
         removeDocument(doc);
     }
-    checkAllDocumentsProcessed();
 }
 
 /*============================================================================
@@ -996,7 +1001,7 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 {
     B_D(BCodeEditor);
-    if ( d->openingDocuments.isEmpty() && d->savingDocuments.isEmpty() && d->closingDocuments.isEmpty() )
+    if ( d->processedDocuments.isEmpty() )
         return true;
     if (msecs <= 0)
         return false;
@@ -1004,7 +1009,7 @@ bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
     QTimer::singleShot( msecs, &el, SLOT( quit() ) );
     connect( this, SIGNAL( allDocumentsProcessed() ), &el, SLOT( quit() ) );
     el.exec();
-    return ( d->openingDocuments.isEmpty() && d->savingDocuments.isEmpty() && d->closingDocuments.isEmpty() );
+    return d->processedDocuments.isEmpty();
 }
 
 QFont BCodeEditor::editFont() const
