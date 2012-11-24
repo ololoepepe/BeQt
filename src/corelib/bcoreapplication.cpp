@@ -251,7 +251,7 @@ void BCoreApplicationPrivate::loadSettings()
         locale = s->value(SettingsKeyLocale, locale).toLocale();
       s->endGroup();
     s->endGroup();
-    QMetaObject::invokeMethod( q_func(), "settingsLoaded", Q_ARG( QSettings *, s.data() ) );
+    QMetaObject::invokeMethod( q_func(), "settingsLoaded", Q_ARG( QSettings &, *s.data() ) );
     if ( s.isNull() )
         return;
     s->deleteLater();
@@ -269,7 +269,7 @@ void BCoreApplicationPrivate::saveSettings()
         s->setValue(SettingsKeyLocale, locale);
       s->endGroup();
     s->endGroup();
-    QMetaObject::invokeMethod( q_func(), "settingsSaved", Q_ARG( QSettings *, s.data() ) );
+    QMetaObject::invokeMethod( q_func(), "settingsSaved", Q_ARG( QSettings &, *s.data() ) );
     if ( s.isNull() )
         return;
     s->sync();

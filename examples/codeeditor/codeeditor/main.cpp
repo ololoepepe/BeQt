@@ -5,6 +5,8 @@
 #include <BIndicatorsEditorModule>
 #include <BSearchEditorModule>
 #include <BOpenSaveEditorModule>
+#include <BAbstractDocumentDriver>
+#include <BLocalDocumentDirver>
 
 #include <QApplication>
 #include <QString>
@@ -15,6 +17,9 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QStatusBar>
+#include <QSettings>
+#include <QVariant>
+#include <QByteArray>
 
 #include <QDebug>
 
@@ -37,6 +42,8 @@ int main(int argc, char **argv)
     //QMainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;
+        BLocalDocumentDriver *drv = static_cast<BLocalDocumentDriver *>( cedtr->driver() );
+        drv->setDefaultDir("/home/darkangel/tmp");
       mw->setCentralWidget(cedtr);
       //
       QMenu *mnuBM = mw->menuBar()->addMenu("Find");

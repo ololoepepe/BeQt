@@ -98,6 +98,7 @@ public slots:
     void newPendingLoadOperation();
     void newPendingSaveOperation();
 private:
+    QString defaultDir;
     QByteArray fileDialogState;
 };
 

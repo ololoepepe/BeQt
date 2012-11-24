@@ -8,12 +8,12 @@ class QObject;
 class QWidget;
 class QTextCodec;
 class QStringList;
+class QString;
+class QByteArray;
 
 #include "babstractdocumentdriver.h"
 
 #include <BeQtCore/BeQtGlobal>
-
-#include <QString>
 
 /*============================================================================
 ================================ Local Document Driver
@@ -31,6 +31,9 @@ public:
     bool shouldSaveAs(const QString &fileName);
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
     bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName, QTextCodec *&codec);
+    void setDefaultDir(const QString &dir);
+    void setDialogState(const QByteArray &state);
+    QByteArray dialogState() const;
 protected:
     BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 private:

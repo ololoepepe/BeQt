@@ -98,8 +98,8 @@ signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();
-    void settingsLoaded(QSettings *s);
-    void settingsSaved(QSettings *s);
+    void settingsLoaded(QSettings &s);
+    void settingsSaved(QSettings &s);
 protected:
     static BCoreApplication *_m_self;
     //

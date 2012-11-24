@@ -235,6 +235,7 @@ BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
 
 void BLocalDocumentDriverPrivate::init()
 {
+    defaultDir = QDir::homePath();
     B_Q(BLocalDocumentDriver);
     connect( q, SIGNAL( newPendingLoadOperation() ), this, SLOT( newPendingLoadOperation() ) );
     connect( q, SIGNAL( newPendingSaveOperation() ), this, SLOT( newPendingSaveOperation() ) );
@@ -293,7 +294,7 @@ QString BLocalDocumentDriver::id() const
 }
 
 bool BLocalDocumentDriver::shouldSaveAs(const QString &fileName)
-{;
+{
     return !QFileInfo(fileName).isFile();
 }
 
@@ -303,6 +304,8 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
         return false;
     BFileDialog bfd(parent);
     bfd.restoreState(d_func()->fileDialogState);
+    if ( d_func()->fileDialogState.isEmpty() )
+        bfd.setDirectory(d_func()->defaultDir);
     bfd.setFileTypes( editor()->fileTypes() );
     bfd.setCodecs( editor()->supportedCodecs() );
     bfd.setAcceptMode(BFileDialog::AcceptOpen);
@@ -331,6 +334,8 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     QString dir = QFileInfo(fileName).path();
     if ( dir != "." && QDir(dir).exists() )
         bfd.setDirectory(dir); //TODO: Myabe should improve
+    else if ( d_func()->fileDialogState.isEmpty() )
+        bfd.setDirectory(d_func()->defaultDir);
     bfd.selectFile(fileName);
     int ret = bfd.exec();
     d_func()->fileDialogState = bfd.saveState();
@@ -339,6 +344,23 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     newFileName = bfd.selectedFiles().first();
     codec = bfd.selectedCodec();
     return true;
+}
+
+void BLocalDocumentDriver::setDefaultDir(const QString &dir)
+{
+    if ( dir.isEmpty() )
+        return;
+    d_func()->defaultDir = dir;
+}
+
+void BLocalDocumentDriver::setDialogState(const QByteArray &state)
+{
+    d_func()->fileDialogState = state;
+}
+
+QByteArray BLocalDocumentDriver::dialogState() const
+{
+    return d_func()->fileDialogState;
 }
 
 //
