@@ -352,6 +352,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
     //
+    connect( doc, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
     return doc;
@@ -414,7 +415,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     {
         if (!codec)
             codec = doc->codec();
-        bool b = driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
+        bool b = !nfn.isEmpty() || driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
         if ( !b || nfn.isEmpty() || findDocument(nfn) )
             return false;
     }
@@ -703,7 +704,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                     this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
         disconnect( document, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
                     this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
-        disconnect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
         disconnect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
                     this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
@@ -729,7 +729,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                  this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
         connect( document, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
                  this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
-        connect( document, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
         connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
         connect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
                  this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
@@ -849,8 +848,15 @@ void BCodeEditorPrivate::documentLinesSplitted(const QList<BCodeEdit::SplittedLi
 
 void BCodeEditorPrivate::documentFileNameChanged(const QString &fn)
 {
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentFileNameChanged(fn);
+    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    if (!doc)
+        return;
+    updateDocumentTab(doc);
+    if (doc == document)
+    {
+        foreach (BAbstractEditorModule *module, modules)
+            module->documentFileNameChanged(fn);
+    }
 }
 
 void BCodeEditorPrivate::documentCodecChanged(const QString &codecName)
@@ -1401,6 +1407,7 @@ bool BCodeEditor::saveCurrentDocumentAs()
 {
     if ( !currentDocument() )
         return false;
+    //
     QString nfn;
     QTextCodec *codec = currentDocument()->codec();
     return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&

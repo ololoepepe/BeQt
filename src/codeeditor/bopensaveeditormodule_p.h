@@ -1,6 +1,10 @@
 #ifndef BOPENSAVEEDITORMODULE_P_H
 #define BOPENSAVEEDITORMODULE_P_H
 
+class BCodeEditor;
+
+class QAction;
+
 #include "bopensaveeditormodule.h"
 #include "babstracteditormodule_p.h"
 
@@ -8,6 +12,7 @@
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
+#include <QPointer>
 
 /*============================================================================
 ================================ Open Save Editor Module Private
@@ -24,6 +29,17 @@ public:
     ~BOpenSaveEditorModulePrivate();
     //
     void init();
+    void checkActions();
+public slots:
+    void retranslateUi();
+public:
+    QPointer<QAction> actNewFile;
+    QPointer<QAction> actOpenFiles;
+    QPointer<QAction> actSaveFile;
+    QPointer<QAction> actSaveFileAs;
+    QPointer<QAction> actSaveAllFiles;
+    QPointer<QAction> actCloseFile;
+    QPointer<QAction> actCloseAllFiles;
 };
 
 #endif // BOPENSAVEEDITORMODULE_P_H

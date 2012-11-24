@@ -39,5 +39,15 @@
         <file>icons/ok.svgz</file>
         <file>images/beqt_logo.png</file>
         <file>images/qt_logo.png</file>
+        <file>icons/fileclose.png</file>
+        <file>icons/fileclose.svgz</file>
+        <file>icons/filenew.png</file>
+        <file>icons/filenew.svgz</file>
+        <file>icons/fileopen.png</file>
+        <file>icons/fileopen.svgz</file>
+        <file>icons/filesaveas.png</file>
+        <file>icons/filesaveas.svgz</file>
+        <file>icons/save_all.png</file>
+        <file>icons/save_all.svgz</file>
     </qresource>
 </RCC>

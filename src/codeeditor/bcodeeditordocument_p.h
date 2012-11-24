@@ -31,6 +31,8 @@ public:
     ~BCodeEditorDocumentPrivate();
     //
     void init();
+    void setFileName(const QString &fn);
+    void setCodec(QTextCodec *c);
     //
     QString fileName;
     QTextCodec *codec;

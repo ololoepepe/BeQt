@@ -5,6 +5,7 @@
 #include "bcodeedit_p.h"
 #include "bplaintextedit.h"
 #include "babstractfiletype.h"
+#include "bcodeeditor.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -48,6 +49,24 @@ void BCodeEditorDocumentPrivate::init()
     q_func()->setRecognizedBrackets( fileType->brackets() );
 }
 
+void BCodeEditorDocumentPrivate::setFileName(const QString &fn)
+{
+    bool b = (fn != fileName);
+    fileName = fn;
+    if (b)
+        QMetaObject::invokeMethod( q_func(), "fileNameChanged", Q_ARG(QString, fn) );
+}
+
+void BCodeEditorDocumentPrivate::setCodec(QTextCodec *c)
+{
+    if (!c)
+        return;
+    bool b = (c != codec);
+    codec = c;
+    if (b)
+        QMetaObject::invokeMethod( q_func(), "codecChanged", Q_ARG( QString, BCodeEditor::codecName(c) ) );
+}
+
 //
 
 void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::Operation &operation,
@@ -58,18 +77,17 @@ void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::
     BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
     disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
                 this, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
-    B_Q(BCodeEditorDocument);
     if (success)
     {
         if ( !operation.fileName.isEmpty() )
-            q->setFileName(operation.fileName);
+            setFileName(operation.fileName);
         if (operation.codec)
-            q->setCodec(operation.codec);
+            setCodec(operation.codec);
         setText(text, asyncMin);
         ptedt->document()->setModified(false);
         ptedt->document()->clearUndoRedoStacks();
     }
-    QMetaObject::invokeMethod( q, "loadingFinished", Q_ARG(bool, success) );
+    QMetaObject::invokeMethod( q_func(), "loadingFinished", Q_ARG(bool, success) );
     setBuisy(false);
 }
 
@@ -80,16 +98,15 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
     BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
     disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
                 this, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
-    B_Q(BCodeEditorDocument);
     if (success)
     {
         if ( !operation.fileName.isEmpty() )
-            q->setFileName(operation.fileName);
+            setFileName(operation.fileName);
         if (operation.codec)
-            q->setCodec(operation.codec);
+            setCodec(operation.codec);
         ptedt->document()->setModified(false);
     }
-    QMetaObject::invokeMethod( q, "savingFinished", Q_ARG(bool, success) );
+    QMetaObject::invokeMethod( q_func(), "savingFinished", Q_ARG(bool, success) );
     setBuisy(false);
 }
 
@@ -112,24 +129,14 @@ void BCodeEditorDocument::setFileName(const QString &fn)
 {
     if ( isBuisy() )
         return;
-    B_D(BCodeEditorDocument);
-    bool b = (fn == d->fileName);
-    d->fileName = fn;
-    if (b)
-        emit fileNameChanged(fn);
+    d_func()->setFileName(fn);
 }
 
 void BCodeEditorDocument::setCodec(QTextCodec *codec)
 {
     if ( isBuisy() )
         return;
-    if (!codec)
-        return;
-    B_D(BCodeEditorDocument);
-    bool b = (codec == d->codec);
-    d->codec = codec;
-    if (b)
-        emit codecChanged( QString::fromLatin1( codec->name() ) );
+    d_func()->setCodec(codec);
 }
 
 void BCodeEditorDocument::setCodec(const char *codecName)

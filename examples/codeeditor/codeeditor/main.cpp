@@ -4,6 +4,7 @@
 #include <BBookmarksEditorModule>
 #include <BIndicatorsEditorModule>
 #include <BSearchEditorModule>
+#include <BOpenSaveEditorModule>
 
 #include <QApplication>
 #include <QString>
@@ -36,9 +37,6 @@ int main(int argc, char **argv)
     //QMainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;
-        cedtr->openDocument("/home/darkangel/tmp/texput.log");
-        cedtr->addDocument("Test.txt");
-        cedtr->openDocument("/home/darkangel/tmp/texput.log");
       mw->setCentralWidget(cedtr);
       //
       QMenu *mnuBM = mw->menuBar()->addMenu("Find");
@@ -54,6 +52,21 @@ int main(int argc, char **argv)
       mw->statusBar()->addPermanentWidget( imdl->indicator(BIndicatorsEditorModule::FileTypeIndicator) );
       mw->statusBar()->addPermanentWidget( imdl->indicator(BIndicatorsEditorModule::CursorPositionIndicator) );
       mw->statusBar()->addPermanentWidget( imdl->indicator(BIndicatorsEditorModule::EncodingIndicator) );
+      //
+      BOpenSaveEditorModule *osmdl = static_cast<BOpenSaveEditorModule *>(
+                  cedtr->module(BCodeEditor::OpenSaveModule) );
+      tbar = new QToolBar;
+        tbar->setWindowTitle("Open");
+        tbar->addActions( osmdl->openActions() );
+      mw->addToolBar(tbar);
+      tbar = new QToolBar;
+        tbar->setWindowTitle("Save");
+        tbar->addActions( osmdl->saveActions() );
+      mw->addToolBar(tbar);
+      tbar = new QToolBar;
+        tbar->setWindowTitle("Close");
+        tbar->addActions( osmdl->closeActions() );
+      mw->addToolBar(tbar);
     mw->resize(1200, 800);
     mw->move(400, 200);
     //Showing widgets
