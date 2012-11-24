@@ -238,7 +238,7 @@ BIndicatorsEditorModule::~BIndicatorsEditorModule()
 
 //
 
-QString BIndicatorsEditorModule::name() const
+QString BIndicatorsEditorModule::id() const
 {
     return "beqt/indicators";
 }

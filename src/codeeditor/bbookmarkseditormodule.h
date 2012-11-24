@@ -33,7 +33,7 @@ public:
     explicit BBookmarksEditorModule(QObject *parent = 0);
     ~BBookmarksEditorModule();
     //
-    QString name() const;
+    QString id() const;
     void setMaximumBookmarkCount(int count);
     int maximumBookmarkCount() const;
     QAction *action(Action type) const;

@@ -1,6 +1,8 @@
 #ifndef BABSTRACTDOCUMENTDRIVER_H
 #define BABSTRACTDOCUMENTDRIVER_H
 
+class BCodeEditorPrivate;
+class BCodeEditor;
 class BCodeEditorDocument;
 class BAbstractDocumentDriverPrivate;
 
@@ -35,6 +37,7 @@ public:
     //
     virtual QString id() const = 0;
     virtual bool shouldSaveAs(const QString &fileName) = 0;
+    virtual bool isBuisy() const;
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool load( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
@@ -42,6 +45,7 @@ public:
     bool hasPendingLoadOperations() const;
     bool hasPendingSaveOperations() const;
     bool isDocumentInList(BCodeEditorDocument *doc) const;
+    BCodeEditor *editor() const;
 signals:
     void newPendingLoadOperation();
     void newPendingSaveOperation();
@@ -56,6 +60,8 @@ protected:
     void emitSavingFinished(const Operation &operation, bool success);
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriver)
+    //
+    friend class BCodeEditorPrivate;
 };
 
 #endif // BABSTRACTDOCUMENTDRIVER_H

@@ -32,7 +32,7 @@ public:
     explicit BAbstractEditorModule(QObject *parent = 0);
     ~BAbstractEditorModule();
     //
-    virtual QString name() const = 0;
+    virtual QString id() const = 0;
     virtual bool isBuisy() const;
     virtual bool canGetOpenFileNames() const;
     virtual bool canGetSaveAsFileName() const;

@@ -33,7 +33,7 @@ public:
     explicit BSearchEditorModule(QObject *parent = 0);
     ~BSearchEditorModule();
     //
-    QString name() const;
+    QString id() const;
     QAction *action(Action type) const;
     QList<QAction *> actions() const;
 public slots:

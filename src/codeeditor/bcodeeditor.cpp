@@ -8,6 +8,8 @@
 #include "bsearcheditormodule.h"
 #include "babstractfiletype.h"
 #include "bindicatorseditormodule.h"
+#include "babstractdocumentdriver_p.h"
+#include "bopensaveeditormodule.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -650,6 +652,13 @@ void BCodeEditorPrivate::setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor
     mdl->d_func()->setEditor(edr);
 }
 
+void BCodeEditorPrivate::setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr)
+{
+    if (!drv)
+        return;
+    drv->d_func()->setEditor(edr);
+}
+
 //
 
 const QStringList BCodeEditorPrivate::UnicodeCodecs = QStringList() << "UTF-16" << "UTF-8";
@@ -908,6 +917,9 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     case IndicatorsModule:
         mdl = new BIndicatorsEditorModule(parent);
         break;
+    case OpenSaveModule:
+        mdl = new BOpenSaveEditorModule(parent);
+        break;
     case SearchModule:
         mdl = new BSearchEditorModule(parent);
         break;
@@ -1015,6 +1027,7 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
 {
     d_func()->init();
     addModule(IndicatorsModule);
+    addModule(OpenSaveModule);
     addModule(SearchModule);
 }
 
@@ -1025,6 +1038,7 @@ BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *p
     foreach (BAbstractFileType *ft, fileTypes)
         d_func()->tryAddFileType(ft);
     addModule(IndicatorsModule);
+    addModule(OpenSaveModule);
     addModule(SearchModule);
 }
 
@@ -1125,9 +1139,9 @@ void BCodeEditor::addModule(BAbstractEditorModule *mdl)
     if ( !mdl || mdl->isBuisy() )
         return;
     B_D(BCodeEditor);
-    if ( d->modules.contains( mdl->name() ) )
+    if ( d->modules.contains( mdl->id() ) )
         return;
-    d->modules.insert(mdl->name(), mdl);
+    d->modules.insert(mdl->id(), mdl);
     d->setModuleEditor(mdl, this);
 }
 
@@ -1142,7 +1156,7 @@ void BCodeEditor::removeModule(BAbstractEditorModule *mdl)
 {
     if (!mdl)
         return;
-    removeModule( mdl->name() );
+    removeModule( mdl->id() );
 }
 
 void BCodeEditor::removeModule(const QString &name)
@@ -1171,13 +1185,23 @@ void BCodeEditor::setDriver(BAbstractDocumentDriver *drv)
     if (!drv)
         return;
     B_D(BCodeEditor);
-    if ( d->driver && ( d->driver->hasPendingLoadOperations() || d->driver->hasPendingSaveOperations() ) )
-        return;
-    if (d->driver && d->driver->parent() == (QObject *) this)
-        d->driver->deleteLater();
+    if (d->driver)
+    {
+        if ( d->driver->isBuisy() )
+            return;
+        if (d->driver->parent() == (QObject *) this)
+        {
+            d->setDriverEditor(d->driver, 0);
+            d->driver->deleteLater();
+        }
+    }
     d->driver = drv;
-    if ( drv && !drv->parent() )
-        drv->setParent(this);
+    if (drv)
+    {
+        d->setDriverEditor(drv, this);
+        if ( !drv->parent() )
+            drv->setParent(this);
+    }
 }
 
 void BCodeEditor::addFileType(BAbstractFileType *ft)

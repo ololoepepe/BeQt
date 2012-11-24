@@ -32,6 +32,7 @@ public:
     {
         BookmarksModule,
         IndicatorsModule,
+        OpenSaveModule,
         SearchModule
     };
     enum CodecGroup

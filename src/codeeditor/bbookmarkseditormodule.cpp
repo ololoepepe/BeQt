@@ -140,7 +140,7 @@ BBookmarksEditorModule::~BBookmarksEditorModule()
 
 //
 
-QString BBookmarksEditorModule::name() const
+QString BBookmarksEditorModule::id() const
 {
     return "beqt/bookmarks";
 }

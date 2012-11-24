@@ -1,4 +1,5 @@
 class BCodeEdit;
+class BCodeEditor;
 
 class QTextCodec;
 
@@ -33,7 +34,12 @@ BAbstractDocumentDriverPrivate::~BAbstractDocumentDriverPrivate()
 
 void BAbstractDocumentDriverPrivate::init()
 {
-    //
+    editor = 0;
+}
+
+void BAbstractDocumentDriverPrivate::setEditor(BCodeEditor *edr)
+{
+    editor = edr;
 }
 
 /*============================================================================
@@ -52,6 +58,11 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
 }
 
 //
+
+bool BAbstractDocumentDriver::isBuisy() const
+{
+    return hasPendingLoadOperations() || hasPendingSaveOperations();
+}
 
 bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, const QString &fileName)
 {
@@ -104,6 +115,11 @@ bool BAbstractDocumentDriver::hasPendingSaveOperations() const
 bool BAbstractDocumentDriver::isDocumentInList(BCodeEditorDocument *doc) const
 {
     return doc && d_func()->docs.contains(doc);
+}
+
+BCodeEditor *BAbstractDocumentDriver::editor() const
+{
+    return d_func()->editor;
 }
 
 //

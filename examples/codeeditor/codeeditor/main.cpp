@@ -4,7 +4,6 @@
 #include <BBookmarksEditorModule>
 #include <BIndicatorsEditorModule>
 #include <BSearchEditorModule>
-#include <BFileDialog>
 
 #include <QApplication>
 #include <QString>
@@ -57,18 +56,11 @@ int main(int argc, char **argv)
       mw->statusBar()->addPermanentWidget( imdl->createIndicator(BIndicatorsEditorModule::EncodingIndicator) );
     mw->resize(1200, 800);
     mw->move(400, 200);
-    //BFileDialog
-    BFileDialog *fd = new BFileDialog;
-    fd->setFileTypes( cedtr->fileTypes() );
-    fd->setCodecs( cedtr->supportedCodecs() );
-    fd->selectCodec("Windows-1251");
-    fd->exec();
     //Showing widgets
     mw->show();
     //Running main event loop
     int ret = app->exec();
     //Deleting objects
-    delete fd;
     delete mw;
     delete bapp;
     delete app;

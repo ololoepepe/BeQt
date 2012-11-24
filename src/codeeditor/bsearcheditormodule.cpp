@@ -537,7 +537,7 @@ BSearchEditorModule::~BSearchEditorModule()
 
 //
 
-QString BSearchEditorModule::name() const
+QString BSearchEditorModule::id() const
 {
     return "beqt/search";
 }

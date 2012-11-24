@@ -36,7 +36,7 @@ public:
     explicit BIndicatorsEditorModule(QObject *parent = 0);
     ~BIndicatorsEditorModule();
     //
-    QString name() const;
+    QString id() const;
     QWidget *createIndicator(Indicator type, QWidget *parent = 0);
     QList<QWidget *> createIndicators(QWidget *parent = 0);
 protected:

@@ -18,6 +18,8 @@ HEADERS += \
     $${PWD}/bindicatorseditormodule_p.h \
     $${PWD}/blocaldocumentdriver.h \
     $${PWD}/blocaldocumentdriver_p.h \
+    $${PWD}/bopensaveeditormodule.h \
+    $${PWD}/bopensaveeditormodule_p.h \
     $${PWD}/bsearcheditormodule.h \
     $${PWD}/bsearcheditormodule_p.h
 
@@ -32,4 +34,5 @@ SOURCES += \
     $${PWD}/bfiledialog.cpp \
     $${PWD}/bindicatorseditormodule.cpp \
     $${PWD}/blocaldocumentdriver.cpp \
+    $${PWD}/bopensaveeditormodule.cpp \
     $${PWD}/bsearcheditormodule.cpp

@@ -2,6 +2,7 @@
 #define BABSTRACTDOCUMENTDRIVER_P_H
 
 class BCodeEditorDocument;
+class BCodeEditor;
 
 #include "babstractdocumentdriver.h"
 
@@ -25,7 +26,9 @@ public:
     ~BAbstractDocumentDriverPrivate();
     //
     void init();
+    void setEditor(BCodeEditor *edr);
     //
+    BCodeEditor *editor;
     QQueue<BAbstractDocumentDriver::Operation> loadOps;
     QQueue<BAbstractDocumentDriver::Operation> saveOps;
     QList<BCodeEditorDocument *> docs;

@@ -138,6 +138,7 @@ public:
     void emitFileTypesChanged();
     //External private class call
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
+    void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
     //
     static const QStringList UnicodeCodecs;
     static const QStringList EastEuropeanCodecs;

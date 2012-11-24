@@ -11,6 +11,7 @@
 #include "bfiledialog.h"
 #include "bindicatorseditormodule.h"
 #include "blocaldocumentdriver.h"
+#include "bopensaveeditormodule.h"
 #include "bsearcheditormodule.h"
 
 #endif //BEQT_BEQTCODEEDITOR_MODULE_H
