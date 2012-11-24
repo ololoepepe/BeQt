@@ -8,6 +8,9 @@ class BCodeEditor;
 class BCodeEditorDocument;
 
 class QString;
+class QWidget;
+class QStringList;
+class QTextCodec;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -29,6 +32,10 @@ protected:
     BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
+    bool canGetOpenFileNames() const;
+    bool canGetSaveAsFileName() const;
+    bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
+    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName, QTextCodec *&codec);
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

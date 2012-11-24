@@ -11,6 +11,11 @@
 
 #include <QObject>
 #include <QString>
+#include <QWidget>
+#include <QStringList>
+#include <QTextCodec>
+#include <QFileDialog>
+#include <QDir>
 
 /*============================================================================
 ================================ Open Save Editor Module Private
@@ -62,6 +67,31 @@ BOpenSaveEditorModule::BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QO
 QString BOpenSaveEditorModule::id() const
 {
     return "beqt/open_save";
+}
+
+bool BOpenSaveEditorModule::canGetOpenFileNames() const
+{
+    return true;
+}
+
+bool BOpenSaveEditorModule::canGetSaveAsFileName() const
+{
+    return true;
+}
+
+
+bool BOpenSaveEditorModule::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
+{
+    //TODO: Implement
+    return false;
+}
+
+bool BOpenSaveEditorModule::getSaveAsFileName(QWidget *parent, const QString &fileName,
+                                              QString &newFileName, QTextCodec *&codec)
+{
+    //TODO: Reimplement
+    newFileName = QFileDialog::getSaveFileName(parent, "select name", QDir::homePath() + "/" + fileName);
+    return !newFileName.isEmpty();
 }
 
 //
