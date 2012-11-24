@@ -405,6 +405,16 @@ bool BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec
     return b;
 }
 
+bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec)
+{
+    if ( !doc || doc->isBuisy() )
+        return false;
+    bool b = doc->load(driver, "", codec);
+    if (!b)
+        failedToOpenMessage( doc->fileName() );
+    return b;
+}
+
 bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
 {
     if ( !doc || savingDocuments.contains(doc) )
@@ -874,18 +884,19 @@ void BCodeEditorPrivate::documentFileTypeChanged(BAbstractFileType *ft)
 void BCodeEditorPrivate::documentLoadingFinished(bool success)
 {
     BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
-    if ( !doc || !openingDocuments.contains(doc) )
+    if (!doc)
         return;
-    QString fn = openingDocuments.take(doc);
-    if (success)
+    QString fn = doc->fileName();
+    if ( openingDocuments.contains(doc) )
     {
-        addDocument(doc);
+        fn = openingDocuments.take(doc);
+        if (success)
+            addDocument(doc);
+        else
+            doc->deleteLater();
     }
-    else
-    {
-        doc->deleteLater();
+    if (!success)
         failedToOpenMessage(fn);
-    }
 }
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
@@ -1401,6 +1412,11 @@ bool BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
 bool BCodeEditor::saveCurrentDocument()
 {
     return currentDocument() && d_func()->saveDocument( currentDocument() );
+}
+
+bool BCodeEditor::reopenCurrentDocument(QTextCodec *codec)
+{
+    return currentDocument() && d_func()->reopenDocument(currentDocument(), codec);
 }
 
 bool BCodeEditor::saveCurrentDocumentAs()

@@ -120,6 +120,7 @@ public:
     void removeDocument(BCodeEditorDocument *doc);
     BAbstractFileType *selectDocumentFileType(BCodeEditorDocument *doc);
     bool openDocument(const QString &fileName, QTextCodec *codec = 0);
+    bool reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec = 0);
     bool saveDocument(BCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
     bool saveDocuments(const QList<BCodeEditorDocument *> &list);
     bool closeDocument(BCodeEditorDocument *doc);

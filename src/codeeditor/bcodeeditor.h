@@ -106,6 +106,7 @@ public slots:
     bool openDocuments();
     bool openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
     bool openDocument(const QString &fileName, QTextCodec *codec = 0);
+    bool reopenCurrentDocument(QTextCodec *codec = 0);
     bool saveCurrentDocument();
     bool saveCurrentDocumentAs();
     bool saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec = 0);
