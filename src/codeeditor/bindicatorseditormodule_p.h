@@ -16,6 +16,7 @@ class QComboBox;
 #include <QObject>
 #include <QMap>
 #include <QList>
+#include <QPointer>
 
 /*============================================================================
 ================================ Indicators Editor Module Private
@@ -37,27 +38,16 @@ public:
     ~BIndicatorsEditorModulePrivate();
     //
     void init();
-    QLabel *createCursorPosIndicator(QWidget *parent = 0);
-    QLabel *createEncodingIndicator(QWidget *parent = 0);
-    QComboBox *createFileTypeIndicator(QWidget *parent = 0);
-    QString createCursorPosIndicatorText() const;
-    QString createEncodingIndicatorText() const;
-    QList<FileTypeInfo> createFileTypeInfos() const;
-    int createFileTypeIndicatorIndex() const;
-    void processFileTypeIndicator(QComboBox *cmbox, const QList<FileTypeInfo> &infos, int index);
-    void updateCursorPosIndicators();
-    void updateEncodingIndicators();
-    void updateFileTypeIndicators();
+    void updateCursorPosIndicator();
+    void updateEncodingIndicator();
+    void updateFileTypeIndicator();
     //
-    QMap<QObject *, QLabel *> cursorPosIndicators;
-    QMap<QObject *, QLabel *> encodingIndicators;
-    QMap<QObject *, QComboBox *> fileTypeIndicators;
+    QPointer<QLabel> lblCursorPos;
+    QPointer<QLabel> lblEncoding;
+    QPointer<QComboBox> cmboxFileType;
 public slots:
     void retranslateUi();
-    void cursorPosIndicatorDestroyed(QObject *obj);
-    void encodingIndicatorDestroyed(QObject *obj);
-    void fileTypeIndicatorDestroyed(QObject *obj);
-    void cmboxCurrentIndexChanged(int index);
+    void cmboxFileTypeCurrentIndexChanged(int index);
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModulePrivate)
 };

@@ -37,8 +37,8 @@ public:
     ~BIndicatorsEditorModule();
     //
     QString id() const;
-    QWidget *createIndicator(Indicator type, QWidget *parent = 0);
-    QList<QWidget *> createIndicators(QWidget *parent = 0);
+    QWidget *indicator(Indicator type);
+    QList<QWidget *> indicators();
 protected:
     BIndicatorsEditorModule(BIndicatorsEditorModulePrivate &d, QObject *parent = 0);
     //
