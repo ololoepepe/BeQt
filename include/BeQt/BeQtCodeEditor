@@ -8,7 +8,6 @@
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
-#include "bfiledialog.h"
 #include "bindicatorseditormodule.h"
 #include "blocaldocumentdriver.h"
 #include "bopensaveeditormodule.h"
