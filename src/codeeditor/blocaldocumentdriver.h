@@ -27,7 +27,6 @@ public:
     //
     QString id() const;
     bool shouldSaveAs(const QString &fileName);
-    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName);
 protected:
     BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 private:

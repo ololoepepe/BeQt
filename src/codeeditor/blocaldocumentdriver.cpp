@@ -9,9 +9,6 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QFileInfo>
-#include <QWidget>
-#include <QFileDialog>
-#include <QDir>
 
 #include <QDebug>
 
@@ -94,13 +91,6 @@ QString BLocalDocumentDriver::id() const
 bool BLocalDocumentDriver::shouldSaveAs(const QString &fileName)
 {
     return !QFileInfo(fileName).isFile();
-}
-
-bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName)
-{
-    //TODO: Use better dialog
-    newFileName = QFileDialog::getSaveFileName(parent, "select name", QDir::homePath() + "/" + fileName);
-    return !newFileName.isEmpty();
 }
 
 //
