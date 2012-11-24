@@ -69,27 +69,6 @@ bool BAbstractEditorModule::isBuisy() const
     return false;
 }
 
-bool BAbstractEditorModule::canGetOpenFileNames() const
-{
-    return false;
-}
-
-bool BAbstractEditorModule::canGetSaveAsFileName() const
-{
-    return false;
-}
-
-bool BAbstractEditorModule::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
-{
-    return false;
-}
-
-bool BAbstractEditorModule::getSaveAsFileName(QWidget *parent, const QString &fileName,
-                                              QString &newFileName, QTextCodec *&codec)
-{
-    return false;
-}
-
 BCodeEditor *BAbstractEditorModule::editor() const
 {
     return d_func()->editor;

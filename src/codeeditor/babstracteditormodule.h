@@ -8,8 +8,6 @@ class BCodeEditorDocument;
 class BAbstractFileType;
 
 class QString;
-class QWidget;
-class QTextCodec;
 
 #include "bcodeedit.h"
 
@@ -34,10 +32,6 @@ public:
     //
     virtual QString id() const = 0;
     virtual bool isBuisy() const;
-    virtual bool canGetOpenFileNames() const;
-    virtual bool canGetSaveAsFileName() const;
-    virtual bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
-    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName, QTextCodec *&codec);
     BCodeEditor *editor() const;
 protected:
     BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent = 0);

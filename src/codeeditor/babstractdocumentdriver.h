@@ -37,6 +37,9 @@ public:
     //
     virtual QString id() const = 0;
     virtual bool shouldSaveAs(const QString &fileName) = 0;
+    virtual bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec) = 0;
+    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName,
+                                   QString &newFileName, QTextCodec *&codec) = 0;
     virtual bool isBuisy() const;
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool load( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );

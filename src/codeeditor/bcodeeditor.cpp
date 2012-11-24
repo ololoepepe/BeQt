@@ -411,15 +411,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     bool ssa = !nfn.isEmpty() || driver->shouldSaveAs( doc->fileName() );
     if (ssa)
     {
-        bool b = false;
-        foreach (BAbstractEditorModule *mdl, modules)
-        {
-            if ( mdl->canGetSaveAsFileName() )
-            {
-                b = mdl->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
-                break;
-            }
-        }
+        bool b = driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
         if ( !b || nfn.isEmpty() || findDocument(nfn) )
             return false;
     }
@@ -1379,18 +1371,9 @@ bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
 
 bool BCodeEditor::openDocument()
 {
-    bool b = false;
     QStringList list;
     QTextCodec *codec = 0;
-    foreach (BAbstractEditorModule *mdl, d_func()->modules)
-    {
-        if ( mdl->canGetOpenFileNames() )
-        {
-            b = mdl->getOpenFileNames(this, list, codec);
-            break;
-        }
-    }
-    return b && openDocuments(list, codec);
+    return d_func()->driver->getOpenFileNames(this, list, codec) && openDocuments(list, codec);
 }
 
 bool BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
@@ -1415,18 +1398,10 @@ bool BCodeEditor::saveCurrentDocumentAs()
 {
     if ( !currentDocument() )
         return false;
-    bool b = false;
     QString nfn;
     QTextCodec *codec = 0;
-    foreach (BAbstractEditorModule *mdl, d_func()->modules)
-    {
-        if ( mdl->canGetSaveAsFileName() )
-        {
-            b = mdl->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec);
-            break;
-        }
-    }
-    return b && saveCurrentDocumentAs(nfn, codec);
+    return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&
+            saveCurrentDocumentAs(nfn, codec);
 }
 
 bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec)

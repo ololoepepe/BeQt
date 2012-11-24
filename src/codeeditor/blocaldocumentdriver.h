@@ -6,6 +6,8 @@ class BLocalDocumentDriverPrivate;
 
 class QObject;
 class QWidget;
+class QTextCodec;
+class QStringList;
 
 #include "babstractdocumentdriver.h"
 
@@ -27,6 +29,8 @@ public:
     //
     QString id() const;
     bool shouldSaveAs(const QString &fileName);
+    bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
+    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName, QTextCodec *&codec);
 protected:
     BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 private:
