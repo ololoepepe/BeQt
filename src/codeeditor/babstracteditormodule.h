@@ -58,6 +58,7 @@ protected:
     virtual void documentCodecChanged(const QString &codecName);
     virtual void documentFileTypeChanged(BAbstractFileType *ft);
     //BCodeEditor events
+    virtual void defaultCodecChanged(const QString &codecName);
     virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);
     virtual void documentAdded(BCodeEditorDocument *doc);
     virtual void documentAboutToBeRemoved(BCodeEditorDocument *doc);

@@ -47,6 +47,7 @@ protected:
     void documentCursorPositionChanged(const QPoint &pos);
     void documentCodecChanged(const QString &codecName);
     void documentFileTypeChanged(BAbstractFileType *ft);
+    void defaultCodecChanged(const QString &codecName);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void fileTypesChanged();
 private:

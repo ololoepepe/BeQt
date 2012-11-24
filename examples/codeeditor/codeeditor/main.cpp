@@ -42,6 +42,7 @@ int main(int argc, char **argv)
     //QMainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;
+        cedtr->setDefaultCodec("Windows-1251");
         BLocalDocumentDriver *drv = static_cast<BLocalDocumentDriver *>( cedtr->driver() );
         drv->setDefaultDir("/home/darkangel/tmp");
       mw->setCentralWidget(cedtr);

@@ -132,6 +132,7 @@ public:
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     int closeModifiedMessage(const QString &fileName);
     //Signal emitting
+    void emitDefaultCodecChanged(const QString &codecName);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);

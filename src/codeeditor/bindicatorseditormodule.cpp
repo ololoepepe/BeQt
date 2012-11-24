@@ -255,6 +255,11 @@ void BIndicatorsEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
     d_func()->updateFileTypeIndicator();
 }
 
+void BIndicatorsEditorModule::defaultCodecChanged(const QString &codecName)
+{
+    d_func()->updateEncodingIndicator();
+}
+
 void BIndicatorsEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
 {
     d_func()->updateCursorPosIndicator();

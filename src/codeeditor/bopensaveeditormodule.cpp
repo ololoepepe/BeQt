@@ -15,6 +15,14 @@
 #include <QString>
 #include <QList>
 #include <QAction>
+#include <QTextCodec>
+#include <QMenu>
+#include <QList>
+#include <QVariant>
+#include <QStringList>
+#include <QByteArray>
+
+#include <QDebug>
 
 /*============================================================================
 ================================ Open Save Editor Module Private
@@ -40,6 +48,31 @@ void BOpenSaveEditorModulePrivate::init()
       actNewFile->setIcon( BApplication::icon("filenew") );
     actOpenFiles = new QAction(q);
       actOpenFiles->setIcon( BApplication::icon("fileopen") );
+    actReopenFile = new QAction(q);
+      actReopenFile->setIcon( BApplication::icon("reload") );
+      actReopenFile->setMenu( new QMenu() );
+      QList<BCodeEditor::CodecGroup> list;
+      list << BCodeEditor::UnicodeGroup;
+      list << BCodeEditor::EastEuropeanGroup;
+      list << BCodeEditor::WestEuropeanGroup;
+      list << BCodeEditor::EastAsianGroup;
+      list << BCodeEditor::SouthEastSouthWestAsianGroup;
+      list << BCodeEditor::MiddleEastGroup;
+      foreach (BCodeEditor::CodecGroup gr, list)
+      {
+          QMenu *mnu = new QMenu( actReopenFile->menu() );
+            mnu->setProperty("beqt/codec_group", gr);
+            foreach ( const QString &cn, BCodeEditor::codecNamesForGroup(gr) )
+            {
+                QAction *act = new QAction(mnu);
+                  act->setProperty("beqt/codec_name", cn);
+                  connect( act, SIGNAL( triggered() ), this, SLOT( codecTriggered() ) );
+                mnu->addAction(act);
+                codecs << act;
+            }
+          actReopenFile->menu()->addMenu(mnu);
+          codecGroups << mnu;
+      }
     actSaveFile = new QAction(q);
       actSaveFile->setIcon( BApplication::icon("filesave") );
     actSaveFileAs = new QAction(q);
@@ -63,6 +96,8 @@ void BOpenSaveEditorModulePrivate::checkActions()
         actNewFile->setEnabled(editor);
     if ( !actOpenFiles.isNull() )
         actOpenFiles->setEnabled(editor);
+    if ( !actReopenFile.isNull() )
+        actReopenFile->setEnabled( doc && !doc->isBuisy() );
     if ( !actSaveFile.isNull() )
         actSaveFile->setEnabled( doc && doc->isModified() && !doc->isReadOnly() && !doc->isBuisy() );
     if ( !actSaveFileAs.isNull() )
@@ -90,6 +125,17 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
         actOpenFiles->setText( trq("Open files", "act text") );
         actOpenFiles->setToolTip( trq("Open files", "act toolTip") );
         actOpenFiles->setWhatsThis( trq("Open files", "act whatsThis") );
+    }
+    if ( !actReopenFile.isNull() )
+    {
+        actReopenFile->setText( trq("Reopen file", "act text") );
+        actReopenFile->setToolTip( trq("Reopen file", "act toolTip") );
+        actReopenFile->setWhatsThis( trq("Reopen file", "act whatsThis") );
+        foreach (QMenu *mnu, codecGroups)
+            mnu->setTitle( BCodeEditor::codecGroupName( static_cast<BCodeEditor::CodecGroup>(
+                                                            mnu->property("beqt/codec_group").toInt() ) ) );
+        foreach (QAction *act, codecs)
+            act->setText( BCodeEditor::fullCodecName( act->property("beqt/codec_name").toString() ) );
     }
     if ( !actSaveFile.isNull() )
     {
@@ -121,6 +167,16 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
         actCloseAllFiles->setToolTip( trq("Close all files", "act toolTip") );
         actCloseAllFiles->setWhatsThis( trq("Close all files", "act whatsThis") );
     }
+}
+
+void BOpenSaveEditorModulePrivate::codecTriggered()
+{
+    if (!editor)
+        return;
+    QString cn = sender()->property("beqt/codec_name").toString();
+    if ( cn.isEmpty() )
+        return;
+    editor->reopenCurrentDocument( QTextCodec::codecForName( cn.toLatin1() ) );
 }
 
 /*============================================================================
@@ -184,6 +240,8 @@ QList<QAction *> BOpenSaveEditorModule::openActions() const
         list << d->actNewFile.data();
     if ( !d->actOpenFiles.isNull() )
         list << d->actOpenFiles.data();
+    if ( !d->actReopenFile.isNull() )
+        list << d->actReopenFile.data();
     return list;
 }
 

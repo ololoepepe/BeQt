@@ -308,6 +308,8 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
         bfd.setDirectory(d_func()->defaultDir);
     bfd.setFileTypes( editor()->fileTypes() );
     bfd.setCodecs( editor()->supportedCodecs() );
+    if (codec)
+        bfd.selectCodec(codec);
     bfd.setAcceptMode(BFileDialog::AcceptOpen);
     bfd.setFileMode(QFileDialog::ExistingFiles);
     int ret = bfd.exec();

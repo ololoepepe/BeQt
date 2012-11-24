@@ -185,6 +185,11 @@ void BAbstractEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
 
 //BCodeEditor events
 
+void BAbstractEditorModule::defaultCodecChanged(const QString &codecName)
+{
+    //
+}
+
 void BAbstractEditorModule::documentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     //

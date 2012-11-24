@@ -613,6 +613,13 @@ int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
 
 //Signal emitting
 
+void BCodeEditorPrivate::emitDefaultCodecChanged(const QString &codecName)
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->defaultCodecChanged(codecName);
+    QMetaObject::invokeMethod( q_func(), "defaultCodecChanged", Q_ARG(QString, codecName) );
+}
+
 void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -1134,16 +1141,17 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
 
 void BCodeEditor::setDefaultCodec(QTextCodec *codec)
 {
-    if ( !supportsCodec(codec) )
+    if ( !codec || !supportsCodec(codec) )
         return;
     d_func()->defaultCodec = codec;
+    d_func()->emitDefaultCodecChanged( codecName(codec) );
 }
 
 void BCodeEditor::setDefaultCodec(const QString &codecName)
 {
-    if ( !supportsCodec(codecName) )
+    if ( codecName.isEmpty() )
         return;
-    d_func()->defaultCodec = QTextCodec::codecForName( codecName.toLatin1() );
+    setDefaultCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
@@ -1392,7 +1400,7 @@ bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
 bool BCodeEditor::openDocuments()
 {
     QStringList list;
-    QTextCodec *codec = 0;
+    QTextCodec *codec = d_func()->defaultCodec;
     return d_func()->driver->getOpenFileNames(this, list, codec) && openDocuments(list, codec);
 }
 
@@ -1423,7 +1431,6 @@ bool BCodeEditor::saveCurrentDocumentAs()
 {
     if ( !currentDocument() )
         return false;
-    //
     QString nfn;
     QTextCodec *codec = currentDocument()->codec();
     return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&

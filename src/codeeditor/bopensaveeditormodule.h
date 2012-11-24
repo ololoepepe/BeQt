@@ -29,6 +29,7 @@ public:
     {
         NewFileAction,
         OpenFilesAction,
+        ReopenAction,
         SaveFileAction,
         SaveFileAsAction,
         SaveAllFilesAction,

@@ -49,5 +49,9 @@
         <file>icons/filesaveas.svgz</file>
         <file>icons/save_all.png</file>
         <file>icons/save_all.svgz</file>
+        <file>icons/history.png</file>
+        <file>icons/history.svgz</file>
+        <file>icons/reload.png</file>
+        <file>icons/reload.svgz</file>
     </qresource>
 </RCC>
