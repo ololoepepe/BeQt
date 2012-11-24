@@ -1483,7 +1483,7 @@ void BCodeEditPrivate::move(int key)
 void BCodeEditPrivate::futureWatcherFinished()
 {
     ProcessTextFutureWatcher *watcher = static_cast<ProcessTextFutureWatcher *>( sender() );
-    if (watcher)
+    if (!watcher)
         return;
     ProcessTextResult res = watcher->result();
     watcher->deleteLater();

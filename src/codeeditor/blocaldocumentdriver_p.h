@@ -32,6 +32,7 @@ class BFileDialog : public QFileDialog, public BBase
 {
     B_DECLARE_PRIVATE(BFileDialog)
     Q_OBJECT
+    Q_DISABLE_COPY(BFileDialog)
 public:
     explicit BFileDialog(QWidget *parent = 0);
     ~BFileDialog();
@@ -50,8 +51,6 @@ public:
     BAbstractFileType *selectedFileType() const;
     QString selectedFileTypeId() const;
     QByteArray saveState(bool includeGeometry = true) const;
-private:
-    Q_DISABLE_COPY(BFileDialog)
 };
 
 /*============================================================================
@@ -63,6 +62,7 @@ class BFileDialogPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BFileDialog)
     B_DECLARE_TR_FUNCTIONS(BFileDialog, q)
     Q_OBJECT
+    Q_DISABLE_COPY(BFileDialogPrivate)
 public:
     explicit BFileDialogPrivate(BFileDialog *q);
     ~BFileDialogPrivate();
@@ -78,8 +78,6 @@ public:
     QLayout *lt;
       QLabel *lblEncodings;
       QComboBox *cmboxEncodings;
-private:
-    Q_DISABLE_COPY(BFileDialogPrivate)
 };
 
 /*============================================================================
@@ -90,6 +88,7 @@ class B_CODEEDITOR_EXPORT BLocalDocumentDriverPrivate : public BAbstractDocument
 {
     B_DECLARE_PUBLIC(BLocalDocumentDriver)
     Q_OBJECT
+    Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
 public:
     explicit BLocalDocumentDriverPrivate(BLocalDocumentDriver *q);
     ~BLocalDocumentDriverPrivate();
@@ -99,7 +98,7 @@ public slots:
     void newPendingLoadOperation();
     void newPendingSaveOperation();
 private:
-    Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
+    QByteArray fileDialogState;
 };
 
 #endif // BLOCALDOCUMENTDRIVER_P_H

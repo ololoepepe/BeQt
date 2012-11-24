@@ -103,9 +103,9 @@ public:
 public slots:
     bool addDocument( const QString &fileName = QString() );
     bool addDocument(const QString &fileName, const QString &text);
-    bool openDocument();
-    bool openDocument(const QString &fileName, QTextCodec *codec = 0);
+    bool openDocuments();
     bool openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
+    bool openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool saveCurrentDocument();
     bool saveCurrentDocumentAs();
     bool saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec = 0);

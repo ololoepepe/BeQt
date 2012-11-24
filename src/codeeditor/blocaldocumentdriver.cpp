@@ -117,6 +117,7 @@ void BFileDialog::setCodecs(const QList<QTextCodec *> &list)
     d->codecIndexes.clear();
     foreach (QTextCodec *c, list)
         d->addEncoding(c);
+    selectCodec("UTF-8");
 }
 
 void BFileDialog::selectFileType(BAbstractFileType *ft)
@@ -205,7 +206,7 @@ QString BFileDialog::selectedFileTypeId() const
 QByteArray BFileDialog::saveState(bool includeGeometry) const
 {
     QByteArray ba;
-    QDataStream out(&ba, QIODevice::ReadOnly);
+    QDataStream out(&ba, QIODevice::WriteOnly);
     out.setVersion(BFileDialogPrivate::DSVersion);
     out << QFileDialog::saveState();
     out << selectedCodecName();
@@ -292,22 +293,52 @@ QString BLocalDocumentDriver::id() const
 }
 
 bool BLocalDocumentDriver::shouldSaveAs(const QString &fileName)
-{
+{;
     return !QFileInfo(fileName).isFile();
 }
 
 bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
 {
-    //TODO: Implement
-    return false;
+    if ( !editor() )
+        return false;
+    BFileDialog bfd(parent);
+    bfd.restoreState(d_func()->fileDialogState);
+    bfd.setFileTypes( editor()->fileTypes() );
+    bfd.setCodecs( editor()->supportedCodecs() );
+    bfd.setAcceptMode(BFileDialog::AcceptOpen);
+    bfd.setFileMode(QFileDialog::ExistingFiles);
+    int ret = bfd.exec();
+    d_func()->fileDialogState = bfd.saveState();
+    if (BFileDialog::Accepted != ret)
+        return false;
+    fileNames = bfd.selectedFiles();
+    codec = bfd.selectedCodec();
+    return true;
 }
 
 bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fileName,
                                              QString &newFileName, QTextCodec *&codec)
 {
-    //TODO: Reimplement
-    newFileName = QFileDialog::getSaveFileName(parent, "select name", QDir::homePath() + "/" + fileName);
-    return !newFileName.isEmpty();
+    if ( !editor() )
+        return false;
+    BFileDialog bfd(parent);
+    bfd.restoreState(d_func()->fileDialogState);
+    bfd.setFileTypes( editor()->fileTypes() );
+    bfd.setCodecs( editor()->supportedCodecs() );
+    bfd.selectCodec(codec);
+    bfd.setAcceptMode(BFileDialog::AcceptSave);
+    bfd.setFileMode(QFileDialog::AnyFile);
+    QString dir = QFileInfo(fileName).path();
+    if ( dir != "." && QDir(dir).exists() )
+        bfd.setDirectory(dir); //TODO: Myabe should improve
+    bfd.selectFile(fileName);
+    int ret = bfd.exec();
+    d_func()->fileDialogState = bfd.saveState();
+    if (BFileDialog::Accepted != ret)
+        return false;
+    newFileName = bfd.selectedFiles().first();
+    codec = bfd.selectedCodec();
+    return true;
 }
 
 //

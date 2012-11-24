@@ -280,7 +280,8 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
-    driver = new BLocalDocumentDriver(q);
+    driver = 0;
+    q->setDriver(new BLocalDocumentDriver);
     defaultFileType = BAbstractFileType::defaultFileType();
     defaultCodec = QTextCodec::codecForName("UTF-8");
     //
@@ -411,6 +412,8 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     bool ssa = !nfn.isEmpty() || driver->shouldSaveAs( doc->fileName() );
     if (ssa)
     {
+        if (!codec)
+            codec = doc->codec();
         bool b = driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
         if ( !b || nfn.isEmpty() || findDocument(nfn) )
             return false;
@@ -1369,16 +1372,11 @@ bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
     return true;
 }
 
-bool BCodeEditor::openDocument()
+bool BCodeEditor::openDocuments()
 {
     QStringList list;
     QTextCodec *codec = 0;
     return d_func()->driver->getOpenFileNames(this, list, codec) && openDocuments(list, codec);
-}
-
-bool BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
-{
-    return d_func()->openDocument(fileName, codec);
 }
 
 bool BCodeEditor::openDocuments(const QStringList &fileNames, QTextCodec *codec)
@@ -1387,6 +1385,11 @@ bool BCodeEditor::openDocuments(const QStringList &fileNames, QTextCodec *codec)
         if ( !openDocument(fn, codec) )
             return false;
     return true;
+}
+
+bool BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
+{
+    return d_func()->openDocument(fileName, codec);
 }
 
 bool BCodeEditor::saveCurrentDocument()
@@ -1399,7 +1402,7 @@ bool BCodeEditor::saveCurrentDocumentAs()
     if ( !currentDocument() )
         return false;
     QString nfn;
-    QTextCodec *codec = 0;
+    QTextCodec *codec = currentDocument()->codec();
     return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&
             saveCurrentDocumentAs(nfn, codec);
 }
