@@ -28,11 +28,11 @@
 ================================ Core Application Private
 ============================================================================*/
 
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dylib");
-#elif defined(B_OS_UNIX)
+#elif defined(Q_OS_LINUX)
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.so");
-#elif defined(B_OS_WIN)
+#elif defined(Q_OS_WIN)
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll");
 #endif
 const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
@@ -132,14 +132,14 @@ void BCoreApplicationPrivate::init()
     appPath = ap;
     QString anls = toLowerNoSpaces(appName);
     //vars
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
     userPrefix = QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
     sharedPrefix = "/Library/Application Support/" + orgName + "/" + appName;
     bundlePrefix = QDir(appPath + "/../Resources").absolutePath();
-#elif defined (B_OS_UNIX)
+#elif defined (Q_OS_LINUX)
     userPrefix = QDir::homePath() + "/." + anls;
     sharedPrefix = "/usr/share/" + anls;
-#elif defined(B_OS_WIN)
+#elif defined(Q_OS_WIN)
     if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
         userPrefix = QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
     else
@@ -163,7 +163,7 @@ void BCoreApplicationPrivate::init()
     {
         userPrefix = appPath;
         sharedPrefix = appPath;
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
         bundlePrefix = appPath;
 #endif
     }
@@ -178,7 +178,7 @@ QString BCoreApplicationPrivate::confFileName(const QString &path, const QString
     if ( path.isEmpty() || name.isEmpty() )
         return QString();
     QString bfn = name;
-#if defined(B_OS_UNIX)
+#if defined(Q_OS_UNIX)
     bfn = toLowerNoSpaces(bfn);
 #endif
     return path + "/settings/" + bfn + ".conf";
@@ -192,7 +192,7 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
         return userPrefix;
     case BCoreApplication::SharedResources :
         return sharedPrefix;
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
     case BCoreApplication::BundleResources :
         return bundlePrefix;
 #endif
@@ -310,7 +310,7 @@ QStringList BCoreApplication::locations(Location loc)
     QStringList sl;
     sl << location(loc, UserResources);
     sl << location(loc, SharedResources);
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
     sl << location(loc, BundleResources);
 #endif
     sl << location(loc, BuiltinResources);
@@ -326,7 +326,7 @@ QStringList BCoreApplication::locations(const QString &subdir)
     QStringList sl;
     sl << location(subdir, UserResources);
     sl << location(subdir, SharedResources);
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
     sl << location(subdir, BundleResources);
 #endif
     sl << location(subdir, BuiltinResources);
@@ -544,7 +544,7 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
         dir = location(BeqtPath, BuiltinResources) + "/";
         fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
     }
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
     if ( fn.isEmpty() )
     {
         dir = location(BeqtPath, BundleResources) + "/";

@@ -172,7 +172,7 @@ QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)
         QString dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
         if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
             return dir + "/" + subpath;
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
         dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
         if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
             return dir + "/" + subpath;

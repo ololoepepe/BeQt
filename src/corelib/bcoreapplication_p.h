@@ -61,7 +61,7 @@ public:
     QString appPath;
     QString userPrefix;
     QString sharedPrefix;
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
     QString bundlePrefix;
 #endif
     bool portable;

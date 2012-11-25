@@ -13,7 +13,7 @@ class BApplicationServerPrivate;
 ================================ Application server
 ============================================================================*/
 
-class BApplicationServer : public BBase
+class B_NETWORK_EXPORT BApplicationServer : public BBase
 {
     B_DECLARE_PRIVATE(BApplicationServer)
 public:

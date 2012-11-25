@@ -22,7 +22,7 @@ class QComboBox;
 ================================ Indicators Editor Module Private
 ============================================================================*/
 
-class BIndicatorsEditorModulePrivate : public BAbstractEditorModulePrivate
+class B_CODEEDITOR_EXPORT BIndicatorsEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BIndicatorsEditorModule)
     B_DECLARE_TR_FUNCTIONS(BIndicatorsEditorModule, q)

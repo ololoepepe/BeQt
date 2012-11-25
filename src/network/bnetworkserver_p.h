@@ -27,7 +27,7 @@ class BNetworkServer;
 ================================ Network Server Worker
 ============================================================================*/
 
-class BNetworkServerWorker : public QObject
+class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
 {
     Q_OBJECT
 public:
@@ -56,7 +56,7 @@ private slots:
 ================================ Network Server Thread
 ============================================================================*/
 
-class BNetworkServerThread : public QThread
+class B_NETWORK_EXPORT BNetworkServerThread : public QThread
 {
     Q_OBJECT
 public:

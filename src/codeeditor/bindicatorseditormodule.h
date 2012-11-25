@@ -21,7 +21,7 @@ class QWidget;
 ================================ Indicators Editor Module
 ============================================================================*/
 
-class BIndicatorsEditorModule : public BAbstractEditorModule
+class B_CODEEDITOR_EXPORT BIndicatorsEditorModule : public BAbstractEditorModule
 {
     B_DECLARE_PRIVATE(BIndicatorsEditorModule)
     Q_OBJECT

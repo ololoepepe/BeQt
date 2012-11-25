@@ -487,7 +487,7 @@ void BSearchEditorModulePrivate::init()
       connect( actFind.data(), SIGNAL( triggered() ), q, SLOT( find() ) );
     actFindNext = new QAction(this);
       actFindNext->setEnabled(false);
-      actFindNext->setIcon( BApplication::icon("next") );
+      actFindNext->setIcon( BApplication::icon("edit_find_next") );
       connect( actFindNext.data(), SIGNAL( triggered() ), q, SLOT( findNext() ) );
       connect( sdlg, SIGNAL( findNextAvailableChanged(bool) ), actFindNext.data(), SLOT( setEnabled(bool) ) );
     //

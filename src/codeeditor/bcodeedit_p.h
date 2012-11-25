@@ -67,7 +67,7 @@ public slots:
 ================================ Plain Text Edit Extended
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPlainTextEditExtended : public BPlainTextEdit
+class B_CODEEDITOR_EXPORT BPlainTextEditExtended : public BPlainTextEdit
 {
     B_DECLARE_PRIVATE(BPlainTextEditExtended)
     Q_OBJECT
@@ -109,7 +109,7 @@ private:
 ================================ Plain Text Edit Extended Private
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPlainTextEditExtendedPrivate : public BPlainTextEditPrivate
+class B_CODEEDITOR_EXPORT BPlainTextEditExtendedPrivate : public BPlainTextEditPrivate
 {
     B_DECLARE_PUBLIC(BPlainTextEditExtended)
     Q_OBJECT

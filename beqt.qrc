@@ -33,8 +33,6 @@
         <file>icons/messagebox_warning.svgz</file>
         <file>icons/network.png</file>
         <file>icons/network.svgz</file>
-        <file>icons/next.png</file>
-        <file>icons/next.svgz</file>
         <file>icons/ok.png</file>
         <file>icons/ok.svgz</file>
         <file>images/beqt_logo.png</file>
@@ -63,5 +61,9 @@
         <file>icons/redo.svgz</file>
         <file>icons/undo.png</file>
         <file>icons/undo.svgz</file>
+        <file>icons/edit_find_next.png</file>
+        <file>icons/edit_find_next.svgz</file>
+        <file>icons/edit_mode_block.png</file>
+        <file>icons/edit_mode_normal.png</file>
     </qresource>
 </RCC>

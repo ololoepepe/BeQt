@@ -28,14 +28,6 @@
 #   define B_CODEEDITOR_EXPORT Q_DECL_IMPORT
 #endif
 
-#if defined(Q_OS_MAC)
-#   define B_OS_MAC
-#elif defined(Q_OS_UNIX)
-#   define B_OS_UNIX
-#elif defined(Q_OS_WIN)
-#   define B_OS_WIN
-#endif
-
 #define B_DECLARE_PRIVATE(Class) \
 inline Class##Private *d_func() \
 { \

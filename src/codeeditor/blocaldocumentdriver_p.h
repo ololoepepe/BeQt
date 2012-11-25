@@ -28,7 +28,7 @@ class QLabel;
 ================================ File Dialog
 ============================================================================*/
 
-class BFileDialog : public QFileDialog, public BBase
+class B_CODEEDITOR_EXPORT BFileDialog : public QFileDialog, public BBase
 {
     B_DECLARE_PRIVATE(BFileDialog)
     Q_OBJECT
@@ -57,7 +57,7 @@ public:
 ================================ File Dialog Private
 ============================================================================*/
 
-class BFileDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BFileDialog)
     B_DECLARE_TR_FUNCTIONS(BFileDialog, q)

@@ -17,7 +17,7 @@ class BGenericServer;
 ================================ Application Server Private
 ============================================================================*/
 
-class BApplicationServerPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BApplicationServer)
     Q_OBJECT

@@ -14,9 +14,9 @@
 
 #include <cstdio>
 
-#if defined(B_OS_UNIX) || defined(B_OS_MAC)
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
 #include "termios.h"
-#elif defined(B_OS_WIN)
+#elif defined(Q_OS_WIN)
 #include "windows.h"
 #endif
 
@@ -171,7 +171,7 @@ void BTerminalIOHandler::writeLine(const QString &text)
 void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 {
     QMutexLocker locker(&BTerminalIOHandlerPrivate::echoMutex);
-#if defined(B_OS_MAC) || defined(B_OS_UNIX)
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
     if(enabled)
@@ -179,7 +179,7 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
     else
         tty.c_lflag &= ~ECHO;
     tcsetattr(STDIN_FILENO, TCSANOW, &tty);
-#elif defined(B_OS_WIN)
+#elif defined(Q_OS_WIN)
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
     GetConsoleMode(hStdin, &mode);

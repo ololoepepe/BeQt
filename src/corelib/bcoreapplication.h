@@ -45,7 +45,7 @@ public:
     {
         UserResources,
         SharedResources,
-#if defined(B_OS_MAC)
+#if defined(Q_OS_MAC)
         BundleResources,
 #endif
         BuiltinResources

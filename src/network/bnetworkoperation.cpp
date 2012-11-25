@@ -9,6 +9,8 @@
 #include <QString>
 #include <QUuid>
 #include <QByteArray>
+#include <QTimer>
+#include <QEventLoop>
 
 /*============================================================================
 ================================ Network Operation Private
@@ -128,6 +130,20 @@ int BNetworkOperation::uploadProgress() const
 bool BNetworkOperation::isFinished() const
 {
     return d_func()->isFinished;
+}
+
+bool BNetworkOperation::waitForFinished(int msecs)
+{
+    if ( isFinished() || isError() )
+        return true;
+    if (msecs <= 0)
+        return false;
+    QEventLoop el;
+    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
+    connect( this, SIGNAL( finished() ), &el, SLOT( quit() ) );
+    connect( this, SIGNAL( error() ), &el, SLOT( quit() ) );
+    el.exec();
+    return isFinished() || isError();
 }
 
 //

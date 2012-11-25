@@ -108,7 +108,7 @@ void BEditEditorModulePrivate::resetSwitchModeAction(bool bm)
 {
     if ( actSwitchMode.isNull() )
         return;
-    actSwitchMode->setIcon( BApplication::icon(bm ? "" : "") ); //TODO
+    actSwitchMode->setIcon( BApplication::icon(bm ? "edit_mode_block" : "edit_mode_normal") );
     actSwitchMode->setText( bm ? trq("Mode: blocks", "act text") : trq("Mode: lines", "act text") );
     actSwitchMode->setToolTip( bm ? trq("Mode: blocks", "act toolTip") : trq("Mode: lines", "act toolTip") );
     actSwitchMode->setWhatsThis( bm ? trq("Mode: blocks", "act whatsThis") : trq("Mode: lines", "act whatsThis") );

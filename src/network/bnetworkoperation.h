@@ -7,7 +7,7 @@ class BNetworkConnectionPrivate;
 #include "bsocketwrapper.h"
 #include "bnetworkoperationmetadata.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
 #include <QObject>
@@ -35,6 +35,7 @@ public:
     int downloadProgress() const;
     int uploadProgress() const;
     bool isFinished() const;
+    bool waitForFinished(int msecs = 30 * BeQt::Second);
 signals:
     void started();
     void error();

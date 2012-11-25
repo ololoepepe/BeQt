@@ -20,7 +20,7 @@ class QAction;
 ================================ Open Save Editor Module
 ============================================================================*/
 
-class BOpenSaveEditorModule : public BAbstractEditorModule
+class B_CODEEDITOR_EXPORT BOpenSaveEditorModule : public BAbstractEditorModule
 {
     B_DECLARE_PRIVATE(BOpenSaveEditorModule)
     Q_DISABLE_COPY(BOpenSaveEditorModule)

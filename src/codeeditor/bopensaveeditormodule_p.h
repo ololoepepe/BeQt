@@ -22,7 +22,7 @@ class QMenu;
 ================================ Open Save Editor Module Private
 ============================================================================*/
 
-class BOpenSaveEditorModulePrivate : public BAbstractEditorModulePrivate
+class B_CODEEDITOR_EXPORT BOpenSaveEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BOpenSaveEditorModule)
     B_DECLARE_TR_FUNCTIONS(BOpenSaveEditorModule, q)
