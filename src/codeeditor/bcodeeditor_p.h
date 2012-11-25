@@ -150,6 +150,7 @@ public:
     //Messages
     void failedToOpenMessage(const QString &fileName);
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
+    int reopenModifiedMessage(const QString &fileName);
     int closeModifiedMessage(const QString &fileName);
     //Signal emitting
     void emitDefaultCodecChanged(const QString &codecName);

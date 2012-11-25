@@ -475,6 +475,8 @@ bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *co
 {
     if ( !doc || doc->isBuisy() )
         return false;
+    if ( doc->isModified() && reopenModifiedMessage( doc->fileName() ) != QMessageBox::Yes)
+        return false;
     bool b = doc->load(driver, codec);
     if (!b)
         failedToOpenMessage( doc->fileName() );
@@ -663,6 +665,18 @@ void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QStr
     msg.setStandardButtons(QMessageBox::Ok);
     msg.setDefaultButton(QMessageBox::Ok);
     msg.exec();
+}
+
+int BCodeEditorPrivate::reopenModifiedMessage(const QString &fileName)
+{
+    QMessageBox msg( q_func() );
+    msg.setWindowTitle( trq("Reopening modified document", "msgbox windowTitle") );
+    msg.setIcon(QMessageBox::Question);
+    msg.setText(trq("Document is modified:", "msgbox text") + "\n" + fileName);
+    msg.setInformativeText( trq("Do you want to reopen it anyway?", "msgbox informativeText") );
+    msg.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    msg.setDefaultButton(QMessageBox::Cancel);
+    return msg.exec();
 }
 
 int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)

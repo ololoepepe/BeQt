@@ -291,6 +291,8 @@ void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
             connect( d->actNewFile.data(), SIGNAL( triggered() ), edr, SLOT( addDocument() ) );
         if ( !d->actOpenFiles.isNull() )
             connect( d->actOpenFiles.data(), SIGNAL( triggered() ), edr, SLOT( openDocuments() ) );
+        if ( !d->actReopenFile.isNull() )
+            connect( d->actReopenFile.data(), SIGNAL( triggered() ), edr, SLOT( reopenCurrentDocument() ) );
         if ( !d->actSaveFile.isNull() )
             connect( d->actSaveFile.data(), SIGNAL( triggered() ), edr, SLOT( saveCurrentDocument() ) );
         if ( !d->actSaveFileAs.isNull() )
@@ -314,6 +316,8 @@ void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
             disconnect( d->actNewFile.data(), SIGNAL( triggered() ), edr, SLOT( addDocument() ) );
         if ( !d->actOpenFiles.isNull() )
             disconnect( d->actOpenFiles.data(), SIGNAL( triggered() ), edr, SLOT( openDocuments() ) );
+        if ( !d->actReopenFile.isNull() )
+            disconnect( d->actReopenFile.data(), SIGNAL( triggered() ), edr, SLOT( reopenCurrentDocument() ) );
         if ( !d->actSaveFile.isNull() )
             disconnect( d->actSaveFile.data(), SIGNAL( triggered() ), edr, SLOT( saveCurrentDocument() ) );
         if ( !d->actSaveFileAs.isNull() )
