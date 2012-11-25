@@ -43,12 +43,11 @@ BOpenSaveEditorModulePrivate::~BOpenSaveEditorModulePrivate()
 
 void BOpenSaveEditorModulePrivate::init()
 {
-    B_Q(BOpenSaveEditorModule);
-    actNewFile = new QAction(q);
+    actNewFile = new QAction(this);
       actNewFile->setIcon( BApplication::icon("filenew") );
-    actOpenFiles = new QAction(q);
+    actOpenFiles = new QAction(this);
       actOpenFiles->setIcon( BApplication::icon("fileopen") );
-    actReopenFile = new QAction(q);
+    actReopenFile = new QAction(this);
       actReopenFile->setIcon( BApplication::icon("reload") );
       actReopenFile->setMenu( new QMenu() );
       QList<BCodeEditor::CodecGroup> list;
@@ -73,15 +72,15 @@ void BOpenSaveEditorModulePrivate::init()
           actReopenFile->menu()->addMenu(mnu);
           codecGroups << mnu;
       }
-    actSaveFile = new QAction(q);
+    actSaveFile = new QAction(this);
       actSaveFile->setIcon( BApplication::icon("filesave") );
-    actSaveFileAs = new QAction(q);
+    actSaveFileAs = new QAction(this);
       actSaveFileAs->setIcon( BApplication::icon("filesaveas") );
-    actSaveAllFiles = new QAction(q);
+    actSaveAllFiles = new QAction(this);
       actSaveAllFiles->setIcon( BApplication::icon("save_all") );
-    actCloseFile = new QAction(q);
+    actCloseFile = new QAction(this);
       actCloseFile->setIcon( BApplication::icon("fileclose") );
-    actCloseAllFiles = new QAction(q);
+    actCloseAllFiles = new QAction(this);
       actCloseAllFiles->setIcon( BApplication::icon("fileclose") );
     checkActions();
     //

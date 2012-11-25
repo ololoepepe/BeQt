@@ -10,6 +10,7 @@
 #include "bindicatorseditormodule.h"
 #include "babstractdocumentdriver_p.h"
 #include "bopensaveeditormodule.h"
+#include "bediteditormodule.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -171,9 +172,17 @@ QString BCodeEditorPrivate::defaultFileName()
     return trq("New document", "fileName");
 }
 
-QString BCodeEditorPrivate::createFileName(const QString &fileName)
+QString BCodeEditorPrivate::createFileName(const QString &fileName, const QString &defaultName,
+                                           const QStringList &existingNames)
 {
-    return !fileName.isEmpty() ? fileName : defaultFileName();
+    if ( !fileName.isEmpty() )
+        return fileName;
+    QString fnbase = !defaultName.isEmpty() ? defaultName : defaultFileName();
+    int i = 1;
+    QString fn = fnbase + " " + QString::number(i++);
+    while ( existingNames.contains(fn) )
+        fn = fnbase + " " + QString::number(i++);
+    return fn;
 }
 
 QMap<QTextCodec *, QString> BCodeEditorPrivate::createCodecNamesMap()
@@ -284,6 +293,7 @@ void BCodeEditorPrivate::init()
     q->setDriver(new BLocalDocumentDriver);
     defaultFileType = BAbstractFileType::defaultFileType();
     defaultCodec = QTextCodec::codecForName("UTF-8");
+    defaultFN = defaultFileName();
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -341,7 +351,7 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
     BCodeEditorDocument *doc = new BCodeEditorDocument;
-    doc->setFileName( createFileName(fileName) );
+    doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
     if ( !text.isEmpty() )
         doc->setText(text);
     doc->setEditFont(editFont);
@@ -933,6 +943,9 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     case BookmarksModule:
         mdl = new BBookmarksEditorModule(parent);
         break;
+    case EditModule:
+        mdl = new BEditEditorModule(parent);
+        break;
     case IndicatorsModule:
         mdl = new BIndicatorsEditorModule(parent);
         break;
@@ -1045,6 +1058,7 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
 {
     d_func()->init();
+    addModule(EditModule);
     addModule(IndicatorsModule);
     addModule(OpenSaveModule);
     addModule(SearchModule);
@@ -1056,6 +1070,7 @@ BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *p
     d_func()->init();
     foreach (BAbstractFileType *ft, fileTypes)
         d_func()->tryAddFileType(ft);
+    addModule(EditModule);
     addModule(IndicatorsModule);
     addModule(OpenSaveModule);
     addModule(SearchModule);
@@ -1152,6 +1167,11 @@ void BCodeEditor::setDefaultCodec(const QString &codecName)
     if ( codecName.isEmpty() )
         return;
     setDefaultCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
+}
+
+void BCodeEditor::setDefaultFileName(const QString &fileName)
+{
+    d_func()->defaultFN = !fileName.isEmpty() ? fileName : BCodeEditorPrivate::defaultFileName();
 }
 
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
@@ -1303,6 +1323,11 @@ QString BCodeEditor::defaultCodecName() const
     return QString::fromAscii( d_func()->defaultCodec->name().data() );
 }
 
+QString BCodeEditor::defaultFileName() const
+{
+    return d_func()->defaultFN;
+}
+
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
 {
     return d_func()->modules.value(name);
@@ -1391,7 +1416,7 @@ bool BCodeEditor::addDocument(const QString &fileName)
 bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
 {
     B_D(BCodeEditor);
-    if ( d->findDocument( BCodeEditorPrivate::createFileName(fileName) ) )
+    if ( d->findDocument( BCodeEditorPrivate::createFileName( fileName, d->defaultFN, fileNames() ) ) )
         return false;
     d->addDocument( d->createDocument(fileName, text) );
     return true;

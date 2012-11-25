@@ -7,6 +7,7 @@
 #include <BOpenSaveEditorModule>
 #include <BAbstractDocumentDriver>
 #include <BLocalDocumentDirver>
+#include <BEditEditorModule>
 
 #include <QApplication>
 #include <QString>
@@ -74,6 +75,16 @@ int main(int argc, char **argv)
       tbar = new QToolBar;
         tbar->setWindowTitle("Close");
         tbar->addActions( osmdl->closeActions() );
+      mw->addToolBar(tbar);
+      //
+      BEditEditorModule *emdl = static_cast<BEditEditorModule *>( cedtr->module(BCodeEditor::EditModule) );
+      tbar = new QToolBar;
+        tbar->setWindowTitle("Clipboard");
+        tbar->addActions( emdl->clipboardActions() );
+      mw->addToolBar(tbar);
+      tbar = new QToolBar;
+        tbar->setWindowTitle("UndoRedo");
+        tbar->addActions( emdl->undoRedoActions() );
       mw->addToolBar(tbar);
     mw->resize(1200, 800);
     mw->move(400, 200);

@@ -104,7 +104,8 @@ public:
     };
     //
     static QString defaultFileName();
-    static QString createFileName(const QString &fileName);
+    static QString createFileName(const QString &fileName, const QString &defaultName,
+                                  const QStringList &existingNames);
     static QMap<QTextCodec *, QString> createCodecNamesMap();
     static QString codecDescriptiveName(const QString &codecName);
     //
@@ -163,6 +164,7 @@ public:
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
     QTextCodec *defaultCodec;
+    QString defaultFN;
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;

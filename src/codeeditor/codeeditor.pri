@@ -12,6 +12,8 @@ HEADERS += \
     $${PWD}/bcodeeditor.h \
     $${PWD}/bcodeeditordocument.h \
     $${PWD}/bcodeeditordocument_p.h \
+    $${PWD}/bediteditormodule.h \
+    $${PWD}/bediteditormodule_p.h \
     $${PWD}/bindicatorseditormodule.h \
     $${PWD}/bindicatorseditormodule_p.h \
     $${PWD}/blocaldocumentdriver.h \
@@ -29,6 +31,7 @@ SOURCES += \
     $${PWD}/bcodeedit.cpp \
     $${PWD}/bcodeeditor.cpp \
     $${PWD}/bcodeeditordocument.cpp \
+    $${PWD}/bediteditormodule.cpp \
     $${PWD}/bindicatorseditormodule.cpp \
     $${PWD}/blocaldocumentdriver.cpp \
     $${PWD}/bopensaveeditormodule.cpp \
