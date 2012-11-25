@@ -32,8 +32,11 @@ public:
     void init();
     void setDocument(BCodeEditorDocument *doc);
     void checkActions();
+    void checkSwitchModeAction();
+    void resetSwitchModeAction(bool bm);
 public slots:
     void retranslateUi();
+    void actSwitchModeTriggered();
 public:
     BCodeEditorDocument *document;
     QPointer<QAction> actCut;
@@ -41,6 +44,7 @@ public:
     QPointer<QAction> actPaste;
     QPointer<QAction> actUndo;
     QPointer<QAction> actRedo;
+    QPointer<QAction> actSwitchMode;
 };
 
 #endif // BEDITEDITORMODULE_P_H

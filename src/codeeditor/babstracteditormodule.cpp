@@ -190,6 +190,11 @@ void BAbstractEditorModule::defaultCodecChanged(const QString &codecName)
     //
 }
 
+void BAbstractEditorModule::editModeChanged(BCodeEdit::EditMode mode)
+{
+    //
+}
+
 void BAbstractEditorModule::documentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     //

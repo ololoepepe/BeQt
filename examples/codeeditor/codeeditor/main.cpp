@@ -89,6 +89,8 @@ int main(int argc, char **argv)
       tbar = new QToolBar;
         tbar->setWindowTitle("UndoRedo");
         tbar->addActions( emdl->undoRedoActions() );
+        tbar->addSeparator();
+        tbar->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
       mw->addToolBar(tbar);
     mw->resize(1200, 800);
     mw->move(400, 200);

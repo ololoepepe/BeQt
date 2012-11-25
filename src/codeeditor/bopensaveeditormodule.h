@@ -44,10 +44,10 @@ protected:
 public:
     QString id() const;
     QAction *action(Action type) const;
-    QList<QAction *> openActions() const;
-    QList<QAction *> saveActions() const;
-    QList<QAction *> closeActions() const;
-    QList<QAction *> actions() const;
+    QList<QAction *> openActions(bool extended = false) const;
+    QList<QAction *> saveActions(bool extended = false) const;
+    QList<QAction *> closeActions(bool extended = false) const;
+    QList<QAction *> actions(bool extended = false) const;
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

@@ -700,6 +700,13 @@ void BCodeEditorPrivate::emitDefaultCodecChanged(const QString &codecName)
     QMetaObject::invokeMethod( q_func(), "defaultCodecChanged", Q_ARG(QString, codecName) );
 }
 
+void BCodeEditorPrivate::emitEditModeChanged(BCodeEdit::EditMode mode)
+{
+    foreach (BAbstractEditorModule *mdl, modules)
+        mdl->editModeChanged(mode);
+    QMetaObject::invokeMethod( q_func(), "editModeChanged", Q_ARG(BCodeEdit::EditMode, mode) );
+}
+
 void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -1200,6 +1207,7 @@ void BCodeEditor::setEditMode(BCodeEdit::EditMode mode)
     d->editMode = mode;
     foreach ( BCodeEditorDocument *doc, documents() )
         doc->setEditMode(mode);
+    d->emitEditModeChanged(mode);
 }
 
 void BCodeEditor::setEditLineLength(int ll)

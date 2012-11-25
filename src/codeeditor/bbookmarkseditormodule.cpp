@@ -87,6 +87,7 @@ void BBookmarksEditorModulePrivate::init()
       actGotoNextBookmark->setIcon( BApplication::icon("bookmark") );
       connect( actGotoNextBookmark.data(), SIGNAL( triggered() ), q, SLOT( gotoNextBookmark() ) );
     //
+    checkBookmarks();
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }

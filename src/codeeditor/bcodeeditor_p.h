@@ -154,6 +154,7 @@ public:
     int closeModifiedMessage(const QString &fileName);
     //Signal emitting
     void emitDefaultCodecChanged(const QString &codecName);
+    void emitEditModeChanged(BCodeEdit::EditMode mode);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);

@@ -9,6 +9,7 @@ class QString;
 class QAction;
 
 #include "babstracteditormodule.h"
+#include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -30,7 +31,8 @@ public:
         CopyAction,
         PasteAction,
         UndoAction,
-        RedoAction
+        RedoAction,
+        SwitchModeAction
     };
     //
     explicit BEditEditorModule(QObject *parent = 0);
@@ -51,6 +53,7 @@ protected:
     void documentPasteAvailableChanged(bool available);
     void documentUndoAvailableChanged(bool available);
     void documentRedoAvailableChanged(bool available);
+    void editModeChanged(BCodeEdit::EditMode mode);
     void currentDocumentChanged(BCodeEditorDocument *doc);
 };
 

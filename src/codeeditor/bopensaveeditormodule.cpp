@@ -83,8 +83,8 @@ void BOpenSaveEditorModulePrivate::init()
       actCloseFile->setIcon( BApplication::icon("fileclose") );
     actCloseAllFiles = new QAction(this);
       actCloseAllFiles->setIcon( BApplication::icon("fileclose") );
-    checkActions();
     //
+    checkActions();
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
@@ -234,7 +234,7 @@ QAction *BOpenSaveEditorModule::action(Action type) const
     }
 }
 
-QList<QAction *> BOpenSaveEditorModule::openActions() const
+QList<QAction *> BOpenSaveEditorModule::openActions(bool extended) const
 {
     const B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
@@ -242,12 +242,12 @@ QList<QAction *> BOpenSaveEditorModule::openActions() const
         list << d->actNewFile.data();
     if ( !d->actOpenFiles.isNull() )
         list << d->actOpenFiles.data();
-    if ( !d->actReopenFile.isNull() )
+    if ( extended && !d->actReopenFile.isNull() )
         list << d->actReopenFile.data();
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::saveActions() const
+QList<QAction *> BOpenSaveEditorModule::saveActions(bool extended) const
 {
     const B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
@@ -255,28 +255,28 @@ QList<QAction *> BOpenSaveEditorModule::saveActions() const
         list << d->actSaveFile.data();
     if ( !d->actSaveFileAs.isNull() )
         list << d->actSaveFileAs.data();
-    if ( !d->actSaveAllFiles.isNull() )
+    if ( extended && !d->actSaveAllFiles.isNull() )
         list << d->actSaveAllFiles.data();
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::closeActions() const
+QList<QAction *> BOpenSaveEditorModule::closeActions(bool extended) const
 {
     const B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
     if ( !d->actCloseFile.isNull() )
         list << d->actCloseFile.data();
-    if ( !d->actCloseAllFiles.isNull() )
+    if ( extended && !d->actCloseAllFiles.isNull() )
         list << d->actCloseAllFiles.data();
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::actions() const
+QList<QAction *> BOpenSaveEditorModule::actions(bool extended) const
 {
     QList<QAction *> list;
-    list << openActions();
-    list << saveActions();
-    list << closeActions();
+    list << openActions(extended);
+    list << saveActions(extended);
+    list << closeActions(extended);
     return list;
 }
 

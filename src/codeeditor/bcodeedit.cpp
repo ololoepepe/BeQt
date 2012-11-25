@@ -171,17 +171,11 @@ QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPain
     return context;
 }
 
-void BPlainTextEditExtendedPrivate::emulateShiftPress()
-{
-    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
-    QApplication::sendEvent(q_func(), &e);
-}
-
 //
 
 void BPlainTextEditExtendedPrivate::selectionChanged()
 {
-    B_Q(BPlainTextEdit);
+    B_Q(BPlainTextEditExtended);
     QTextCursor tc = q->textCursor();
     hasSelection = tc.hasSelection();
     if (!blockMode)
@@ -196,7 +190,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     int soffset = start - q->document()->findBlock(start).position();
     int eoffset = end - q->document()->findBlock(end).position();
     if (soffset == eoffset)
-        return emulateShiftPress(); //Workaround to update the selection
+        return q->emulateShiftPress(); //Workaround to update the selection
     int minoffset = qMin<int>(soffset, eoffset);
     int maxoffset = qMax<int>(soffset, eoffset);
     int astart = qMin<int>(start, end);
@@ -214,7 +208,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
         tb = tb.next();
     }
     //Workaround to update the selection
-    emulateShiftPress();
+    q->emulateShiftPress();
 }
 
 /*============================================================================
@@ -237,6 +231,12 @@ BPlainTextEditExtended::~BPlainTextEditExtended()
 void BPlainTextEditExtended::setBlockMode(bool enabled)
 {
     d_func()->blockMode = enabled;
+}
+
+void BPlainTextEditExtended::emulateShiftPress()
+{
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
+    QApplication::sendEvent(this, &e);
 }
 
 bool BPlainTextEditExtended::blockMode() const
@@ -1641,7 +1641,8 @@ void BCodeEdit::setEditMode(EditMode mode)
         return;
     d->blockMode = b;
     d->ptedt->setBlockMode(b);
-    d->ptedt->update();
+    //d->ptedt->update();
+    d->ptedt->emulateShiftPress();
     emit editModeChanged(mode);
 }
 

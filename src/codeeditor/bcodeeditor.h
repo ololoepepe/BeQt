@@ -119,6 +119,7 @@ public slots:
     bool closeAllDocuments();
 signals:
     void defaultCodecChanged(const QString &codecName);
+    void editModeChanged(BCodeEdit::EditMode mode);
     void documentAboutToBeAdded(BCodeEditorDocument *doc);
     void documentAdded(BCodeEditorDocument *doc);
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);

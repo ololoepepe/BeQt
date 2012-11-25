@@ -4,6 +4,7 @@
 #include "babstracteditormodule_p.h"
 #include "bcodeeditordocument.h"
 #include "bcodeeditor.h"
+#include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -47,7 +48,11 @@ void BEditEditorModulePrivate::init()
       actUndo->setIcon( BApplication::icon("undo") );
     actRedo = new QAction(this);
       actRedo->setIcon( BApplication::icon("redo") );
+    actSwitchMode = new QAction(this);
+      connect( actSwitchMode.data(), SIGNAL( triggered() ), this, SLOT( actSwitchModeTriggered() ) );
     //
+    resetSwitchModeAction(false);
+    checkActions();
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
@@ -75,7 +80,7 @@ void BEditEditorModulePrivate::setDocument(BCodeEditorDocument *doc)
 
 void BEditEditorModulePrivate::checkActions()
 {
-    BCodeEditorDocument *doc = editor ? editor->currentDocument() : 0;
+    BCodeEditorDocument *doc = q_func()->currentDocument();
     if ( !actCut.isNull() )
         actCut->setEnabled( doc && doc->isCutAvailable() );
     if ( !actCopy.isNull() )
@@ -86,6 +91,27 @@ void BEditEditorModulePrivate::checkActions()
         actUndo->setEnabled( doc && doc->isUndoAvailable() );
     if ( !actRedo.isNull() )
         actRedo->setEnabled( doc && doc->isRedoAvailable() );
+    checkSwitchModeAction();
+}
+
+void BEditEditorModulePrivate::checkSwitchModeAction()
+{
+    if ( actSwitchMode.isNull() )
+        return;
+    BCodeEditorDocument *doc = q_func()->currentDocument();
+    actSwitchMode->setEnabled(doc);
+    if (doc)
+        resetSwitchModeAction(doc->editMode() == BCodeEdit::BlockMode);
+}
+
+void BEditEditorModulePrivate::resetSwitchModeAction(bool bm)
+{
+    if ( actSwitchMode.isNull() )
+        return;
+    actSwitchMode->setIcon( BApplication::icon(bm ? "" : "") ); //TODO
+    actSwitchMode->setText( bm ? trq("Mode: blocks", "act text") : trq("Mode: lines", "act text") );
+    actSwitchMode->setToolTip( bm ? trq("Mode: blocks", "act toolTip") : trq("Mode: lines", "act toolTip") );
+    actSwitchMode->setWhatsThis( bm ? trq("Mode: blocks", "act whatsThis") : trq("Mode: lines", "act whatsThis") );
 }
 
 //
@@ -122,6 +148,15 @@ void BEditEditorModulePrivate::retranslateUi()
         actRedo->setToolTip( trq("Redo", "act toolTip") );
         actRedo->setWhatsThis( trq("Redo", "act whatsThis") );
     }
+    checkSwitchModeAction();
+}
+
+void BEditEditorModulePrivate::actSwitchModeTriggered()
+{
+    if (!editor)
+        return;
+    editor->setEditMode( (editor->editMode() == BCodeEdit::NormalMode) ? BCodeEdit::BlockMode :
+                                                                         BCodeEdit::NormalMode );
 }
 
 /*============================================================================
@@ -168,6 +203,8 @@ QAction *BEditEditorModule::action(Action type) const
         return d_func()->actUndo.data();
     case RedoAction:
         return d_func()->actRedo.data();
+    case SwitchModeAction:
+        return d_func()->actSwitchMode.data();
     default:
         return 0;
     }
@@ -202,6 +239,7 @@ QList<QAction *> BEditEditorModule::actions() const
     QList<QAction *> list;
     list << clipboardActions();
     list << undoRedoActions();
+    list << d_func()->actSwitchMode.data();
     return list;
 }
 
@@ -242,6 +280,11 @@ void BEditEditorModule::documentUndoAvailableChanged(bool available)
 void BEditEditorModule::documentRedoAvailableChanged(bool available)
 {
     d_func()->checkActions();
+}
+
+void BEditEditorModule::editModeChanged(BCodeEdit::EditMode mode)
+{
+    d_func()->checkSwitchModeAction();
 }
 
 void BEditEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
