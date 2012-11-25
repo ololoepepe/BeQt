@@ -4,6 +4,7 @@
 class BCodeEditorDocumentPrivate;
 class BAbstractDocumentDriver;
 class BAbstractFileType;
+class BCodeEditorPrivate;
 
 class QTextCodec;
 class QWidget;
@@ -53,6 +54,8 @@ protected:
     BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
+    //
+    friend class BCodeEditorPrivate;
 };
 
 #endif // BCODEEDITORDOCUMENT_H

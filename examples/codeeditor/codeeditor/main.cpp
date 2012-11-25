@@ -48,6 +48,8 @@ int main(int argc, char **argv)
         cedtr->setDefaultCodec("Windows-1251");
         BLocalDocumentDriver *drv = static_cast<BLocalDocumentDriver *>( cedtr->driver() );
         drv->setDefaultDir("/home/darkangel/tmp");
+        mw->installEventFilter( cedtr->dropHandler() );
+        mw->setAcceptDrops(true);
       mw->setCentralWidget(cedtr);
       //
       QMenu *mnuBM = mw->menuBar()->addMenu("Find");

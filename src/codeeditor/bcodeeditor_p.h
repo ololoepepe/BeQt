@@ -18,6 +18,7 @@ class QDialogButtonBox;
 class QAbstractButton;
 class QTextCodec;
 class QStringList;
+class QEvent;
 
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
@@ -84,6 +85,24 @@ private slots:
     void dlgbboxClicked(QAbstractButton *button);
 private:
     Q_DISABLE_COPY(BSelectDocumentsDialogPrivate)
+};
+
+/*============================================================================
+================================ Drop Handler
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BDropHandler : public QObject
+{
+    Q_OBJECT
+public:
+    explicit BDropHandler(BCodeEditorPrivate *parent);
+    ~BDropHandler();
+    //
+    bool eventFilter(QObject *o, QEvent *e);
+    //
+    BCodeEditorPrivate *const Editor;
+private:
+    Q_DISABLE_COPY(BDropHandler)
 };
 
 /*============================================================================
@@ -168,10 +187,12 @@ public:
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;
+    BDropHandler *dropHandler;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;
 public slots:
+    void createDropHandler();
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);
     //BCodeEdit events
@@ -197,6 +218,8 @@ public slots:
     void documentSavingFinished(bool success);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
+    //
+    friend class BDropHandler;
 };
 
 #endif // BCODEEDITOR_P_H

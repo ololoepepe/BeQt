@@ -103,6 +103,7 @@ public:
     bool documentAvailable() const;
     QString currentFileName() const;
     QStringList fileNames() const;
+    QObject *dropHandler() const;
 public slots:
     bool addDocument( const QString &fileName = QString() );
     bool addDocument(const QString &fileName, const QString &text);

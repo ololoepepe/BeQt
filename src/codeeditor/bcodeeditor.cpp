@@ -11,6 +11,7 @@
 #include "babstractdocumentdriver_p.h"
 #include "bopensaveeditormodule.h"
 #include "bediteditormodule.h"
+#include "bcodeedit_p.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -40,6 +41,13 @@
 #include <QTimer>
 #include <QTextCodec>
 #include <QByteArray>
+#include <QEvent>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QDragLeaveEvent>
+#include <QDropEvent>
+#include <QUrl>
+#include <QMimeData>
 
 #include <QDebug>
 
@@ -161,6 +169,51 @@ BSelectDocumentsDialog::BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d,
     QDialog(parent), BBase(d)
 {
     //
+}
+
+/*============================================================================
+================================ Drop Handler
+============================================================================*/
+
+BDropHandler::BDropHandler(BCodeEditorPrivate *parent) :
+    QObject(parent), Editor(parent)
+{
+    //
+}
+
+BDropHandler::~BDropHandler()
+{
+    //
+}
+
+//
+
+bool BDropHandler::eventFilter(QObject *o, QEvent *e)
+{
+    if (!Editor)
+        return QObject::eventFilter(o, e);
+    switch ( e->type() )
+    {
+    case QEvent::DragEnter:
+        static_cast<QDragEnterEvent *>(e)->acceptProposedAction();
+        return true;
+    case QEvent::DragMove:
+        static_cast<QDragMoveEvent *>(e)->acceptProposedAction();
+        return true;
+    case QEvent::DragLeave:
+        static_cast<QDragLeaveEvent *>(e)->accept();
+        return true;
+    case QEvent::Drop:
+    {
+        QStringList list;
+        foreach ( const QUrl &url, static_cast<QDropEvent *>(e)->mimeData()->urls() )
+            list << url.toLocalFile();
+        Editor->q_func()->openDocuments(list);
+        return true;
+    }
+    default:
+        return QObject::eventFilter(o, e);
+    }
 }
 
 /*============================================================================
@@ -303,6 +356,8 @@ void BCodeEditorPrivate::init()
         connect( twgt, SIGNAL( currentChanged(int) ), this, SLOT( twgtCurrentChanged(int) ) );
         connect( twgt, SIGNAL( tabCloseRequested(int) ), this, SLOT( twgtTabCloseRequested(int) ) );
       vlt->addWidget(twgt);
+   //
+   createDropHandler();
 }
 
 bool BCodeEditorPrivate::tryAddFileType(BAbstractFileType *ft)
@@ -351,6 +406,7 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
     BCodeEditorDocument *doc = new BCodeEditorDocument;
+    doc->innerEdit()->viewport()->installEventFilter(dropHandler);
     doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
     if ( !text.isEmpty() )
         doc->setText(text);
@@ -704,6 +760,14 @@ const QStringList BCodeEditorPrivate::SupportedCodecs = QStringList() << BCodeEd
 const QMap<QTextCodec *, QString> BCodeEditorPrivate::CodecNames = BCodeEditorPrivate::createCodecNamesMap();
 
 //
+
+void BCodeEditorPrivate::createDropHandler()
+{
+    dropHandler = new BDropHandler(this);
+    foreach ( BCodeEditorDocument *doc, q_func()->documents() )
+        doc->innerEdit()->viewport()->installEventFilter(dropHandler);
+    connect( dropHandler, SIGNAL( destroyed() ), this, SLOT( createDropHandler() ) );
+}
 
 void BCodeEditorPrivate::twgtCurrentChanged(int index)
 {
@@ -1404,6 +1468,11 @@ QStringList BCodeEditor::fileNames() const
             list << doc->fileName();
     list.removeDuplicates();
     return list;
+}
+
+QObject *BCodeEditor::dropHandler() const
+{
+    return d_func()->dropHandler;
 }
 
 //
