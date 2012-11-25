@@ -26,16 +26,20 @@ class B_CODEEDITOR_EXPORT BLocalDocumentDriver : public BAbstractDocumentDriver
 public:
     explicit BLocalDocumentDriver(QObject *parent = 0);
     ~BLocalDocumentDriver();
-    //
+protected:
+    BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
+public:
     QString id() const;
+    bool isBuisy() const;
     bool shouldSaveAs(const QString &fileName);
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
-    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newFileName, QTextCodec *&codec);
+    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec);
     void setDefaultDir(const QString &dir);
     void setDialogState(const QByteArray &state);
     QByteArray dialogState() const;
 protected:
-    BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
+    bool handleSaveOperation(const Operation &op);
+    bool handleLoadOperation(const Operation &op);
 private:
     Q_DISABLE_COPY(BLocalDocumentDriver)
 };

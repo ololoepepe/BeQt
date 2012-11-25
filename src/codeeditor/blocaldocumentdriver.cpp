@@ -236,39 +236,6 @@ BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
 void BLocalDocumentDriverPrivate::init()
 {
     defaultDir = QDir::homePath();
-    B_Q(BLocalDocumentDriver);
-    connect( q, SIGNAL( newPendingLoadOperation() ), this, SLOT( newPendingLoadOperation() ) );
-    connect( q, SIGNAL( newPendingSaveOperation() ), this, SLOT( newPendingSaveOperation() ) );
-}
-
-//
-
-void BLocalDocumentDriverPrivate::newPendingLoadOperation()
-{
-    B_Q(BLocalDocumentDriver);
-    BLocalDocumentDriver::Operation op = q->nextPendingLoadOperation();
-    QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
-    if ( !f.open(QFile::ReadOnly) )
-        return q->emitLoadingFinished(op, false);
-    QTextStream in(&f);
-    in.setCodec( op.codec ? op.codec : op.document->codec() );
-    QString text = in.readAll();
-    f.close();
-    q->emitLoadingFinished(op, true, text);
-}
-
-void BLocalDocumentDriverPrivate::newPendingSaveOperation()
-{
-    B_Q(BLocalDocumentDriver);
-    BLocalDocumentDriver::Operation op = q->nextPendingSaveOperation();
-    QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
-    if ( !f.open(QFile::WriteOnly) )
-        return q->emitSavingFinished(op, false);
-    QTextStream out(&f);
-    out.setCodec( op.codec ? op.codec : op.document->codec() );
-    out << op.document->text();
-    f.close();
-    q->emitSavingFinished(op, true);
 }
 
 /*============================================================================
@@ -288,9 +255,22 @@ BLocalDocumentDriver::~BLocalDocumentDriver()
 
 //
 
+BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent) :
+    BAbstractDocumentDriver(d, parent)
+{
+    d_func()->init();
+}
+
+//
+
 QString BLocalDocumentDriver::id() const
 {
     return "beqt/local";
+}
+
+bool BLocalDocumentDriver::isBuisy() const
+{
+    return false;
 }
 
 bool BLocalDocumentDriver::shouldSaveAs(const QString &fileName)
@@ -322,7 +302,7 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
 }
 
 bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fileName,
-                                             QString &newFileName, QTextCodec *&codec)
+                                             QString &newName, QTextCodec *&codec)
 {
     if ( !editor() )
         return false;
@@ -343,7 +323,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     d_func()->fileDialogState = bfd.saveState();
     if (BFileDialog::Accepted != ret)
         return false;
-    newFileName = bfd.selectedFiles().first();
+    newName = bfd.selectedFiles().first();
     codec = bfd.selectedCodec();
     return true;
 }
@@ -367,8 +347,34 @@ QByteArray BLocalDocumentDriver::dialogState() const
 
 //
 
-BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent) :
-    BAbstractDocumentDriver(d, parent)
+bool BLocalDocumentDriver::handleLoadOperation(const Operation &op)
 {
-    d_func()->init();
+    QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
+    if ( !f.open(QFile::ReadOnly) )
+    {
+        emitLoadingFinished(op, false);
+        return false;
+    }
+    QTextStream in(&f);
+    in.setCodec( op.codec ? op.codec : op.document->codec() );
+    QString text = in.readAll();
+    f.close();
+    emitLoadingFinished(op, true, text);
+    return true;
+}
+
+bool BLocalDocumentDriver::handleSaveOperation(const Operation &op)
+{
+    QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
+    if ( !f.open(QFile::WriteOnly) )
+    {
+        emitSavingFinished(op, false);
+        return false;
+    }
+    QTextStream out(&f);
+    out.setCodec( op.codec ? op.codec : op.document->codec() );
+    out << op.document->text();
+    f.close();
+    emitSavingFinished(op, true);
+    return true;
 }

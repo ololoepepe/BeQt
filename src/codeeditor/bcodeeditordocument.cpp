@@ -165,7 +165,12 @@ void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
     emit fileTypeChanged(ft);
 }
 
-bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName, QTextCodec *codec)
+bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
+{
+    return load(driver, 0, fileName);
+}
+
+bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName)
 {
     if ( !driver || isBuisy() )
         return false;
@@ -183,7 +188,12 @@ bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &f
     return true;
 }
 
-bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &fileName, QTextCodec *codec)
+bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &fileName)
+{
+    return save(driver, 0, fileName);
+}
+
+bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName)
 {
     if ( !driver || isBuisy() )
         return false;

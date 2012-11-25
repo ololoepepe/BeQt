@@ -1,7 +1,6 @@
 #ifndef BABSTRACTDOCUMENTDRIVER_P_H
 #define BABSTRACTDOCUMENTDRIVER_P_H
 
-class BCodeEditorDocument;
 class BCodeEditor;
 
 #include "babstractdocumentdriver.h"
@@ -10,8 +9,6 @@ class BCodeEditor;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
-#include <QQueue>
-#include <QList>
 
 /*============================================================================
 ================================ Abstract Document Driver Private
@@ -29,9 +26,6 @@ public:
     void setEditor(BCodeEditor *edr);
     //
     BCodeEditor *editor;
-    QQueue<BAbstractDocumentDriver::Operation> loadOps;
-    QQueue<BAbstractDocumentDriver::Operation> saveOps;
-    QList<BCodeEditorDocument *> docs;
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriverPrivate)
 };

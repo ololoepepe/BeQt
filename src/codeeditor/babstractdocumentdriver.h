@@ -36,29 +36,23 @@ public:
     ~BAbstractDocumentDriver();
     //
     virtual QString id() const = 0;
+    virtual bool isBuisy() const = 0;
     virtual bool shouldSaveAs(const QString &fileName) = 0;
     virtual bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec) = 0;
-    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName,
-                                   QString &newFileName, QTextCodec *&codec) = 0;
-    virtual bool isBuisy() const;
+    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec) = 0;
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool load( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
-    bool hasPendingLoadOperations() const;
-    bool hasPendingSaveOperations() const;
-    bool isDocumentInList(BCodeEditorDocument *doc) const;
     BCodeEditor *editor() const;
 signals:
-    void newPendingLoadOperation();
-    void newPendingSaveOperation();
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 protected:
     BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent = 0);
     //
-    Operation nextPendingLoadOperation();
-    Operation nextPendingSaveOperation();
+    virtual bool handleSaveOperation(const Operation &op) = 0;
+    virtual bool handleLoadOperation(const Operation &op) = 0;
     void emitLoadingFinished( const Operation &operation, bool success, const QString &text = QString() );
     void emitSavingFinished(const Operation &operation, bool success);
 private:

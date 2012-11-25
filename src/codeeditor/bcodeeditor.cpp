@@ -395,7 +395,7 @@ bool BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec
         return false;
     BCodeEditorDocument *doc = createDocument(fileName);
     openingDocuments.insert(doc, fileName);
-    bool b = doc->load(driver, fileName, codec);
+    bool b = doc->load(driver, codec, fileName);
     if (!b)
     {
         openingDocuments.remove(doc);
@@ -409,7 +409,7 @@ bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *co
 {
     if ( !doc || doc->isBuisy() )
         return false;
-    bool b = doc->load(driver, "", codec);
+    bool b = doc->load(driver, codec);
     if (!b)
         failedToOpenMessage( doc->fileName() );
     return b;
@@ -437,7 +437,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
             return false;
     }
     savingDocuments.insert(doc, nfn);
-    bool b = doc->save(driver, nfn, codec);
+    bool b = doc->save(driver, codec, nfn);
     if (!b)
     {
         savingDocuments.remove(doc);
