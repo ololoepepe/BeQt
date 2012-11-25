@@ -359,6 +359,8 @@ bool BLocalDocumentDriver::handleLoadOperation(const Operation &op)
     in.setCodec( op.codec ? op.codec : op.document->codec() );
     QString text = in.readAll();
     f.close();
+    op.document->setReadOnly( !f.open(QFile::WriteOnly | QFile::Append) );
+    f.close();
     emitLoadingFinished(op, true, text);
     return true;
 }
@@ -374,6 +376,8 @@ bool BLocalDocumentDriver::handleSaveOperation(const Operation &op)
     QTextStream out(&f);
     out.setCodec( op.codec ? op.codec : op.document->codec() );
     out << op.document->text();
+    f.close();
+    op.document->setReadOnly( !f.open(QFile::WriteOnly | QFile::Append) );
     f.close();
     emitSavingFinished(op, true);
     return true;
