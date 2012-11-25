@@ -406,7 +406,7 @@ BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString 
 {
     ProcessTextResult res;
     //TODO
-    QStringList sl = text.split('\n');
+    QStringList sl = removeUnsupportedSymbols(text).split('\n');
     QStringList sln;
     for (int i = 0; i < sl.size(); ++i)
     {

@@ -21,6 +21,8 @@
 #include <QSettings>
 #include <QVariant>
 #include <QByteArray>
+#include <QToolButton>
+#include <QWidget>
 
 #include <QDebug>
 
@@ -67,6 +69,9 @@ int main(int argc, char **argv)
       tbar = new QToolBar;
         tbar->setWindowTitle("Open");
         tbar->addActions( osmdl->openActions() );
+        QToolButton *tbtn = static_cast<QToolButton *>( tbar->widgetForAction(
+                                                            osmdl->action(BOpenSaveEditorModule::ReopenAction) ) );
+        tbtn->setPopupMode(QToolButton::InstantPopup);
       mw->addToolBar(tbar);
       tbar = new QToolBar;
         tbar->setWindowTitle("Save");

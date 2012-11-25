@@ -430,7 +430,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     if ( !doc || savingDocuments.contains(doc) )
         return false;
     QString nfn = newFileName;
-    bool ssa = !nfn.isEmpty() || driver->shouldSaveAs( doc->fileName() );
+    bool ssa = !nfn.isEmpty() || !driver->checkFileExistance( doc->fileName() );
     if (ssa)
     {
         if (!codec)

@@ -5,6 +5,7 @@
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
 #include "babstractfiletype.h"
+#include "babstractdocumentdriver.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -96,7 +97,7 @@ void BOpenSaveEditorModulePrivate::checkActions()
     if ( !actOpenFiles.isNull() )
         actOpenFiles->setEnabled(editor);
     if ( !actReopenFile.isNull() )
-        actReopenFile->setEnabled( doc && !doc->isBuisy() );
+        actReopenFile->setEnabled( doc && editor->driver()->checkFileExistance( doc->fileName() ) && !doc->isBuisy() );
     if ( !actSaveFile.isNull() )
         actSaveFile->setEnabled( doc && doc->isModified() && !doc->isReadOnly() && !doc->isBuisy() );
     if ( !actSaveFileAs.isNull() )
@@ -216,6 +217,8 @@ QAction *BOpenSaveEditorModule::action(Action type) const
         return d_func()->actNewFile.data();
     case OpenFilesAction:
         return d_func()->actOpenFiles.data();
+    case ReopenAction:
+        return d_func()->actReopenFile.data();
     case SaveFileAction:
         return d_func()->actSaveFile.data();
     case SaveFileAsAction:

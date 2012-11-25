@@ -273,9 +273,9 @@ bool BLocalDocumentDriver::isBuisy() const
     return false;
 }
 
-bool BLocalDocumentDriver::shouldSaveAs(const QString &fileName)
+bool BLocalDocumentDriver::checkFileExistance(const QString &fileName)
 {
-    return !QFileInfo(fileName).isFile();
+    return QFileInfo(fileName).isFile();
 }
 
 bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
