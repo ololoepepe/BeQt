@@ -39,6 +39,11 @@ public:
 public slots:
     void find();
     void findNext();
+signals:
+    void textFound(const QString &text);
+    void textNotFound(const QString &text);
+    void textReplaced(int count, const QString &oldText, const QString &newText);
+    void message(const QString &msg);
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

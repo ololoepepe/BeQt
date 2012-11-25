@@ -154,12 +154,15 @@ public:
     //
     void init();
     void setDialogParent(QWidget *parent = 0);
+    QString createNotFoundMessage(const QString &text);
     //
     BSearchDialog *sdlg;
     QPointer<QAction> actFind;
     QPointer<QAction> actFindNext;
 public slots:
     void retranslateUi();
+    void textFound(bool found, const QString &text);
+    void textReplaced(int count, const QString &oldText, const QString &newText);
 private:
     Q_DISABLE_COPY(BSearchEditorModulePrivate)
 };

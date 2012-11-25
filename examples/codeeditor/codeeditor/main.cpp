@@ -53,7 +53,9 @@ int main(int argc, char **argv)
       mw->setCentralWidget(cedtr);
       //
       QMenu *mnuBM = mw->menuBar()->addMenu("Find");
-        mnuBM->addActions( static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) )->actions() );
+        BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) );
+        mnuBM->addActions( smdl->actions() );
+        QObject::connect( smdl, SIGNAL( message(QString) ), mw->statusBar(), SLOT( showMessage(QString) ) );
       //
       QToolBar *tbar = new QToolBar;
         tbar->setWindowTitle("Search");

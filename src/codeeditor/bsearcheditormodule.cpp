@@ -35,6 +35,7 @@
 #include <QMetaObject>
 #include <QPointer>
 #include <QList>
+#include <QMetaObject>
 
 #include <QDebug>
 
@@ -112,7 +113,7 @@ void BSearchDialogPrivate::init()
           btnReplaceAll->setMenu(mnuReplaceAll);
         dlgbbox->addButton(btnReplaceAll, QDialogButtonBox::ActionRole);
         btnReplace = new QPushButton;
-        connect( btnReplace, SIGNAL( clicked() ), q, SLOT( replaceNext() ) );
+          connect( btnReplace, SIGNAL( clicked() ), q, SLOT( replaceNext() ) );
         dlgbbox->addButton(btnReplace, QDialogButtonBox::ApplyRole);
         btnFind = new QPushButton;
           btnFind->setDefault(true);
@@ -448,7 +449,7 @@ void BSearchDialog::replaceNext()
         return;
     B_D(BSearchDialog);
     QString text = d->cmboxReplace->lineEdit()->text();
-    emit textReplaced(d->document->replaceNext(text) ? 1 : 0, d->cmboxSearch->lineEdit()->text(), text);
+    emit textReplaced(d->document->replaceNext(text), d->cmboxSearch->lineEdit()->text(), text);
     findNext();
 }
 
@@ -478,7 +479,8 @@ BSearchEditorModulePrivate::~BSearchEditorModulePrivate()
 void BSearchEditorModulePrivate::init()
 {
     sdlg = new BSearchDialog;
-    //sdlg->setModal(false);
+    connect( sdlg, SIGNAL( textFound(bool, QString) ), this, SLOT( textFound(bool, QString) ) );
+    connect( sdlg, SIGNAL( textReplaced(int, QString, QString) ), this, SLOT( textReplaced(int, QString, QString) ) );
     //
     B_Q(BSearchEditorModule);
     actFind = new QAction(this);
@@ -502,6 +504,11 @@ void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
     sdlg->setWindowFlags(flags);
 }
 
+QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
+{
+    return trq("Text", "msg text") + " \"" + text + "\" " + trq("not found", "msg text");
+}
+
 //
 
 void BSearchEditorModulePrivate::retranslateUi()
@@ -517,6 +524,41 @@ void BSearchEditorModulePrivate::retranslateUi()
         actFindNext->setText( trq("find next", "act text") );
         actFindNext->setToolTip( trq("find next", "act toolTip") );
         actFindNext->setWhatsThis( trq("find next", "act whatsThis") );
+    }
+}
+
+void BSearchEditorModulePrivate::textFound(bool found, const QString &text)
+{
+    B_Q(BSearchEditorModule);
+    if (found)
+    {
+        QMetaObject::invokeMethod( q, "textFound", Q_ARG(QString, text) );
+    }
+    else
+    {
+        QMetaObject::invokeMethod( q, "textNotFound", Q_ARG(QString, text) );
+        QMetaObject::invokeMethod( q, "message", Q_ARG( QString, createNotFoundMessage(text) ) );
+    }
+}
+
+void BSearchEditorModulePrivate::textReplaced(int count, const QString &oldText, const QString &newText)
+{
+    B_Q(BSearchEditorModule);
+    if (count > 0)
+    {
+        QMetaObject::invokeMethod( q, "textReplaced", Q_ARG(int, count), Q_ARG(QString, oldText),
+                                   Q_ARG(QString, newText) );
+        if (count > 1)
+        {
+            QString msg = trq("Found and replaced", "msg text") + " " +
+                    QString::number(count) + " " + trq("entries", "msg text");
+            QMetaObject::invokeMethod( q, "message", Q_ARG(QString, msg) );
+        }
+    }
+    else
+    {
+        QMetaObject::invokeMethod( q, "textNotFound", Q_ARG(QString, oldText) );
+        QMetaObject::invokeMethod( q, "message", Q_ARG( QString, createNotFoundMessage(oldText) ) );
     }
 }
 
