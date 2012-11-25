@@ -1529,41 +1529,41 @@ void BCodeEditPrivate::updateHasSelection()
 
 void BCodeEditPrivate::updateCopyAvailable(bool available)
 {
-    bool b1 = ptedt->isReadOnly() && copyAvailable;
+    bool b1 = !ptedt->isReadOnly() && copyAvailable;
     bool b2 = copyAvailable;
     copyAvailable = available;
-    if ( b1 != (ptedt->isReadOnly() && copyAvailable) )
-        QMetaObject::invokeMethod( q_func(), "copyAvailableChanged",
-                                   Q_ARG(bool, ptedt->isReadOnly() && copyAvailable) );
+    if ( b1 != (!ptedt->isReadOnly() && copyAvailable) )
+        QMetaObject::invokeMethod( q_func(), "cutAvailableChanged",
+                                   Q_ARG(bool, !ptedt->isReadOnly() && copyAvailable) );
     if (b2 != copyAvailable)
         QMetaObject::invokeMethod( q_func(), "copyAvailableChanged", Q_ARG(bool, copyAvailable) );
 }
 
 void BCodeEditPrivate::updatePasteAvailable(bool available)
 {
-    bool b = ptedt->isReadOnly() && pasteAvailable;
+    bool b = !ptedt->isReadOnly() && pasteAvailable;
     pasteAvailable = available;
     if (b != pasteAvailable)
         QMetaObject::invokeMethod( q_func(), "pasteAvailableChanged",
-                                   Q_ARG(bool, ptedt->isReadOnly() && pasteAvailable) );
+                                   Q_ARG(bool, !ptedt->isReadOnly() && pasteAvailable) );
 }
 
 void BCodeEditPrivate::updateUndoAvailable(bool available)
 {
-    bool b = ptedt->isReadOnly() && undoAvailable;
+    bool b = !ptedt->isReadOnly() && undoAvailable;
     undoAvailable = available;
     if (b != undoAvailable)
         QMetaObject::invokeMethod( q_func(), "undoAvailableChanged",
-                                   Q_ARG(bool, ptedt->isReadOnly() && undoAvailable) );
+                                   Q_ARG(bool, !ptedt->isReadOnly() && undoAvailable) );
 }
 
 void BCodeEditPrivate::updateRedoAvailable(bool available)
 {
-    bool b = ptedt->isReadOnly() && redoAvailable;
+    bool b = !ptedt->isReadOnly() && redoAvailable;
     redoAvailable = available;
     if (b != redoAvailable)
         QMetaObject::invokeMethod( q_func(), "redoAvailableChanged",
-                                   Q_ARG(bool, ptedt->isReadOnly() && redoAvailable) );
+                                   Q_ARG(bool, !ptedt->isReadOnly() && redoAvailable) );
 }
 
 //
