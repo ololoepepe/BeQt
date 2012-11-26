@@ -42,8 +42,9 @@ int main(int argc, char **argv)
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
     //Initializing BApplication About
-    BApplication::aboutDialogInstance()->setAbout("This is an example application", "2012 Andrey Bogdanov",
-                                                  "https://github.com/the-dark-angel/test");
+    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012");
+    BApplication::aboutDialogInstance()->setWebsite("https://github.com/the-dark-angel/test");
+    BApplication::aboutDialogInstance()->setDescription("This is an example application");
     //QMainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;
@@ -100,6 +101,7 @@ int main(int argc, char **argv)
       mw->addToolBar(tbar);
     mw->resize(1200, 800);
     mw->move(400, 200);
+    qDebug() << BApplication::beqtInfo(BApplication::Authors);
     //Showing widgets
     mw->show();
     //Running main event loop

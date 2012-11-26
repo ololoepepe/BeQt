@@ -29,6 +29,7 @@ class B_CORE_EXPORT BCoreApplicationPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCoreApplication)
     B_DECLARE_PUBLIC_S(BCoreApplication)
+    B_DECLARE_TR_FUNCTIONS(BCoreApplication, q)
 public:
     static QString toLowerNoSpaces(const QString &string);
     static QString subdir(BCoreApplication::Location loc);
@@ -36,6 +37,7 @@ public:
     static bool testCoreUnique();
     static QSettings *createSettingsInstance(const QString &fileName);
     static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
+    static QString personInfoString(BPersonInfoProvider *prov);
     //
     static const QStringList PluginSuffixes;
     static const QString SettingsGroupBeqt;

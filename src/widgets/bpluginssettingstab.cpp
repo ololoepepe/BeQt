@@ -124,11 +124,13 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
     BPluginWrapper *pw = plugins.at( lstwgt->currentRow() );
     BAboutDialog ad( q_func() );
     BPluginInterface::PluginInfo info = pw->info();
-    ad.setAbout(info.description, info.copyright, info.website);
+    ad.setOrganization(info.organization, info.copyrightYears);
+    ad.setWebsite(info.website);
+    ad.setDescription(info.description);
     ad.setChangeLog(info.changelog);
-    ad.setAuthorsInfos(info.authors);
-    ad.setTranslationInfos(info.translators);
-    ad.setThanksToInfos(info.thanksTo);
+    ad.setAuthors(info.authors);
+    ad.setTranslators(info.translators);
+    ad.setThanksTo(info.thanksTo);
     ad.setLicense(info.license);
     BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
     QPixmap pm;

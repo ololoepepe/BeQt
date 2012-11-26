@@ -72,22 +72,24 @@ int main(int argc, char **argv)
     BApplication *bapp = new Application;
     //Initializing BApplication About
     BAboutDialog *adlg = BApplication::aboutDialogInstance();
+    adlg->setOrganization("Andrey Bogdanov", "2012");
+    adlg->setWebsite("https://github.com/the-dark-angel/test");
+    adlg->setDescription("This is an example application");
     adlg->setPixmap(BApplication::location(BApplication::DataPath,
                                            BApplication::SharedResources) + "/images/myapp.png");
-    adlg->setAbout("This is an example application", "2012 Andrey Bogdanov", "https://github.com/the-dark-angel/test");
     BPersonInfoProvider::PersonInfo pi;
     pi.name = "Andrey Bogdanov";
     pi.role = "Main developer";
     pi.site = "https://github.com/the-dark-angel";
     pi.mail = "the-dark-angel@yandex.ru";
-    adlg->setAuthorsInfos(BPersonInfoProvider::PersonInfoList() << pi);
+    adlg->setAuthors(BPersonInfoProvider::PersonInfoList() << pi);
     pi.role = "Translator";
-    adlg->setTranslationInfos(BPersonInfoProvider::PersonInfoList() << pi);
+    adlg->setTranslators(BPersonInfoProvider::PersonInfoList() << pi);
     pi.name = "Miku";
     pi.role = "Muse";
     pi.mail = "";
     pi.site = "";
-    adlg->setThanksToInfos(BPersonInfoProvider::PersonInfoList() << pi);
+    adlg->setThanksTo(BPersonInfoProvider::PersonInfoList() << pi);
     adlg->setLicense("MIT License");
     //Installing translators
     BTranslator *t = new BTranslator("qt");

@@ -31,19 +31,25 @@ public:
     //
     void setAppName(const QString &name);
     void setAppVersion(const QString &version);
+    void setOrganization( const QString &organization, const QString &copyrightPeriod = QString() );
+    void setWebsite(const QString &site);
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);
-    void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
+    void setDescription(const QString &text);
+    void setDescriptionSource( const QString &fileName, const QString &defaultFileName,
+                               const QString &possibleSuffix = QString() );
     void setChangeLog(const QString &text);
-    void setChangeLog(const QString &fileName, const char *codecName);
-    void setAuthors(BPersonInfoProvider *prov);
-    void setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &list);
-    void setTranslation(BPersonInfoProvider *prov);
-    void setTranslationInfos(const BPersonInfoProvider::PersonInfoList &list);
-    void setThanksTo(BPersonInfoProvider *prov);
-    void setThanksToInfos(const BPersonInfoProvider::PersonInfoList &list);
+    void setChangeLogSource( const QString &fileName, const QString &defaultFileName,
+                             const QString &possibleSuffix = QString() );
     void setLicense(const QString &text);
-    void setLicense(const QString &fileName, const char *codecName);
+    void setLicenseSource( const QString &fileName, const QString &defaultFileName,
+                           const QString &possibleSuffix = QString() );
+    void setAuthors(const BPersonInfoProvider::PersonInfoList &list);
+    void setAuthorsProvider(BPersonInfoProvider *prov);
+    void setTranslators(const BPersonInfoProvider::PersonInfoList &list);
+    void setTranslatorsProvider(BPersonInfoProvider *prov);
+    void setThanksTo(const BPersonInfoProvider::PersonInfoList &list);
+    void setThanksToProvider(BPersonInfoProvider *prov);
     void setAboutQtShown(bool b);
     void setAboutBeqtShown(bool b);
 public slots:

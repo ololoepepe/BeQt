@@ -32,7 +32,7 @@ public:
                                         const QString &possibleSuffix = QString() );
     static QString localeBasedDirName(const QString &dir);
     static QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
-    static QString readTextFile(const QString &fileName, const char *codecName = 0);
+    static QString readTextFile(const QString &fileName, const QString &codecName);
     static QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
     static QString findResource(const QString &subpath, const QStringList &locations);
     static bool createUserLocation(BCoreApplication::Location loc);

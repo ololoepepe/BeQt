@@ -103,6 +103,30 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
     return info;
 }
 
+QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
+        return "";
+    if (!prov)
+        return "";
+    QString s;
+    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos() )
+    {
+        if ( info.name.isEmpty() )
+            continue;
+        s += trq("Name:", "info") + " " + info.name + "\n";
+        if ( !info.role.isEmpty() )
+            s += trq("Role:", "info") + " " + info.role + "\n";
+        if ( !info.site.isEmpty() )
+            s += trq("Website:", "info") + " " + info.site + "\n";
+        if ( !info.mail.isEmpty() )
+            s += trq("E-mail:", "info") + " " + info.mail + "\n";
+    }
+    if ( !s.isEmpty() )
+        s.remove(s.length() - 1, 1);
+    return s;
+}
+
 //
 
 BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
@@ -554,6 +578,12 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
         pfn = "about/copying/COPYING";
         dfn = "COPYING";
         break;
+    case Authors:
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtAuthors);
+    case Translators:
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtTranslations);
+    case ThanksTo:
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtThanksTo);
     default:
         return "";
     }

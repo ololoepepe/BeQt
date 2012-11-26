@@ -54,7 +54,10 @@ public:
     {
         Description,
         ChangeLog,
-        License
+        License,
+        Authors,
+        Translators,
+        ThanksTo
     };
     //
     struct LocaleSupportInfo

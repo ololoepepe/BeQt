@@ -11,6 +11,7 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QList>
+#include <QByteArray>
 
 #include <QDebug>
 
@@ -161,9 +162,9 @@ QString BDirTools::readTextFile(const QString &fileName, QTextCodec *codec)
     return text;
 }
 
-QString BDirTools::readTextFile(const QString &fileName, const char *codecName)
+QString BDirTools::readTextFile(const QString &fileName, const QString &codecName)
 {
-    return readTextFile( fileName, QTextCodec::codecForName(codecName) );
+    return readTextFile( fileName, QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
 QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)

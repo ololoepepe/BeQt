@@ -37,9 +37,10 @@ QString MyPlugin::name() const
 MyPlugin::PluginInfo MyPlugin::info() const
 {
     PluginInfo inf;
-    inf.description = "Test plugin for demonstration.";
-    inf.copyright = "2012 Andrey Bogdanov";
+    inf.organization = "Andrey Bogdanov";
+    inf.copyrightYears = "2012";
     inf.website = "https://github.com/the-dark-angel/BeQt";
+    inf.description = "Test plugin for demonstration.";
     inf.license = "MIT license";
     BPersonInfoProvider::PersonInfo pi;
     pi.name = "Andrey Bogdanov";

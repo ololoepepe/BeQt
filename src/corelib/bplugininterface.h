@@ -17,9 +17,10 @@ class B_CORE_EXPORT BPluginInterface
 public:
     struct PluginInfo
     {
-        QString description;
-        QString copyright;
+        QString organization;
+        QString copyrightYears;
         QString website;
+        QString description;
         QString changelog;
         BPersonInfoProvider::PersonInfoList authors;
         BPersonInfoProvider::PersonInfoList translators;

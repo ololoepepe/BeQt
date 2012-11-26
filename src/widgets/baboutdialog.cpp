@@ -39,6 +39,71 @@ class QWidget;
 ================================ About Dialog Private
 ============================================================================*/
 
+QString BAboutDialogPrivate::processChangeLog(const QString &text)
+{
+    QString s;
+    QStringList sl = text.split('\n');
+    for (int i = 0; i < sl.size(); ++i)
+    {
+        QString l = sl.at(i);
+        int len = l.length();
+        l.replace('<', HtmlLT);
+        l.replace('>', HtmlGT);
+        if (len > 1)
+        {
+            if (l.at(0) == '=' && l.at(len - 1) == '=')
+            {
+                l.prepend("<font color='dark red'>").append("</font>");
+            }
+            else
+            {
+                for (int j = 0; j < len; ++j)
+                {
+                    if (l.at(j) == '*')
+                    {
+                        l.insert(j + 1, "</font><font color=blue>");
+                        l.insert(j, "<font color='dark green'>");
+                        bool b = false;
+                        for (int k = j + 1; k < l.length(); ++k)
+                        {
+                            if (l.at(k) == ':')
+                            {
+                                l.insert(k + 1, "</font>");
+                                b = true;
+                                break;
+                            }
+                        }
+                        if (!b)
+                            l.append("</font>");
+                        QString r;
+                        for (int k = 0; k < j; ++k)
+                            r += HtmlSpace;
+                        l.replace(0, j, r);
+                        break;
+                    }
+                    else if (l.at(j) != ' ' && l.at(j) != '\t')
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+        s += l;
+        if (i < sl.size() - 1)
+            s += "<br>";
+    }
+    return s;
+}
+
+QString BAboutDialogPrivate::sourceFileName(const SourceInfo &src)
+{
+    if ( src.fileName.isEmpty() || src.defaultFileName.isEmpty() )
+        return "";
+    return BDirTools::localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix);
+}
+
+//
+
 BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q) :
     BBasePrivate(q)
 {
@@ -73,7 +138,6 @@ void BAboutDialogPrivate::init()
             font.setPointSize(12);
             font.setBold(true);
             lblName->setFont(font);
-            //lblName->setText(appName + " v" + appVersion);
           vltHeader->addWidget(lblName);
           hltCRWebsite = new QHBoxLayout;
             lblCopyright = new QLabel(q);
@@ -109,6 +173,8 @@ void BAboutDialogPrivate::init()
     //
     q->setAppName( QApplication::applicationName() );
     q->setAppVersion( QApplication::applicationVersion() );
+    q->setOrganization( QApplication::organizationName() );
+    q->setWebsite( QApplication::organizationDomain() );
     retranslateUi();
     connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
@@ -117,10 +183,17 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
 {
     aboutBeqtDlg = new BAboutDialog( 0, "BeQt", bVersion() );
     aboutBeqtDlg->setWindowModality(Qt::NonModal);
+    aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012");
+    aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
-    aboutBeqtDlg->setAuthors(BApplication::ds_func()->beqtAuthors);
-    aboutBeqtDlg->setTranslation(BApplication::ds_func()->beqtTranslations);
-    aboutBeqtDlg->setThanksTo(BApplication::ds_func()->beqtThanksTo);
+    QString loc = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources) + "/";
+    aboutBeqtDlg->setDescriptionSource(loc + "about/description/DESCRIPTION",
+                                       loc + "about/description/DESCRIPTION", "txt");
+    aboutBeqtDlg->setChangeLogSource(loc + "about/changelog/ChangeLog", loc + "ChangeLog", "txt");
+    aboutBeqtDlg->setLicenseSource(loc + "about/copying/COPYING", loc + "COPYING", "txt");
+    aboutBeqtDlg->setAuthorsProvider(BApplication::ds_func()->beqtAuthors);
+    aboutBeqtDlg->setTranslatorsProvider(BApplication::ds_func()->beqtTranslations);
+    aboutBeqtDlg->setThanksToProvider(BApplication::ds_func()->beqtThanksTo);
     retranslateAboutBeqtDialog();
 }
 
@@ -128,34 +201,44 @@ void BAboutDialogPrivate::retranslateAboutBeqtDialog()
 {
     if (!aboutBeqtDlg)
         return;
-    QString copyright = "2012 Andrey Bogdanov";
-    QString website = "https://github.com/the-dark-angel/BeQt";
-    aboutBeqtDlg->setAbout(BApplication::beqtInfo(BApplication::Description), copyright, website);
+    aboutBeqtDlg->setDescription( BApplication::beqtInfo(BApplication::Description) );
     aboutBeqtDlg->setChangeLog( BApplication::beqtInfo(BApplication::ChangeLog) );
     aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
 }
 
 void BAboutDialogPrivate::updateWindowTitle()
 {
-    q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
+    q_func()->setWindowTitle(trq("About", "windowTitle") + " " + appName);
+}
+
+void BAboutDialogPrivate::updateCopyright()
+{
+    QString cr = !copyrightPeriod.isEmpty() ? (copyrightPeriod + " ") : QString();
+    lblCopyright->setText(trq("Copyright", "about") + " &copy; " + cr + organization);
+}
+
+void BAboutDialogPrivate::updateWebsite()
+{
+    lblWebsite->setText("<a href=\"" + website + "\">[" + trq("Website", "lbl text") + "]</a>");
+    lblWebsite->setToolTip(website);
 }
 
 QString BAboutDialogPrivate::tabTitle(DialogTab t) const
 {
     switch (t)
     {
-    case AboutTab:
-        return tr("About", "twgt tabText");
+    case DescriptionTab:
+        return trq("About", "twgt tabText");
     case ChangeLogTab:
-        return tr("Changelog", "twgt tabText");
+        return trq("Changelog", "twgt tabText");
     case AuthorsTab:
-        return tr("Authors", "twgt tabText");
+        return trq("Authors", "twgt tabText");
     case TranslatorsTab:
-        return tr("Translation", "twgt tabText");
+        return trq("Translation", "twgt tabText");
     case ThanksToTab:
-        return tr("Thanks to", "twgt tabText");
+        return trq("Thanks to", "twgt tabText");
     case LicenseTab:
-        return tr("License", "twgt tabText");
+        return trq("License", "twgt tabText");
     default:
         return "";
     }
@@ -165,10 +248,10 @@ int BAboutDialogPrivate::tabIndex(DialogTab t) const
 {
     switch (t)
     {
-    case AboutTab:
+    case DescriptionTab:
         return 0;
     case ChangeLogTab:
-        return tbrsrs.contains(AboutTab) ? 1 : 0;
+        return tbrsrs.contains(DescriptionTab) ? 1 : 0;
     case AuthorsTab:
         return tabIndex(ChangeLogTab) + (tbrsrs.contains(ChangeLogTab) ? 1 : 0);
     case TranslatorsTab:
@@ -282,6 +365,52 @@ void BAboutDialogPrivate::resetThanksToProvider(BPersonInfoProvider *prov)
     resetThanksTo();
 }
 
+void BAboutDialogPrivate::resetDescriptionSource(const QString &fileName, const QString &defaultFileName,
+                                                 const QString &possibleSuffix)
+{
+    descriptionSource.fileName = fileName;
+    descriptionSource.defaultFileName = defaultFileName;
+    descriptionSource.possibleSuffix = possibleSuffix;
+    resetDescription();
+}
+
+void BAboutDialogPrivate::resetChangeLogSource(const QString &fileName, const QString &defaultFileName,
+                                               const QString &possibleSuffix)
+{
+    changeLogSource.fileName = fileName;
+    changeLogSource.defaultFileName = defaultFileName;
+    changeLogSource.possibleSuffix = possibleSuffix;
+    resetChangeLog();
+}
+
+void BAboutDialogPrivate::resetLicenseSource(const QString &fileName, const QString &defaultFileName,
+                                             const QString &possibleSuffix)
+{
+    licenseSource.fileName = fileName;
+    licenseSource.defaultFileName = defaultFileName;
+    licenseSource.possibleSuffix = possibleSuffix;
+    resetLicense();
+}
+
+void BAboutDialogPrivate::resetDescription()
+{
+    QString fn = sourceFileName(descriptionSource);
+    fillTab(DescriptionTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : QString(), false);
+}
+
+void BAboutDialogPrivate::resetChangeLog()
+{
+    QString fn = sourceFileName(changeLogSource);
+    QString txt = !fn.isEmpty() ? processChangeLog( BDirTools::readTextFile(fn, "UTF-8") ) : QString();
+    fillTab(ChangeLogTab, txt, true);
+}
+
+void BAboutDialogPrivate::resetLicense()
+{
+    QString fn = sourceFileName(licenseSource);
+    fillTab(LicenseTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : QString(), false);
+}
+
 //
 
 const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
@@ -294,13 +423,18 @@ const QString BAboutDialogPrivate::HtmlGT = "&gt;";
 void BAboutDialogPrivate::retranslateUi()
 {
     updateWindowTitle();
+    updateCopyright();
+    updateWebsite();
     foreach ( DialogTab t, tbrsrs.keys() )
         twgt->setTabText( tabIndex(t), tabTitle(t) );
     resetAuthors();
     resetTranslations();
     resetThanksTo();
-    tbtnAboutQt->setToolTip( tr("About Qt", "tbtn toolTip") );
-    tbtnAboutBeqt->setToolTip( tr("About BeQt", "tbtn toolTip") );
+    resetDescription();
+    resetChangeLog();
+    resetLicense();
+    tbtnAboutQt->setToolTip( trq("About Qt", "tbtn toolTip") );
+    tbtnAboutBeqt->setToolTip( trq("About BeQt", "tbtn toolTip") );
     retranslateAboutBeqtDialog();
 }
 
@@ -371,6 +505,28 @@ void BAboutDialog::setAppVersion(const QString &version)
     d->lblName->setText(d->appName + " v" + d->appVersion);
 }
 
+void BAboutDialog::setOrganization(const QString &organization, const QString &copyrightPeriod)
+{
+    if ( organization.isEmpty() )
+        return;
+    B_D(BAboutDialog);
+    d->organization = organization;
+    d->copyrightPeriod = copyrightPeriod;
+    d->lblCopyright->setVisible(true);
+    d->updateCopyright();
+}
+
+void BAboutDialog::setWebsite(const QString &site)
+{
+    if ( site.isEmpty() )
+        return;
+    B_D(BAboutDialog);
+    d->website = site;
+    d->lblWebsite->setVisible(true);
+    d->updateWebsite();
+
+}
+
 void BAboutDialog::setPixmap(const QPixmap &pixmap)
 {
     B_D(BAboutDialog);
@@ -383,134 +539,73 @@ void BAboutDialog::setPixmap(const QString &fileName)
     setPixmap( QPixmap(fileName) );
 }
 
-void BAboutDialog::setAbout(const QString &description, const QString &copyright, const QString &website)
+void BAboutDialog::setDescription(const QString &text)
 {
-    B_D(BAboutDialog);
-    bool b = !description.isEmpty() && !copyright.isEmpty();
-    d->lblCopyright->setVisible(b);
-    d->lblWebsite->setVisible(b);
-    if (!b)
-        return;
-    d->fillTab(BAboutDialogPrivate::AboutTab, description, false);
-    d->lblCopyright->setText(tr("Copyright", "about") + " &copy; " + copyright);
-    QString s = !website.isEmpty() ? ("<a href=\"" + website + "\">[" + tr("Website", "lbl text") + "]</a>") : "";
-    d->lblWebsite->setText(s);
-    d->lblWebsite->setToolTip(website);
+    d_func()->resetDescriptionSource();
+    d_func()->fillTab(BAboutDialogPrivate::DescriptionTab, text, false);
+}
+
+void BAboutDialog::setDescriptionSource(const QString &fileName, const QString &defaultFileName,
+                                        const QString &possibleSuffix)
+{
+    d_func()->resetDescriptionSource(fileName, defaultFileName, possibleSuffix);
 }
 
 void BAboutDialog::setChangeLog(const QString &text)
 {
-    QString s;
-    QStringList sl = text.split('\n');
-    for (int i = 0; i < sl.size(); ++i)
-    {
-        QString l = sl.at(i);
-        int len = l.length();
-        l.replace('<', BAboutDialogPrivate::HtmlLT);
-        l.replace('>', BAboutDialogPrivate::HtmlGT);
-        if (len > 1)
-        {
-            if (l.at(0) == '=' && l.at(len - 1) == '=')
-            {
-                l.prepend("<font color='dark red'>").append("</font>");
-            }
-            else
-            {
-                for (int j = 0; j < len; ++j)
-                {
-                    if (l.at(j) == '*')
-                    {
-                        l.insert(j + 1, "</font><font color=blue>");
-                        l.insert(j, "<font color='dark green'>");
-                        bool b = false;
-                        for (int k = j + 1; k < l.length(); ++k)
-                        {
-                            if (l.at(k) == ':')
-                            {
-                                l.insert(k + 1, "</font>");
-                                b = true;
-                                break;
-                            }
-                        }
-                        if (!b)
-                            l.append("</font>");
-                        QString r;
-                        for (int k = 0; k < j; ++k)
-                            r += BAboutDialogPrivate::HtmlSpace;
-                        l.replace(0, j, r);
-                        break;
-                    }
-                    else if (l.at(j) != ' ' && l.at(j) != '\t')
-                    {
-                        break;
-                    }
-                }
-            }
-        }
-        s += l;
-        if (i < sl.size() - 1)
-            s += "<br>";
-    }
-    d_func()->fillTab(BAboutDialogPrivate::ChangeLogTab, s, true);
+    d_func()->resetChangeLogSource();
+    d_func()->fillTab(BAboutDialogPrivate::ChangeLogTab, BAboutDialogPrivate::processChangeLog(text), true);
 }
 
-void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
+void BAboutDialog::setChangeLogSource(const QString &fileName, const QString &defaultFileName,
+                                      const QString &possibleSuffix)
 {
-    setChangeLog( BDirTools::readTextFile(fileName, codecName) );
+    d_func()->resetChangeLogSource(fileName, defaultFileName, possibleSuffix);
 }
 
-void BAboutDialog::setAuthors(BPersonInfoProvider *prov)
+void BAboutDialog::setLicense(const QString &text)
 {
-    d_func()->resetAuthorsProvider(prov);
+    d_func()->resetLicenseSource();
+    d_func()->fillTab(BAboutDialogPrivate::LicenseTab, text, false);
 }
 
-void BAboutDialog::setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &list)
+void BAboutDialog::setLicenseSource(const QString &fileName, const QString &defaultFileName,
+                                    const QString &possibleSuffix)
+{
+    d_func()->resetLicenseSource(fileName, defaultFileName, possibleSuffix);
+}
+
+void BAboutDialog::setAuthors(const BPersonInfoProvider::PersonInfoList &list)
 {
     d_func()->resetAuthorsProvider();
     d_func()->fillTab(BAboutDialogPrivate::AuthorsTab, list);
 }
 
-void BAboutDialog::setTranslation(BPersonInfoProvider *prov)
+void BAboutDialog::setAuthorsProvider(BPersonInfoProvider *prov)
 {
-    d_func()->resetTranslationProvider(prov);
+    d_func()->resetAuthorsProvider(prov);
 }
 
-void BAboutDialog::setTranslationInfos(const BPersonInfoProvider::PersonInfoList &list)
+void BAboutDialog::setTranslators(const BPersonInfoProvider::PersonInfoList &list)
 {
     d_func()->resetTranslationProvider();
     d_func()->fillTab(BAboutDialogPrivate::TranslatorsTab, list);
 }
 
-void BAboutDialog::setThanksTo(BPersonInfoProvider *prov)
+void BAboutDialog::setTranslatorsProvider(BPersonInfoProvider *prov)
 {
-    d_func()->resetThanksToProvider(prov);
+    d_func()->resetTranslationProvider(prov);
 }
 
-void BAboutDialog::setThanksToInfos(const BPersonInfoProvider::PersonInfoList &list)
+void BAboutDialog::setThanksTo(const BPersonInfoProvider::PersonInfoList &list)
 {
     d_func()->resetThanksToProvider();
     d_func()->fillTab(BAboutDialogPrivate::ThanksToTab, list);
 }
 
-void BAboutDialog::setLicense(const QString &text)
+void BAboutDialog::setThanksToProvider(BPersonInfoProvider *prov)
 {
-    B_D(BAboutDialog);
-    if ( text.isEmpty() )
-        return d->removeTab(BAboutDialogPrivate::LicenseTab);
-    QTextBrowser *&tab = d->tbrsrs[BAboutDialogPrivate::LicenseTab];
-    if (!tab)
-    {
-        tab = new QTextBrowser;
-        tab->setOpenExternalLinks(true);
-        d->twgt->addTab( tab, d->tabTitle(BAboutDialogPrivate::LicenseTab) );
-    }
-    tab->clear();
-    tab->setPlainText(text);
-}
-
-void BAboutDialog::setLicense(const QString &fileName, const char *codecName)
-{
-    setLicense( BDirTools::readTextFile( fileName, codecName) );
+    d_func()->resetThanksToProvider(prov);
 }
 
 void BAboutDialog::setAboutQtShown(bool b)
