@@ -39,20 +39,8 @@ class QWidget;
 ================================ About Dialog Private
 ============================================================================*/
 
-BAboutDialog::AboutOptions BAboutDialogPrivate::createAboutOptions()
-{
-    BAboutDialog::AboutOptions opts;
-    opts.aboutQtButton = false;
-    opts.aboutBeQtButton = false;
-    opts.appName = QCoreApplication::applicationName();
-    opts.appVersion = QCoreApplication::applicationVersion();
-    return opts;
-}
-
-//
-
-BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options) :
-    BBasePrivate(q), Options(options)
+BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q) :
+    BBasePrivate(q)
 {
     //
 }
@@ -69,6 +57,8 @@ void BAboutDialogPrivate::init()
     authorsProvider = 0;
     translationsProvider = 0;
     thanksToProvider = 0;
+    aboutBeqtDlg = 0;
+    //
     B_Q(BAboutDialog);
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
@@ -83,10 +73,7 @@ void BAboutDialogPrivate::init()
             font.setPointSize(12);
             font.setBold(true);
             lblName->setFont(font);
-            appName = !Options.appName.isEmpty() ? Options.appName : QApplication::applicationName();
-            QString appVersion = !Options.appVersion.isEmpty() ? Options.appVersion :
-                                                                 QApplication::applicationVersion();
-            lblName->setText(appName + " v" + appVersion);
+            //lblName->setText(appName + " v" + appVersion);
           vltHeader->addWidget(lblName);
           hltCRWebsite = new QHBoxLayout;
             lblCopyright = new QLabel(q);
@@ -102,39 +89,16 @@ void BAboutDialogPrivate::init()
           vltHeader->addLayout(hltCRWebsite);
         hltHeader->addLayout(vltHeader);
         hltHeader->addStretch();
-        if (Options.aboutQtButton)
-        {
-            tbtnAboutQt = new QToolButton(q);
-              tbtnAboutQt->setIcon( QIcon( BApplication::beqtPixmap("qt_logo") ) );
-              connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
-            hltHeader->addWidget(tbtnAboutQt);
-        }
-        else
-        {
-            tbtnAboutQt = 0;
-        }
-        if (Options.aboutBeQtButton)
-        {
-            tbtnAboutBeQt = new QToolButton(q);
-              tbtnAboutBeQt->setIcon( QIcon( BApplication::beqtPixmap("beqt_logo") ) );
-            hltHeader->addWidget(tbtnAboutBeQt);
-            //
-            BAboutDialog::AboutOptions opt = createAboutOptions();
-            opt.appName = "BeQt";
-            opt.appVersion = bVersion();
-            aboutBeqtDlg = new BAboutDialog( opt, q_func() );
-            aboutBeqtDlg->setWindowModality(Qt::NonModal);
-            aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
-            aboutBeqtDlg->setAuthors(BApplication::ds_func()->beqtAuthors);
-            aboutBeqtDlg->setTranslation(BApplication::ds_func()->beqtTranslations);
-            aboutBeqtDlg->setThanksTo(BApplication::ds_func()->beqtThanksTo);
-            connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
-        }
-        else
-        {
-            tbtnAboutBeQt = 0;
-            aboutBeqtDlg = 0;
-        }
+        tbtnAboutQt = new QToolButton(q);
+          tbtnAboutQt->setVisible(false);
+          tbtnAboutQt->setIcon( QIcon( BApplication::beqtPixmap("qt_logo") ) );
+          connect( tbtnAboutQt, SIGNAL( clicked() ), QApplication::instance(), SLOT( aboutQt() ) );
+        hltHeader->addWidget(tbtnAboutQt);
+        tbtnAboutBeqt = new QToolButton(q);
+          tbtnAboutBeqt->setVisible(false);
+          tbtnAboutBeqt->setIcon( QIcon( BApplication::beqtPixmap("beqt_logo") ) );
+          connect( tbtnAboutBeqt, SIGNAL( clicked() ), this, SLOT( tbtnAboutBeqtClicked() ) );
+        hltHeader->addWidget(tbtnAboutBeqt);
       vlt->addLayout(hltHeader);
       twgt = new QTabWidget(q);
       vlt->addWidget(twgt);
@@ -143,8 +107,37 @@ void BAboutDialogPrivate::init()
         QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
       vlt->addWidget(dlgbbox);
     //
+    q->setAppName( QApplication::applicationName() );
+    q->setAppVersion( QApplication::applicationVersion() );
     retranslateUi();
     connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+}
+
+void BAboutDialogPrivate::initAboutBeqtDialog()
+{
+    aboutBeqtDlg = new BAboutDialog( 0, "BeQt", bVersion() );
+    aboutBeqtDlg->setWindowModality(Qt::NonModal);
+    aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
+    aboutBeqtDlg->setAuthors(BApplication::ds_func()->beqtAuthors);
+    aboutBeqtDlg->setTranslation(BApplication::ds_func()->beqtTranslations);
+    aboutBeqtDlg->setThanksTo(BApplication::ds_func()->beqtThanksTo);
+    retranslateAboutBeqtDialog();
+}
+
+void BAboutDialogPrivate::retranslateAboutBeqtDialog()
+{
+    if (!aboutBeqtDlg)
+        return;
+    QString copyright = "2012 Andrey Bogdanov";
+    QString website = "https://github.com/the-dark-angel/BeQt";
+    aboutBeqtDlg->setAbout(BApplication::beqtInfo(BApplication::Description), copyright, website);
+    aboutBeqtDlg->setChangeLog( BApplication::beqtInfo(BApplication::ChangeLog) );
+    aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
+}
+
+void BAboutDialogPrivate::updateWindowTitle()
+{
+    q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
 }
 
 QString BAboutDialogPrivate::tabTitle(DialogTab t) const
@@ -300,24 +293,15 @@ const QString BAboutDialogPrivate::HtmlGT = "&gt;";
 
 void BAboutDialogPrivate::retranslateUi()
 {
-    q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
+    updateWindowTitle();
     foreach ( DialogTab t, tbrsrs.keys() )
         twgt->setTabText( tabIndex(t), tabTitle(t) );
     resetAuthors();
     resetTranslations();
     resetThanksTo();
-    if (tbtnAboutQt)
-        tbtnAboutQt->setToolTip( tr("About Qt", "tbtn toolTip") );
-    if (tbtnAboutBeQt)
-        tbtnAboutBeQt->setToolTip( tr("About BeQt", "tbtn toolTip") );
-    if (aboutBeqtDlg)
-    {
-        QString copyright = "2012 Andrey Bogdanov";
-        QString website = "https://github.com/the-dark-angel/BeQt";
-        aboutBeqtDlg->setAbout(BApplication::beqtInfo(BApplication::Description), copyright, website);
-        aboutBeqtDlg->setChangeLog( BApplication::beqtInfo(BApplication::ChangeLog) );
-        aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
-    }
+    tbtnAboutQt->setToolTip( tr("About Qt", "tbtn toolTip") );
+    tbtnAboutBeqt->setToolTip( tr("About BeQt", "tbtn toolTip") );
+    retranslateAboutBeqtDialog();
 }
 
 void BAboutDialogPrivate::resetAuthors()
@@ -336,20 +320,29 @@ void BAboutDialogPrivate::resetThanksTo()
     fillTab( ThanksToTab, thanksToProvider ? thanksToProvider->infos() : BPersonInfoProvider::PersonInfoList() );
 }
 
+void BAboutDialogPrivate::tbtnAboutBeqtClicked()
+{
+    if (!aboutBeqtDlg)
+        initAboutBeqtDialog();
+    aboutBeqtDlg->open();
+}
+
 /*============================================================================
 ================================ About Dialog
 ============================================================================*/
 
 BAboutDialog::BAboutDialog(QWidget *parent) :
-    QDialog(parent), BBase( *new BAboutDialogPrivate( this, BAboutDialogPrivate::createAboutOptions() ) )
+    QDialog(parent), BBase( *new BAboutDialogPrivate(this) )
 {
     d_func()->init();
 }
 
-BAboutDialog::BAboutDialog(const AboutOptions &options, QWidget *parent) :
-    QDialog(parent), BBase( *new BAboutDialogPrivate(this, options) )
+BAboutDialog::BAboutDialog(QWidget *parent, const QString &appName, const QString &appVersion) :
+    QDialog(parent), BBase( *new BAboutDialogPrivate(this) )
 {
     d_func()->init();
+    setAppName(appName);
+    setAppVersion(appVersion);
 }
 
 BAboutDialog::~BAboutDialog()
@@ -358,6 +351,25 @@ BAboutDialog::~BAboutDialog()
 }
 
 //
+
+void BAboutDialog::setAppName(const QString &name)
+{
+    if ( name.isEmpty() )
+        return;
+    B_D(BAboutDialog);
+    d->appName = name;
+    d->updateWindowTitle();
+    d->lblName->setText(d->appName + " v" + d->appVersion);
+}
+
+void BAboutDialog::setAppVersion(const QString &version)
+{
+    if ( version.isEmpty() )
+        return;
+    B_D(BAboutDialog);
+    d->appVersion = version;
+    d->lblName->setText(d->appName + " v" + d->appVersion);
+}
 
 void BAboutDialog::setPixmap(const QPixmap &pixmap)
 {
@@ -499,6 +511,16 @@ void BAboutDialog::setLicense(const QString &text)
 void BAboutDialog::setLicense(const QString &fileName, const char *codecName)
 {
     setLicense( BDirTools::readTextFile( fileName, codecName) );
+}
+
+void BAboutDialog::setAboutQtShown(bool b)
+{
+    d_func()->tbtnAboutQt->setVisible(b);
+}
+
+void BAboutDialog::setAboutBeqtShown(bool b)
+{
+    d_func()->tbtnAboutBeqt->setVisible(b);
 }
 
 void BAboutDialog::resetTabs()

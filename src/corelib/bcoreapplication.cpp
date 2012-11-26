@@ -543,16 +543,16 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
     switch (type)
     {
     case Description:
-        pfn = "description/DESCRIPTION";
+        pfn = "about/description/DESCRIPTION";
         dfn = pfn;
         break;
     case ChangeLog:
-        pfn = "changelog/ChangeLog";
+        pfn = "about/changelog/ChangeLog";
         dfn = "ChangeLog";
         break;
     case License:
-        pfn = "copying/COPYING";
-        dfn = pfn;
+        pfn = "about/copying/COPYING";
+        dfn = "COPYING";
         break;
     default:
         return "";

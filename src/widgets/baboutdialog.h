@@ -25,18 +25,12 @@ class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBase
     B_DECLARE_PRIVATE(BAboutDialog)
     Q_OBJECT
 public:
-    struct AboutOptions
-    {
-        bool aboutQtButton;
-        bool aboutBeQtButton;
-        QString appName;
-        QString appVersion;
-    };
-    //
     explicit BAboutDialog(QWidget *parent = 0);
-    explicit BAboutDialog(const AboutOptions &options, QWidget *parent = 0);
+    explicit BAboutDialog( QWidget *parent, const QString &appName, const QString &appVersion = QString() );
     ~BAboutDialog();
     //
+    void setAppName(const QString &name);
+    void setAppVersion(const QString &version);
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);
     void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
@@ -50,6 +44,9 @@ public:
     void setThanksToInfos(const BPersonInfoProvider::PersonInfoList &list);
     void setLicense(const QString &text);
     void setLicense(const QString &fileName, const char *codecName);
+    void setAboutQtShown(bool b);
+    void setAboutBeqtShown(bool b);
+public slots:
     void resetTabs();
 protected:
     BAboutDialog(BAboutDialogPrivate &d, QWidget *parent = 0);

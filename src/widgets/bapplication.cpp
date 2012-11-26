@@ -141,10 +141,9 @@ void BApplicationPrivate::initAboutDlg()
 {
     if (aboutDlg)
         return;
-    BAboutDialog::AboutOptions opt;
-    opt.aboutQtButton = true;
-    opt.aboutBeQtButton = true;
-    aboutDlg = new BAboutDialog(opt);
+    aboutDlg = new BAboutDialog;
+    aboutDlg->setAboutQtShown(true);
+    aboutDlg->setAboutBeqtShown(true);
     aboutDlg->setWindowModality(Qt::NonModal);
 }
 

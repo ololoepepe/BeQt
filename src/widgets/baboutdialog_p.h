@@ -42,12 +42,13 @@ public:
         LicenseTab
     };
     //
-    static BAboutDialog::AboutOptions createAboutOptions();
-    //
-    BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options);
+    BAboutDialogPrivate(BAboutDialog *q);
     ~BAboutDialogPrivate();
     //
     void init();
+    void initAboutBeqtDialog();
+    void retranslateAboutBeqtDialog();
+    void updateWindowTitle();
     QString tabTitle(DialogTab t) const;
     int tabIndex(DialogTab t) const;
     void removeTab(DialogTab t);
@@ -63,9 +64,8 @@ public:
     static const QString HtmlLT;
     static const QString HtmlGT;
     //
-    const BAboutDialog::AboutOptions Options;
-    //
     QString appName;
+    QString appVersion;
     BPersonInfoProvider *authorsProvider;
     BPersonInfoProvider *translationsProvider;
     BPersonInfoProvider *thanksToProvider;
@@ -81,7 +81,7 @@ public:
             QLabel *lblWebsite;
         //stretch
         QToolButton *tbtnAboutQt;
-        QToolButton *tbtnAboutBeQt;
+        QToolButton *tbtnAboutBeqt;
       QTabWidget *twgt;
         //text browsers
       QDialogButtonBox *dlgbbox;
@@ -91,6 +91,7 @@ public slots:
    void resetAuthors();
    void resetTranslations();
    void resetThanksTo();
+   void tbtnAboutBeqtClicked();
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
 };
