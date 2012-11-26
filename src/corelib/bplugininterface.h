@@ -2,6 +2,7 @@
 #define BPLUGININTERFACE_H
 
 #include "bglobal.h"
+#include "bpersoninfoprovider.h"
 
 #include <QString>
 #include <QtPlugin>
@@ -14,25 +15,15 @@
 class B_CORE_EXPORT BPluginInterface
 {
 public:
-    struct PersonInfo
-    {
-        QString name;
-        QString mail;
-        QString site;
-        QString role;
-    };
-    //
-    typedef QList<PersonInfo> PersonInfoList;
-    //
     struct PluginInfo
     {
         QString description;
         QString copyright;
         QString website;
         QString changelog;
-        PersonInfoList authors;
-        PersonInfoList translators;
-        PersonInfoList thanksTo;
+        BPersonInfoProvider::PersonInfoList authors;
+        BPersonInfoProvider::PersonInfoList translators;
+        BPersonInfoProvider::PersonInfoList thanksTo;
         QString license;
     };
     //

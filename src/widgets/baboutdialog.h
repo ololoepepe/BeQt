@@ -9,6 +9,7 @@ class QIcon;
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 #include <BeQtCore/BPluginInterface>
+#include <BeQtCore/BPersonInfoProvider>
 
 #include <QDialog>
 #include <QList>
@@ -31,17 +32,6 @@ public:
         QString appName;
         QString appVersion;
     };
-    struct PersonInfo
-    {
-        QString name;
-        QString mail;
-        QString site;
-        QString role;
-    };
-    //
-    typedef QList<PersonInfo> PersonInfoList;
-    //
-    static PersonInfoList fromPluginPersonInfoList(const BPluginInterface::PersonInfoList &list);
     //
     explicit BAboutDialog(QWidget *parent = 0);
     explicit BAboutDialog(const AboutOptions &options, QWidget *parent = 0);
@@ -52,12 +42,9 @@ public:
     void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
     void setChangeLog(const QString &text);
     void setChangeLog(const QString &fileName, const char *codecName);
-    void setAuthorsInfos(const PersonInfoList &infos);
-    void setAuthorsInfos(const BPluginInterface::PersonInfoList &infos);
-    void setTranslationInfos(const PersonInfoList &infos);
-    void setTranslationInfos(const BPluginInterface::PersonInfoList &infos);
-    void setThanksToInfos(const PersonInfoList &infos);
-    void setThanksToInfos(const BPluginInterface::PersonInfoList &infos);
+    void setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos);
+    void setTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos);
+    void setThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos);
     void setLicense(const QString &text);
     void setLicense(const QString &fileName, const char *codecName);
     void resetTabs();

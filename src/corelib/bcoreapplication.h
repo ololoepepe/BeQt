@@ -6,12 +6,12 @@ class BTranslator;
 class BTranslatorPrivate;
 class BPluginWrapperPrivate;
 class BDirToolsPrivate;
+class BPluginWrapper;
 
 class QLocale;
 class QSettings;
 
 #include "bglobal.h"
-#include "bpluginwrapper.h"
 #include "bbase.h"
 
 #include <QObject>
@@ -64,6 +64,8 @@ public:
         int total;
     };
     //
+    typedef bool (*InterfaceTestFunction)(const QObject *);
+    //
     static BCoreApplication *instance();
     static QString location(Location loc, ResourcesType type);
     static QString location(const QString &subdir, ResourcesType type);
@@ -73,7 +75,7 @@ public:
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(),
-                            BPluginWrapper::InterfaceTestFunction function = 0, bool reload = false);
+                            InterfaceTestFunction function = 0, bool reload = false);
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
     static void installTranslator(BTranslator *translator, bool noLanguageChange = false);
     static void removeTranslator(BTranslator *translator, bool noLanguageChange = false);

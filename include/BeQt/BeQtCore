@@ -6,6 +6,7 @@
 #include "bdirtools.h"
 #include "bglobal.h"
 #include "bnamespace.h"
+#include "bpersoninfoprovider.h"
 #include "bplugin.h"
 #include "bplugininterface.h"
 #include "bterminaliohandler.h"

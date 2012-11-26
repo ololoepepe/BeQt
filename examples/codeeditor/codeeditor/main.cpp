@@ -8,6 +8,7 @@
 #include <BAbstractDocumentDriver>
 #include <BLocalDocumentDirver>
 #include <BEditEditorModule>
+#include <BPersonInfoProvider>
 
 #include <QApplication>
 #include <QString>
@@ -55,6 +56,7 @@ int main(int argc, char **argv)
       QMenu *mnuBM = mw->menuBar()->addMenu("Find");
         BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) );
         mnuBM->addActions( smdl->actions() );
+        mnuBM->addAction( BApplication::createStandardAction(BApplication::AboutAction, mnuBM) );
         QObject::connect( smdl, SIGNAL( message(QString) ), mw->statusBar(), SLOT( showMessage(QString) ) );
       //
       QToolBar *tbar = new QToolBar;

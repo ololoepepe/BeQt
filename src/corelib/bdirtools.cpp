@@ -10,6 +10,9 @@
 #include <QLocale>
 #include <QTextStream>
 #include <QTextCodec>
+#include <QList>
+
+#include <QDebug>
 
 /*============================================================================
 ================================ Dir Tools Private (declaration)

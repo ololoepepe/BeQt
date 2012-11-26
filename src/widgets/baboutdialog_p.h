@@ -2,6 +2,7 @@
 #define BABOUTDIALOG_P_H
 
 class BAboutDialogPrivate;
+class BPersonInfoProvider;
 
 class QString;
 class QVBoxLayout;
@@ -16,6 +17,7 @@ class QDialogButtonBox;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BPersonInfoProvider>
 
 #include <QObject>
 #include <QList>
@@ -50,7 +52,7 @@ public:
     int tabIndex(DialogTab t) const;
     void removeTab(DialogTab t);
     void fillTab(DialogTab t, const QString &text, bool html);
-    void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
+    void fillTab(DialogTab t, const BPersonInfoProvider::PersonInfoList &infos);
     //
     //
     static const QString HtmlSpace;
@@ -61,6 +63,9 @@ public:
     const BAboutDialog::AboutOptions Options;
     //
     QString appName;
+    BPersonInfoProvider *beqtAuthors;
+    BPersonInfoProvider *beqtTranslations;
+    BPersonInfoProvider *beqtThanksTo;
     QMap<DialogTab, QTextBrowser *> tbrsrs;
     BAboutDialog *aboutBeqtDlg;
     QVBoxLayout *vlt;
@@ -80,6 +85,9 @@ public:
         //Close
 public slots:
    void retranslateUi();
+   void resetAuthors();
+   void resetTranslations();
+   void resetThanksTo();
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
 };

@@ -18,6 +18,7 @@
 #include <BAbstractEditorModule>
 #include <BBookmarksEditorModule>
 #include <BSearchEditorModule>
+#include <BPersonInfoProvider>
 
 #include <QApplication>
 #include <QString>
@@ -73,19 +74,19 @@ int main(int argc, char **argv)
                                                         BApplication::SharedResources) + "/images/myapp.png");
     BApplication::setAbout("This is an example application", "2012 Andrey Bogdanov",
                            "https://github.com/the-dark-angel/test");
-    BAboutDialog::PersonInfo pi;
+    BPersonInfoProvider::PersonInfo pi;
     pi.name = "Andrey Bogdanov";
     pi.role = "Main developer";
     pi.site = "https://github.com/the-dark-angel";
     pi.mail = "the-dark-angel@yandex.ru";
-    BApplication::setAboutAuthorsInfos(BAboutDialog::PersonInfoList() << pi);
+    BApplication::setAboutAuthorsInfos(BPersonInfoProvider::PersonInfoList() << pi);
     pi.role = "Translator";
-    BApplication::setAboutTranslationInfos(BAboutDialog::PersonInfoList() << pi);
+    BApplication::setAboutTranslationInfos(BPersonInfoProvider::PersonInfoList() << pi);
     pi.name = "Miku";
     pi.role = "Muse";
     pi.mail = "";
     pi.site = "";
-    BApplication::setAboutThanksToInfos(BAboutDialog::PersonInfoList() << pi);
+    BApplication::setAboutThanksToInfos(BPersonInfoProvider::PersonInfoList() << pi);
     BApplication::setAboutLicense("MIT License");
     //Installing translators
     BTranslator *t = new BTranslator("qt");

@@ -8,6 +8,7 @@ class QTextCodec;
 
 #include <QString>
 #include <QStringList>
+#include <QList>
 
 /*============================================================================
 ================================ Dir Tools

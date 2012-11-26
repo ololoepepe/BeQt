@@ -1,7 +1,5 @@
 <RCC>
     <qresource prefix="/beqt">
-        <file>copying/COPYING_ru.txt</file>
-        <file>description/DESCRIPTION.txt</file>
         <file>ChangeLog.txt</file>
         <file>COPYING.txt</file>
         <file>icons/back.png</file>
@@ -65,5 +63,10 @@
         <file>icons/edit_find_next.svgz</file>
         <file>icons/edit_mode_block.png</file>
         <file>icons/edit_mode_normal.png</file>
+        <file>about/copying/COPYING_ru.txt</file>
+        <file>about/description/DESCRIPTION.txt</file>
+        <file>about/infos/authors.info</file>
+        <file>about/infos/thanks-to.info</file>
+        <file>about/infos/translations.info</file>
     </qresource>
 </RCC>

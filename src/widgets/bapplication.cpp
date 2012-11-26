@@ -8,6 +8,7 @@
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/private/bcoreapplication_p.h>
 #include <BeQtCore/BDirTools>
+#include <BeQtCore/BPersonInfoProvider>
 
 #include <QObject>
 #include <QIcon>
@@ -305,7 +306,7 @@ void BApplication::setAboutChangeLog(const QString &fileName, const char *codecN
     ds->aboutDlg->setChangeLog(fileName, codecName);
 }
 
-void BApplication::setAboutAuthorsInfos(const BAboutDialog::PersonInfoList &infos)
+void BApplication::setAboutAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
@@ -314,7 +315,7 @@ void BApplication::setAboutAuthorsInfos(const BAboutDialog::PersonInfoList &info
     ds->aboutDlg->setAuthorsInfos(infos);
 }
 
-void BApplication::setAboutTranslationInfos(const BAboutDialog::PersonInfoList &infos)
+void BApplication::setAboutTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
@@ -323,7 +324,7 @@ void BApplication::setAboutTranslationInfos(const BAboutDialog::PersonInfoList &
     ds->aboutDlg->setTranslationInfos(infos);
 }
 
-void BApplication::setAboutThanksToInfos(const BAboutDialog::PersonInfoList &infos)
+void BApplication::setAboutThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;

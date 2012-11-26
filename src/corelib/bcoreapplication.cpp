@@ -372,8 +372,7 @@ void BCoreApplication::unregisterPluginWrapper(BPluginWrapper *plugin)
     ds_func()->plugins.removeAll(plugin);
 }
 
-void BCoreApplication::loadPlugins(const QStringList &acceptableTypes,
-                                   BPluginWrapper::InterfaceTestFunction function, bool reload)
+void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function, bool reload)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;

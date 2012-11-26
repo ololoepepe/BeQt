@@ -13,6 +13,7 @@ class QFont;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BCoreApplication>
+#include <BeQtCore/BPersonInfoProvider>
 
 #include <QObject>
 #include <QSize>
@@ -58,9 +59,9 @@ public:
     static void setAboutPixmap(const QString &fileName);
     static void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
     static void setAboutChangeLog(const QString &fileName, const char *codecName);
-    static void setAboutAuthorsInfos(const BAboutDialog::PersonInfoList &infos);
-    static void setAboutTranslationInfos(const BAboutDialog::PersonInfoList &infos);
-    static void setAboutThanksToInfos(const BAboutDialog::PersonInfoList &infos);
+    static void setAboutAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos);
+    static void setAboutTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos);
+    static void setAboutThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos);
     static void setAboutLicense(const QString &text);
     static void setAboutLicense(const QString &fileName, const char *codecName);
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);

@@ -3,6 +3,7 @@
 
 #include <BPluginWrapper>
 #include <BApplication>
+#include <BPersonInfoProvider>
 
 #include <QPixmap>
 #include <QSettings>
@@ -40,19 +41,19 @@ MyPlugin::PluginInfo MyPlugin::info() const
     inf.copyright = "2012 Andrey Bogdanov";
     inf.website = "https://github.com/the-dark-angel/BeQt";
     inf.license = "MIT license";
-    PersonInfo pi;
+    BPersonInfoProvider::PersonInfo pi;
     pi.name = "Andrey Bogdanov";
     pi.role = "Main developer";
     pi.site = "https://github.com/the-dark-angel";
     pi.mail = "ololoepepe@gmail.com";
-    inf.authors = PersonInfoList() << pi;
+    inf.authors = BPersonInfoProvider::PersonInfoList() << pi;
     pi.role = "Translator";
-    inf.translators = PersonInfoList() << pi;
+    inf.translators = BPersonInfoProvider::PersonInfoList() << pi;
     pi.name = "Miku";
     pi.role = "Muse";
     pi.site = "";
     pi.mail = "";
-    inf.thanksTo = PersonInfoList() << pi;
+    inf.thanksTo = BPersonInfoProvider::PersonInfoList() << pi;
     return inf;
 }
 
