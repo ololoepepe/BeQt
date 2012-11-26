@@ -236,6 +236,7 @@ BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
 void BLocalDocumentDriverPrivate::init()
 {
     defaultDir = QDir::homePath();
+    nativeLineEnd = true;
 }
 
 /*============================================================================
@@ -343,6 +344,11 @@ void BLocalDocumentDriver::setDefaultDir(const QString &dir)
     d_func()->defaultDir = dir;
 }
 
+void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
+{
+    d_func()->nativeLineEnd = enabled;
+}
+
 void BLocalDocumentDriver::setDialogState(const QByteArray &state)
 {
     d_func()->fileDialogState = state;
@@ -381,7 +387,12 @@ bool BLocalDocumentDriver::handleSaveOperation(const Operation &op)
     }
     QTextStream out(&f);
     out.setCodec( op.codec ? op.codec : op.document->codec() );
-    out << op.document->text();
+    QString text = op.document->text();
+#if defined(Q_OS_WIN)
+    if (d_func()->nativeLineEnd)
+        text.replace('\n', "\r\n");
+#endif
+    out << text;
     f.close();
     emitSavingFinished(op, true);
     return true;

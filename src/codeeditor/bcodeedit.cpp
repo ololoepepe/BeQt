@@ -443,9 +443,8 @@ QString BCodeEditPrivate::removeUnsupportedSymbols(const QString &s)
 
 void BCodeEditPrivate::removeUnsupportedSymbols(QString &text)
 {
-    text.remove('\r');
-    for (int i = 0; i < unsupportedSymbols.size(); ++i)
-        text.remove( unsupportedSymbols.at(i) );
+    foreach (const QChar &c, UnsupportedSymbols)
+        text.remove(c);
 }
 
 QString BCodeEditPrivate::removeTrailingSpaces(const QString &s)
@@ -1631,7 +1630,7 @@ void BCodeEditPrivate::setTextToEmptyLine()
 
 //
 
-const QList<QChar> BCodeEditPrivate::unsupportedSymbols = QList<QChar>() << QChar(1) << QChar(2) << QChar(3)
+const QList<QChar> BCodeEditPrivate::UnsupportedSymbols = QList<QChar>() << QChar(1) << QChar(2) << QChar(3)
     << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8) << QChar(9) << QChar(11) << QChar(12) << QChar(13)
     << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21)
     << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26) << QChar(27) << QChar(28) << QChar(29)

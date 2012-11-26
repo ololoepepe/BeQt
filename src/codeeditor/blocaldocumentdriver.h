@@ -36,6 +36,7 @@ public:
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
     bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec);
     void setDefaultDir(const QString &dir);
+    void setNativeLineEnd(bool enabled);
     void setDialogState(const QByteArray &state);
     QByteArray dialogState() const;
 protected:

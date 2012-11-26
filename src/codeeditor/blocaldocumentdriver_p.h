@@ -96,6 +96,7 @@ public:
     void init();
 private:
     QString defaultDir;
+    bool nativeLineEnd;
     QByteArray fileDialogState;
 };
 

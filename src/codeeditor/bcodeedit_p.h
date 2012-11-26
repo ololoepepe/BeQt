@@ -222,7 +222,7 @@ public:
     void handleCtrlRight();
     void move(int key);
     //
-    static const QList<QChar> unsupportedSymbols;
+    static const QList<QChar> UnsupportedSymbols;
     //
     bool blockMode;
     int lineLength;
