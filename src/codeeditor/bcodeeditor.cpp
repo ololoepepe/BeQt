@@ -488,7 +488,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     if ( !doc || savingDocuments.contains(doc) )
         return false;
     QString nfn = newFileName;
-    bool ssa = !nfn.isEmpty() || !driver->checkFileExistance( doc->fileName() );
+    bool ssa = !nfn.isEmpty() || !driver->testFileExistance( doc->fileName() );
     if (ssa)
     {
         if (!codec)
@@ -997,7 +997,9 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
         else
             doc->deleteLater();
     }
-    if (!success)
+    if (success)
+        doc->setReadOnly( driver->testFileReadOnly(fn) );
+    else
         failedToOpenMessage(fn);
 }
 
@@ -1007,7 +1009,9 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
     if ( !doc || !savingDocuments.contains(doc) )
         return;
     QString fn = savingDocuments.take(doc);
-    if (!success)
+    if (success)
+        doc->setReadOnly( driver->testFileReadOnly( !fn.isEmpty() ? fn : doc->fileName() ) );
+    else
         failedToSaveMessage(doc->fileName(), fn);
     if ( closingDocuments.contains(doc) )
     {

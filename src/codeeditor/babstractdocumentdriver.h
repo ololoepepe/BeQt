@@ -27,7 +27,7 @@ class B_CODEEDITOR_EXPORT BAbstractDocumentDriver : public QObject, public BBase
 public:
     struct Operation
     {
-        BCodeEditorDocument *document;
+        const BCodeEditorDocument *document;
         QString fileName;
         QTextCodec *codec;
     };
@@ -37,7 +37,8 @@ public:
     //
     virtual QString id() const = 0;
     virtual bool isBuisy() const = 0;
-    virtual bool checkFileExistance(const QString &fileName) = 0;
+    virtual bool testFileExistance(const QString &fileName) = 0;
+    virtual bool testFileReadOnly(const QString &fileName) = 0;
     virtual bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec) = 0;
     virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec) = 0;
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );

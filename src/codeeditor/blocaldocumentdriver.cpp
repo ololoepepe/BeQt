@@ -273,9 +273,17 @@ bool BLocalDocumentDriver::isBuisy() const
     return false;
 }
 
-bool BLocalDocumentDriver::checkFileExistance(const QString &fileName)
+bool BLocalDocumentDriver::testFileExistance(const QString &fileName)
 {
     return QFileInfo(fileName).isFile();
+}
+
+bool BLocalDocumentDriver::testFileReadOnly(const QString &fileName)
+{
+    QFile f(fileName);
+    bool b = !f.open(QFile::WriteOnly | QFile::Append);
+    f.close();
+    return b;
 }
 
 bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
@@ -359,8 +367,6 @@ bool BLocalDocumentDriver::handleLoadOperation(const Operation &op)
     in.setCodec( op.codec ? op.codec : op.document->codec() );
     QString text = in.readAll();
     f.close();
-    op.document->setReadOnly( !f.open(QFile::WriteOnly | QFile::Append) );
-    f.close();
     emitLoadingFinished(op, true, text);
     return true;
 }
@@ -376,8 +382,6 @@ bool BLocalDocumentDriver::handleSaveOperation(const Operation &op)
     QTextStream out(&f);
     out.setCodec( op.codec ? op.codec : op.document->codec() );
     out << op.document->text();
-    f.close();
-    op.document->setReadOnly( !f.open(QFile::WriteOnly | QFile::Append) );
     f.close();
     emitSavingFinished(op, true);
     return true;
