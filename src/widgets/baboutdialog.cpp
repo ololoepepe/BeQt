@@ -36,10 +36,15 @@ class QWidget;
 ================================ About Dialog Private
 ============================================================================*/
 
-const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
-const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
-const QString BAboutDialogPrivate::HtmlLT = "&lt;";
-const QString BAboutDialogPrivate::HtmlGT = "&gt;";
+BAboutDialog::AboutOptions BAboutDialogPrivate::createAboutOptions()
+{
+    BAboutDialog::AboutOptions opts;
+    opts.aboutQtButton = false;
+    opts.aboutBeQtButton = false;
+    opts.appName = QCoreApplication::applicationName();
+    opts.appVersion = QCoreApplication::applicationVersion();
+    return opts;
+}
 
 //
 
@@ -125,7 +130,7 @@ void BAboutDialogPrivate::init()
               tbtnAboutBeQt->setIcon( QIcon( BApplication::beqtPixmap("beqt_logo") ) );
             hltHeader->addWidget(tbtnAboutBeQt);
             //
-            BAboutDialog::AboutOptions opt;
+            BAboutDialog::AboutOptions opt = createAboutOptions();
             opt.appName = "BeQt";
             opt.appVersion = bVersion();
             aboutBeqtDlg = new BAboutDialog( opt, q_func() );
@@ -240,6 +245,13 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BAboutDialog::PersonInfoLis
 
 //
 
+const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
+const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
+const QString BAboutDialogPrivate::HtmlLT = "&lt;";
+const QString BAboutDialogPrivate::HtmlGT = "&gt;";
+
+//
+
 void BAboutDialogPrivate::retranslateUi()
 {
     q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
@@ -272,7 +284,7 @@ void BAboutDialogPrivate::retranslateUi()
 ============================================================================*/
 
 BAboutDialog::BAboutDialog(QWidget *parent) :
-    QDialog(parent), BBase( *new BAboutDialogPrivate( this, AboutOptions() ) )
+    QDialog(parent), BBase( *new BAboutDialogPrivate( this, BAboutDialogPrivate::createAboutOptions() ) )
 {
     d_func()->init();
 }

@@ -30,14 +30,6 @@ public:
         bool aboutBeQtButton;
         QString appName;
         QString appVersion;
-        //
-        AboutOptions()
-        {
-            aboutQtButton = false;
-            aboutBeQtButton = false;
-            appName = QCoreApplication::applicationName();
-            appVersion = QCoreApplication::applicationVersion();
-        }
     };
     struct PersonInfo
     {

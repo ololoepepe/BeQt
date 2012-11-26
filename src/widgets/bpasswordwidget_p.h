@@ -26,6 +26,8 @@ class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BPasswordWidget)
     Q_OBJECT
 public:
+    static BPasswordWidget::PasswordWidgetData createPasswordWidgetData();
+    //
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);
     ~BPasswordWidgetPrivate();
     //

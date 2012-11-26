@@ -153,24 +153,12 @@ public:
         bool valid;
         BCodeEdit::BracketPair bracket;
         bool opening;
-        //
-        TestBracketResult()
-        {
-            valid = false;
-            opening = true;
-        }
     };
     struct FindBracketResult
     {
         bool valid;
         int pos;
         BCodeEdit::BracketPair bracket;
-        //
-        FindBracketResult()
-        {
-            valid = false;
-            pos = -1;
-        }
     };
     //
     typedef QFuture<ProcessTextResult> ProcessTextFuture;
@@ -191,6 +179,14 @@ public:
     static FindBracketResult findBracketPair(const BCodeEdit::BracketPair &br, bool opening, const QTextBlock &tb,
                                              int pos, const QList<BCodeEdit::BracketPair> &brlist);
     static TestBracketResult testBracket(const QString &txt, int pos, const QList<BCodeEdit::BracketPair> &brlist);
+    static BCodeEdit::BracketPair createBracketPair( const QString &op, const QString &cl,
+                                                     const QString &esc = QString() );
+    static BCodeEdit::SplittedLinesRange createSplittedLinesRange();
+    static TestBracketResult createTestBracketResult();
+    static FindBracketResult createFindBracketResult();
+    static bool testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2);
+    static bool testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
+                                             const QList<BCodeEdit::BracketPair> &l2);
     //
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();

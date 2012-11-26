@@ -24,6 +24,17 @@
 ================================ Password Widget Private
 ============================================================================*/
 
+BPasswordWidget::PasswordWidgetData BPasswordWidgetPrivate::createPasswordWidgetData()
+{
+    BPasswordWidget::PasswordWidgetData pwd;
+    pwd.charCount = -1;
+    pwd.save = false;
+    pwd.show = false;
+    return pwd;
+}
+
+//
+
 BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     BBasePrivate(q)
 {

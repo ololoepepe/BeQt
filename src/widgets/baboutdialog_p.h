@@ -40,10 +40,7 @@ public:
         LicenseTab
     };
     //
-    static const QString HtmlSpace;
-    static const QString HtmlSpaceDouble;
-    static const QString HtmlLT;
-    static const QString HtmlGT;
+    static BAboutDialog::AboutOptions createAboutOptions();
     //
     BAboutDialogPrivate(BAboutDialog *q, const BAboutDialog::AboutOptions &options);
     ~BAboutDialogPrivate();
@@ -54,6 +51,12 @@ public:
     void removeTab(DialogTab t);
     void fillTab(DialogTab t, const QString &text, bool html);
     void fillTab(DialogTab t, const BAboutDialog::PersonInfoList &infos);
+    //
+    //
+    static const QString HtmlSpace;
+    static const QString HtmlSpaceDouble;
+    static const QString HtmlLT;
+    static const QString HtmlGT;
     //
     const BAboutDialog::AboutOptions Options;
     //

@@ -42,32 +42,11 @@ public:
         QString opening;
         QString closing;
         QString escape;
-        //
-        BracketPair()
-        {
-            //
-        }
-        BracketPair( const QString &op, const QString &cl, const QString &esc = QString() )
-        {
-            opening = op;
-            closing = cl;
-            escape = esc;
-        }
-        bool operator==(const BracketPair &other) const
-        {
-            return opening == other.opening && closing == other.closing && escape == other.escape;
-        }
     };
     struct SplittedLinesRange
     {
         int firstLineNumber;
         int lastLineNumber;
-        //
-        SplittedLinesRange()
-        {
-            firstLineNumber = -1;
-            lastLineNumber = -1;
-        }
     };
     //
     explicit BCodeEdit(QWidget *parent = 0);

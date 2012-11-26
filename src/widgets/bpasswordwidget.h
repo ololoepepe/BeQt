@@ -28,13 +28,6 @@ public:
         int charCount;
         bool save;
         bool show;
-        //
-        PasswordWidgetData()
-        {
-            charCount = -1;
-            save = false;
-            show = false;
-        }
     };
     //
     static QByteArray encrypt(const QString &string, QCryptographicHash::Algorithm method = QCryptographicHash::Sha1);

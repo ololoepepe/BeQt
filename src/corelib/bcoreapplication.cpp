@@ -93,6 +93,15 @@ QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileNa
     return new QSettings(qs->d_func()->confFileName(qs->d_func()->userPrefix, fileName), QSettings::IniFormat);
 }
 
+BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupportInfo()
+{
+    BCoreApplication::LocaleSupportInfo info;
+    info.locale = QLocale(QLocale::English);
+    info.supports = 0;
+    info.total = 0;
+    return info;
+}
+
 //
 
 BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
@@ -453,7 +462,7 @@ QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bo
     QList<BCoreApplication::LocaleSupportInfo> list;
     if (alwaysIncludeEnglish)
     {
-        LocaleSupportInfo en;
+        LocaleSupportInfo en = BCoreApplicationPrivate::createLocaleSupportInfo();
         en.total = ds->translators.size();
         if (!en.total)
             en.total += 1;
@@ -467,7 +476,7 @@ QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bo
             if ( !llist.contains(l) )
             {
                 llist << l;
-                LocaleSupportInfo lsi;
+                LocaleSupportInfo lsi = BCoreApplicationPrivate::createLocaleSupportInfo();
                 lsi.locale = l;
                 lsi.total = ds->translators.size();
                 if (!lsi.total)

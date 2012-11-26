@@ -62,13 +62,6 @@ public:
         QLocale locale;
         int supports;
         int total;
-        //
-        LocaleSupportInfo()
-        {
-            locale = QLocale(QLocale::English);
-            supports = 0;
-            total = 0;
-        }
     };
     //
     static BCoreApplication *instance();

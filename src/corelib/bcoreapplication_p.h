@@ -34,6 +34,7 @@ public:
     static bool testCoreInit(const char *where = 0);
     static bool testCoreUnique();
     static QSettings *createSettingsInstance(const QString &fileName);
+    static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
     //
     static const QStringList PluginSuffixes;
     static const QString SettingsGroupBeqt;
