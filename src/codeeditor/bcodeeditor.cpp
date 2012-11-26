@@ -347,6 +347,7 @@ void BCodeEditorPrivate::init()
     defaultFileType = BAbstractFileType::defaultFileType();
     defaultCodec = QTextCodec::codecForName("UTF-8");
     defaultFN = defaultFileName();
+    maxHistoryCount = 20;
     //
     vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -644,6 +645,9 @@ void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QStrin
         fileHistory.removeAll(oldFileName);
     fileHistory.removeAll(fileName);
     fileHistory.prepend(fileName);
+    if (maxHistoryCount >= 0)
+        while (fileHistory.size() > maxHistoryCount)
+            fileHistory.removeLast();
     QMetaObject::invokeMethod( q_func(), "fileHistoryChanged", Q_ARG(QStringList, fileHistory) );
 }
 
@@ -1387,8 +1391,25 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
 
 void BCodeEditor::setFileHistory(const QStringList &list)
 {
-    d_func()->fileHistory = list;
-    emit fileHistoryChanged(list);
+    B_D(BCodeEditor);
+    d->fileHistory = list;
+    if (d->maxHistoryCount >= 0)
+        while (d->fileHistory.size() > d->maxHistoryCount)
+            d->fileHistory.removeLast();
+    emit fileHistoryChanged(d->fileHistory);
+}
+
+void BCodeEditor::setMaxHistoryCount(int count)
+{
+    B_D(BCodeEditor);
+    if (count == d->maxHistoryCount)
+        return;
+    if (count < 0)
+        count = -1;
+    d->maxHistoryCount = count;
+    if (d->maxHistoryCount >= 0)
+        while (d->fileHistory.size() > count)
+            d->fileHistory.removeLast();
 }
 
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
@@ -1505,6 +1526,11 @@ QList<BAbstractFileType *> BCodeEditor::fileTypes() const
 QStringList BCodeEditor::fileHistory() const
 {
     return d_func()->fileHistory;
+}
+
+int BCodeEditor::maxHistoryCount() const
+{
+    return d_func()->maxHistoryCount;
 }
 
 bool BCodeEditor::documentAvailable() const

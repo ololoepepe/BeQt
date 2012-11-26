@@ -84,6 +84,7 @@ public:
     void removeFileType(const QString &id);
     void setFileTypes(const QList<BAbstractFileType *> &list);
     void setFileHistory(const QStringList &list);
+    void setMaxHistoryCount(int count);
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
     QFont editFont() const;
     BCodeEdit::EditMode editMode() const;
@@ -102,6 +103,7 @@ public:
     BAbstractFileType *fileType(const QString &id) const;
     QList<BAbstractFileType *> fileTypes() const;
     QStringList fileHistory() const;
+    int maxHistoryCount() const;
     bool documentAvailable() const;
     QString currentFileName() const;
     QStringList fileNames() const;

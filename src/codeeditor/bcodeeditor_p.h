@@ -192,6 +192,7 @@ public:
     BAbstractFileType *defaultFileType;
     BDropHandler *dropHandler;
     QStringList fileHistory;
+    int maxHistoryCount;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;
