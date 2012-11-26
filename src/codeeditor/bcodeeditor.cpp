@@ -636,6 +636,17 @@ void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
     twgt->setTabToolTip( ind, doc->fileName() );
 }
 
+void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QString &oldFileName)
+{
+    if ( fileName.isEmpty() )
+        return;
+    if ( !oldFileName.isEmpty() )
+        fileHistory.removeAll(oldFileName);
+    fileHistory.removeAll(fileName);
+    fileHistory.prepend(fileName);
+    QMetaObject::invokeMethod( q_func(), "fileHistoryChanged", Q_ARG(QStringList, fileHistory) );
+}
+
 //Messages
 
 void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
@@ -1364,6 +1375,12 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
         d_func()->emitFileTypesChanged();
 }
 
+void BCodeEditor::setFileHistory(const QStringList &list)
+{
+    d_func()->fileHistory = list;
+    emit fileHistoryChanged(list);
+}
+
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 {
     B_D(BCodeEditor);
@@ -1473,6 +1490,11 @@ QList<BAbstractFileType *> BCodeEditor::fileTypes() const
     QList<BAbstractFileType *> list = d_func()->fileTypes.values();
     list << d_func()->defaultFileType;
     return list;
+}
+
+QStringList BCodeEditor::fileHistory() const
+{
+    return d_func()->fileHistory;
 }
 
 bool BCodeEditor::documentAvailable() const

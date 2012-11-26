@@ -147,6 +147,7 @@ public:
     bool closeAllDocuments();
     bool tryCloseDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
+    void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
     //Messages
     void failedToOpenMessage(const QString &fileName);
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
@@ -190,6 +191,7 @@ public:
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;
     BDropHandler *dropHandler;
+    QStringList fileHistory;
     //
     QVBoxLayout *vlt;
       QTabWidget *twgt;

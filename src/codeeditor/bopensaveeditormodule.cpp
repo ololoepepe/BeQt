@@ -97,7 +97,7 @@ void BOpenSaveEditorModulePrivate::checkActions()
     if ( !actOpenFiles.isNull() )
         actOpenFiles->setEnabled(editor);
     if ( !actReopenFile.isNull() )
-        actReopenFile->setEnabled( doc && editor->driver()->checkFileExistance( doc->fileName() ) && !doc->isBuisy() );
+        actReopenFile->setEnabled( doc && editor->driver()->testFileExistance( doc->fileName() ) && !doc->isBuisy() );
     if ( !actSaveFile.isNull() )
         actSaveFile->setEnabled( doc && doc->isModified() && !doc->isReadOnly() && !doc->isBuisy() );
     if ( !actSaveFileAs.isNull() )
