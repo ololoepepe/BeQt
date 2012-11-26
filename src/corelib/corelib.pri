@@ -12,6 +12,7 @@ HEADERS += \
     $${PWD}/bpluginwrapper.h \
     $${PWD}/bpluginwrapper_p.h \
     $${PWD}/bterminaliohandler.h \
+    $${PWD}/bterminaliohandler_p.h \
     $${PWD}/btranslator.h \
     $${PWD}/btranslator_p.h
 

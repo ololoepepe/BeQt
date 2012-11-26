@@ -1,4 +1,5 @@
 #include "bterminaliohandler.h"
+#include "bterminaliohandler_p.h"
 #include "bglobal.h"
 #include "bbase_p.h"
 
@@ -21,34 +22,47 @@
 #endif
 
 /*============================================================================
-================================ Terminal IO Handler Private (declaration)
+================================ Terminal IO Handler Thread
 ============================================================================*/
 
-class BTerminalIOHandlerPrivate : public BBasePrivate
+BTerminalIOHandlerThread::BTerminalIOHandlerThread(QObject *parent) :
+    QThread(parent)
 {
-    B_DECLARE_PUBLIC(BTerminalIOHandler)
-    B_DECLARE_PUBLIC_S(BTerminalIOHandler)
-public:
-    static QStringList splitCommand(const QString &command);
     //
-    explicit BTerminalIOHandlerPrivate(BTerminalIOHandler *q);
-    ~BTerminalIOHandlerPrivate();
+}
+
+BTerminalIOHandlerThread::~BTerminalIOHandlerThread()
+{
     //
-    void init();
-    //
-    static QMutex instMutex;
-    static QMutex stdinMutex;
-    static QMutex stdoutMutex;
-    static QMutex readLineMutex;
-    static QMutex echoMutex;
-    static bool prefereReadLine;
-    static QString lastLine;
-private:
-    Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
-};
+}
+
+//
+
+void BTerminalIOHandlerThread::run()
+{
+    QTextStream in(stdin, QIODevice::ReadOnly);
+    forever
+    {
+        BTerminalIOHandlerPrivate::stdinMutex.lock();
+        QString line = in.readLine();
+        if (BTerminalIOHandlerPrivate::prefereReadLine)
+        {
+            BTerminalIOHandlerPrivate::lastLine = line;
+        }
+        else
+        {
+            QStringList args = BTerminalIOHandler::splitCommand(line);
+            QString command = args.takeFirst();
+            //QMetaObject::invokeMethod( _m_self, "commandEntered", Qt::QueuedConnection,
+                                       //Q_ARG(QString, command), Q_ARG(QStringList, args) );
+        }
+        BTerminalIOHandlerPrivate::stdinMutex.unlock();
+        msleep(100); //Required for readLine() to be able to lock the mutex. This is unlikely to be noticed by users
+    }
+}
 
 /*============================================================================
-================================ Terminal IO Handler (definition)
+================================ Terminal IO Handler
 ============================================================================*/
 
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
@@ -133,6 +147,11 @@ BTerminalIOHandler *BTerminalIOHandler::instance()
     return _m_self;
 }
 
+void BTerminalIOHandler::start()
+{
+    //
+}
+
 QString BTerminalIOHandler::readLine()
 {
     QString line;
@@ -193,42 +212,25 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 
 //
 
-void BTerminalIOHandler::run()
-{
-    QTextStream in(stdin, QIODevice::ReadOnly);
-    forever
-    {
-        BTerminalIOHandlerPrivate::stdinMutex.lock();
-        QString line = in.readLine();
-        if (BTerminalIOHandlerPrivate::prefereReadLine)
-        {
-            BTerminalIOHandlerPrivate::lastLine = line;
-        }
-        else
-        {
-            QStringList args = splitCommand(line);
-            QString command = args.takeFirst();
-            QMetaObject::invokeMethod( _m_self, "commandEntered", Qt::QueuedConnection,
-                                       Q_ARG(QString, command), Q_ARG(QStringList, args) );
-        }
-        BTerminalIOHandlerPrivate::stdinMutex.unlock();
-        msleep(100); //Required for readLine() to be able to lock the mutex. This is unlikely to be noticed by users
-    }
-}
-
-//
-
 BTerminalIOHandler *BTerminalIOHandler::_m_self = 0;
 
 //
 
-BTerminalIOHandler::BTerminalIOHandler() :
-    QThread(0), BBase( *new BTerminalIOHandlerPrivate(this) )
+BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
+    QObject(parent), BBase( *new BTerminalIOHandlerPrivate(this) )
 {
     d_func()->init();
 }
 
 BTerminalIOHandler::~BTerminalIOHandler()
+{
+    //
+}
+
+//
+
+BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
 {
     //
 }

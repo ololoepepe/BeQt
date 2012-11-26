@@ -6,7 +6,7 @@ class BTerminalIOHandlerPrivate;
 #include "bglobal.h"
 #include "bbase.h"
 
-#include <QThread>
+#include <QObject>
 #include <QString>
 #include <QStringList>
 
@@ -14,29 +14,29 @@ class BTerminalIOHandlerPrivate;
 ================================ Terminal IO Handler
 ============================================================================*/
 
-class B_CORE_EXPORT BTerminalIOHandler : public QThread, public BBase
+class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
 {
-    Q_OBJECT
     B_DECLARE_PRIVATE(BTerminalIOHandler)
     B_DECLARE_PRIVATE_S(BTerminalIOHandler)
+    Q_OBJECT
+    Q_DISABLE_COPY(BTerminalIOHandler)
 public:
     static QStringList splitCommand(const QString &command);
     static BTerminalIOHandler *instance();
+    static void start();
     static QString readLine();
     static void write(const QString &text);
     static void writeLine(const QString &text);
     static void setStdinEchoEnabled(bool enabled = true);
+    //
+    explicit BTerminalIOHandler(QObject *parent = 0);
+    ~BTerminalIOHandler();
+protected:
+    BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent = 0);
 signals:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:
-    void run();
-    //
     static BTerminalIOHandler *_m_self;
-private:
-    Q_DISABLE_COPY(BTerminalIOHandler)
-    //
-    BTerminalIOHandler();
-    ~BTerminalIOHandler();
 };
 
 #endif // BTERMINALIOHANDLER_H

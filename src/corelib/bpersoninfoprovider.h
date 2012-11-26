@@ -17,7 +17,7 @@ class QString;
 ================================ Person Info Provider
 ============================================================================*/
 
-class BPersonInfoProvider : public QObject, public BBase
+class B_CORE_EXPORT BPersonInfoProvider : public QObject, public BBase
 {
     B_DECLARE_PRIVATE(BPersonInfoProvider)
     Q_OBJECT
