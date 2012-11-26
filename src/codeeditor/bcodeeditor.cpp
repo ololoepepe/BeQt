@@ -1004,9 +1004,14 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
     {
         fn = openingDocuments.take(doc);
         if (success)
+        {
             addDocument(doc);
+            appendFileHistory(fn);
+        }
         else
+        {
             doc->deleteLater();
+        }
     }
     if (success)
         doc->setReadOnly( driver->testFileReadOnly(fn) );
@@ -1021,9 +1026,14 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
         return;
     QString fn = savingDocuments.take(doc);
     if (success)
+    {
         doc->setReadOnly( driver->testFileReadOnly( !fn.isEmpty() ? fn : doc->fileName() ) );
+        appendFileHistory( !fn.isEmpty() ? fn : doc->fileName(), doc->fileName() );
+    }
     else
+    {
         failedToSaveMessage(doc->fileName(), fn);
+    }
     if ( closingDocuments.contains(doc) )
     {
         closingDocuments.removeAll(doc);
