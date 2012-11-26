@@ -155,6 +155,12 @@ void BPlainTextEditExtendedPrivate::init()
     connect( q_func(), SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
 }
 
+void BPlainTextEditExtendedPrivate::emulateShiftPress()
+{
+    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
+    QApplication::sendEvent(q_func(), &e);
+}
+
 QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPaintContext() const
 {
     QAbstractTextDocumentLayout::PaintContext context = q_func()->getPaintContext();
@@ -190,7 +196,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     int soffset = start - q->document()->findBlock(start).position();
     int eoffset = end - q->document()->findBlock(end).position();
     if (soffset == eoffset)
-        return q->emulateShiftPress(); //Workaround to update the selection
+        return emulateShiftPress(); //Workaround to update the selection
     int minoffset = qMin<int>(soffset, eoffset);
     int maxoffset = qMax<int>(soffset, eoffset);
     int astart = qMin<int>(start, end);
@@ -208,7 +214,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
         tb = tb.next();
     }
     //Workaround to update the selection
-    q->emulateShiftPress();
+    emulateShiftPress();
 }
 
 /*============================================================================
@@ -230,13 +236,17 @@ BPlainTextEditExtended::~BPlainTextEditExtended()
 
 void BPlainTextEditExtended::setBlockMode(bool enabled)
 {
-    d_func()->blockMode = enabled;
+    B_D(BPlainTextEditExtended);
+    if (enabled == d->blockMode)
+        return;
+    d->blockMode = enabled;
+    updateSelection();
 }
 
-void BPlainTextEditExtended::emulateShiftPress()
+void BPlainTextEditExtended::updateSelection()
 {
-    QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
-    QApplication::sendEvent(this, &e);
+    d_func()->selectionChanged();
+    d_func()->emulateShiftPress();
 }
 
 bool BPlainTextEditExtended::blockMode() const
@@ -1298,7 +1308,7 @@ void BCodeEditPrivate::handleLeft(bool shift)
         {
             tc.setPosition(0);
             ptedt->setTextCursor(tc);
-            //_m_editSelectionChanged();
+            //ptedt->updateSelection();
         }
         return;
     }
@@ -1321,7 +1331,7 @@ void BCodeEditPrivate::handleLeft(bool shift)
     }
     tc.setPosition(npos, mode);
     ptedt->setTextCursor(tc);
-    //_m_editSelectionChanged();
+    ptedt->updateSelection();
 }
 
 void BCodeEditPrivate::handleCtrlLeft()
@@ -1641,8 +1651,6 @@ void BCodeEdit::setEditMode(EditMode mode)
         return;
     d->blockMode = b;
     d->ptedt->setBlockMode(b);
-    //d->ptedt->update();
-    d->ptedt->emulateShiftPress();
     emit editModeChanged(mode);
 }
 

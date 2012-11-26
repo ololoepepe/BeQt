@@ -94,7 +94,7 @@ public:
     ~BPlainTextEditExtended();
     //
     void setBlockMode(bool enabled);
-    void emulateShiftPress();
+    void updateSelection();
     bool blockMode() const;
     QVector<SelectionRange> selectionRanges() const;
 protected:
@@ -121,6 +121,7 @@ public:
     ~BPlainTextEditExtendedPrivate();
     //
     void init();
+    void emulateShiftPress();
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
     //
     bool blockMode;
