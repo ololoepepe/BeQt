@@ -168,42 +168,47 @@ QString BDirTools::readTextFile(const QString &fileName, const char *codecName)
 
 QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)
 {
+    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
+        return "";
+    QStringList sl;
     switch (mode)
     {
     case GlobalOnly:
     {
-        QString dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
-        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
-            return dir + "/" + subpath;
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
 #if defined(Q_OS_MAC)
-        dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
-        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
-            return dir + "/" + subpath;
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
 #endif
-        dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResources);
-        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
-            return dir + "/" + subpath;
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResources);
         break;
     }
     case UserOnly:
     {
-        QString dir = BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResources);
-        if ( !dir.isEmpty() && QFileInfo(dir + "/" + subpath).exists() )
-            return dir + "/" + subpath;
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResources);
         break;
     }
     case AllResources:
     default:
     {
-        QString res = findResource(subpath, GlobalOnly);
-        if ( !res.isEmpty() )
-            return res;
-        res = findResource(subpath, UserOnly);
-        if ( !res.isEmpty() )
-            return res;
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
+#if defined(Q_OS_MAC)
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
+#endif
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResources);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResources);
         break;
     }
     }
+    return findResource(subpath, sl);
+}
+
+QString BDirTools::findResource(const QString &subpath, const QStringList &locations)
+{
+    if ( subpath.isEmpty() || locations.isEmpty() )
+        return "";
+    foreach (const QString &loc, locations)
+        if ( !loc.isEmpty() && QFileInfo(loc + "/" + subpath).exists() )
+            return loc + "/" + subpath;
     return "";
 }
 

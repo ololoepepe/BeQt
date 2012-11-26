@@ -14,6 +14,7 @@
 #include <QTextStream>
 #include <QStringList>
 #include <QList>
+#include <QMetaObject>
 
 #include <QDebug>
 
@@ -74,6 +75,56 @@ void BPersonInfoProviderPrivate::init()
     //
 }
 
+void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
+{
+    QFile f(fileName);
+    if ( !f.open(QFile::ReadOnly) )
+        return;
+    QTextStream in(&f);
+    infos.clear();
+    QMap<QString, BPersonInfoProvider::PersonInfo> info;
+    while ( !in.atEnd() )
+    {
+        QString line = in.readLine();
+        if ( !line.isEmpty() )
+        {
+            QStringList sl = line.split('=');
+            if (sl.size() < 2)
+                continue;
+            QString id = sl.takeFirst();
+            QString val = sl.join("=");
+            if ( id.isEmpty() || id.length() < 4 || val.isEmpty() )
+                continue;
+            QString ln;
+            if (id.at(id.length() - 1) == ']')
+            {
+                int i = id.length() - 2;
+                while (i >= 0 && id.at(i) != '[')
+                    ln.prepend( id.at(i--) );
+            }
+            if (ln.isEmpty() || QLocale(ln).name() != ln )
+                ln = "en";
+            id = id.left(4);
+            if ( !id.compare("name", Qt::CaseInsensitive) )
+                info[ln].name = val;
+            else if ( !id.compare("role", Qt::CaseInsensitive) )
+                info[ln].role = val;
+            else if ( !id.compare("site", Qt::CaseInsensitive) )
+                info[ln].site = val;
+            else if ( !id.compare("mail", Qt::CaseInsensitive) )
+                info[ln].mail = val;
+        }
+        else
+        {
+            tryAppendInfo(infos, info);
+            info.clear();
+        }
+    }
+    tryAppendInfo(infos, info);
+    f.close();
+    QMetaObject::invokeMethod(q_func(), "reloaded");
+}
+
 /*============================================================================
 ================================ Person Info Provider
 ============================================================================*/
@@ -111,52 +162,7 @@ void BPersonInfoProvider::setFileName(const QString &fileName)
     B_D(BPersonInfoProvider);
     if (fileName.isEmpty() || fileName == d->fileName)
         return;
-    QFile f(fileName);
-    if ( !f.open(QFile::ReadOnly) )
-        return;
-    QTextStream in(&f);
-    d->infos.clear();
-    QMap<QString, BPersonInfoProvider::PersonInfo> info;
-    while ( !in.atEnd() )
-    {
-        QString line = in.readLine();
-        if ( !line.isEmpty() )
-        {
-            QStringList sl = line.split('=');
-            if (sl.size() < 2)
-                continue;
-            QString id = sl.takeFirst();
-            QString val = sl.join("=");
-            if ( id.isEmpty() || id.length() < 4 || val.isEmpty() )
-                continue;
-            QString ln;
-            if (id.at(id.length() - 1) == ']')
-            {
-                int i = id.length() - 2;
-                while (i >= 0 && id.at(i) != '[')
-                    ln.prepend( id.at(i--) );
-            }
-            if (ln.isEmpty() || QLocale(ln).name() != ln )
-                ln = "en";
-            id = id.left(4);
-            if ( !id.compare("name", Qt::CaseInsensitive) )
-                info[ln].name = val;
-            else if ( !id.compare("role", Qt::CaseInsensitive) )
-                info[ln].role = val;
-            else if ( !id.compare("site", Qt::CaseInsensitive) )
-                info[ln].site = val;
-            else if ( !id.compare("mail", Qt::CaseInsensitive) )
-                info[ln].mail = val;
-        }
-        else
-        {
-            BPersonInfoProviderPrivate::tryAppendInfo(d->infos, info);
-            info.clear();
-        }
-    }
-    BPersonInfoProviderPrivate::tryAppendInfo(d->infos, info);
-    f.close();
-    emit reloaded();
+    d->setFileName(fileName);
 }
 
 QString BPersonInfoProvider::fileName() const
@@ -166,12 +172,27 @@ QString BPersonInfoProvider::fileName() const
 
 BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QLocale &locale) const
 {
+    return infos( locale.name() );
+}
+
+BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QString &localeName) const
+{
     PersonInfoList list;
     foreach (const BPersonInfoProviderPrivate::PersonInfoMap &map, d_func()->infos)
     {
-        PersonInfo info = BPersonInfoProviderPrivate::infoForLocale( map, locale.name() );
+        PersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, localeName);
         if ( !info.name.isEmpty() )
             list << info;
     }
     return list;
+}
+
+//
+
+void BPersonInfoProvider::reload()
+{
+    B_D(BPersonInfoProvider);
+    if ( d->fileName.isEmpty() )
+        return;
+    d->setFileName(d->fileName);
 }

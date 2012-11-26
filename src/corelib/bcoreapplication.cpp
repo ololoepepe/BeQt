@@ -6,6 +6,7 @@
 #include "bpluginwrapper.h"
 #include "btranslator_p.h"
 #include "bpluginwrapper_p.h"
+#include "bpersoninfoprovider.h"
 
 #include <QObject>
 #include <QString>
@@ -177,9 +178,20 @@ void BCoreApplicationPrivate::init()
 #endif
     }
     //default locale
-    locale = QLocale::system();;
+    locale = QLocale::system();
     //initialized
     initialized = true;
+    //infos
+    QStringList locs;
+    locs << sharedPrefix;
+#if defined(Q_OS_MAC)
+    locs << bundlePrefix;
+#endif
+    locs << ":";
+    QString spref = "beqt/about/infos/";
+    beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.info", locs), this);
+    beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translations.info", locs), this);
+    beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.info", locs), this);
 }
 
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name) const

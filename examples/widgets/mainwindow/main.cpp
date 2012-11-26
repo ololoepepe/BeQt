@@ -19,6 +19,7 @@
 #include <BBookmarksEditorModule>
 #include <BSearchEditorModule>
 #include <BPersonInfoProvider>
+#include <BAboutDialog>
 
 #include <QApplication>
 #include <QString>
@@ -70,24 +71,24 @@ int main(int argc, char **argv)
     //Creating BApplication instance
     BApplication *bapp = new Application;
     //Initializing BApplication About
-    BApplication::setAboutPixmap(BApplication::location(BApplication::DataPath,
-                                                        BApplication::SharedResources) + "/images/myapp.png");
-    BApplication::setAbout("This is an example application", "2012 Andrey Bogdanov",
-                           "https://github.com/the-dark-angel/test");
+    BAboutDialog *adlg = BApplication::aboutDialogInstance();
+    adlg->setPixmap(BApplication::location(BApplication::DataPath,
+                                           BApplication::SharedResources) + "/images/myapp.png");
+    adlg->setAbout("This is an example application", "2012 Andrey Bogdanov", "https://github.com/the-dark-angel/test");
     BPersonInfoProvider::PersonInfo pi;
     pi.name = "Andrey Bogdanov";
     pi.role = "Main developer";
     pi.site = "https://github.com/the-dark-angel";
     pi.mail = "the-dark-angel@yandex.ru";
-    BApplication::setAboutAuthorsInfos(BPersonInfoProvider::PersonInfoList() << pi);
+    adlg->setAuthorsInfos(BPersonInfoProvider::PersonInfoList() << pi);
     pi.role = "Translator";
-    BApplication::setAboutTranslationInfos(BPersonInfoProvider::PersonInfoList() << pi);
+    adlg->setTranslationInfos(BPersonInfoProvider::PersonInfoList() << pi);
     pi.name = "Miku";
     pi.role = "Muse";
     pi.mail = "";
     pi.site = "";
-    BApplication::setAboutThanksToInfos(BPersonInfoProvider::PersonInfoList() << pi);
-    BApplication::setAboutLicense("MIT License");
+    adlg->setThanksToInfos(BPersonInfoProvider::PersonInfoList() << pi);
+    adlg->setLicense("MIT License");
     //Installing translators
     BTranslator *t = new BTranslator("qt");
     BApplication::installTranslator(t);

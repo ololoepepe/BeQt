@@ -53,6 +53,9 @@ public:
     void removeTab(DialogTab t);
     void fillTab(DialogTab t, const QString &text, bool html);
     void fillTab(DialogTab t, const BPersonInfoProvider::PersonInfoList &infos);
+    void resetAuthorsProvider(BPersonInfoProvider *prov = 0);
+    void resetTranslationProvider(BPersonInfoProvider *prov = 0);
+    void resetThanksToProvider(BPersonInfoProvider *prov = 0);
     //
     //
     static const QString HtmlSpace;
@@ -63,9 +66,9 @@ public:
     const BAboutDialog::AboutOptions Options;
     //
     QString appName;
-    BPersonInfoProvider *beqtAuthors;
-    BPersonInfoProvider *beqtTranslations;
-    BPersonInfoProvider *beqtThanksTo;
+    BPersonInfoProvider *authorsProvider;
+    BPersonInfoProvider *translationsProvider;
+    BPersonInfoProvider *thanksToProvider;
     QMap<DialogTab, QTextBrowser *> tbrsrs;
     BAboutDialog *aboutBeqtDlg;
     QVBoxLayout *vlt;

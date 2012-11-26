@@ -6,6 +6,7 @@ class BTranslator;
 class BPluginWrapperPrivate;
 class BTranslatorPrivate;
 class BDirTools;
+class BPersonInfoProvider;
 
 class QString;
 class QLocale;
@@ -70,6 +71,9 @@ public:
     QStringList deactivatedPlugins;
     QMap<QString, BTranslator *> translators;
     QList<BPluginWrapper *> plugins;
+    BPersonInfoProvider *beqtAuthors;
+    BPersonInfoProvider *beqtTranslations;
+    BPersonInfoProvider *beqtThanksTo;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     //

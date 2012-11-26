@@ -9,6 +9,7 @@
 #include <BLocalDocumentDirver>
 #include <BEditEditorModule>
 #include <BPersonInfoProvider>
+#include <BAboutDialog>
 
 #include <QApplication>
 #include <QString>
@@ -41,8 +42,8 @@ int main(int argc, char **argv)
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
     //Initializing BApplication About
-    BApplication::setAbout("This is an example application", "2012 Andrey Bogdanov",
-                           "https://github.com/the-dark-angel/test");
+    BApplication::aboutDialogInstance()->setAbout("This is an example application", "2012 Andrey Bogdanov",
+                                                  "https://github.com/the-dark-angel/test");
     //QMainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;

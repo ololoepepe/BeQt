@@ -42,9 +42,12 @@ public:
     void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
     void setChangeLog(const QString &text);
     void setChangeLog(const QString &fileName, const char *codecName);
-    void setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos);
-    void setTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos);
-    void setThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos);
+    void setAuthors(BPersonInfoProvider *prov);
+    void setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &list);
+    void setTranslation(BPersonInfoProvider *prov);
+    void setTranslationInfos(const BPersonInfoProvider::PersonInfoList &list);
+    void setThanksTo(BPersonInfoProvider *prov);
+    void setThanksToInfos(const BPersonInfoProvider::PersonInfoList &list);
     void setLicense(const QString &text);
     void setLicense(const QString &fileName, const char *codecName);
     void resetTabs();

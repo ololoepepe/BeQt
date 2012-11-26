@@ -2,13 +2,15 @@
 #define BAPPLICATION_H
 
 class BApplicationPrivate;
+class BAboutDialogPrivate;
+class BPersonInfoProvider;
+class BAboutDialog;
 
 class QIcon;
 class QPixmap;
 class QAction;
 class QFont;
 
-#include "baboutdialog.h"
 #include "bsettingsdialog.h"
 
 #include <BeQtCore/BeQtGlobal>
@@ -55,15 +57,7 @@ public:
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
     static void setIconCachingEnabled(bool enabled);
     static void clearIconCache();
-    static void setAboutPixmap(const QPixmap &pixmap);
-    static void setAboutPixmap(const QString &fileName);
-    static void setAbout( const QString &description, const QString &copyright, const QString &website = QString() );
-    static void setAboutChangeLog(const QString &fileName, const char *codecName);
-    static void setAboutAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos);
-    static void setAboutTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos);
-    static void setAboutThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos);
-    static void setAboutLicense(const QString &text);
-    static void setAboutLicense(const QString &fileName, const char *codecName);
+    static BAboutDialog *aboutDialogInstance();
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
@@ -85,6 +79,8 @@ protected:
     virtual void handleSettings(const BSettingsDialog::SettingsMap &s);
 private:
     Q_DISABLE_COPY(BApplication)
+    //
+    friend class BAboutDialogPrivate;
 };
 
 #endif // BAPPLICATION_H

@@ -32,6 +32,7 @@
 #include <QByteArray>
 #include <QFont>
 #include <QFontInfo>
+#include <QPointer>
 
 #include <QDebug>
 #include <QPointer>
@@ -269,86 +270,13 @@ void BApplication::clearIconCache()
     ds_func()->iconCache.clear();
 }
 
-void BApplication::setAboutPixmap(const QPixmap &pixmap)
+BAboutDialog *BApplication::aboutDialogInstance()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setPixmap(pixmap);
-}
-
-void BApplication::setAboutPixmap(const QString &fileName)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setPixmap(fileName);
-}
-
-void BApplication::setAbout(const QString &description, const QString &copyright, const QString &website)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->homepage = website;
-    ds->initAboutDlg();
-    ds->aboutDlg->setAbout(description, copyright, website);
-}
-
-void BApplication::setAboutChangeLog(const QString &fileName, const char *codecName)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setChangeLog(fileName, codecName);
-}
-
-void BApplication::setAboutAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setAuthorsInfos(infos);
-}
-
-void BApplication::setAboutTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setTranslationInfos(infos);
-}
-
-void BApplication::setAboutThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setThanksToInfos(infos);
-}
-
-void BApplication::setAboutLicense(const QString &text)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setLicense(text);
-}
-
-void BApplication::setAboutLicense(const QString &fileName, const char *codecName)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
-        return;
-    B_DS(BApplication);
-    ds->initAboutDlg();
-    ds->aboutDlg->setLicense(fileName, codecName);
+    if ( !BApplicationPrivate::testCoreInit("BApplication") )
+        return 0;
+    if ( ds_func()->aboutDlg.isNull() )
+        ds_func()->initAboutDlg();
+    return ds_func()->aboutDlg.data();
 }
 
 void BApplication::setSettingsTabDefaultNavigation(SettingsTabNavigation navigation)

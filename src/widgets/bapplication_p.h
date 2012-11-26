@@ -15,6 +15,7 @@ class QAction;
 #include <QString>
 #include <QMap>
 #include <QIcon>
+#include <QPointer>
 
 /*============================================================================
 ================================ Application Private
@@ -41,7 +42,7 @@ public:
     void showHelp( const QString &file = QString() );
     //
     QString homepage;
-    BAboutDialog *aboutDlg;
+    QPointer<BAboutDialog> aboutDlg;
     BApplication::SettingsTabNavigation navigation;
     QString helpIndex;
     QMap<QString, QIcon> iconCache;

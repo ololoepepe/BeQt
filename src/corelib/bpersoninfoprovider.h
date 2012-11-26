@@ -42,6 +42,9 @@ public:
     void setFileName(const QString &fileName);
     QString fileName() const;
     PersonInfoList infos( const QLocale &locale = BCoreApplication::locale() ) const;
+    PersonInfoList infos(const QString &localeName) const;
+public slots:
+    void reload();
 signals:
     void reloaded();
 };

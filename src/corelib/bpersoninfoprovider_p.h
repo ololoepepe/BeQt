@@ -32,6 +32,7 @@ public:
     ~BPersonInfoProviderPrivate();
     //
     void init();
+    void setFileName(const QString &fn);
     //
     QString fileName;
     QList<PersonInfoMap> infos;

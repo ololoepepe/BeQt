@@ -34,6 +34,7 @@ public:
     static QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
     static QString readTextFile(const QString &fileName, const char *codecName = 0);
     static QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
+    static QString findResource(const QString &subpath, const QStringList &locations);
     static bool createUserLocation(BCoreApplication::Location loc);
     static bool createUserLocation(const QString &subdir);
     static bool createUserLocations(const QStringList &subdirs);

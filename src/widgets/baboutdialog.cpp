@@ -3,6 +3,7 @@ class QWidget;
 #include "baboutdialog.h"
 #include "baboutdialog_p.h"
 #include "bapplication.h"
+#include "bapplication_p.h"
 
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPluginInterface>
@@ -65,6 +66,9 @@ BAboutDialogPrivate::~BAboutDialogPrivate()
 
 void BAboutDialogPrivate::init()
 {
+    authorsProvider = 0;
+    translationsProvider = 0;
+    thanksToProvider = 0;
     B_Q(BAboutDialog);
     q->setMinimumHeight(400);
     q->setMinimumWidth(600);
@@ -111,16 +115,6 @@ void BAboutDialogPrivate::init()
         }
         if (Options.aboutBeQtButton)
         {
-            beqtAuthors = new BPersonInfoProvider(BDirTools::findResource("beqt/about/infos/authors.info",
-                                                                          BDirTools::GlobalOnly), this);
-            connect( beqtAuthors, SIGNAL( reloaded() ), this, SLOT( resetAuthors() ) );
-            beqtTranslations = new BPersonInfoProvider(BDirTools::findResource("beqt/about/infos/translations.info",
-                                                                               BDirTools::GlobalOnly), this);
-            connect( beqtTranslations, SIGNAL( reloaded() ), this, SLOT( resetTranslations() ) );
-            beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource("beqt/about/infos/thanks-to.info",
-                                                                           BDirTools::GlobalOnly), this);
-            connect( beqtThanksTo, SIGNAL( reloaded() ), this, SLOT( resetThanksTo() ) );
-            //
             tbtnAboutBeQt = new QToolButton(q);
               tbtnAboutBeQt->setIcon( QIcon( BApplication::beqtPixmap("beqt_logo") ) );
             hltHeader->addWidget(tbtnAboutBeQt);
@@ -131,13 +125,13 @@ void BAboutDialogPrivate::init()
             aboutBeqtDlg = new BAboutDialog( opt, q_func() );
             aboutBeqtDlg->setWindowModality(Qt::NonModal);
             aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
+            aboutBeqtDlg->setAuthors(BApplication::ds_func()->beqtAuthors);
+            aboutBeqtDlg->setTranslation(BApplication::ds_func()->beqtTranslations);
+            aboutBeqtDlg->setThanksTo(BApplication::ds_func()->beqtThanksTo);
             connect( tbtnAboutBeQt, SIGNAL( clicked() ), aboutBeqtDlg, SLOT( open() ) );
         }
         else
         {
-            beqtAuthors = 0;
-            beqtTranslations = 0;
-            beqtThanksTo = 0;
             tbtnAboutBeQt = 0;
             aboutBeqtDlg = 0;
         }
@@ -241,6 +235,60 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoProvider::Person
     fillTab(t, s, true);
 }
 
+void BAboutDialogPrivate::resetAuthorsProvider(BPersonInfoProvider *prov)
+{
+    if (authorsProvider)
+    {
+        disconnect( authorsProvider, SIGNAL( reloaded() ), this, SLOT( resetAuthors() ) );
+        if (!authorsProvider->parent() || authorsProvider->parent() == (QObject *) this)
+            authorsProvider->deleteLater();
+    }
+    authorsProvider = prov;
+    if (authorsProvider)
+    {
+        if ( !authorsProvider->parent() )
+            authorsProvider->setParent(this);
+        connect( authorsProvider, SIGNAL( reloaded() ), this, SLOT( resetAuthors() ) );
+    }
+    resetAuthors();
+}
+
+void BAboutDialogPrivate::resetTranslationProvider(BPersonInfoProvider *prov)
+{
+    if (translationsProvider)
+    {
+        disconnect( translationsProvider, SIGNAL( reloaded() ), this, SLOT( resetTranslations() ) );
+        if (!translationsProvider->parent() || translationsProvider->parent() == (QObject *) this)
+            translationsProvider->deleteLater();
+    }
+    translationsProvider = prov;
+    if (translationsProvider)
+    {
+        if ( !translationsProvider->parent() )
+            translationsProvider->setParent(this);
+        connect( translationsProvider, SIGNAL( reloaded() ), this, SLOT( resetTranslations() ) );
+    }
+    resetTranslations();
+}
+
+void BAboutDialogPrivate::resetThanksToProvider(BPersonInfoProvider *prov)
+{
+    if (thanksToProvider)
+    {
+        disconnect( thanksToProvider, SIGNAL( reloaded() ), this, SLOT( resetThanksTo() ) );
+        if (!thanksToProvider->parent() || thanksToProvider->parent() == (QObject *) this)
+            thanksToProvider->deleteLater();
+    }
+    thanksToProvider = prov;
+    if (thanksToProvider)
+    {
+        if ( !thanksToProvider->parent() )
+            thanksToProvider->setParent(this);
+        connect( thanksToProvider, SIGNAL( reloaded() ), this, SLOT( resetThanksTo() ) );
+    }
+    resetThanksTo();
+}
+
 //
 
 const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
@@ -255,6 +303,9 @@ void BAboutDialogPrivate::retranslateUi()
     q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
     foreach ( DialogTab t, tbrsrs.keys() )
         twgt->setTabText( tabIndex(t), tabTitle(t) );
+    resetAuthors();
+    resetTranslations();
+    resetThanksTo();
     if (tbtnAboutQt)
         tbtnAboutQt->setToolTip( tr("About Qt", "tbtn toolTip") );
     if (tbtnAboutBeQt)
@@ -265,40 +316,24 @@ void BAboutDialogPrivate::retranslateUi()
         QString website = "https://github.com/the-dark-angel/BeQt";
         aboutBeqtDlg->setAbout(BApplication::beqtInfo(BApplication::Description), copyright, website);
         aboutBeqtDlg->setChangeLog( BApplication::beqtInfo(BApplication::ChangeLog) );
-        resetAuthors();
-        resetTranslations();
-        resetThanksTo();
-        /*BPersonInfoProvider::PersonInfo pi;
-        pi.name = tr("Andrey Bogdanov", "info name");
-        pi.role = tr("Main developer", "info role");
-        pi.mail = "ololoepepe@gmail.com";
-        pi.site = "https://github.com/the-dark-angel";
-        aboutBeqtDlg->setAuthorsInfos(BPersonInfoProvider::PersonInfoList() << pi);
-        pi.role = tr("Translator", "info role");
-        aboutBeqtDlg->setTranslationInfos(BPersonInfoProvider::PersonInfoList() << pi);*/
         aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
     }
 }
 
 void BAboutDialogPrivate::resetAuthors()
 {
-    if (!aboutBeqtDlg)
-        return;
-    aboutBeqtDlg->setAuthorsInfos( beqtAuthors->infos() );
+    fillTab( AuthorsTab, authorsProvider ? authorsProvider->infos() : BPersonInfoProvider::PersonInfoList() );
 }
 
 void BAboutDialogPrivate::resetTranslations()
 {
-    if (!aboutBeqtDlg)
-        return;
-    aboutBeqtDlg->setTranslationInfos( beqtTranslations->infos() );
+    fillTab( TranslatorsTab, translationsProvider ? translationsProvider->infos() :
+                                                    BPersonInfoProvider::PersonInfoList() );
 }
 
 void BAboutDialogPrivate::resetThanksTo()
 {
-    if (!aboutBeqtDlg)
-        return;
-    aboutBeqtDlg->setThanksToInfos( beqtThanksTo->infos() );
+    fillTab( ThanksToTab, thanksToProvider ? thanksToProvider->infos() : BPersonInfoProvider::PersonInfoList() );
 }
 
 /*============================================================================
@@ -412,19 +447,37 @@ void BAboutDialog::setChangeLog(const QString &fileName, const char *codecName)
     setChangeLog( BDirTools::readTextFile(fileName, codecName) );
 }
 
-void BAboutDialog::setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &infos)
+void BAboutDialog::setAuthors(BPersonInfoProvider *prov)
 {
-    d_func()->fillTab(BAboutDialogPrivate::AuthorsTab, infos);
+    d_func()->resetAuthorsProvider(prov);
 }
 
-void BAboutDialog::setTranslationInfos(const BPersonInfoProvider::PersonInfoList &infos)
+void BAboutDialog::setAuthorsInfos(const BPersonInfoProvider::PersonInfoList &list)
 {
-    d_func()->fillTab(BAboutDialogPrivate::TranslatorsTab, infos);
+    d_func()->resetAuthorsProvider();
+    d_func()->fillTab(BAboutDialogPrivate::AuthorsTab, list);
 }
 
-void BAboutDialog::setThanksToInfos(const BPersonInfoProvider::PersonInfoList &infos)
+void BAboutDialog::setTranslation(BPersonInfoProvider *prov)
 {
-    d_func()->fillTab(BAboutDialogPrivate::ThanksToTab, infos);
+    d_func()->resetTranslationProvider(prov);
+}
+
+void BAboutDialog::setTranslationInfos(const BPersonInfoProvider::PersonInfoList &list)
+{
+    d_func()->resetTranslationProvider();
+    d_func()->fillTab(BAboutDialogPrivate::TranslatorsTab, list);
+}
+
+void BAboutDialog::setThanksTo(BPersonInfoProvider *prov)
+{
+    d_func()->resetThanksToProvider(prov);
+}
+
+void BAboutDialog::setThanksToInfos(const BPersonInfoProvider::PersonInfoList &list)
+{
+    d_func()->resetThanksToProvider();
+    d_func()->fillTab(BAboutDialogPrivate::ThanksToTab, list);
 }
 
 void BAboutDialog::setLicense(const QString &text)
