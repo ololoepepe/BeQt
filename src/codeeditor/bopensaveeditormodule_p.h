@@ -17,6 +17,7 @@ class QMenu;
 #include <QObject>
 #include <QPointer>
 #include <QList>
+#include <QStringList>
 
 /*============================================================================
 ================================ Open Save Editor Module Private
@@ -34,9 +35,11 @@ public:
     //
     void init();
     void checkActions();
+    void resetFileHistory( const QStringList &list = QStringList() );
 public slots:
     void retranslateUi();
     void codecTriggered();
+    void fileTriggered();
 public:
     QPointer<QAction> actNewFile;
     QPointer<QAction> actOpenFiles;
@@ -48,6 +51,7 @@ public:
     QPointer<QAction> actCloseAllFiles;
     QList<QMenu *> codecGroups;
     QList<QAction *> codecs;
+    QPointer<QMenu> mnuFileHistory;
 };
 
 #endif // BOPENSAVEEDITORMODULE_P_H

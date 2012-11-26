@@ -73,6 +73,7 @@ int main(int argc, char **argv)
       tbar = new QToolBar;
         tbar->setWindowTitle("Open");
         tbar->addActions( osmdl->openActions() );
+        tbar->addAction( osmdl->fileHistoryMenu()->menuAction() );
       mw->addToolBar(tbar);
       tbar = new QToolBar;
         tbar->setWindowTitle("Save");

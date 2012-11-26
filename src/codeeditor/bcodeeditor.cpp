@@ -639,6 +639,8 @@ void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
 
 void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QString &oldFileName)
 {
+    if (!maxHistoryCount)
+        return;
     if ( fileName.isEmpty() )
         return;
     if ( !oldFileName.isEmpty() )
@@ -648,7 +650,7 @@ void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QStrin
     if (maxHistoryCount >= 0)
         while (fileHistory.size() > maxHistoryCount)
             fileHistory.removeLast();
-    QMetaObject::invokeMethod( q_func(), "fileHistoryChanged", Q_ARG(QStringList, fileHistory) );
+    emitFileHistoryChanged(fileHistory);
 }
 
 //Messages
@@ -756,6 +758,13 @@ void BCodeEditorPrivate::emitFileTypesChanged()
     foreach (BAbstractEditorModule *module, modules)
         module->fileTypesChanged();
     QMetaObject::invokeMethod(q_func(), "fileTypesChanged");
+}
+
+void BCodeEditorPrivate::emitFileHistoryChanged(const QStringList &list)
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->fileHistoryChanged(list);
+    QMetaObject::invokeMethod( q_func(), "fileHistoryChanged", Q_ARG(QStringList, list) );
 }
 
 //External private class call
@@ -1392,11 +1401,15 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
 void BCodeEditor::setFileHistory(const QStringList &list)
 {
     B_D(BCodeEditor);
+    if (!d->maxHistoryCount)
+        return;
+    bool b = (list == d->fileHistory);
     d->fileHistory = list;
-    if (d->maxHistoryCount >= 0)
+    if (d->maxHistoryCount >= 0 && d->fileHistory.size() > d->maxHistoryCount)
         while (d->fileHistory.size() > d->maxHistoryCount)
             d->fileHistory.removeLast();
-    emit fileHistoryChanged(d->fileHistory);
+    if (!b)
+        d->emitFileHistoryChanged(d->fileHistory);
 }
 
 void BCodeEditor::setMaxHistoryCount(int count)
@@ -1407,9 +1420,12 @@ void BCodeEditor::setMaxHistoryCount(int count)
     if (count < 0)
         count = -1;
     d->maxHistoryCount = count;
-    if (d->maxHistoryCount >= 0)
+    if (d->maxHistoryCount >= 0 && d->fileHistory.size() > count)
+    {
         while (d->fileHistory.size() > count)
             d->fileHistory.removeLast();
+        d->emitFileHistoryChanged(d->fileHistory);
+    }
 }
 
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)

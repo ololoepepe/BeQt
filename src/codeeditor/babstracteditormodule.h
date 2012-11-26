@@ -8,6 +8,7 @@ class BCodeEditorDocument;
 class BAbstractFileType;
 
 class QString;
+class QStringList;
 
 #include "bcodeedit.h"
 
@@ -65,6 +66,7 @@ protected:
     virtual void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     virtual void currentDocumentChanged(BCodeEditorDocument *doc);
     virtual void fileTypesChanged();
+    virtual void fileHistoryChanged(const QStringList &list);
     //
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;

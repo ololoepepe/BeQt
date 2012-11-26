@@ -12,6 +12,7 @@
 #include <QPoint>
 #include <QList>
 #include <QString>
+#include <QStringList>
 
 #include <QDebug>
 
@@ -216,6 +217,11 @@ void BAbstractEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
 }
 
 void BAbstractEditorModule::fileTypesChanged()
+{
+    //
+}
+
+void BAbstractEditorModule::fileHistoryChanged(const QStringList &list)
 {
     //
 }

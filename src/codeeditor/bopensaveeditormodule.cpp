@@ -22,6 +22,7 @@
 #include <QVariant>
 #include <QStringList>
 #include <QByteArray>
+#include <QFileInfo>
 
 #include <QDebug>
 
@@ -37,7 +38,8 @@ BOpenSaveEditorModulePrivate::BOpenSaveEditorModulePrivate(BOpenSaveEditorModule
 
 BOpenSaveEditorModulePrivate::~BOpenSaveEditorModulePrivate()
 {
-    //
+    if ( !mnuFileHistory.isNull() )
+        mnuFileHistory->deleteLater();
 }
 
 //
@@ -83,6 +85,8 @@ void BOpenSaveEditorModulePrivate::init()
       actCloseFile->setIcon( BApplication::icon("fileclose") );
     actCloseAllFiles = new QAction(this);
       actCloseAllFiles->setIcon( BApplication::icon("fileclose") );
+    mnuFileHistory = new QMenu;
+      mnuFileHistory->setIcon( BApplication::icon("history") );
     //
     checkActions();
     retranslateUi();
@@ -91,7 +95,7 @@ void BOpenSaveEditorModulePrivate::init()
 
 void BOpenSaveEditorModulePrivate::checkActions()
 {
-    BCodeEditorDocument *doc = editor ? editor->currentDocument() : 0;
+    BCodeEditorDocument *doc = q_func()->currentDocument();
     if ( !actNewFile.isNull() )
         actNewFile->setEnabled(editor);
     if ( !actOpenFiles.isNull() )
@@ -108,6 +112,35 @@ void BOpenSaveEditorModulePrivate::checkActions()
         actCloseFile->setEnabled( doc && !doc->isBuisy() );
     if ( !actCloseAllFiles.isNull() )
         actCloseAllFiles->setEnabled(editor && doc);
+    if ( !mnuFileHistory.isNull() )
+        mnuFileHistory->setEnabled( editor && !mnuFileHistory->isEmpty() );
+}
+
+void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
+{
+    if ( mnuFileHistory.isNull() )
+        return;
+    QList<QAction *> acts = mnuFileHistory->actions();
+    while ( acts.size() > list.size() )
+    {
+        QAction *act = acts.takeLast();
+        mnuFileHistory->removeAction(act);
+        act->deleteLater();
+    }
+    while ( acts.size() < list.size() )
+    {
+        QAction *act = new QAction( mnuFileHistory.data() );
+        acts << act;
+        mnuFileHistory->addAction(act);
+    }
+    for (int i = 0; i < list.size(); ++i)
+    {
+        QAction *act = acts.at(i);
+        act->setProperty( "beqt/file_name", list.at(i) );
+        act->setText( QFileInfo( list.at(i) ).fileName() );
+        connect( act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ) );
+    }
+    mnuFileHistory->setEnabled( !mnuFileHistory->isEmpty() );
 }
 
 //
@@ -167,6 +200,12 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
         actCloseAllFiles->setToolTip( trq("Close all files", "act toolTip") );
         actCloseAllFiles->setWhatsThis( trq("Close all files", "act whatsThis") );
     }
+    if ( !mnuFileHistory.isNull() )
+    {
+        mnuFileHistory->setTitle( trq("Recent files", "mnu title") );
+        mnuFileHistory->setToolTip( trq("Recent files", "mnu toolTip") );
+        mnuFileHistory->setWhatsThis( trq("Recent files", "mnu whatsThis") );
+    }
 }
 
 void BOpenSaveEditorModulePrivate::codecTriggered()
@@ -177,6 +216,16 @@ void BOpenSaveEditorModulePrivate::codecTriggered()
     if ( cn.isEmpty() )
         return;
     editor->reopenCurrentDocument( QTextCodec::codecForName( cn.toLatin1() ) );
+}
+
+void BOpenSaveEditorModulePrivate::fileTriggered()
+{
+    if (!editor)
+        return;
+    QString fn = sender()->property("beqt/file_name").toString();
+    if ( fn.isEmpty() )
+        return;
+    editor->openDocument(fn);
 }
 
 /*============================================================================
@@ -280,6 +329,17 @@ QList<QAction *> BOpenSaveEditorModule::actions(bool extended) const
     return list;
 }
 
+QMenu *BOpenSaveEditorModule::fileHistoryMenu() const
+{
+    return d_func()->mnuFileHistory.data();
+}
+
+QList<QAction *> BOpenSaveEditorModule::fileHistoryActions() const
+{
+    const B_D(BOpenSaveEditorModule);
+    return !d->mnuFileHistory.isNull() ? d->mnuFileHistory->actions() : QList<QAction *>();
+}
+
 //
 
 void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
@@ -305,6 +365,7 @@ void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
             connect( d->actCloseAllFiles.data(), SIGNAL( triggered() ), edr, SLOT( closeAllDocuments() ) );
     }
     d->checkActions();
+    d->resetFileHistory( edr ? edr->fileHistory() : QStringList() );
 }
 
 void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
@@ -330,6 +391,7 @@ void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
             disconnect( d->actCloseAllFiles.data(), SIGNAL( triggered() ), edr, SLOT( closeAllDocuments() ) );
     }
     d->checkActions();
+    d->resetFileHistory();
 }
 
 void BOpenSaveEditorModule::documentReadOnlyChanged(bool ro)
@@ -350,4 +412,9 @@ void BOpenSaveEditorModule::documentBuisyChanged(bool buisy)
 void BOpenSaveEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
 {
     d_func()->checkActions();
+}
+
+void BOpenSaveEditorModule::fileHistoryChanged(const QStringList &list)
+{
+    d_func()->resetFileHistory(list);
 }

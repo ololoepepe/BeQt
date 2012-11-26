@@ -161,6 +161,7 @@ public:
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
     void emitFileTypesChanged();
+    void emitFileHistoryChanged(const QStringList &list);
     //External private class call
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);

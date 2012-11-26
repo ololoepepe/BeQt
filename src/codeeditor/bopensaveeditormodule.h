@@ -9,6 +9,7 @@ class BCodeEditorDocument;
 
 class QString;
 class QAction;
+class QMenu;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -48,6 +49,8 @@ public:
     QList<QAction *> saveActions(bool extended = false) const;
     QList<QAction *> closeActions(bool extended = false) const;
     QList<QAction *> actions(bool extended = false) const;
+    QMenu *fileHistoryMenu() const;
+    QList<QAction *> fileHistoryActions() const;
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
@@ -55,6 +58,7 @@ protected:
     void documentModificationChanged(bool modified);
     void documentBuisyChanged(bool buisy);
     void currentDocumentChanged(BCodeEditorDocument *doc);
+    void fileHistoryChanged(const QStringList &list);
 };
 
 #endif // BOPENSAVEEDITORMODULE_H
