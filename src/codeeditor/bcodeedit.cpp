@@ -673,7 +673,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         switch (key)
         {
         case Qt::Key_Return:
-            q_func()->insertText("\n");
+            handleReturn();
             return true;
         case Qt::Key_Space:
             handleSpace();
@@ -781,7 +781,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         switch (key)
         {
         case Qt::Key_Enter:
-            q_func()->insertText("\n");
+            handleReturn();
             return true;
         case Qt::Key_End:
             handleEnd();
@@ -1106,8 +1106,40 @@ void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRan
                                    Q_ARG( const BCodeEdit::SplittedLinesRange &, ranges.first() ) );
 }
 
+void BCodeEditPrivate::handleReturn()
+{
+    if ( ptedt->isReadOnly() )
+        return;
+    QTextCursor tc = ptedt->textCursor();
+    tc.beginEditBlock();
+    deleteSelection();
+    tc = ptedt->textCursor();
+    int posb = tc.positionInBlock();
+    QTextBlock tbp = tc.block();
+    QString text = tbp.text();
+    int i = 0;
+    while (i < posb && text.at(i) == ' ')
+        ++i;
+    QString ltext = appendTrailingSpaces(text.left(posb), lineLength);
+    QString rtext = text.right(text.length() - posb).prepend( QString().fill(' ', i) );
+    appendTrailingSpaces(rtext, lineLength);
+    tc.movePosition(QTextCursor::StartOfBlock);
+    tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+    tc.insertText(ltext);
+    tc.insertBlock();
+    tc.insertText(rtext);
+    tc.movePosition(QTextCursor::StartOfBlock);
+    tc.setPosition(tc.position() + i);
+    ptedt->setTextCursor(tc);
+    tc.endEditBlock();
+    if (highlighter)
+        highlighter->rehighlightBlock(tbp); //TODO
+}
+
 void BCodeEditPrivate::handleSpace()
 {
+    if ( ptedt->isReadOnly() )
+        return;
     QTextCursor tc = ptedt->textCursor();
     tc.beginEditBlock();
     if (hasSelection)
@@ -1164,6 +1196,7 @@ void BCodeEditPrivate::handleBackspace()
         int pbpos = tbp.position();
         QString ptext = removeTrailingSpaces( tbp.text() );
         QString text = ptext + removeTrailingSpaces( tb.text() );
+        appendTrailingSpaces(text, lineLength);
         tc.movePosition(QTextCursor::EndOfBlock);
         tc.movePosition(QTextCursor::PreviousBlock, QTextCursor::KeepAnchor);
         tc.removeSelectedText();
