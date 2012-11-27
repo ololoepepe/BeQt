@@ -15,7 +15,7 @@ class QSettings;
 #include <QString>
 
 /*============================================================================
-================================ Plugin Wrapper
+================================ BPluginWrapper ==============================
 ============================================================================*/
 
 class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
@@ -24,17 +24,19 @@ class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
     B_DECLARE_PRIVATE(BPluginWrapper)
 public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
-    //
+public:
+    explicit BPluginWrapper(QObject *parent = 0);
+    explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);
+    ~BPluginWrapper();
+protected:
+    explicit BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent = 0);
+public:
     static QSettings *createPluginSettingsInstance(BPluginInterface *iface);
     static void setAcceptableTypes(const QStringList &list);
     static void setInterfaceTestFunction(InterfaceTestFunction function);
     static QStringList acceptableFileTypes();
     static InterfaceTestFunction interfacetestFunction();
-    //
-    explicit BPluginWrapper(QObject *parent = 0);
-    explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);
-    ~BPluginWrapper();
-    //
+public:
     void setLoaded(bool b);
     void setActivated(bool b);
     void setFileName(const QString &fn);
@@ -54,11 +56,8 @@ public slots:
 signals:
     void activated();
     void aboutToBeDeactivated();
-protected:
-    BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BPluginWrapper)
-    //
     friend class BCoreApplicationPrivate;
 };
 

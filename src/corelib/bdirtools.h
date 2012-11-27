@@ -11,35 +11,34 @@ class QTextCodec;
 #include <QList>
 
 /*============================================================================
-================================ Dir Tools
+================================ BDirTools ===================================
 ============================================================================*/
 
-class B_CORE_EXPORT BDirTools
+namespace BDirTools
 {
-public:
-    enum ResourceLookupMode
-    {
-        AllResources,
-        GlobalOnly,
-        UserOnly
-    };
-    //
-    static bool mkpath(const QString &dirPath);
-    static bool rmdir(const QString &dirName);
-    static bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );
-    static bool copyDir(const QString &dirName, const QString &newDirName, bool recursively = false);
-    static QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
-                                        const QString &possibleSuffix = QString() );
-    static QString localeBasedDirName(const QString &dir);
-    static QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
-    static QString readTextFile(const QString &fileName, const QString &codecName);
-    static QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
-    static QString findResource(const QString &subpath, const QStringList &locations);
-    static bool createUserLocation(BCoreApplication::Location loc);
-    static bool createUserLocation(const QString &subdir);
-    static bool createUserLocations(const QStringList &subdirs);
-private:
-    BDirTools();
+
+enum ResourceLookupMode
+{
+    AllResources,
+    GlobalOnly,
+    UserOnly
 };
+
+B_CORE_EXPORT bool mkpath(const QString &dirPath);
+B_CORE_EXPORT bool rmdir(const QString &dirName);
+B_CORE_EXPORT bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );
+B_CORE_EXPORT bool copyDir(const QString &dirName, const QString &newDirName, bool recursively = false);
+B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
+                                           const QString &possibleSuffix = QString() );
+B_CORE_EXPORT QString localeBasedDirName(const QString &dir);
+B_CORE_EXPORT QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
+B_CORE_EXPORT QString readTextFile(const QString &fileName, const QString &codecName);
+B_CORE_EXPORT QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
+B_CORE_EXPORT QString findResource(const QString &subpath, const QStringList &locations);
+B_CORE_EXPORT bool createUserLocation(BCoreApplication::Location loc);
+B_CORE_EXPORT bool createUserLocation(const QString &subdir);
+B_CORE_EXPORT bool createUserLocations(const QStringList &subdirs);
+
+}
 
 #endif // BDIRTOOLS_H

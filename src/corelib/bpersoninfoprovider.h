@@ -14,14 +14,13 @@ class QString;
 #include <QList>
 
 /*============================================================================
-================================ Person Info Provider
+================================BPersonInfoProvider ==========================
 ============================================================================*/
 
 class B_CORE_EXPORT BPersonInfoProvider : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BPersonInfoProvider)
     Q_OBJECT
-    Q_DISABLE_COPY(BPersonInfoProvider)
+    B_DECLARE_PRIVATE(BPersonInfoProvider)
 public:
     struct PersonInfo
     {
@@ -30,14 +29,14 @@ public:
         QString site;
         QString mail;
     };
-    //
+public:
     typedef QList<PersonInfo> PersonInfoList;
-    //
+public:
     explicit BPersonInfoProvider(QObject *parent = 0);
     explicit BPersonInfoProvider(const QString &fileName, QObject *parent = 0);
     ~BPersonInfoProvider();
 protected:
-    BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent = 0);
+    explicit BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent = 0);
 public:
     void setFileName(const QString &fileName);
     QString fileName() const;
@@ -47,6 +46,8 @@ public slots:
     void reload();
 signals:
     void reloaded();
+private:
+    Q_DISABLE_COPY(BPersonInfoProvider)
 };
 
 #endif // BPERSONINFOPROVIDER_H

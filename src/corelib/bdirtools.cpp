@@ -16,43 +16,18 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Dir Tools Private (declaration)
+================================ BDirTools ===================================
 ============================================================================*/
 
-class BDirToolsPrivate
+namespace BDirTools
 {
-public:
-    static BCoreApplicationPrivate *appD();
-private:
-    BDirToolsPrivate();
-};
 
-/*============================================================================
-================================ Dir Tools Private (definition)
-============================================================================*/
-
-BCoreApplicationPrivate *BDirToolsPrivate::appD()
-{
-    return bApp ? bApp->ds_func() : 0;
-}
-
-//
-
-BDirToolsPrivate::BDirToolsPrivate()
-{
-    //
-}
-
-/*============================================================================
-================================ Dir Tools
-============================================================================*/
-
-bool BDirTools::mkpath(const QString &dirPath)
+bool mkpath(const QString &dirPath)
 {
     return QDir(dirPath).mkpath(dirPath);
 }
 
-bool BDirTools::rmdir(const QString &dirName)
+bool rmdir(const QString &dirName)
 {
     QDir d(dirName);
     QStringList dirs = d.entryList(QDir::Dirs | QDir::NoDotAndDotDot);
@@ -62,7 +37,7 @@ bool BDirTools::rmdir(const QString &dirName)
     return removeFilesInDir(dirName) && d.rmdir(dirName);
 }
 
-bool BDirTools::removeFilesInDir(const QString &dirName, const QStringList &nameFilters)
+bool removeFilesInDir(const QString &dirName, const QStringList &nameFilters)
 {
     QDir d(dirName);
     if ( !QFileInfo(dirName).isDir() )
@@ -74,7 +49,7 @@ bool BDirTools::removeFilesInDir(const QString &dirName, const QStringList &name
     return true;
 }
 
-bool BDirTools::copyDir(const QString &dirName, const QString &newDirName, bool recursively)
+bool copyDir(const QString &dirName, const QString &newDirName, bool recursively)
 {
     QDir d(dirName);
     QDir nd(newDirName);
@@ -101,7 +76,7 @@ bool BDirTools::copyDir(const QString &dirName, const QString &newDirName, bool 
     return true;
 }
 
-QString BDirTools::localeBasedFileName(const QString &fileName, const QString &defaultFileName,
+QString localeBasedFileName(const QString &fileName, const QString &defaultFileName,
                                    const QString &possibleSuffix)
 {
     if ( fileName.isEmpty() )
@@ -130,7 +105,7 @@ QString BDirTools::localeBasedFileName(const QString &fileName, const QString &d
     return f.fileName();
 }
 
-QString BDirTools::localeBasedDirName(const QString &dir)
+QString localeBasedDirName(const QString &dir)
 {
     if ( dir.isEmpty() )
         return "";
@@ -147,7 +122,7 @@ QString BDirTools::localeBasedDirName(const QString &dir)
     return d.path();
 }
 
-QString BDirTools::readTextFile(const QString &fileName, QTextCodec *codec)
+QString readTextFile(const QString &fileName, QTextCodec *codec)
 {
     if ( fileName.isEmpty() )
         return "";
@@ -162,12 +137,12 @@ QString BDirTools::readTextFile(const QString &fileName, QTextCodec *codec)
     return text;
 }
 
-QString BDirTools::readTextFile(const QString &fileName, const QString &codecName)
+QString readTextFile(const QString &fileName, const QString &codecName)
 {
     return readTextFile( fileName, QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
-QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)
+QString findResource(const QString &subpath, ResourceLookupMode mode)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
         return "";
@@ -203,7 +178,7 @@ QString BDirTools::findResource(const QString &subpath, ResourceLookupMode mode)
     return findResource(subpath, sl);
 }
 
-QString BDirTools::findResource(const QString &subpath, const QStringList &locations)
+QString findResource(const QString &subpath, const QStringList &locations)
 {
     if ( subpath.isEmpty() || locations.isEmpty() )
         return "";
@@ -213,21 +188,21 @@ QString BDirTools::findResource(const QString &subpath, const QStringList &locat
     return "";
 }
 
-bool BDirTools::createUserLocation(BCoreApplication::Location loc)
+bool createUserLocation(BCoreApplication::Location loc)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
         return false;
-    return mkpath( BDirToolsPrivate::appD()->userPrefix + "/" + BCoreApplicationPrivate::subdir(loc) );
+    return mkpath( BCoreApplicationPrivate::instance()->userPrefix + "/" + BCoreApplicationPrivate::subdir(loc) );
 }
 
-bool BDirTools::createUserLocation(const QString &subdir)
+bool createUserLocation(const QString &subdir)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
         return false;
-    return BDirTools::mkpath(BDirToolsPrivate::appD()->userPrefix + "/" + subdir);
+    return mkpath(BCoreApplicationPrivate::instance()->userPrefix + "/" + subdir);
 }
 
-bool BDirTools::createUserLocations(const QStringList &subdirs)
+bool createUserLocations(const QStringList &subdirs)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
         return false;
@@ -237,8 +212,4 @@ bool BDirTools::createUserLocations(const QStringList &subdirs)
     return true;
 }
 
-//
-
-BDirTools::BDirTools()
-{
 }

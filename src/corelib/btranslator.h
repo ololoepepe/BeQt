@@ -14,7 +14,7 @@ class QLocale;
 #include <QString>
 
 /*============================================================================
-================================ Translator
+================================ BTranslator =================================
 ============================================================================*/
 
 class B_CORE_EXPORT BTranslator : public QObject, public BBase
@@ -25,17 +25,16 @@ public:
     explicit BTranslator(QObject *parent = 0);
     explicit BTranslator(const QString &fileName, QObject *parent = 0);
     ~BTranslator();
-    //
+protected:
+    explicit BTranslator(BTranslatorPrivate &d, QObject *parent = 0);
+public:
     void setFileName(const QString &fileName, bool languageChange = false);
     bool isValid() const;
     bool isInstalled() const;
     QString fileName() const;
     QList<QLocale> availableLocales() const;
-protected:
-    BTranslator(BTranslatorPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BTranslator)
-    //
     friend class BCoreApplicationPrivate;
 };
 

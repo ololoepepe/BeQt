@@ -12,20 +12,19 @@ class QStringLit;
 #include <QObject>
 
 /*============================================================================
-================================ Terminal IO Handler
+================================ BTerminalIOHandler ==========================
 ============================================================================*/
 
 class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
 {
     Q_OBJECT
-    Q_DISABLE_COPY(BTerminalIOHandler)
     B_DECLARE_PRIVATE(BTerminalIOHandler)
     B_DECLARE_PRIVATE_S(BTerminalIOHandler)
 public:
     explicit BTerminalIOHandler(QObject *parent = 0);
     ~BTerminalIOHandler();
 protected:
-    BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent = 0);
+    explicit BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent = 0);
 public:
     static BTerminalIOHandler *instance();
     static QStringList splitCommand(const QString &command);
@@ -39,6 +38,8 @@ signals:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:
     static BTerminalIOHandler *_m_self;
+private:
+    Q_DISABLE_COPY(BTerminalIOHandler)
 };
 
 #endif // BTERMINALIOHANDLER_H

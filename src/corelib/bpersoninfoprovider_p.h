@@ -13,28 +13,29 @@ class QString;
 #include <QMap>
 
 /*============================================================================
-================================ Person Info Provider Private
+================================ BPersonInfoProviderPrivate ==================
 ============================================================================*/
 
 class B_CORE_EXPORT BPersonInfoProviderPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BPersonInfoProvider)
     Q_OBJECT
-    Q_DISABLE_COPY(BPersonInfoProviderPrivate)
+    B_DECLARE_PUBLIC(BPersonInfoProvider)
 public:
     typedef QMap<QString, BPersonInfoProvider::PersonInfo> PersonInfoMap;
-    //
-    static BPersonInfoProvider::PersonInfo infoForLocale(const PersonInfoMap &map, const QString &localeName);
-    static void tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what);
-    //
+public:
     explicit BPersonInfoProviderPrivate(BPersonInfoProvider *q);
     ~BPersonInfoProviderPrivate();
-    //
+public:
+    static BPersonInfoProvider::PersonInfo infoForLocale(const PersonInfoMap &map, const QString &localeName);
+    static void tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what);
+public:
     void init();
     void setFileName(const QString &fn);
-    //
+private:
     QString fileName;
     QList<PersonInfoMap> infos;
+private:
+    Q_DISABLE_COPY(BPersonInfoProviderPrivate)
 };
 
 #endif // BPERSONINFOPROVIDER_P_H

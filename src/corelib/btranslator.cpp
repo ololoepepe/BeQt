@@ -15,8 +15,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Translator Private
+================================ BTranslatorPrivate ==========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
     BBasePrivate(q)
@@ -29,7 +31,7 @@ BTranslatorPrivate::~BTranslatorPrivate()
     remove();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BTranslatorPrivate::init()
 {
@@ -79,8 +81,10 @@ void BTranslatorPrivate::emitLanguageChange()
 }
 
 /*============================================================================
-================================ Translator
+================================ BTranslator =================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTranslator::BTranslator(QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )
@@ -100,7 +104,15 @@ BTranslator::~BTranslator()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BTranslator::setFileName(const QString &fileName, bool languageChange)
 {
@@ -160,12 +172,4 @@ QList<QLocale> BTranslator::availableLocales() const
             list << l;
     }
     return list;
-}
-
-//
-
-BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
 }

@@ -23,14 +23,14 @@ class QSettings;
 #define bApp BCoreApplication::instance()
 
 /*============================================================================
-================================ Core Application
+================================ BCoreApplication ============================
 ============================================================================*/
 
 class B_CORE_EXPORT BCoreApplication : public QObject, public BBase
 {
+    Q_OBJECT
     B_DECLARE_PRIVATE(BCoreApplication)
     B_DECLARE_PRIVATE_S(BCoreApplication)
-    Q_OBJECT
 public:
     enum Location
     {
@@ -59,16 +59,21 @@ public:
         Translators,
         ThanksTo
     };
-    //
+public:
     struct LocaleSupportInfo
     {
         QLocale locale;
         int supports;
         int total;
     };
-    //
+public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
-    //
+public:
+    explicit BCoreApplication();
+    ~BCoreApplication();
+protected:
+    explicit BCoreApplication(BCoreApplicationPrivate &d);
+public:
     static BCoreApplication *instance();
     static QString location(Location loc, ResourcesType type);
     static QString location(const QString &subdir, ResourcesType type);
@@ -89,9 +94,6 @@ public:
     static void loadSettings();
     static void saveSettings();
     static QString beqtInfo(BeQtInfo type);
-    //
-    explicit BCoreApplication();
-    ~BCoreApplication();
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
@@ -100,11 +102,8 @@ signals:
     void settingsSaved(QSettings *s);
 protected:
     static BCoreApplication *_m_self;
-    //
-    BCoreApplication(BCoreApplicationPrivate &d);
 private:
     Q_DISABLE_COPY(BCoreApplication)
-    //
     friend class BTranslatorPrivate;
     friend class BPluginWrapperPrivate;
     friend class BDirToolsPrivate;

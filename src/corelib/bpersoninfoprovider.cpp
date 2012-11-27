@@ -19,8 +19,23 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Person Info Provider Private
+================================ BPersonInfoProviderPrivate ==================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BPersonInfoProviderPrivate::BPersonInfoProviderPrivate(BPersonInfoProvider *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BPersonInfoProviderPrivate::~BPersonInfoProviderPrivate()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
 
 BPersonInfoProvider::PersonInfo BPersonInfoProviderPrivate::infoForLocale(const PersonInfoMap &map,
                                                                           const QString &localeName)
@@ -55,20 +70,7 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     where << what;
 }
 
-//
-
-BPersonInfoProviderPrivate::BPersonInfoProviderPrivate(BPersonInfoProvider *q) :
-    BBasePrivate(q)
-{
-    //
-}
-
-BPersonInfoProviderPrivate::~BPersonInfoProviderPrivate()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BPersonInfoProviderPrivate::init()
 {
@@ -126,8 +128,10 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
 }
 
 /*============================================================================
-================================ Person Info Provider
+================================ BPersonInfoProvider =========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BPersonInfoProvider::BPersonInfoProvider(QObject *parent) :
     QObject(parent), BBase( *new BPersonInfoProviderPrivate(this) )
@@ -147,7 +151,7 @@ BPersonInfoProvider::~BPersonInfoProvider()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
 
 BPersonInfoProvider::BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
@@ -155,7 +159,7 @@ BPersonInfoProvider::BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject 
     d_func()->init();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BPersonInfoProvider::setFileName(const QString &fileName)
 {
@@ -187,7 +191,7 @@ BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QString &lo
     return list;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BPersonInfoProvider::reload()
 {

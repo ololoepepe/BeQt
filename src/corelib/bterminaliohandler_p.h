@@ -18,13 +18,12 @@ class QString;
 #include <QEventLoop>
 
 /*============================================================================
-================================ Terminal IO Handler Thread
+================================ BTerminalIOHandlerThread ====================
 ============================================================================*/
 
 class BTerminalIOHandlerThread : public QThread
 {
     Q_OBJECT
-    Q_DISABLE_COPY(BTerminalIOHandlerThread)
 public:
     explicit BTerminalIOHandlerThread(BTerminalIOHandlerPrivate *p);
     ~BTerminalIOHandlerThread();
@@ -32,43 +31,45 @@ protected:
     void run();
 public:
     static QMutex readMutex;
-    //
+public:
     BTerminalIOHandlerPrivate *const _m_p;
-    //
+public:
     QTextStream readStream;
+private:
+    Q_DISABLE_COPY(BTerminalIOHandlerThread)
 };
 
 /*============================================================================
-================================ Terminal IO Handler Private
+================================ BTerminalIOHandlerPrivate ===================
 ============================================================================*/
 
 class B_CORE_EXPORT BTerminalIOHandlerPrivate : public BBasePrivate
 {
+    Q_OBJECT
     B_DECLARE_PUBLIC(BTerminalIOHandler)
     B_DECLARE_PUBLIC_S(BTerminalIOHandler)
-    Q_OBJECT
-    Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
 public:
     explicit BTerminalIOHandlerPrivate(BTerminalIOHandler *q);
     ~BTerminalIOHandlerPrivate();
-    //
+public:
     static bool testInit(const char *where = 0);
     static bool testUnique();
-    //
+public:
     void init();
     void lineRead(const QString &text);
-    //
+public:
     static QMutex echoMutex;
     static QMutex readMutex;
     static QMutex writeMutex;
     static QTextStream writeStream;
-    //
+public:
     BTerminalIOHandlerThread *const Thread;
-    //
+public:
     QMutex loopMutex;
     QEventLoop readEventLoop;
     QString lastLine;
 private:
+    Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
     friend class BTerminalIOHandlerThread;
 };
 

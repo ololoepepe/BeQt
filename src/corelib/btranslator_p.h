@@ -13,7 +13,7 @@ class QTranslator;
 #include <QtGlobal>
 
 /*============================================================================
-================================ Translator Private
+================================ BTranslatorPrivate ==========================
 ============================================================================*/
 
 class B_CORE_EXPORT BTranslatorPrivate : public BBasePrivate
@@ -22,13 +22,13 @@ class B_CORE_EXPORT BTranslatorPrivate : public BBasePrivate
 public:
     explicit BTranslatorPrivate(BTranslator *q);
     ~BTranslatorPrivate();
-    //
+public:
     void init();
     void clear();
     void install();
     void remove();
     void emitLanguageChange();
-    //
+public:
     QString fileName;
     QList<QTranslator *> translators;
     bool installed;

@@ -9,7 +9,7 @@
 #include <QList>
 
 /*============================================================================
-================================ Plugin Interface
+================================ BPluginInterface ============================
 ============================================================================*/
 
 class B_CORE_EXPORT BPluginInterface
@@ -27,9 +27,9 @@ public:
         BPersonInfoProvider::PersonInfoList thanksTo;
         QString license;
     };
-    //
+public:
     virtual ~BPluginInterface() {}
-    //
+public:
     virtual QString type() const = 0;
     virtual QString name() const = 0;
     virtual PluginInfo info() const = 0;

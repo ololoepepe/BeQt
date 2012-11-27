@@ -25,8 +25,10 @@
 #endif
 
 /*============================================================================
-================================ Terminal IO Handler Thread
+================================ BTerminalIOHandlerThread ====================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTerminalIOHandlerThread::BTerminalIOHandlerThread(BTerminalIOHandlerPrivate *p) :
     QThread(p), _m_p(p), readStream(stdin, QIODevice::ReadOnly)
@@ -39,7 +41,7 @@ BTerminalIOHandlerThread::~BTerminalIOHandlerThread()
     //
 }
 
-//
+/*============================== Protected methods =========================*/
 
 void BTerminalIOHandlerThread::run()
 {
@@ -50,13 +52,15 @@ void BTerminalIOHandlerThread::run()
     }
 }
 
-//
+/*============================== Static public variables ===================*/
 
 QMutex BTerminalIOHandlerThread::readMutex;
 
 /*============================================================================
-================================ Terminal IO Handler
+================================ BTerminalIOHandlerPrivate
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
     BBasePrivate(q), Thread( new BTerminalIOHandlerThread(this) )
@@ -69,7 +73,7 @@ BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
     //
 }
 
-//
+/*============================== Static public methods =====================*/
 
 bool BTerminalIOHandlerPrivate::testInit(const char *where)
 {
@@ -83,7 +87,7 @@ bool BTerminalIOHandlerPrivate::testUnique()
     return bTest(!qs_func(), "BTerminalIOHandler", "There must be only one instance of BTerminalIOHandler");
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BTerminalIOHandlerPrivate::init()
 {
@@ -106,7 +110,7 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
     }
 }
 
-//
+/*============================== Static public variables ===================*/
 
 QMutex BTerminalIOHandlerPrivate::echoMutex;
 QMutex BTerminalIOHandlerPrivate::readMutex;
@@ -114,8 +118,10 @@ QMutex BTerminalIOHandlerPrivate::writeMutex;
 QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly);
 
 /*============================================================================
-================================ Terminal IO Handler
+================================ BTerminalIOHandler ==========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
     QObject(parent), BBase( *new BTerminalIOHandlerPrivate(this) )
@@ -130,13 +136,16 @@ BTerminalIOHandler::~BTerminalIOHandler()
     _m_self = 0;
 }
 
+
+/*============================== Protected constructors ====================*/
+
 BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
     //
 }
 
-//
+/*============================== Static public methods =====================*/
 
 BTerminalIOHandler *BTerminalIOHandler::instance()
 {
@@ -220,13 +229,13 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 #endif
 }
 
-//
+/*============================== Protected methods =========================*/
 
 void BTerminalIOHandler::handleCommand(const QString &command, const QStringList &arguments)
 {
     emit commandEntered(command, arguments);
 }
 
-//
+/*============================== Static protected variables ================*/
 
 BTerminalIOHandler *BTerminalIOHandler::_m_self = 0;

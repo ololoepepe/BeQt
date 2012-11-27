@@ -17,15 +17,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Plugin Wrapper Private
+================================ BPluginWrapperPrivate =======================
 ============================================================================*/
 
-QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName)
-{
-    return BCoreApplicationPrivate::createSettingsInstance(pluginName);
-}
-
-//
+/*============================== Public constructors =======================*/
 
 BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper *q) :
     BBasePrivate(q)
@@ -38,7 +33,14 @@ BPluginWrapperPrivate::~BPluginWrapperPrivate()
     unload();
 }
 
-//
+/*============================== Static public methods =====================*/
+
+QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName)
+{
+    return BCoreApplicationPrivate::createSettingsInstance(pluginName);
+}
+
+/*============================== Public methods ============================*/
 
 void BPluginWrapperPrivate::init()
 {
@@ -149,15 +151,45 @@ void BPluginWrapperPrivate::deleteLoader()
     loader->deleteLater();
 }
 
-//
+/*============================== Static public variables ===================*/
 
 QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
 QStringList BPluginWrapperPrivate::acctptableTypes;
 BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
 
 /*============================================================================
-================================ Plugin Wrapper
+================================ BPluginWrapper ==============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BPluginWrapper::BPluginWrapper(QObject *parent) :
+    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
+{
+    d_func()->init();
+}
+
+BPluginWrapper::BPluginWrapper(const QString &fileName, QObject *parent) :
+    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
+{
+    d_func()->init();
+    setFileName(fileName);
+}
+
+BPluginWrapper::~BPluginWrapper()
+{
+    //
+}
+
+/*============================== Protected constructors ====================*/
+
+BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
 
 QSettings *BPluginWrapper::createPluginSettingsInstance(BPluginInterface *iface)
 {
@@ -186,27 +218,7 @@ BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction()
     return BPluginWrapperPrivate::testFunction;
 }
 
-//
-
-BPluginWrapper::BPluginWrapper(QObject *parent) :
-    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
-{
-    d_func()->init();
-}
-
-BPluginWrapper::BPluginWrapper(const QString &fileName, QObject *parent) :
-    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
-{
-    d_func()->init();
-    setFileName(fileName);
-}
-
-BPluginWrapper::~BPluginWrapper()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BPluginWrapper::setLoaded(bool b)
 {
@@ -277,7 +289,7 @@ BPluginInterface *BPluginWrapper::interface() const
     return d_func()->interface;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 bool BPluginWrapper::load()
 {
@@ -297,12 +309,4 @@ bool BPluginWrapper::activate()
 void BPluginWrapper::deactivate()
 {
     d_func()->deactivate();
-}
-
-//
-
-BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
 }

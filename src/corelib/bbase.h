@@ -8,7 +8,7 @@ class BBasePrivate;
 #include <QtGlobal>
 
 /*============================================================================
-================================ Base
+================================ BBase =======================================
 ============================================================================*/
 
 class B_CORE_EXPORT BBase
@@ -19,7 +19,7 @@ public:
     virtual ~BBase();
 protected:
     BBase(BBasePrivate &d);
-    //
+protected:
     BBasePrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BBase)

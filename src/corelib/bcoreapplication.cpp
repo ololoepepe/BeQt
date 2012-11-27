@@ -26,8 +26,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Core Application Private
+================================ BCoreApplicationPrivate =====================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
 
 #if defined(Q_OS_MAC)
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dylib");
@@ -41,7 +43,28 @@ const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
     const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
     const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
 
-//
+/*============================== Public constructors =======================*/
+
+BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BCoreApplicationPrivate::~BCoreApplicationPrivate()
+{
+    foreach (BTranslator *t, translators)
+        removeTranslator(t, false);
+    foreach (BPluginWrapper *pw, plugins)
+        pw->deleteLater();
+}
+
+/*============================== Static public methods =====================*/
+
+BCoreApplicationPrivate *BCoreApplicationPrivate::instance()
+{
+    return bApp ? bApp->ds_func() : 0;
+}
 
 QString BCoreApplicationPrivate::toLowerNoSpaces(const QString &string)
 {
@@ -126,23 +149,7 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov)
     return s;
 }
 
-//
-
-BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
-    BBasePrivate(q)
-{
-    //
-}
-
-BCoreApplicationPrivate::~BCoreApplicationPrivate()
-{
-    foreach (BTranslator *t, translators)
-        removeTranslator(t, false);
-    foreach (BPluginWrapper *pw, plugins)
-        pw->deleteLater();
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BCoreApplicationPrivate::init()
 {
@@ -321,8 +328,35 @@ void BCoreApplicationPrivate::saveSettings()
 }
 
 /*============================================================================
-================================ Core Application
+================================ BCoreApplication ============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BCoreApplication::BCoreApplication() :
+    QObject(0), BBase( *new BCoreApplicationPrivate(this) )
+{
+    d_func()->init();
+    BCoreApplicationPrivate::testCoreUnique();
+    _m_self = this;
+}
+
+BCoreApplication::~BCoreApplication()
+{
+    _m_self = 0;
+}
+
+/*============================== Protected constructors ====================*/
+
+BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d) :
+    BBase(d)
+{
+    d_func()->init();
+    BCoreApplicationPrivate::testCoreUnique();
+    _m_self = this;
+}
+
+/*============================== Static public methods =====================*/
 
 BCoreApplication *BCoreApplication::instance()
 {
@@ -603,31 +637,6 @@ QString BCoreApplication::beqtInfo(BeQtInfo type)
     return BDirTools::readTextFile(fn, "UTF-8");
 }
 
-//
-
-BCoreApplication::BCoreApplication() :
-    QObject(0), BBase( *new BCoreApplicationPrivate(this) )
-{
-    d_func()->init();
-    BCoreApplicationPrivate::testCoreUnique();
-    _m_self = this;
-}
-
-BCoreApplication::~BCoreApplication()
-{
-    _m_self = 0;
-}
-
-//
+/*============================== Static protected variables ================*/
 
 BCoreApplication *BCoreApplication::_m_self = 0;
-
-//
-
-BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d) :
-    BBase(d)
-{
-    d_func()->init();
-    BCoreApplicationPrivate::testCoreUnique();
-    _m_self = this;
-}

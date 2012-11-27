@@ -18,18 +18,19 @@ class QSettings;
 #include <QPointer>
 
 /*============================================================================
-================================ Plugin Wrapper Private
+================================ BPluginWrapperPrivate =======================
 ============================================================================*/
 
 class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
+    Q_OBJECT
     B_DECLARE_PUBLIC(BPluginWrapper)
 public:
-    static QSettings *createPluginSettingsInstance(const QString &pluginName);
-    //
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
-    //
+public:
+    static QSettings *createPluginSettingsInstance(const QString &pluginName);
+public:
     void init();
     bool load();
     void unload();
@@ -37,11 +38,11 @@ public:
     void deactivate();
     void createLoader();
     void deleteLoader();
-    //
+public:
     static QMap<QString, BPluginWrapper *> globalQMap;
     static QStringList acctptableTypes;
     static BPluginWrapper::InterfaceTestFunction testFunction;
-    //
+public:
     QString fileName;
     QPointer<QPluginLoader> loader;
     QObject *instance;
@@ -53,7 +54,6 @@ public:
     BPluginInterface::PluginInfo info;
 private:
     Q_DISABLE_COPY(BPluginWrapperPrivate)
-    //
     friend class BCoreApplicationPrivate;
 };
 

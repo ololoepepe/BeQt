@@ -10,17 +10,17 @@ class BBasePrivate;
 #include <QObject>
 
 /*============================================================================
-================================ Base Private
+================================ BBasePrivate
 ============================================================================*/
 
 class B_CORE_EXPORT BBasePrivate : public QObject
 {
-    B_DECLARE_PUBLIC(BBase)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BBase)
 public:
     explicit BBasePrivate(BBase *q);
     virtual ~BBasePrivate();
-    //
+public:
     void init();
 protected:
     BBase *const _m_q;
