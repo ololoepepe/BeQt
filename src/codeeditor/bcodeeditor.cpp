@@ -1433,10 +1433,11 @@ bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
     B_D(BCodeEditor);
     if ( d->processedDocuments.isEmpty() )
         return true;
-    if (msecs <= 0)
-        return false;
+    if (!msecs)
+        return d->processedDocuments.isEmpty();
     QEventLoop el;
-    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
+    if (msecs > 0)
+        QTimer::singleShot( msecs, &el, SLOT( quit() ) );
     connect( this, SIGNAL( allDocumentsProcessed() ), &el, SLOT( quit() ) );
     el.exec();
     return d->processedDocuments.isEmpty();

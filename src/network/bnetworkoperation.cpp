@@ -136,10 +136,11 @@ bool BNetworkOperation::waitForFinished(int msecs)
 {
     if ( isFinished() || isError() )
         return true;
-    if (msecs <= 0)
-        return false;
+    if (!msecs)
+        return isFinished() || isError();
     QEventLoop el;
-    QTimer::singleShot( msecs, &el, SLOT( quit() ) );
+    if (msecs > 0)
+        QTimer::singleShot( msecs, &el, SLOT( quit() ) );
     connect( this, SIGNAL( finished() ), &el, SLOT( quit() ) );
     connect( this, SIGNAL( error() ), &el, SLOT( quit() ) );
     el.exec();
