@@ -149,21 +149,21 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
 {
     if ( !actNewFile.isNull() )
     {
-        actNewFile->setText( trq("New file", "act text") );
-        actNewFile->setToolTip( trq("New file", "act toolTip") );
-        actNewFile->setWhatsThis( trq("New file", "act whatsThis") );
+        actNewFile->setText( tr("New file", "act text") );
+        actNewFile->setToolTip( tr("New file", "act toolTip") );
+        actNewFile->setWhatsThis( tr("New file", "act whatsThis") );
     }
     if ( !actOpenFiles.isNull() )
     {
-        actOpenFiles->setText( trq("Open files", "act text") );
-        actOpenFiles->setToolTip( trq("Open files", "act toolTip") );
-        actOpenFiles->setWhatsThis( trq("Open files", "act whatsThis") );
+        actOpenFiles->setText( tr("Open files", "act text") );
+        actOpenFiles->setToolTip( tr("Open files", "act toolTip") );
+        actOpenFiles->setWhatsThis( tr("Open files", "act whatsThis") );
     }
     if ( !actReopenFile.isNull() )
     {
-        actReopenFile->setText( trq("Reopen file", "act text") );
-        actReopenFile->setToolTip( trq("Reopen file", "act toolTip") );
-        actReopenFile->setWhatsThis( trq("Reopen file", "act whatsThis") );
+        actReopenFile->setText( tr("Reopen file", "act text") );
+        actReopenFile->setToolTip( tr("Reopen file", "act toolTip") );
+        actReopenFile->setWhatsThis( tr("Reopen file", "act whatsThis") );
         foreach (QMenu *mnu, codecGroups)
             mnu->setTitle( BCodeEditor::codecGroupName( static_cast<BCodeEditor::CodecGroup>(
                                                             mnu->property("beqt/codec_group").toInt() ) ) );
@@ -172,39 +172,39 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actSaveFile.isNull() )
     {
-        actSaveFile->setText( trq("Save file", "act text") );
-        actSaveFile->setToolTip( trq("Save file", "act toolTip") );
-        actSaveFile->setWhatsThis( trq("Save file", "act whatsThis") );
+        actSaveFile->setText( tr("Save file", "act text") );
+        actSaveFile->setToolTip( tr("Save file", "act toolTip") );
+        actSaveFile->setWhatsThis( tr("Save file", "act whatsThis") );
     }
     if ( !actSaveFileAs.isNull() )
     {
-        actSaveFileAs->setText( trq("Save file as", "act text") );
-        actSaveFileAs->setToolTip( trq("Save file as", "act toolTip") );
-        actSaveFileAs->setWhatsThis( trq("Save file as", "act whatsThis") );
+        actSaveFileAs->setText( tr("Save file as", "act text") );
+        actSaveFileAs->setToolTip( tr("Save file as", "act toolTip") );
+        actSaveFileAs->setWhatsThis( tr("Save file as", "act whatsThis") );
     }
     if ( !actSaveAllFiles.isNull() )
     {
-        actSaveAllFiles->setText( trq("Save all files", "act text") );
-        actSaveAllFiles->setToolTip( trq("Save all files", "act toolTip") );
-        actSaveAllFiles->setWhatsThis( trq("Save all files", "act whatsThis") );
+        actSaveAllFiles->setText( tr("Save all files", "act text") );
+        actSaveAllFiles->setToolTip( tr("Save all files", "act toolTip") );
+        actSaveAllFiles->setWhatsThis( tr("Save all files", "act whatsThis") );
     }
     if ( !actCloseFile.isNull() )
     {
-        actCloseFile->setText( trq("Close file", "act text") );
-        actCloseFile->setToolTip( trq("Close file", "act toolTip") );
-        actCloseFile->setWhatsThis( trq("Close file", "act whatsThis") );
+        actCloseFile->setText( tr("Close file", "act text") );
+        actCloseFile->setToolTip( tr("Close file", "act toolTip") );
+        actCloseFile->setWhatsThis( tr("Close file", "act whatsThis") );
     }
     if ( !actCloseAllFiles.isNull() )
     {
-        actCloseAllFiles->setText( trq("Close all files", "act text") );
-        actCloseAllFiles->setToolTip( trq("Close all files", "act toolTip") );
-        actCloseAllFiles->setWhatsThis( trq("Close all files", "act whatsThis") );
+        actCloseAllFiles->setText( tr("Close all files", "act text") );
+        actCloseAllFiles->setToolTip( tr("Close all files", "act toolTip") );
+        actCloseAllFiles->setWhatsThis( tr("Close all files", "act whatsThis") );
     }
     if ( !mnuFileHistory.isNull() )
     {
-        mnuFileHistory->setTitle( trq("Recent files", "mnu title") );
-        mnuFileHistory->setToolTip( trq("Recent files", "mnu toolTip") );
-        mnuFileHistory->setWhatsThis( trq("Recent files", "mnu whatsThis") );
+        mnuFileHistory->setTitle( tr("Recent files", "mnu title") );
+        mnuFileHistory->setToolTip( tr("Recent files", "mnu toolTip") );
+        mnuFileHistory->setWhatsThis( tr("Recent files", "mnu whatsThis") );
     }
 }
 

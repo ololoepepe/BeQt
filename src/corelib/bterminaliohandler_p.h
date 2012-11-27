@@ -46,7 +46,6 @@ class B_CORE_EXPORT BTerminalIOHandlerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTerminalIOHandler)
     B_DECLARE_PUBLIC_S(BTerminalIOHandler)
-    B_DECLARE_TR_FUNCTIONS(BTerminalIOHandler, q)
     Q_OBJECT
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
 public:

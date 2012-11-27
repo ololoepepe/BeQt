@@ -26,7 +26,6 @@ class QMenu;
 class B_CODEEDITOR_EXPORT BOpenSaveEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BOpenSaveEditorModule)
-    B_DECLARE_TR_FUNCTIONS(BOpenSaveEditorModule, q)
     Q_OBJECT
     Q_DISABLE_COPY(BOpenSaveEditorModulePrivate)
 public:

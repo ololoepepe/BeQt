@@ -90,7 +90,6 @@ private:
 class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSearchDialog)
-    B_DECLARE_TR_FUNCTIONS(BSearchDialog, q)
     Q_OBJECT
 public:
     explicit BSearchDialogPrivate(BSearchDialog *q);
@@ -146,7 +145,6 @@ private:
 class B_CODEEDITOR_EXPORT BSearchEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BSearchEditorModule)
-    B_DECLARE_TR_FUNCTIONS(BSearchEditorModule, q)
     Q_OBJECT
 public:
     explicit BSearchEditorModulePrivate(BSearchEditorModule *q);

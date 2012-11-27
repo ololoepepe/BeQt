@@ -172,7 +172,7 @@ QTextDocument::FindFlags BSearchDialogPrivate::createFindFlags() const
 
 QString BSearchDialogPrivate::windowTitle() const
 {
-    return cmboxReplace->isVisible() ? trq("Find and replace", "windowTitle") : trq("Find", "windowTitle");
+    return cmboxReplace->isVisible() ? tr("Find and replace", "windowTitle") : tr("Find", "windowTitle");
 }
 
 //
@@ -180,18 +180,18 @@ QString BSearchDialogPrivate::windowTitle() const
 void BSearchDialogPrivate::retranslateUi()
 {
     q_func()->setWindowTitle( windowTitle() );
-    lblSearch->setText( trq("Find:", "lbl text") );
-    lblReplace->setText( trq("Replace with:", "lbl text") );
-    gboxOptions->setTitle( trq("Options", "gbox title") );
-    cboxCaseSensitive->setText( trq("Case sensitive", "cbox text") );
-    cboxWholeWords->setText( trq("Whole words only", "cbox text") );
-    cboxBackwardOrder->setText( trq("Reverse search", "cbox text") );
-    cboxCyclic->setText( trq("Cyclic search", "cbox text") );
-    btnReplaceAll->setText( trq("Replace all", "btn text") );
-    actSelection->setText( trq("in selection", "act text") );
-    actDocument->setText( trq("in document", "act text") );
-    btnReplace->setText( trq("Replace", "btn text") );
-    btnFind->setText( trq("Find", "btn text") );
+    lblSearch->setText( tr("Find:", "lbl text") );
+    lblReplace->setText( tr("Replace with:", "lbl text") );
+    gboxOptions->setTitle( tr("Options", "gbox title") );
+    cboxCaseSensitive->setText( tr("Case sensitive", "cbox text") );
+    cboxWholeWords->setText( tr("Whole words only", "cbox text") );
+    cboxBackwardOrder->setText( tr("Reverse search", "cbox text") );
+    cboxCyclic->setText( tr("Cyclic search", "cbox text") );
+    btnReplaceAll->setText( tr("Replace all", "btn text") );
+    actSelection->setText( tr("in selection", "act text") );
+    actDocument->setText( tr("in document", "act text") );
+    btnReplace->setText( tr("Replace", "btn text") );
+    btnFind->setText( tr("Find", "btn text") );
 }
 
 void BSearchDialogPrivate::checkSearchReplace()
@@ -506,7 +506,7 @@ void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
 
 QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
 {
-    return trq("Text", "msg text") + " \"" + text + "\" " + trq("not found", "msg text");
+    return tr("Text", "msg text") + " \"" + text + "\" " + tr("not found", "msg text");
 }
 
 //
@@ -515,15 +515,15 @@ void BSearchEditorModulePrivate::retranslateUi()
 {
     if ( !actFind.isNull() )
     {
-        actFind->setText( trq("find", "act text") );
-        actFind->setToolTip( trq("find", "act toolTip") );
-        actFind->setWhatsThis( trq("find", "act whatsThis") );
+        actFind->setText( tr("find", "act text") );
+        actFind->setToolTip( tr("find", "act toolTip") );
+        actFind->setWhatsThis( tr("find", "act whatsThis") );
     }
     if ( !actFindNext.isNull() )
     {
-        actFindNext->setText( trq("find next", "act text") );
-        actFindNext->setToolTip( trq("find next", "act toolTip") );
-        actFindNext->setWhatsThis( trq("find next", "act whatsThis") );
+        actFindNext->setText( tr("find next", "act text") );
+        actFindNext->setToolTip( tr("find next", "act toolTip") );
+        actFindNext->setWhatsThis( tr("find next", "act whatsThis") );
     }
 }
 
@@ -550,8 +550,8 @@ void BSearchEditorModulePrivate::textReplaced(int count, const QString &oldText,
                                    Q_ARG(QString, newText) );
         if (count > 1)
         {
-            QString msg = trq("Found and replaced", "msg text") + " " +
-                    QString::number(count) + " " + trq("entries", "msg text");
+            QString msg = tr("Found and replaced", "msg text") + " " +
+                    QString::number(count) + " " + tr("entries", "msg text");
             QMetaObject::invokeMethod( q, "message", Q_ARG(QString, msg) );
         }
     }

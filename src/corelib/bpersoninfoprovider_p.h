@@ -19,7 +19,6 @@ class QString;
 class B_CORE_EXPORT BPersonInfoProviderPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPersonInfoProvider)
-    B_DECLARE_TR_FUNCTIONS(BPersonInfoProvider, q)
     Q_OBJECT
     Q_DISABLE_COPY(BPersonInfoProviderPrivate)
 public:

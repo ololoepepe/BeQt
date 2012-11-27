@@ -208,18 +208,18 @@ void BAboutDialogPrivate::retranslateAboutBeqtDialog()
 
 void BAboutDialogPrivate::updateWindowTitle()
 {
-    q_func()->setWindowTitle(trq("About", "windowTitle") + " " + appName);
+    q_func()->setWindowTitle(tr("About", "windowTitle") + " " + appName);
 }
 
 void BAboutDialogPrivate::updateCopyright()
 {
     QString cr = !copyrightPeriod.isEmpty() ? (copyrightPeriod + " ") : QString();
-    lblCopyright->setText(trq("Copyright", "about") + " &copy; " + cr + organization);
+    lblCopyright->setText(tr("Copyright", "about") + " &copy; " + cr + organization);
 }
 
 void BAboutDialogPrivate::updateWebsite()
 {
-    lblWebsite->setText("<a href=\"" + website + "\">[" + trq("Website", "lbl text") + "]</a>");
+    lblWebsite->setText("<a href=\"" + website + "\">[" + tr("Website", "lbl text") + "]</a>");
     lblWebsite->setToolTip(website);
 }
 
@@ -228,17 +228,17 @@ QString BAboutDialogPrivate::tabTitle(DialogTab t) const
     switch (t)
     {
     case DescriptionTab:
-        return trq("About", "twgt tabText");
+        return tr("About", "twgt tabText");
     case ChangeLogTab:
-        return trq("Changelog", "twgt tabText");
+        return tr("Changelog", "twgt tabText");
     case AuthorsTab:
-        return trq("Authors", "twgt tabText");
+        return tr("Authors", "twgt tabText");
     case TranslatorsTab:
-        return trq("Translation", "twgt tabText");
+        return tr("Translation", "twgt tabText");
     case ThanksToTab:
-        return trq("Thanks to", "twgt tabText");
+        return tr("Thanks to", "twgt tabText");
     case LicenseTab:
-        return trq("License", "twgt tabText");
+        return tr("License", "twgt tabText");
     default:
         return "";
     }
@@ -433,8 +433,8 @@ void BAboutDialogPrivate::retranslateUi()
     resetDescription();
     resetChangeLog();
     resetLicense();
-    tbtnAboutQt->setToolTip( trq("About Qt", "tbtn toolTip") );
-    tbtnAboutBeqt->setToolTip( trq("About BeQt", "tbtn toolTip") );
+    tbtnAboutQt->setToolTip( tr("About Qt", "tbtn toolTip") );
+    tbtnAboutBeqt->setToolTip( tr("About BeQt", "tbtn toolTip") );
     retranslateAboutBeqtDialog();
 }
 

@@ -51,24 +51,24 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
     switch ( static_cast<BApplication::StandardAction>( v.toInt() ) )
     {
     case BApplication::SettingsAction:
-        act->setText( trq("Settings...", "act text") );
-        act->setToolTip( trq("Show Settings dialog", "act toolTip") );
-        act->setWhatsThis( trq("Use this action to show application settings dialog", "act whatsThis") );
+        act->setText( tr("Settings...", "act text") );
+        act->setToolTip( tr("Show Settings dialog", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show application settings dialog", "act whatsThis") );
         break;
     case BApplication::HomepageAction:
-        act->setText( trq("Homepage", "act text") );
-        act->setToolTip( trq("Go to homepage", "act toolTip") );
-        act->setWhatsThis( trq("Use this action to show application homepage with your browser", "act whatsThis") );
+        act->setText( tr("Homepage", "act text") );
+        act->setToolTip( tr("Go to homepage", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show application homepage with your browser", "act whatsThis") );
         break;
     case BApplication::HelpContentsAction:
-        act->setText( trq("Help contents", "act text") );
-        act->setToolTip( trq("Show Help contents", "act toolTip") );
-        act->setWhatsThis( trq("Use this action to show Help contents (index)", "act whatsThis") );
+        act->setText( tr("Help contents", "act text") );
+        act->setToolTip( tr("Show Help contents", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show Help contents (index)", "act whatsThis") );
         break;
     case BApplication::ContextualHelpAction:
-        act->setText( trq("Contextual Help", "act text") );
-        act->setToolTip( trq("Show contextual Help", "act toolTip") );
-        act->setWhatsThis( trq("Use this action to open context-specific Help page", "act whatsThis") );
+        act->setText( tr("Contextual Help", "act text") );
+        act->setToolTip( tr("Show contextual Help", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to open context-specific Help page", "act whatsThis") );
         break;
     case BApplication::WhatsThisAction:
     {
@@ -79,9 +79,9 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
         break;
     }
     case BApplication::AboutAction:
-        act->setText( trq("About", "act text") );
-        act->setToolTip( trq("Show About dialog", "act toolTip") );
-        act->setWhatsThis( trq("Use this action to show information about application, it's authors, etc.",
+        act->setText( tr("About", "act text") );
+        act->setToolTip( tr("Show About dialog", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show information about application, it's authors, etc.",
                                "act whatsThis") );
         break;
     default:

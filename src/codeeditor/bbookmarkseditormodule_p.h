@@ -23,7 +23,6 @@ class QAction;
 class B_CODEEDITOR_EXPORT BBookmarksEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BBookmarksEditorModule)
-    B_DECLARE_TR_FUNCTIONS(BBookmarksEditorModule, q)
     Q_OBJECT
 public:
     static void setBookmarks(BCodeEditorDocument *doc, const QList<QPoint> &list);

@@ -30,7 +30,6 @@ class QDialogButtonBox;
 class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BAboutDialog)
-    B_DECLARE_TR_FUNCTIONS(BAboutDialog, q)
     Q_OBJECT
 public:
     enum DialogTab

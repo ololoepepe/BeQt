@@ -109,9 +109,9 @@ void BEditEditorModulePrivate::resetSwitchModeAction(bool bm)
     if ( actSwitchMode.isNull() )
         return;
     actSwitchMode->setIcon( BApplication::icon(bm ? "edit_mode_block" : "edit_mode_normal") );
-    actSwitchMode->setText( bm ? trq("Mode: blocks", "act text") : trq("Mode: lines", "act text") );
-    actSwitchMode->setToolTip( bm ? trq("Mode: blocks", "act toolTip") : trq("Mode: lines", "act toolTip") );
-    actSwitchMode->setWhatsThis( bm ? trq("Mode: blocks", "act whatsThis") : trq("Mode: lines", "act whatsThis") );
+    actSwitchMode->setText( bm ? tr("Mode: blocks", "act text") : tr("Mode: lines", "act text") );
+    actSwitchMode->setToolTip( bm ? tr("Mode: blocks", "act toolTip") : tr("Mode: lines", "act toolTip") );
+    actSwitchMode->setWhatsThis( bm ? tr("Mode: blocks", "act whatsThis") : tr("Mode: lines", "act whatsThis") );
 }
 
 //
@@ -120,33 +120,33 @@ void BEditEditorModulePrivate::retranslateUi()
 {
     if ( !actCut.isNull() )
     {
-        actCut->setText( trq("Cut", "act text") );
-        actCut->setToolTip( trq("Cut", "act toolTip") );
-        actCut->setWhatsThis( trq("Cut", "act whatsThis") );
+        actCut->setText( tr("Cut", "act text") );
+        actCut->setToolTip( tr("Cut", "act toolTip") );
+        actCut->setWhatsThis( tr("Cut", "act whatsThis") );
     }
     if ( !actCopy.isNull() )
     {
-        actCopy->setText( trq("Copy", "act text") );
-        actCopy->setToolTip( trq("Copy", "act toolTip") );
-        actCopy->setWhatsThis( trq("Copy", "act whatsThis") );
+        actCopy->setText( tr("Copy", "act text") );
+        actCopy->setToolTip( tr("Copy", "act toolTip") );
+        actCopy->setWhatsThis( tr("Copy", "act whatsThis") );
     }
     if ( !actPaste.isNull() )
     {
-        actPaste->setText( trq("Paste", "act text") );
-        actPaste->setToolTip( trq("Paste", "act toolTip") );
-        actPaste->setWhatsThis( trq("Paste", "act whatsThis") );
+        actPaste->setText( tr("Paste", "act text") );
+        actPaste->setToolTip( tr("Paste", "act toolTip") );
+        actPaste->setWhatsThis( tr("Paste", "act whatsThis") );
     }
     if ( !actUndo.isNull() )
     {
-        actUndo->setText( trq("Undo", "act text") );
-        actUndo->setToolTip( trq("Undo", "act toolTip") );
-        actUndo->setWhatsThis( trq("Undo", "act whatsThis") );
+        actUndo->setText( tr("Undo", "act text") );
+        actUndo->setToolTip( tr("Undo", "act toolTip") );
+        actUndo->setWhatsThis( tr("Undo", "act whatsThis") );
     }
     if ( !actRedo.isNull() )
     {
-        actRedo->setText( trq("Redo", "act text") );
-        actRedo->setToolTip( trq("Redo", "act toolTip") );
-        actRedo->setWhatsThis( trq("Redo", "act whatsThis") );
+        actRedo->setText( tr("Redo", "act text") );
+        actRedo->setToolTip( tr("Redo", "act toolTip") );
+        actRedo->setWhatsThis( tr("Redo", "act whatsThis") );
     }
     checkSwitchModeAction();
 }

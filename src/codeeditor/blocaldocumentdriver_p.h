@@ -60,7 +60,6 @@ public:
 class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BFileDialog)
-    B_DECLARE_TR_FUNCTIONS(BFileDialog, q)
     Q_OBJECT
     Q_DISABLE_COPY(BFileDialogPrivate)
 public:

@@ -140,7 +140,6 @@ private:
 class B_CODEEDITOR_EXPORT BCodeEditPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEdit)
-    B_DECLARE_TR_FUNCTIONS(BCodeEdit, q)
     Q_OBJECT
 public:
     struct ProcessTextResult

@@ -81,11 +81,11 @@ void BSelectDocumentsDialogPrivate::init()
         fnt.setBold(true);
         lblText->setWordWrap(true);
         lblText->setFont(fnt);
-        lblText->setText( trq("Some documents are modified. Do you want to save them before closing?", "lbl text") );
+        lblText->setText( tr("Some documents are modified. Do you want to save them before closing?", "lbl text") );
       vlt->addWidget(lblText);
       lblInformativeTextUpper = new QLabel(q);
         lblInformativeTextUpper->setWordWrap(true);
-        lblInformativeTextUpper->setText( trq("Choose documents that you want to save:", "lbl text") );
+        lblInformativeTextUpper->setText( tr("Choose documents that you want to save:", "lbl text") );
       vlt->addWidget(lblInformativeTextUpper);
       lstwgt = new QListWidget(q);
         foreach (BCodeEditorDocument *doc, Documents)
@@ -100,8 +100,8 @@ void BSelectDocumentsDialogPrivate::init()
       vlt->addWidget(lstwgt);
       lblInformativeTextLower = new QLabel(q);
         lblInformativeTextLower->setWordWrap(true);
-        lblInformativeTextLower->setText( trq("If you don't save the documents, all changes will be lost",
-                                              "lbl text") );
+        lblInformativeTextLower->setText( tr("If you don't save the documents, all changes will be lost",
+                                             "lbl text") );
       vlt->addWidget(lblInformativeTextLower);
       dlgbbox = new QDialogButtonBox(q);
         dlgbbox->setStandardButtons(QDialogButtonBox::Save | QDialogButtonBox::Discard | QDialogButtonBox::Cancel);
@@ -222,7 +222,7 @@ bool BDropHandler::eventFilter(QObject *o, QEvent *e)
 
 QString BCodeEditorPrivate::defaultFileName()
 {
-    return trq("New document", "fileName");
+    return tr("New document", "fileName");
 }
 
 QString BCodeEditorPrivate::createFileName(const QString &fileName, const QString &defaultName,
@@ -250,66 +250,66 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
 {
     if ( UnicodeCodecs.contains(codecName) )
     {
-        return trq("Unicode", "codec descriptiveName");
+        return tr("Unicode", "codec descriptiveName");
     }
     else if ( EastEuropeanCodecs.contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257").contains(codecName,
                                                                                          Qt::CaseInsensitive) )
-            return trq("Baltic", "codec descriptiveName");
+            return tr("Baltic", "codec descriptiveName");
         else if ( (QStringList() << "ISO 8859-5" << "KOI8-R" << "Windows-1251").contains(codecName,
                                                                                          Qt::CaseInsensitive) )
-            return trq("Cyrillic", "codec descriptiveName");
+            return tr("Cyrillic", "codec descriptiveName");
         else if ( !codecName.compare("KOI8-U", Qt::CaseInsensitive) )
-            return trq("Cyrillic (Ukrainian)", "codec descriptiveName");
+            return tr("Cyrillic (Ukrainian)", "codec descriptiveName");
         else if ( !codecName.compare("ISO 8859-16", Qt::CaseInsensitive) )
-            return trq("Romanic", "codec descriptiveName");
+            return tr("Romanic", "codec descriptiveName");
         else if ( (QStringList() << "ISO 8859-2" << "Windows-1250").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Central European", "codec descriptiveName");
+            return tr("Central European", "codec descriptiveName");
     }
     else if ( WestEuropeanCodecs.contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-7" << "Windows-1253").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Greek", "codec descriptiveName");
+            return tr("Greek", "codec descriptiveName");
         else if ( (QStringList() << "IBM 850" << "ISO 8859-1" << "ISO 8859-15"
                    << "Apple Roman" << "Windows-1252").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Western", "codec descriptiveName");
+            return tr("Western", "codec descriptiveName");
         else if ( !codecName.compare("ISO 8859-14", Qt::CaseInsensitive) )
-            return trq("Celtic", "codec descriptiveName");
+            return tr("Celtic", "codec descriptiveName");
         else if ( !codecName.compare("ISO 8859-10", Qt::CaseInsensitive) )
-            return trq("Nordic", "codec descriptiveName");
+            return tr("Nordic", "codec descriptiveName");
         else if ( !codecName.compare("ISO 8859-3", Qt::CaseInsensitive) )
-            return trq("South European", "codec descriptiveName");
+            return tr("South European", "codec descriptiveName");
     }
     else if ( EastAsianCodecs.contains(codecName) )
     {
         if ( !codecName.compare("Windows-1258", Qt::CaseInsensitive) )
-            return trq("Vietnamese", "codec descriptiveName");
+            return tr("Vietnamese", "codec descriptiveName");
         else if ( (QStringList() << "Big5" << "Big5-HKSCS").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Traditional Chinese", "codec descriptiveName");
+            return tr("Traditional Chinese", "codec descriptiveName");
         else if ( !codecName.compare("GB18030-0", Qt::CaseInsensitive) )
-            return trq("Simplified Chinese", "codec descriptiveName");
+            return tr("Simplified Chinese", "codec descriptiveName");
         else if ( (QStringList() << "EUC-KR" << "JOHAB").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Korean", "codec descriptiveName");
+            return tr("Korean", "codec descriptiveName");
         else if ( (QStringList() << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS").contains(codecName,
                                                                                        Qt::CaseInsensitive) )
-            return trq("Japanese", "codec descriptiveName");
+            return tr("Japanese", "codec descriptiveName");
     }
     else if ( SouthEastSouthWestAsianCodecs.contains(codecName) )
     {
         if ( !codecName.compare("TIS-620", Qt::CaseInsensitive) )
-            return trq("Thai", "codec descriptiveName");
+            return tr("Thai", "codec descriptiveName");
         else if ( (QStringList() << "ISO 8859-9" << "Windows-1254").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Turkish", "codec descriptiveName");
+            return tr("Turkish", "codec descriptiveName");
     }
     else if ( MiddleEastCodecs.contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-6" << "Windows-1256").contains(codecName, Qt::CaseInsensitive) )
-            return trq("Arabic", "codec descriptiveName");
+            return tr("Arabic", "codec descriptiveName");
         else if ( !codecName.compare("Windows-1255", Qt::CaseInsensitive) )
-            return trq("Hebrew", "codec descriptiveName");
+            return tr("Hebrew", "codec descriptiveName");
         else if ( !codecName.compare("ISO 8859-8", Qt::CaseInsensitive) )
-            return trq("Hebrew (visual)", "codec descriptiveName");
+            return tr("Hebrew (visual)", "codec descriptiveName");
     }
     return "";
 }
@@ -660,9 +660,9 @@ void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
     if ( fileName.isEmpty() )
         return;
     QMessageBox msg( q_func() );
-    msg.setWindowTitle( trq("Failed to open file", "msgbox windowTitle") );
+    msg.setWindowTitle( tr("Failed to open file", "msgbox windowTitle") );
     msg.setIcon(QMessageBox::Warning);
-    msg.setText(trq("Failed to open file:", "msgbox text") + "\n" + fileName);
+    msg.setText(tr("Failed to open file:", "msgbox text") + "\n" + fileName);
     msg.setStandardButtons(QMessageBox::Ok);
     msg.setDefaultButton(QMessageBox::Ok);
     msg.exec();
@@ -673,11 +673,11 @@ void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QStr
     if ( fileName.isEmpty() )
         return;
     QMessageBox msg( q_func() );
-    msg.setWindowTitle( trq("Failed to save file", "msgbox windowTitle") );
+    msg.setWindowTitle( tr("Failed to save file", "msgbox windowTitle") );
     msg.setIcon(QMessageBox::Warning);
-    QString text = trq("Failed to open file:", "msgbox text") + "\n" + fileName;
+    QString text = tr("Failed to open file:", "msgbox text") + "\n" + fileName;
     if (!newFileName.isEmpty() && fileName != newFileName)
-        text += "\n" + trq("as:", "msgbox text") + "\n" + newFileName;
+        text += "\n" + tr("as:", "msgbox text") + "\n" + newFileName;
     msg.setText(text);
     msg.setStandardButtons(QMessageBox::Ok);
     msg.setDefaultButton(QMessageBox::Ok);
@@ -687,10 +687,10 @@ void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QStr
 int BCodeEditorPrivate::reopenModifiedMessage(const QString &fileName)
 {
     QMessageBox msg( q_func() );
-    msg.setWindowTitle( trq("Reopening modified document", "msgbox windowTitle") );
+    msg.setWindowTitle( tr("Reopening modified document", "msgbox windowTitle") );
     msg.setIcon(QMessageBox::Question);
-    msg.setText(trq("Document is modified:", "msgbox text") + "\n" + fileName);
-    msg.setInformativeText( trq("Do you want to reopen it anyway?", "msgbox informativeText") );
+    msg.setText(tr("Document is modified:", "msgbox text") + "\n" + fileName);
+    msg.setInformativeText( tr("Do you want to reopen it anyway?", "msgbox informativeText") );
     msg.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
     msg.setDefaultButton(QMessageBox::Cancel);
     return msg.exec();
@@ -699,10 +699,10 @@ int BCodeEditorPrivate::reopenModifiedMessage(const QString &fileName)
 int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
 {
     QMessageBox msg( q_func() );
-    msg.setWindowTitle( trq("Closing modified document", "msgbox windowTitle") );
+    msg.setWindowTitle( tr("Closing modified document", "msgbox windowTitle") );
     msg.setIcon(QMessageBox::Question);
-    msg.setText(trq("Document is modified:", "msgbox text") + "\n" + fileName);
-    msg.setInformativeText( trq("Do you want to save it before closing?", "msgbox informativeText") );
+    msg.setText(tr("Document is modified:", "msgbox text") + "\n" + fileName);
+    msg.setInformativeText( tr("Do you want to save it before closing?", "msgbox informativeText") );
     msg.setStandardButtons(QMessageBox::Save | QMessageBox::Discard | QMessageBox::Cancel);
     msg.setDefaultButton(QMessageBox::Discard);
     return msg.exec();

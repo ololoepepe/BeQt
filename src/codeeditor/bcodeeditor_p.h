@@ -61,7 +61,6 @@ private:
 class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSelectDocumentsDialog)
-    B_DECLARE_TR_FUNCTIONS(BSelectDocumentsDialog, q)
     Q_OBJECT
 public:
     explicit BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q, const QList<BCodeEditorDocument *> &list);
@@ -112,7 +111,6 @@ private:
 class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BCodeEditor)
-    B_DECLARE_TR_FUNCTIONS(BCodeEditor, q)
     Q_OBJECT
 public:
     enum Operation

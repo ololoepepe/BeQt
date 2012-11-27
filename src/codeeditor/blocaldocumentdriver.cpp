@@ -48,7 +48,7 @@ void BFileDialogPrivate::init()
     B_Q(BFileDialog);
     lt = q->layout();
       lblEncodings = new QLabel(q);
-        lblEncodings->setText(trq("Encoding", "lbl text") + ":");
+        lblEncodings->setText(tr("Encoding", "lbl text") + ":");
       lt->addWidget(lblEncodings);
       cmboxEncodings = new QComboBox(q);
         addEncoding( QTextCodec::codecForName("UTF-8") );

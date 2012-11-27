@@ -82,8 +82,7 @@ void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
         if (columnVal.length() < len)
             columnVal.prepend( QString().fill( ' ', len - columnVal.length() ) );
     }
-    lblCursorPos->setText(trq("Row:", "lbl text") + " " + rowVal + ", " +
-                          trq("Column:", "lbl text") + " " + columnVal);
+    lblCursorPos->setText(tr("Row:", "lbl text") + " " + rowVal + ", " + tr("Column:", "lbl text") + " " + columnVal);
 }
 
 void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
@@ -91,11 +90,11 @@ void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
     if ( lblEncoding.isNull() )
         return;
     if (!editor)
-        return lblEncoding->setText( trq("----------", "lbl text") );
+        return lblEncoding->setText( tr("----------", "lbl text") );
     QString cn = q_func()->currentDocument() ? q_func()->currentDocument()->codecName() : editor->defaultCodecName();
     QString fcn = editor->fullCodecName(cn);
     if ( fcn.isEmpty() )
-        fcn = trq("Unknown encoding", "lbl text");
+        fcn = tr("Unknown encoding", "lbl text");
     lblEncoding->setText(fcn);
 }
 

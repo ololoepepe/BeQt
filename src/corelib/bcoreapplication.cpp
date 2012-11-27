@@ -113,13 +113,13 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov)
     {
         if ( info.name.isEmpty() )
             continue;
-        s += trq("Name:", "info") + " " + info.name + "\n";
+        s += tr("Name:", "info") + " " + info.name + "\n";
         if ( !info.role.isEmpty() )
-            s += trq("Role:", "info") + " " + info.role + "\n";
+            s += tr("Role:", "info") + " " + info.role + "\n";
         if ( !info.site.isEmpty() )
-            s += trq("Website:", "info") + " " + info.site + "\n";
+            s += tr("Website:", "info") + " " + info.site + "\n";
         if ( !info.mail.isEmpty() )
-            s += trq("E-mail:", "info") + " " + info.mail + "\n";
+            s += tr("E-mail:", "info") + " " + info.mail + "\n";
     }
     if ( !s.isEmpty() )
         s.remove(s.length() - 1, 1);

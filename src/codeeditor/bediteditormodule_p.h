@@ -22,7 +22,6 @@ class QAction;
 class B_CODEEDITOR_EXPORT BEditEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BEditEditorModule)
-    B_DECLARE_TR_FUNCTIONS(BEditEditorModule, q)
     Q_OBJECT
     Q_DISABLE_COPY(BEditEditorModulePrivate)
 public:

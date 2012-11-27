@@ -25,7 +25,6 @@ class QComboBox;
 class B_CODEEDITOR_EXPORT BIndicatorsEditorModulePrivate : public BAbstractEditorModulePrivate
 {
     B_DECLARE_PUBLIC(BIndicatorsEditorModule)
-    B_DECLARE_TR_FUNCTIONS(BIndicatorsEditorModule, q)
     Q_OBJECT
 public:
     struct FileTypeInfo
