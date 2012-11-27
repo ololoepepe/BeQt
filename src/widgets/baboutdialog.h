@@ -17,18 +17,20 @@ class QIcon;
 #include <QCoreApplication>
 
 /*============================================================================
-================================ About Dialog
+================================ BAboutDialog ================================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBase
 {
-    B_DECLARE_PRIVATE(BAboutDialog)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BAboutDialog)
 public:
     explicit BAboutDialog(QWidget *parent = 0);
     explicit BAboutDialog( QWidget *parent, const QString &appName, const QString &appVersion = QString() );
     ~BAboutDialog();
-    //
+protected:
+    explicit BAboutDialog(BAboutDialogPrivate &d, QWidget *parent = 0);
+public:
     void setAppName(const QString &name);
     void setAppVersion(const QString &version);
     void setOrganization( const QString &organization, const QString &copyrightPeriod = QString() );
@@ -54,8 +56,6 @@ public:
     void setAboutBeqtShown(bool b);
 public slots:
     void resetTabs();
-protected:
-    BAboutDialog(BAboutDialogPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BAboutDialog)
 };

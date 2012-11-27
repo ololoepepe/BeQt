@@ -36,8 +36,30 @@ class QWidget;
 #include <QDebug>
 
 /*============================================================================
-================================ About Dialog Private
+================================ BAboutDialogPrivate =========================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
+const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
+const QString BAboutDialogPrivate::HtmlLT = "&lt;";
+const QString BAboutDialogPrivate::HtmlGT = "&gt;";
+
+/*============================== Public constructors =======================*/
+
+BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BAboutDialogPrivate::~BAboutDialogPrivate()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
 
 QString BAboutDialogPrivate::processChangeLog(const QString &text)
 {
@@ -102,20 +124,7 @@ QString BAboutDialogPrivate::sourceFileName(const SourceInfo &src)
     return BDirTools::localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix);
 }
 
-//
-
-BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q) :
-    BBasePrivate(q)
-{
-    //
-}
-
-BAboutDialogPrivate::~BAboutDialogPrivate()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BAboutDialogPrivate::init()
 {
@@ -411,14 +420,7 @@ void BAboutDialogPrivate::resetLicense()
     fillTab(LicenseTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : QString(), false);
 }
 
-//
-
-const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
-const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
-const QString BAboutDialogPrivate::HtmlLT = "&lt;";
-const QString BAboutDialogPrivate::HtmlGT = "&gt;";
-
-//
+/*============================== Public slots ==============================*/
 
 void BAboutDialogPrivate::retranslateUi()
 {
@@ -462,8 +464,10 @@ void BAboutDialogPrivate::tbtnAboutBeqtClicked()
 }
 
 /*============================================================================
-================================ About Dialog
+================================ BAboutDialog ================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BAboutDialog::BAboutDialog(QWidget *parent) :
     QDialog(parent), BBase( *new BAboutDialogPrivate(this) )
@@ -484,7 +488,15 @@ BAboutDialog::~BAboutDialog()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BAboutDialog::BAboutDialog(BAboutDialogPrivate &d, QWidget *parent) :
+    QDialog(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BAboutDialog::setAppName(const QString &name)
 {
@@ -618,6 +630,8 @@ void BAboutDialog::setAboutBeqtShown(bool b)
     d_func()->tbtnAboutBeqt->setVisible(b);
 }
 
+/*============================== Public slots ==============================*/
+
 void BAboutDialog::resetTabs()
 {
     QTabWidget *twgt = d_func()->twgt;
@@ -625,12 +639,4 @@ void BAboutDialog::resetTabs()
         return;
     twgt->setCurrentIndex(0);
     twgt->widget(0)->setFocus();
-}
-
-//
-
-BAboutDialog::BAboutDialog(BAboutDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
-{
-    d_func()->init();
 }

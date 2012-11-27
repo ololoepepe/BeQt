@@ -12,7 +12,7 @@
 #include <QObject>
 
 /*============================================================================
-================================ Flow Layout Private (declaration)
+================================ BFlowLayoutPrivate ==========================
 ============================================================================*/
 
 class BFlowLayoutPrivate : public BBasePrivate
@@ -21,11 +21,11 @@ class BFlowLayoutPrivate : public BBasePrivate
 public:
     explicit BFlowLayoutPrivate(BFlowLayout *q);
     ~BFlowLayoutPrivate();
-    //
+public:
     void init();
     int doLayout(const QRect &rect, bool testOnly) const;
     int smartSpacing(QStyle::PixelMetric pm) const;
-    //
+public:
     QList<QLayoutItem *> items;
     int hSpace;
     int vSpace;
@@ -34,8 +34,10 @@ private:
 };
 
 /*============================================================================
-================================ Flow Layout Private (definition)
+================================ BFlowLayoutPrivate ==========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BFlowLayoutPrivate::BFlowLayoutPrivate(BFlowLayout *q) :
     BBasePrivate(q)
@@ -48,7 +50,7 @@ BFlowLayoutPrivate::~BFlowLayoutPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BFlowLayoutPrivate::init()
 {
@@ -109,8 +111,10 @@ int BFlowLayoutPrivate::smartSpacing(QStyle::PixelMetric pm) const
 }
 
 /*============================================================================
-================================ Flow Layout
+================================ BFlowLayout =================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BFlowLayout::BFlowLayout(QWidget *parent, int hSpacing, int vSpacing) :
     QLayout(parent), BBase( *new BFlowLayoutPrivate(this) )
@@ -137,7 +141,15 @@ BFlowLayout::~BFlowLayout()
         delete item;
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BFlowLayout::BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent) :
+    QLayout(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BFlowLayout::addItem(QLayoutItem *item)
 {
@@ -206,12 +218,4 @@ QSize BFlowLayout::minimumSize() const
 QSize BFlowLayout::sizeHint() const
 {
     return minimumSize();
-}
-
-//
-
-BFlowLayout::BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent) :
-    QLayout(parent), BBase(d)
-{
-    d_func()->init();
 }

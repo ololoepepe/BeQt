@@ -21,19 +21,14 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Password Widget Private
+================================ BPasswordWidgetPrivate ======================
 ============================================================================*/
 
-BPasswordWidget::PasswordWidgetData BPasswordWidgetPrivate::createPasswordWidgetData()
-{
-    BPasswordWidget::PasswordWidgetData pwd;
-    pwd.charCount = -1;
-    pwd.save = false;
-    pwd.show = false;
-    return pwd;
-}
+/*============================== Static public constants ===================*/
 
-//
+const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
+
+/*============================== Public constructors =======================*/
 
 BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
     BBasePrivate(q)
@@ -46,7 +41,18 @@ BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
     //
 }
 
-//
+/*============================== Static public methods =====================*/
+
+BPasswordWidget::PasswordWidgetData BPasswordWidgetPrivate::createPasswordWidgetData()
+{
+    BPasswordWidget::PasswordWidgetData pwd;
+    pwd.charCount = -1;
+    pwd.save = false;
+    pwd.show = false;
+    return pwd;
+}
+
+/*============================== Public methods ============================*/
 
 void BPasswordWidgetPrivate::init()
 {
@@ -73,11 +79,7 @@ void BPasswordWidgetPrivate::init()
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
-//
-
-const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
-
-//
+/*============================== Public slots ==============================*/
 
 void BPasswordWidgetPrivate::retranslateUi()
 {
@@ -99,8 +101,31 @@ void BPasswordWidgetPrivate::resetShow()
 }
 
 /*============================================================================
-================================ Password Widget
+================================ BPasswordWidget =============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BPasswordWidget::BPasswordWidget(QWidget *parent) :
+    QWidget(parent), BBase( *new BPasswordWidgetPrivate(this) )
+{
+    d_func()->init();
+}
+
+BPasswordWidget::~BPasswordWidget()
+{
+    //
+}
+
+/*============================== Protected constructors ====================*/
+
+BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
+    QWidget(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
 
 QByteArray BPasswordWidget::encrypt(const QString &string, QCryptographicHash::Algorithm method)
 {
@@ -149,20 +174,7 @@ QByteArray BPasswordWidget::dataToState(const PasswordWidgetData &dt)
     return ba;
 }
 
-//
-
-BPasswordWidget::BPasswordWidget(QWidget *parent) :
-    QWidget(parent), BBase( *new BPasswordWidgetPrivate(this) )
-{
-    d_func()->init();
-}
-
-BPasswordWidget::~BPasswordWidget()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BPasswordWidget::setPassword(const QString &password)
 {
@@ -280,12 +292,3 @@ QByteArray BPasswordWidget::saveStateEncrypted(QCryptographicHash::Algorithm met
 {
     return dataToState( encryptedData(method) );
 }
-
-//
-
-BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
-{
-    d_func()->init();
-}
-

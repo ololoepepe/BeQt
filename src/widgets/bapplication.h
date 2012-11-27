@@ -27,14 +27,14 @@ class QFont;
 #define bApp ( static_cast<BApplication *>( BCoreApplication::instance() ) )
 
 /*============================================================================
-================================ Application
+================================ BApplication ================================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BApplication : public BCoreApplication
 {
+    Q_OBJECT
     B_DECLARE_PRIVATE(BApplication)
     B_DECLARE_PRIVATE_S(BApplication)
-    Q_OBJECT
 public:
     enum SettingsTabNavigation
     {
@@ -51,7 +51,12 @@ public:
         WhatsThisAction,
         AboutAction
     };
-    //
+public:
+    BApplication();
+    ~BApplication();
+protected:
+    explicit BApplication(BApplicationPrivate &d);
+public:
     static QIcon icon( const QString &name, const QString &theme = QString() );
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
@@ -62,9 +67,6 @@ public:
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
     static QFont createMonospaceFont();
-    //
-    explicit BApplication();
-    ~BApplication();
 public slots:
     void showAboutDialog();
     void showSettingsDialog();
@@ -73,13 +75,10 @@ public slots:
     void showContextualHelp();
     void openHomepage();
 protected:
-    BApplication(BApplicationPrivate &d);
-    //
     virtual BSettingsDialog::SettingsTabMap settingsTabMap() const;
     virtual void handleSettings(const BSettingsDialog::SettingsMap &s);
 private:
     Q_DISABLE_COPY(BApplication)
-    //
     friend class BAboutDialogPrivate;
 };
 

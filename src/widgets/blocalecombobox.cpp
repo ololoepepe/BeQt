@@ -15,31 +15,45 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Locale Combo Box Private (declaration)
+================================ BLocaleComboBoxPrivate ======================
 ============================================================================*/
 
 class BLocaleComboBoxPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocaleComboBox)
-    Q_DECLARE_TR_FUNCTIONS(BLocaleComboBox)
+public:
+    BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
+    ~BLocaleComboBoxPrivate();
 public:
     static QString localeToString(const BApplication::LocaleSupportInfo &info);
     static QIcon iconForLocale(const BApplication::LocaleSupportInfo &info);
-    //
-    BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
-    ~BLocaleComboBoxPrivate();
-    //
+public:
     void init();
     void updateAvailableLocales();
-    //
+public:
     const bool AlwaysIncludeEnglish;
 private:
     Q_DISABLE_COPY(BLocaleComboBoxPrivate)
 };
 
 /*============================================================================
-================================ Locale Combo Box Private (definition)
+================================ BLocaleComboBoxPrivate ======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BLocaleComboBoxPrivate::BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish) :
+    BBasePrivate(q), AlwaysIncludeEnglish(alwaysIncludeEnglish)
+{
+    //
+}
+
+BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
 
 QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupportInfo &info)
 {
@@ -55,20 +69,7 @@ QIcon BLocaleComboBoxPrivate::iconForLocale(const BApplication::LocaleSupportInf
     return (info.supports == info.total) ? BApplication::icon("ok") : BApplication::icon("messagebox_warning");
 }
 
-//
-
-BLocaleComboBoxPrivate::BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish) :
-    BBasePrivate(q), AlwaysIncludeEnglish(alwaysIncludeEnglish)
-{
-    //
-}
-
-BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BLocaleComboBoxPrivate::init()
 {
@@ -85,8 +86,10 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
 }
 
 /*============================================================================
-================================ Locale Combo Box
+================================ BLocaleComboBox =============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BLocaleComboBox::BLocaleComboBox(bool alwaysIncludeEnglish, QWidget *parent) :
     QComboBox(parent), BBase( *new BLocaleComboBoxPrivate(this, alwaysIncludeEnglish) )
@@ -105,14 +108,22 @@ BLocaleComboBox::~BLocaleComboBox()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
+    QComboBox(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 QLocale BLocaleComboBox::currentLocale() const
 {
     return itemData( currentIndex() ).toLocale();
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BLocaleComboBox::setCurrentLocale(const QLocale &locale)
 {
@@ -125,12 +136,4 @@ void BLocaleComboBox::setCurrentLocale(const QLocale &locale)
 void BLocaleComboBox::updateAvailableLocales()
 {
     d_func()->updateAvailableLocales();
-}
-
-//
-
-BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
-    QComboBox(parent), BBase(d)
-{
-    d_func()->init();
 }

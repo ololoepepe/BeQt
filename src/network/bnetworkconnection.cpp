@@ -218,7 +218,7 @@ void BNetworkConnectionPrivate::operationDestroyed(QObject *obj)
 {
     if ( !operations.contains(obj) )
         return;
-    BNetworkOperationMetaData md = operations.value(obj);
+    BNetworkOperationMetaData md = operations.take(obj);
     if ( md.isRequest() )
         requests.remove(md);
     else
@@ -250,6 +250,11 @@ BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject 
         d_func()->setSocket(s);
     else
         s->deleteLater();
+}
+
+BNetworkConnection::~BNetworkConnection()
+{
+    //
 }
 
 /*============================== Protected constructors ====================*/

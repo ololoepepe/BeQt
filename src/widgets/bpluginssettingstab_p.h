@@ -19,30 +19,30 @@ class QListWidgetItem;
 #include <QObject>
 
 /*============================================================================
-================================ Plugins Settings Tab Private
+================================ BPluginsSettingsTabPrivate ==================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BPluginsSettingsTab)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BPluginsSettingsTab)
 public:
     explicit BPluginsSettingsTabPrivate(BPluginsSettingsTab *q);
     ~BPluginsSettingsTabPrivate();
-    //
+public:
     void init();
-    //
+public slots:
+    void lstwgtCurrentRowChanged(int currentRow);
+    void lstwgtItemChanged(QListWidgetItem *item);
+    void btnSettingsClicked();
+    void btnAboutClicked();
+public:
     QList<BPluginWrapper *> plugins;
     QHBoxLayout *hlt;
       QListWidget *lstwgt;
       QVBoxLayout *vlt;
         QPushButton *btnSettings;
         QPushButton *btnAbout;
-public slots:
-    void lstwgtCurrentRowChanged(int currentRow);
-    void lstwgtItemChanged(QListWidgetItem *item);
-    void btnSettingsClicked();
-    void btnAboutClicked();
 private:
     Q_DISABLE_COPY(BPluginsSettingsTabPrivate)
 };

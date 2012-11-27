@@ -14,7 +14,7 @@ class QWidget;
 #include <QVariantMap>
 
 /*============================================================================
-================================ Settings Dialog
+================================ BSettingsDialog =============================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBase
@@ -27,18 +27,18 @@ public:
         ListNavigation,
         TabbedNavigation
     };
-    //
+public:
     typedef QMap<QString, BAbstractSettingsTab *> SettingsTabMap;
     typedef QMap<QString, QVariantMap> SettingsMap;
-    //
+public:
     explicit BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent = 0);
     explicit BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent = 0);
     ~BSettingsDialog();
-    //
+protected:
+    explicit BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent = 0);
+public:
     bool isValid() const;
     SettingsMap settingsMap() const;
-protected:
-    BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BSettingsDialog)
 };

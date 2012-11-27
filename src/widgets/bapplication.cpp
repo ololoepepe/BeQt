@@ -38,8 +38,27 @@
 #include <QPointer>
 
 /*============================================================================
-================================ Application Private
+================================ BApplicationPrivate =========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BApplicationPrivate::BApplicationPrivate(BApplication *q) :
+    BCoreApplicationPrivate(q)
+{
+    //
+}
+
+BApplicationPrivate::~BApplicationPrivate()
+{
+    if (aboutDlg)
+    {
+        aboutDlg->close();
+        aboutDlg->deleteLater();
+    }
+}
+
+/*============================== Static public methods =====================*/
 
 void BApplicationPrivate::retranslateStandardAction(QAction *act)
 {
@@ -112,22 +131,7 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
     return "";
 }
 
-BApplicationPrivate::BApplicationPrivate(BApplication *q) :
-    BCoreApplicationPrivate(q)
-{
-    //
-}
-
-BApplicationPrivate::~BApplicationPrivate()
-{
-    if (aboutDlg)
-    {
-        aboutDlg->close();
-        aboutDlg->deleteLater();
-    }
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BApplicationPrivate::init()
 {
@@ -196,7 +200,7 @@ void BApplicationPrivate::showHelp(const QString &file)
     hb->show();
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BApplicationPrivate::retranslateUi()
 {
@@ -211,9 +215,33 @@ void BApplicationPrivate::actionDestroyed(QObject *act)
     actions.remove(act);
 }
 
+
 /*============================================================================
-================================ Application
+================================ BApplication ================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BApplication::BApplication() :
+    BCoreApplication( *new BApplicationPrivate(this) )
+{
+    d_func()->init();
+}
+
+BApplication::~BApplication()
+{
+    //
+}
+
+/*============================== Protected constructors ====================*/
+
+BApplication::BApplication(BApplicationPrivate &d) :
+    BCoreApplication(d)
+{
+    d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
 
 QIcon BApplication::icon(const QString &name, const QString &theme)
 {
@@ -350,20 +378,7 @@ QFont BApplication::createMonospaceFont()
     return QFont( QFontInfo( QFont("monospace") ).family() );
 }
 
-//
-
-BApplication::BApplication() :
-    BCoreApplication( *new BApplicationPrivate(this) )
-{
-    d_func()->init();
-}
-
-BApplication::~BApplication()
-{
-    //
-}
-
-//
+/*============================== Public slots ==============================*/
 
 void BApplication::showAboutDialog()
 {
@@ -417,13 +432,7 @@ void BApplication::openHomepage()
     QDesktopServices::openUrl( QUrl::fromUserInput(url) );
 }
 
-//
-
-BApplication::BApplication(BApplicationPrivate &d) :
-    BCoreApplication(d)
-{
-    d_func()->init();
-}
+/*============================== Protected methods =========================*/
 
 BSettingsDialog::SettingsTabMap BApplication::settingsTabMap() const
 {

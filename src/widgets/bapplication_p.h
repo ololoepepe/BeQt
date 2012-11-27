@@ -18,20 +18,20 @@ class QAction;
 #include <QPointer>
 
 /*============================================================================
-================================ Application Private
+================================ BApplicationPrivate =========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BApplicationPrivate : public BCoreApplicationPrivate
 {
-    B_DECLARE_PUBLIC(BApplication)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BApplication)
+public:
+    explicit BApplicationPrivate(BApplication *q);
+    ~BApplicationPrivate();
 public:
     static void retranslateStandardAction(QAction *act);
     static QString findImage(const QString &subdir, const QString &name);
-    //
-    BApplicationPrivate(BApplication *q);
-    ~BApplicationPrivate();
-    //
+public:
     void init();
     void initAboutDlg();
     void showAbout();
@@ -39,7 +39,10 @@ public:
     QString getHelpIndex() const;
     QStringList helpSearchPaths() const;
     void showHelp( const QString &file = QString() );
-    //
+public slots:
+    void retranslateUi();
+    void actionDestroyed(QObject *act);
+public:
     QString homepage;
     QPointer<BAboutDialog> aboutDlg;
     BApplication::SettingsTabNavigation navigation;
@@ -47,9 +50,6 @@ public:
     QMap<QString, QIcon> iconCache;
     bool iconCaching;
     QMap<QObject *, QAction *> actions;
-public slots:
-    void retranslateUi();
-    void actionDestroyed(QObject *act);
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

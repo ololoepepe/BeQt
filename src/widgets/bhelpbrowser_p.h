@@ -22,21 +22,25 @@ class QString;
 #include <QMap>
 
 /*============================================================================
-================================ Help Browser Private
+================================ BHelpBrowserPrivate =========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BHelpBrowser)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BHelpBrowser)
+public:
+    explicit BHelpBrowserPrivate( BHelpBrowser *q);
+    ~BHelpBrowserPrivate();
+public:
+    void init();
+public slots:
+    void retranslateUi();
+    void updateCaption();
+    void search();
 public:
     static QMap<QString, QStringList> searchCache;
-    //
-    BHelpBrowserPrivate( BHelpBrowser *q);
-    ~BHelpBrowserPrivate();
-    //
-    void init();
-    //
+public:
     QVBoxLayout *vlt;
       QToolBar *tbar;
         QToolButton *tbtnBackward;
@@ -47,10 +51,6 @@ public:
         QLabel *lblSearch;
         QLineEdit *ledtSearch;
       QTextBrowser *tbrsr;
-public slots:
-    void retranslateUi();
-    void updateCaption();
-    void search();
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivate)
 };

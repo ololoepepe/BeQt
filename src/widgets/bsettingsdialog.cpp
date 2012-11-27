@@ -20,7 +20,7 @@
 #include <QPushButton>
 
 /*============================================================================
-================================ Settings Dialog Private (declaration)
+================================ BSettingsDialogPrivate ======================
 ============================================================================*/
 
 class BSettingsDialogPrivate : public BBasePrivate
@@ -31,9 +31,9 @@ public:
     BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
                            BSettingsDialog::Navigation navigation);
     ~BSettingsDialogPrivate();
-    //
+public:
     void init();
-    //
+public:
     const BSettingsDialog::SettingsTabMap TabMap;
     const BSettingsDialog::Navigation Navigation;
     //
@@ -50,8 +50,10 @@ private:
 };
 
 /*============================================================================
-================================ Settings Dialog Private (definition)
+================================ BSettingsDialogPrivate ======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
                                                BSettingsDialog::Navigation navigation) :
@@ -65,7 +67,7 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BSettingsDialogPrivate::init()
 {
@@ -135,8 +137,10 @@ void BSettingsDialogPrivate::init()
 }
 
 /*============================================================================
-================================ Settings Dialog
+================================ BSettingsDialog =============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation) )
@@ -155,7 +159,15 @@ BSettingsDialog::~BSettingsDialog()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
+    QDialog(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 bool BSettingsDialog::isValid() const
 {
@@ -169,12 +181,4 @@ BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const
     foreach ( const QString &key, d->TabMap.keys() )
         m.insert( key, d->TabMap.value(key)->valueMap() );
     return m;
-}
-
-//
-
-BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
-{
-    d_func()->init();
 }

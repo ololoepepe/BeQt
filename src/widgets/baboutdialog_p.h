@@ -24,13 +24,13 @@ class QDialogButtonBox;
 #include <QMap>
 
 /*============================================================================
-================================ About Dialog Private
+================================ BAboutDialogPrivate =========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BAboutDialog)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BAboutDialog)
 public:
     enum DialogTab
     {
@@ -41,20 +41,25 @@ public:
         ThanksToTab,
         LicenseTab
     };
-    //
+public:
     struct SourceInfo
     {
         QString fileName;
         QString defaultFileName;
         QString possibleSuffix;
     };
-    //
-    static QString processChangeLog(const QString &text);
-    QString sourceFileName(const SourceInfo &src);
-    //
-    BAboutDialogPrivate(BAboutDialog *q);
+public:
+    static const QString HtmlSpace;
+    static const QString HtmlSpaceDouble;
+    static const QString HtmlLT;
+    static const QString HtmlGT;
+public:
+    explicit BAboutDialogPrivate(BAboutDialog *q);
     ~BAboutDialogPrivate();
-    //
+public:
+    static QString processChangeLog(const QString &text);
+    static QString sourceFileName(const SourceInfo &src);
+public:
     void init();
     void initAboutBeqtDialog();
     void retranslateAboutBeqtDialog();
@@ -78,13 +83,13 @@ public:
     void resetDescription();
     void resetChangeLog();
     void resetLicense();
-    //
-    //
-    static const QString HtmlSpace;
-    static const QString HtmlSpaceDouble;
-    static const QString HtmlLT;
-    static const QString HtmlGT;
-    //
+public slots:
+   void retranslateUi();
+   void resetAuthors();
+   void resetTranslations();
+   void resetThanksTo();
+   void tbtnAboutBeqtClicked();
+public:
     QString appName;
     QString appVersion;
     QString organization;
@@ -113,12 +118,6 @@ public:
         //text browsers
       QDialogButtonBox *dlgbbox;
         //Close
-public slots:
-   void retranslateUi();
-   void resetAuthors();
-   void resetTranslations();
-   void resetThanksTo();
-   void tbtnAboutBeqtClicked();
 private:
     Q_DISABLE_COPY(BAboutDialogPrivate)
 };

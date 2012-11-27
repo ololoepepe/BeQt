@@ -20,12 +20,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Help Browser Private
+================================ BHelpBrowserPrivate =========================
 ============================================================================*/
 
-QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
-
-//
+/*============================== Public constructors =======================*/
 
 BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q) :
     BBasePrivate(q)
@@ -38,7 +36,7 @@ BHelpBrowserPrivate::~BHelpBrowserPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BHelpBrowserPrivate::init()
 {
@@ -78,7 +76,7 @@ void BHelpBrowserPrivate::init()
     QObject::connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BHelpBrowserPrivate::retranslateUi()
 {
@@ -118,7 +116,7 @@ void BHelpBrowserPrivate::search()
                 if ( !f.open(QFile::ReadOnly) )
                     continue;
                 QTextStream in(&f);
-                //in.setCodec("UTF-8");
+                //in.setCodec("UTF-8"); //TODO
                 QString ft = in.readAll();
                 f.close();
                 if ( ft.contains(text, Qt::CaseInsensitive) )
@@ -137,16 +135,15 @@ void BHelpBrowserPrivate::search()
     tbrsr->setHtml(source);
 }
 
+/*============================== Static public variables ===================*/
+
+QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
+
 /*============================================================================
-================================ Help Browser
+================================ BHelpBrowser ================================
 ============================================================================*/
 
-void BHelpBrowser::clearSearchCache()
-{
-    BHelpBrowserPrivate::searchCache.clear();
-}
-
-//
+/*============================== Public constructors =======================*/
 
 BHelpBrowser::BHelpBrowser(QWidget *parent) :
     QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
@@ -188,7 +185,22 @@ BHelpBrowser::~BHelpBrowser()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BHelpBrowser::BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent) :
+    QWidget(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
+
+void BHelpBrowser::clearSearchCache()
+{
+    BHelpBrowserPrivate::searchCache.clear();
+}
+
+/*============================== Public methods ============================*/
 
 void BHelpBrowser::setSearchPaths(const QStringList &paths)
 {
@@ -198,12 +210,4 @@ void BHelpBrowser::setSearchPaths(const QStringList &paths)
 void BHelpBrowser::setFile(const QString &file)
 {
     d_func()->tbrsr->setSource( QUrl(file) );
-}
-
-//
-
-BHelpBrowser::BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
-{
-    d_func()->init();
 }

@@ -26,8 +26,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Plugins Settings Tab Private
+================================ BPluginsSettingsTabPrivate ==================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
     BBasePrivate(q)
@@ -40,7 +42,7 @@ BPluginsSettingsTabPrivate::~BPluginsSettingsTabPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BPluginsSettingsTabPrivate::init()
 {
@@ -81,7 +83,7 @@ void BPluginsSettingsTabPrivate::init()
     lstwgtCurrentRowChanged( lstwgt->currentRow() );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BPluginsSettingsTabPrivate::lstwgtCurrentRowChanged(int currentRow)
 {
@@ -138,12 +140,14 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         pm = gpi->pixmap();
     if ( !pm.isNull() )
         ad.setPixmap(pm);
-    ad.exec(); //Maybe use open() instead?
+    ad.exec(); //TODO: Maybe use open() instead?
 }
 
 /*============================================================================
-================================ Plugins Settings Tab
+================================ BPluginsSettingsTab =========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BPluginsSettingsTab::BPluginsSettingsTab() :
     BBase( *new BPluginsSettingsTabPrivate(this) )
@@ -156,7 +160,15 @@ BPluginsSettingsTab::~BPluginsSettingsTab()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BPluginsSettingsTab::BPluginsSettingsTab(BPluginsSettingsTabPrivate &d) :
+    BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 QString BPluginsSettingsTab::title() const
 {
@@ -171,12 +183,4 @@ QIcon BPluginsSettingsTab::icon() const
 QVariantMap BPluginsSettingsTab::valueMap() const
 {
     return QVariantMap();
-}
-
-//
-
-BPluginsSettingsTab::BPluginsSettingsTab(BPluginsSettingsTabPrivate &d) :
-    BBase(d)
-{
-    d_func()->init();
 }

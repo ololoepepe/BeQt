@@ -11,7 +11,7 @@ class QIcon;
 #include <QVariantMap>
 
 /*============================================================================
-================================ Abstract Settings Tab
+================================ BAbstractSettingsTab ========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BAbstractSettingsTab : public QWidget
@@ -20,7 +20,7 @@ class B_WIDGETS_EXPORT BAbstractSettingsTab : public QWidget
 public:
     BAbstractSettingsTab();
     ~BAbstractSettingsTab();
-    //
+public:
     virtual QString title() const = 0;
     virtual QIcon icon() const = 0;
     virtual QVariantMap valueMap() const = 0;

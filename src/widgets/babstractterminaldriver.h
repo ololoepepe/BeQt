@@ -9,7 +9,7 @@ class QStringList;
 #include <QObject>
 
 /*============================================================================
-================================ Abstract Terminal Driver
+================================ BAbstractTerminalDriver =====================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BAbstractTerminalDriver : public QObject
@@ -18,7 +18,7 @@ class B_WIDGETS_EXPORT BAbstractTerminalDriver : public QObject
 public:
     explicit BAbstractTerminalDriver(QObject *parent = 0);
     ~BAbstractTerminalDriver();
-    //
+public:
     virtual bool processCommand(const QString &command, const QStringList &arguments, QString &error) = 0;
     virtual bool isActive() const = 0;
     virtual QString read() = 0;
@@ -29,16 +29,16 @@ public:
     virtual bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
     virtual void setWorkingDirectory(const QString &path);
     virtual QString workingDirectory() const;
-signals:
-    void readyRead();
-    void finished(int exitCode);
-    void blockTerminal();
-    void unblockTerminal();
 protected slots:
     void emitReadyRead();
     void emitFinished(int exitCode);
     void emitBlockTerminal();
     void emitUnblockTerminal();
+signals:
+    void readyRead();
+    void finished(int exitCode);
+    void blockTerminal();
+    void unblockTerminal();
 private:
     Q_DISABLE_COPY(BAbstractTerminalDriver)
 };

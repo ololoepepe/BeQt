@@ -14,7 +14,7 @@ class QStringList;
 #include <QString>
 
 /*============================================================================
-================================ Terminal Widget
+================================ BTerminalWidget =============================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBase
@@ -27,11 +27,13 @@ public:
         NormalMode,
         ProgrammaticMode
     };
-    //
+public:
     explicit BTerminalWidget(TerminalMode mode, QWidget *parent = 0);
     explicit BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent = 0);
     ~BTerminalWidget();
-    //
+protected:
+    explicit BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent = 0);
+public:
     void setDriver(BAbstractTerminalDriver *driver);
     void setTerminatingSequence( int key, int modifiers, const QString &displayedSymbols = QString() );
     void setWorkingDirectory(const QString &path);
@@ -51,8 +53,6 @@ public slots:
     void kill();
 signals:
     void finished(int exitCode);
-protected:
-    BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BTerminalWidget)
 };

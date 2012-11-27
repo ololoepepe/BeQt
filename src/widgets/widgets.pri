@@ -11,11 +11,9 @@ HEADERS += \
     $${PWD}/bhelpbrowser_p.h \
     $${PWD}/blocalecombobox.h \
     $${PWD}/blocalterminaldriver.h \
-    $${PWD}/blocalterminaldriver_p.h \
     $${PWD}/bpasswordwidget_p.h \
     $${PWD}/bpasswordwidget.h \
     $${PWD}/bplaintextedit.h \
-    $${PWD}/bplaintextedit_p.h \
     $${PWD}/bpluginssettingstab.h \
     $${PWD}/bpluginssettingstab_p.h \
     $${PWD}/bsettingsdialog.h \

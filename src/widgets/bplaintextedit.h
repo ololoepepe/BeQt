@@ -12,22 +12,22 @@ class QMimeData;
 #include <QPlainTextEdit>
 
 /*============================================================================
-================================ Plain Text Edit
+================================ BPlainTextEdit ==============================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBase
 {
-    B_DECLARE_PRIVATE(BPlainTextEdit)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BPlainTextEdit)
 public:
     explicit BPlainTextEdit(QWidget *parent = 0);
     ~BPlainTextEdit();
-    //
+protected:
+    explicit BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent = 0);
+public:
     void setDragEnabled(bool b);
     bool dragEnabled() const;
 protected:
-    BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent = 0);
-    //
     QMimeData *createMimeDataFromSelection() const;
 private:
     Q_DISABLE_COPY(BPlainTextEdit)

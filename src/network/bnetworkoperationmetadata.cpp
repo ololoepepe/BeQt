@@ -11,7 +11,6 @@
 
 class BNetworkOperationMetaDataPrivate : public BBasePrivate
 {
-    Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkOperationMetaData)
 public:
     explicit BNetworkOperationMetaDataPrivate(BNetworkOperationMetaData *q);

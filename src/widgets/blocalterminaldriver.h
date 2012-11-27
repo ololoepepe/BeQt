@@ -13,17 +13,19 @@ class QString;
 #include <QObject>
 
 /*============================================================================
-================================ Local Terminal Driver
+================================ BLocalTerminalDriver ========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BLocalTerminalDriver : public BAbstractTerminalDriver, public BBase
 {
-    B_DECLARE_PRIVATE(BLocalTerminalDriver)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BLocalTerminalDriver)
 public:
     explicit BLocalTerminalDriver(QObject *parent = 0);
     ~BLocalTerminalDriver();
-    //
+protected:
+    explicit BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent = 0);
+public:
     bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     bool isActive() const;
     QString read();
@@ -34,8 +36,6 @@ public:
     bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
     void setWorkingDirectory(const QString &path);
     QString workingDirectory() const;
-protected:
-    BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BLocalTerminalDriver)
 };

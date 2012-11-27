@@ -1,5 +1,4 @@
 #include "bplaintextedit.h"
-#include "bplaintextedit_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -16,6 +15,26 @@
 ================================ Plain Text Edit Private
 ============================================================================*/
 
+class BPlainTextEditPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BPlainTextEdit)
+public:
+    explicit BPlainTextEditPrivate(BPlainTextEdit *q);
+    ~BPlainTextEditPrivate();
+public:
+    void init();
+public:
+    bool drag;
+private:
+    Q_DISABLE_COPY(BPlainTextEditPrivate)
+};
+
+/*============================================================================
+================================ BPlainTextEditPrivate =======================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
 BPlainTextEditPrivate::BPlainTextEditPrivate(BPlainTextEdit *q) :
     BBasePrivate(q)
 {
@@ -27,7 +46,7 @@ BPlainTextEditPrivate::~BPlainTextEditPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BPlainTextEditPrivate::init()
 {
@@ -35,8 +54,10 @@ void BPlainTextEditPrivate::init()
 }
 
 /*============================================================================
-================================ Plain Text Edit
+================================ BPlainTextEdit ==============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BPlainTextEdit::BPlainTextEdit(QWidget *parent) :
     QPlainTextEdit(parent), BBase( *new BPlainTextEditPrivate(this) )
@@ -49,7 +70,15 @@ BPlainTextEdit::~BPlainTextEdit()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BPlainTextEdit::BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent) :
+    QPlainTextEdit(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BPlainTextEdit::setDragEnabled(bool b)
 {
@@ -61,15 +90,7 @@ bool BPlainTextEdit::dragEnabled() const
     return d_func()->drag;
 }
 
-//
-
-BPlainTextEdit::BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent) :
-    QPlainTextEdit(parent), BBase(d)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 QMimeData *BPlainTextEdit::createMimeDataFromSelection() const
 {

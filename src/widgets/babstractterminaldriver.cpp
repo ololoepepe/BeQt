@@ -4,8 +4,10 @@
 #include <QMetaObject>
 
 /*============================================================================
-================================ Abstract Terminal Driver
+================================ BAbstractTerminalDriver =====================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BAbstractTerminalDriver::BAbstractTerminalDriver(QObject *parent) :
     QObject(parent)
@@ -18,7 +20,7 @@ BAbstractTerminalDriver::~BAbstractTerminalDriver()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 QString BAbstractTerminalDriver::prompt() const
 {
@@ -41,7 +43,7 @@ QString BAbstractTerminalDriver::workingDirectory() const
     return "";
 }
 
-//
+/*============================== Protected slots ===========================*/
 
 void BAbstractTerminalDriver::emitReadyRead()
 {

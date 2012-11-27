@@ -14,7 +14,7 @@ class QIcon;
 #include <QVariantMap>
 
 /*============================================================================
-================================ Plugins Settings Tab
+================================ BPluginsSettingsTab =========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public BBase
@@ -24,12 +24,12 @@ class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public
 public:
     BPluginsSettingsTab();
     ~BPluginsSettingsTab();
-    //
+protected:
+    explicit BPluginsSettingsTab(BPluginsSettingsTabPrivate &d);
+public:
     QString title() const;
     QIcon icon() const;
     QVariantMap valueMap() const;
-protected:
-    BPluginsSettingsTab(BPluginsSettingsTabPrivate &d);
 private:
     Q_DISABLE_COPY(BPluginsSettingsTab)
 };

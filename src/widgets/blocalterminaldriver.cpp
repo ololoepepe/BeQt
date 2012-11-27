@@ -1,5 +1,4 @@
 #include "blocalterminaldriver.h"
-#include "blocalterminaldriver_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -13,12 +12,34 @@
 #include <QStringList>
 #include <QObject>
 #include <QDir>
+#include <QMap>
 
 #include <QDebug>
 
 /*============================================================================
-================================ Local Terminal Driver Private
+================================ BLocalTerminalDriverPrivate =================
 ============================================================================*/
+
+class BLocalTerminalDriverPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BLocalTerminalDriver)
+public:
+    explicit BLocalTerminalDriverPrivate(BLocalTerminalDriver *q);
+    ~BLocalTerminalDriverPrivate();
+    //
+    void init();
+    //
+    QProcess *process;
+    QString workingDirectory;
+private:
+    Q_DISABLE_COPY(BLocalTerminalDriverPrivate)
+};
+
+/*============================================================================
+================================ BLocalTerminalDriverPrivate =================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BLocalTerminalDriverPrivate::BLocalTerminalDriverPrivate(BLocalTerminalDriver *q) :
     BBasePrivate(q)
@@ -31,32 +52,23 @@ BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BLocalTerminalDriverPrivate::init()
 {
-    process = new QProcess( q_func() );
+    B_Q(BLocalTerminalDriver);
+    process = new QProcess(this);
     workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
-    connect( process, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
-    connect( process, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
-}
-
-//
-
-void BLocalTerminalDriverPrivate::finished(int exitCode)
-{
-    q_func()->emitFinished(exitCode);
-}
-
-void BLocalTerminalDriverPrivate::readyRead()
-{
-    q_func()->emitReadyRead();
+    connect( process, SIGNAL( finished(int) ), q, SLOT( emitFinished(int) ) );
+    connect( process, SIGNAL( readyRead() ), q, SLOT( emitReadyRead() ) );
 }
 
 /*============================================================================
-================================ Local Terminal Driver
+================================ BLocalTerminalDriver ========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BLocalTerminalDriver::BLocalTerminalDriver(QObject *parent) :
     BAbstractTerminalDriver(parent), BBase( *new BLocalTerminalDriverPrivate(this) )
@@ -69,7 +81,15 @@ BLocalTerminalDriver::~BLocalTerminalDriver()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BLocalTerminalDriver::BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent) :
+    BAbstractTerminalDriver(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 bool BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments, QString &error)
 {
@@ -157,12 +177,4 @@ void BLocalTerminalDriver::setWorkingDirectory(const QString &path)
 QString BLocalTerminalDriver::workingDirectory() const
 {
     return d_func()->workingDirectory;
-}
-
-//
-
-BLocalTerminalDriver::BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent) :
-    BAbstractTerminalDriver(parent), BBase(d)
-{
-    d_func()->init();
 }

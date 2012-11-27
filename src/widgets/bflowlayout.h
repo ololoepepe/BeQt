@@ -16,7 +16,7 @@ class QWidget;
 #include <QSize>
 
 /*============================================================================
-================================ Flow Layout
+================================ BFlowLayout =================================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BFlowLayout : public QLayout, public BBase
@@ -27,7 +27,9 @@ public:
     explicit BFlowLayout(QWidget *parent, int hSpacing = -1, int vSpacing = -1);
     explicit BFlowLayout(int hSpacing = -1, int vSpacing = -1);
     ~BFlowLayout();
-    //
+protected:
+    explicit BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent = 0);
+public:
     void addItem(QLayoutItem *item);
     void setGeometry(const QRect &rect);
     int horizontalSpacing() const;
@@ -40,8 +42,6 @@ public:
     QLayoutItem *takeAt(int index);
     QSize minimumSize() const;
     QSize sizeHint() const;
-protected:
-    BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BFlowLayout)
 };

@@ -17,17 +17,17 @@ class QVBoxLayout;
 #include <QCoreApplication>
 
 /*============================================================================
-================================ Terminal Widget Private
+================================ BTerminalWidgetPrivate ======================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BTerminalWidget)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BTerminalWidget)
 public:
     explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
     ~BTerminalWidgetPrivate();
-    //
+public:
     void init();
     bool eventFilter(QObject *object, QEvent *event);
     void setDriver(BAbstractTerminalDriver *drv);
@@ -36,22 +36,21 @@ public:
     void appendText(const QString &text);
     void appendLine( const QString &text = QString() );
     QString constructErrorString(const QString &error) const;
-    //
-    const bool NormalMode;
-    //
-    BAbstractTerminalDriver *driver;
-    int terminatingKey;
-    int terminatingModifiers;
-    QString terminatingSymbols;
-    int len;
-    //
-    QVBoxLayout *vlt;
-      BPlainTextEdit *ptedt;
 public slots:
     void read();
     void finished(int exitCode);
     void blockTerminal();
     void unblockTerminal();
+public:
+    const bool NormalMode;
+public:
+    BAbstractTerminalDriver *driver;
+    int terminatingKey;
+    int terminatingModifiers;
+    QString terminatingSymbols;
+    int len;
+    QVBoxLayout *vlt;
+      BPlainTextEdit *ptedt;
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivate)
 };

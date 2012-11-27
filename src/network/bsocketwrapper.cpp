@@ -165,6 +165,11 @@ BSocketWrapper::BSocketWrapper(BGenericSocket::SocketType type, QObject *parent)
     setSocket( new BGenericSocket(type) );
 }
 
+BSocketWrapper::~BSocketWrapper()
+{
+    //
+}
+
 /*============================== Protected constructors ====================*/
 
 BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :

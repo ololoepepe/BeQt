@@ -13,13 +13,13 @@ class QString;
 #include <QCryptographicHash>
 
 /*============================================================================
-================================ Password Widget
+================================ BPasswordWidget =============================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBase
 {
-    B_DECLARE_PRIVATE(BPasswordWidget)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BPasswordWidget)
 public:
     struct PasswordWidgetData
     {
@@ -29,14 +29,16 @@ public:
         bool save;
         bool show;
     };
-    //
+public:
+    explicit BPasswordWidget(QWidget *parent = 0);
+    ~BPasswordWidget();
+protected:
+    explicit BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent = 0);
+public:
     static QByteArray encrypt(const QString &string, QCryptographicHash::Algorithm method = QCryptographicHash::Sha1);
     static PasswordWidgetData stateToData(const QByteArray &ba);
     static QByteArray dataToState(const PasswordWidgetData &dt);
-    //
-    explicit BPasswordWidget(QWidget *parent = 0);
-    ~BPasswordWidget();
-    //
+public:
     void setPassword(const QString &password);
     void setEncryptedPassword(const QByteArray &password, int charCount = -1);
     void setSavePassword(bool b);
@@ -53,8 +55,6 @@ public:
     PasswordWidgetData encryptedData(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
     QByteArray saveState() const;
     QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
-protected:
-    BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BPasswordWidget)
 };

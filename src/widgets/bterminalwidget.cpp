@@ -23,8 +23,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Terminal Widget Private
+================================ BTerminalWidgetPrivate ======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
     BBasePrivate(q), NormalMode(nmode)
@@ -37,7 +39,7 @@ BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BTerminalWidgetPrivate::init()
 {
@@ -171,7 +173,7 @@ QString BTerminalWidgetPrivate::constructErrorString(const QString &error) const
     return tr("Error:", "text") + " " + ( !error.isEmpty() ? error : tr("Unknown error", "text") );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BTerminalWidgetPrivate::read()
 {
@@ -212,8 +214,10 @@ void BTerminalWidgetPrivate::unblockTerminal()
 }
 
 /*============================================================================
-================================ Terminal Widget
+================================ BTerminalWidget =============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
     QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
@@ -233,7 +237,15 @@ BTerminalWidget::~BTerminalWidget()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
+    QWidget(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BTerminalWidget::setDriver(BAbstractTerminalDriver *driver)
 {
@@ -283,7 +295,7 @@ bool BTerminalWidget::isActive() const
     return d->driver && d->driver->isActive();
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BTerminalWidget::terminalCommand(const QString &command)
 {
@@ -358,12 +370,4 @@ void BTerminalWidget::kill()
     if ( !isActive() )
         return;
     d_func()->driver->kill();
-}
-
-//
-
-BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
-{
-    d_func()->init();
 }

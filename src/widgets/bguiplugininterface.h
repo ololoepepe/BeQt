@@ -11,14 +11,14 @@ class QPixmap;
 #include <QVariantMap>
 
 /*============================================================================
-================================ Gui Plugin Interface
+================================ BGuiPluginInterface =========================
 ============================================================================*/
 
 class B_WIDGETS_EXPORT BGuiPluginInterface
 {
 public:
     virtual ~BGuiPluginInterface() {}
-    //
+public:
     virtual QPixmap pixmap() const = 0;
     virtual BAbstractSettingsTab *settingsTab() const = 0;
     virtual void handleSettings(const QVariantMap &s) = 0;
