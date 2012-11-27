@@ -8,6 +8,7 @@ class QTranslator;
 
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "btranslator.h"
 
 #include <QList>
 #include <QtGlobal>
@@ -18,6 +19,7 @@ class QTranslator;
 
 class B_CORE_EXPORT BTranslatorPrivate : public BBasePrivate
 {
+    Q_OBJECT
     B_DECLARE_PUBLIC(BTranslator)
 public:
     explicit BTranslatorPrivate(BTranslator *q);

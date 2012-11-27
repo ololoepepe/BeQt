@@ -6,18 +6,19 @@
 #include <QUuid>
 
 /*============================================================================
-================================ Network Operation Meta Data Private (declaration)
+================================ BNetworkOperationMetaDataPrivate ============
 ============================================================================*/
 
 class BNetworkOperationMetaDataPrivate : public BBasePrivate
 {
+    Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkOperationMetaData)
 public:
     explicit BNetworkOperationMetaDataPrivate(BNetworkOperationMetaData *q);
     ~BNetworkOperationMetaDataPrivate();
-    //
+public:
     void init();
-    //
+public:
     QUuid id;
     bool request;
     QString operation;
@@ -26,8 +27,10 @@ private:
 };
 
 /*============================================================================
-================================ Network Operation Meta Data Private (definition)
+================================ BNetworkOperationMetaDataPrivate ============
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkOperationMetaDataPrivate::BNetworkOperationMetaDataPrivate(BNetworkOperationMetaData *q) :
     BBasePrivate(q)
@@ -40,7 +43,7 @@ BNetworkOperationMetaDataPrivate::~BNetworkOperationMetaDataPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BNetworkOperationMetaDataPrivate::init()
 {
@@ -48,8 +51,10 @@ void BNetworkOperationMetaDataPrivate::init()
 }
 
 /*============================================================================
-================================ Network Operation Meta Data
+================================ BNetworkOperationMetaData ===================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkOperationMetaData::BNetworkOperationMetaData() :
     BBase( *new BNetworkOperationMetaDataPrivate(this) )
@@ -73,7 +78,15 @@ BNetworkOperationMetaData::BNetworkOperationMetaData(const QUuid &id, bool reque
     setOperation(operation);
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BNetworkOperationMetaData::BNetworkOperationMetaData(BNetworkOperationMetaDataPrivate &d) :
+    BBase(d)
+{
+    //
+}
+
+/*============================== Public methods ============================*/
 
 void BNetworkOperationMetaData::setIsRequest(bool request)
 {
@@ -119,7 +132,7 @@ bool BNetworkOperationMetaData::isValid() const
     return !d->id.isNull() && !d->operation.isEmpty();
 }
 
-//
+/*============================== Public operators ==========================*/
 
 BNetworkOperationMetaData &BNetworkOperationMetaData::operator=(const BNetworkOperationMetaData &other)
 {

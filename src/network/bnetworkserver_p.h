@@ -24,7 +24,7 @@ class BNetworkServer;
 #include <QMutex>
 
 /*============================================================================
-================================ Network Server Worker
+================================ BNetworkServerWorker ========================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
@@ -33,27 +33,24 @@ class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
 public:
     explicit BNetworkServerWorker(BNetworkServerPrivate *sp);
     ~BNetworkServerWorker();
-    //
+public:
     int connectionCount() const;
 public slots:
     void addConnection(int socketDescriptor);
+    void disconnected();
 signals:
     void ranOutOfConnections();
-protected:
-    BNetworkServerWorker(BNetworkServerWorkerPrivate &d);
-private:
-    Q_DISABLE_COPY(BNetworkServerWorker)
-    //
+public:
     BNetworkServerPrivate *const serverPrivate;
-    //
+public:
     mutable QMutex connectionsMutex;
     QList<BNetworkConnection *> connections;
-private slots:
-    void disconnected();
+private:
+    Q_DISABLE_COPY(BNetworkServerWorker)
 };
 
 /*============================================================================
-================================ Network Server Thread
+================================ BNetworkServerThread ========================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServerThread : public QThread
@@ -62,19 +59,17 @@ class B_NETWORK_EXPORT BNetworkServerThread : public QThread
 public:
     explicit BNetworkServerThread(BNetworkServerPrivate *serverPrivate);
     ~BNetworkServerThread();
-    //
+public:
     void addConnection(int socketDescriptor);
     int connectionCount() const;
-protected:
-    BNetworkServerThread(BNetworkServerThreadPrivate &d);
+public:
+    BNetworkServerWorker *const worker;
 private:
     Q_DISABLE_COPY(BNetworkServerThread)
-    //
-    BNetworkServerWorker *const worker;
 };
 
 /*============================================================================
-================================ Network Server Private
+================================ BNetworkServerPrivate =======================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServerPrivate : public BBasePrivate
@@ -84,20 +79,19 @@ class B_NETWORK_EXPORT BNetworkServerPrivate : public BBasePrivate
 public:
     explicit BNetworkServerPrivate(BNetworkServer *q);
     ~BNetworkServerPrivate();
-    //
+public:
     void init();
     BNetworkConnection *createConnection(int socketDescriptor) const;
-    //
+public slots:
+    void newConnection(int socketDescriptor);
+    void finished();
+public:
     QPointer<BGenericServer> server;
     QList<BNetworkServerThread *> threads;
     int maxConnectionCount;
     int maxThreadCount;
-public slots:
-    void newConnection(int socketDescriptor);
-    void finished();
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)
-    //
     friend class BNetworkServerWorkerPrivate;
 };
 

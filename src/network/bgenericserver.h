@@ -17,13 +17,13 @@ class QString;
 #include <QAbstractSocket>
 
 /*============================================================================
-================================ Generic Server
+================================ BGenericServer ==============================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BGenericServer : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BGenericServer)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BGenericServer)
 public:
     enum ServerType
     {
@@ -31,9 +31,12 @@ public:
         TcpServer = 0x03,   //0 0 0 0 0 0 1 1
         LocalServer = 0x10  //0 0 0 1 0 0 0 0
     };
-    //
+public:
     explicit BGenericServer(ServerType type, QObject *parent = 0);
-    //
+    ~BGenericServer();
+protected:
+    explicit BGenericServer(BGenericServerPrivate &d, QObject *parent = 0);
+public:
     QTcpServer *tcpServer() const;
     QLocalServer *localServer() const;
     void close();
@@ -49,14 +52,12 @@ public:
     ServerType serverType() const;
     void setMaxPendingConnections(int numConnections);
     bool waitForNewConnection(int msec = 0, bool *timedOut = 0);
+protected:
+    virtual BGenericSocket *createSocket(int socketDescriptor);
 signals:
     void newPendingConnection();
     void newConnection(int socketDescriptor);
     void connectionOverflow();
-protected:
-    BGenericServer(BGenericServerPrivate &d, QObject *parent = 0);
-    //
-    virtual BGenericSocket *createSocket(int socketDescriptor);
 private:
     Q_DISABLE_COPY(BGenericServer)
 };

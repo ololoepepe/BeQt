@@ -13,8 +13,10 @@
 #include <QEventLoop>
 
 /*============================================================================
-================================ Network Operation Private
+================================ BNetworkOperationPrivate ====================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md) :
     BBasePrivate(q), MetaData(md)
@@ -27,7 +29,7 @@ BNetworkOperationPrivate::~BNetworkOperationPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BNetworkOperationPrivate::init()
 {
@@ -75,15 +77,33 @@ void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
 }
 
 /*============================================================================
-================================ Network Operation
+================================ BNetworkOperation ===========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkOperation::~BNetworkOperation()
 {
-    emit destroyed(d_func()->MetaData);
+    //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Private constructors ======================*/
+
+BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent) :
+    QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData) )
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 const QByteArray &BNetworkOperation::data() const
 {
@@ -145,20 +165,4 @@ bool BNetworkOperation::waitForFinished(int msecs)
     connect( this, SIGNAL( error() ), &el, SLOT( quit() ) );
     el.exec();
     return isFinished() || isError();
-}
-
-//
-
-BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
-}
-
-//
-
-BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData) )
-{
-    d_func()->init();
 }

@@ -21,8 +21,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Generic Socket Private
+================================ BGenericSocketPrivate =======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q) :
     BBasePrivate(q)
@@ -32,10 +34,10 @@ BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q) :
 
 BGenericSocketPrivate::~BGenericSocketPrivate()
 {
-    q_func()->close();
+    //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BGenericSocketPrivate::init()
 {
@@ -97,7 +99,7 @@ void BGenericSocketPrivate::disconnectIODevice()
     disconnect( device, SIGNAL( readyRead() ), this, SLOT( readyRead() ) );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BGenericSocketPrivate::lsocketError(QLocalSocket::LocalSocketError socketError)
 {
@@ -153,8 +155,10 @@ void BGenericSocketPrivate::stateChanged(QAbstractSocket::SocketState socketStat
 }
 
 /*============================================================================
-================================ Generic Socket
+================================ BGenericSocket ==============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
     QObject(parent), BBase( *new BGenericSocketPrivate(this) )
@@ -179,7 +183,20 @@ BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
     }
 }
 
-//
+BGenericSocket::~BGenericSocket()
+{
+    close();
+}
+
+/*============================== Protected constructors ====================*/
+
+BGenericSocket::BGenericSocket(BGenericSocketPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 QIODevice *BGenericSocket::ioDevice() const
 {
@@ -451,12 +468,4 @@ bool BGenericSocket::waitForReadyRead(int msecs)
 qint64 BGenericSocket::write(const QByteArray &byteArray)
 {
     return isSocketSet() ? ioDevice()->write(byteArray) : -1;
-}
-
-//
-
-BGenericSocket::BGenericSocket(BGenericSocketPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
 }

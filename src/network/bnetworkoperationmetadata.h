@@ -11,7 +11,7 @@ class QString;
 #include <QUuid>
 
 /*============================================================================
-================================ Network Operation Meta Data
+================================ BNetworkOperationMetaData ===================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkOperationMetaData : public BBase
@@ -21,7 +21,9 @@ public:
     BNetworkOperationMetaData();
     BNetworkOperationMetaData(const BNetworkOperationMetaData &other);
     BNetworkOperationMetaData(const QUuid &id, bool request, const QString &operation);
-    //
+protected:
+    explicit BNetworkOperationMetaData(BNetworkOperationMetaDataPrivate &d);
+public:
     void setId(const QUuid &id);
     void setIsRequest(bool request);
     void setOperation(const QString &operation);
@@ -30,12 +32,10 @@ public:
     bool isRequest() const;
     const QString operation() const;
     bool isValid() const;
-    //
+public:
     BNetworkOperationMetaData &operator=(const BNetworkOperationMetaData &other);
     bool operator==(const BNetworkOperationMetaData &other) const;
     bool operator<(const BNetworkOperationMetaData &other) const;
-protected:
-    BNetworkOperationMetaData(BNetworkOperationMetaDataPrivate &d);
 };
 
 #endif // BNETWORKOPERATIONMETADATA_H

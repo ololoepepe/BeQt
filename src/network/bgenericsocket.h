@@ -18,13 +18,13 @@ class QUdpSocket;
 #include <QByteArray>
 
 /*============================================================================
-================================ Generic Socket
+================================ BGenericSocket ==============================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BGenericSocket : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BGenericSocket)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BGenericSocket)
 public:
     enum SocketType
     {
@@ -35,9 +35,12 @@ public:
         UdpSocket = AbstractSocket + 0x08,  //0 0 0 0 1 0 0 1
         LocalSocket = 0x10                  //0 0 0 1 0 0 0 0
     };
-    //
+public:
     explicit BGenericSocket(SocketType type, QObject *parent = 0);
-    //
+    ~BGenericSocket();
+protected:
+    explicit BGenericSocket(BGenericSocketPrivate &d, QObject *parent = 0);
+public:
     QIODevice *ioDevice() const;
     QAbstractSocket *abstractSocket() const;
     QTcpSocket *tcpSocket() const;
@@ -87,8 +90,6 @@ signals:
     void readChannelFinished();
     void readyRead();
     void stateChanged(QAbstractSocket::SocketState socketState);
-protected:
-    BGenericSocket(BGenericSocketPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BGenericSocket)
 };

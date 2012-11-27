@@ -16,25 +16,23 @@ class QLocalSocket;
 #include <QAbstractSocket>
 
 /*============================================================================
-================================ Generic Socket Private
+================================ BGenericSocketPrivate =======================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BGenericSocket)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BGenericSocket)
+
 public:
     explicit BGenericSocketPrivate(BGenericSocket *q);
     ~BGenericSocketPrivate();
-    //
+public:
     void init();
     void setSocket(QAbstractSocket *socket);
     void setSocket(QLocalSocket *socket);
     void connectIODevice();
     void disconnectIODevice();
-    //
-    QPointer<QAbstractSocket> asocket;
-    QPointer<QLocalSocket> lsocket;
 public slots:
     void lsocketError(QLocalSocket::LocalSocketError socketError);
     void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
@@ -46,6 +44,9 @@ public slots:
     void readChannelFinished();
     void readyRead();
     void stateChanged(QAbstractSocket::SocketState socketState);
+public:
+    QPointer<QAbstractSocket> asocket;
+    QPointer<QLocalSocket> lsocket;
 private:
     Q_DISABLE_COPY(BGenericSocketPrivate)
 };

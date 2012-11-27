@@ -12,8 +12,10 @@
 #include <QMutexLocker>
 
 /*============================================================================
-================================ Network Server Worker
+================================ BNetworkServerWorker ========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *sp) :
     QObject(0), serverPrivate(sp)
@@ -26,7 +28,7 @@ BNetworkServerWorker::~BNetworkServerWorker()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 int BNetworkServerWorker::connectionCount() const
 {
@@ -46,7 +48,7 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     connections << connection;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BNetworkServerWorker::disconnected()
 {
@@ -61,8 +63,10 @@ void BNetworkServerWorker::disconnected()
 }
 
 /*============================================================================
-================================ Network Server Thread
+================================ BNetworkServerThread ========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkServerThread::BNetworkServerThread(BNetworkServerPrivate *serverPrivate) :
     QThread(0), worker( new BNetworkServerWorker(serverPrivate) )
@@ -76,7 +80,7 @@ BNetworkServerThread::~BNetworkServerThread()
     worker->deleteLater();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BNetworkServerThread::addConnection(int socketDescriptor)
 {
@@ -89,8 +93,10 @@ int BNetworkServerThread::connectionCount() const
 }
 
 /*============================================================================
-================================ Network Server Private
+================================ BNetworkServerPrivate =======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q) :
     BBasePrivate(q)
@@ -110,7 +116,7 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
     }
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BNetworkServerPrivate::init()
 {
@@ -123,7 +129,7 @@ BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor
     return q_func()->createConnection(socketDescriptor);
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BNetworkServerPrivate::newConnection(int socketDescriptor)
 {
@@ -165,8 +171,10 @@ void BNetworkServerPrivate::finished()
 }
 
 /*============================================================================
-================================ Network Server
+================================ BNetworkServer ==============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BNetworkServerPrivate(this) )
@@ -186,7 +194,15 @@ BNetworkServer::~BNetworkServer()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BNetworkServer::BNetworkServer(BNetworkServerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BNetworkServer::setMaxConnectionCount(int count)
 {
@@ -251,12 +267,4 @@ int BNetworkServer::maxThreadCount() const
 int BNetworkServer::currentThreadCount() const
 {
     return d_func()->threads.size();
-}
-
-//
-
-BNetworkServer::BNetworkServer(BNetworkServerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
 }

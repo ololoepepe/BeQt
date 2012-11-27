@@ -10,7 +10,7 @@ class BApplicationServerPrivate;
 #include <QStringList>
 
 /*============================================================================
-================================ Application server
+================================ BApplicationServer ==========================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BApplicationServer : public BBase
@@ -19,13 +19,13 @@ class B_NETWORK_EXPORT BApplicationServer : public BBase
 public:
     BApplicationServer();
     ~BApplicationServer();
-    //
+protected:
+    explicit BApplicationServer(BApplicationServerPrivate &d);
+public:
     bool tryListen(const QString &serverName);
     bool sendMessage(const QString &serverName, int &argc, char **argv);
     bool sendMessage( const QString &serverName, const QStringList &arguments = QStringList() );
 protected:
-    BApplicationServer(BApplicationServerPrivate &d);
-    //
     virtual void handleMessage(const QStringList &arguments);
 private:
     Q_DISABLE_COPY(BApplicationServer)

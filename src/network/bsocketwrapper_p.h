@@ -15,21 +15,26 @@ class BSocketWrapperPrivate;
 #include <QPointer>
 
 /*============================================================================
-================================ Socket Wrapper Private
+================================ BSocketWrapperPrivate =======================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BSocketWrapper)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BSocketWrapper)
 public:
     explicit BSocketWrapperPrivate(BSocketWrapper *q);
     ~BSocketWrapperPrivate();
-    //
+public:
     void init();
     void resetIn();
     void resetOut();
-    //
+public slots:
+    void bytesWritten(qint64 bytes);
+    void disconnected();
+    void error(QAbstractSocket::SocketError socketError);
+    void readyRead();
+public:
     QPointer<BGenericSocket> socket;
     qint64 bytesInTotal;
     BNetworkOperationMetaData metaIn;
@@ -39,11 +44,6 @@ public:
     int comprLvl;
     qint64 criticalBufferSize;
     bool closeOnCriticalBufferSize;
-public slots:
-    void bytesWritten(qint64 bytes);
-    void disconnected();
-    void error(QAbstractSocket::SocketError socketError);
-    void readyRead();
 private:
     Q_DISABLE_COPY(BSocketWrapperPrivate)
 };

@@ -17,8 +17,10 @@
 #include <QMetaObject>
 
 /*============================================================================
-================================ Network Connection Private
+================================ BNetworkConnectionPrivate ===================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q) :
     BBasePrivate(q), UniqueId( QUuid::createUuid() )
@@ -31,7 +33,7 @@ BNetworkConnectionPrivate::~BNetworkConnectionPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BNetworkConnectionPrivate::init()
 {
@@ -79,10 +81,13 @@ void BNetworkConnectionPrivate::sendNext()
 
 BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOperationMetaData &metaData)
 {
-    return new BNetworkOperation( metaData, q_func() );
+    BNetworkOperation *op = new BNetworkOperation( metaData, q_func() );
+    operations.insert(op, metaData);
+    connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( operationDestroyed(QObject *) ) );
+    return op;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BNetworkConnectionPrivate::connected()
 {
@@ -120,8 +125,7 @@ void BNetworkConnectionPrivate::downloadProgress(const BNetworkOperationMetaData
         }
         else
         {
-            op = new BNetworkOperation(mdat, q);
-            //QObject::connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( _m_operationDestroyed(QObject *) ) );
+            op = createOperation(mdat);
             replies.insert(mdat, op);
             op->d_func()->setStarted();
             if (detailedLog)
@@ -210,17 +214,22 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
     sendNext();
 }
 
-void BNetworkConnectionPrivate::operationDestroyed(const BNetworkOperationMetaData &metaData)
+void BNetworkConnectionPrivate::operationDestroyed(QObject *obj)
 {
-    if ( metaData.isRequest() )
-        requests.remove(metaData);
+    if ( !operations.contains(obj) )
+        return;
+    BNetworkOperationMetaData md = operations.value(obj);
+    if ( md.isRequest() )
+        requests.remove(md);
     else
-        replies.remove(metaData);
+        replies.remove(md);
 }
 
 /*============================================================================
-================================ Network Connection
+================================ BNetworkConnection ==========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
     QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
@@ -243,7 +252,15 @@ BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject 
         s->deleteLater();
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BNetworkConnection::setCriticalBufferSize(qint64 size)
 {
@@ -366,7 +383,6 @@ BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, con
     dat.second.setIsRequest(true);
     dat.second.setOperation(operation);
     BNetworkOperation *op = d->createOperation(dat.second);
-    //connect( op, SIGNAL( destroyed(QObject *) ), d->_m_o, SLOT( operationDestroyed(QObject *) ) );
     d->requests.insert(dat.second, op);
     d->dataQueue.enqueue(dat);
     d->sendNext();
@@ -386,15 +402,7 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
     return true;
 }
 
-//
-
-BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 void BNetworkConnection::log(const QString &text)
 {

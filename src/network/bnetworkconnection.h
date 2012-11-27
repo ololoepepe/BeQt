@@ -18,17 +18,20 @@ class QUuid;
 #include <QAbstractSocket>
 
 /*============================================================================
-================================ Network Connection
+================================ BNetworkConnection ==========================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BNetworkConnection)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BNetworkConnection)
 public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
     explicit BNetworkConnection(BGenericSocket::SocketType type, QObject *parent = 0);
-    //
+    ~BNetworkConnection();
+protected:
+    explicit BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
+public:
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
     void setDetailedLogMode(bool enabled);
@@ -50,6 +53,8 @@ public:
     QString peerAddress() const;
     BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
+protected:
+    virtual void log(const QString &text);
 signals:
     void connected();
     void disconnected();
@@ -60,10 +65,6 @@ signals:
     void requestReceived(BNetworkOperation *operation);
     void replySent(BNetworkOperation *operation);
     void criticalBufferSizeReached();
-protected:
-    BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
-    //
-    virtual void log(const QString &text);
 private:
     Q_DISABLE_COPY(BNetworkConnection)
 };

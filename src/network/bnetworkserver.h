@@ -14,17 +14,19 @@ class QString;
 #include <QObject>
 
 /*============================================================================
-================================ Network Server
+================================ BNetworkServer ==============================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkServer : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BNetworkServer)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BNetworkServer)
 public:
     explicit BNetworkServer(BGenericServer::ServerType type, QObject *parent = 0);
     ~BNetworkServer();
-    //
+protected:
+    explicit BNetworkServer(BNetworkServerPrivate &d, QObject *parent = 0);
+public:
     void setMaxConnectionCount(int count);
     void setMaxThreadCount(int count);
     bool isValid() const;
@@ -37,8 +39,6 @@ public:
     int maxThreadCount() const;
     int currentThreadCount() const;
 protected:
-    BNetworkServer(BNetworkServerPrivate &d, QObject *parent = 0);
-    //
     virtual BNetworkConnection *createConnection(int socketDescriptor) const = 0;
 private:
     Q_DISABLE_COPY(BNetworkServer)

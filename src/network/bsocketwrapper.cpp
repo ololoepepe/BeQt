@@ -13,8 +13,10 @@
 #include <QMetaObject>
 
 /*============================================================================
-================================ Socket Wrapper Private
+================================ BSocketWrapperPrivate =======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
     BBasePrivate(q)
@@ -27,7 +29,7 @@ BSocketWrapperPrivate::~BSocketWrapperPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BSocketWrapperPrivate::init()
 {
@@ -51,7 +53,7 @@ void BSocketWrapperPrivate::resetOut()
     metaOut.invalidate();
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BSocketWrapperPrivate::bytesWritten(qint64 bytes)
 {
@@ -134,8 +136,14 @@ void BSocketWrapperPrivate::readyRead()
 }
 
 /*============================================================================
-================================ Socket Wrapper
+================================ BSocketWrapper ==============================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_4_8;
+
+/*============================== Public constructors =======================*/
 
 BSocketWrapper::BSocketWrapper(QObject *parent) :
     QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
@@ -157,7 +165,15 @@ BSocketWrapper::BSocketWrapper(BGenericSocket::SocketType type, QObject *parent)
     setSocket( new BGenericSocket(type) );
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BSocketWrapper::setSocket(BGenericSocket *socket)
 {
@@ -276,16 +292,4 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
         emit uploadProgress(d->metaOut, d->bytesOutReady, d->bytesOutReady);
     d->socket->flush();
     return true;
-}
-
-//
-
-const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_4_8;
-
-//
-
-BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
 }

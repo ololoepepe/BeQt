@@ -15,18 +15,23 @@ class QByteArray;
 #include <QDataStream>
 
 /*============================================================================
-================================ Socket Wrapper
+================================ BSocketWrapper ==============================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BSocketWrapper : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BSocketWrapper)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BSocketWrapper)
+public:
+    static const QDataStream::Version DataStreamVersion;
 public:
     explicit BSocketWrapper(QObject *parent = 0);
     explicit BSocketWrapper(BGenericSocket *socket, QObject *parent = 0);
     explicit BSocketWrapper(BGenericSocket::SocketType type, QObject *parent = 0);
-    //
+    ~BSocketWrapper();
+protected:
+    explicit BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
+public:
     void setSocket(BGenericSocket *socket);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
@@ -38,16 +43,12 @@ public:
     bool closeOnCriticalBufferSize() const;
     bool isBuisy() const;
     bool sendData( const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
-    //
-    static const QDataStream::Version DataStreamVersion;
 signals:
     void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
     void dataSent(const BNetworkOperationMetaData &metaData);
     void criticalBufferSizeReached();
-protected:
-    BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
 private:
     Q_DISABLE_COPY(BSocketWrapper)
 };

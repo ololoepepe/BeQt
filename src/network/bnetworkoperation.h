@@ -16,16 +16,20 @@ class BNetworkConnectionPrivate;
 #include <QByteArray>
 
 /*============================================================================
-================================ Network Operation
+================================ BNetworkOperation ===========================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkOperation : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BNetworkOperation)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BNetworkOperation)
 public:
     ~BNetworkOperation();
-    //
+protected:
+    explicit BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent = 0);
+private:
+    explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent = 0);
+public:
     const QByteArray &data() const;
     BNetworkOperationMetaData metaData() const;
     bool isRequest() const;
@@ -42,14 +46,8 @@ signals:
     void downloadProgress(qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(qint64 bytesReady, qint64 bytesTotal);
     void finished();
-    void destroyed(const BNetworkOperationMetaData &metaData);
-protected:
-    BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent = 0);
 private:
-    explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent = 0);
-    //
     Q_DISABLE_COPY(BNetworkOperation)
-    //
     friend class BNetworkConnectionPrivate;
 };
 

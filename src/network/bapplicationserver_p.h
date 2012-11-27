@@ -14,25 +14,25 @@ class BGenericServer;
 #include <QDataStream>
 
 /*============================================================================
-================================ Application Server Private
+================================ BApplicationServerPrivate ===================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BApplicationServer)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BApplicationServer)
 public:
     static const int OperationTimeout;
     static const QDataStream::Version DSVersion;
-    //
+public:
     explicit BApplicationServerPrivate(BApplicationServer *q);
     ~BApplicationServerPrivate();
-    //
+public:
     void init();
-    //
-    BGenericServer *server;
 public slots:
     void newPendingConnection();
+public:
+    BGenericServer *server;
 private:
     Q_DISABLE_COPY(BApplicationServerPrivate)
 };

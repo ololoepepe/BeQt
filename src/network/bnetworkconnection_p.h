@@ -25,33 +25,23 @@ class QByteArray;
 #include <QUuid>
 
 /*============================================================================
-================================ Network Connection Private
+================================ BNetworkConnectionPrivate ===================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BNetworkConnection)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BNetworkConnection)
 public:
     typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
-    //
-    BNetworkConnectionPrivate(BNetworkConnection *q);
+public:
+    explicit BNetworkConnectionPrivate(BNetworkConnection *q);
     ~BNetworkConnectionPrivate();
-    //
+public:
     void init();
     void setSocket(BGenericSocket *s);
     void sendNext();
     BNetworkOperation *createOperation(const BNetworkOperationMetaData &metaData);
-    //
-    const QUuid UniqueId;
-    //
-    QPointer<BGenericSocket> socket;
-    QPointer<BSocketWrapper> socketWrapper;
-    QMap<BNetworkOperationMetaData, BNetworkOperation *> requests;
-    QMap<BNetworkOperationMetaData, BNetworkOperation *> replies;
-    QQueue<Data> dataQueue;
-    bool detailedLog;
-    bool autoDelete;
 public slots:
     void connected();
     void disconnected();
@@ -60,7 +50,18 @@ public slots:
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
     void dataSent(const BNetworkOperationMetaData &metaData);
-    void operationDestroyed(const BNetworkOperationMetaData &metaData);
+    void operationDestroyed(QObject *obj);
+public:
+    const QUuid UniqueId;
+public:
+    QPointer<BGenericSocket> socket;
+    QPointer<BSocketWrapper> socketWrapper;
+    QMap<BNetworkOperationMetaData, BNetworkOperation *> requests;
+    QMap<BNetworkOperationMetaData, BNetworkOperation *> replies;
+    QMap<QObject *, BNetworkOperationMetaData> operations;
+    QQueue<Data> dataQueue;
+    bool detailedLog;
+    bool autoDelete;
 private:
     Q_DISABLE_COPY(BNetworkConnectionPrivate)
 };

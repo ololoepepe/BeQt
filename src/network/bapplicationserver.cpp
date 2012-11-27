@@ -18,13 +18,15 @@
 #include <QScopedPointer>
 
 /*============================================================================
-================================ Application Server Private
+================================ BApplicationServerPrivate ===================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
 
 const int BApplicationServerPrivate::OperationTimeout = 5 * BeQt::Second;
 const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_4_8;
 
-//
+/*============================== Public constructors =======================*/
 
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
     BBasePrivate(q)
@@ -39,7 +41,7 @@ BApplicationServerPrivate::~BApplicationServerPrivate()
     server->deleteLater();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BApplicationServerPrivate::init()
 {
@@ -50,7 +52,7 @@ void BApplicationServerPrivate::init()
     connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BApplicationServerPrivate::newPendingConnection()
 {
@@ -83,8 +85,10 @@ void BApplicationServerPrivate::newPendingConnection()
 }
 
 /*============================================================================
-================================ Application Server
+================================ BApplicationServer ==========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BApplicationServer::BApplicationServer() :
     BBase( *new BApplicationServerPrivate(this) )
@@ -97,7 +101,15 @@ BApplicationServer::~BApplicationServer()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
+    BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 bool BApplicationServer::tryListen(const QString &serverName)
 {
@@ -155,15 +167,7 @@ bool BApplicationServer::sendMessage(const QString &serverName, const QStringLis
     return s.waitForBytesWritten(BApplicationServerPrivate::OperationTimeout);
 }
 
-//
-
-BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
-    BBase(d)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 void BApplicationServer::handleMessage(const QStringList &arguments)
 {

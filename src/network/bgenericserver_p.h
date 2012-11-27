@@ -19,7 +19,7 @@ class QLocalServer;
 #include <QLocalServer>
 
 /*============================================================================
-================================ Local Server
+================================ BLocalServer ================================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BLocalServer : public QLocalServer
@@ -27,14 +27,15 @@ class B_NETWORK_EXPORT BLocalServer : public QLocalServer
     Q_OBJECT
 public:
     explicit BLocalServer(QObject *parent = 0);
-signals:
-    void newConnection(int socketDescriptor);
+    ~BLocalServer();
 protected:
     void incomingConnection(quintptr socketDescriptor);
+signals:
+    void newConnection(int socketDescriptor);
 };
 
 /*============================================================================
-================================ Tcp Server
+================================ BTcpServer ==================================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BTcpServer : public QTcpServer
@@ -42,32 +43,33 @@ class B_NETWORK_EXPORT BTcpServer : public QTcpServer
     Q_OBJECT
 public:
     explicit BTcpServer(QObject *parent = 0);
-signals:
-    void newConnection(int socketDescriptor);
+    ~BTcpServer();
 protected:
     void incomingConnection(int handle);
+signals:
+    void newConnection(int socketDescriptor);
 };
 
 /*============================================================================
-================================ Generic Server Private
+================================ BGenericServerPrivate =======================
 ============================================================================*/
 
 class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BGenericServer)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BGenericServer)
 public:
     explicit BGenericServerPrivate(BGenericServer *q);
     ~BGenericServerPrivate();
-    //
+public:
     void init();
-    //
+public slots:
+    void newConnection(int socketDescriptor);
+public:
     QPointer<QTcpServer> tserver;
     QPointer<QLocalServer> lserver;
     QQueue<BGenericSocket *> socketQueue;
     int maxPending;
-public slots:
-    void newConnection(int socketDescriptor);
 private:
     Q_DISABLE_COPY(BGenericServerPrivate)
 };

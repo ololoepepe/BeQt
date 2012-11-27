@@ -15,15 +15,23 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Local Server
+================================ BLocalServer ================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BLocalServer::BLocalServer(QObject *parent) :
     QLocalServer(parent)
 {
+    //
 }
 
-//
+BLocalServer::~BLocalServer()
+{
+    //
+}
+
+/*============================== Protected methods =========================*/
 
 void BLocalServer::incomingConnection(quintptr socketDescriptor)
 {
@@ -31,15 +39,23 @@ void BLocalServer::incomingConnection(quintptr socketDescriptor)
 }
 
 /*============================================================================
-================================ Tcp Server
+================================ BTcpServer ==================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BTcpServer::BTcpServer(QObject *parent) :
     QTcpServer(parent)
 {
+    //
 }
 
-//
+BTcpServer::~BTcpServer()
+{
+    //
+}
+
+/*============================== Protected methods =========================*/
 
 void BTcpServer::incomingConnection(int handle)
 {
@@ -47,8 +63,10 @@ void BTcpServer::incomingConnection(int handle)
 }
 
 /*============================================================================
-================================ Generic Server Private
+================================ BGenericServerPrivate =======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q) :
     BBasePrivate(q)
@@ -61,14 +79,14 @@ BGenericServerPrivate::~BGenericServerPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BGenericServerPrivate::init()
 {
     maxPending = 10;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BGenericServerPrivate::newConnection(int socketDescriptor)
 {
@@ -96,8 +114,10 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
 }
 
 /*============================================================================
-================================ Generic Server
+================================ BGenericServer ==============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BGenericServer::BGenericServer(ServerType type, QObject *parent) :
     QObject(parent), BBase( *new BGenericServerPrivate(this) )
@@ -124,7 +144,20 @@ BGenericServer::BGenericServer(ServerType type, QObject *parent) :
     }
 }
 
-//
+BGenericServer::~BGenericServer()
+{
+    //
+}
+
+/*============================== Protected constructors ====================*/
+
+BGenericServer::BGenericServer(BGenericServerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 QTcpServer *BGenericServer::tcpServer() const
 {
@@ -224,7 +257,7 @@ bool BGenericServer::waitForNewConnection(int msec, bool *timedOut)
                                   d->lserver->waitForNewConnection(msec, timedOut);
 }
 
-//
+/*============================== Protected methods =========================*/
 
 BGenericSocket *BGenericServer::createSocket(int socketDescriptor)
 {
@@ -242,12 +275,4 @@ BGenericSocket *BGenericServer::createSocket(int socketDescriptor)
         break;
     }
     return socket;
-}
-
-//
-
-BGenericServer::BGenericServer(BGenericServerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
 }
