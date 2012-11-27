@@ -37,6 +37,8 @@ public:
     };
 public:
     explicit BGenericSocket(SocketType type, QObject *parent = 0);
+    explicit BGenericSocket(QAbstractSocket *socket, QObject *parent = 0);
+    explicit BGenericSocket(QLocalSocket *socket, QObject *parent = 0);
     ~BGenericSocket();
 protected:
     explicit BGenericSocket(BGenericSocketPrivate &d, QObject *parent = 0);

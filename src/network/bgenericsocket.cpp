@@ -183,6 +183,24 @@ BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
     }
 }
 
+BGenericSocket::BGenericSocket(QAbstractSocket *socket, QObject *parent) :
+    QObject(parent), BBase( *new BGenericSocketPrivate(this) )
+{
+    d_func()->init();
+    if (!socket)
+        return;
+    d_func()->setSocket(socket);
+}
+
+BGenericSocket::BGenericSocket(QLocalSocket *socket, QObject *parent) :
+    QObject(parent), BBase( *new BGenericSocketPrivate(this) )
+{
+    d_func()->init();
+    if (!socket)
+        return;
+    d_func()->setSocket(socket);
+}
+
 BGenericSocket::~BGenericSocket()
 {
     close();
