@@ -1,7 +1,8 @@
 #ifndef BTERMINALIOHANDLER_P_H
 #define BTERMINALIOHANDLER_P_H
 
-class QMutex;
+class BTerminalIOHandlerPrivate;
+
 class QString;
 
 #include "bterminaliohandler.h"
@@ -11,6 +12,10 @@ class QString;
 
 #include <QObject>
 #include <QThread>
+#include <QMutex>
+#include <QTextStream>
+#include <QFile>
+#include <QEventLoop>
 
 /*============================================================================
 ================================ Terminal IO Handler Thread
@@ -21,10 +26,16 @@ class BTerminalIOHandlerThread : public QThread
     Q_OBJECT
     Q_DISABLE_COPY(BTerminalIOHandlerThread)
 public:
-    explicit BTerminalIOHandlerThread(QObject *parent = 0);
+    explicit BTerminalIOHandlerThread(BTerminalIOHandlerPrivate *p);
     ~BTerminalIOHandlerThread();
 protected:
     void run();
+public:
+    static QMutex readMutex;
+    //
+    BTerminalIOHandlerPrivate *const _m_p;
+    //
+    QTextStream readStream;
 };
 
 /*============================================================================
@@ -34,6 +45,7 @@ protected:
 class B_CORE_EXPORT BTerminalIOHandlerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTerminalIOHandler)
+    B_DECLARE_PUBLIC_S(BTerminalIOHandler)
     B_DECLARE_TR_FUNCTIONS(BTerminalIOHandler, q)
     Q_OBJECT
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
@@ -41,15 +53,24 @@ public:
     explicit BTerminalIOHandlerPrivate(BTerminalIOHandler *q);
     ~BTerminalIOHandlerPrivate();
     //
-    void init();
+    static bool testInit(const char *where = 0);
+    static bool testUnique();
     //
-    static QMutex instMutex;
-    static QMutex stdinMutex;
-    static QMutex stdoutMutex;
-    static QMutex readLineMutex;
+    void init();
+    void lineRead(const QString &text);
+    //
     static QMutex echoMutex;
-    static bool prefereReadLine;
-    static QString lastLine;
+    static QMutex readMutex;
+    static QMutex writeMutex;
+    static QTextStream writeStream;
+    //
+    BTerminalIOHandlerThread *const Thread;
+    //
+    QMutex loopMutex;
+    QEventLoop readEventLoop;
+    QString lastLine;
+private:
+    friend class BTerminalIOHandlerThread;
 };
 
 #endif // BTERMINALIOHANDLER_P_H

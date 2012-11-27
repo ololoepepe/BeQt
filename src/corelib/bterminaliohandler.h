@@ -3,12 +3,13 @@
 
 class BTerminalIOHandlerPrivate;
 
+class QString;
+class QStringLit;
+
 #include "bglobal.h"
 #include "bbase.h"
 
 #include <QObject>
-#include <QString>
-#include <QStringList>
 
 /*============================================================================
 ================================ Terminal IO Handler
@@ -16,23 +17,24 @@ class BTerminalIOHandlerPrivate;
 
 class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BTerminalIOHandler)
-    B_DECLARE_PRIVATE_S(BTerminalIOHandler)
     Q_OBJECT
     Q_DISABLE_COPY(BTerminalIOHandler)
+    B_DECLARE_PRIVATE(BTerminalIOHandler)
+    B_DECLARE_PRIVATE_S(BTerminalIOHandler)
 public:
-    static QStringList splitCommand(const QString &command);
-    static BTerminalIOHandler *instance();
-    static void start();
-    static QString readLine();
-    static void write(const QString &text);
-    static void writeLine(const QString &text);
-    static void setStdinEchoEnabled(bool enabled = true);
-    //
     explicit BTerminalIOHandler(QObject *parent = 0);
     ~BTerminalIOHandler();
 protected:
     BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent = 0);
+public:
+    static BTerminalIOHandler *instance();
+    static QStringList splitCommand(const QString &command);
+    static QString readLine();
+    static void write(const QString &text);
+    static void writeLine(const QString &text);
+    static void setStdinEchoEnabled(bool enabled = true);
+protected:
+    virtual void handleCommand(const QString &command, const QStringList &arguments);
 signals:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:

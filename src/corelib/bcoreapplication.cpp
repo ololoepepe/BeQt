@@ -82,8 +82,7 @@ bool BCoreApplicationPrivate::testCoreInit(const char *where)
 
 bool BCoreApplicationPrivate::testCoreUnique()
 {
-    return bTest(!qs_func(), "BCoreApplication",
-                 "There must be only one instance of BCoreApplication");
+    return bTest(!qs_func(), "BCoreApplication", "There must be only one instance of BCoreApplication");
 }
 
 QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileName)

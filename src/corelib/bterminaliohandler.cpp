@@ -12,6 +12,9 @@
 #include <QChar>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QFile>
+
+#include <QDebug>
 
 #include <cstdio>
 
@@ -25,8 +28,8 @@
 ================================ Terminal IO Handler Thread
 ============================================================================*/
 
-BTerminalIOHandlerThread::BTerminalIOHandlerThread(QObject *parent) :
-    QThread(parent)
+BTerminalIOHandlerThread::BTerminalIOHandlerThread(BTerminalIOHandlerPrivate *p) :
+    QThread(p), _m_p(p), readStream(stdin, QIODevice::ReadOnly)
 {
     //
 }
@@ -40,33 +43,23 @@ BTerminalIOHandlerThread::~BTerminalIOHandlerThread()
 
 void BTerminalIOHandlerThread::run()
 {
-    QTextStream in(stdin, QIODevice::ReadOnly);
+    QMutexLocker locker(&readMutex);
     forever
     {
-        BTerminalIOHandlerPrivate::stdinMutex.lock();
-        QString line = in.readLine();
-        if (BTerminalIOHandlerPrivate::prefereReadLine)
-        {
-            BTerminalIOHandlerPrivate::lastLine = line;
-        }
-        else
-        {
-            QStringList args = BTerminalIOHandler::splitCommand(line);
-            QString command = args.takeFirst();
-            //QMetaObject::invokeMethod( _m_self, "commandEntered", Qt::QueuedConnection,
-                                       //Q_ARG(QString, command), Q_ARG(QStringList, args) );
-        }
-        BTerminalIOHandlerPrivate::stdinMutex.unlock();
-        msleep(100); //Required for readLine() to be able to lock the mutex. This is unlikely to be noticed by users
+        _m_p->lineRead( readStream.readLine() );
     }
 }
+
+//
+
+QMutex BTerminalIOHandlerThread::readMutex;
 
 /*============================================================================
 ================================ Terminal IO Handler
 ============================================================================*/
 
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
-  BBasePrivate(q)
+    BBasePrivate(q), Thread( new BTerminalIOHandlerThread(this) )
 {
     //
 }
@@ -78,24 +71,77 @@ BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 
 //
 
-void BTerminalIOHandlerPrivate::init()
+bool BTerminalIOHandlerPrivate::testInit(const char *where)
 {
-    prefereReadLine = false;
+    const char *w = where ? where : "BTerminalIOHandler";
+    B_QS(BTerminalIOHandler);
+    return bTest(qs, w, "There must be a BTerminalIOHandler instance");
+}
+
+bool BTerminalIOHandlerPrivate::testUnique()
+{
+    return bTest(!qs_func(), "BTerminalIOHandler", "There must be only one instance of BTerminalIOHandler");
 }
 
 //
 
-QMutex BTerminalIOHandlerPrivate::instMutex;
-QMutex BTerminalIOHandlerPrivate::stdinMutex;
-QMutex BTerminalIOHandlerPrivate::stdoutMutex;
-QMutex BTerminalIOHandlerPrivate::readLineMutex;
+void BTerminalIOHandlerPrivate::init()
+{
+    Thread->start();
+}
+
+void BTerminalIOHandlerPrivate::lineRead(const QString &text)
+{
+    QMutexLocker locker(&loopMutex);
+    if ( readEventLoop.isRunning() )
+    {
+        lastLine = text;
+        readEventLoop.quit();
+    }
+    else
+    {
+        QStringList args = BTerminalIOHandler::splitCommand(text);
+        QString cmd = !args.isEmpty() ? args.first() : QString();
+        q_func()->handleCommand(cmd, args);
+    }
+}
+
+//
+
 QMutex BTerminalIOHandlerPrivate::echoMutex;
-bool BTerminalIOHandlerPrivate::prefereReadLine = false;
-QString BTerminalIOHandlerPrivate::lastLine;
+QMutex BTerminalIOHandlerPrivate::readMutex;
+QMutex BTerminalIOHandlerPrivate::writeMutex;
+QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly);
 
 /*============================================================================
 ================================ Terminal IO Handler
 ============================================================================*/
+
+BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
+    QObject(parent), BBase( *new BTerminalIOHandlerPrivate(this) )
+{
+    BTerminalIOHandlerPrivate::testUnique();
+    d_func()->init();
+    _m_self = this;
+}
+
+BTerminalIOHandler::~BTerminalIOHandler()
+{
+    _m_self = 0;
+}
+
+BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    //
+}
+
+//
+
+BTerminalIOHandler *BTerminalIOHandler::instance()
+{
+    return _m_self;
+}
 
 QStringList BTerminalIOHandler::splitCommand(const QString &command)
 {
@@ -132,54 +178,18 @@ QStringList BTerminalIOHandler::splitCommand(const QString &command)
     return args;
 }
 
-BTerminalIOHandler *BTerminalIOHandler::instance()
-{
-    if (!_m_self)
-    {
-        BTerminalIOHandlerPrivate::instMutex.lock();
-        if (!_m_self)
-        {
-            _m_self = new BTerminalIOHandler;
-            _m_self->start();
-        }
-        BTerminalIOHandlerPrivate::instMutex.unlock();
-    }
-    return _m_self;
-}
-
-void BTerminalIOHandler::start()
-{
-    //
-}
-
 QString BTerminalIOHandler::readLine()
 {
-    QString line;
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::readLineMutex);
-    if ( BTerminalIOHandlerPrivate::stdinMutex.tryLock() )
-    {
-        static QTextStream in(stdin, QIODevice::ReadOnly);
-        line = in.readLine();
-        BTerminalIOHandlerPrivate::stdinMutex.unlock();
-    }
-    else
-    {
-        BTerminalIOHandlerPrivate::prefereReadLine = true;
-        BTerminalIOHandlerPrivate::stdinMutex.lock();
-        line = BTerminalIOHandlerPrivate::lastLine;
-        BTerminalIOHandlerPrivate::prefereReadLine = false;
-        BTerminalIOHandlerPrivate::lastLine.clear();
-        BTerminalIOHandlerPrivate::stdinMutex.unlock();
-    }
-    return line;
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::readMutex);
+    ds_func()->readEventLoop.exec();
+    return ds_func()->lastLine;
 }
 
 void BTerminalIOHandler::write(const QString &text)
 {
-    static QTextStream out(stdout, QIODevice::WriteOnly);
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::stdoutMutex);
-    out << text;
-    out.flush();
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::writeMutex);
+    BTerminalIOHandlerPrivate::writeStream << text;
+    BTerminalIOHandlerPrivate::writeStream.flush();
 }
 
 void BTerminalIOHandler::writeLine(const QString &text)
@@ -212,25 +222,11 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 
 //
 
+void BTerminalIOHandler::handleCommand(const QString &command, const QStringList &arguments)
+{
+    emit commandEntered(command, arguments);
+}
+
+//
+
 BTerminalIOHandler *BTerminalIOHandler::_m_self = 0;
-
-//
-
-BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
-    QObject(parent), BBase( *new BTerminalIOHandlerPrivate(this) )
-{
-    d_func()->init();
-}
-
-BTerminalIOHandler::~BTerminalIOHandler()
-{
-    //
-}
-
-//
-
-BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    //
-}
