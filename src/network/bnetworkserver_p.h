@@ -8,6 +8,7 @@ class BNetworkServerThreadPrivate;
 class BNetworkServerThread;
 class BNetworkServerPrivate;
 class BNetworkServer;
+class BGenericSocket;
 
 #include "bnetworkserver.h"
 #include "bgenericserver.h"
@@ -81,7 +82,8 @@ public:
     ~BNetworkServerPrivate();
 public:
     void init();
-    BNetworkConnection *createConnection(int socketDescriptor) const;
+    BNetworkConnection *createConnection(BGenericSocket *socket) const;
+    BGenericSocket *createSocket() const;
 public slots:
     void newConnection(int socketDescriptor);
     void finished();

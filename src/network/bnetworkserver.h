@@ -3,6 +3,7 @@
 
 class BNetworkServerPrivate;
 class BNetworkConnection;
+class BGenericSocket;
 
 class QString;
 
@@ -39,7 +40,8 @@ public:
     int maxThreadCount() const;
     int currentThreadCount() const;
 protected:
-    virtual BNetworkConnection *createConnection(int socketDescriptor) const = 0;
+    virtual BNetworkConnection *createConnection(BGenericSocket *socket) const = 0;
+    virtual BGenericSocket *createSocket() const;
 private:
     Q_DISABLE_COPY(BNetworkServer)
 };

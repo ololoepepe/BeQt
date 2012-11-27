@@ -40,7 +40,10 @@ int BNetworkServerWorker::connectionCount() const
 
 void BNetworkServerWorker::addConnection(int socketDescriptor)
 {
-    BNetworkConnection *connection = serverPrivate->createConnection(socketDescriptor);
+    BGenericSocket *s = serverPrivate->createSocket();
+    if ( !s || !s->setSocketDescriptor(socketDescriptor) || !s->isValid() )
+        return;
+    BNetworkConnection *connection = serverPrivate->createConnection(s);
     if ( !connection || !connection->isValid() )
         return;
     connect( connection, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
@@ -124,9 +127,9 @@ void BNetworkServerPrivate::init()
     maxThreadCount = 0;
 }
 
-BNetworkConnection *BNetworkServerPrivate::createConnection(int socketDescriptor) const
+BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket) const
 {
-    return q_func()->createConnection(socketDescriptor);
+    return q_func()->createConnection(socket);
 }
 
 /*============================== Public slots ==============================*/
@@ -267,4 +270,11 @@ int BNetworkServer::maxThreadCount() const
 int BNetworkServer::currentThreadCount() const
 {
     return d_func()->threads.size();
+}
+
+/*============================== Protected methods =========================*/
+
+BGenericSocket *BNetworkServer::createSocket() const
+{
+    return new BGenericSocket(BGenericSocket::TcpSocket);
 }
