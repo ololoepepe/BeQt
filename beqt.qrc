@@ -68,5 +68,7 @@
         <file>about/infos/authors.info</file>
         <file>about/infos/thanks-to.info</file>
         <file>about/infos/translations.info</file>
+        <file>icons/edit_mode_block.svgz</file>
+        <file>icons/edit_mode_normal.svgz</file>
     </qresource>
 </RCC>

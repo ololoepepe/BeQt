@@ -101,7 +101,6 @@ int main(int argc, char **argv)
       mw->addToolBar(tbar);
     mw->resize(1200, 800);
     mw->move(400, 200);
-    qDebug() << BApplication::beqtInfo(BApplication::Authors);
     //Showing widgets
     mw->show();
     //Running main event loop
