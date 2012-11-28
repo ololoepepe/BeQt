@@ -204,6 +204,7 @@ public:
     int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     void highlightBrackets();
+    bool testBracket(bool opening, const BCodeEdit::BracketPair *&bracket) const;
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
     void handleReturn();
     void handleSpace();

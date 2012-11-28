@@ -79,7 +79,16 @@ QSyntaxHighlighter *BDefaultFileType::createHighlighter() const
 
 QList<BCodeEdit::BracketPair> BDefaultFileType::brackets() const
 {
-    return QList<BCodeEdit::BracketPair>();
+    //test
+    QList<BCodeEdit::BracketPair> list;
+    BCodeEdit::BracketPair br;
+    br.opening = "(";
+    br.closing = ")";
+    br.escape = "\\";
+    list << br;
+    return list;
+    //end test
+    //return QList<BCodeEdit::BracketPair>();
 }
 
 /*============================================================================

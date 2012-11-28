@@ -1100,7 +1100,9 @@ int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QStrin
 
 void BCodeEditPrivate::highlightBrackets()
 {
-    QList<QTextEdit::ExtraSelection> list = ptedt->extraSelections();
+    const BCodeEdit::BracketPair *br = 0;
+    qDebug() << recognizedBrackets.size() << testBracket(true, br) << testBracket(false, br);
+    /*QList<QTextEdit::ExtraSelection> list = ptedt->extraSelections();
     removeExtraSelections(list, highlightedBrackets);
     highlightedBrackets.clear();
     QTextCursor tc = ptedt->textCursor();
@@ -1157,7 +1159,39 @@ void BCodeEditPrivate::highlightBrackets()
             list << es;
         }
     }
-    ptedt->setExtraSelections(list);
+    ptedt->setExtraSelections(list);*/
+}
+
+bool BCodeEditPrivate::testBracket(bool opening, const BCodeEdit::BracketPair *&bracket) const
+{
+    bracket = 0;
+    if ( recognizedBrackets.isEmpty() )
+        return false;
+    QTextCursor tc = ptedt->textCursor();
+    QString txt = removeTrailingSpaces( tc.block().text() );
+    int posInBlock = tc.positionInBlock();
+    foreach (const BCodeEdit::BracketPair &br, recognizedBrackets)
+    {
+        const QString &brText = opening ? br.opening : br.closing;
+        if ( brText.isEmpty() )
+            continue;
+        int len = brText.length();
+        int pos = opening ? posInBlock : posInBlock - len;
+        if (txt.mid(pos, len) != brText)
+            continue;
+        if ( br.escape.isEmpty() )
+        {
+            bracket = &br;
+            return true;
+        }
+        len = br.escape.length();
+        if ( txt.mid(pos - len, len) != br.escape)
+        {
+            bracket = &br;
+            return true;
+        }
+    }
+    return false;
 }
 
 void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges)
@@ -1826,7 +1860,7 @@ void BCodeEdit::setHighlighter(QSyntaxHighlighter *hl)
 void BCodeEdit::setRecognizedBrackets(const QList<BracketPair> &list)
 {
     B_D(BCodeEdit);
-    if ( !BCodeEditPrivate::testBracketPairListsEquality(d->recognizedBrackets, list) )
+    if ( BCodeEditPrivate::testBracketPairListsEquality(d->recognizedBrackets, list) )
         return;
     d->recognizedBrackets = list;
     d->highlightBrackets();

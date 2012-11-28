@@ -46,9 +46,11 @@ void BCodeEditorDocumentPrivate::init()
 {
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
-    fileType = BAbstractFileType::defaultFileType();
-    q_func()->setHighlighter( fileType->createHighlighter() );
-    q_func()->setRecognizedBrackets( fileType->brackets() );
+    fileType = 0;
+    q_func()->setFileType( BAbstractFileType::defaultFileType() );
+    //fileType = BAbstractFileType::defaultFileType();
+    //q_func()->setHighlighter( fileType->createHighlighter() );
+    //q_func()->setRecognizedBrackets( fileType->brackets() );
 }
 
 void BCodeEditorDocumentPrivate::setFileName(const QString &fn)
@@ -170,12 +172,13 @@ void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
     B_D(BCodeEditorDocument);
     if (ft == d->fileType)
         return;
-    d->fileType = ft;
-    if (ft)
-    {
-        setHighlighter( ft->createHighlighter() );
-        setRecognizedBrackets( ft->brackets() );
-    }
+    if ( ft && d->fileType && ft->id() == d->fileType->id() )
+        return;
+    if (!ft && d->fileType && d->fileType->id() == "Text")
+        return;
+    d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
+    setHighlighter( ft->createHighlighter() );
+    setRecognizedBrackets( ft->brackets() );
     emit fileTypeChanged(ft);
 }
 
