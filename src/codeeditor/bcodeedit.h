@@ -92,10 +92,12 @@ public slots:
     void insertText(const QString &txt);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
+    void selectAll();
     void deselectText();
     void cut();
     void copy();
     void paste();
+    void deleteSelection();
     void undo();
     void redo();
 protected:

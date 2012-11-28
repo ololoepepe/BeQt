@@ -1610,11 +1610,53 @@ void BCodeEditPrivate::futureWatcherFinished()
 
 void BCodeEditPrivate::popupMenu(const QPoint &pos)
 {
-    QMenu *menu = ptedt->createStandardContextMenu();
-    //TODO
-    QList<QAction *> actions = menu->actions();
-    //
-    menu->popup( ptedt->mapToGlobal(pos) );
+    B_Q(BCodeEdit);
+    QMenu *menu = new QMenu;
+    QAction *act = new QAction(menu);
+      act->setText( tr("Undo", "act text") );
+      act->setShortcut( QKeySequence("Ctrl+Z") );
+      act->setEnabled( q->isUndoAvailable() );
+      connect( act, SIGNAL( triggered() ), q, SLOT( undo() ) );
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText( tr("Redo", "act text") );
+      act->setShortcut( QKeySequence("Ctrl+Shift+Z") );
+      act->setEnabled( q->isRedoAvailable() );
+      connect( act, SIGNAL( triggered() ), q, SLOT( redo() ) );
+    menu->addAction(act);
+    menu->addSeparator();
+    act = new QAction(menu);
+      act->setText( tr("Cut", "act text") );
+      act->setShortcut( QKeySequence("Ctrl+X") );
+      act->setEnabled( q->isCutAvailable() );
+      connect( act, SIGNAL( triggered() ), q, SLOT( cut() ) );
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText( tr("Copy", "act text") );
+      act->setShortcut( QKeySequence("Ctrl+C") );
+      act->setEnabled( q->isCopyAvailable() );
+      connect( act, SIGNAL( triggered() ), q, SLOT( copy() ) );
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText( tr("Paste", "act text") );
+      act->setShortcut( QKeySequence("Ctrl+V") );
+      act->setEnabled( q->isPasteAvailable() );
+      connect( act, SIGNAL( triggered() ), q, SLOT( paste() ) );
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText( tr("Delete", "act text") );
+      act->setShortcut( QKeySequence("Del") );
+      act->setEnabled( q->hasSelection() && !q->isReadOnly() );
+      connect( act, SIGNAL( triggered() ), q, SLOT( deleteSelection() ) );
+    menu->addAction(act);
+    menu->addSeparator();
+    act = new QAction(menu);
+      act->setText( tr("Select all", "act text") );
+      act->setShortcut( QKeySequence("Ctrl+A") );
+      connect( act, SIGNAL( triggered() ), q, SLOT( selectAll() ) );
+    menu->addAction(act);
+    menu->exec( ptedt->mapToGlobal(pos) );
+    menu->deleteLater();
 }
 
 void BCodeEditPrivate::updateCursorPosition()
@@ -2153,6 +2195,11 @@ void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
     //_m_editSelectionChanged();
 }
 
+void BCodeEdit::selectAll()
+{
+    d_func()->ptedt->selectAll();
+}
+
 void BCodeEdit::deselectText()
 {
     B_D(BCodeEdit);
@@ -2187,6 +2234,13 @@ void BCodeEdit::paste()
     if ( text.isEmpty() )
         return;
     insertText(text);
+}
+
+void BCodeEdit::deleteSelection()
+{
+    if ( isReadOnly() || !hasSelection() )
+        return;
+    d_func()->deleteSelection();
 }
 
 void BCodeEdit::undo()
