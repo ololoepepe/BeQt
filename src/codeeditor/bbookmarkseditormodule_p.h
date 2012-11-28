@@ -17,29 +17,26 @@ class QAction;
 #include <QPointer>
 
 /*============================================================================
-================================ Bookmarks Editor Module Private
+================================ BBookmarksEditorModulePrivate ===============
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BBookmarksEditorModulePrivate : public BAbstractEditorModulePrivate
 {
-    B_DECLARE_PUBLIC(BBookmarksEditorModule)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BBookmarksEditorModule)
+public:
+    explicit BBookmarksEditorModulePrivate(BBookmarksEditorModule *q);
+    ~BBookmarksEditorModulePrivate();
 public:
     static void setBookmarks(BCodeEditorDocument *doc, const QList<QPoint> &list);
     static void setCurrentBookmark(BCodeEditorDocument *doc, const QPoint &pos);
     static QList<QPoint> bookmarks(BCodeEditorDocument *doc);
     static QPoint currentBookmark(BCodeEditorDocument *doc);
-    //
-    explicit BBookmarksEditorModulePrivate(BBookmarksEditorModule *q);
-    ~BBookmarksEditorModulePrivate();
-    //
+public:
     void init();
     void checkBookmarks();
-    //
-    static const QPoint InvalidPos;
-    //
+public:
     int maxBookmarks;
-    //
     QPointer<QAction> actMakeBookmark;
     QPointer<QAction> actGotoNextBookmark;
 public slots:

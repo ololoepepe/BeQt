@@ -13,17 +13,17 @@ class QSyntaxHighlighter;
 #include <QApplication>
 
 /*============================================================================
-================================ Abstract File Type
+================================ BAbstractFileType ===========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BAbstractFileType
 {
 public:
-    static BAbstractFileType *defaultFileType();
-    //
     BAbstractFileType();
     virtual ~BAbstractFileType();
-    //
+public:
+    static BAbstractFileType *defaultFileType();
+public:
     QString createFileDialogFilter() const;
     virtual QString id() const = 0;
     virtual QString name() const = 0;

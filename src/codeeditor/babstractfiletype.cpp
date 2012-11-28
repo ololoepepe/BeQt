@@ -10,7 +10,7 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Default File Type (declaration)
+================================ BDefaultFileType ============================
 ============================================================================*/
 
 class BDefaultFileType : public BAbstractFileType
@@ -19,7 +19,7 @@ class BDefaultFileType : public BAbstractFileType
 public:
     BDefaultFileType();
     ~BDefaultFileType();
-    //
+public:
     QString id() const;
     QString name() const;
     QString description() const;
@@ -30,8 +30,10 @@ public:
 };
 
 /*============================================================================
-================================ Default File Type (definition)
+================================ BDefaultFileType ============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BDefaultFileType::BDefaultFileType()
 {
@@ -43,7 +45,7 @@ BDefaultFileType::~BDefaultFileType()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 QString BDefaultFileType::id() const
 {
@@ -81,15 +83,10 @@ QList<BCodeEdit::BracketPair> BDefaultFileType::brackets() const
 }
 
 /*============================================================================
-================================ Abstract File Type
+================================ BAbstractFileType ===========================
 ============================================================================*/
 
-BAbstractFileType *BAbstractFileType::defaultFileType()
-{
-    return new BDefaultFileType;
-}
-
-//
+/*============================== Public constructors =======================*/
 
 BAbstractFileType::BAbstractFileType()
 {
@@ -100,7 +97,14 @@ BAbstractFileType::~BAbstractFileType()
     //
 }
 
-//
+/*============================== Static public methods =====================*/
+
+BAbstractFileType *BAbstractFileType::defaultFileType()
+{
+    return new BDefaultFileType;
+}
+
+/*============================== Public methods ============================*/
 
 QString BAbstractFileType::createFileDialogFilter() const
 {

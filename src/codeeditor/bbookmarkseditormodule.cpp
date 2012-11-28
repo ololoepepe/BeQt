@@ -21,8 +21,23 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Bookmarks Editor Module Private
+================================ BBookmarksEditorModulePrivate ===============
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BBookmarksEditorModulePrivate::BBookmarksEditorModulePrivate(BBookmarksEditorModule *q) :
+    BAbstractEditorModulePrivate(q)
+{
+    //
+}
+
+BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
 
 void BBookmarksEditorModulePrivate::setBookmarks(BCodeEditorDocument *doc, const QList<QPoint> &list)
 {
@@ -57,23 +72,10 @@ QPoint BBookmarksEditorModulePrivate::currentBookmark(BCodeEditorDocument *doc)
     if (!doc)
         return InvalidPos;
     QVariant v = doc->property("beqt/currentBookmark");
-    return v.type() == QVariant::Point ? v.toPoint() : InvalidPos;
+    return v.type() == QVariant::Point ? v.toPoint() : BBookmarksEditorModule::InvalidPos;
 }
 
-//
-
-BBookmarksEditorModulePrivate::BBookmarksEditorModulePrivate(BBookmarksEditorModule *q) :
-    BAbstractEditorModulePrivate(q)
-{
-    //
-}
-
-BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BBookmarksEditorModulePrivate::init()
 {
@@ -102,7 +104,7 @@ void BBookmarksEditorModulePrivate::checkBookmarks()
         actGotoNextBookmark->setEnabled(bm);
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BBookmarksEditorModulePrivate::retranslateUi()
 {
@@ -120,13 +122,17 @@ void BBookmarksEditorModulePrivate::retranslateUi()
     }
 }
 
-//
 
-const QPoint BBookmarksEditorModulePrivate::InvalidPos = QPoint(-1, -1);
 
 /*============================================================================
-================================ Bookmarks Editor Module
+================================ BBookmarksEditorModule ======================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const QPoint BBookmarksEditorModule::InvalidPos = QPoint(-1, -1);
+
+/*============================== Public constructors =======================*/
 
 BBookmarksEditorModule::BBookmarksEditorModule(QObject *parent) :
     BAbstractEditorModule(*new BBookmarksEditorModulePrivate(this), parent)
@@ -139,7 +145,15 @@ BBookmarksEditorModule::~BBookmarksEditorModule()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BBookmarksEditorModule::BBookmarksEditorModule(BBookmarksEditorModulePrivate &d, QObject *parent) :
+    BAbstractEditorModule(d, parent)
+{
+    //
+}
+
+/*============================== Public methods ============================*/
 
 QString BBookmarksEditorModule::id() const
 {
@@ -202,7 +216,7 @@ QList<QAction *> BBookmarksEditorModule::actions() const
     return list;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BBookmarksEditorModule::makeBookmark()
 {
@@ -280,7 +294,7 @@ bool BBookmarksEditorModule::gotoNextBookmark()
     return gotoBookmark(list.size() != ind ? ind : 0);
 }
 
-//
+/*============================== Protected methods =========================*/
 
 void BBookmarksEditorModule::editorSet(BCodeEditor *edr)
 {

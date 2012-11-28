@@ -7,6 +7,7 @@ class BCodeEditorDocument;
 
 class QString;
 class QAction;
+class QPoint;
 
 #include "babstracteditormodule.h"
 
@@ -16,23 +17,27 @@ class QAction;
 #include <QList>
 
 /*============================================================================
-================================ Bookmarks Editor Module
+================================ BBookmarksEditorModule ======================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BBookmarksEditorModule : public BAbstractEditorModule
 {
-    B_DECLARE_PRIVATE(BBookmarksEditorModule)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BBookmarksEditorModule)
 public:
     enum Action
     {
         MakeBookmarkAction,
         GotoNextBookmarkAction
     };
-    //
+public:
+    static const QPoint InvalidPos;
+public:
     explicit BBookmarksEditorModule(QObject *parent = 0);
     ~BBookmarksEditorModule();
-    //
+protected:
+    explicit BBookmarksEditorModule(BBookmarksEditorModulePrivate &d, QObject *parent = 0);
+public:
     QString id() const;
     void setMaximumBookmarkCount(int count);
     int maximumBookmarkCount() const;

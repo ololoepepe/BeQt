@@ -17,8 +17,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Abstract Editor Module Private
+================================ BAbstractEditorModulePrivate ================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BAbstractEditorModulePrivate::BAbstractEditorModulePrivate(BAbstractEditorModule *q) :
     BBasePrivate(q)
@@ -31,7 +33,7 @@ BAbstractEditorModulePrivate::~BAbstractEditorModulePrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BAbstractEditorModulePrivate::init()
 {
@@ -49,8 +51,10 @@ void BAbstractEditorModulePrivate::setEditor(BCodeEditor *edr)
 }
 
 /*============================================================================
-================================ Abstract Editor Module
+================================ BAbstractEditorModule =======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BAbstractEditorModule::BAbstractEditorModule(QObject *parent) :
     QObject(parent), BBase( *new BAbstractEditorModulePrivate(this) )
@@ -63,7 +67,15 @@ BAbstractEditorModule::~BAbstractEditorModule()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 bool BAbstractEditorModule::isBuisy() const
 {
@@ -75,15 +87,7 @@ BCodeEditor *BAbstractEditorModule::editor() const
     return d_func()->editor;
 }
 
-//
-
-BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 void BAbstractEditorModule::editorSet(BCodeEditor *edr)
 {
@@ -94,8 +98,6 @@ void BAbstractEditorModule::editorUnset(BCodeEditor *edr)
 {
     //
 }
-
-//BCodeEdit events
 
 void BAbstractEditorModule::documentReadOnlyChanged(bool ro)
 {
@@ -167,8 +169,6 @@ void BAbstractEditorModule::documentLinesSplitted(const QList<BCodeEdit::Splitte
     //
 }
 
-//BCodeEditorDocument events
-
 void BAbstractEditorModule::documentFileNameChanged(const QString &fn)
 {
     //
@@ -183,8 +183,6 @@ void BAbstractEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
 {
     //
 }
-
-//BCodeEditor events
 
 void BAbstractEditorModule::defaultCodecChanged(const QString &codecName)
 {
@@ -225,8 +223,6 @@ void BAbstractEditorModule::fileHistoryChanged(const QStringList &list)
 {
     //
 }
-
-//
 
 BCodeEditorDocument *BAbstractEditorModule::currentDocument() const
 {

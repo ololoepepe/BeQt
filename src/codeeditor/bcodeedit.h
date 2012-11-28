@@ -17,13 +17,14 @@ class QSyntaxHighlighter;
 #include <QTextDocument>
 
 /*============================================================================
-================================ Code Edit
+================================ BCodeEdit ===================================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEdit : public QWidget, public BBase
 {
-    B_DECLARE_PRIVATE(BCodeEdit)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BCodeEdit)
+
 public:
     enum EditMode
     {
@@ -36,7 +37,7 @@ public:
         TabWidth4 = 4,
         TabWidth8 = 8
     };
-    //
+public:
     struct BracketPair
     {
         QString opening;
@@ -48,10 +49,12 @@ public:
         int firstLineNumber;
         int lastLineNumber;
     };
-    //
+public:
     explicit BCodeEdit(QWidget *parent = 0);
     ~BCodeEdit();
-    //Setters
+protected:
+    explicit BCodeEdit(BCodeEditPrivate &d, QWidget *parent = 0);
+public:
     void setReadOnly(bool ro);
     void setEditFont(const QFont &fnt);
     void setEditMode(EditMode mode);
@@ -60,7 +63,6 @@ public:
     void setHighlighter(QSyntaxHighlighter *hl);
     void setRecognizedBrackets(const QList<BracketPair> &list);
     void setBracketHighlightingEnabled(bool enabled);
-    //Getters
     bool isReadOnly() const;
     bool isModified() const;
     bool hasSelection() const;
@@ -80,7 +82,6 @@ public:
     QString text() const;
     QString selectedText() const;
     bool isBuisy() const;
-    //Operations
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
@@ -97,6 +98,8 @@ public slots:
     void paste();
     void undo();
     void redo();
+protected:
+    BPlainTextEdit *innerEdit() const;
 signals:
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);
@@ -112,10 +115,6 @@ signals:
     void buisyChanged(bool buisy);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
-protected:
-    BCodeEdit(BCodeEditPrivate &d, QWidget *parent = 0);
-    //
-    BPlainTextEdit *innerEdit() const;
 private:
     Q_DISABLE_COPY(BCodeEdit)
 };

@@ -20,26 +20,25 @@ class QStringList;
 #include <QList>
 
 /*============================================================================
-================================ Abstract Editor Module
+================================ BAbstractEditorModule =======================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BAbstractEditorModule : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BAbstractEditorModule)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BAbstractEditorModule)
 public:
     explicit BAbstractEditorModule(QObject *parent = 0);
     ~BAbstractEditorModule();
-    //
+protected:
+    explicit BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent = 0);
+public:
     virtual QString id() const = 0;
     virtual bool isBuisy() const;
     BCodeEditor *editor() const;
 protected:
-    BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent = 0);
-    //
     virtual void editorSet(BCodeEditor *edr);
     virtual void editorUnset(BCodeEditor *edr);
-    //BCodeEdit events
     virtual void documentReadOnlyChanged(bool ro);
     virtual void documentModificationChanged(bool modified);
     virtual void documentSelectionChanged();
@@ -54,11 +53,9 @@ protected:
     virtual void documentBuisyChanged(bool buisy);
     virtual void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     virtual void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
-    //BCodeEditorDocument events
     virtual void documentFileNameChanged(const QString &fn);
     virtual void documentCodecChanged(const QString &codecName);
     virtual void documentFileTypeChanged(BAbstractFileType *ft);
-    //BCodeEditor events
     virtual void defaultCodecChanged(const QString &codecName);
     virtual void editModeChanged(BCodeEdit::EditMode mode);
     virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);
@@ -67,12 +64,10 @@ protected:
     virtual void currentDocumentChanged(BCodeEditorDocument *doc);
     virtual void fileTypesChanged();
     virtual void fileHistoryChanged(const QStringList &list);
-    //
     BCodeEditorDocument *currentDocument() const;
     QList<BCodeEditorDocument *> documents() const;
 private:
     Q_DISABLE_COPY(BAbstractEditorModule)
-    //
     friend class BCodeEditorPrivate;
 };
 

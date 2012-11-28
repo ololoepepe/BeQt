@@ -1,4 +1,5 @@
 #include "bplaintextedit.h"
+#include "bplaintextedit_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -10,24 +11,6 @@
 #include <QMimeData>
 
 #include <QDebug>
-
-/*============================================================================
-================================ Plain Text Edit Private
-============================================================================*/
-
-class BPlainTextEditPrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BPlainTextEdit)
-public:
-    explicit BPlainTextEditPrivate(BPlainTextEdit *q);
-    ~BPlainTextEditPrivate();
-public:
-    void init();
-public:
-    bool drag;
-private:
-    Q_DISABLE_COPY(BPlainTextEditPrivate)
-};
 
 /*============================================================================
 ================================ BPlainTextEditPrivate =======================

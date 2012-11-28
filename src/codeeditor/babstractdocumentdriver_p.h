@@ -11,20 +11,20 @@ class BCodeEditor;
 #include <QObject>
 
 /*============================================================================
-================================ Abstract Document Driver Private
+================================ BAbstractDocumentDriverPrivate ==============
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractDocumentDriverPrivate : public BBasePrivate
+class BAbstractDocumentDriverPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BAbstractDocumentDriver)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BAbstractDocumentDriver)
 public:
     explicit BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q);
     ~BAbstractDocumentDriverPrivate();
-    //
+public:
     void init();
     void setEditor(BCodeEditor *edr);
-    //
+public:
     BCodeEditor *editor;
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriverPrivate)

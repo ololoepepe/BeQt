@@ -16,14 +16,32 @@ class QTextCodec;
 #include <QString>
 #include <QtGlobal>
 
+/*============================== Static public constants ===================*/
+/*============================== Public constructors =======================*/
+/*============================== Protected constructors ====================*/
+/*============================== Private constructors ======================*/
+/*============================== Static public methods =====================*/
+/*============================== Public methods ============================*/
+/*============================== Public slots ==============================*/
+/*============================== Protected methods =========================*/
+/*============================== Protected slots ===========================*/
+
+/*============================== Public operators ==========================*/
+
+/*============================== Static public variables ===================*/
+/*============================== Static protected variables ================*/
+
+
+/*============================== */
+
 /*============================================================================
-================================ Abstract Document Driver
+================================ BAbstractDocumentDriver =====================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BAbstractDocumentDriver : public QObject, public BBase
 {
-    B_DECLARE_PRIVATE(BAbstractDocumentDriver)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BAbstractDocumentDriver)
 public:
     struct Operation
     {
@@ -31,10 +49,12 @@ public:
         QString fileName;
         QTextCodec *codec;
     };
-    //
+public:
     explicit BAbstractDocumentDriver(QObject *parent = 0);
     ~BAbstractDocumentDriver();
-    //
+protected:
+    explicit BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent = 0);
+public:
     virtual QString id() const = 0;
     virtual bool isBuisy() const = 0;
     virtual bool testFileExistance(const QString &fileName) = 0;
@@ -46,19 +66,16 @@ public:
     bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
     BCodeEditor *editor() const;
-signals:
-    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
-    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 protected:
-    BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent = 0);
-    //
     virtual bool handleSaveOperation(const Operation &op) = 0;
     virtual bool handleLoadOperation(const Operation &op) = 0;
     void emitLoadingFinished( const Operation &operation, bool success, const QString &text = QString() );
     void emitSavingFinished(const Operation &operation, bool success);
+signals:
+    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
+    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriver)
-    //
     friend class BCodeEditorPrivate;
 };
 

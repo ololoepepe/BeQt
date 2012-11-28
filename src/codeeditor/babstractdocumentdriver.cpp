@@ -6,6 +6,7 @@ class QTextCodec;
 #include "babstractdocumentdriver_p.h"
 #include "bcodeeditordocument.h"
 
+#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
@@ -13,8 +14,10 @@ class QTextCodec;
 #include <QDebug>
 
 /*============================================================================
-================================ Abstract Document Driver Private
+================================ BAbstractDocumentDriverPrivate ==============
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q) :
     BBasePrivate(q)
@@ -27,7 +30,7 @@ BAbstractDocumentDriverPrivate::~BAbstractDocumentDriverPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BAbstractDocumentDriverPrivate::init()
 {
@@ -40,8 +43,10 @@ void BAbstractDocumentDriverPrivate::setEditor(BCodeEditor *edr)
 }
 
 /*============================================================================
-================================ Abstract Document Driver
+================================ BAbstractDocumentDriver =====================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BAbstractDocumentDriver::BAbstractDocumentDriver(QObject *parent) :
     QObject(parent)
@@ -54,7 +59,15 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BAbstractDocumentDriver::BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
 {
@@ -93,14 +106,7 @@ BCodeEditor *BAbstractDocumentDriver::editor() const
     return d_func()->editor;
 }
 
-//
-
-BAbstractDocumentDriver::BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
-}
-
+/*============================== Protected methods =========================*/
 
 void BAbstractDocumentDriver::emitLoadingFinished(const Operation &operation, bool success, const QString &text)
 {

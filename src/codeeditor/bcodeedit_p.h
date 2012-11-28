@@ -38,46 +38,46 @@ class QPaintEvent;
 #include <QAbstractTextDocumentLayout>
 
 /*============================================================================
-================================ Code Edit Clipboard Notifier
+================================ BCodeEditClipboardNotifier ==================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditClipboardNotifier : public QObject
 {
     Q_OBJECT
 public:
-    static BCodeEditClipboardNotifier *instance();
-    //
     explicit BCodeEditClipboardNotifier();
     ~BCodeEditClipboardNotifier();
-    //
+public:
+    static BCodeEditClipboardNotifier *instance();
+public:
     bool clipboardDataAvailable() const;
-    //
-    static BCodeEditClipboardNotifier *_m_self;
-signals:
-    void clipboardDataAvailableChanged(bool available);
-private:
-    Q_DISABLE_COPY(BCodeEditClipboardNotifier)
-    //
-    bool dataAvailable;
 public slots:
     void dataChanged();
+signals:
+    void clipboardDataAvailableChanged(bool available);
+protected:
+    static BCodeEditClipboardNotifier *_m_self;
+private:
+    bool dataAvailable;
+private:
+    Q_DISABLE_COPY(BCodeEditClipboardNotifier)
 };
 
 /*============================================================================
-================================ Plain Text Edit Extended
+================================ BPlainTextEditExtended ======================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BPlainTextEditExtended : public BPlainTextEdit
 {
-    B_DECLARE_PRIVATE(BPlainTextEditExtended)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BPlainTextEditExtended)
 public:
     enum SelectionMode
     {
         NormalSelection,
         BlockSelection
     };
-    //
+public:
     struct SelectionRange
     {
         int start;
@@ -89,58 +89,58 @@ public:
             end = -1;
         }
     };
-    //
+public:
     explicit BPlainTextEditExtended(QWidget *parent = 0);
     ~BPlainTextEditExtended();
-    //
+protected:
+    explicit BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent = 0);
+public:
     void setBlockMode(bool enabled);
     void updateSelection();
     bool blockMode() const;
     QVector<SelectionRange> selectionRanges() const;
 protected:
-    BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent = 0);
-    //
     void paintEvent(QPaintEvent *e);
 private:
     Q_DISABLE_COPY(BPlainTextEditExtended)
 };
 
 /*============================================================================
-================================ Plain Text Edit Extended Private
+================================ BPlainTextEditExtendedPrivate ===============
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BPlainTextEditExtendedPrivate : public BPlainTextEditPrivate
 {
-    B_DECLARE_PUBLIC(BPlainTextEditExtended)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BPlainTextEditExtended)
+public:
+    explicit BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q);
+    ~BPlainTextEditExtendedPrivate();
 public:
     static inline void fillBackground( QPainter *painter, const QRectF &rect,
                                        QBrush brush, QRectF gradientRect = QRectF() );
-    //
-    explicit BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q);
-    ~BPlainTextEditExtendedPrivate();
-    //
+public:
     void init();
     void emulateShiftPress();
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
-    //
+public slots:
+    void selectionChanged();
+public:
     bool blockMode;
     bool hasSelection;
     QVector<BPlainTextEditExtended::SelectionRange> selectionRanges;
-public slots:
-    void selectionChanged();
 private:
     Q_DISABLE_COPY(BPlainTextEditExtendedPrivate)
 };
 
 /*============================================================================
-================================ Code Edit Private
+================================ BCodeEditPrivate ============================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BCodeEdit)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BCodeEdit)
 public:
     struct ProcessTextResult
     {
@@ -159,10 +159,15 @@ public:
         int pos;
         BCodeEdit::BracketPair bracket;
     };
-    //
+public:
     typedef QFuture<ProcessTextResult> ProcessTextFuture;
     typedef QFutureWatcher<ProcessTextResult> ProcessTextFutureWatcher;
-    //
+public:
+    static const QList<QChar> UnsupportedSymbols;
+public:
+    explicit BCodeEditPrivate(BCodeEdit *q);
+    ~BCodeEditPrivate();
+public:
     static QStringList processLine(const QString &line, int ll, BCodeEdit::TabWidth tw);
     static ProcessTextResult processText(const QString &text, int ll, BCodeEdit::TabWidth tw);
     static QString removeUnsupportedSymbols(const QString &text);
@@ -186,10 +191,7 @@ public:
     static bool testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2);
     static bool testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
                                              const QList<BCodeEdit::BracketPair> &l2);
-    //
-    explicit BCodeEditPrivate(BCodeEdit *q);
-    ~BCodeEditPrivate();
-    //
+public:
     void init();
     bool eventFilter(QObject *obj, QEvent *e);
     inline bool keyPressEvent(QKeyEvent *e);
@@ -203,7 +205,6 @@ public:
     int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     void highlightBrackets();
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
-    //KeyPress handlers
     void handleReturn();
     void handleSpace();
     void handleBackspace();
@@ -216,9 +217,19 @@ public:
     void handleCtrlLeft();
     void handleCtrlRight();
     void move(int key);
-    //
-    static const QList<QChar> UnsupportedSymbols;
-    //
+public slots:
+    void futureWatcherFinished();
+    void popupMenu(const QPoint &pos);
+    void updateCursorPosition();
+    void updateHasSelection();
+    void updateCopyAvailable(bool available);
+    void updatePasteAvailable(bool available);
+    void updateUndoAvailable(bool available);
+    void updateRedoAvailable(bool available);
+    void emitModificationChanged(bool modified);
+    void emitSelectionChanged();
+    void setTextToEmptyLine();
+public:
     bool blockMode;
     int lineLength;
     BCodeEdit::TabWidth tabWidth;
@@ -236,19 +247,6 @@ public:
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEditExtended *ptedt;
-public slots:
-    void futureWatcherFinished();
-    void popupMenu(const QPoint &pos);
-    void updateCursorPosition();
-    void updateHasSelection();
-    void updateCopyAvailable(bool available);
-    void updatePasteAvailable(bool available);
-    void updateUndoAvailable(bool available);
-    void updateRedoAvailable(bool available);
-    //
-    void emitModificationChanged(bool modified);
-    void emitSelectionChanged();
-    void setTextToEmptyLine();
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)
 };

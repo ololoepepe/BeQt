@@ -12,24 +12,23 @@ class BCodeEditorPrivate;
 #include <QObject>
 
 /*============================================================================
-================================ Abstract Editor Module Private
+================================ BAbstractEditorModulePrivate ================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BAbstractEditorModulePrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BAbstractEditorModule)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BAbstractEditorModule)
 public:
     explicit BAbstractEditorModulePrivate(BAbstractEditorModule *q);
     ~BAbstractEditorModulePrivate();
-    //
+public:
     void init();
     void setEditor(BCodeEditor *edr);
-    //
+public:
     BCodeEditor *editor;
 private:
     Q_DISABLE_COPY(BAbstractEditorModulePrivate)
-    //
     friend class BCodeEditorPrivate;
 };
 

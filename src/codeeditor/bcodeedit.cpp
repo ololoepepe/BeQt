@@ -60,15 +60,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Code Edit Clipboard Notifier
+================================ BCodeEditClipboardNotifier ==================
 ============================================================================*/
 
-BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::instance()
-{
-    return _m_self;
-}
-
-//
+/*============================== Public constructors =======================*/
 
 BCodeEditClipboardNotifier::BCodeEditClipboardNotifier() :
     QObject(0)
@@ -84,14 +79,21 @@ BCodeEditClipboardNotifier::~BCodeEditClipboardNotifier()
     _m_self = 0;
 }
 
-//
+/*============================== Static public methods =====================*/
+
+BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::instance()
+{
+    return _m_self;
+}
+
+/*============================== Public methods ============================*/
 
 bool BCodeEditClipboardNotifier::clipboardDataAvailable() const
 {
     return dataAvailable;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BCodeEditClipboardNotifier::dataChanged()
 {
@@ -102,13 +104,28 @@ void BCodeEditClipboardNotifier::dataChanged()
         emit clipboardDataAvailableChanged(b);
 }
 
-//
+/*============================== Static protected variables ================*/
 
 BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
 
 /*============================================================================
-================================ Plain Text Edit Extended Private
+================================ BPlainTextEditExtendedPrivate ===============
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BPlainTextEditExtendedPrivate::BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q) :
+    BPlainTextEditPrivate(q)
+{
+    //
+}
+
+BPlainTextEditExtendedPrivate::~BPlainTextEditExtendedPrivate()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
 
 void BPlainTextEditExtendedPrivate::fillBackground(QPainter *painter, const QRectF &rect,
                                                    QBrush brush, QRectF gradientRect)
@@ -133,20 +150,7 @@ void BPlainTextEditExtendedPrivate::fillBackground(QPainter *painter, const QRec
     painter->restore();
 }
 
-//
-
-BPlainTextEditExtendedPrivate::BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q) :
-    BPlainTextEditPrivate(q)
-{
-    //
-}
-
-BPlainTextEditExtendedPrivate::~BPlainTextEditExtendedPrivate()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BPlainTextEditExtendedPrivate::init()
 {
@@ -177,7 +181,7 @@ QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPain
     return context;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BPlainTextEditExtendedPrivate::selectionChanged()
 {
@@ -218,8 +222,10 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
 }
 
 /*============================================================================
-================================ Plain Text Edit Extended
+================================ BPlainTextEditExtended ======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BPlainTextEditExtended::BPlainTextEditExtended(QWidget *parent) :
     BPlainTextEdit(*new BPlainTextEditExtendedPrivate(this), parent)
@@ -232,7 +238,15 @@ BPlainTextEditExtended::~BPlainTextEditExtended()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BPlainTextEditExtended::BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent) :
+    BPlainTextEdit(d, parent)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BPlainTextEditExtended::setBlockMode(bool enabled)
 {
@@ -259,15 +273,7 @@ QVector<BPlainTextEditExtended::SelectionRange> BPlainTextEditExtended::selectio
     return d_func()->selectionRanges;
 }
 
-//
-
-BPlainTextEditExtended::BPlainTextEditExtended(BPlainTextEditExtendedPrivate &d, QWidget *parent) :
-    BPlainTextEdit(d, parent)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
 {
@@ -377,8 +383,32 @@ void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
 }
 
 /*============================================================================
-================================ Code Edit Private
+================================ BCodeEditPrivate ============================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const QList<QChar> BCodeEditPrivate::UnsupportedSymbols = QList<QChar>() << QChar(1) << QChar(2) << QChar(3)
+    << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8) << QChar(9) << QChar(11) << QChar(12) << QChar(13)
+    << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21)
+    << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26) << QChar(27) << QChar(28) << QChar(29)
+    << QChar(30) << QChar(31);
+
+/*============================== Public constructors =======================*/
+
+BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BCodeEditPrivate::~BCodeEditPrivate()
+{
+    if (highlighter)
+        highlighter->deleteLater();
+}
+
+/*============================== Static public methods =====================*/
 
 QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit::TabWidth tw)
 {
@@ -634,21 +664,7 @@ bool BCodeEditPrivate::testBracketPairListsEquality(const QList<BCodeEdit::Brack
     return true;
 }
 
-//
-
-BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
-    BBasePrivate(q)
-{
-    //
-}
-
-BCodeEditPrivate::~BCodeEditPrivate()
-{
-    if (highlighter)
-        highlighter->deleteLater();
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BCodeEditPrivate::init()
 {
@@ -1569,7 +1585,7 @@ void BCodeEditPrivate::move(int key)
     tc.endEditBlock();
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BCodeEditPrivate::futureWatcherFinished()
 {
@@ -1657,8 +1673,6 @@ void BCodeEditPrivate::updateRedoAvailable(bool available)
                                    Q_ARG(bool, !ptedt->isReadOnly() && redoAvailable) );
 }
 
-//
-
 void BCodeEditPrivate::emitModificationChanged(bool modified)
 {
     QMetaObject::invokeMethod( q_func(), "modificationChanged", Q_ARG(bool, modified) );
@@ -1677,17 +1691,11 @@ void BCodeEditPrivate::setTextToEmptyLine()
     ptedt->setTextCursor(tc);
 }
 
-//
-
-const QList<QChar> BCodeEditPrivate::UnsupportedSymbols = QList<QChar>() << QChar(1) << QChar(2) << QChar(3)
-    << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8) << QChar(9) << QChar(11) << QChar(12) << QChar(13)
-    << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18) << QChar(19) << QChar(20) << QChar(21)
-    << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26) << QChar(27) << QChar(28) << QChar(29)
-    << QChar(30) << QChar(31);
-
 /*============================================================================
-================================ Code Edit
+================================ BCodeEdit ===================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BCodeEdit::BCodeEdit(QWidget *parent) :
     QWidget(parent), BBase( *new BCodeEditPrivate(this) )
@@ -1700,7 +1708,15 @@ BCodeEdit::~BCodeEdit()
     //
 }
 
-//Setters
+/*============================== Protected constructors ====================*/
+
+BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
+    QWidget(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BCodeEdit::setReadOnly(bool ro)
 {
@@ -1782,8 +1798,6 @@ void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
     d->bracketsHighlighting = enabled;
     d->highlightBrackets();
 }
-
-//Getters
 
 bool BCodeEdit::isReadOnly() const
 {
@@ -1901,8 +1915,6 @@ bool BCodeEdit::isBuisy() const
     return d_func()->buisy;
 }
 
-//Operations
-
 bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     if ( txt.isEmpty() )
@@ -1981,7 +1993,7 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
     return count;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
 {
@@ -2215,15 +2227,7 @@ void BCodeEdit::redo()
     //_m_editCursorPositionChanged();
 }
 
-//
-
-BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 BPlainTextEdit *BCodeEdit::innerEdit() const
 {
