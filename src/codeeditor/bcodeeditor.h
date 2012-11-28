@@ -20,13 +20,13 @@ class QTextCodec;
 #include <QString>
 
 /*============================================================================
-================================ Code Editor
+================================ BCodeEditor =================================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditor : public QWidget, public BBase
 {
-    B_DECLARE_PRIVATE(BCodeEditor)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BCodeEditor)
 public:
     enum StandardModule
     {
@@ -45,7 +45,16 @@ public:
         SouthEastSouthWestAsianGroup,
         MiddleEastGroup
     };
-    //
+public:
+    explicit BCodeEditor(QWidget *parent = 0);
+    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent = 0);
+    explicit BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
+    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
+                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
+    ~BCodeEditor();
+protected:
+    explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
+public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
     static bool supportsCodec(QTextCodec *codec);
     static bool supportsCodec(const QString &codecName);
@@ -57,14 +66,7 @@ public:
     static QString codecGroupName(CodecGroup group);
     static QList<QTextCodec *> codecsForGroup(CodecGroup group);
     static QStringList codecNamesForGroup(CodecGroup group);
-    //
-    explicit BCodeEditor(QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
-                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
-    ~BCodeEditor();
-    //
+public:
     void setEditFont(const QFont &fnt);
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
@@ -132,11 +134,8 @@ signals:
     void fileTypesChanged();
     void fileHistoryChanged(const QStringList &history);
     void allDocumentsProcessed();
-protected:
-    BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BCodeEditor)
-    //
     friend class BAbstractEditorModulePrivate;
 };
 

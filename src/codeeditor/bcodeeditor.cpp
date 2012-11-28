@@ -55,6 +55,8 @@
 ================================ Select Documents Dialog Private
 ============================================================================*/
 
+/*============================== Public constructors =======================*/
+
 BSelectDocumentsDialogPrivate::BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q,
                                                              const QList<BCodeEditorDocument *> &list) :
     BBasePrivate(q), Documents(list)
@@ -67,7 +69,7 @@ BSelectDocumentsDialogPrivate::~BSelectDocumentsDialogPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BSelectDocumentsDialogPrivate::init()
 {
@@ -110,7 +112,7 @@ void BSelectDocumentsDialogPrivate::init()
       vlt->addWidget(dlgbbox);
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BSelectDocumentsDialogPrivate::dlgbboxClicked(QAbstractButton *button)
 {
@@ -132,8 +134,10 @@ void BSelectDocumentsDialogPrivate::dlgbboxClicked(QAbstractButton *button)
 }
 
 /*============================================================================
-================================ Select Documents Dialog
+================================ BSelectDocumentsDialog ======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSelectDocumentsDialog::BSelectDocumentsDialog(const QList<BCodeEditorDocument *> &documents, QWidget *parent) :
     QDialog(parent), BBase( *new BSelectDocumentsDialogPrivate(this, documents) )
@@ -146,7 +150,15 @@ BSelectDocumentsDialog::~BSelectDocumentsDialog()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BSelectDocumentsDialog::BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent) :
+    QDialog(parent), BBase(d)
+{
+    //
+}
+
+/*============================== Public methods ============================*/
 
 int BSelectDocumentsDialog::decision() const
 {
@@ -163,17 +175,11 @@ QList<BCodeEditorDocument *> BSelectDocumentsDialog::selectedDocuments() const
     return list;
 }
 
-//
-
-BSelectDocumentsDialog::BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
-{
-    //
-}
-
 /*============================================================================
-================================ Drop Handler
+================================ BDropHandler ================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BDropHandler::BDropHandler(BCodeEditorPrivate *parent) :
     QObject(parent), Editor(parent)
@@ -186,7 +192,7 @@ BDropHandler::~BDropHandler()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 bool BDropHandler::eventFilter(QObject *o, QEvent *e)
 {
@@ -217,8 +223,46 @@ bool BDropHandler::eventFilter(QObject *o, QEvent *e)
 }
 
 /*============================================================================
-================================ Code Editor Private
+================================ BCodeEditorPrivate ==========================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const QStringList BCodeEditorPrivate::UnicodeCodecs = QStringList() << "UTF-16" << "UTF-8";
+const QStringList BCodeEditorPrivate::EastEuropeanCodecs = QStringList() << "ISO 8859-13" << "ISO 8859-4"
+    << "Windows-1257" << "ISO 8859-5" << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2"
+    << "Windows-1250";
+const QStringList BCodeEditorPrivate::WestEuropeanCodecs = QStringList() << "ISO 8859-7" << "Windows-1253" << "IBM 850"
+    << "ISO 8859-1" << "ISO 8859-15" << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10"
+    << "ISO 8859-3";
+const QStringList BCodeEditorPrivate::EastAsianCodecs = QStringList() << "Windows-1258" << "Big5" << "Big5-HKSCS"
+    << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS";
+const QStringList BCodeEditorPrivate::SouthEastSouthWestAsianCodecs = QStringList() << "TIS-620" << "ISO 8859-9"
+    << "Windows-1254";
+const QStringList BCodeEditorPrivate::MiddleEastCodecs = QStringList() << "ISO 8859-6" << "Windows-1256"
+    << "Windows-1255" << "ISO 8859-8";
+const QStringList BCodeEditorPrivate::SupportedCodecs = QStringList() << BCodeEditorPrivate::UnicodeCodecs
+    << BCodeEditorPrivate::EastEuropeanCodecs << BCodeEditorPrivate::WestEuropeanCodecs
+    << BCodeEditorPrivate::EastAsianCodecs << BCodeEditorPrivate::SouthEastSouthWestAsianCodecs
+    << BCodeEditorPrivate::MiddleEastCodecs;
+const QMap<QTextCodec *, QString> BCodeEditorPrivate::CodecNames = BCodeEditorPrivate::createCodecNamesMap();
+
+/*============================== Public constructors =======================*/
+
+BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BCodeEditorPrivate::~BCodeEditorPrivate()
+{
+    foreach (BAbstractFileType *ft, fileTypes)
+        delete ft;
+    delete defaultFileType;
+}
+
+/*============================== Static public methods =====================*/
 
 QString BCodeEditorPrivate::defaultFileName()
 {
@@ -314,24 +358,7 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
     return "";
 }
 
-
-
-//
-
-BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
-    BBasePrivate(q)
-{
-    //
-}
-
-BCodeEditorPrivate::~BCodeEditorPrivate()
-{
-    foreach (BAbstractFileType *ft, fileTypes)
-        delete ft;
-    delete defaultFileType;
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BCodeEditorPrivate::init()
 {
@@ -653,8 +680,6 @@ void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QStrin
     emitFileHistoryChanged(fileHistory);
 }
 
-//Messages
-
 void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
 {
     if ( fileName.isEmpty() )
@@ -707,8 +732,6 @@ int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
     msg.setDefaultButton(QMessageBox::Discard);
     return msg.exec();
 }
-
-//Signal emitting
 
 void BCodeEditorPrivate::emitDefaultCodecChanged(const QString &codecName)
 {
@@ -767,8 +790,6 @@ void BCodeEditorPrivate::emitFileHistoryChanged(const QStringList &list)
     QMetaObject::invokeMethod( q_func(), "fileHistoryChanged", Q_ARG(QStringList, list) );
 }
 
-//External private class call
-
 void BCodeEditorPrivate::setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr)
 {
     if (!mdl)
@@ -783,28 +804,7 @@ void BCodeEditorPrivate::setDriverEditor(BAbstractDocumentDriver *drv, BCodeEdit
     drv->d_func()->setEditor(edr);
 }
 
-//
-
-const QStringList BCodeEditorPrivate::UnicodeCodecs = QStringList() << "UTF-16" << "UTF-8";
-const QStringList BCodeEditorPrivate::EastEuropeanCodecs = QStringList() << "ISO 8859-13" << "ISO 8859-4"
-    << "Windows-1257" << "ISO 8859-5" << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2"
-    << "Windows-1250";
-const QStringList BCodeEditorPrivate::WestEuropeanCodecs = QStringList() << "ISO 8859-7" << "Windows-1253" << "IBM 850"
-    << "ISO 8859-1" << "ISO 8859-15" << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10"
-    << "ISO 8859-3";
-const QStringList BCodeEditorPrivate::EastAsianCodecs = QStringList() << "Windows-1258" << "Big5" << "Big5-HKSCS"
-    << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS";
-const QStringList BCodeEditorPrivate::SouthEastSouthWestAsianCodecs = QStringList() << "TIS-620" << "ISO 8859-9"
-    << "Windows-1254";
-const QStringList BCodeEditorPrivate::MiddleEastCodecs = QStringList() << "ISO 8859-6" << "Windows-1256"
-    << "Windows-1255" << "ISO 8859-8";
-const QStringList BCodeEditorPrivate::SupportedCodecs = QStringList() << BCodeEditorPrivate::UnicodeCodecs
-    << BCodeEditorPrivate::EastEuropeanCodecs << BCodeEditorPrivate::WestEuropeanCodecs
-    << BCodeEditorPrivate::EastAsianCodecs << BCodeEditorPrivate::SouthEastSouthWestAsianCodecs
-    << BCodeEditorPrivate::MiddleEastCodecs;
-const QMap<QTextCodec *, QString> BCodeEditorPrivate::CodecNames = BCodeEditorPrivate::createCodecNamesMap();
-
-//
+/*============================== Public slots ==============================*/
 
 void BCodeEditorPrivate::createDropHandler()
 {
@@ -878,8 +878,6 @@ void BCodeEditorPrivate::twgtTabCloseRequested(int index)
     if (doc)
         closeDocument(doc);
 }
-
-//BCodeEdit events
 
 void BCodeEditorPrivate::documentReadOnlyChanged(bool ro)
 {
@@ -980,8 +978,6 @@ void BCodeEditorPrivate::documentLinesSplitted(const QList<BCodeEdit::SplittedLi
         module->documentLinesSplitted(linesRanges);
 }
 
-//BCodeEditorDocument events
-
 void BCodeEditorPrivate::documentFileNameChanged(const QString &fn)
 {
     BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
@@ -1055,8 +1051,64 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
 }
 
 /*============================================================================
-================================ Code Editor
+================================ BCodeEditor =================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BCodeEditor::BCodeEditor(QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    d_func()->init();
+    addModule(EditModule);
+    addModule(IndicatorsModule);
+    addModule(OpenSaveModule);
+    addModule(SearchModule);
+}
+
+BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    d_func()->init();
+    foreach (BAbstractFileType *ft, fileTypes)
+        d_func()->tryAddFileType(ft);
+    addModule(EditModule);
+    addModule(IndicatorsModule);
+    addModule(OpenSaveModule);
+    addModule(SearchModule);
+}
+
+BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    d_func()->init();
+    setModules(moduleList);
+}
+
+BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
+                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
+    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+{
+    d_func()->init();
+    foreach (BAbstractFileType *ft, fileTypes)
+        d_func()->tryAddFileType(ft);
+    setModules(moduleList);
+}
+
+BCodeEditor::~BCodeEditor()
+{
+    //
+}
+
+/*============================== Protected constructors ====================*/
+
+BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
+    QWidget(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
 
 BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BCodeEditor *parent)
 {
@@ -1175,53 +1227,7 @@ QStringList BCodeEditor::codecNamesForGroup(CodecGroup group)
     }
 }
 
-//
-
-BCodeEditor::BCodeEditor(QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    addModule(EditModule);
-    addModule(IndicatorsModule);
-    addModule(OpenSaveModule);
-    addModule(SearchModule);
-}
-
-BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    foreach (BAbstractFileType *ft, fileTypes)
-        d_func()->tryAddFileType(ft);
-    addModule(EditModule);
-    addModule(IndicatorsModule);
-    addModule(OpenSaveModule);
-    addModule(SearchModule);
-}
-
-BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    setModules(moduleList);
-}
-
-BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
-                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    foreach (BAbstractFileType *ft, fileTypes)
-        d_func()->tryAddFileType(ft);
-    setModules(moduleList);
-}
-
-BCodeEditor::~BCodeEditor()
-{
-    //
-}
-
-//
+/*============================== Public methods ============================*/
 
 void BCodeEditor::setEditFont(const QFont &fnt)
 {
@@ -1576,7 +1582,7 @@ QObject *BCodeEditor::dropHandler() const
     return d_func()->dropHandler;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 bool BCodeEditor::addDocument(const QString &fileName)
 {
@@ -1652,12 +1658,4 @@ bool BCodeEditor::closeCurrentDocument()
 bool BCodeEditor::closeAllDocuments()
 {
     return d_func()->closeAllDocuments();
-}
-
-//
-
-BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
-{
-    d_func()->init();
 }

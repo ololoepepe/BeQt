@@ -35,41 +35,43 @@ class QEvent;
 #include <QDialog>
 
 /*============================================================================
-================================ Select Documents Dialog
+================================ BSelectDocumentsDialog ======================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBase
 {
-    B_DECLARE_PRIVATE(BSelectDocumentsDialog)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BSelectDocumentsDialog)
 public:
     explicit BSelectDocumentsDialog(const QList<BCodeEditorDocument *> &documents, QWidget *parent = 0);
     ~BSelectDocumentsDialog();
-    //
+protected:
+    explicit BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent = 0);
+public:
     int decision() const;
     QList<BCodeEditorDocument *> selectedDocuments() const;
-protected:
-    BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BSelectDocumentsDialog)
 };
 
 /*============================================================================
-================================ Select Documents Dialog Private
+================================ BSelectDocumentsDialogPrivate ===============
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BSelectDocumentsDialog)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BSelectDocumentsDialog)
 public:
     explicit BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q, const QList<BCodeEditorDocument *> &list);
     ~BSelectDocumentsDialogPrivate();
-    //
+public:
     void init();
-    //
+public slots:
+    void dlgbboxClicked(QAbstractButton *button);
+public:
     const QList<BCodeEditorDocument *> Documents;
-    //
+public:
     int decision;
     QVBoxLayout *vlt;
       QLabel *lblText;
@@ -80,14 +82,12 @@ public:
         //Save
         //Discard
         //Cancel
-private slots:
-    void dlgbboxClicked(QAbstractButton *button);
 private:
     Q_DISABLE_COPY(BSelectDocumentsDialogPrivate)
 };
 
 /*============================================================================
-================================ Drop Handler
+================================ BDropHandler ================================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BDropHandler : public QObject
@@ -96,22 +96,22 @@ class B_CODEEDITOR_EXPORT BDropHandler : public QObject
 public:
     explicit BDropHandler(BCodeEditorPrivate *parent);
     ~BDropHandler();
-    //
+public:
     bool eventFilter(QObject *o, QEvent *e);
-    //
+private:
     BCodeEditorPrivate *const Editor;
 private:
     Q_DISABLE_COPY(BDropHandler)
 };
 
 /*============================================================================
-================================ Code Editor Private
+================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BCodeEditor)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BCodeEditor)
 public:
     enum Operation
     {
@@ -119,16 +119,25 @@ public:
         OpenOperation,
         SaveOperation
     };
-    //
+public:
+    static const QStringList UnicodeCodecs;
+    static const QStringList EastEuropeanCodecs;
+    static const QStringList WestEuropeanCodecs;
+    static const QStringList EastAsianCodecs;
+    static const QStringList SouthEastSouthWestAsianCodecs;
+    static const QStringList MiddleEastCodecs;
+    static const QStringList SupportedCodecs;
+    static const QMap<QTextCodec *, QString> CodecNames;
+public:
+    explicit BCodeEditorPrivate(BCodeEditor *q);
+    ~BCodeEditorPrivate();
+public:
     static QString defaultFileName();
     static QString createFileName(const QString &fileName, const QString &defaultName,
                                   const QStringList &existingNames);
     static QMap<QTextCodec *, QString> createCodecNamesMap();
     static QString codecDescriptiveName(const QString &codecName);
-    //
-    explicit BCodeEditorPrivate(BCodeEditor *q);
-    ~BCodeEditorPrivate();
-    //
+public:
     void init();
     bool tryAddFileType(BAbstractFileType *ft);
     bool tryRemoveFileType(const QString &id);
@@ -146,12 +155,10 @@ public:
     bool tryCloseDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
     void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
-    //Messages
     void failedToOpenMessage(const QString &fileName);
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     int reopenModifiedMessage(const QString &fileName);
     int closeModifiedMessage(const QString &fileName);
-    //Signal emitting
     void emitDefaultCodecChanged(const QString &codecName);
     void emitEditModeChanged(BCodeEdit::EditMode mode);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
@@ -160,19 +167,32 @@ public:
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
     void emitFileTypesChanged();
     void emitFileHistoryChanged(const QStringList &list);
-    //External private class call
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
-    //
-    static const QStringList UnicodeCodecs;
-    static const QStringList EastEuropeanCodecs;
-    static const QStringList WestEuropeanCodecs;
-    static const QStringList EastAsianCodecs;
-    static const QStringList SouthEastSouthWestAsianCodecs;
-    static const QStringList MiddleEastCodecs;
-    static const QStringList SupportedCodecs;
-    static const QMap<QTextCodec *, QString> CodecNames;
-    //
+public slots:
+    void createDropHandler();
+    void twgtCurrentChanged(int index);
+    void twgtTabCloseRequested(int index);
+    void documentReadOnlyChanged(bool ro);
+    void documentModificationChanged(bool modified);
+    void documentSelectionChanged();
+    void documentHasSelectionChanged(bool hasSelection);
+    void documentCutAvailableChanged(bool available);
+    void documentCopyAvailableChanged(bool available);
+    void documentPasteAvailableChanged(bool available);
+    void documentUndoAvailableChanged(bool available);
+    void documentRedoAvailableChanged(bool available);
+    void documentEditModeChanged(BCodeEdit::EditMode mode);
+    void documentCursorPositionChanged(const QPoint &pos);
+    void documentBuisyChanged(bool buisy);
+    void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
+    void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
+    void documentFileNameChanged(const QString &fn);
+    void documentCodecChanged(const QString &codecName);
+    void documentFileTypeChanged(BAbstractFileType *ft);
+    void documentLoadingFinished(bool success);
+    void documentSavingFinished(bool success);
+public:
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
     QMap<BCodeEditorDocument *, QString> openingDocuments;
@@ -192,37 +212,10 @@ public:
     BDropHandler *dropHandler;
     QStringList fileHistory;
     int maxHistoryCount;
-    //
     QVBoxLayout *vlt;
       QTabWidget *twgt;
-public slots:
-    void createDropHandler();
-    void twgtCurrentChanged(int index);
-    void twgtTabCloseRequested(int index);
-    //BCodeEdit events
-    void documentReadOnlyChanged(bool ro);
-    void documentModificationChanged(bool modified);
-    void documentSelectionChanged();
-    void documentHasSelectionChanged(bool hasSelection);
-    void documentCutAvailableChanged(bool available);
-    void documentCopyAvailableChanged(bool available);
-    void documentPasteAvailableChanged(bool available);
-    void documentUndoAvailableChanged(bool available);
-    void documentRedoAvailableChanged(bool available);
-    void documentEditModeChanged(BCodeEdit::EditMode mode);
-    void documentCursorPositionChanged(const QPoint &pos);
-    void documentBuisyChanged(bool buisy);
-    void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
-    void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
-    //BCodeEditorDocument events
-    void documentFileNameChanged(const QString &fn);
-    void documentCodecChanged(const QString &codecName);
-    void documentFileTypeChanged(BAbstractFileType *ft);
-    void documentLoadingFinished(bool success);
-    void documentSavingFinished(bool success);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
-    //
     friend class BDropHandler;
 };
 
