@@ -51,7 +51,7 @@ BApplicationPrivate::BApplicationPrivate(BApplication *q) :
 
 BApplicationPrivate::~BApplicationPrivate()
 {
-    if (aboutDlg)
+    if ( !aboutDlg.isNull() )
     {
         aboutDlg->close();
         aboutDlg->deleteLater();
@@ -135,7 +135,6 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
 
 void BApplicationPrivate::init()
 {
-    aboutDlg = 0;
     iconCaching = false;
     navigation = BApplication::DefaultNavigation;
     connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
@@ -143,7 +142,7 @@ void BApplicationPrivate::init()
 
 void BApplicationPrivate::initAboutDlg()
 {
-    if (aboutDlg)
+    if ( !aboutDlg.isNull() )
         return;
     aboutDlg = new BAboutDialog;
     aboutDlg->setAboutQtShown(true);
@@ -155,9 +154,14 @@ void BApplicationPrivate::showAbout()
 {
     initAboutDlg();
     if ( aboutDlg->isVisible() )
+    {
         aboutDlg->activateWindow();
+    }
     else
+    {
+        aboutDlg->resetTabs();
         aboutDlg->open();
+    }
 }
 
 QString BApplicationPrivate::helpContext(QWidget *widget) const

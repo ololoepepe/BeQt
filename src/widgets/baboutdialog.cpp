@@ -460,7 +460,15 @@ void BAboutDialogPrivate::tbtnAboutBeqtClicked()
 {
     if (!aboutBeqtDlg)
         initAboutBeqtDialog();
-    aboutBeqtDlg->open();
+    if ( aboutBeqtDlg->isVisible() )
+    {
+        aboutBeqtDlg->activateWindow();
+    }
+    else
+    {
+        aboutBeqtDlg->resetTabs();
+        aboutBeqtDlg->open();
+    }
 }
 
 /*============================================================================
