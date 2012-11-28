@@ -35,18 +35,20 @@ class QEvent;
 #include <QPointer>
 
 /*============================================================================
-================================ Search Dialog
+================================ BSearchDialog ===============================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BSearchDialog : public QDialog, public BBase
 {
-    B_DECLARE_PRIVATE(BSearchDialog)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BSearchDialog)
 public:
     explicit BSearchDialog(QWidget *parent = 0);
     explicit BSearchDialog(bool replaceEnabled, QWidget *parent = 0);
     ~BSearchDialog();
-    //
+protected:
+    explicit BSearchDialog(BSearchDialogPrivate &d, QWidget *parent = 0);
+public:
     void setCaseSensitivity(Qt::CaseSensitivity cs);
     void setMatchWholeWords(bool enabled);
     void setBackwardOrder(bool enabled);
@@ -77,36 +79,38 @@ signals:
     void replaceNextAvailableChanged(bool available);
     void textFound(bool found, const QString &text);
     void textReplaced(int count, const QString &oldText, const QString &newText);
-protected:
-    BSearchDialog(BSearchDialogPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BSearchDialog)
 };
 
 /*============================================================================
-================================ Search Dialog Private
+================================ BSearchDialogPrivate ========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BSearchDialog)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BSearchDialog)
+public:
+    static const int DefMaximumHistorySize;
+    static const QDataStream::Version DSVersion;
 public:
     explicit BSearchDialogPrivate(BSearchDialog *q);
     ~BSearchDialogPrivate();
-    //
+public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);
     void appendHistory(QComboBox *cmbox);
     void emitTextReplaced(int count, const QString &oldText, const QString &newText);
     QTextDocument::FindFlags createFindFlags() const;
     QString windowTitle() const;
-    //
-    static const int DefMaximumHistorySize;
-    static const QDataStream::Version DSVersion;
-    //
+public slots:
+    void retranslateUi();
+    void checkSearchReplace();
+    void actSelectionTriggered();
+    void actDocumentTriggered();
+public:
     BCodeEditorDocument *document;
-    //
     QVBoxLayout *vlt;
       QHBoxLayout *hltSearch;
         QLabel *lblSearch;
@@ -129,38 +133,33 @@ public:
             QAction *actAllDocuments;
         QPushButton *btnReplace;
         QPushButton *btnFind;
-public slots:
-    void retranslateUi();
-    void checkSearchReplace();
-    void actSelectionTriggered();
-    void actDocumentTriggered();
 private:
     Q_DISABLE_COPY(BSearchDialogPrivate)
 };
 
 /*============================================================================
-================================ Search Editor Module Private
+================================ BSearchEditorModulePrivate ==================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BSearchEditorModulePrivate : public BAbstractEditorModulePrivate
 {
-    B_DECLARE_PUBLIC(BSearchEditorModule)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BSearchEditorModule)
 public:
     explicit BSearchEditorModulePrivate(BSearchEditorModule *q);
     ~BSearchEditorModulePrivate();
-    //
+public:
     void init();
     void setDialogParent(QWidget *parent = 0);
     QString createNotFoundMessage(const QString &text);
-    //
-    BSearchDialog *sdlg;
-    QPointer<QAction> actFind;
-    QPointer<QAction> actFindNext;
 public slots:
     void retranslateUi();
     void textFound(bool found, const QString &text);
     void textReplaced(int count, const QString &oldText, const QString &newText);
+public:
+    BSearchDialog *sdlg;
+    QPointer<QAction> actFind;
+    QPointer<QAction> actFindNext;
 private:
     Q_DISABLE_COPY(BSearchEditorModulePrivate)
 };

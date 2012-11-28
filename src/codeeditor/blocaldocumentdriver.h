@@ -16,18 +16,18 @@ class QByteArray;
 #include <BeQtCore/BeQtGlobal>
 
 /*============================================================================
-================================ Local Document Driver
+================================ BLocalDocumentDriver ========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BLocalDocumentDriver : public BAbstractDocumentDriver
 {
-    B_DECLARE_PRIVATE(BLocalDocumentDriver)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BLocalDocumentDriver)
 public:
     explicit BLocalDocumentDriver(QObject *parent = 0);
     ~BLocalDocumentDriver();
 protected:
-    BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
+    explicit BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 public:
     QString id() const;
     bool isBuisy() const;

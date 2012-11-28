@@ -27,8 +27,14 @@
 #include <QDebug>
 
 /*============================================================================
-================================ File Dialog Private
+================================ BFileDialogPrivate ==========================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_4_8;
+
+/*============================== Public constructors =======================*/
 
 BFileDialogPrivate::BFileDialogPrivate(BFileDialog *q) :
     BBasePrivate(q)
@@ -41,7 +47,7 @@ BFileDialogPrivate::~BFileDialogPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BFileDialogPrivate::init()
 {
@@ -65,13 +71,11 @@ void BFileDialogPrivate::addEncoding(QTextCodec *codec)
     cmboxEncodings->addItem(!fcn.isEmpty() ? fcn : cn, cn);
 }
 
-//
-
-const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_4_8;
-
 /*============================================================================
-================================ File Dialog
+================================ BFileDialog =================================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BFileDialog::BFileDialog(QWidget *parent) :
     QFileDialog(parent), BBase( *new BFileDialogPrivate(this) )
@@ -84,7 +88,7 @@ BFileDialog::~BFileDialog()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
 
 BFileDialog::BFileDialog(BFileDialogPrivate &d, QWidget *parent) :
     QFileDialog(parent), BBase(d)
@@ -92,7 +96,7 @@ BFileDialog::BFileDialog(BFileDialogPrivate &d, QWidget *parent) :
     d_func()->init();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
 {
@@ -217,8 +221,10 @@ QByteArray BFileDialog::saveState(bool includeGeometry) const
 }
 
 /*============================================================================
-================================ Local Document Driver Private
+================================ BLocalDocumentDriverPrivate =================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BLocalDocumentDriverPrivate::BLocalDocumentDriverPrivate(BLocalDocumentDriver *q) :
     BAbstractDocumentDriverPrivate(q)
@@ -231,7 +237,7 @@ BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BLocalDocumentDriverPrivate::init()
 {
@@ -240,8 +246,10 @@ void BLocalDocumentDriverPrivate::init()
 }
 
 /*============================================================================
-================================ Local Document Driver
+================================ BLocalDocumentDriver ========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BLocalDocumentDriver::BLocalDocumentDriver(QObject *parent) :
     BAbstractDocumentDriver(*new BLocalDocumentDriverPrivate(this), parent)
@@ -254,7 +262,7 @@ BLocalDocumentDriver::~BLocalDocumentDriver()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
 
 BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent) :
     BAbstractDocumentDriver(d, parent)
@@ -262,7 +270,7 @@ BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObje
     d_func()->init();
 }
 
-//
+/*============================== Public methods ============================*/
 
 QString BLocalDocumentDriver::id() const
 {
@@ -359,7 +367,7 @@ QByteArray BLocalDocumentDriver::dialogState() const
     return d_func()->fileDialogState;
 }
 
-//
+/*============================== Protected methods =========================*/
 
 bool BLocalDocumentDriver::handleLoadOperation(const Operation &op)
 {

@@ -126,8 +126,8 @@ QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly)
 BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
     QObject(parent), BBase( *new BTerminalIOHandlerPrivate(this) )
 {
-    BTerminalIOHandlerPrivate::testUnique();
     d_func()->init();
+    BTerminalIOHandlerPrivate::testUnique();
     _m_self = this;
 }
 
@@ -142,7 +142,7 @@ BTerminalIOHandler::~BTerminalIOHandler()
 BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 /*============================== Static public methods =====================*/

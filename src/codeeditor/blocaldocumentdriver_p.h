@@ -25,19 +25,18 @@ class QLabel;
 #include <QDataStream>
 
 /*============================================================================
-================================ File Dialog
+================================ BFileDialog =================================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BFileDialog : public QFileDialog, public BBase
 {
-    B_DECLARE_PRIVATE(BFileDialog)
     Q_OBJECT
-    Q_DISABLE_COPY(BFileDialog)
+    B_DECLARE_PRIVATE(BFileDialog)
 public:
     explicit BFileDialog(QWidget *parent = 0);
     ~BFileDialog();
 protected:
-    BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
+    explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
     void setFileTypes(const QList<BAbstractFileType *> &list);
     void setCodecs(const QList<QTextCodec *> &list);
@@ -51,52 +50,55 @@ public:
     BAbstractFileType *selectedFileType() const;
     QString selectedFileTypeId() const;
     QByteArray saveState(bool includeGeometry = true) const;
+private:
+    Q_DISABLE_COPY(BFileDialog)
 };
 
 /*============================================================================
-================================ File Dialog Private
+================================ BFileDialogPrivate ==========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
 {
-    B_DECLARE_PUBLIC(BFileDialog)
     Q_OBJECT
-    Q_DISABLE_COPY(BFileDialogPrivate)
+    B_DECLARE_PUBLIC(BFileDialog)
+public:
+    static const QDataStream::Version DSVersion;
 public:
     explicit BFileDialogPrivate(BFileDialog *q);
     ~BFileDialogPrivate();
-    //
+public:
     void init();
     void addEncoding(QTextCodec *codec);
-    //
-    static const QDataStream::Version DSVersion;
-    //
+public:
     QMap<QTextCodec *, int> codecIndexes;
     QList<BAbstractFileType *> fileTypes;
-    //
     QLayout *lt;
       QLabel *lblEncodings;
       QComboBox *cmboxEncodings;
+private:
+    Q_DISABLE_COPY(BFileDialogPrivate)
 };
 
 /*============================================================================
-================================ Local Document Driver Private
+================================ BLocalDocumentDriverPrivate =================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BLocalDocumentDriverPrivate : public BAbstractDocumentDriverPrivate
 {
-    B_DECLARE_PUBLIC(BLocalDocumentDriver)
     Q_OBJECT
-    Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
+    B_DECLARE_PUBLIC(BLocalDocumentDriver)
 public:
     explicit BLocalDocumentDriverPrivate(BLocalDocumentDriver *q);
     ~BLocalDocumentDriverPrivate();
-    //
+public:
     void init();
-private:
+public:
     QString defaultDir;
     bool nativeLineEnd;
     QByteArray fileDialogState;
+private:
+    Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
 };
 
 #endif // BLOCALDOCUMENTDRIVER_P_H

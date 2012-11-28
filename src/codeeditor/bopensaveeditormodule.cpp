@@ -27,8 +27,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Open Save Editor Module Private
+================================ BOpenSaveEditorModulePrivate ================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BOpenSaveEditorModulePrivate::BOpenSaveEditorModulePrivate(BOpenSaveEditorModule *q) :
     BAbstractEditorModulePrivate(q)
@@ -42,7 +44,7 @@ BOpenSaveEditorModulePrivate::~BOpenSaveEditorModulePrivate()
         mnuFileHistory->deleteLater();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BOpenSaveEditorModulePrivate::init()
 {
@@ -143,7 +145,7 @@ void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
     mnuFileHistory->setEnabled( !mnuFileHistory->isEmpty() );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BOpenSaveEditorModulePrivate::retranslateUi()
 {
@@ -229,8 +231,10 @@ void BOpenSaveEditorModulePrivate::fileTriggered()
 }
 
 /*============================================================================
-================================ Open Save Editor Module
+================================ BOpenSaveEditorModule =======================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BOpenSaveEditorModule::BOpenSaveEditorModule(QObject *parent) :
     BAbstractEditorModule(*new BOpenSaveEditorModulePrivate(this), parent)
@@ -243,7 +247,7 @@ BOpenSaveEditorModule::~BOpenSaveEditorModule()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
 
 BOpenSaveEditorModule::BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QObject *parent) :
     BAbstractEditorModule(d, parent)
@@ -251,7 +255,7 @@ BOpenSaveEditorModule::BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QO
     d_func()->init();
 }
 
-//
+/*============================== Public methods ============================*/
 
 QString BOpenSaveEditorModule::id() const
 {
@@ -340,7 +344,7 @@ QList<QAction *> BOpenSaveEditorModule::fileHistoryActions() const
     return !d->mnuFileHistory.isNull() ? d->mnuFileHistory->actions() : QList<QAction *>();
 }
 
-//
+/*============================== Protected methods =========================*/
 
 void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
 {

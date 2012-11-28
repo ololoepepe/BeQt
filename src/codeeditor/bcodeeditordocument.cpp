@@ -24,8 +24,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Code Editor Document Private
+================================ BCodeEditorDocumentPrivate ==================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q) :
     BCodeEditPrivate(q)
@@ -38,7 +40,7 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BCodeEditorDocumentPrivate::init()
 {
@@ -67,7 +69,7 @@ void BCodeEditorDocumentPrivate::setCodec(QTextCodec *c)
         QMetaObject::invokeMethod( q_func(), "codecChanged", Q_ARG( QString, BCodeEditor::codecName(c) ) );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::Operation &operation,
                                                  bool success, const QString &text)
@@ -111,8 +113,10 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
 }
 
 /*============================================================================
-================================ Code Editor Document
+================================ BCodeEditorDocument =========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BCodeEditorDocument::BCodeEditorDocument(QWidget *parent) :
     BCodeEdit(*new BCodeEditorDocumentPrivate(this), parent)
@@ -124,6 +128,16 @@ BCodeEditorDocument::~BCodeEditorDocument()
 {
     //
 }
+
+/*============================== Protected constructors ====================*/
+
+BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent) :
+    BCodeEdit(d, parent)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BCodeEditorDocument::setFileName(const QString &fn)
 {
@@ -235,12 +249,3 @@ BAbstractFileType *BCodeEditorDocument::fileType() const
 {
     return d_func()->fileType;
 }
-
-//
-
-BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent) :
-    BCodeEdit(d, parent)
-{
-    d_func()->init();
-}
-

@@ -18,8 +18,10 @@
 #include <QString>
 
 /*============================================================================
-================================ Edit Editor Module Private
+================================ BEditEditorModulePrivate ====================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BEditEditorModulePrivate::BEditEditorModulePrivate(BEditEditorModule *q) :
     BAbstractEditorModulePrivate(q)
@@ -32,7 +34,7 @@ BEditEditorModulePrivate::~BEditEditorModulePrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BEditEditorModulePrivate::init()
 {
@@ -114,7 +116,7 @@ void BEditEditorModulePrivate::resetSwitchModeAction(bool bm)
     actSwitchMode->setWhatsThis( bm ? tr("Mode: blocks", "act whatsThis") : tr("Mode: lines", "act whatsThis") );
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BEditEditorModulePrivate::retranslateUi()
 {
@@ -160,8 +162,10 @@ void BEditEditorModulePrivate::actSwitchModeTriggered()
 }
 
 /*============================================================================
-================================ Edit Editor Module
+================================ BEditEditorModule ===========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BEditEditorModule::BEditEditorModule(QObject *parent) :
     BAbstractEditorModule(*new BEditEditorModulePrivate(this), parent)
@@ -174,7 +178,7 @@ BEditEditorModule::~BEditEditorModule()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
 
 BEditEditorModule::BEditEditorModule(BEditEditorModulePrivate &d, QObject *parent) :
     BAbstractEditorModule(d, parent)
@@ -182,7 +186,7 @@ BEditEditorModule::BEditEditorModule(BEditEditorModulePrivate &d, QObject *paren
     d_func()->init();
 }
 
-//
+/*============================== Public methods ============================*/
 
 QString BEditEditorModule::id() const
 {
@@ -243,7 +247,7 @@ QList<QAction *> BEditEditorModule::actions() const
     return list;
 }
 
-//
+/*============================== Protected methods =========================*/
 
 void BEditEditorModule::editorSet(BCodeEditor *edr)
 {

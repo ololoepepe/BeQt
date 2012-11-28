@@ -70,7 +70,7 @@ QList<QPoint> BBookmarksEditorModulePrivate::bookmarks(BCodeEditorDocument *doc)
 QPoint BBookmarksEditorModulePrivate::currentBookmark(BCodeEditorDocument *doc)
 {
     if (!doc)
-        return InvalidPos;
+        return BBookmarksEditorModule::InvalidPos;
     QVariant v = doc->property("beqt/currentBookmark");
     return v.type() == QVariant::Point ? v.toPoint() : BBookmarksEditorModule::InvalidPos;
 }
@@ -150,7 +150,7 @@ BBookmarksEditorModule::~BBookmarksEditorModule()
 BBookmarksEditorModule::BBookmarksEditorModule(BBookmarksEditorModulePrivate &d, QObject *parent) :
     BAbstractEditorModule(d, parent)
 {
-    //
+    d_func()->init();
 }
 
 /*============================== Public methods ============================*/
@@ -246,7 +246,7 @@ void BBookmarksEditorModule::removeBookmark(int index)
     if (pind < 0)
         pind = 0;
     list.removeAt(index);
-    pos = !list.isEmpty() ? list.at(pind) : BBookmarksEditorModulePrivate::InvalidPos;
+    pos = !list.isEmpty() ? list.at(pind) : InvalidPos;
     BBookmarksEditorModulePrivate::setBookmarks(currentDocument(), list);
     BBookmarksEditorModulePrivate::setCurrentBookmark(currentDocument(), pos);
     d_func()->checkBookmarks();
@@ -257,7 +257,7 @@ void BBookmarksEditorModule::removeLastBookmark()
     if ( !currentDocument() )
         return;
     QPoint pos = BBookmarksEditorModulePrivate::currentBookmark( currentDocument() );
-    if (BBookmarksEditorModulePrivate::InvalidPos == pos)
+    if (InvalidPos == pos)
         return;
     QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
     removeBookmark( list.indexOf(pos) );
@@ -271,11 +271,10 @@ bool BBookmarksEditorModule::gotoBookmark(int index)
     if ( index < 0 || index >= list.size() )
         return false;
     QPoint pos = list.at(index);
-    if (BBookmarksEditorModulePrivate::InvalidPos == pos)
+    if (InvalidPos == pos)
     {
         removeBookmark(index);
-        BBookmarksEditorModulePrivate::setCurrentBookmark(currentDocument(),
-                                                          BBookmarksEditorModulePrivate::InvalidPos);
+        BBookmarksEditorModulePrivate::setCurrentBookmark(currentDocument(), InvalidPos);
         return false;
     }
     currentDocument()->moveCursor(pos);

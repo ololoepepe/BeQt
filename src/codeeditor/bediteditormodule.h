@@ -17,13 +17,13 @@ class QAction;
 #include <QList>
 
 /*============================================================================
-================================ Edit Editor Module
+================================ BEditEditorModule ===========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BEditEditorModule : public BAbstractEditorModule
 {
+    Q_OBJECT
     B_DECLARE_PRIVATE(BEditEditorModule)
-    Q_DISABLE_COPY(BEditEditorModule)
 public:
     enum Action
     {
@@ -34,11 +34,11 @@ public:
         RedoAction,
         SwitchModeAction
     };
-    //
+public:
     explicit BEditEditorModule(QObject *parent = 0);
     ~BEditEditorModule();
 protected:
-    BEditEditorModule(BEditEditorModulePrivate &d, QObject *parent = 0);
+    explicit BEditEditorModule(BEditEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
     QAction *action(Action type) const;
@@ -55,6 +55,8 @@ protected:
     void documentRedoAvailableChanged(bool available);
     void editModeChanged(BCodeEdit::EditMode mode);
     void currentDocumentChanged(BCodeEditorDocument *doc);
+private:
+    Q_DISABLE_COPY(BEditEditorModule)
 };
 
 #endif // BEDITEDITORMODULE_H

@@ -20,18 +20,17 @@ class QMenu;
 #include <QStringList>
 
 /*============================================================================
-================================ Open Save Editor Module Private
+================================ BOpenSaveEditorModulePrivate ================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BOpenSaveEditorModulePrivate : public BAbstractEditorModulePrivate
 {
-    B_DECLARE_PUBLIC(BOpenSaveEditorModule)
     Q_OBJECT
-    Q_DISABLE_COPY(BOpenSaveEditorModulePrivate)
+    B_DECLARE_PUBLIC(BOpenSaveEditorModule)
 public:
     explicit BOpenSaveEditorModulePrivate(BOpenSaveEditorModule *q);
     ~BOpenSaveEditorModulePrivate();
-    //
+public:
     void init();
     void checkActions();
     void resetFileHistory( const QStringList &list = QStringList() );
@@ -51,6 +50,8 @@ public:
     QList<QMenu *> codecGroups;
     QList<QAction *> codecs;
     QPointer<QMenu> mnuFileHistory;
+private:
+    Q_DISABLE_COPY(BOpenSaveEditorModulePrivate)
 };
 
 #endif // BOPENSAVEEDITORMODULE_P_H

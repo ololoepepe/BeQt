@@ -16,18 +16,17 @@ class QAction;
 #include <QPointer>
 
 /*============================================================================
-================================ Edit Editor Module Private
+================================ BEditEditorModulePrivate ====================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BEditEditorModulePrivate : public BAbstractEditorModulePrivate
 {
-    B_DECLARE_PUBLIC(BEditEditorModule)
     Q_OBJECT
-    Q_DISABLE_COPY(BEditEditorModulePrivate)
+    B_DECLARE_PUBLIC(BEditEditorModule)
 public:
     explicit BEditEditorModulePrivate(BEditEditorModule *q);
     ~BEditEditorModulePrivate();
-    //
+public:
     void init();
     void setDocument(BCodeEditorDocument *doc);
     void checkActions();
@@ -44,6 +43,8 @@ public:
     QPointer<QAction> actUndo;
     QPointer<QAction> actRedo;
     QPointer<QAction> actSwitchMode;
+private:
+    Q_DISABLE_COPY(BEditEditorModulePrivate)
 };
 
 #endif // BEDITEDITORMODULE_P_H

@@ -19,28 +19,28 @@ class QTextCodec;
 #include <QCoreApplication>
 
 /*============================================================================
-================================ Code Editor Document Private
+================================ BCodeEditorDocumentPrivate ==================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditorDocumentPrivate : public BCodeEditPrivate
 {
-    B_DECLARE_PUBLIC(BCodeEditorDocument)
     Q_OBJECT
+    B_DECLARE_PUBLIC(BCodeEditorDocument)
 public:
     explicit BCodeEditorDocumentPrivate(BCodeEditorDocument *q);
     ~BCodeEditorDocumentPrivate();
-    //
+public:
     void init();
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *c);
-    //
+public slots:
+    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
+    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
+public:
     QString fileName;
     QTextCodec *codec;
     int asyncMin;
     BAbstractFileType *fileType;
-public slots:
-    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
-    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)
 };

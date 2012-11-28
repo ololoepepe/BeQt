@@ -19,17 +19,19 @@ class QWidget;
 #include <QString>
 
 /*============================================================================
-================================ Code Editor Document
+================================ BCodeEditorDocument =========================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BCodeEditorDocument : public BCodeEdit
 {
-    B_DECLARE_PRIVATE(BCodeEditorDocument)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BCodeEditorDocument)
 public:
     explicit BCodeEditorDocument(QWidget *parent = 0);
     ~BCodeEditorDocument();
-    //
+protected:
+    explicit BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
+public:
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *codec);
     void setCodec(const char *codecName);
@@ -50,11 +52,8 @@ signals:
     void loadingFinished(bool success);
     void savingFinished(bool success);
     void fileTypeChanged(BAbstractFileType *ft);
-protected:
-    BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
-    //
     friend class BCodeEditorPrivate;
 };
 

@@ -18,13 +18,13 @@ class QWidget;
 #include <QList>
 
 /*============================================================================
-================================ Indicators Editor Module
+================================ BIndicatorsEditorModule =====================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BIndicatorsEditorModule : public BAbstractEditorModule
 {
-    B_DECLARE_PRIVATE(BIndicatorsEditorModule)
     Q_OBJECT
+    B_DECLARE_PRIVATE(BIndicatorsEditorModule)
 public:
     enum Indicator
     {
@@ -32,16 +32,16 @@ public:
         EncodingIndicator,
         FileTypeIndicator
     };
-    //
+public:
     explicit BIndicatorsEditorModule(QObject *parent = 0);
     ~BIndicatorsEditorModule();
-    //
+protected:
+    explicit BIndicatorsEditorModule(BIndicatorsEditorModulePrivate &d, QObject *parent = 0);
+public:
     QString id() const;
     QWidget *indicator(Indicator type);
     QList<QWidget *> indicators();
 protected:
-    BIndicatorsEditorModule(BIndicatorsEditorModulePrivate &d, QObject *parent = 0);
-    //
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
     void documentCursorPositionChanged(const QPoint &pos);

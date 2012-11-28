@@ -23,8 +23,10 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Indicators Editor Module Private
+================================ BIndicatorsEditorModulePrivate ==============
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BIndicatorsEditorModulePrivate::BIndicatorsEditorModulePrivate(BIndicatorsEditorModule *q) :
     BAbstractEditorModulePrivate(q)
@@ -42,7 +44,7 @@ BIndicatorsEditorModulePrivate::~BIndicatorsEditorModulePrivate()
         cmboxFileType->deleteLater();
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BIndicatorsEditorModulePrivate::init()
 {
@@ -137,7 +139,7 @@ void BIndicatorsEditorModulePrivate::updateFileTypeIndicator()
     cmboxFileType->blockSignals(false);
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BIndicatorsEditorModulePrivate::retranslateUi()
 {
@@ -166,8 +168,10 @@ void BIndicatorsEditorModulePrivate::cmboxFileTypeCurrentIndexChanged(int index)
 }
 
 /*============================================================================
-================================ Indicators Editor Module
+================================ BIndicatorsEditorModule =====================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BIndicatorsEditorModule::BIndicatorsEditorModule(QObject *parent) :
     BAbstractEditorModule(*new BIndicatorsEditorModulePrivate(this), parent)
@@ -180,7 +184,15 @@ BIndicatorsEditorModule::~BIndicatorsEditorModule()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BIndicatorsEditorModule::BIndicatorsEditorModule(BIndicatorsEditorModulePrivate &d, QObject *parent) :
+    BAbstractEditorModule(d, parent)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 QString BIndicatorsEditorModule::id() const
 {
@@ -215,15 +227,7 @@ QList<QWidget *> BIndicatorsEditorModule::indicators()
     return list;
 }
 
-//
-
-BIndicatorsEditorModule::BIndicatorsEditorModule(BIndicatorsEditorModulePrivate &d, QObject *parent) :
-    BAbstractEditorModule(d, parent)
-{
-    d_func()->init();
-}
-
-//
+/*============================== Protected methods =========================*/
 
 void BIndicatorsEditorModule::editorSet(BCodeEditor *edr)
 {

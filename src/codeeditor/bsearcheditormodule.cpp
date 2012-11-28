@@ -40,8 +40,15 @@
 #include <QDebug>
 
 /*============================================================================
-================================ Search Dialog Private
+================================ BSearchDialogPrivate ========================
 ============================================================================*/
+
+/*============================== Static public constants ===================*/
+
+const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
+const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_4_8;
+
+/*============================== Public constructors =======================*/
 
 BSearchDialogPrivate::BSearchDialogPrivate(BSearchDialog *q) :
     BBasePrivate(q)
@@ -54,7 +61,7 @@ BSearchDialogPrivate::~BSearchDialogPrivate()
     //
 }
 
-//
+/*============================== Public methods ============================*/
 
 void BSearchDialogPrivate::init()
 {
@@ -175,7 +182,7 @@ QString BSearchDialogPrivate::windowTitle() const
     return cmboxReplace->isVisible() ? tr("Find and replace", "windowTitle") : tr("Find", "windowTitle");
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BSearchDialogPrivate::retranslateUi()
 {
@@ -226,14 +233,11 @@ void BSearchDialogPrivate::actDocumentTriggered()
     emitTextReplaced(document->replaceInDocument( oldText, newText, q_func()->caseSensitivity() ), oldText, newText);
 }
 
-//
-
-const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
-const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_4_8;
-
 /*============================================================================
-================================ Search Dialog
+================================ BSearchDialog ===============================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSearchDialog::BSearchDialog(QWidget *parent) :
     QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
@@ -253,7 +257,15 @@ BSearchDialog::~BSearchDialog()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BSearchDialog::BSearchDialog(BSearchDialogPrivate &d, QWidget *parent) :
+    QDialog(parent), BBase(d)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 void BSearchDialog::setCaseSensitivity(Qt::CaseSensitivity cs)
 {
@@ -426,7 +438,7 @@ QByteArray BSearchDialog::saveState() const
     return ba;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BSearchDialog::findNext()
 {
@@ -453,17 +465,11 @@ void BSearchDialog::replaceNext()
     findNext();
 }
 
-//
-
-BSearchDialog::BSearchDialog(BSearchDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
-{
-    d_func()->init();
-}
-
 /*============================================================================
-================================ Search Editor Module Private
+================================ BSearchEditorModulePrivate ==================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSearchEditorModulePrivate::BSearchEditorModulePrivate(BSearchEditorModule *q) :
     BAbstractEditorModulePrivate(q)
@@ -475,6 +481,8 @@ BSearchEditorModulePrivate::~BSearchEditorModulePrivate()
 {
     //
 }
+
+/*============================== Public methods ============================*/
 
 void BSearchEditorModulePrivate::init()
 {
@@ -509,7 +517,7 @@ QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
     return tr("Text", "msg text") + " \"" + text + "\" " + tr("not found", "msg text");
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BSearchEditorModulePrivate::retranslateUi()
 {
@@ -563,8 +571,10 @@ void BSearchEditorModulePrivate::textReplaced(int count, const QString &oldText,
 }
 
 /*============================================================================
-================================ Search Editor Module
+================================ BSearchEditorModule =========================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
 
 BSearchEditorModule::BSearchEditorModule(QObject *parent) :
     BAbstractEditorModule(*new BSearchEditorModulePrivate(this), parent)
@@ -577,7 +587,15 @@ BSearchEditorModule::~BSearchEditorModule()
     //
 }
 
-//
+/*============================== Protected constructors ====================*/
+
+BSearchEditorModule::BSearchEditorModule(BSearchEditorModulePrivate &d, QObject *parent) :
+    BAbstractEditorModule(d, parent)
+{
+    d_func()->init();
+}
+
+/*============================== Public methods ============================*/
 
 QString BSearchEditorModule::id() const
 {
@@ -608,7 +626,7 @@ QList<QAction *> BSearchEditorModule::actions() const
     return list;
 }
 
-//
+/*============================== Public slots ==============================*/
 
 void BSearchEditorModule::find()
 {
@@ -625,7 +643,7 @@ void BSearchEditorModule::findNext()
     d_func()->sdlg->findNext();
 }
 
-//
+/*============================== Protected methods =========================*/
 
 void BSearchEditorModule::editorSet(BCodeEditor *edr)
 {

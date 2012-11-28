@@ -82,7 +82,7 @@ BNetworkOperationMetaData::BNetworkOperationMetaData(const QUuid &id, bool reque
 BNetworkOperationMetaData::BNetworkOperationMetaData(BNetworkOperationMetaDataPrivate &d) :
     BBase(d)
 {
-    //
+    d_func()->init();
 }
 
 /*============================== Public methods ============================*/

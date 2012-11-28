@@ -132,6 +132,11 @@ BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *sock
     return q_func()->createConnection(socket);
 }
 
+BGenericSocket *BNetworkServerPrivate::createSocket() const
+{
+    return q_func()->createSocket();
+}
+
 /*============================== Public slots ==============================*/
 
 void BNetworkServerPrivate::newConnection(int socketDescriptor)

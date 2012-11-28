@@ -18,13 +18,13 @@ class QMenu;
 #include <QList>
 
 /*============================================================================
-================================ Open Save Editor Module
+================================ BOpenSaveEditorModule =======================
 ============================================================================*/
 
 class B_CODEEDITOR_EXPORT BOpenSaveEditorModule : public BAbstractEditorModule
 {
+    Q_OBJECT
     B_DECLARE_PRIVATE(BOpenSaveEditorModule)
-    Q_DISABLE_COPY(BOpenSaveEditorModule)
 public:
     enum Action
     {
@@ -37,11 +37,11 @@ public:
         CloseFileAction,
         CloseAllFilesAction
     };
-    //
+public:
     explicit BOpenSaveEditorModule(QObject *parent = 0);
     ~BOpenSaveEditorModule();
 protected:
-    BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QObject *parent = 0);
+    explicit BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
     QAction *action(Action type) const;
@@ -59,6 +59,8 @@ protected:
     void documentBuisyChanged(bool buisy);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void fileHistoryChanged(const QStringList &list);
+private:
+    Q_DISABLE_COPY(BOpenSaveEditorModule)
 };
 
 #endif // BOPENSAVEEDITORMODULE_H
