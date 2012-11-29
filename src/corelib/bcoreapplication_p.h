@@ -72,8 +72,8 @@ public:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void emitLanguageChange();
-    void installTranslator(BTranslator *translator, bool languageChange);
-    void removeTranslator(BTranslator *translator, bool languageChange);
+    void installTranslator(BTranslator *translator, bool blockLC);
+    void removeTranslator(BTranslator *translator, bool blockLC);
     void loadSettings();
     void saveSettings();
 public:

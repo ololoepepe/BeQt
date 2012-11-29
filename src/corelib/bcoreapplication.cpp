@@ -290,24 +290,22 @@ void BCoreApplicationPrivate::emitLanguageChange()
     QMetaObject::invokeMethod(q_func(), "languageChanged");
 }
 
-void BCoreApplicationPrivate::installTranslator(BTranslator *translator, bool languageChange)
+void BCoreApplicationPrivate::installTranslator(BTranslator *translator, bool blockLC)
 {
     if ( !translator || !translator->isValid() || translators.contains( translator->fileName() ) )
         return;
     translators.insert(translator->fileName(), translator);
-    translator->d_func()->install();
-    if (languageChange)
-        emitLanguageChange();
+    translator->d_func()->install(blockLC);
+    emitLanguageChange();
 }
 
-void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool languageChange)
+void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool blockLC)
 {
     if ( !translator || !translators.contains( translator->fileName() ) )
         return;
     translators.remove( translator->fileName() );
-    translator->d_func()->remove();
-    if (languageChange)
-        emitLanguageChange();
+    translator->d_func()->remove(blockLC);
+    emitLanguageChange();
 }
 
 void BCoreApplicationPrivate::loadSettings()
@@ -504,18 +502,18 @@ QList<BPluginWrapper *> BCoreApplication::pluginWrappers(const QString &type)
     return list;
 }
 
-void BCoreApplication::installTranslator(BTranslator *translator, bool noLanguageChange)
+void BCoreApplication::installTranslator(BTranslator *translator, bool blockLanguageChange)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
-    ds_func()->installTranslator(translator, !noLanguageChange);
+    ds_func()->installTranslator(translator, blockLanguageChange);
 }
 
-void BCoreApplication::removeTranslator(BTranslator *translator, bool noLanguageChange)
+void BCoreApplication::removeTranslator(BTranslator *translator, bool blockLanguageChange)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
-    ds_func()->removeTranslator(translator, !noLanguageChange);
+    ds_func()->removeTranslator(translator, blockLanguageChange);
 }
 
 void BCoreApplication::setLocale(const QLocale &l, bool noRetranslate)
