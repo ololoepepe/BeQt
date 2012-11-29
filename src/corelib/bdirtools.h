@@ -24,10 +24,20 @@ enum ResourceLookupMode
     UserOnly
 };
 
+struct LocaleBasedSource
+{
+    QString fileName;
+    QString defaultFileName;
+    QString possibleSuffix;
+};
+
 B_CORE_EXPORT bool mkpath(const QString &dirPath);
 B_CORE_EXPORT bool rmdir(const QString &dirName);
 B_CORE_EXPORT bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );
 B_CORE_EXPORT bool copyDir(const QString &dirName, const QString &newDirName, bool recursively = false);
+B_CORE_EXPORT LocaleBasedSource createLocaleBasedSource( const QString &fileName, const QString &defaultFileName,
+                                                         const QString &possibleSuffix = QString() );
+B_CORE_EXPORT QString localeBasedFileName(const LocaleBasedSource &src);
 B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
                                            const QString &possibleSuffix = QString() );
 B_CORE_EXPORT QString localeBasedDirName(const QString &dir);

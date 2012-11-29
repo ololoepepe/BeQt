@@ -49,6 +49,7 @@ void BPluginWrapperPrivate::init()
     testFunction = 0;
     loaded = false;
     activated = false;
+    prefereStaticInfo = false;
 }
 
 bool BPluginWrapperPrivate::load()
@@ -80,6 +81,8 @@ bool BPluginWrapperPrivate::load()
     interface = iface;
     type = tp;
     name = nm;
+    prefereStaticInfo = interface->prefereStaticInfo();
+    staticInfo = interface->staticInfo();
     info = interface->info();
     loaded = true;
     globalQMap.insert( nm, q_func() );
@@ -274,9 +277,19 @@ QString BPluginWrapper::name() const
     return d_func()->name;
 }
 
+bool BPluginWrapper::prefereStaticInfo() const
+{
+    return d_func()->prefereStaticInfo;
+}
+
 BPluginInterface::PluginInfo BPluginWrapper::info() const
 {
     return d_func()->info;
+}
+
+BPluginInterface::PluginInfoStatic BPluginWrapper::staticInfo() const
+{
+    return d_func()->staticInfo;
 }
 
 QObject *BPluginWrapper::instance() const

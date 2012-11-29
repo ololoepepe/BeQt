@@ -10,6 +10,7 @@ class QIcon;
 #include <BeQtCore/BBase>
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BPersonInfoProvider>
+#include <BeQtCore/BDirTools>
 
 #include <QDialog>
 #include <QList>
@@ -38,19 +39,19 @@ public:
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);
     void setDescription(const QString &text);
-    void setDescriptionSource( const QString &fileName, const QString &defaultFileName,
-                               const QString &possibleSuffix = QString() );
+    void setDescriptionSource(const BDirTools::LocaleBasedSource &src);
     void setChangeLog(const QString &text);
-    void setChangeLogSource( const QString &fileName, const QString &defaultFileName,
-                             const QString &possibleSuffix = QString() );
+    void setChangeLogSource(const BDirTools::LocaleBasedSource &src);
     void setLicense(const QString &text);
-    void setLicenseSource( const QString &fileName, const QString &defaultFileName,
-                           const QString &possibleSuffix = QString() );
+    void setLicenseSource(const BDirTools::LocaleBasedSource &src);
     void setAuthors(const BPersonInfoProvider::PersonInfoList &list);
+    void setAuthorsFile(const QString &fileName);
     void setAuthorsProvider(BPersonInfoProvider *prov);
     void setTranslators(const BPersonInfoProvider::PersonInfoList &list);
+    void setTranslatorsFile(const QString &fileName);
     void setTranslatorsProvider(BPersonInfoProvider *prov);
     void setThanksTo(const BPersonInfoProvider::PersonInfoList &list);
+    void setThanksToFile(const QString &fileName);
     void setThanksToProvider(BPersonInfoProvider *prov);
     void setAboutQtShown(bool b);
     void setAboutBeqtShown(bool b);

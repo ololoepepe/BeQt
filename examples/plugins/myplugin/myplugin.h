@@ -17,7 +17,9 @@ public:
     //
     virtual QString type() const;
     virtual QString name() const;
+    virtual bool prefereStaticInfo() const;
     virtual PluginInfo info() const;
+    virtual PluginInfoStatic staticInfo() const;
     virtual void activate();
     virtual void deactivate();
     virtual QPixmap pixmap() const;

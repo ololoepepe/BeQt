@@ -9,6 +9,7 @@ class QWidget;
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BPersonInfoProvider>
+#include <BeQtCore/BDirTools>
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -196,10 +197,13 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
     QString loc = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources) + "/";
-    aboutBeqtDlg->setDescriptionSource(loc + "about/description/DESCRIPTION",
-                                       loc + "about/description/DESCRIPTION", "txt");
-    aboutBeqtDlg->setChangeLogSource(loc + "about/changelog/ChangeLog", loc + "ChangeLog", "txt");
-    aboutBeqtDlg->setLicenseSource(loc + "about/copying/COPYING", loc + "COPYING", "txt");
+    aboutBeqtDlg->setDescriptionSource( BDirTools::createLocaleBasedSource(loc + "about/description/DESCRIPTION",
+                                                                           loc + "about/description/DESCRIPTION",
+                                                                           "txt" ) );
+    aboutBeqtDlg->setChangeLogSource( BDirTools::createLocaleBasedSource(loc + "about/changelog/ChangeLog",
+                                                                         loc + "ChangeLog", "txt") );
+    aboutBeqtDlg->setLicenseSource( BDirTools::createLocaleBasedSource(loc + "about/copying/COPYING",
+                                                                       loc + "COPYING", "txt") );
     aboutBeqtDlg->setAuthorsProvider(BApplication::ds_func()->beqtAuthors);
     aboutBeqtDlg->setTranslatorsProvider(BApplication::ds_func()->beqtTranslations);
     aboutBeqtDlg->setThanksToProvider(BApplication::ds_func()->beqtThanksTo);
@@ -565,10 +569,9 @@ void BAboutDialog::setDescription(const QString &text)
     d_func()->fillTab(BAboutDialogPrivate::DescriptionTab, text, false);
 }
 
-void BAboutDialog::setDescriptionSource(const QString &fileName, const QString &defaultFileName,
-                                        const QString &possibleSuffix)
+void BAboutDialog::setDescriptionSource(const BDirTools::LocaleBasedSource &src)
 {
-    d_func()->resetDescriptionSource(fileName, defaultFileName, possibleSuffix);
+    d_func()->resetDescriptionSource(src.fileName, src.defaultFileName, src.possibleSuffix);
 }
 
 void BAboutDialog::setChangeLog(const QString &text)
@@ -577,10 +580,9 @@ void BAboutDialog::setChangeLog(const QString &text)
     d_func()->fillTab(BAboutDialogPrivate::ChangeLogTab, BAboutDialogPrivate::processChangeLog(text), true);
 }
 
-void BAboutDialog::setChangeLogSource(const QString &fileName, const QString &defaultFileName,
-                                      const QString &possibleSuffix)
+void BAboutDialog::setChangeLogSource(const BDirTools::LocaleBasedSource &src)
 {
-    d_func()->resetChangeLogSource(fileName, defaultFileName, possibleSuffix);
+    d_func()->resetChangeLogSource(src.fileName, src.defaultFileName, src.possibleSuffix);
 }
 
 void BAboutDialog::setLicense(const QString &text)
@@ -589,16 +591,20 @@ void BAboutDialog::setLicense(const QString &text)
     d_func()->fillTab(BAboutDialogPrivate::LicenseTab, text, false);
 }
 
-void BAboutDialog::setLicenseSource(const QString &fileName, const QString &defaultFileName,
-                                    const QString &possibleSuffix)
+void BAboutDialog::setLicenseSource(const BDirTools::LocaleBasedSource &src)
 {
-    d_func()->resetLicenseSource(fileName, defaultFileName, possibleSuffix);
+    d_func()->resetLicenseSource(src.fileName, src.defaultFileName, src.possibleSuffix);
 }
 
 void BAboutDialog::setAuthors(const BPersonInfoProvider::PersonInfoList &list)
 {
     d_func()->resetAuthorsProvider();
     d_func()->fillTab(BAboutDialogPrivate::AuthorsTab, list);
+}
+
+void BAboutDialog::setAuthorsFile(const QString &fileName)
+{
+    setAuthorsProvider( new BPersonInfoProvider( fileName, d_func() ) );
 }
 
 void BAboutDialog::setAuthorsProvider(BPersonInfoProvider *prov)
@@ -612,6 +618,11 @@ void BAboutDialog::setTranslators(const BPersonInfoProvider::PersonInfoList &lis
     d_func()->fillTab(BAboutDialogPrivate::TranslatorsTab, list);
 }
 
+void BAboutDialog::setTranslatorsFile(const QString &fileName)
+{
+    setTranslatorsProvider( new BPersonInfoProvider( fileName, d_func() ) );
+}
+
 void BAboutDialog::setTranslatorsProvider(BPersonInfoProvider *prov)
 {
     d_func()->resetTranslationProvider(prov);
@@ -621,6 +632,11 @@ void BAboutDialog::setThanksTo(const BPersonInfoProvider::PersonInfoList &list)
 {
     d_func()->resetThanksToProvider();
     d_func()->fillTab(BAboutDialogPrivate::ThanksToTab, list);
+}
+
+void BAboutDialog::setThanksToFile(const QString &fileName)
+{
+    setThanksToProvider( new BPersonInfoProvider( fileName, d_func() ) );
 }
 
 void BAboutDialog::setThanksToProvider(BPersonInfoProvider *prov)

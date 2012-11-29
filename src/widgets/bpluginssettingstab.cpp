@@ -125,15 +125,30 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
 {
     BPluginWrapper *pw = plugins.at( lstwgt->currentRow() );
     BAboutDialog ad( q_func() );
-    BPluginInterface::PluginInfo info = pw->info();
-    ad.setOrganization(info.organization, info.copyrightYears);
-    ad.setWebsite(info.website);
-    ad.setDescription(info.description);
-    ad.setChangeLog(info.changelog);
-    ad.setAuthors(info.authors);
-    ad.setTranslators(info.translators);
-    ad.setThanksTo(info.thanksTo);
-    ad.setLicense(info.license);
+    if ( pw->prefereStaticInfo() )
+    {
+        BPluginInterface::PluginInfoStatic sinf = pw->staticInfo();
+        ad.setOrganization(sinf.organization, sinf.copyrightYears);
+        ad.setWebsite(sinf.website);
+        ad.setDescription(sinf.description);
+        ad.setChangeLog(sinf.changeLog);
+        ad.setLicense(sinf.license);
+        ad.setAuthors(sinf.authors);
+        ad.setTranslators(sinf.translators);
+        ad.setThanksTo(sinf.thanksTo);
+    }
+    else
+    {
+        BPluginInterface::PluginInfo inf = pw->info();
+        ad.setOrganization(inf.organization, inf.copyrightYears);
+        ad.setWebsite(inf.website);
+        ad.setDescriptionSource(inf.descriptionSource);
+        ad.setChangeLogSource(inf.changeLogSource);
+        ad.setLicenseSource(inf.licenseSource);
+        ad.setAuthorsFile(inf.authorsFileName);
+        ad.setTranslatorsFile(inf.translatorsFileName);
+        ad.setThanksToFile(inf.thanksToFileName);
+    }
     BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
     QPixmap pm;
     if (gpi)

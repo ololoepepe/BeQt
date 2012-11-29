@@ -45,7 +45,9 @@ public:
     QString fileName() const;
     QString type() const;
     QString name() const;
+    bool prefereStaticInfo() const;
     BPluginInterface::PluginInfo info() const;
+    BPluginInterface::PluginInfoStatic staticInfo() const;
     QObject *instance() const;
     BPluginInterface *interface() const;
 public slots:

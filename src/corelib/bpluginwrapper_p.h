@@ -51,7 +51,9 @@ public:
     bool activated;
     QString type;
     QString name;
+    bool prefereStaticInfo;
     BPluginInterface::PluginInfo info;
+    BPluginInterface::PluginInfoStatic staticInfo;
 private:
     Q_DISABLE_COPY(BPluginWrapperPrivate)
     friend class BCoreApplicationPrivate;

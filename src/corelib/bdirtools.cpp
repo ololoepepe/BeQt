@@ -76,6 +76,21 @@ bool copyDir(const QString &dirName, const QString &newDirName, bool recursively
     return true;
 }
 
+LocaleBasedSource createLocaleBasedSource(const QString &fileName, const QString &defaultFileName,
+                                          const QString &possibleSuffix)
+{
+    LocaleBasedSource r;
+    r.fileName = fileName;
+    r.defaultFileName = defaultFileName;
+    r.possibleSuffix = possibleSuffix;
+    return r;
+}
+
+QString localeBasedFileName(const LocaleBasedSource &src)
+{
+    return localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix);
+}
+
 QString localeBasedFileName(const QString &fileName, const QString &defaultFileName,
                                    const QString &possibleSuffix)
 {
