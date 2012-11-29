@@ -16,6 +16,7 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
+#include <QTextCodec>
 
 #include <QDebug>
 
@@ -40,6 +41,7 @@ BHelpBrowserPrivate::~BHelpBrowserPrivate()
 
 void BHelpBrowserPrivate::init()
 {
+    codec = QTextCodec::codecForName("UTF-8");
     B_Q(BHelpBrowser);
     QVBoxLayout *vlt = new QVBoxLayout(q);
       tbar = new QToolBar(q);
@@ -116,7 +118,7 @@ void BHelpBrowserPrivate::search()
                 if ( !f.open(QFile::ReadOnly) )
                     continue;
                 QTextStream in(&f);
-                //in.setCodec("UTF-8"); //TODO
+                in.setCodec(codec);
                 QString ft = in.readAll();
                 f.close();
                 if ( ft.contains(text, Qt::CaseInsensitive) )
@@ -210,4 +212,16 @@ void BHelpBrowser::setSearchPaths(const QStringList &paths)
 void BHelpBrowser::setFile(const QString &file)
 {
     d_func()->tbrsr->setSource( QUrl(file) );
+}
+
+void BHelpBrowser::setCodec(QTextCodec *codec)
+{
+    if (!codec)
+        return;
+    d_func()->codec = codec;
+}
+
+void BHelpBrowser::setCodec(const char *codecName)
+{
+    setCodec( QTextCodec::codecForName(codecName) );
 }

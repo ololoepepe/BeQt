@@ -155,7 +155,7 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         pm = gpi->pixmap();
     if ( !pm.isNull() )
         ad.setPixmap(pm);
-    ad.exec(); //TODO: Maybe use open() instead?
+    ad.exec();
 }
 
 /*============================================================================

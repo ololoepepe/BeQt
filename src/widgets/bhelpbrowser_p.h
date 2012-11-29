@@ -10,6 +10,7 @@ class QLabel;
 class QLineEdit;
 class QTextBrowser;
 class QString;
+class QTextCodec;
 
 #include "bhelpbrowser.h"
 
@@ -41,6 +42,7 @@ public slots:
 public:
     static QMap<QString, QStringList> searchCache;
 public:
+    QTextCodec *codec;
     QVBoxLayout *vlt;
       QToolBar *tbar;
         QToolButton *tbtnBackward;

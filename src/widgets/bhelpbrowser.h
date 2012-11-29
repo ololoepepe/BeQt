@@ -5,6 +5,7 @@ class BHelpBrowserPrivate;
 
 class QString;
 class QStringList;
+class QTextCodec;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -32,6 +33,8 @@ public:
 public:
     void setSearchPaths(const QStringList &paths);
     void setFile(const QString &file);
+    void setCodec(QTextCodec *codec);
+    void setCodec(const char *codecName);
 private:
     Q_DISABLE_COPY(BHelpBrowser)
 };
