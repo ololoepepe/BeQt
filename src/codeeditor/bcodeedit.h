@@ -15,6 +15,19 @@ class QSyntaxHighlighter;
 #include <QWidget>
 #include <QList>
 #include <QTextDocument>
+#include <QTextBlockUserData>
+
+/*============================================================================
+================================ BTextBlockUserData ==========================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BTextBlockUserData : public QTextBlockUserData
+{
+public:
+    ~BTextBlockUserData();
+public:
+    int skipFrom;
+};
 
 /*============================================================================
 ================================ BCodeEdit ===================================

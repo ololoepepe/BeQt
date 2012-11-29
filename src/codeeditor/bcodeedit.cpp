@@ -1087,7 +1087,11 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
+    int skipFrom = ud ? ud->skipFrom : -1;
     int posInBlock = tc.positionInBlock();
+    if (skipFrom >= 0 && posInBlock > skipFrom)
+        return res;
     const BCodeEdit::BracketPair *bracket = 0;
     if ( !testBracket(tb.text(), posInBlock, false, bracket) )
         return res;
@@ -1123,7 +1127,9 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
             }
         }
         tb = tb.previous();
-        posInBlock = tb.length();
+        ud = static_cast<BTextBlockUserData *>( tb.userData() );
+        skipFrom = ud ? ud->skipFrom : -1;
+        posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
     }
     return res;
 }
@@ -1133,7 +1139,11 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
+    int skipFrom = ud ? ud->skipFrom : -1;
     int posInBlock = tc.positionInBlock();
+    if (skipFrom >= 0 && posInBlock > skipFrom)
+        return res;
     const BCodeEdit::BracketPair *bracket = 0;
     if ( !testBracket(tb.text(), posInBlock, true, bracket) )
         return res;
@@ -1144,7 +1154,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
     while ( tb.isValid() )
     {
         QString text = removeTrailingSpaces( tb.text() );
-        while ( posInBlock <= text.length() )
+        while ( posInBlock <= ( (skipFrom >= 0) ? (skipFrom - 1) : text.length() ) )
         {
             if ( testBracket(text, posInBlock, true, br) )
             {
@@ -1169,6 +1179,8 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
             }
         }
         tb = tb.next();
+        ud = static_cast<BTextBlockUserData *>( tb.userData() );
+        skipFrom = ud ? ud->skipFrom : -1;
         posInBlock = 0;
     }
     return res;
@@ -1775,6 +1787,17 @@ void BCodeEditPrivate::setTextToEmptyLine()
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
+}
+
+/*============================================================================
+================================ BTextBlockUserData ==========================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BTextBlockUserData::~BTextBlockUserData()
+{
+    skipFrom = -1;
 }
 
 /*============================================================================
