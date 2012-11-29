@@ -209,6 +209,7 @@ public:
     void emitLineSplitted(const BCodeEdit::SplittedLinesRange &range);
     void handleReturn();
     void handleSpace();
+    void handleTab();
     void handleBackspace();
     void handleCtrlBackspace();
     void handleDelete();

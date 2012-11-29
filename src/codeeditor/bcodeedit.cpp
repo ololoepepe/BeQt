@@ -685,6 +685,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Space:
             handleSpace();
             return true;
+        case Qt::Key_Tab:
+            handleTab();
+            return true;
         case Qt::Key_Backspace:
             handleBackspace();
             return true;
@@ -1284,6 +1287,40 @@ void BCodeEditPrivate::handleSpace()
     else
     {
         q_func()->insertText(" ");
+    }
+    tc.endEditBlock();
+}
+
+void BCodeEditPrivate::handleTab()
+{
+    if ( ptedt->isReadOnly() )
+        return;
+    QTextCursor tc = ptedt->textCursor();
+    tc.beginEditBlock();
+    if (hasSelection)
+        deleteSelection();
+    tc = ptedt->textCursor();
+    QString text = tc.block().text();
+    static QRegExp rx("\\S");
+    int posb = tc.positionInBlock();
+    int spcount = tabWidth - (posb < tabWidth ? posb : posb % tabWidth);
+    if (!spcount)
+        spcount = tabWidth;
+    if ( posb == text.length() )
+    {
+        tc.insertBlock();
+        tc.insertText( QString().fill(' ', lineLength) );
+        tc.setPosition(tc.block().position() + tabWidth);
+        ptedt->setTextCursor(tc);
+    }
+    else if ( !text.mid( tc.positionInBlock() ).contains(rx) )
+    {
+        tc.setPosition(tc.position() + spcount);
+        ptedt->setTextCursor(tc);
+    }
+    else
+    {
+        q_func()->insertText( QString().fill(' ', spcount) );
     }
     tc.endEditBlock();
 }

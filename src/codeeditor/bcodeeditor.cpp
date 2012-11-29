@@ -48,6 +48,7 @@
 #include <QDropEvent>
 #include <QUrl>
 #include <QMimeData>
+#include <QKeyEvent>
 
 #include <QDebug>
 
@@ -387,6 +388,25 @@ void BCodeEditorPrivate::init()
    createDropHandler();
 }
 
+bool BCodeEditorPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() != QEvent::KeyPress)
+        return BBasePrivate::eventFilter(o, e);
+    QKeyEvent *ke = static_cast<QKeyEvent *>(e);
+    if (ke->modifiers() != Qt::ControlModifier || ke->key() != Qt::Key_Tab)
+        return BBasePrivate::eventFilter(o, e);
+    int count = twgt->count();
+    if (!count)
+        return true;
+    int ind = twgt->currentIndex();
+    if (ind < count - 1)
+        ++ind;
+    else
+        ind = 0;
+    twgt->setCurrentIndex(ind);
+    return true;
+}
+
 bool BCodeEditorPrivate::tryAddFileType(BAbstractFileType *ft)
 {
     if ( !ft || ft->id() == defaultFileType->id() || fileTypes.contains( ft->id() ) )
@@ -434,6 +454,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
 {
     BCodeEditorDocument *doc = new BCodeEditorDocument;
     doc->innerEdit()->viewport()->installEventFilter(dropHandler);
+    doc->innerEdit()->installEventFilter(this);
     doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
     if ( !text.isEmpty() )
         doc->setText(text);

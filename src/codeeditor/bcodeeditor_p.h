@@ -139,6 +139,7 @@ public:
     static QString codecDescriptiveName(const QString &codecName);
 public:
     void init();
+    bool eventFilter(QObject *o, QEvent *e);
     bool tryAddFileType(BAbstractFileType *ft);
     bool tryRemoveFileType(const QString &id);
     bool findDocument(const QString &fileName);
