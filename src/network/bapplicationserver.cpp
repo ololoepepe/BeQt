@@ -146,7 +146,7 @@ bool BApplicationServer::sendMessage(const QString &serverName, int &argc, char 
 
 bool BApplicationServer::sendMessage(const QString &serverName, const QStringList &arguments)
 {
-    if ( d_func()->server->isListening() ) //Not sure if valid
+    if ( d_func()->server->isListening() )
         return false;
     if ( serverName.isEmpty() )
         return false;
@@ -171,5 +171,5 @@ bool BApplicationServer::sendMessage(const QString &serverName, const QStringLis
 
 void BApplicationServer::handleMessage(const QStringList &arguments)
 {
-    qDebug() << arguments;
+    //
 }
