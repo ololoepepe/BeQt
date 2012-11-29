@@ -79,16 +79,7 @@ QSyntaxHighlighter *BDefaultFileType::createHighlighter() const
 
 QList<BCodeEdit::BracketPair> BDefaultFileType::brackets() const
 {
-    //test
-    QList<BCodeEdit::BracketPair> list;
-    BCodeEdit::BracketPair br;
-    br.opening = "(";
-    br.closing = ")";
-    br.escape = "\\";
-    list << br;
-    return list;
-    //end test
-    //return QList<BCodeEdit::BracketPair>();
+    return QList<BCodeEdit::BracketPair>();
 }
 
 /*============================================================================
@@ -133,4 +124,15 @@ QString BAbstractFileType::createFileDialogFilter() const
         filter += "*";
     filter += ")";
     return filter;
+}
+
+/*============================== Static protected methods ==================*/
+
+BCodeEdit::BracketPair BAbstractFileType::createBracketPair(const QString &op, const QString &cl, const QString &esc)
+{
+    BCodeEdit::BracketPair bp;
+    bp.opening = op;
+    bp.closing = cl;
+    bp.escape = esc;
+    return bp;
 }

@@ -36,6 +36,8 @@ class QPaintEvent;
 #include <QVector>
 #include <QRectF>
 #include <QAbstractTextDocumentLayout>
+#include <QPair>
+#include <QTextCharFormat>
 
 /*============================================================================
 ================================ BCodeEditClipboardNotifier ==================
@@ -147,23 +149,20 @@ public:
         QString newText;
         QList<BCodeEdit::SplittedLinesRange> splittedLinesRanges;
     };
-    struct TestBracketResult
+    struct FindBracketPairResult
     {
-        bool valid;
-        BCodeEdit::BracketPair bracket;
-        bool opening;
-    };
-    struct FindBracketResult
-    {
-        bool valid;
-        int pos;
-        BCodeEdit::BracketPair bracket;
+        int start;
+        int end;
+        const BCodeEdit::BracketPair *startBr;
+        const BCodeEdit::BracketPair *endBr;
     };
 public:
     typedef QFuture<ProcessTextResult> ProcessTextFuture;
     typedef QFutureWatcher<ProcessTextResult> ProcessTextFutureWatcher;
 public:
     static const QList<QChar> UnsupportedSymbols;
+    static const QTextCharFormat BracketsFormat;
+    static const QTextCharFormat BracketsErrorFormat;
 public:
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
@@ -180,14 +179,13 @@ public:
     static void replaceTabs(QString &s, BCodeEdit::TabWidth tw);
     static void removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
                                       const QList<QTextEdit::ExtraSelection> &what);
-    static FindBracketResult findBracketPair(const BCodeEdit::BracketPair &br, bool opening, const QTextBlock &tb,
-                                             int pos, const QList<BCodeEdit::BracketPair> &brlist);
-    static TestBracketResult testBracket(const QString &txt, int pos, const QList<BCodeEdit::BracketPair> &brlist);
-    static BCodeEdit::BracketPair createBracketPair( const QString &op, const QString &cl,
-                                                     const QString &esc = QString() );
+    static QList<QChar> createUnsupportedSymbols();
+    static QTextCharFormat createBracketsFormat();
+    static QTextCharFormat createBracketsErrorFormat();
     static BCodeEdit::SplittedLinesRange createSplittedLinesRange();
-    static TestBracketResult createTestBracketResult();
-    static FindBracketResult createFindBracketResult();
+    static FindBracketPairResult createFindBracketPairResult();
+    static QTextEdit::ExtraSelection createExtraSelection( const QPlainTextEdit *edt,
+                                                           const QTextCharFormat &format = QTextCharFormat() );
     static bool testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2);
     static bool testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
                                              const QList<BCodeEdit::BracketPair> &l2);
@@ -204,7 +202,9 @@ public:
     int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
     void highlightBrackets();
-    bool testBracket(bool opening, const BCodeEdit::BracketPair *&bracket) const;
+    FindBracketPairResult findLeftBracketPair() const;
+    FindBracketPairResult findRightBracketPair() const;
+    bool testBracket(const QString &text, int posInBlock, bool opening, const BCodeEdit::BracketPair *&bracket) const;
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
     void handleReturn();
     void handleSpace();

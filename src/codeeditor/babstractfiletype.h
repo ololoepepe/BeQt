@@ -32,6 +32,8 @@ public:
     virtual bool matchesFileName(const QString &fileName) const = 0;
     virtual QSyntaxHighlighter *createHighlighter() const = 0;
     virtual QList<BCodeEdit::BracketPair> brackets() const = 0;
+protected:
+    static BCodeEdit::BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc);
 };
 
 #endif // BABSTRACTFILETYPE_H
