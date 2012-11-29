@@ -79,7 +79,6 @@ void BSelectDocumentsDialogPrivate::init()
     vlt = new QVBoxLayout(q);
       lblText = new QLabel(q);
         QFont fnt;
-        //fnt.setPointSize(fnt.pointSize() + 4);
         fnt.setBold(true);
         lblText->setWordWrap(true);
         lblText->setFont(fnt);
@@ -424,10 +423,10 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
     }
     foreach (const QString &fn, openingDocuments)
         if (fn == fileName)
-            return true; //TODO: Show message
+            return true;
     foreach (const QString &fn, savingDocuments)
         if (fn == fileName)
-            return true; //TODO: Show message
+            return true;
     return false;
 }
 

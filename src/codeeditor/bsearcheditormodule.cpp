@@ -637,9 +637,10 @@ void BSearchEditorModule::find()
         d->sdlg->show();
 }
 
-void BSearchEditorModule::findNext()
+void BSearchEditorModule::findNext(bool showDialog)
 {
-    find(); //Not sure if needed
+    if (showDialog)
+        find();
     d_func()->sdlg->findNext();
 }
 

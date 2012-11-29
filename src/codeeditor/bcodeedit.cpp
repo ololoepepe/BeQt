@@ -194,7 +194,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     if (!hasSelection)
         return;
     //Assuming all lines have the same length
-    //It's also good to set a monospace font
+    //It's also a good idea to set a monospace font
     int start = tc.selectionStart();
     int end = tc.selectionEnd();
     int soffset = start - q->document()->findBlock(start).position();
@@ -443,7 +443,6 @@ QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit
 BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString &text, int ll, BCodeEdit::TabWidth tw)
 {
     ProcessTextResult res;
-    //TODO
     QStringList sl = removeUnsupportedSymbols(text).split('\n');
     QStringList sln;
     for (int i = 0; i < sl.size(); ++i)
@@ -484,14 +483,14 @@ QString BCodeEditPrivate::removeTrailingSpaces(const QString &s)
 
 void BCodeEditPrivate::removeTrailingSpaces(QString &s)
 {
-    //TODO: Use the commented variant with Qt5' improved RegExp
+    //TODO (Qt5): Use the commented variant with Qt5's improved RegExp
     //static QRegExp rx("\\s+(?=\\n|$)");
+    //text.remove(rx);
     static QRegExp rx("\\s+$");
     QStringList sl = s.split('\n');
     for (int i = 0; i < sl.size(); ++i)
         sl[i].remove(rx);
     s = sl.join("\n");
-    //text.remove(rx);
 }
 
 QString BCodeEditPrivate::appendTrailingSpaces(const QString &s, int ll)
@@ -671,8 +670,6 @@ bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
 {
-    /*if (_m_recorder) //Install external event filter
-        _m_recorder->handleKeyPress(event);*/
     static const int ContorlShiftModifier = ( (int) Qt::ControlModifier | (int) Qt::ShiftModifier );
     static const int KeypadControlModifier = ( (int) Qt::KeypadModifier | (int) Qt::ControlModifier);
     int modifiers = e->modifiers();
@@ -725,9 +722,6 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_End:
             handleEnd(true);
             return true;
-        //case Qt::Key_Tab: //Install external event filter
-            //emit requestSwitchDocument();
-            //return true;
         case Qt::Key_Backspace:
             handleCtrlBackspace();
             return true;
@@ -756,10 +750,6 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_End:
             handleShiftEnd();
             return true;
-        //case Qt::Key_PageUp: //Not needed (or Shift press emulation needed)
-        //case Qt::Key_PageDown:
-            //QTimer::singleShot( 0, this, SLOT( _m_editSelectionChanged() ) );
-            //return false;
         default:
             break;
         }
@@ -850,13 +840,14 @@ bool BCodeEditPrivate::mousePressEvent(QMouseEvent *e)
     return true;
 }
 
-void BCodeEditPrivate::deleteSelection()
+BCodeEdit::SplittedLinesRange BCodeEditPrivate::deleteSelection()
 {
     QTextCursor tc = ptedt->textCursor();
     if ( !tc.hasSelection() )
-        return;
+        return createSplittedLinesRange();
     tc.beginEditBlock();
-    int pos = tc.selectionStart();
+    int pos = qMin( tc.selectionStart(), tc.selectionEnd() );
+    BCodeEdit::SplittedLinesRange slr = createSplittedLinesRange();
     if (blockMode)
     {
         QVector<BPlainTextEditExtended::SelectionRange> ranges = ptedt->selectionRanges();
@@ -876,23 +867,32 @@ void BCodeEditPrivate::deleteSelection()
     {
         tc.removeSelectedText();
         QString text = tc.block().text();
-        if (text.length() > lineLength) //TODO: Don't just truncate, split into lines
-            text.truncate(lineLength);
-        appendTrailingSpaces(text, lineLength);
+        QStringList sl = processLine(text, lineLength, tabWidth);
+        if (sl.size() > 1)
+        {
+            slr.firstLineNumber = tc.block().blockNumber();
+            slr.lastLineNumber = slr.firstLineNumber + sl.size();
+        }
         tc.movePosition(QTextCursor::StartOfBlock);
         tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        tc.insertText(text);
+        tc.insertText( sl.join("\n") );
     }
     tc.setPosition(pos);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
+    return slr;
 }
 
 void BCodeEditPrivate::seletAll()
 {
-    //TODO: Don't select last line's trailing spaces in normal mode; don't select any trailing spaces in block mode
-    ptedt->selectAll();
-    //_m_editSelectionChanged();
+    if (blockMode)
+        return ptedt->selectAll();
+    QTextCursor tc = ptedt->textCursor();
+    QTextBlock tbl = ptedt->document()->lastBlock();
+    int len = removeTrailingSpaces( tbl.text() ).length();
+    tc.movePosition(QTextCursor::Start);
+    tc.setPosition(tbl.position() + len, QTextCursor::KeepAnchor);
+    ptedt->setTextCursor(tc);
 }
 
 void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
@@ -957,9 +957,7 @@ int BCodeEditPrivate::replaceInSelectionLines(const QString &text, const QString
     tc.setPosition(end < start ? pos : start);
     tc.setPosition(end < start ? end : pos, QTextCursor::KeepAnchor);
     ptedt->setTextCursor(tc);
-    //_m_editSelectionChanged();
     tc.endEditBlock();
-    //Rehighlighting
     if (highlighter)
     {
         QTextBlock tb = ptedt->document()->findBlock( qMin<int>(start, end) );
@@ -975,7 +973,7 @@ int BCodeEditPrivate::replaceInSelectionLines(const QString &text, const QString
 
 int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
 {
-    //TODO: Improve replacing
+    //TODO (release 3.0.0): Improve replacing
     if (!blockMode)
         return -1;
     B_Q(BCodeEdit);
@@ -1001,7 +999,7 @@ int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QStrin
         QString txt = tbr.text();
         removeTrailingSpaces(txt);
         sl << txt.replace(tcr.selectionStart() - tbr.position(), slen, st);
-        if (txt.length() > lineLength) //This must be fixed
+        if (txt.length() > lineLength) //TODO (release 3.0.0): This must be fixed
             return -1;
     }
     QTextCursor tc = ptedt->textCursor();
@@ -1035,9 +1033,7 @@ int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QStrin
     tc.setPosition(start);
     tc.setPosition(end, QTextCursor::KeepAnchor);
     ptedt->setTextCursor(tc);
-    //_m_editSelectionChanged();
     tc.endEditBlock();
-    //Rehighlighting
     if (highlighter)
         foreach (const BPlainTextEditExtended::SelectionRange &range, ranges)
             highlighter->rehighlightBlock( ptedt->document()->findBlock(range.start) );
@@ -1221,9 +1217,14 @@ void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRan
     if (ranges.size() > 1)
         QMetaObject::invokeMethod( q_func(), "linesSplitted",
                                    Q_ARG(const QList<BCodeEdit::SplittedLinesRange> &, ranges) );
-    else if (ranges.size() == 1)
+    else if (ranges.size() == 1 && ranges.first().firstLineNumber >= 0)
         QMetaObject::invokeMethod( q_func(), "lineSplitted",
                                    Q_ARG( const BCodeEdit::SplittedLinesRange &, ranges.first() ) );
+}
+
+void BCodeEditPrivate::emitLineSplitted(const BCodeEdit::SplittedLinesRange &range)
+{
+    emitLinesSplitted(QList<BCodeEdit::SplittedLinesRange>() << range);
 }
 
 void BCodeEditPrivate::handleReturn()
@@ -1252,8 +1253,9 @@ void BCodeEditPrivate::handleReturn()
     tc.setPosition(tc.position() + i);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
+    //Not sure if this is necessary
     if (highlighter)
-        highlighter->rehighlightBlock(tbp); //TODO
+        highlighter->rehighlightBlock(tbp);
 }
 
 void BCodeEditPrivate::handleSpace()
@@ -1292,7 +1294,7 @@ void BCodeEditPrivate::handleBackspace()
         return;
     QTextCursor tc = ptedt->textCursor();
     if ( tc.hasSelection() )
-        return deleteSelection();
+        return emitLineSplitted( deleteSelection() );
     if (tc.position() == 0)
         return;
     tc.beginEditBlock();
@@ -1333,7 +1335,7 @@ void BCodeEditPrivate::handleCtrlBackspace()
         return;
     QTextCursor tc = ptedt->textCursor();
     if ( tc.hasSelection() )
-        return deleteSelection();
+        return emitLineSplitted( deleteSelection() );
     tc.beginEditBlock();
     QString text = tc.block().text();
     int posb = tc.positionInBlock();
@@ -1359,7 +1361,7 @@ void BCodeEditPrivate::handleDelete()
         return;
     QTextCursor tc = ptedt->textCursor();
     if ( tc.hasSelection() )
-        return deleteSelection();
+        return emitLineSplitted( deleteSelection() );
     if (tc.position() == 0)
         return;
     int posb = tc.positionInBlock();
@@ -1405,7 +1407,7 @@ void BCodeEditPrivate::handleCtrlDelete()
             return;
     QTextCursor tc = ptedt->textCursor();
     if ( tc.hasSelection() )
-        return deleteSelection();
+        return emitLineSplitted( deleteSelection() );
     tc.beginEditBlock();
     QString text = tc.block().text();
     int posb = tc.positionInBlock();
@@ -1434,7 +1436,6 @@ void BCodeEditPrivate::handleEnd(bool ctrl)
         --i;
     tc.setPosition(tb.position() + i + 1);
     ptedt->setTextCursor(tc);
-    //_m_editCursorPositionChanged();
 }
 
 void BCodeEditPrivate::handleShiftEnd()
@@ -1448,7 +1449,6 @@ void BCodeEditPrivate::handleShiftEnd()
         return;
     tc.setPosition(tc.position() + d, QTextCursor::KeepAnchor);
     ptedt->setTextCursor(tc);
-    //_m_editCursorPositionChanged();
 }
 
 void BCodeEditPrivate::handleLeft(bool shift)
@@ -1461,7 +1461,6 @@ void BCodeEditPrivate::handleLeft(bool shift)
         {
             tc.setPosition(0);
             ptedt->setTextCursor(tc);
-            //ptedt->updateSelection();
         }
         return;
     }
@@ -1475,7 +1474,7 @@ void BCodeEditPrivate::handleLeft(bool shift)
     else
     {
         QTextBlock tb = tc.block().previous();
-        //check block validity
+        //TODO: Maybe block validity should be checked
         QString text = tb.text();
         int i = text.length() - 1;
         while (i >= 0 && text.at(i) == ' ')
@@ -1637,7 +1636,6 @@ void BCodeEditPrivate::move(int key)
     tc.setPosition(start);
     tc.setPosition(end, QTextCursor::KeepAnchor);
     ptedt->setTextCursor(tc);
-    //_m_editSelectionChanged();
     tc.endEditBlock();
 }
 
@@ -2038,8 +2036,6 @@ bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, boo
             d->ptedt->moveCursor(QTextCursor::Start);
         b = d->ptedt->find(txt, flags);
     }
-    //if (b)
-        //_m_editSelectionChanged();
     return b;
 }
 
@@ -2124,7 +2120,10 @@ void BCodeEdit::insertText(const QString &txt)
     d->setBuisy(true);
     QTextCursor tc = d->ptedt->textCursor();
     tc.beginEditBlock();
-    d->deleteSelection(); //TODO: deleteSelection() must return a splitted lines list
+    QList<SplittedLinesRange> ranges;
+    SplittedLinesRange range = d->deleteSelection();
+    if (range.firstLineNumber >= 0)
+        ranges << range;
     if ( txt.isEmpty() )
     {
         tc.endEditBlock();
@@ -2152,10 +2151,9 @@ void BCodeEdit::insertText(const QString &txt)
             }
         }
     }
-    QList<SplittedLinesRange> ranges;
     if (b)
     {
-        //TODO: Improve text insertion in block mode
+        //TODO (release 3.0.0): Improve text insertion in block mode
         int offset = ltext.length();
         QTextBlock tb = tc.block();
         int  i = 0;
@@ -2216,15 +2214,17 @@ void BCodeEdit::insertText(const QString &txt)
         if (pos > 0)
             pos -= rtext.length();
         tc.setPosition(tc.block().position() + pos);
-        ranges = res.splittedLinesRanges;
-        for (int i = 0; i < ranges.size(); ++i)
+        if ( !res.splittedLinesRanges.isEmpty() )
         {
-            ranges[i].firstLineNumber += boffset;
-            ranges[i].lastLineNumber += boffset;
+            ranges = res.splittedLinesRanges;
+            for (int i = 0; i < ranges.size(); ++i)
+            {
+                ranges[i].firstLineNumber += boffset;
+                ranges[i].lastLineNumber += boffset;
+            }
         }
-
-        d->emitLinesSplitted(ranges);
     }
+    d->emitLinesSplitted(ranges);
     d->ptedt->setTextCursor(tc);
     if (d->highlighter)
         d->highlighter->rehighlight();
@@ -2243,7 +2243,6 @@ void BCodeEdit::moveCursor(const QPoint &pos)
     QTextCursor tc = d->ptedt->textCursor();
     tc.setPosition( tb.position() + (pos.x() > 0 ? pos.x() : 0) );
     d->ptedt->setTextCursor(tc);
-    //_m_editSelectionChanged();
 }
 
 void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
@@ -2259,7 +2258,6 @@ void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
     tc.setPosition(tbs.position() + (start.x() > 0 ? start.x() : 0) );
     tc.setPosition(tbe.position() + (end.x() > 0 ? end.x() : 0), QTextCursor::KeepAnchor);
     d->ptedt->setTextCursor(tc);
-    //_m_editSelectionChanged();
 }
 
 void BCodeEdit::selectAll()
@@ -2326,7 +2324,6 @@ void BCodeEdit::undo()
         return;
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
-    //_m_editCursorPositionChanged();
 }
 
 void BCodeEdit::redo()
@@ -2345,7 +2342,6 @@ void BCodeEdit::redo()
         return;
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
-    //_m_editCursorPositionChanged();
 }
 
 /*============================== Protected methods =========================*/

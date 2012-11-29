@@ -48,9 +48,6 @@ void BCodeEditorDocumentPrivate::init()
     asyncMin = 100 * BeQt::Kilobyte;
     fileType = 0;
     q_func()->setFileType( BAbstractFileType::defaultFileType() );
-    //fileType = BAbstractFileType::defaultFileType();
-    //q_func()->setHighlighter( fileType->createHighlighter() );
-    //q_func()->setRecognizedBrackets( fileType->brackets() );
 }
 
 void BCodeEditorDocumentPrivate::setFileName(const QString &fn)

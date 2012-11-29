@@ -195,7 +195,7 @@ public:
     inline bool keyPressEvent(QKeyEvent *e);
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);
-    void deleteSelection();
+    BCodeEdit::SplittedLinesRange deleteSelection();
     void seletAll();
     void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);
@@ -206,6 +206,7 @@ public:
     FindBracketPairResult findRightBracketPair() const;
     bool testBracket(const QString &text, int posInBlock, bool opening, const BCodeEdit::BracketPair *&bracket) const;
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
+    void emitLineSplitted(const BCodeEdit::SplittedLinesRange &range);
     void handleReturn();
     void handleSpace();
     void handleBackspace();

@@ -40,7 +40,7 @@ public:
     QList<QAction *> actions() const;
 public slots:
     void find();
-    void findNext();
+    void findNext(bool showDialog = true);
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
