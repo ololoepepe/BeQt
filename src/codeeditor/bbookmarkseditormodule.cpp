@@ -110,15 +110,17 @@ void BBookmarksEditorModulePrivate::retranslateUi()
 {
     if ( !actMakeBookmark.isNull() )
     {
-        actMakeBookmark->setText( tr("make bookmark", "act text") );
-        actMakeBookmark->setToolTip( tr("make bookmark", "act toolTip") );
-        actMakeBookmark->setWhatsThis( tr("make bookmark", "act whatsThis") );
+        actMakeBookmark->setText( tr("Make bookmark", "act text") );
+        actMakeBookmark->setToolTip( tr("Make a bookmark at cursor position", "act toolTip") );
+        actMakeBookmark->setWhatsThis( tr("Use this action to make a bookmark at the current cursor position",
+                                          "act whatsThis") );
     }
     if ( !actGotoNextBookmark.isNull() )
     {
-        actGotoNextBookmark->setText( tr("go to next bookmark", "act text") );
-        actGotoNextBookmark->setToolTip( tr("go to next bookmark", "act toolTip") );
-        actGotoNextBookmark->setWhatsThis( tr("go to next bookmark", "act whatsThis") );
+        actGotoNextBookmark->setText( tr("Next bookmark", "act text") );
+        actGotoNextBookmark->setToolTip( tr("Go to next bookmark", "act toolTip") );
+        actGotoNextBookmark->setWhatsThis( tr("Use this action to go to next bookmark in current document",
+                                              "act whatsThis") );
     }
 }
 

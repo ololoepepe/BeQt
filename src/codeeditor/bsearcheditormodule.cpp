@@ -523,15 +523,15 @@ void BSearchEditorModulePrivate::retranslateUi()
 {
     if ( !actFind.isNull() )
     {
-        actFind->setText( tr("find", "act text") );
-        actFind->setToolTip( tr("find", "act toolTip") );
-        actFind->setWhatsThis( tr("find", "act whatsThis") );
+        actFind->setText( tr("Find and replace", "act text") );
+        actFind->setToolTip( tr("Find and replace text", "act toolTip") );
+        actFind->setWhatsThis( tr("Use this action to open a find and replace dialog", "act whatsThis") );
     }
     if ( !actFindNext.isNull() )
     {
-        actFindNext->setText( tr("find next", "act text") );
-        actFindNext->setToolTip( tr("find next", "act toolTip") );
-        actFindNext->setWhatsThis( tr("find next", "act whatsThis") );
+        actFindNext->setText( tr("Find next", "act text") );
+        actFindNext->setToolTip( tr("Find next", "act toolTip") );
+        actFindNext->setWhatsThis( tr("Use this action to find next occurrence of the text", "act whatsThis") );
     }
 }
 

@@ -243,7 +243,7 @@ QString BAboutDialogPrivate::tabTitle(DialogTab t) const
     case DescriptionTab:
         return tr("About", "twgt tabText");
     case ChangeLogTab:
-        return tr("Changelog", "twgt tabText");
+        return tr("Change log", "twgt tabText");
     case AuthorsTab:
         return tr("Authors", "twgt tabText");
     case TranslatorsTab:

@@ -144,7 +144,7 @@ bool BLocalTerminalDriver::terminalCommand(const QString &command, const QString
 {
     if ( isActive() )
     {
-        error = tr("A process is running", "terminalCommand return");
+        error = tr("Another process is running", "terminalCommand return");
         return false;
     }
     B_D(BLocalTerminalDriver);

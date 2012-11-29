@@ -82,7 +82,7 @@ void BHelpBrowserPrivate::init()
 
 void BHelpBrowserPrivate::retranslateUi()
 {
-    tbtnBackward->setToolTip( tr("Backward", "tbtn toolTip") );
+    tbtnBackward->setToolTip( tr("Back", "tbtn toolTip") );
     tbtnForward->setToolTip( tr("Forward", "tbtn toolTip") );
     tbtnHome->setToolTip( tr("Home", "tbtn toolTip") );
     lblSearch->setText(tr("Search:", "lbl text") + " ");

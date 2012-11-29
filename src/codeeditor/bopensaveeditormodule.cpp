@@ -152,20 +152,24 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     if ( !actNewFile.isNull() )
     {
         actNewFile->setText( tr("New file", "act text") );
-        actNewFile->setToolTip( tr("New file", "act toolTip") );
-        actNewFile->setWhatsThis( tr("New file", "act whatsThis") );
+        actNewFile->setToolTip( tr("Create new file", "act toolTip") );
+        actNewFile->setWhatsThis( tr("Use this action to create a new file. "
+                                     "The file will not be created on your drive", "act whatsThis") );
     }
     if ( !actOpenFiles.isNull() )
     {
         actOpenFiles->setText( tr("Open files", "act text") );
-        actOpenFiles->setToolTip( tr("Open files", "act toolTip") );
-        actOpenFiles->setWhatsThis( tr("Open files", "act whatsThis") );
+        actOpenFiles->setToolTip( tr("Open existing files", "act toolTip") );
+        actOpenFiles->setWhatsThis( tr("Use this action to open one or more files existing on your drive",
+                                       "act whatsThis") );
     }
     if ( !actReopenFile.isNull() )
     {
         actReopenFile->setText( tr("Reopen file", "act text") );
-        actReopenFile->setToolTip( tr("Reopen file", "act toolTip") );
-        actReopenFile->setWhatsThis( tr("Reopen file", "act whatsThis") );
+        actReopenFile->setToolTip( tr("Reopen current file", "act toolTip") );
+        actReopenFile->setWhatsThis( tr("Use this file to reload current document. "
+                                        "Use the down arrow to reopen the document using another encoding",
+                                        "act whatsThis") );
         foreach (QMenu *mnu, codecGroups)
             mnu->setTitle( BCodeEditor::codecGroupName( static_cast<BCodeEditor::CodecGroup>(
                                                             mnu->property("beqt/codec_group").toInt() ) ) );
@@ -174,39 +178,49 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actSaveFile.isNull() )
     {
-        actSaveFile->setText( tr("Save file", "act text") );
-        actSaveFile->setToolTip( tr("Save file", "act toolTip") );
-        actSaveFile->setWhatsThis( tr("Save file", "act whatsThis") );
+        actSaveFile->setText( tr("Save document", "act text") );
+        actSaveFile->setToolTip( tr("Save current document", "act toolTip") );
+        actSaveFile->setWhatsThis( tr("Use this action to save the current document on your drive. "
+                                      "If the corresponding file doesn't exist, "
+                                      "you will be proposed to select a name for it", "act whatsThis") );
     }
     if ( !actSaveFileAs.isNull() )
     {
-        actSaveFileAs->setText( tr("Save file as", "act text") );
-        actSaveFileAs->setToolTip( tr("Save file as", "act toolTip") );
-        actSaveFileAs->setWhatsThis( tr("Save file as", "act whatsThis") );
+        actSaveFileAs->setText( tr("Save document as", "act text") );
+        actSaveFileAs->setToolTip( tr("Save current document as", "act toolTip") );
+        actSaveFileAs->setWhatsThis( tr("Use this action to save the current document on your drive. "
+                                        "You will be proposed to select a file name and encoding", "act whatsThis") );
     }
     if ( !actSaveAllFiles.isNull() )
     {
-        actSaveAllFiles->setText( tr("Save all files", "act text") );
-        actSaveAllFiles->setToolTip( tr("Save all files", "act toolTip") );
-        actSaveAllFiles->setWhatsThis( tr("Save all files", "act whatsThis") );
+        actSaveAllFiles->setText( tr("Save all documents", "act text") );
+        actSaveAllFiles->setToolTip( tr("Save all opened documents", "act toolTip") );
+        actSaveAllFiles->setWhatsThis( tr("Use this action to save all modified documents. "
+                                          "This is the same as using the Save action at every modified document",
+                                          "act whatsThis") );
     }
     if ( !actCloseFile.isNull() )
     {
-        actCloseFile->setText( tr("Close file", "act text") );
-        actCloseFile->setToolTip( tr("Close file", "act toolTip") );
-        actCloseFile->setWhatsThis( tr("Close file", "act whatsThis") );
+        actCloseFile->setText( tr("Close document", "act text") );
+        actCloseFile->setToolTip( tr("Close current document", "act toolTip") );
+        actCloseFile->setWhatsThis( tr("Use this action to close the current document. "
+                                       "If the document is modified, you will be asked to save it before closing",
+                                       "act whatsThis") );
     }
     if ( !actCloseAllFiles.isNull() )
     {
-        actCloseAllFiles->setText( tr("Close all files", "act text") );
-        actCloseAllFiles->setToolTip( tr("Close all files", "act toolTip") );
-        actCloseAllFiles->setWhatsThis( tr("Close all files", "act whatsThis") );
+        actCloseAllFiles->setText( tr("Close all documents", "act text") );
+        actCloseAllFiles->setToolTip( tr("Close all opened documents", "act toolTip") );
+        actCloseAllFiles->setWhatsThis( tr("Use this action to close all opened documents. "
+                                           "If any documents are modified, "
+                                           "you will be asked to save them before closing", "act whatsThis") );
     }
     if ( !mnuFileHistory.isNull() )
     {
         mnuFileHistory->setTitle( tr("Recent files", "mnu title") );
-        mnuFileHistory->setToolTip( tr("Recent files", "mnu toolTip") );
-        mnuFileHistory->setWhatsThis( tr("Recent files", "mnu whatsThis") );
+        mnuFileHistory->setToolTip( tr("Recently opened files", "mnu toolTip") );
+        mnuFileHistory->setWhatsThis( tr("Use this action to open one of the recently opened files",
+                                         "mnu whatsThis") );
     }
 }
 

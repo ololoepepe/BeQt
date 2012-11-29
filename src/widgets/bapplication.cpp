@@ -71,13 +71,13 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
     {
     case BApplication::SettingsAction:
         act->setText( tr("Settings...", "act text") );
-        act->setToolTip( tr("Show Settings dialog", "act toolTip") );
-        act->setWhatsThis( tr("Use this action to show application settings dialog", "act whatsThis") );
+        act->setToolTip( tr("Show application settings", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show application settings", "act whatsThis") );
         break;
     case BApplication::HomepageAction:
         act->setText( tr("Homepage", "act text") );
         act->setToolTip( tr("Go to homepage", "act toolTip") );
-        act->setWhatsThis( tr("Use this action to show application homepage with your browser", "act whatsThis") );
+        act->setWhatsThis( tr("Use this action to open application homepage with your browser", "act whatsThis") );
         break;
     case BApplication::HelpContentsAction:
         act->setText( tr("Help contents", "act text") );
@@ -99,8 +99,8 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
     }
     case BApplication::AboutAction:
         act->setText( tr("About", "act text") );
-        act->setToolTip( tr("Show About dialog", "act toolTip") );
-        act->setWhatsThis( tr("Use this action to show information about application, it's authors, etc.",
+        act->setToolTip( tr("Show info about this application", "act toolTip") );
+        act->setWhatsThis( tr("Use this action to show information about the application, it's authors, etc.",
                                "act whatsThis") );
         break;
     default:

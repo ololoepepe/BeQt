@@ -222,12 +222,12 @@ void BSplittedLinesDialogPrivate::init()
       lbl = new QLabel(q);
         lbl->setWordWrap(true);
         lbl->setText( tr("Some lines in this document were too long, "
-                         "so they were splitted into several lines.", "lbl text") );
+                         "so they were splitted into several lines", "lbl text") );
       vlt->addWidget(lbl);
       lstwgt = new QListWidget(q);
         foreach (const BCodeEdit::SplittedLinesRange &range, Ranges)
             lstwgt->insertItem(0, createListWidgetItem(range, LineLength) );
-        lstwgt->setToolTip( tr("Doublecick an item to go to the corresponding line.", "lstwgt toolTip") );
+        lstwgt->setToolTip( tr("Doubleclick an item to go to the corresponding line", "lstwgt toolTip") );
         connect( lstwgt, SIGNAL( itemDoubleClicked(QListWidgetItem *) ),
                  this, SLOT( lstwgtItemDoubleClicked(QListWidgetItem *) ) );
       vlt->addWidget(lstwgt);

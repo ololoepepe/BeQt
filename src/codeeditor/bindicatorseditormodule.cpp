@@ -92,7 +92,7 @@ void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
     if ( lblEncoding.isNull() )
         return;
     if (!editor)
-        return lblEncoding->setText( tr("----------", "lbl text") );
+        return lblEncoding->setText("----------");
     QString cn = q_func()->currentDocument() ? q_func()->currentDocument()->codecName() : editor->defaultCodecName();
     QString fcn = editor->fullCodecName(cn);
     if ( fcn.isEmpty() )
