@@ -159,16 +159,6 @@ void BAbstractEditorModule::documentBuisyChanged(bool buisy)
     //
 }
 
-void BAbstractEditorModule::documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange)
-{
-    //
-}
-
-void BAbstractEditorModule::documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges)
-{
-    //
-}
-
 void BAbstractEditorModule::documentFileNameChanged(const QString &fn)
 {
     //

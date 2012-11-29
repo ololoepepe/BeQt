@@ -448,14 +448,18 @@ BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString 
     for (int i = 0; i < sl.size(); ++i)
     {
         QStringList lines = processLine(sl.at(i), ll, tw);
-        sln << lines;
         if (lines.size() > 1)
         {
             BCodeEdit::SplittedLinesRange r = createSplittedLinesRange();
             r.firstLineNumber = sln.size();
-            r.lastLineNumber = r.firstLineNumber + lines.size();
-            res.splittedLinesRanges << r;
+            r.lastLineNumber = r.firstLineNumber + lines.size() - 1;
+            if (!res.splittedLinesRanges.isEmpty() &&
+                    res.splittedLinesRanges.last().lastLineNumber == r.firstLineNumber - 1)
+                res.splittedLinesRanges.last().lastLineNumber = r.lastLineNumber;
+            else
+                res.splittedLinesRanges << r;
         }
+        sln << lines;
     }
     res.newText = sln.join("\n");
     return res;
@@ -1219,10 +1223,10 @@ void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRan
 {
     if (ranges.size() > 1)
         QMetaObject::invokeMethod( q_func(), "linesSplitted",
-                                   Q_ARG(const QList<BCodeEdit::SplittedLinesRange> &, ranges) );
+                                   Q_ARG(QList<BCodeEdit::SplittedLinesRange>, ranges) );
     else if (ranges.size() == 1 && ranges.first().firstLineNumber >= 0)
         QMetaObject::invokeMethod( q_func(), "lineSplitted",
-                                   Q_ARG( const BCodeEdit::SplittedLinesRange &, ranges.first() ) );
+                                   Q_ARG(const BCodeEdit::SplittedLinesRange, ranges.first() ) );
 }
 
 void BCodeEditPrivate::emitLineSplitted(const BCodeEdit::SplittedLinesRange &range)
@@ -2142,6 +2146,8 @@ void BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
     if ( isBuisy() )
         return;
     d_func()->setText(txt, asyncIfLongerThan);
+    activateWindow();
+    d_func()->ptedt->setFocus();
 }
 
 void BCodeEdit::switchMode()
@@ -2261,14 +2267,14 @@ void BCodeEdit::insertText(const QString &txt)
             }
         }
     }
-    d->emitLinesSplitted(ranges);
     d->ptedt->setTextCursor(tc);
     if (d->highlighter)
         d->highlighter->rehighlight();
     tc.endEditBlock();
     d->setBuisy(false);
-    if ( !ranges.isEmpty() )
-        d->emitLinesSplitted(ranges);
+    d->emitLinesSplitted(ranges);
+    activateWindow();
+    d->ptedt->setFocus();
 }
 
 void BCodeEdit::moveCursor(const QPoint &pos)
@@ -2280,6 +2286,8 @@ void BCodeEdit::moveCursor(const QPoint &pos)
     QTextCursor tc = d->ptedt->textCursor();
     tc.setPosition( tb.position() + (pos.x() > 0 ? pos.x() : 0) );
     d->ptedt->setTextCursor(tc);
+    activateWindow();
+    d->ptedt->setFocus();
 }
 
 void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
@@ -2295,11 +2303,15 @@ void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
     tc.setPosition(tbs.position() + (start.x() > 0 ? start.x() : 0) );
     tc.setPosition(tbe.position() + (end.x() > 0 ? end.x() : 0), QTextCursor::KeepAnchor);
     d->ptedt->setTextCursor(tc);
+    activateWindow();
+    d->ptedt->setFocus();
 }
 
 void BCodeEdit::selectAll()
 {
     d_func()->ptedt->selectAll();
+    activateWindow();
+    d_func()->ptedt->setFocus();
 }
 
 void BCodeEdit::deselectText()
@@ -2310,6 +2322,8 @@ void BCodeEdit::deselectText()
         return;
     tc.setPosition( tc.selectionEnd() );
     d->ptedt->setTextCursor(tc);
+    activateWindow();
+    d->ptedt->setFocus();
 }
 
 void BCodeEdit::cut()
@@ -2318,6 +2332,8 @@ void BCodeEdit::cut()
         return;
     copy();
     d_func()->deleteSelection();
+    activateWindow();
+    d_func()->ptedt->setFocus();
 }
 
 void BCodeEdit::copy()
@@ -2326,6 +2342,8 @@ void BCodeEdit::copy()
     if ( text.isEmpty() )
         return;
     QApplication::clipboard()->setText(text);
+    activateWindow();
+    d_func()->ptedt->setFocus();
 }
 
 void BCodeEdit::paste()
@@ -2343,6 +2361,8 @@ void BCodeEdit::deleteSelection()
     if ( isReadOnly() || !hasSelection() )
         return;
     d_func()->deleteSelection();
+    activateWindow();
+    d_func()->ptedt->setFocus();
 }
 
 void BCodeEdit::undo()
@@ -2361,6 +2381,8 @@ void BCodeEdit::undo()
         return;
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
+    activateWindow();
+    d->ptedt->setFocus();
 }
 
 void BCodeEdit::redo()
@@ -2379,6 +2401,8 @@ void BCodeEdit::redo()
         return;
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
+    activateWindow();
+    d->ptedt->setFocus();
 }
 
 /*============================== Protected methods =========================*/

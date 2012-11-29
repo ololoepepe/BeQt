@@ -51,8 +51,6 @@ protected:
     virtual void documentEditModeChanged(BCodeEdit::EditMode mode);
     virtual void documentCursorPositionChanged(const QPoint &pos);
     virtual void documentBuisyChanged(bool buisy);
-    virtual void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
-    virtual void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
     virtual void documentFileNameChanged(const QString &fn);
     virtual void documentCodecChanged(const QString &codecName);
     virtual void documentFileTypeChanged(BAbstractFileType *ft);

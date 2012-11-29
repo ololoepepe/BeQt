@@ -5,6 +5,7 @@ class BCodeEditorDocument;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BSelectDocumentsDialogPrivate;
+class BSplittedLinesDialogPrivate;
 class BAbstractFileType;
 
 class QVBoxLayout;
@@ -19,6 +20,9 @@ class QAbstractButton;
 class QTextCodec;
 class QStringList;
 class QEvent;
+class QCheckBox;
+class QPushButton;
+class QListWidgetItem;
 
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
@@ -84,6 +88,61 @@ public:
         //Cancel
 private:
     Q_DISABLE_COPY(BSelectDocumentsDialogPrivate)
+};
+
+/*============================================================================
+================================ BSplittedLinesDialog ========================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BSplittedLinesDialog : public QDialog, public BBase
+{
+    Q_OBJECT
+    B_DECLARE_PRIVATE(BSplittedLinesDialog)
+public:
+    explicit BSplittedLinesDialog(const QList<BCodeEdit::SplittedLinesRange> &ranges, int lineLength,
+                                  QWidget *parent = 0);
+    ~BSplittedLinesDialog();
+protected:
+    explicit BSplittedLinesDialog(BSplittedLinesDialogPrivate &d, QWidget *parent = 0);
+signals:
+    void gotoLine(const QPoint &pos);
+    void selectLines(const QPoint &start, const QPoint &end);
+private:
+    Q_DISABLE_COPY(BSplittedLinesDialog)
+};
+
+/*============================================================================
+================================ BSplittedLinesDialogPrivate =================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BSplittedLinesDialogPrivate : public BBasePrivate
+{
+    Q_OBJECT
+    B_DECLARE_PUBLIC(BSplittedLinesDialog)
+public:
+    explicit BSplittedLinesDialogPrivate(BSplittedLinesDialog *q,
+                                         const QList<BCodeEdit::SplittedLinesRange> &ranges, int lineLength);
+    ~BSplittedLinesDialogPrivate();
+public:
+    static QListWidgetItem *createListWidgetItem(const BCodeEdit::SplittedLinesRange &range, int lineLength);
+public:
+    void init();
+public slots:
+    void lstwgtItemDoubleClicked(QListWidgetItem *item);
+    void btnGotoClicked();
+public:
+    const QList<BCodeEdit::SplittedLinesRange> Ranges;
+    const int LineLength;
+public:
+    QVBoxLayout *vlt;
+      QLabel *lbl;
+      QListWidget *lstwgt;
+      QCheckBox *cboxSelect;
+      QDialogButtonBox *dlgbbox;
+        QPushButton *btnGoto;
+        //Close
+private:
+    Q_DISABLE_COPY(BSplittedLinesDialogPrivate)
 };
 
 /*============================================================================
