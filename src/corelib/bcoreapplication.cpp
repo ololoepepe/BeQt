@@ -22,8 +22,36 @@
 #include <QMetaObject>
 #include <QTranslator>
 #include <QPointer>
+#include <QEvent>
 
 #include <QDebug>
+
+/*============================================================================
+================================ BCoreApplicationEventFilter =================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BCoreApplicationEventFilter::BCoreApplicationEventFilter(BCoreApplicationPrivate *p) :
+    QObject(p), _m_p(p)
+{
+    //
+}
+
+BCoreApplicationEventFilter::~BCoreApplicationEventFilter()
+{
+    //
+}
+
+/*============================== Public methods ============================*/
+
+bool BCoreApplicationEventFilter::eventFilter(QObject *o, QEvent *e)
+{
+    if ( !_m_p->blockLanguageChange || e->type() != QEvent::LanguageChange ||
+         o != (QObject *) QCoreApplication::instance() )
+        return QObject::eventFilter(o, e);
+    return true;
+}
 
 /*============================================================================
 ================================ BCoreApplicationPrivate =====================
@@ -184,17 +212,6 @@ void BCoreApplicationPrivate::init()
         userPrefix = QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
     else
         userPrefix = QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
-    /*bool sws = (BCoreApplication::SM_SystemWide == options.settingsMode);
-    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
-    {
-        QString x = QDir::rootPath() + "/Documents and Settings/All Users";
-        userPrefix = (!sws ? QDir::homePath() : x) + "/Application Data/" + orgName + "/" + appName;
-    }
-    else
-    {
-        QString x = QDir::rootPath() + "/Users/Default";
-        userPrefix = (!sws ? QDir::homePath() : x) + "/AppData/Roaming/" + orgName + "/" + appName;
-    }*/
     sharedPrefix = appPath;
 #endif
     //app mode
@@ -207,8 +224,10 @@ void BCoreApplicationPrivate::init()
         bundlePrefix = appPath;
 #endif
     }
-    //default locale
+    //localization
     locale = QLocale::system();
+    appEventFilter = new BCoreApplicationEventFilter(this);
+    QCoreApplication::instance()->installEventFilter(appEventFilter);
     //initialized
     initialized = true;
     //infos
@@ -441,7 +460,7 @@ void BCoreApplication::unregisterPluginWrapper(BPluginWrapper *plugin)
     ds_func()->plugins.removeAll(plugin);
 }
 
-void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function, bool reload)
+void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
@@ -449,7 +468,7 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, Interface
     BPluginWrapper::setAcceptableTypes(acceptableTypes);
     BPluginWrapper::setInterfaceTestFunction(function);
     //loading plugins
-    //TODO: No means to determine from which dir the plugin is loaded.
+    //TODO (release 3.0.0): No means to determine from which dir the plugin is loaded.
     //Plugins from user dir should replace plugins from other dirs, even if they are already loaded
     //For now it's only possible to reload ALL plugins, so ones located in user dir are loaded first
     QStringList dirs = locations(PluginsPath);
@@ -563,17 +582,18 @@ QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bo
     return list;
 }
 
-void BCoreApplication::retranslateUi()
+void BCoreApplication::retranslateUi(bool blockLanguageChange)
 {
-    //TODO: Block QCoreApplication LanguageChange events
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     B_DS(BCoreApplication);
+    ds->blockLanguageChange = blockLanguageChange;
     foreach (BTranslator *t, ds->translators)
     {
         ds->removeTranslator(t, false);
         ds->installTranslator(t, false);
     }
+    ds->blockLanguageChange = false;
     QMetaObject::invokeMethod(_m_self, "languageChanged");
 }
 

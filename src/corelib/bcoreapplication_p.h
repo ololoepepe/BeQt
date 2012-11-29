@@ -6,10 +6,12 @@ class BTranslator;
 class BPluginWrapperPrivate;
 class BTranslatorPrivate;
 class BPersonInfoProvider;
+class BCoreApplicationPrivate;
 
 class QString;
 class QLocale;
 class QSettings;
+class QEvent;
 
 #include "bcoreapplication.h"
 #include "bglobal.h"
@@ -19,6 +21,22 @@ class QSettings;
 #include <QList>
 #include <QMap>
 #include <QStringList>
+
+/*============================================================================
+================================ BCoreApplicationEventFilter =================
+============================================================================*/
+
+class B_CORE_EXPORT BCoreApplicationEventFilter : public QObject
+{
+    Q_OBJECT
+public:
+    explicit BCoreApplicationEventFilter(BCoreApplicationPrivate *p);
+    ~BCoreApplicationEventFilter();
+public:
+    bool eventFilter(QObject *o, QEvent *e);
+public:
+    BCoreApplicationPrivate *const _m_p;
+};
 
 /*============================================================================
 ================================ BCoreApplicationPrivate =====================
@@ -72,6 +90,8 @@ public:
     QLocale locale;
     QStringList deactivatedPlugins;
     QMap<QString, BTranslator *> translators;
+    BCoreApplicationEventFilter *appEventFilter;
+    bool blockLanguageChange;
     QList<BPluginWrapper *> plugins;
     BPersonInfoProvider *beqtAuthors;
     BPersonInfoProvider *beqtTranslations;
@@ -80,6 +100,7 @@ private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;
     friend class BTranslatorPrivate;
+    friend class BCoreApplicationEventFilter;
 };
 
 #endif // BCOREAPPLICATION_P_H

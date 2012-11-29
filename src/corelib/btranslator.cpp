@@ -38,12 +38,13 @@ void BTranslatorPrivate::init()
     installed = false;
 }
 
-void BTranslatorPrivate::install()
+void BTranslatorPrivate::install(bool blockLanguageChange)
 {
     if (installed)
         return;
     QLocale l = BCoreApplication::locale();
     QStringList dirs = BCoreApplication::locations(BCoreApplication::TranslationsPath);
+    BCoreApplication::instance()->ds_func()->blockLanguageChange = blockLanguageChange;
     for (int i = dirs.size() - 1; i >= 0; --i) //User translators come last, having higher priority
     {
         QTranslator *t = new QTranslator;
@@ -57,18 +58,21 @@ void BTranslatorPrivate::install()
             t->deleteLater();
         }
     }
+    BCoreApplication::instance()->ds_func()->blockLanguageChange = false;
     installed = true;
 }
 
-void BTranslatorPrivate::remove()
+void BTranslatorPrivate::remove(bool blockLanguageChange)
 {
     if (!installed)
         return;
+    BCoreApplication::instance()->ds_func()->blockLanguageChange = blockLanguageChange;
     foreach (QTranslator *t, translators)
     {
         QCoreApplication::removeTranslator(t);
         t->deleteLater();
     }
+    BCoreApplication::instance()->ds_func()->blockLanguageChange = false;
     translators.clear();
     installed = false;
 }
@@ -89,12 +93,14 @@ void BTranslatorPrivate::emitLanguageChange()
 BTranslator::BTranslator(QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )
 {
+    BCoreApplicationPrivate::testCoreInit("BTranslator");
     d_func()->init();
 }
 
 BTranslator::BTranslator(const QString &fileName, QObject *parent) :
     QObject(parent), BBase( *new BTranslatorPrivate(this) )
 {
+    BCoreApplicationPrivate::testCoreInit("BTranslator");
     d_func()->init();
     d_func()->fileName = fileName;
 }
@@ -114,19 +120,18 @@ BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
 
 /*============================== Public methods ============================*/
 
-void BTranslator::setFileName(const QString &fileName, bool languageChange)
+void BTranslator::setFileName(const QString &fileName, bool blockLanguageChange)
 {
     B_D(BTranslator);
     bool wasInstalled = isInstalled();
     if (wasInstalled)
-        d->remove();
+        d->remove(blockLanguageChange);
     d->fileName = fileName;
     if ( !isValid() )
-        return;
+        return d->emitLanguageChange();
     if (wasInstalled)
-        d->install();
-    if (languageChange)
-        d->emitLanguageChange();
+        d->install(blockLanguageChange);
+    d->emitLanguageChange();
 }
 
 bool BTranslator::isValid() const

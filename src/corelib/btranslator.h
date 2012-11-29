@@ -28,7 +28,7 @@ public:
 protected:
     explicit BTranslator(BTranslatorPrivate &d, QObject *parent = 0);
 public:
-    void setFileName(const QString &fileName, bool languageChange = false);
+    void setFileName(const QString &fileName, bool blockLanguageChange = true);
     bool isValid() const;
     bool isInstalled() const;
     QString fileName() const;

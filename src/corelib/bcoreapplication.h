@@ -82,15 +82,14 @@ public:
     static QSettings *createAppSettingsInstance();
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
-    static void loadPlugins(const QStringList &acceptableTypes = QStringList(),
-                            InterfaceTestFunction function = 0, bool reload = false);
+    static void loadPlugins(const QStringList &acceptableTypes = QStringList(), InterfaceTestFunction function = 0);
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
     static void installTranslator(BTranslator *translator, bool noLanguageChange = false);
     static void removeTranslator(BTranslator *translator, bool noLanguageChange = false);
     static void setLocale(const QLocale &l, bool noRetranslate = false);
     static QLocale locale();
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
-    static void retranslateUi();
+    static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
     static QString beqtInfo(BeQtInfo type);

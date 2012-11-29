@@ -27,8 +27,8 @@ public:
 public:
     void init();
     void clear();
-    void install();
-    void remove();
+    void install(bool blockLanguageChange = true);
+    void remove(bool blockLanguageChange = true);
     void emitLanguageChange();
 public:
     QString fileName;
