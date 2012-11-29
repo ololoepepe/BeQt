@@ -204,8 +204,7 @@ QListWidgetItem *BSplittedLinesDialogPrivate::createListWidgetItem(const BCodeEd
     int ub = range.lastLineNumber;
     lwi->setData( Qt::UserRole, QPoint(0, lb) );
     lwi->setData( Qt::UserRole + 1, QPoint(lineLength, ub) );
-    QString text = tr("Lines:", "lstwgti text") + " " + QString::number(lb + 1) + " ";
-    text += tr("to", "lstwgti text") + " " + QString::number(ub + 1);
+    QString text = tr("Lines:", "lstwgti text") + " " + QString::number(lb + 1) + " - " + QString::number(ub + 1);
     text += " (" + QString::number(ub - lb + 1) + " " + tr("lines", "lstwgti text") + ")";
     lwi->setText(text);
     return lwi;

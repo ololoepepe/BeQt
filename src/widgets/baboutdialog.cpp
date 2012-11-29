@@ -227,7 +227,7 @@ void BAboutDialogPrivate::updateWindowTitle()
 void BAboutDialogPrivate::updateCopyright()
 {
     QString cr = !copyrightPeriod.isEmpty() ? (copyrightPeriod + " ") : QString();
-    lblCopyright->setText(tr("Copyright", "about") + " &copy; " + cr + organization);
+    lblCopyright->setText(tr("Copyright", "lbl text") + " &copy; " + cr + organization);
 }
 
 void BAboutDialogPrivate::updateWebsite()
@@ -241,13 +241,13 @@ QString BAboutDialogPrivate::tabTitle(DialogTab t) const
     switch (t)
     {
     case DescriptionTab:
-        return tr("About", "twgt tabText");
+        return tr("Description", "twgt tabText");
     case ChangeLogTab:
         return tr("Change log", "twgt tabText");
     case AuthorsTab:
         return tr("Authors", "twgt tabText");
     case TranslatorsTab:
-        return tr("Translation", "twgt tabText");
+        return tr("Translators", "twgt tabText");
     case ThanksToTab:
         return tr("Thanks to", "twgt tabText");
     case LicenseTab:
