@@ -33,13 +33,12 @@ else:exists($${PWD}/include):beqtHeadersPath=$${PWD}/include
 isEmpty(beqtHeadersPath):error("BeQt headers not found")
 #Searching for libraries
 beqtLibsPath=
-else:mac:exists($${PWD}/../Frameworks):beqtLibsPath=$${PWD}/../Frameworks
+mac:exists($${PWD}/../Frameworks):beqtLibsPath=$${PWD}/../Frameworks
 else:exists($${PWD}/lib):beqtLibsPath=$${PWD}/lib
 else:exists($${OUT_PWD}/beqt):beqtLibsPath=$${OUT_PWD}/beqt
 else:exists($${OUT_PWD}/../beqt):beqtLibsPath=$${OUT_PWD}/../beqt
 else:exists($${OUT_PWD}/../../beqt):beqtLibsPath=$${OUT_PWD}/../../beqt
 else:exists($${OUT_PWD}/../../../beqt):beqtLibsPath=$${OUT_PWD}/../../../beqt
-
 
 #If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {
