@@ -36,21 +36,18 @@ int main(int argc, char **argv)
     QApplication *app = new QApplication(argc, argv);
     //QApplication initialization
     QApplication::setApplicationName("Simple Editor");
-    QApplication::setOrganizationName("darkangel");
-    QApplication::setOrganizationDomain("https://github.com/the-dark-angel/test");
+    QApplication::setOrganizationName("Andrey Bogdanov");
+    QApplication::setOrganizationDomain("https://github.com/the-dark-angel");
     QApplication::setApplicationVersion("0.1.0pa1");
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
     //Initializing BApplication About
     BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012");
-    BApplication::aboutDialogInstance()->setWebsite("https://github.com/the-dark-angel/test");
-    BApplication::aboutDialogInstance()->setDescription("This is an example application");
+    BApplication::aboutDialogInstance()->setWebsite("https://github.com/the-dark-angel");
+    BApplication::aboutDialogInstance()->setDescription("Simple code editor.");
     //QMainWindow
     QMainWindow *mw = new QMainWindow;
       BCodeEditor *cedtr = new BCodeEditor;
-        cedtr->setDefaultCodec("Windows-1251");
-        BLocalDocumentDriver *drv = static_cast<BLocalDocumentDriver *>( cedtr->driver() );
-        drv->setDefaultDir("/home/darkangel/tmp");
         mw->installEventFilter( cedtr->dropHandler() );
         mw->setAcceptDrops(true);
       mw->setCentralWidget(cedtr);

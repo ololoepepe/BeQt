@@ -64,7 +64,7 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
             if ( what.value( keys.at(i) ).site.isEmpty() )
                 what[keys.at(i)].site = defSite;
             if ( what.value( keys.at(i) ).mail.isEmpty() )
-                what[keys.at(i)].site = defMail;
+                what[keys.at(i)].mail = defMail;
         }
     }
     where << what;
