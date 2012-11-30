@@ -3,6 +3,6 @@ TEMPLATE = subdirs
 
 SUBDIRS = src
 
-!contains(CONFIG, beqt_no_examples):SUBDIRS += examples
+contains(CONFIG, beqt_examples):SUBDIRS += examples
 
 include(installs.pri)

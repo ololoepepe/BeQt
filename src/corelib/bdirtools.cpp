@@ -86,17 +86,17 @@ LocaleBasedSource createLocaleBasedSource(const QString &fileName, const QString
     return r;
 }
 
-QString localeBasedFileName(const LocaleBasedSource &src)
+QString localeBasedFileName(const LocaleBasedSource &src, const QLocale &loc)
 {
-    return localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix);
+    return localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix, loc);
 }
 
 QString localeBasedFileName(const QString &fileName, const QString &defaultFileName,
-                                   const QString &possibleSuffix)
+                            const QString &possibleSuffix, const QLocale &loc)
 {
     if ( fileName.isEmpty() )
         return "";
-    QString lname = BCoreApplication::locale().name().left(5);
+    QString lname = loc.name().left(5);
     QFileInfo fi(fileName);
     QString bfn = fi.path() + "/" + fi.baseName();
     QString suff = fi.suffix();
@@ -120,11 +120,11 @@ QString localeBasedFileName(const QString &fileName, const QString &defaultFileN
     return f.fileName();
 }
 
-QString localeBasedDirName(const QString &dir)
+QString localeBasedDirName(const QString &dir, const QLocale &loc)
 {
     if ( dir.isEmpty() )
         return "";
-    QString lname = BCoreApplication::locale().name().left(5);
+    QString lname = loc.name().left(5);
     QDir d(dir + "/" + lname);
     if ( !d.exists() )
         d.setPath( dir + "/" + lname.left(2) );

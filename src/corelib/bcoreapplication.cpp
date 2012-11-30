@@ -85,6 +85,7 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
         removeTranslator(t, false);
     foreach (BPluginWrapper *pw, plugins)
         pw->deleteLater();
+    Q_CLEANUP_RESOURCE(beqtcore);
 }
 
 /*============================== Static public methods =====================*/
@@ -153,14 +154,14 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
     return info;
 }
 
-QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov)
+QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
         return "";
     if (!prov)
         return "";
     QString s;
-    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos() )
+    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos(loc) )
     {
         if ( info.name.isEmpty() )
             continue;
@@ -181,6 +182,7 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov)
 
 void BCoreApplicationPrivate::init()
 {
+    Q_INIT_RESOURCE(beqtcore);
     initialized = false;
     portable = false;
     //checks
@@ -237,10 +239,10 @@ void BCoreApplicationPrivate::init()
     locs << bundlePrefix;
 #endif
     locs << ":";
-    QString spref = "beqt/about/infos/";
-    beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.info", locs), this);
-    beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translations.info", locs), this);
-    beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.info", locs), this);
+    QString spref = "beqt/infos/";
+    beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
+    beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
+    beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
 }
 
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name) const
@@ -609,47 +611,43 @@ void BCoreApplication::saveSettings()
     ds_func()->saveSettings();
 }
 
-QString BCoreApplication::beqtInfo(BeQtInfo type)
+QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return "";
-    QString pfn;
-    QString dfn;
+    QString fn;
     switch (type)
     {
     case Description:
-        pfn = "about/description/DESCRIPTION";
-        dfn = pfn;
+        fn = "/description/DESCRIPTION";
         break;
     case ChangeLog:
-        pfn = "about/changelog/ChangeLog";
-        dfn = "ChangeLog";
+        fn = "/changelog/ChangeLog";
         break;
     case License:
-        pfn = "about/copying/COPYING";
-        dfn = "COPYING";
+        fn = "/copying/COPYING";
         break;
     case Authors:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtAuthors);
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtAuthors, loc);
     case Translators:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtTranslations);
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtTranslations, loc);
     case ThanksTo:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtThanksTo);
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtThanksTo, loc);
     default:
         return "";
     }
     QString dir = location(BeqtPath, SharedResources) + "/";
-    QString fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
+    fn = BDirTools::localeBasedFileName(dir + fn, dir + fn, "txt", loc);
     if ( fn.isEmpty() )
     {
         dir = location(BeqtPath, BuiltinResources) + "/";
-        fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
+        fn = BDirTools::localeBasedFileName(dir + fn, dir + fn, "txt", loc);
     }
 #if defined(Q_OS_MAC)
     if ( fn.isEmpty() )
     {
         dir = location(BeqtPath, BundleResources) + "/";
-        fn = BDirTools::localeBasedFileName(dir + pfn, dir + dfn, "txt");
+        fn = BDirTools::localeBasedFileName(dir + fn, dir + fn, "txt", loc);
     }
 #endif
     return BDirTools::readTextFile(fn, "UTF-8");

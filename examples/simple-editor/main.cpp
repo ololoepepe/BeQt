@@ -30,8 +30,6 @@
 
 int main(int argc, char **argv)
 {
-    //Initializing BeQt built-in resources
-    Q_INIT_RESOURCE(beqt);
     //Creating QApplication instance
     QApplication *app = new QApplication(argc, argv);
     //QApplication initialization
@@ -106,8 +104,6 @@ int main(int argc, char **argv)
     delete mw;
     delete bapp;
     delete app;
-    //Cleaning up BeQt built-in resources
-    Q_CLEANUP_RESOURCE(beqt);
     //Returning from main
     return ret;
 }

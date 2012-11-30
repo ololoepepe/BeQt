@@ -64,7 +64,7 @@ public:
     static bool testCoreUnique();
     static QSettings *createSettingsInstance(const QString &fileName);
     static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
-    static QString personInfoString(BPersonInfoProvider *prov);
+    static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc);
 public:
     void init();
     QString confFileName(const QString &path, const QString &name) const;

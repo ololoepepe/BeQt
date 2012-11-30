@@ -35,3 +35,5 @@ SOURCES += \
     $${PWD}/bpluginssettingstab.cpp \
     $${PWD}/bsettingsdialog.cpp \
     $${PWD}/bterminalwidget.cpp
+
+contains(CONFIG, beqt_builtin_resources):RESOURCES += $${PWD}/beqtwidgets.qrc

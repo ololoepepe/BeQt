@@ -37,10 +37,12 @@ B_CORE_EXPORT bool removeFilesInDir( const QString &dirName, const QStringList &
 B_CORE_EXPORT bool copyDir(const QString &dirName, const QString &newDirName, bool recursively = false);
 B_CORE_EXPORT LocaleBasedSource createLocaleBasedSource( const QString &fileName, const QString &defaultFileName,
                                                          const QString &possibleSuffix = QString() );
-B_CORE_EXPORT QString localeBasedFileName(const LocaleBasedSource &src);
+B_CORE_EXPORT QString localeBasedFileName( const LocaleBasedSource &src,
+                                           const QLocale &loc = BCoreApplication::locale() );
 B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
-                                           const QString &possibleSuffix = QString() );
-B_CORE_EXPORT QString localeBasedDirName(const QString &dir);
+                                           const QString &possibleSuffix = QString(),
+                                           const QLocale &loc = BCoreApplication::locale() );
+B_CORE_EXPORT QString localeBasedDirName( const QString &dir, const QLocale &loc = BCoreApplication::locale() );
 B_CORE_EXPORT QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
 B_CORE_EXPORT QString readTextFile(const QString &fileName, const QString &codecName);
 B_CORE_EXPORT QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);

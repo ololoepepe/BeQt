@@ -92,7 +92,7 @@ public:
     static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
-    static QString beqtInfo(BeQtInfo type);
+    static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
