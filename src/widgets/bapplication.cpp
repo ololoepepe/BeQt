@@ -76,7 +76,7 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
         break;
     case BApplication::HomepageAction:
         act->setText( tr("Homepage", "act text") );
-        act->setToolTip( tr("Go to homepage", "act toolTip") );
+        act->setToolTip( tr("Open homepage", "act toolTip") );
         act->setWhatsThis( tr("Use this action to open application homepage with your browser", "act whatsThis") );
         break;
     case BApplication::HelpContentsAction:

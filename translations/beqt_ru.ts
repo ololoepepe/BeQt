@@ -82,67 +82,67 @@
         <location filename="../src/widgets/bapplication.cpp" line="74"/>
         <source>Show application settings</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Показать настройки приложения</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="75"/>
         <source>Use this action to show application settings</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы показать настройки приложения</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="78"/>
         <source>Homepage</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Домашняя страница</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="79"/>
-        <source>Go to homepage</source>
+        <source>Open homepage</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Открыть домашнюю страницу</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="80"/>
         <source>Use this action to open application homepage with your browser</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы открыть домашнюю страницу приложения в вашем браузере</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="83"/>
         <source>Help contents</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Содержание</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="84"/>
         <source>Show Help contents</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Показать содержание</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="85"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Используйте это действие чтобы показать содержание (указатель) справки</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="88"/>
         <source>Contextual Help</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Контекстная справка</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="89"/>
         <source>Show contextual Help</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Показать контекстную справку</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="90"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Используйте это действие, чтобы открыть страницу справки, соответствующую контексту</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="101"/>
@@ -154,13 +154,13 @@
         <location filename="../src/widgets/bapplication.cpp" line="102"/>
         <source>Show info about this application</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Use this action to show information about the application, it&apos;s authors, etc.</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы показать информацию о приложении, его авторах и т.д.</translation>
     </message>
 </context>
 <context>
@@ -298,189 +298,189 @@
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="383"/>
         <source>New document</source>
         <comment>fileName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Новый документ</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="411"/>
         <source>Unicode</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Юникод</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="417"/>
         <source>Baltic</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Балтийская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="420"/>
         <source>Cyrillic</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Кириллица</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="422"/>
         <source>Cyrillic (Ukrainian)</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Кириллица (украинская)</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="424"/>
         <source>Romanic</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Романская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="426"/>
         <source>Central European</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Центральноевропейская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="431"/>
         <source>Greek</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Греческая</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="434"/>
         <source>Western</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Западная</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="436"/>
         <source>Celtic</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Кельтская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="438"/>
         <source>Nordic</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Северная</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="440"/>
         <source>South European</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Восточноевропейская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="445"/>
         <source>Vietnamese</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Вьетнамская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="447"/>
         <source>Traditional Chinese</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Китайская традиционная</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="449"/>
         <source>Simplified Chinese</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Китайская упрощённая</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="451"/>
         <source>Korean</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Корейская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="454"/>
         <source>Japanese</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Японская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="459"/>
         <source>Thai</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Тайская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="461"/>
         <source>Turkish</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Турецкая</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="466"/>
         <source>Arabic</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Арабская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="468"/>
         <source>Hebrew</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Еврейская</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="470"/>
         <source>Hebrew (visual)</source>
         <comment>codec descriptiveName</comment>
-        <translation type="unfinished"></translation>
+        <translation>Еврейская видимая</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="826"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть файл</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="828"/>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="841"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="839"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
-        <translation type="unfinished"></translation>
+        <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="843"/>
         <source>as:</source>
         <comment>msgbox text</comment>
-        <translation type="unfinished"></translation>
+        <translation>как:</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="853"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
-        <translation type="unfinished"></translation>
+        <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="855"/>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="867"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Документ изменён:</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="856"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
-        <translation type="unfinished"></translation>
+        <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="865"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
-        <translation type="unfinished"></translation>
+        <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="868"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
-        <translation type="unfinished"></translation>
+        <translation>Хотите сохранить его перед закрытием?</translation>
     </message>
 </context>
 <context>
@@ -531,121 +531,121 @@
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="114"/>
         <source>Mode: blocks</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Режим: блоки</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="114"/>
         <source>Mode: lines</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Режим: строки</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="115"/>
         <source>Edit mode: blocks</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Режим редактирования: блоки</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="115"/>
         <source>Edit mode: lines</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Режим редактирования: строки</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="116"/>
         <source>Use this action to switch between normal and block edit modes</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы переключаться между обычным режимом редактирования и режимом блоков</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="126"/>
         <source>Cut</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Вырезать</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="127"/>
         <source>Cut selected text</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Вырезать выделенный текст</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="128"/>
         <source>Use this action to delete current selected text and move it to clipboard</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы удалить текущий выделенный текст и переместить его в буфер обмена</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="133"/>
         <source>Copy</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Копировать</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="134"/>
         <source>Copy selected text</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Копировать выделенный текст</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="135"/>
         <source>Use this action to copy current selected text to clipboard</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы копировать текущий выделенный текст в буфер обмена</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="139"/>
         <source>Paste</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Вставить</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="140"/>
         <source>Paste text from clipboard</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Вставить из буфера обмена</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="141"/>
         <source>Paste text from clipboard to current cursor position</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Вставить текст из буфера обмена в текущее местоположение курсора</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="145"/>
         <source>Undo</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Отменить</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="146"/>
         <source>Undo last action</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Отменить последнее действие</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="147"/>
         <source>Use this action to undo last action (text insertion, selection deletion, etc.)</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Используйте это действие чтобы отменить последнее действие (вставка текста, удаление выделения и т.д.)</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="152"/>
         <source>Redo</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Повторить</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="153"/>
         <source>Redo canceled action</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Повторить отменённое действие</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="154"/>
         <source>Use this action to repeat last action, cancelled using the Undo action</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Используйте это действие чтобы повторить последнее действие, отменённое при помощи действия Отменить</translation>
     </message>
 </context>
 <context>
@@ -808,165 +808,165 @@
     <name>BOpenSaveEditorModulePrivate</name>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="154"/>
-        <source>New file</source>
+        <source>Create</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Создать</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="155"/>
-        <source>Create new file</source>
+        <source>Create new document</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Создать новый документ</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="156"/>
-        <source>Use this action to create a new file. The file will not be created on your drive</source>
+        <source>Use this action to create a new document. No file will be created on your drive</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="161"/>
-        <source>Open files</source>
-        <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы создать новый документ. Файл на диске создан не будет</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="162"/>
         <source>Open existing files</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Открыть существующие файлы</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="163"/>
         <source>Use this action to open one or more files existing on your drive</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="168"/>
-        <source>Reopen file</source>
-        <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation type="unfinished">Используйте это действие чтобы открыть один или несколько файлов, существующих на диске</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="169"/>
         <source>Reopen current file</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Повторно открыть текущий файл</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="170"/>
         <source>Use this file to reload current document. Use the down arrow to reopen the document using another encoding</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="181"/>
-        <source>Save document</source>
-        <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы перезагрузить текущий файл. Воспользуйтесь символом стрелки чтобы открыть документ с использованием другой кодировки</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="182"/>
         <source>Save current document</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить текущий документ</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="183"/>
-        <source>Use this action to save the current document on your drive. If the corresponding file doesn&apos;t exist, you will be proposed to select a name for it</source>
+        <source>Use this action to save the current document on your drive. If the corresponding file doesn&apos;t exist, you will be proposed to select it&apos;s location</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="189"/>
-        <source>Save document as</source>
-        <comment>act text</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="190"/>
-        <source>Save current document as</source>
-        <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы сохранить текущий документ на диске. Если соответствующий файл не существует, будет предложено выбрать его расположение</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="191"/>
-        <source>Use this action to save the current document on your drive. You will be proposed to select a file name and encoding</source>
+        <source>Use this action to save the current document on your drive. You will be proposed to select file location and encoding</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="196"/>
-        <source>Save all documents</source>
-        <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы сохранить текущий документ на диске. Будет предложено выбрать расположение файла и кодировку</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="197"/>
         <source>Save all opened documents</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Сохранить все открытые документы</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="198"/>
         <source>Use this action to save all modified documents. This is the same as using the Save action at every modified document</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="204"/>
-        <source>Close document</source>
-        <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы сохранить все изменённые документы. Это то же самое, что использовать действие Сохранить для каждого изменённого документа</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="205"/>
         <source>Close current document</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть текущий документ</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="206"/>
         <source>Use this action to close the current document. If the document is modified, you will be asked to save it before closing</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы закрыть текущий документ. Если документ был изменён, будет предложено сохранить его перед закрытием</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="161"/>
+        <source>Open</source>
+        <comment>act text</comment>
+        <translation>Открыть</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="168"/>
+        <source>Reopen</source>
+        <comment>act text</comment>
+        <translation>Открыть заново</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="181"/>
+        <source>Save</source>
+        <comment>act text</comment>
+        <translation>Сохранить</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="189"/>
+        <source>Save as...</source>
+        <comment>act text</comment>
+        <translation>Сохранить как...</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="190"/>
+        <source>Save current document as...</source>
+        <comment>act toolTip</comment>
+        <translation>Сохранить текущий документ как...</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="196"/>
+        <source>Save all</source>
+        <comment>act text</comment>
+        <translation>Сохранить все</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="204"/>
+        <source>Close</source>
+        <comment>act text</comment>
+        <translation>Закрыть</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="212"/>
-        <source>Close all documents</source>
+        <source>Close all</source>
         <comment>act text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть все</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="213"/>
         <source>Close all opened documents</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Закрыть все открытые документы</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="214"/>
         <source>Use this action to close all opened documents. If any documents are modified, you will be asked to save them before closing</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы закрыть все открытые документы. Если какие-то документы были изменены, будет предложено сохранить их перед закрытием</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="220"/>
         <source>Recent files</source>
         <comment>mnu title</comment>
-        <translation type="unfinished"></translation>
+        <translation>Недавние файлы</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="221"/>
         <source>Recently opened files</source>
         <comment>mnu toolTip</comment>
-        <translation type="unfinished"></translation>
+        <translation>Недавно открытые файлы</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="222"/>
         <source>Use this action to open one of the recently opened files</source>
         <comment>mnu whatsThis</comment>
-        <translation type="unfinished"></translation>
+        <translation>Используйте это действие чтобы снова открыть один из недавно открытых документов</translation>
     </message>
 </context>
 <context>

@@ -151,21 +151,21 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
 {
     if ( !actNewFile.isNull() )
     {
-        actNewFile->setText( tr("New file", "act text") );
-        actNewFile->setToolTip( tr("Create new file", "act toolTip") );
-        actNewFile->setWhatsThis( tr("Use this action to create a new file. "
-                                     "The file will not be created on your drive", "act whatsThis") );
+        actNewFile->setText( tr("Create", "act text") );
+        actNewFile->setToolTip( tr("Create new document", "act toolTip") );
+        actNewFile->setWhatsThis( tr("Use this action to create a new document. No file will be created on your drive",
+                                     "act whatsThis") );
     }
     if ( !actOpenFiles.isNull() )
     {
-        actOpenFiles->setText( tr("Open files", "act text") );
+        actOpenFiles->setText( tr("Open", "act text") );
         actOpenFiles->setToolTip( tr("Open existing files", "act toolTip") );
         actOpenFiles->setWhatsThis( tr("Use this action to open one or more files existing on your drive",
                                        "act whatsThis") );
     }
     if ( !actReopenFile.isNull() )
     {
-        actReopenFile->setText( tr("Reopen file", "act text") );
+        actReopenFile->setText( tr("Reopen", "act text") );
         actReopenFile->setToolTip( tr("Reopen current file", "act toolTip") );
         actReopenFile->setWhatsThis( tr("Use this file to reload current document. "
                                         "Use the down arrow to reopen the document using another encoding",
@@ -178,22 +178,22 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actSaveFile.isNull() )
     {
-        actSaveFile->setText( tr("Save document", "act text") );
+        actSaveFile->setText( tr("Save", "act text") );
         actSaveFile->setToolTip( tr("Save current document", "act toolTip") );
         actSaveFile->setWhatsThis( tr("Use this action to save the current document on your drive. "
                                       "If the corresponding file doesn't exist, "
-                                      "you will be proposed to select a name for it", "act whatsThis") );
+                                      "you will be proposed to select it's location", "act whatsThis") );
     }
     if ( !actSaveFileAs.isNull() )
     {
-        actSaveFileAs->setText( tr("Save document as", "act text") );
-        actSaveFileAs->setToolTip( tr("Save current document as", "act toolTip") );
+        actSaveFileAs->setText( tr("Save as...", "act text") );
+        actSaveFileAs->setToolTip( tr("Save current document as...", "act toolTip") );
         actSaveFileAs->setWhatsThis( tr("Use this action to save the current document on your drive. "
-                                        "You will be proposed to select a file name and encoding", "act whatsThis") );
+                                        "You will be proposed to select file location and encoding", "act whatsThis") );
     }
     if ( !actSaveAllFiles.isNull() )
     {
-        actSaveAllFiles->setText( tr("Save all documents", "act text") );
+        actSaveAllFiles->setText( tr("Save all", "act text") );
         actSaveAllFiles->setToolTip( tr("Save all opened documents", "act toolTip") );
         actSaveAllFiles->setWhatsThis( tr("Use this action to save all modified documents. "
                                           "This is the same as using the Save action at every modified document",
@@ -201,7 +201,7 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actCloseFile.isNull() )
     {
-        actCloseFile->setText( tr("Close document", "act text") );
+        actCloseFile->setText( tr("Close", "act text") );
         actCloseFile->setToolTip( tr("Close current document", "act toolTip") );
         actCloseFile->setWhatsThis( tr("Use this action to close the current document. "
                                        "If the document is modified, you will be asked to save it before closing",
@@ -209,7 +209,7 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actCloseAllFiles.isNull() )
     {
-        actCloseAllFiles->setText( tr("Close all documents", "act text") );
+        actCloseAllFiles->setText( tr("Close all", "act text") );
         actCloseAllFiles->setToolTip( tr("Close all opened documents", "act toolTip") );
         actCloseAllFiles->setWhatsThis( tr("Use this action to close all opened documents. "
                                            "If any documents are modified, "
