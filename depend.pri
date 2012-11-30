@@ -104,7 +104,7 @@ isEmpty(BEQT_PART) {
 } else {
     beqt_headers_prefix=$${PWD}/include
     equals(BEQT_PART, module):beqt_libs_prefix=$${OUT_PWD}/..
-    equals(BEQT_PART, example):beqt_libs_prefix=$${OUT_PWD}/../../../src
+    equals(BEQT_PART, example):beqt_libs_prefix=$${OUT_PWD}/../../src
 }
 
 #If CONFIG contains "release" or "debug", sets special suffix for libs' path

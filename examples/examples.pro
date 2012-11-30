@@ -1,6 +1,4 @@
 TEMPLATE = subdirs
 
 SUBDIRS = \
-    codeeditor \
-    plugins \
-    widgets
+    simple-editor

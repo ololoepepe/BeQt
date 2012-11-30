@@ -1,5 +1,5 @@
 TEMPLATE = app
-TARGET = codeeditor
+TARGET = simple-editor
 
 CONFIG += release
 
@@ -8,7 +8,7 @@ QT = core gui
 BEQT = core widgets codeeditor
 BEQT_PART=example
 
-include(../../../depend.pri)
+include(../../depend.pri)
 
 SOURCES = \
     main.cpp

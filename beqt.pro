@@ -1,6 +1,8 @@
 CONFIG += ordered
 TEMPLATE = subdirs
 
-SUBDIRS = src examples
+SUBDIRS = src
+
+!contains(CONFIG, beqt_no_examples):SUBDIRS += examples
 
 include(installs.pri)

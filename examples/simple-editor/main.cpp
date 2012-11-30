@@ -35,7 +35,7 @@ int main(int argc, char **argv)
     //Creating QApplication instance
     QApplication *app = new QApplication(argc, argv);
     //QApplication initialization
-    QApplication::setApplicationName("Code Editor");
+    QApplication::setApplicationName("Simple Editor");
     QApplication::setOrganizationName("darkangel");
     QApplication::setOrganizationDomain("https://github.com/the-dark-angel/test");
     QApplication::setApplicationVersion("0.1.0pa1");

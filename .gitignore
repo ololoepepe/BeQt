@@ -55,8 +55,7 @@ BeQtCodeEditor
 BeQtCore
 BeQtNetwork
 BeQtWidgets
-mainwindow
-codeeditor
+simple-editor
 !include/BeQt/BeQtCodeEditor
 !include/BeQt/BeQtCore
 !include/BeQt/BeQtNetwork
@@ -65,6 +64,3 @@ codeeditor
 !include/BeQtCore
 !include/BeQtNetwork
 !include/BeQtWidgets
-!examples/widgets/mainwindow
-!src/codeeditor
-!examples/codeeditor/codeeditor
