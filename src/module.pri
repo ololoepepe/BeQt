@@ -27,29 +27,33 @@ defineReplace(beqtModuleSubdir) {
     return($${moduleSubdir})
 }
 
+beqtHeadersPath=$${PWD}/../include
+beqtLibsPath=$${OUT_PWD}/..
+
 #If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {
     releaseDebugSuffix=
-    CONFIG(release, debug|release):releaseDebugSuffix=release/
-    CONFIG(debug, debug|release):releaseDebugSuffix=debug/
+    CONFIG(release, debug|release):releaseDebugSuffix=/release
+    CONFIG(debug, debug|release):releaseDebugSuffix=/debug
 }
 
-#Gets full module name, for example "BeQtCore", "BeQtWidgets", etc.
+#Gets short module name, for example "core", "widgets", etc.
 #Appends corresponding paths to DEPENDPATH, INCLUDEPATH and LIBS variables
 defineTest(addBeqtModule) {
     shortName=$${1}
     fullName=$$fullBeqtModuleName($${shortName})
-    INCLUDEPATH *= $${PWD}/include/../$${fullName}
-    DEPENDPATH *= $${PWD}/include/../$${fullName}
-    LIBS *= -L$${OUT_PWD}/../$$beqtModuleSubdir($${shortName})/$${releaseDebugSuffix} -l$${fullName}
+    INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
+    DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
+    LIBS *= -L$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -l$${fullName}
+    #LIBS *= -F$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -framework $${fullName}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     export(LIBS)
 }
 
 #Appending headers base dir to INCLUDEPATH and DEPENDPATH variables
-INCLUDEPATH *= $${PWD}/../include
-DEPENDPATH *= $${PWD}/../include
+INCLUDEPATH *= $${beqtHeadersPath}
+DEPENDPATH *= $${beqtHeadersPath}
 
 #Replaces "all" meta-module with the list of all BeQt modules
 contains(BEQT, all) {
