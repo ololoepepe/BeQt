@@ -615,17 +615,17 @@ QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return "";
-    QString fn;
+    QString bfn;
     switch (type)
     {
     case Description:
-        fn = "/description/DESCRIPTION";
+        bfn = "description/DESCRIPTION";
         break;
     case ChangeLog:
-        fn = "/changelog/ChangeLog";
+        bfn = "changelog/ChangeLog";
         break;
     case License:
-        fn = "/copying/COPYING";
+        bfn = "copying/COPYING";
         break;
     case Authors:
         return BCoreApplicationPrivate::personInfoString(ds_func()->beqtAuthors, loc);
@@ -637,17 +637,17 @@ QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
         return "";
     }
     QString dir = location(BeqtPath, SharedResources) + "/";
-    fn = BDirTools::localeBasedFileName(dir + fn, dir + fn, "txt", loc);
+    QString fn = BDirTools::localeBasedFileName(dir + bfn, dir + bfn, "txt", loc);
     if ( fn.isEmpty() )
     {
         dir = location(BeqtPath, BuiltinResources) + "/";
-        fn = BDirTools::localeBasedFileName(dir + fn, dir + fn, "txt", loc);
+        fn = BDirTools::localeBasedFileName(dir + bfn, dir + bfn, "txt", loc);
     }
 #if defined(Q_OS_MAC)
     if ( fn.isEmpty() )
     {
         dir = location(BeqtPath, BundleResources) + "/";
-        fn = BDirTools::localeBasedFileName(dir + fn, dir + fn, "txt", loc);
+        fn = BDirTools::localeBasedFileName(dir + bfn, dir + bfn, "txt", loc);
     }
 #endif
     return BDirTools::readTextFile(fn, "UTF-8");

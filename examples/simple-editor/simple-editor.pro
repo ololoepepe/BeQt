@@ -6,9 +6,8 @@ CONFIG += release
 QT = core gui
 
 BEQT = core widgets codeeditor
-BEQT_PART=example
 
-include(../../depend.pri)
+include(../example.pri)
 
 SOURCES = \
     main.cpp

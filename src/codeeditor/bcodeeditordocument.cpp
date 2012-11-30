@@ -3,7 +3,6 @@
 #include "babstractdocumentdriver.h"
 #include "bcodeedit.h"
 #include "bcodeedit_p.h"
-#include "bplaintextedit.h"
 #include "babstractfiletype.h"
 #include "bcodeeditor.h"
 
