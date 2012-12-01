@@ -229,10 +229,41 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 #endif
 }
 
+void BTerminalIOHandler::installHandler(const QString &command, InternalHandler handler)
+{
+    if ( !BTerminalIOHandlerPrivate::testInit() )
+        return;
+    if (command.isEmpty() || !handler)
+        return;
+    B_DS(BTerminalIOHandler);
+    if ( ds->internalHandlers.contains(command) )
+        return;
+    ds->internalHandlers.insert(command, handler);
+}
+
+void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler handler)
+{
+    if ( !BTerminalIOHandlerPrivate::testInit() )
+        return;
+    if (command.isEmpty() || !handler)
+        return;
+    B_DS(BTerminalIOHandler);
+    if ( ds->externalHandlers.contains(command) )
+        return;
+    ds->externalHandlers.insert(command, handler);
+}
+
 /*============================== Protected methods =========================*/
 
 void BTerminalIOHandler::handleCommand(const QString &command, const QStringList &arguments)
 {
+    if ( command.isEmpty() )
+        return;
+    B_D(BTerminalIOHandler);
+    if ( d->internalHandlers.contains(command) )
+        return ( this->*d->internalHandlers.value(command) )(command, arguments);
+    if ( d->externalHandlers.contains(command) )
+        return d->externalHandlers.value(command)(command, arguments);
     emit commandEntered(command, arguments);
 }
 

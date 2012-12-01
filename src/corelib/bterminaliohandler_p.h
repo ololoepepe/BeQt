@@ -16,6 +16,7 @@ class QString;
 #include <QTextStream>
 #include <QFile>
 #include <QEventLoop>
+#include <QMap>
 
 /*============================================================================
 ================================ BTerminalIOHandlerThread ====================
@@ -68,6 +69,8 @@ public:
     QMutex loopMutex;
     QEventLoop readEventLoop;
     QString lastLine;
+    QMap<QString, BTerminalIOHandler::InternalHandler> internalHandlers;
+    QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
 private:
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
     friend class BTerminalIOHandlerThread;
