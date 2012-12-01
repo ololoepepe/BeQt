@@ -48,3 +48,18 @@ include(../../prefix.pri)
 
 target.path = $${libsInstallsPath}
 INSTALLS = target
+
+!contains(CONFIG, beqt_builtin_resources) {
+    beqtInstallsChangelog.files=$$files($${PWD}/changelog/*.txt)
+    beqtInstallsChangelog.path=$${resourcesInstallsPath}/changelog
+    INSTALLS += beqtInstallsChangelog
+    beqtInstallsCopying.files=$$files($${PWD}/copying/*.txt)
+    beqtInstallsCopying.path=$${resourcesInstallsPath}/copying
+    INSTALLS += beqtInstallsCopying
+    beqtInstallsDescription.files=$$files($${PWD}/description/*.txt)
+    beqtInstallsDescription.path=$${resourcesInstallsPath}/description
+    INSTALLS += beqtInstallsDescription
+    beqtInstallsInfos.files=$$files($${PWD}/infos/*.beqt-info)
+    beqtInstallsInfos.path=$${resourcesInstallsPath}/infos
+    INSTALLS += beqtInstallsInfos
+}
