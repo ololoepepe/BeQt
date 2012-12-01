@@ -367,50 +367,46 @@ void BAboutDialogPrivate::resetThanksToProvider(BPersonInfoProvider *prov)
     resetThanksTo();
 }
 
-void BAboutDialogPrivate::resetDescriptionSource(const QString &fileName, const QString &defaultFileName,
-                                                 const QString &possibleSuffix)
+void BAboutDialogPrivate::resetDescriptionFile(const QString &fileName)
 {
-    descriptionSource.fileName = fileName;
-    descriptionSource.defaultFileName = defaultFileName;
-    descriptionSource.possibleSuffix = possibleSuffix;
+    descriptionFileName = fileName;
+    if ( !fileName.isEmpty() )
+        description.clear();
     resetDescription();
 }
 
-void BAboutDialogPrivate::resetChangeLogSource(const QString &fileName, const QString &defaultFileName,
-                                               const QString &possibleSuffix)
+void BAboutDialogPrivate::resetChangeLogFile(const QString &fileName)
 {
-    changeLogSource.fileName = fileName;
-    changeLogSource.defaultFileName = defaultFileName;
-    changeLogSource.possibleSuffix = possibleSuffix;
+    changeLogFileName = fileName;
+    if ( !fileName.isEmpty() )
+        changeLog.clear();
     resetChangeLog();
 }
 
-void BAboutDialogPrivate::resetLicenseSource(const QString &fileName, const QString &defaultFileName,
-                                             const QString &possibleSuffix)
+void BAboutDialogPrivate::resetLicenseFile(const QString &fileName)
 {
-    licenseSource.fileName = fileName;
-    licenseSource.defaultFileName = defaultFileName;
-    licenseSource.possibleSuffix = possibleSuffix;
+    licenseFileName = fileName;
+    if ( !fileName.isEmpty() )
+        license.clear();
     resetLicense();
 }
 
 void BAboutDialogPrivate::resetDescription()
 {
-    QString fn = sourceFileName(descriptionSource);
-    fillTab(DescriptionTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : QString(), false);
+    QString fn = BDirTools::localeBasedFileName(descriptionFileName);
+    fillTab(DescriptionTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : description, false);
 }
 
 void BAboutDialogPrivate::resetChangeLog()
 {
-    QString fn = sourceFileName(changeLogSource);
-    QString txt = !fn.isEmpty() ? processChangeLog( BDirTools::readTextFile(fn, "UTF-8") ) : QString();
-    fillTab(ChangeLogTab, txt, true);
+    QString fn = BDirTools::localeBasedFileName(changeLogFileName);
+    fillTab(ChangeLogTab, processChangeLog(!fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : changeLog), true);
 }
 
 void BAboutDialogPrivate::resetLicense()
 {
-    QString fn = sourceFileName(licenseSource);
-    fillTab(LicenseTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : QString(), false);
+    QString fn = BDirTools::localeBasedFileName(licenseFileName);
+    fillTab(LicenseTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : license, false);
 }
 
 /*============================== Public slots ==============================*/
@@ -554,35 +550,38 @@ void BAboutDialog::setPixmap(const QString &fileName)
 
 void BAboutDialog::setDescription(const QString &text)
 {
-    d_func()->resetDescriptionSource();
-    d_func()->fillTab(BAboutDialogPrivate::DescriptionTab, text, false);
+    B_D(BAboutDialog);
+    d->description = text;
+    d->resetDescriptionFile();
 }
 
-void BAboutDialog::setDescriptionSource(const BDirTools::LocaleBasedSource &src)
+void BAboutDialog::setDescriptionFile(const QString &fileName)
 {
-    d_func()->resetDescriptionSource(src.fileName, src.defaultFileName, src.possibleSuffix);
+    d_func()->resetDescriptionFile(fileName);
 }
 
 void BAboutDialog::setChangeLog(const QString &text)
 {
-    d_func()->resetChangeLogSource();
-    d_func()->fillTab(BAboutDialogPrivate::ChangeLogTab, BAboutDialogPrivate::processChangeLog(text), true);
+    B_D(BAboutDialog);
+    d->changeLog = text;
+    d->resetChangeLogFile();
 }
 
-void BAboutDialog::setChangeLogSource(const BDirTools::LocaleBasedSource &src)
+void BAboutDialog::setChangeLogFile(const QString &fileName)
 {
-    d_func()->resetChangeLogSource(src.fileName, src.defaultFileName, src.possibleSuffix);
+    d_func()->resetChangeLogFile(fileName);
 }
 
 void BAboutDialog::setLicense(const QString &text)
 {
-    d_func()->resetLicenseSource();
-    d_func()->fillTab(BAboutDialogPrivate::LicenseTab, text, false);
+    B_D(BAboutDialog);
+    d->license = text;
+    d->resetLicenseFile();
 }
 
-void BAboutDialog::setLicenseSource(const BDirTools::LocaleBasedSource &src)
+void BAboutDialog::setLicenseFile(const QString &fileName)
 {
-    d_func()->resetLicenseSource(src.fileName, src.defaultFileName, src.possibleSuffix);
+    d_func()->resetLicenseFile(fileName);
 }
 
 void BAboutDialog::setAuthors(const BPersonInfoProvider::PersonInfoList &list)

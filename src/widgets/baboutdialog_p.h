@@ -73,12 +73,9 @@ public:
     void resetAuthorsProvider(BPersonInfoProvider *prov = 0);
     void resetTranslationProvider(BPersonInfoProvider *prov = 0);
     void resetThanksToProvider(BPersonInfoProvider *prov = 0);
-    void resetDescriptionSource( const QString &fileName = QString(), const QString &defaultFileName = QString(),
-                                 const QString &possibleSuffix = QString() );
-    void resetChangeLogSource( const QString &fileName = QString(), const QString &defaultFileName = QString(),
-                               const QString &possibleSuffix = QString() );
-    void resetLicenseSource( const QString &fileName = QString(), const QString &defaultFileName = QString(),
-                             const QString &possibleSuffix = QString() );
+    void resetDescriptionFile( const QString &fileName = QString() );
+    void resetChangeLogFile( const QString &fileName = QString() );
+    void resetLicenseFile( const QString &fileName = QString() );
     void resetDescription();
     void resetChangeLog();
     void resetLicense();
@@ -97,6 +94,9 @@ public:
     QString descriptionFileName;
     QString changeLogFileName;
     QString licenseFileName;
+    QString description;
+    QString changeLog;
+    QString license;
     BPersonInfoProvider *authorsProvider;
     BPersonInfoProvider *translationsProvider;
     BPersonInfoProvider *thanksToProvider;

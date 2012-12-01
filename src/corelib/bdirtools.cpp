@@ -76,21 +76,6 @@ bool copyDir(const QString &dirName, const QString &newDirName, bool recursively
     return true;
 }
 
-/*LocaleBasedSource createLocaleBasedSource(const QString &fileName, const QString &defaultFileName,
-                                          const QString &possibleSuffix)
-{
-    LocaleBasedSource r;
-    r.fileName = fileName;
-    r.defaultFileName = defaultFileName;
-    r.possibleSuffix = possibleSuffix;
-    return r;
-}*/
-
-/*QString localeBasedFileName(const LocaleBasedSource &src, const QLocale &loc)
-{
-    return localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix, loc);
-}*/
-
 QString localeBasedFileName(const QString &fileName, const QLocale &loc)
 {
     if ( fileName.isEmpty() )
@@ -110,14 +95,6 @@ QString localeBasedFileName(const QString &fileName, const QLocale &loc)
         if ( QFile(fn).exists() )
             return fn;
     return "";
-    /*QFile f(bfn + "_" + lname + suff);
-    if ( !f.exists() )
-        f.setFileName(bfn + "_" + lname.left(2) + suff);
-    if ( !f.exists() )
-        f.setFileName(bfn + "_" + "en" + suff);
-    if ( !f.exists() )
-        f.setFileName(fileName);
-    return f.exists() ? f.fileName() : QString();*/
 }
 
 QString localeBasedDirName(const QString &path, const QString &subpath, const QLocale &loc)

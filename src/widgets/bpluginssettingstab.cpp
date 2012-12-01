@@ -142,9 +142,9 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         BPluginInterface::PluginInfo inf = pw->info();
         ad.setOrganization(inf.organization, inf.copyrightYears);
         ad.setWebsite(inf.website);
-        ad.setDescriptionSource(inf.descriptionSource);
-        ad.setChangeLogSource(inf.changeLogSource);
-        ad.setLicenseSource(inf.licenseSource);
+        ad.setDescriptionFile(inf.descriptionFileName);
+        ad.setChangeLogFile(inf.changeLogFileName);
+        ad.setLicenseFile(inf.licenseFileName);
         ad.setAuthorsFile(inf.authorsFileName);
         ad.setTranslatorsFile(inf.translatorsFileName);
         ad.setThanksToFile(inf.thanksToFileName);

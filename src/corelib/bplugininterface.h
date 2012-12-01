@@ -21,9 +21,9 @@ public:
         QString organization;
         QString copyrightYears;
         QString website;
-        BDirTools::LocaleBasedSource descriptionSource;
-        BDirTools::LocaleBasedSource changeLogSource;
-        BDirTools::LocaleBasedSource licenseSource;
+        QString descriptionFileName;
+        QString changeLogFileName;
+        QString licenseFileName;
         QString authorsFileName;
         QString translatorsFileName;
         QString thanksToFileName;
