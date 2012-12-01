@@ -1,7 +1,5 @@
-BeQt is a library set, developed as an extension of Qt (or you may say a framework in a framework). That is where the project's name comes from.
-BeQt is suitable for small and medium desktop applications, implementing such common features as:
+BeQt - Beyond Qt
 
- * Translating UI
- * Loading plugins
- * Showing About, Help and Settings dialogs
- * Storing basic application settings
+BeQt is a library set developed as an extension of Qt. That is where the project's name comes from. BeQt may be useful in small and medium desktop applications with classic interface. It takes most of routine work, allowing one to focus on solving the actual task.
+
+BeQt modules help one to quickly implement working with application resources, plugin support, and user interface on-the-fly translation. BeQt provides the means for convenient user commands handling in console applications, and even it's own terminal emulator. Several frequently used auxiliary widgets are also provided. Moreover, BeQt implements a ready-to-use network client-server interaction model, based on Qt classes. Entire module is dedicated to a simple yet powerfull text editor, capable of selecting text by rectangular blocks.

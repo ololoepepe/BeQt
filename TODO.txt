@@ -1,8 +1,8 @@
 === Next patch ===
 
-=== Next release ===
+=== This release ===
 
-* Re-write README; write additional README in Russian (about/readme/README_ru.txt)
+* Re-write README
 [done] Remove icons from the resources, install them to the Shared directory instead
 [done] Remove bcore/BCryptor
 [done] Move bgui/"About Qt" to the "About" dialog
