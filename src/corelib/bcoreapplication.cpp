@@ -156,14 +156,14 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
     return info;
 }
 
-QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc)
+QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
         return "";
     if (!prov)
         return "";
     QString s;
-    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos(loc) )
+    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos(noDefault, loc) )
     {
         if ( info.name.isEmpty() )
             continue;
@@ -634,7 +634,7 @@ QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
     case Authors:
         return BCoreApplicationPrivate::personInfoString(ds_func()->beqtAuthors, loc);
     case Translators:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtTranslations, loc);
+        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtTranslations, loc, true);
     case ThanksTo:
         return BCoreApplicationPrivate::personInfoString(ds_func()->beqtThanksTo, loc);
     default:

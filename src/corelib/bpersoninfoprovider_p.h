@@ -26,7 +26,8 @@ public:
     explicit BPersonInfoProviderPrivate(BPersonInfoProvider *q);
     ~BPersonInfoProviderPrivate();
 public:
-    static BPersonInfoProvider::PersonInfo infoForLocale(const PersonInfoMap &map, const QString &localeName);
+    static BPersonInfoProvider::PersonInfo infoForLocale(const PersonInfoMap &map, const QString &localeName,
+                                                         bool noDefault);
     static void tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what);
 public:
     void init();

@@ -40,8 +40,8 @@ protected:
 public:
     void setFileName(const QString &fileName);
     QString fileName() const;
-    PersonInfoList infos( const QLocale &locale = BCoreApplication::locale() ) const;
-    PersonInfoList infos(const QString &localeName) const;
+    PersonInfoList infos( bool noDefault = false, const QLocale &locale = BCoreApplication::locale() ) const;
+    PersonInfoList infos(const QString &localeName, bool noDefault = false) const;
 public slots:
     void reload();
 signals:

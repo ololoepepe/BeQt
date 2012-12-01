@@ -436,7 +436,7 @@ void BAboutDialogPrivate::resetAuthors()
 
 void BAboutDialogPrivate::resetTranslations()
 {
-    fillTab( TranslatorsTab, translationsProvider ? translationsProvider->infos() :
+    fillTab( TranslatorsTab, translationsProvider ? translationsProvider->infos(true) :
                                                     BPersonInfoProvider::PersonInfoList() );
 }
 

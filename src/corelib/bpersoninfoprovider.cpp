@@ -38,35 +38,59 @@ BPersonInfoProviderPrivate::~BPersonInfoProviderPrivate()
 /*============================== Static public methods =====================*/
 
 BPersonInfoProvider::PersonInfo BPersonInfoProviderPrivate::infoForLocale(const PersonInfoMap &map,
-                                                                          const QString &localeName)
+                                                                          const QString &localeName, bool noDefault)
 {
+    if ( localeName.isEmpty() )
+        return BPersonInfoProvider::PersonInfo();
     if ( map.contains(localeName) )
         return map.value(localeName);
     if (localeName != "en")
-        return infoForLocale( map, (localeName.length() > 2) ? localeName.left(2) : QString("en") );
+        return infoForLocale(map, (localeName.length() > 2) ? localeName.left(2) :
+                                                              QString(!noDefault ? "en" : ""), noDefault);
     return BPersonInfoProvider::PersonInfo();
 }
 
 void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what)
 {
+    if ( what.isEmpty() )
+        return;
+    QStringList keys = what.keys();
+    QString defSite = what.value("en").site;
+    QString defMail = what.value("en").mail;
+    if ( defSite.isEmpty() )
+    {
+        foreach (const QString &key, keys)
+        {
+            if ( !what.value(key).site.isEmpty() )
+            {
+                defSite = what.value(key).site;
+                break;
+            }
+        }
+    }
+    if ( defMail.isEmpty() )
+    {
+        foreach (const QString &key, keys)
+        {
+            if ( !what.value(key).mail.isEmpty() )
+            {
+                defMail = what.value(key).mail;
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < keys.size(); ++i)
+    {
+        if ( what.value( keys.at(i) ).site.isEmpty() )
+            what[keys.at(i)].site = defSite;
+        if ( what.value( keys.at(i) ).mail.isEmpty() )
+            what[keys.at(i)].mail = defMail;
+    }
     foreach ( const QString &key, what.keys() )
         if ( what.value(key).name.isEmpty() )
             what.remove(key);
     if ( what.isEmpty() )
         return;
-    if ( what.contains("en") )
-    {
-        QString defSite = what.value("en").site;
-        QString defMail = what.value("en").mail;
-        QStringList keys = what.keys();
-        for (int i = 0; i < keys.size(); ++i)
-        {
-            if ( what.value( keys.at(i) ).site.isEmpty() )
-                what[keys.at(i)].site = defSite;
-            if ( what.value( keys.at(i) ).mail.isEmpty() )
-                what[keys.at(i)].mail = defMail;
-        }
-    }
     where << what;
 }
 
@@ -104,7 +128,7 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
                 while (i >= 0 && id.at(i) != '[')
                     ln.prepend( id.at(i--) );
             }
-            if (ln.isEmpty() || QLocale(ln).name() != ln )
+            if ( ln.isEmpty() || (QLocale(ln).name() != ln && QLocale(ln).name().left(2) != ln) )
                 ln = "en";
             id = id.left(4);
             if ( !id.compare("name", Qt::CaseInsensitive) )
@@ -174,17 +198,17 @@ QString BPersonInfoProvider::fileName() const
     return d_func()->fileName;
 }
 
-BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QLocale &locale) const
+BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(bool noDefault, const QLocale &locale) const
 {
-    return infos( locale.name() );
+    return infos(locale.name(), noDefault);
 }
 
-BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QString &localeName) const
+BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QString &localeName, bool noDefault) const
 {
     PersonInfoList list;
     foreach (const BPersonInfoProviderPrivate::PersonInfoMap &map, d_func()->infos)
     {
-        PersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, localeName);
+        PersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, localeName, noDefault);
         if ( !info.name.isEmpty() )
             list << info;
     }
