@@ -104,3 +104,11 @@ for(fileName, beqtTranslationsTs) {
 beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
 beqtInstallsTranslations.path=$${resourcesInstallsPath}/translations
 INSTALLS += beqtInstallsTranslations
+
+##############################################################################
+################################ Other resources #############################
+##############################################################################
+
+beqtInstallsDepend.files=depend.pri
+beqtInstallsDepend.path=$${resourcesInstallsPath}
+INSTALLS += beqtInstallsDepend

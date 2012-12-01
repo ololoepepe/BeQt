@@ -1,3 +1,16 @@
+=== BeQt 2.0.0 (xx December 2012) ===
+    * Fully revise library structure (in particular, use D-pointers)
+    * Make most of internal classes available externally
+    * Change most of classes' interfaces
+    * Remove or rename some old classes, add new ones
+    * Change modules' names and corresponding libraries' names
+    * Revise application architecture approach (see README.txt)
+    * Revise application resources system (see README.txt)
+    * Fully revise the text editor and move it to a dedicated module
+    * Improve building, installing and deploying system ot the libraries (see README.txt)
+    * Add backup icons of the svgz format (see README.txt)
+    * Add application examples
+
 === BeQt 1.0.1 (20 October 2012) ===
     * Make usage of <Backspace> possible when <Shift> key is pressed (BTextEditorDocument)
 
