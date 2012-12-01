@@ -42,7 +42,8 @@ B_CORE_EXPORT QString localeBasedFileName( const LocaleBasedSource &src,
 B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QString &defaultFileName,
                                            const QString &possibleSuffix = QString(),
                                            const QLocale &loc = BCoreApplication::locale() );
-B_CORE_EXPORT QString localeBasedDirName( const QString &dir, const QLocale &loc = BCoreApplication::locale() );
+B_CORE_EXPORT QString localeBasedDirName( const QString &path, const QString &subpath = QString(),
+                                          const QLocale &loc = BCoreApplication::locale() );
 B_CORE_EXPORT QString readTextFile(const QString &fileName, QTextCodec *codec = 0);
 B_CORE_EXPORT QString readTextFile(const QString &fileName, const QString &codecName);
 B_CORE_EXPORT QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);

@@ -120,18 +120,18 @@ QString localeBasedFileName(const QString &fileName, const QString &defaultFileN
     return f.fileName();
 }
 
-QString localeBasedDirName(const QString &dir, const QLocale &loc)
+QString localeBasedDirName(const QString &path, const QString &subpath, const QLocale &loc)
 {
-    if ( dir.isEmpty() )
+    if ( path.isEmpty() )
         return "";
     QString lname = loc.name().left(5);
-    QDir d(dir + "/" + lname);
+    QDir d(path + "/" + subpath + lname);
     if ( !d.exists() )
-        d.setPath( dir + "/" + lname.left(2) );
+        d.setPath( path + "/" + subpath + lname.left(2) );
     if ( !d.exists() )
-        d.setPath(dir + "/" + "en");
+        d.setPath(path + "/" + subpath + "en");
     if ( !d.exists() )
-        d.setPath(dir);
+        d.setPath(path);
     if ( !d.exists() )
         return "";
     return d.path();
