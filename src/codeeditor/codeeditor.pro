@@ -49,3 +49,8 @@ SOURCES += \
     blocaldocumentdriver.cpp \
     bopensaveeditormodule.cpp \
     bsearcheditormodule.cpp
+
+include(../../prefix.pri)
+
+target.path = $${libsInstallsPath}
+INSTALLS = target

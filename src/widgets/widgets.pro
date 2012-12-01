@@ -53,3 +53,8 @@ contains(CONFIG, beqt_builtin_resources) {
     RESOURCES += beqtwidgets.qrc
     DEFINES += BEQT_BUILTIN_RESOURCES
 }
+
+include(../../prefix.pri)
+
+target.path = $${libsInstallsPath}
+INSTALLS = target

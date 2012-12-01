@@ -37,3 +37,8 @@ SOURCES += \
     bnetworkoperationmetadata.cpp \
     bnetworkserver.cpp \
     bsocketwrapper.cpp
+
+include(../../prefix.pri)
+
+target.path = $${libsInstallsPath}
+INSTALLS = target

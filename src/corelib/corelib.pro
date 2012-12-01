@@ -43,3 +43,8 @@ contains(CONFIG, beqt_builtin_resources) {
     RESOURCES += beqtcore.qrc
     DEFINES += BEQT_BUILTIN_RESOURCES
 }
+
+include(../../prefix.pri)
+
+target.path = $${libsInstallsPath}
+INSTALLS = target
