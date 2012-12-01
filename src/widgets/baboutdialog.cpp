@@ -118,13 +118,6 @@ QString BAboutDialogPrivate::processChangeLog(const QString &text)
     return s;
 }
 
-QString BAboutDialogPrivate::sourceFileName(const SourceInfo &src)
-{
-    if ( src.fileName.isEmpty() || src.defaultFileName.isEmpty() )
-        return "";
-    return BDirTools::localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix);
-}
-
 /*============================== Public methods ============================*/
 
 void BAboutDialogPrivate::init()
@@ -197,13 +190,9 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
     QString loc = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources) + "/";
-    aboutBeqtDlg->setDescriptionSource( BDirTools::createLocaleBasedSource(loc + "about/description/DESCRIPTION",
-                                                                           loc + "about/description/DESCRIPTION",
-                                                                           "txt" ) );
-    aboutBeqtDlg->setChangeLogSource( BDirTools::createLocaleBasedSource(loc + "about/changelog/ChangeLog",
-                                                                         loc + "ChangeLog", "txt") );
-    aboutBeqtDlg->setLicenseSource( BDirTools::createLocaleBasedSource(loc + "about/copying/COPYING",
-                                                                       loc + "COPYING", "txt") );
+    aboutBeqtDlg->setDescriptionFile(loc + "description/DESCRIPTION.txt");
+    aboutBeqtDlg->setChangeLogFile(loc + "changelog/ChangeLog.txt");
+    aboutBeqtDlg->setLicenseFile(loc + "copying/COPYING.txt");
     aboutBeqtDlg->setAuthorsProvider(BApplication::ds_func()->beqtAuthors);
     aboutBeqtDlg->setTranslatorsProvider(BApplication::ds_func()->beqtTranslations);
     aboutBeqtDlg->setThanksToProvider(BApplication::ds_func()->beqtThanksTo);

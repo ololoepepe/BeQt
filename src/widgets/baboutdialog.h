@@ -39,11 +39,11 @@ public:
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);
     void setDescription(const QString &text);
-    void setDescriptionSource(const BDirTools::LocaleBasedSource &src);
+    void setDescriptionFile(const QString &fileName);
     void setChangeLog(const QString &text);
-    void setChangeLogSource(const BDirTools::LocaleBasedSource &src);
+    void setChangeLogFile(const QString &fileName);
     void setLicense(const QString &text);
-    void setLicenseSource(const BDirTools::LocaleBasedSource &src);
+    void setLicenseFile(const QString &fileName);
     void setAuthors(const BPersonInfoProvider::PersonInfoList &list);
     void setAuthorsFile(const QString &fileName);
     void setAuthorsProvider(BPersonInfoProvider *prov);

@@ -58,7 +58,6 @@ public:
     ~BAboutDialogPrivate();
 public:
     static QString processChangeLog(const QString &text);
-    static QString sourceFileName(const SourceInfo &src);
 public:
     void init();
     void initAboutBeqtDialog();
@@ -95,9 +94,9 @@ public:
     QString organization;
     QString copyrightPeriod;
     QString website;
-    SourceInfo descriptionSource;
-    SourceInfo changeLogSource;
-    SourceInfo licenseSource;
+    QString descriptionFileName;
+    QString changeLogFileName;
+    QString licenseFileName;
     BPersonInfoProvider *authorsProvider;
     BPersonInfoProvider *translationsProvider;
     BPersonInfoProvider *thanksToProvider;

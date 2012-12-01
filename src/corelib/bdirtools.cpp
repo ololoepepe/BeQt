@@ -76,7 +76,7 @@ bool copyDir(const QString &dirName, const QString &newDirName, bool recursively
     return true;
 }
 
-LocaleBasedSource createLocaleBasedSource(const QString &fileName, const QString &defaultFileName,
+/*LocaleBasedSource createLocaleBasedSource(const QString &fileName, const QString &defaultFileName,
                                           const QString &possibleSuffix)
 {
     LocaleBasedSource r;
@@ -84,15 +84,14 @@ LocaleBasedSource createLocaleBasedSource(const QString &fileName, const QString
     r.defaultFileName = defaultFileName;
     r.possibleSuffix = possibleSuffix;
     return r;
-}
+}*/
 
-QString localeBasedFileName(const LocaleBasedSource &src, const QLocale &loc)
+/*QString localeBasedFileName(const LocaleBasedSource &src, const QLocale &loc)
 {
     return localeBasedFileName(src.fileName, src.defaultFileName, src.possibleSuffix, loc);
-}
+}*/
 
-QString localeBasedFileName(const QString &fileName, const QString &defaultFileName,
-                            const QString &possibleSuffix, const QLocale &loc)
+QString localeBasedFileName(const QString &fileName, const QLocale &loc)
 {
     if ( fileName.isEmpty() )
         return "";
@@ -100,24 +99,25 @@ QString localeBasedFileName(const QString &fileName, const QString &defaultFileN
     QFileInfo fi(fileName);
     QString bfn = fi.path() + "/" + fi.baseName();
     QString suff = fi.suffix();
-    suff = suff.isEmpty() ? possibleSuffix : "";
     if ( !suff.isEmpty() )
         suff.prepend('.');
-    QFile f(bfn + "_" + lname);
+    QStringList sl;
+    sl << bfn + "_" + lname + suff;
+    sl << bfn + "_" + lname.left(2) + suff;
+    sl << bfn + "_" + "en" + suff;
+    sl << fileName;
+    foreach (const QString &fn, sl)
+        if ( QFile(fn).exists() )
+            return fn;
+    return "";
+    /*QFile f(bfn + "_" + lname + suff);
     if ( !f.exists() )
-        f.setFileName(bfn + "_" + lname + suff);
-    lname = lname.left(2);
+        f.setFileName(bfn + "_" + lname.left(2) + suff);
     if ( !f.exists() )
-        f.setFileName(bfn + "_" + lname);
+        f.setFileName(bfn + "_" + "en" + suff);
     if ( !f.exists() )
-        f.setFileName(bfn + "_" + lname + suff);
-    if ( !f.exists() )
-        f.setFileName(defaultFileName);
-    if ( !f.exists() )
-        f.setFileName(defaultFileName + suff);
-    if ( !f.exists() )
-        return "";
-    return f.fileName();
+        f.setFileName(fileName);
+    return f.exists() ? f.fileName() : QString();*/
 }
 
 QString localeBasedDirName(const QString &path, const QString &subpath, const QLocale &loc)
