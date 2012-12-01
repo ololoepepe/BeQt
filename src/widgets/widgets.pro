@@ -49,4 +49,7 @@ SOURCES += \
     bsettingsdialog.cpp \
     bterminalwidget.cpp
 
-contains(CONFIG, beqt_builtin_resources):RESOURCES += beqtwidgets.qrc
+contains(CONFIG, beqt_builtin_resources) {
+    RESOURCES += beqtwidgets.qrc
+    DEFINES += BEQT_BUILTIN_RESOURCES
+}

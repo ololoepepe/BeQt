@@ -85,7 +85,9 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
         removeTranslator(t, false);
     foreach (BPluginWrapper *pw, plugins)
         pw->deleteLater();
+#if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtcore);
+#endif
 }
 
 /*============================== Static public methods =====================*/
@@ -182,7 +184,9 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, con
 
 void BCoreApplicationPrivate::init()
 {
+#if defined(BEQT_BUILTIN_RESOURCES)
     Q_INIT_RESOURCE(beqtcore);
+#endif
     initialized = false;
     portable = false;
     //checks

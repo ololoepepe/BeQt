@@ -56,7 +56,9 @@ BApplicationPrivate::~BApplicationPrivate()
         aboutDlg->close();
         aboutDlg->deleteLater();
     }
+#if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtwidgets);
+#endif
 }
 
 /*============================== Static public methods =====================*/
@@ -136,7 +138,9 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
 
 void BApplicationPrivate::init()
 {
+#if defined(BEQT_BUILTIN_RESOURCES)
     Q_INIT_RESOURCE(beqtwidgets);
+#endif
     iconCaching = false;
     navigation = BApplication::DefaultNavigation;
     connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );

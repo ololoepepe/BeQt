@@ -55,8 +55,14 @@ defineTest(addBeqtModule) {
     INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
     DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
     !isEmpty(beqtLibsPath) {
-        LIBS *= -L$${beqtLibsPath}$${releaseDebugSuffix}/ -l$${fullName}
-        #LIBS *= -F$${beqtLibsPath}/$${fullName}.framework/ -framework $${fullName}
+        mac:contains(CONFIG, lib_bundle) {
+            LIBS *= -F$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -framework $${fullName}
+        } else {
+            LIBS *= -L$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -l$${fullName}
+        }
+    } else {
+        mac:LIBS *= -framework $${fullName}
+        else:LIBS *= -l$${fullName}
     }
     export(INCLUDEPATH)
     export(DEPENDPATH)

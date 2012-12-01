@@ -39,4 +39,7 @@ SOURCES += \
     bterminaliohandler.cpp \
     btranslator.cpp
 
-contains(CONFIG, beqt_builtin_resources):RESOURCES += beqtcore.qrc
+contains(CONFIG, beqt_builtin_resources) {
+    RESOURCES += beqtcore.qrc
+    DEFINES += BEQT_BUILTIN_RESOURCES
+}
