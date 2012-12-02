@@ -36,6 +36,7 @@ public:
     ~BNetworkServerWorker();
 public:
     int connectionCount() const;
+    QList<BNetworkConnection *> getConnections() const;
 public slots:
     void addConnection(int socketDescriptor);
     void disconnected();

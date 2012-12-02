@@ -13,6 +13,7 @@ class QString;
 #include <BeQtCore/BBase>
 
 #include <QObject>
+#include <QList>
 
 /*============================================================================
 ================================ BNetworkServer ==============================
@@ -39,6 +40,7 @@ public:
     int currentConnectionCount() const;
     int maxThreadCount() const;
     int currentThreadCount() const;
+    QList<BNetworkConnection *> connections() const;
 protected:
     virtual BNetworkConnection *createConnection(BGenericSocket *socket) const = 0;
     virtual BGenericSocket *createSocket() const;

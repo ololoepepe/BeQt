@@ -36,7 +36,13 @@ int BNetworkServerWorker::connectionCount() const
     return connections.size();
 }
 
-//
+QList<BNetworkConnection *> BNetworkServerWorker::getConnections() const
+{
+    QMutexLocker locker(&connectionsMutex);
+    return connections;
+}
+
+/*============================== Public slots ==============================*/
 
 void BNetworkServerWorker::addConnection(int socketDescriptor)
 {
@@ -50,8 +56,6 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     QMutexLocker locker(&connectionsMutex);
     connections << connection;
 }
-
-/*============================== Public slots ==============================*/
 
 void BNetworkServerWorker::disconnected()
 {
@@ -275,6 +279,14 @@ int BNetworkServer::maxThreadCount() const
 int BNetworkServer::currentThreadCount() const
 {
     return d_func()->threads.size();
+}
+
+QList<BNetworkConnection *> BNetworkServer::connections() const
+{
+    QList<BNetworkConnection *> list;
+    foreach (BNetworkServerThread *t, d_func()->threads)
+        list << t->worker->getConnections();
+    return list;
 }
 
 /*============================== Protected methods =========================*/
