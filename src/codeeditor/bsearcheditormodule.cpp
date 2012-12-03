@@ -626,6 +626,76 @@ QList<QAction *> BSearchEditorModule::actions() const
     return list;
 }
 
+void BSearchEditorModule::setCaseSensitivity(Qt::CaseSensitivity cs)
+{
+    d_func()->sdlg->setCaseSensitivity(cs);
+}
+
+void BSearchEditorModule::setMatchWholeWords(bool enabled)
+{
+    d_func()->sdlg->setMatchWholeWords(enabled);
+}
+
+void BSearchEditorModule::setBackwardOrder(bool enabled)
+{
+    d_func()->sdlg->setBackwardOrder(enabled);
+}
+
+void BSearchEditorModule::setCyclicSearch(bool enabled)
+{
+    d_func()->sdlg->setCyclicSearch(enabled);
+}
+
+void BSearchEditorModule::setMaximumHistorySize(int sz)
+{
+    d_func()->sdlg->setMaximumHistorySize(sz);
+}
+
+void BSearchEditorModule::setReplaceEnabled(bool enabled)
+{
+    d_func()->sdlg->setReplaceEnabled(enabled);
+}
+
+Qt::CaseSensitivity BSearchEditorModule::caseSensitivity() const
+{
+    return d_func()->sdlg->caseSensitivity();
+}
+
+bool BSearchEditorModule::matchWholeWords() const
+{
+    return d_func()->sdlg->matchWholeWords();
+}
+
+bool BSearchEditorModule::backwardOrder() const
+{
+    return d_func()->sdlg->backwardOrder();
+}
+
+bool BSearchEditorModule::cyclicSearch() const
+{
+    return d_func()->sdlg->cyclicSearch();
+}
+
+int BSearchEditorModule::maximumHistorySize() const
+{
+    return d_func()->sdlg->maximumHistorySize();
+}
+
+bool BSearchEditorModule::replaceEnabled() const
+{
+    return d_func()->sdlg->replaceEnabled();
+}
+
+void BSearchEditorModule::restoreDialogState(const QByteArray &state)
+{
+    d_func()->sdlg->restoreState(state);
+}
+
+QByteArray BSearchEditorModule::saveDialogState() const
+{
+    return d_func()->sdlg->saveState();
+}
+
 /*============================== Public slots ==============================*/
 
 void BSearchEditorModule::find()

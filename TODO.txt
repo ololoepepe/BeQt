@@ -2,7 +2,8 @@
 
 === This release ===
 
-* Re-write README
+[done] Finish writing the Simple Editor example
+[done] Re-write README
 [done] Remove icons from the resources, install them to the Shared directory instead
 [done] Remove bcore/BCryptor
 [done] Move bgui/"About Qt" to the "About" dialog
@@ -11,5 +12,4 @@
 === Global ===
 
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
-* Create user manual
-* Add comments to the code and make docs
+* Add comments to the code and make docs; write detailed user manual

@@ -7,6 +7,7 @@ class BCodeEditorDocument;
 
 class QString;
 class QAction;
+class QByteArray;
 
 #include "babstracteditormodule.h"
 
@@ -38,6 +39,20 @@ public:
     QString id() const;
     QAction *action(Action type) const;
     QList<QAction *> actions() const;
+    void setCaseSensitivity(Qt::CaseSensitivity cs);
+    void setMatchWholeWords(bool enabled);
+    void setBackwardOrder(bool enabled);
+    void setCyclicSearch(bool enabled);
+    void setMaximumHistorySize(int sz);
+    void setReplaceEnabled(bool enabled);
+    Qt::CaseSensitivity caseSensitivity() const;
+    bool matchWholeWords() const;
+    bool backwardOrder() const;
+    bool cyclicSearch() const;
+    int maximumHistorySize() const;
+    bool replaceEnabled() const;
+    void restoreDialogState(const QByteArray &state);
+    QByteArray saveDialogState() const;
 public slots:
     void find();
     void findNext(bool showDialog = true);

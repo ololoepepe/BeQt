@@ -168,6 +168,9 @@ void BFileDialog::restoreState(const QByteArray &ba, bool includeGeometry)
     in >> scn;
     in >> sft;
     QFileDialog::restoreState(fdstate);
+    QStringList h = history();
+    if (h.size() > 20)
+        setHistory( h.mid(h.size() - 20, 20) ); //Truncate long history
     selectCodec(scn);
     selectFileType(sft);
     if (includeGeometry)
@@ -357,12 +360,12 @@ void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
     d_func()->nativeLineEnd = enabled;
 }
 
-void BLocalDocumentDriver::setDialogState(const QByteArray &state)
+void BLocalDocumentDriver::restoreDialogState(const QByteArray &state)
 {
     d_func()->fileDialogState = state;
 }
 
-QByteArray BLocalDocumentDriver::dialogState() const
+QByteArray BLocalDocumentDriver::saveDialogState() const
 {
     return d_func()->fileDialogState;
 }
