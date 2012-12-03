@@ -48,7 +48,7 @@ void BNetworkConnectionPrivate::init()
              this, SLOT( dataReceived(QByteArray, BNetworkOperationMetaData) ) );
     connect( socketWrapper, SIGNAL( dataSent(BNetworkOperationMetaData) ),
              this, SLOT( dataSent(BNetworkOperationMetaData) ) );
-    connect( socketWrapper, SIGNAL( criticalBufferSizeReached() ), this, SIGNAL( criticalBufferSizeReached() ) );
+    connect( socketWrapper, SIGNAL( criticalBufferSizeReached() ), q_func(), SIGNAL( criticalBufferSizeReached() ) );
 }
 
 void BNetworkConnectionPrivate::setSocket(BGenericSocket *s)
