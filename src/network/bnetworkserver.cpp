@@ -28,20 +28,6 @@ BNetworkServerWorker::~BNetworkServerWorker()
     //
 }
 
-/*============================== Public methods ============================*/
-
-int BNetworkServerWorker::connectionCount() const
-{
-    QMutexLocker locker(&connectionsMutex);
-    return connections.size();
-}
-
-QList<BNetworkConnection *> BNetworkServerWorker::getConnections() const
-{
-    QMutexLocker locker(&connectionsMutex);
-    return connections;
-}
-
 /*============================== Public slots ==============================*/
 
 void BNetworkServerWorker::addConnection(int socketDescriptor)
@@ -49,24 +35,16 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     BGenericSocket *s = serverPrivate->createSocket();
     if ( !s || !s->setSocketDescriptor(socketDescriptor) || !s->isValid() )
         return;
-    BNetworkConnection *connection = serverPrivate->createConnection(s);
-    if ( !connection || !connection->isValid() )
+    BNetworkConnection *c = serverPrivate->createConnection(s);
+    if ( !c || !c->isValid() )
         return;
-    connect( connection, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
-    QMutexLocker locker(&connectionsMutex);
-    connections << connection;
+    connect( c, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+    emit connectionAdded(c);
 }
 
 void BNetworkServerWorker::disconnected()
 {
-    BNetworkConnection *c = static_cast<BNetworkConnection *>( sender() );
-    if (!c)
-        return;
-    QMutexLocker locker(&connectionsMutex);
-    connections.removeAll(c);
-    c->deleteLater();
-    if ( connections.isEmpty() )
-        emit ranOutOfConnections();
+    emit disconnected( sender() );
 }
 
 /*============================================================================
@@ -76,27 +54,50 @@ void BNetworkServerWorker::disconnected()
 /*============================== Public constructors =======================*/
 
 BNetworkServerThread::BNetworkServerThread(BNetworkServerPrivate *serverPrivate) :
-    QThread(0), worker( new BNetworkServerWorker(serverPrivate) )
+    QThread(0), Worker( new BNetworkServerWorker(serverPrivate) )
 {
-    worker->moveToThread(this);
-    QObject::connect(worker, SIGNAL( ranOutOfConnections() ), this, SLOT( quit() ), Qt::QueuedConnection);
+    Worker->moveToThread(this);
+    connect(Worker, SIGNAL( connectionAdded(QObject *) ),
+            this, SLOT( connectionAdded(QObject *) ), Qt::QueuedConnection);
+    connect(Worker, SIGNAL( disconnected(QObject *) ), this, SLOT( disconnected(QObject *) ), Qt::QueuedConnection);
 }
 
 BNetworkServerThread::~BNetworkServerThread()
 {
-    worker->deleteLater();
+    Worker->deleteLater();
 }
 
 /*============================== Public methods ============================*/
 
 void BNetworkServerThread::addConnection(int socketDescriptor)
 {
-    QMetaObject::invokeMethod( worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor) );
+    QMetaObject::invokeMethod( Worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor) );
 }
 
 int BNetworkServerThread::connectionCount() const
 {
-    return worker->connectionCount();
+    return connections.size();
+}
+
+/*============================== Public slots ==============================*/
+
+void BNetworkServerThread::connectionAdded(QObject *obj)
+{
+    BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
+    if (!c)
+        return;
+    connections << c;
+}
+
+void BNetworkServerThread::disconnected(QObject *obj)
+{
+    BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
+    if (!c)
+        return;
+    connections.removeAll(c);
+    c->deleteLater();
+    if ( connections.isEmpty() )
+        emit ranOutOfConnections();
 }
 
 /*============================================================================
@@ -285,7 +286,7 @@ QList<BNetworkConnection *> BNetworkServer::connections() const
 {
     QList<BNetworkConnection *> list;
     foreach (BNetworkServerThread *t, d_func()->threads)
-        list << t->worker->getConnections();
+        list << t->connections;
     return list;
 }
 

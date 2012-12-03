@@ -2,9 +2,7 @@
 #define BNETWORKSERVER_P_H
 
 class BNetworkConnection;
-class BNetworkServerWorkerPrivate;
 class BNetworkServerWorker;
-class BNetworkServerThreadPrivate;
 class BNetworkServerThread;
 class BNetworkServerPrivate;
 class BNetworkServer;
@@ -34,19 +32,14 @@ class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
 public:
     explicit BNetworkServerWorker(BNetworkServerPrivate *sp);
     ~BNetworkServerWorker();
-public:
-    int connectionCount() const;
-    QList<BNetworkConnection *> getConnections() const;
 public slots:
     void addConnection(int socketDescriptor);
     void disconnected();
 signals:
-    void ranOutOfConnections();
+    void connectionAdded(QObject *obj);
+    void disconnected(QObject *obj);
 public:
     BNetworkServerPrivate *const serverPrivate;
-public:
-    mutable QMutex connectionsMutex;
-    QList<BNetworkConnection *> connections;
 private:
     Q_DISABLE_COPY(BNetworkServerWorker)
 };
@@ -64,8 +57,15 @@ public:
 public:
     void addConnection(int socketDescriptor);
     int connectionCount() const;
+public slots:
+    void connectionAdded(QObject *obj);
+    void disconnected(QObject *obj);
+signals:
+    void ranOutOfConnections();
 public:
-    BNetworkServerWorker *const worker;
+    BNetworkServerWorker *const Worker;
+public:
+    QList<BNetworkConnection *> connections;
 private:
     Q_DISABLE_COPY(BNetworkServerThread)
 };
