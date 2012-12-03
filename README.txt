@@ -64,7 +64,7 @@ See: http://qt-project.org/doc/qt-5.0/plugins-howto.html for details.
  Building and installing (briefly)
 ==============================================================================
 
-In order to build BeQt, just cd into the sources' directory and execute
+In order to build BeQt, just cd into the sources directory and execute
 the following commands:
 
  * "qmake"
@@ -73,7 +73,7 @@ the following commands:
    or other similar command ("nmake", "mingw32-make", etc.)
 
  * "make install"
-   In UNIX-like systems you may need the superuser privileges
+   You may need the superuser privileges in UNIX-like systems 
 
 Note: When building from the command line, you have to configure
 the environment (path to Qt libraries, etc.).
@@ -95,7 +95,7 @@ When building BeQt, you may pass some parameters to qmake:
 
  * "CONFIG+=beqt_no_widgets"
    Don't build the BeQtWidgets module (BeQtCodeEditor module also will not be
-   built, because in depends on BeQtWidgets module)
+   built, because it depends on BeQtWidgets module)
 
  * "CONFIG+=beqt_no_codeeditor"
    Don't build the BeQtCodeEditor module
@@ -113,22 +113,22 @@ When building BeQt, you may pass some parameters to qmake:
  * "PREFIX=<path>"
    Set install path. See the note below
 
-Note: By default in Windows systems BeQt is installed to the
-"C:\Program files\BeQt" directory (or other similar directory,
-depending on your system). Headers, libraries and resources are installed
+Note: In Windows systems BeQt is installed to the "C:\Program files\BeQt"
+directory (or other similar directory, depending on your system) by default.
+Headers, libraries and resources are installed
 to the corresponding subdirectories (include, lib, etc.).
 
 In UNIX-like systems the directory structure during installation
 looks like this:
 
  * "/usr/include/beqt"
-   Headers' path
+   Path to headers
 
  * "/usr/lib"
-   Libraries' path
+   Path to libraries
 
  * "/usr/share/beqt"
-   Resources' path
+   Path to resources
 
 You may set another installation path. To do so,
 pass the corresponding parameter to qmake (see above).
@@ -188,8 +188,8 @@ Note: Due to qmake features you may have to execute "qmake" and "make"
 commands again after building the project (it's required for proper library
 linking). The repeated command execution will take at most few seconds.
 
-When building, BeQt generates translation files (.qm), containing UI elements'
-translations. These files are located in the "translations" subdirectory
+When building, BeQt generates translation files (.qm), containing translations
+of UI elements. These files are located in the "translations" subdirectory
 (for example, "translations/beqt_ru.qm").
 Dont' forget to copy these files into your project.
 
@@ -206,14 +206,14 @@ A: See "Building and installing", "Using",
 and demos in the "examples" directory.
 
 Q: What are BeQt license restrictions?
-A: There is almost no restriction. You may use BeQt as you wish,
+A: There are almost no restrictions. You may use BeQt as you wish,
 but don't forget that this statement doesn't apply to the Qt libraries.
 See: COPYING.txt, http://qt-project.org/products/licensing for details.
 
 Q: I'm having troubles using BeQt, where can I get help?
 A: E-mail/Jabber: ololoepepe@gmail.com
 
-Q: I've detected a bug/I have an idea, where can I post it?
+Q: I've detected a bug/I have an idea, where can I report/post it?
 A: See the answer above.
 
 Q: Why there is no documentation?
@@ -238,8 +238,8 @@ When deploying an application that uses BeQt, don't forget to include
 the resource files (libraries, images, translations, etc. - see above).
 
 It's recommended to build applications statically, because that helps avoid
-dependency issues. In case of building your project statically you may use
-the "beqt_builtin_resources" parameter.
+dependency issues. You may use the "beqt_builtin_resources" parameter
+in case of building your project statically.
 
 For details, see:
 http://qt-project.org/doc/qt-5.0/deployment.html#static-vs-shared-libraries
