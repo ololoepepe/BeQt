@@ -19,7 +19,7 @@ on solving the actual task.
 BeQt needs you! Everyone may contribute to this open project.
 If you wish to get involved, or have any ideas or suggestions,
 or you need help dealing with BeQt, - you may contact me
-using e-mail or Jabber (ololoepepe@gmail.com).
+by e-mail or Jabber (ololoepepe@gmail.com).
 
 ==============================================================================
  Overview
