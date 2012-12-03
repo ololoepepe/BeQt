@@ -97,7 +97,7 @@ void BNetworkServerThread::disconnected(QObject *obj)
     connections.removeAll(c);
     c->deleteLater();
     if ( connections.isEmpty() )
-        emit ranOutOfConnections();
+        quit();
 }
 
 /*============================================================================
@@ -116,8 +116,6 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
 {
     foreach (BNetworkServerThread *t, threads)
     {
-        if (!t)
-            continue;
         disconnect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
         t->quit();
         t->wait(1000);
@@ -142,13 +140,11 @@ BGenericSocket *BNetworkServerPrivate::createSocket() const
     return q_func()->createSocket();
 }
 
-/*============================== Public slots ==============================*/
-
-void BNetworkServerPrivate::newConnection(int socketDescriptor)
+BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
 {
     B_Q(BNetworkServer);
     if (maxConnectionCount > 0 && q->currentConnectionCount() > maxConnectionCount)
-        return;
+        return 0;
     if (maxThreadCount > 0 && q->currentThreadCount() == maxThreadCount)
     {
         int cc = threads.first()->connectionCount();
@@ -162,16 +158,26 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
                 ind = i;
             }
         }
-        threads[ind]->addConnection(socketDescriptor);
+        return threads[ind];
     }
     else
     {
         BNetworkServerThread *t = new BNetworkServerThread(this);
         QObject::connect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
         t->start();
-        t->addConnection(socketDescriptor);
         threads << t;
+        return t;
     }
+}
+
+/*============================== Public slots ==============================*/
+
+void BNetworkServerPrivate::newConnection(int socketDescriptor)
+{
+    BNetworkServerThread *t = getOptimalThread();
+    if (!t)
+        return;
+    t->addConnection(socketDescriptor);
 }
 
 void BNetworkServerPrivate::finished()

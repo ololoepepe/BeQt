@@ -60,8 +60,6 @@ public:
 public slots:
     void connectionAdded(QObject *obj);
     void disconnected(QObject *obj);
-signals:
-    void ranOutOfConnections();
 public:
     BNetworkServerWorker *const Worker;
 public:
@@ -85,6 +83,7 @@ public:
     void init();
     BNetworkConnection *createConnection(BGenericSocket *socket) const;
     BGenericSocket *createSocket() const;
+    BNetworkServerThread *getOptimalThread();
 public slots:
     void newConnection(int socketDescriptor);
     void finished();
