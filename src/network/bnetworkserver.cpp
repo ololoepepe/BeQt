@@ -142,10 +142,10 @@ BGenericSocket *BNetworkServerPrivate::createSocket() const
 
 BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
 {
-    B_Q(BNetworkServer);
-    if (maxConnectionCount > 0 && q->currentConnectionCount() > maxConnectionCount)
+    int ccount = connectionCount();
+    if (maxConnectionCount > 0 && ccount > maxConnectionCount)
         return 0;
-    if (maxThreadCount > 0 && q->currentThreadCount() == maxThreadCount)
+    if (maxThreadCount > 0 && ccount == maxThreadCount)
     {
         int cc = threads.first()->connectionCount();
         int ind = 0;
@@ -168,6 +168,14 @@ BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
         threads << t;
         return t;
     }
+}
+
+int BNetworkServerPrivate::connectionCount() const
+{
+    int count = 0;
+    foreach (BNetworkServerThread *t, threads)
+        count += t->connectionCount();
+    return count;
 }
 
 /*============================== Public slots ==============================*/
@@ -286,9 +294,7 @@ int BNetworkServer::maxConnectionCount() const
 int BNetworkServer::currentConnectionCount() const
 {
     QMutexLocker locker(&d_func()->connectionMutex);
-    int count = 0;
-    foreach (BNetworkServerThread *t, d_func()->threads)
-        count += t->connectionCount();
+    int count = d_func()->connectionCount();
     return count;
 }
 

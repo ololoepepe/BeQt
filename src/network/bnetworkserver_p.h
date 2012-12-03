@@ -84,6 +84,7 @@ public:
     BNetworkConnection *createConnection(BGenericSocket *socket) const;
     BGenericSocket *createSocket() const;
     BNetworkServerThread *getOptimalThread();
+    int connectionCount() const;
 public slots:
     void newConnection(int socketDescriptor);
     void finished();
