@@ -1,126 +1,245 @@
-===============================================================================
+==============================================================================
  BeQt - Beyond Qt
-===============================================================================
+==============================================================================
+
+Check for your language README in the "readme" directory.
 
 Homepage: https://github.com/the-dark-angel/BeQt
 
-Author: Andrey Bogdanov
+Author: Andrey Bogdanov (ololoepepe@gmail.com)
 
-License: See COPYING.txt
+License: MIT (см. COPYING.txt, http://en.wikipedia.org/wiki/MIT_License)
 
-BeQt is a library set, developed as an extension of Qt (or you may say
-"a framework in a framework"). That is where the project's name comes from.
+BeQt is a library set developed as an extension of Qt.
+That is where the project's name comes from. BeQt may be useful
+in small and medium desktop applications with classic interface.
+It takes most of routine work, allowing one to focus
+on solving the actual task.
 
-BeQt is suitable for small and medium desktop applications, implementing such
-common features as:
+BeQt needs you! Everyone may contribute to this open project.
+If you wish to get involved, or have any ideas or suggestions,
+or you need help dealing with BeQt, - you may contact me
+using e-mail or Jabber (ololoepepe@gmail.com).
 
- * Translating UI
- * Loading plugins
- * Showing "About", "Help" and "Settings" dialogs
- * Storing basic application settings
-
-===============================================================================
+==============================================================================
  Overview
-===============================================================================
+==============================================================================
 
-BeQt consists of three libraries: beqtcore, beqtgui and beqtnetwork. These
-libraries correspond to QtCore, QtGui and QtNetwork modules, respectively.
+BeQt modules help one to quickly implement working with application resources,
+plugin support, and user interface on-the-fly translation.
 
-beqtcore provides a class BCore, containing some useful constants (such as
-const int Kilobyte = 1024), some methods for handling plugins, and other useful
-methods.
+BeQt provides the means for convenient user commands handling in
+console applications, and even it's own terminal emulator.
+Several frequently used auxiliary widgets are also provided.
 
-beqtgui implements a main window widget with some features common for most of
-applications. It also provides a minimalistic yet powerfull text editor, and
-some other widgets.
+Moreover, BeQt implements a ready-to-use network client-server
+interaction model, based on Qt classes.
 
-beqtnetwork helps you deal with network connections via the client-server
-model. It provides socket-based classes, which are much more abstracted than
-the ones provided by Qt.
+Entire module is dedicated to a simple yet powerfull text editor,
+capable of selecting text by rectangular blocks.
 
-===============================================================================
- Requirements
-===============================================================================
+Important: BeQt does not QtQuick.
 
-To build and use BeQt you will need the same libraries and tools as for
-building any other Qt-based project.
+==============================================================================
+ Dependencies
+==============================================================================
+
+In order to build and use BeQt you will need the same libraries and tools
+as for every other project using Qt.
+
 See: http://qt-project.org/resources/getting_started for details.
 
-You have to use Qt libraries version 4.8.x.
-Further releases of BeQt may use Qt libraries 5.0.
-The easiest way to get Qt is to download the SDK.
+BeQt is intended for use with Qt 5.
+Support of Qt libraries' versions lower than 5.0.0 us not guaranteed.
 
-===============================================================================
- Building and installing
-===============================================================================
+Note: in order to use all BeQt features you will need
+the following Qt modules: QtCore, QtNetwork, QtGui, QtWidgets.
 
-BeQt may only be built as shared libraries (".dylib" on Mac, ".so" on other
-UNIX-like systems and ".dll" on Windows). This is because there are some issues
-when linking one static library to another.
+In order to use builtin .svgz icons you will also need
+the corresponding plugin.
 
-All you have to do is run the followong commands:
+See: http://qt-project.org/doc/qt-5.0/plugins-howto.html for details.
 
- * qmake
- * make
-   or other make command
- * make install
-   You may have to run this command as a superuser on UNIX-like systems.
+==============================================================================
+ Building and installing (briefly)
+==============================================================================
 
-You may also use Qt Creator. Just open the beqt.pro file, and build the
-libraries (configuration must be set to "Release"). After that, use the
-"make install" command.
+In order to build BeQt, just cd into the sources' directory and execute
+the following commands:
 
-On UNIX-like systems the library files will be located in the "PREFIX/lib"
-directory, the headers will be located in the "PREFIX/include/beqt" directory,
-and the resources will be located in the "PREFIX/share/beqt" directory.
+ * "qmake"
 
-On Windows all files will be located in the "PREFIX" directory.
-The following subdirectories will be created:
+ * "make"
+   or other similar command ("nmake", "mingw32-make", etc.)
 
- * "lib" - library files will be located here, for example "beqtcore1.dll"
- * "include" - headers will be located here, for example "bcore.h"
- * "translations" - translation files (.qm)
+ * "make install"
+   In UNIX-like systems you may need the superuser privileges
 
-On UNIX-like systems, PREFIX defaults to "/usr". On Windows it will be
-"C:\PROGRA~1\BeQt". You may change PREFIX value when running qmake. To do this,
-pass "PREFIX=install_path" parameter to qmake.
-Warning: don't use spaces. Use short names instead. For example, use "PROGRA~1"
-instead of "Program files".
+Note: When building from the command line, you have to configure
+the environment (path to Qt libraries, etc.).
 
-===============================================================================
+You may also use Qt Creator. After building the project, cd to
+the output directory and execute the "make install" command, or
+configure automatic execution of that command in Qt Creator.
+
+See: http://qt-project.org/doc/qtcreator-2.6 for details.
+
+==============================================================================
+ Building and installing (in detail)
+==============================================================================
+
+When building BeQt, you may pass some parameters to qmake:
+
+ * "CONFIG+=beqt_no_network"
+   Don't build the BeQtNetwork module
+
+ * "CONFIG+=beqt_no_widgets"
+   Don't build the BeQtWidgets module (BeQtCodeEditor module also will not be
+   built, because in depends on BeQtWidgets module)
+
+ * "CONFIG+=beqt_no_codeeditor"
+   Don't build the BeQtCodeEditor module
+
+ * "CONFIG+=beqt_builtin_resources"
+   Embed resources into library files
+   See: http://qt-project.org/doc/qt-5.0/resources.html for details
+
+ * "CONFIG+=beqt_examples"
+   Build demo examples (by default examples are not built)
+
+ * "CONFIG+=beqt_no_headers"
+   Don't install headers
+
+ * "PREFIX=<path>"
+   Set install path. See the note below
+
+Note: By default in Windows systems BeQt is installed to the
+"C:\Program files\BeQt" directory (or other similar directory,
+depending on your system). Headers, libraries and resources are installed
+to the corresponding subdirectories (include, lib, etc.).
+
+In UNIX-like systems the directory structure during installation
+looks like this:
+
+ * "/usr/include/beqt"
+   Headers' path
+
+ * "/usr/lib"
+   Libraries' path
+
+ * "/usr/share/beqt"
+   Resources' path
+
+You may set another installation path. To do so,
+pass the corresponding parameter to qmake (see above).
+
+Warning: Don't use paths containing spaces. In Windows systems you may replace
+directory names, containing spaces, with the corresponding short names:
+
+See: http://support.microsoft.com/kb/142982 for details.
+
+==============================================================================
  Using
-===============================================================================
+==============================================================================
 
-In order to use BeQt, you first have to specify the paths to libraries and
-headers in your project (".pro") files.
+BeQt may be used either as a system library, or as a project submodule.
 
-Remember that all libraries depends on beqtcore. Also, remeber that you should
-add the correspoding Qt module to your project for each library.
+Important: BeQt may be linked to a project with just two lines of code in the
+.pro file, but in that case you need to use qmake.
 
-If you wish to use the translation or plugins system, or the BMainWindow class,
-you have to create an instance of QCoreApplication (or QApplication for GUI
-programms), and then call BCore::init(). After that, you may call
-BCore::loadSettings(), and then you may create your objects and call
-QApplication::exec(). If you wish to save BCore settings, you must call
-BCore::saveSettngs() before returning from the main() function.
+First of all, add the following to your .pro file:
 
-===============================================================================
+ "BEQT = [core] [network] [widgets] [codeeditor] [all]"
+
+There are BeQt module names in the square brackets.
+You may also add all modules (the "[all]" parameter).
+BeQt and Qt modules' dependencies are resolved automatically.
+
+In case BeQt is used as a system library (or is built and
+placed to a separate directory), you need to add the following line to your
+.pro file after "BEQT = ...":
+
+ "include(<path_to_beqt>/depend.pri)"
+
+"<path_to_beqt>" is a path to BeQt resources (in UNIX-like systems it is
+usually "/usr/share/beqt", and in Windows it is "C:\Program files\BeQt").
+
+In case BeQt is used as a submodule, you will have to make your
+project structure slightly more compilcated, creating a common .pro file,
+in which both BeQt and your project will be included as subprojects.
+
+For details, see:
+http://qt-project.org/doc/qt-5.0/qmake-project-files.html#project-templates
+
+Common .pro file example:
+
+ "...
+ CONFIG+=ordered
+ TEMPLATE=subdirs
+ SUBDIRS=beqt yourproject
+ ..."
+
+Important: Note, that the BeQt submodule must be included before any other
+submodule that uses it, and the "ordered" parameter must be passed to
+the "CONFIG" variable. It's done to guarantee that BeQt is built
+before any other submodule uses it.
+
+Note: Due to qmake features you may have to execute "qmake" and "make"
+commands again after building the project (it's required for proper library
+linking). The repeated command execution will take at most few seconds.
+
+When building, BeQt generates translation files (.qm), containing UI elements'
+translations. These files are located in the "translations" subdirectory
+(for example, "translations/beqt_ru.qm").
+Dont' forget to copy these files into your project.
+
+Note: Translation files are not built into libraries when
+"beqt_builtin_resources" is used, because they may take up extra space.
+Include them into your project manually.
+
+==============================================================================
+ FAQ
+==============================================================================
+
+Q: Ho do I start using BeQt?
+A: See "Building and installing", "Using",
+and demos in the "examples" directory.
+
+Q: What are BeQt license restrictions?
+A: There is almost no restriction. You may use BeQt as you wish,
+but don't forget that this statement doesn't apply to the Qt libraries.
+See: COPYING.txt, http://qt-project.org/products/licensing for details.
+
+Q: I'm having troubles using BeQt, where can I get help?
+A: E-mail/Jabber: ololoepepe@gmail.com
+
+Q: I've detected a bug/I have an idea, where can I post it?
+A: See the answer above.
+
+Q: Why there is no documentation?
+A: Unfoturnately, I just don't have enough time to write documentation.
+You may help the project if you get involved (see the answer above).
+
+Q: Will the project be maintained/developed further?
+A: Current version (2.x.y) is likely to be maintained. Further project
+development depends on whether there are anybody willing to help me with it.
+Unfoturnately, I don't have enough time and skills to develop
+such a big project further on my own.
+
+Q: Does it make sense to use BeQt together with QtQuick (QML)?
+A: BeQtCore and BeQtNetwork modules may be useful
+when creating UI with QtQuick.
+
+==============================================================================
  Deploying
-===============================================================================
+==============================================================================
 
-When deploying a BeQt-based application, you should remember to supply BeQt
-library files and resources. You should create some directories for that.
+When deploying an application that uses BeQt, don't forget to include
+the resource files (libraries, images, translations, etc. - see above).
 
-Let's assume you are deploying the "myapp" application.
+It's recommended to build applications statically, because that helps avoid
+dependency issues. In case of building your project statically you may use
+the "beqt_builtin_resources" parameter.
 
-On UNIX-like systems the directories will be:
-
- * "/usr/share/myapp/translations"
-
-On Windows the directories will be:
-
- * "C:\Program files\myapp\translations"
-
-You should put the BeQt translation files to the "translations" subdirectory of
-your application. See Building and installing section for BeQt resources
-location.
+For details, see:
+http://qt-project.org/doc/qt-5.0/deployment.html#static-vs-shared-libraries
