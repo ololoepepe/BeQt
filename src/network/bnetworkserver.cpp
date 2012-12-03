@@ -175,9 +175,22 @@ BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
 void BNetworkServerPrivate::newConnection(int socketDescriptor)
 {
     BNetworkServerThread *t = getOptimalThread();
-    if (!t)
-        return;
-    t->addConnection(socketDescriptor);
+    if (t)
+    {
+        t->addConnection(socketDescriptor);
+    }
+    else
+    {
+        //If connection limit is reached, every new connection is automatically removed.
+        //No notifications are sent to clients, they are just disconnected.
+        //If you want to send a notification to a client before disconnecting, set unlimited connection count,
+        //and then check current connection count from within the newly connected client.
+        //Then you may send some notifications and disconnect the client.
+        BGenericSocket *s = new BGenericSocket(BGenericSocket::TcpSocket);
+        s->setSocketDescriptor(socketDescriptor);
+        s->disconnectFromHost();
+        s->deleteLater();
+    }
 }
 
 void BNetworkServerPrivate::finished()
@@ -272,6 +285,7 @@ int BNetworkServer::maxConnectionCount() const
 
 int BNetworkServer::currentConnectionCount() const
 {
+    QMutexLocker locker(&d_func()->connectionMutex);
     int count = 0;
     foreach (BNetworkServerThread *t, d_func()->threads)
         count += t->connectionCount();
@@ -290,6 +304,7 @@ int BNetworkServer::currentThreadCount() const
 
 QList<BNetworkConnection *> BNetworkServer::connections() const
 {
+    QMutexLocker locker(&d_func()->connectionMutex);
     QList<BNetworkConnection *> list;
     foreach (BNetworkServerThread *t, d_func()->threads)
         list << t->connections;

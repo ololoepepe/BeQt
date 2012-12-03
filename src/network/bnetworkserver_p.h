@@ -92,6 +92,7 @@ public:
     QList<BNetworkServerThread *> threads;
     int maxConnectionCount;
     int maxThreadCount;
+    mutable QMutex connectionMutex;
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)
     friend class BNetworkServerWorkerPrivate;
