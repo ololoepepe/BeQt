@@ -880,7 +880,7 @@ BSplittedLinesDialog *BCodeEditorPrivate::createSplittedLinesDialog(BCodeEditorD
     BSplittedLinesDialog *sld = doc->findChild<BSplittedLinesDialog *>();
     if (sld)
         sld->close();
-    sld = new BSplittedLinesDialog( ranges, doc->editLineLength(), q_func() );
+    sld = new BSplittedLinesDialog(ranges, doc->editLineLength(), doc);
     sld->setAttribute(Qt::WA_DeleteOnClose);
     connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( moveCursor(QPoint) ) );
     connect( sld, SIGNAL( selectLines(QPoint, QPoint) ), doc, SLOT( selectText(QPoint, QPoint) ) );
