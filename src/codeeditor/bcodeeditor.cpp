@@ -587,6 +587,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     connect( doc, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
+    connect( doc, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
     return doc;
 }
 
@@ -871,6 +872,24 @@ int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
     return msg.exec();
 }
 
+BSplittedLinesDialog *BCodeEditorPrivate::createSplittedLinesDialog(BCodeEditorDocument *doc,
+                                                                    const QList<BCodeEdit::SplittedLinesRange> ranges)
+{
+    if ( !doc || !processedDocuments.contains(doc) )
+        return 0;
+    BSplittedLinesDialog *sld = doc->findChild<BSplittedLinesDialog *>();
+    if (sld)
+        sld->close();
+    sld = new BSplittedLinesDialog( ranges, doc->editLineLength(), q_func() );
+    sld->setAttribute(Qt::WA_DeleteOnClose);
+    connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( moveCursor(QPoint) ) );
+    connect( sld, SIGNAL( selectLines(QPoint, QPoint) ), doc, SLOT( selectText(QPoint, QPoint) ) );
+    connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( activateWindow() ) );
+    connect( sld, SIGNAL( selectLines(QPoint, QPoint) ), doc, SLOT( activateWindow() ) );
+    sld->show();
+    return sld;
+}
+
 void BCodeEditorPrivate::emitDefaultCodecChanged(const QString &codecName)
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -978,7 +997,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                     this, SLOT( documentEditModeChanged(BCodeEdit::EditMode) ) );
         disconnect( document, SIGNAL( cursorPositionChanged(QPoint) ),
                     this, SLOT( documentCursorPositionChanged(QPoint) ) );
-        disconnect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
         disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
         disconnect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
                     this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
@@ -999,10 +1017,10 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                  this, SLOT( documentEditModeChanged(BCodeEdit::EditMode) ) );
         connect( document, SIGNAL( cursorPositionChanged(QPoint) ),
                  this, SLOT( documentCursorPositionChanged(QPoint) ) );
-        connect( document, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
         connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
         connect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
                  this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
+        document->setFocus();
     }
     emitCurrentDocumentChanged(document);
     emitCurrentDocumentFileNameChanged( document ? document->fileName() : QString() );
@@ -1098,33 +1116,22 @@ void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
         if ( processedDocuments.isEmpty() )
             QMetaObject::invokeMethod(q_func(), "allDocumentsProcessed");
     }
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentBuisyChanged(buisy);
+    if (doc == document)
+    {
+        foreach (BAbstractEditorModule *module, modules)
+            module->documentBuisyChanged(buisy);
+    }
 }
 
 void BCodeEditorPrivate::documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
-    if ( !doc || !openingDocuments.contains(doc) )
-        return;
-    BSplittedLinesDialog *sld = new BSplittedLinesDialog( QList<BCodeEdit::SplittedLinesRange>() << linesRange,
-                                                          doc->editLineLength(), q_func() );
-    sld->setAttribute(Qt::WA_DeleteOnClose);
-    connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( moveCursor(QPoint) ) );
-    connect( sld, SIGNAL( selectLines(QPoint, QPoint) ), doc, SLOT( selectText(QPoint, QPoint) ) );
-    sld->show();
+    createSplittedLinesDialog(static_cast<BCodeEditorDocument *>( sender() ),
+                              QList<BCodeEdit::SplittedLinesRange>() << linesRange);
 }
 
 void BCodeEditorPrivate::documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
-    if ( !doc || !openingDocuments.contains(doc) )
-        return;
-    BSplittedLinesDialog *sld = new BSplittedLinesDialog( linesRanges, doc->editLineLength(), q_func() );
-    sld->setAttribute(Qt::WA_DeleteOnClose);
-    connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( moveCursor(QPoint) ) );
-    connect( sld, SIGNAL( selectLines(QPoint, QPoint) ), doc, SLOT( selectText(QPoint, QPoint) ) );
-    sld->show();
+    createSplittedLinesDialog(static_cast<BCodeEditorDocument *>( sender() ), linesRanges);
 }
 
 void BCodeEditorPrivate::documentFileNameChanged(const QString &fn)

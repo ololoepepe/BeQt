@@ -446,13 +446,7 @@ void BSearchDialog::findNext()
         return;
     B_D(BSearchDialog);
     QString text = d->cmboxSearch->lineEdit()->text();
-    bool b = d->document->findNext( text, d->createFindFlags(), cyclicSearch() );
-    if (b)
-    {
-        d->document->window()->activateWindow();
-        d->document->setFocus();
-    }
-    emit textFound(b, text);
+    emit textFound(d->document->findNext( text, d->createFindFlags(), cyclicSearch() ), text);
 }
 
 void BSearchDialog::replaceNext()

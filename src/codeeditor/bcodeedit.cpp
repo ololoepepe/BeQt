@@ -928,8 +928,8 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
         if (highlighter)
             highlighter->setDocument( ptedt->document() );
         ptedt->setFocus();
-        setBuisy(false);
         emitLinesSplitted(res.splittedLinesRanges);
+        setBuisy(false);
     }
 }
 
@@ -1699,8 +1699,8 @@ void BCodeEditPrivate::futureWatcherFinished()
     if (highlighter)
         highlighter->setDocument( ptedt->document() );
     ptedt->setFocus();
-    setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
+    setBuisy(false);
 }
 
 void BCodeEditPrivate::popupMenu(const QPoint &pos)
@@ -2141,13 +2141,22 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
 
 /*============================== Public slots ==============================*/
 
+void BCodeEdit::setFocus()
+{
+    d_func()->ptedt->setFocus();
+}
+
+void BCodeEdit::activateWindow()
+{
+    d_func()->ptedt->activateWindow();
+}
+
 void BCodeEdit::setText(const QString &txt, int asyncIfLongerThan)
 {
     if ( isBuisy() )
         return;
     d_func()->setText(txt, asyncIfLongerThan);
-    activateWindow();
-    d_func()->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::switchMode()
@@ -2273,8 +2282,7 @@ void BCodeEdit::insertText(const QString &txt)
     tc.endEditBlock();
     d->setBuisy(false);
     d->emitLinesSplitted(ranges);
-    activateWindow();
-    d->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::moveCursor(const QPoint &pos)
@@ -2286,8 +2294,7 @@ void BCodeEdit::moveCursor(const QPoint &pos)
     QTextCursor tc = d->ptedt->textCursor();
     tc.setPosition( tb.position() + (pos.x() > 0 ? pos.x() : 0) );
     d->ptedt->setTextCursor(tc);
-    activateWindow();
-    d->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
@@ -2303,15 +2310,13 @@ void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
     tc.setPosition(tbs.position() + (start.x() > 0 ? start.x() : 0) );
     tc.setPosition(tbe.position() + (end.x() > 0 ? end.x() : 0), QTextCursor::KeepAnchor);
     d->ptedt->setTextCursor(tc);
-    activateWindow();
-    d->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::selectAll()
 {
     d_func()->ptedt->selectAll();
-    activateWindow();
-    d_func()->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::deselectText()
@@ -2322,8 +2327,7 @@ void BCodeEdit::deselectText()
         return;
     tc.setPosition( tc.selectionEnd() );
     d->ptedt->setTextCursor(tc);
-    activateWindow();
-    d->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::cut()
@@ -2332,8 +2336,7 @@ void BCodeEdit::cut()
         return;
     copy();
     d_func()->deleteSelection();
-    activateWindow();
-    d_func()->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::copy()
@@ -2342,8 +2345,7 @@ void BCodeEdit::copy()
     if ( text.isEmpty() )
         return;
     QApplication::clipboard()->setText(text);
-    activateWindow();
-    d_func()->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::paste()
@@ -2361,8 +2363,7 @@ void BCodeEdit::deleteSelection()
     if ( isReadOnly() || !hasSelection() )
         return;
     d_func()->deleteSelection();
-    activateWindow();
-    d_func()->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::undo()
@@ -2381,8 +2382,7 @@ void BCodeEdit::undo()
         return;
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
-    activateWindow();
-    d->ptedt->setFocus();
+    setFocus();
 }
 
 void BCodeEdit::redo()
@@ -2401,8 +2401,7 @@ void BCodeEdit::redo()
         return;
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
-    activateWindow();
-    d->ptedt->setFocus();
+    setFocus();
 }
 
 /*============================== Protected methods =========================*/

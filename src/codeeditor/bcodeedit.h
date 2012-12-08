@@ -100,6 +100,8 @@ public:
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
 public slots:
+    void setFocus();
+    void activateWindow();
     void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
     void switchMode();
     void insertText(const QString &txt);

@@ -219,6 +219,8 @@ public:
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     int reopenModifiedMessage(const QString &fileName);
     int closeModifiedMessage(const QString &fileName);
+    BSplittedLinesDialog *createSplittedLinesDialog(BCodeEditorDocument *doc,
+                                                    const QList<BCodeEdit::SplittedLinesRange> ranges);
     void emitDefaultCodecChanged(const QString &codecName);
     void emitEditModeChanged(BCodeEdit::EditMode mode);
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
