@@ -43,7 +43,7 @@ contains(CONFIG, beqt_builtin_resources) {
     RESOURCES += beqtcore.qrc
     DEFINES += BEQT_BUILTIN_RESOURCES
     contains(CONFIG, beqt_builtin_translations) {
-        RESOURCES += ../../translations/beqttranslations.qrc
+        RESOURCES += ../../translations/beqt_translations.qrc
         DEFINES += BEQT_BUILTIN_TRANSLATIONS
     }
 }

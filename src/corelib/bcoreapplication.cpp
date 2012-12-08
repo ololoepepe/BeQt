@@ -89,7 +89,7 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
     Q_CLEANUP_RESOURCE(beqtcore);
 #endif
 #if defined(BEQT_BUILTIN_TRANSLATIONS)
-    Q_CLEANUP_RESOURCE(beqttranslations);
+    Q_CLEANUP_RESOURCE(beqt_translations);
 #endif
 }
 
@@ -191,7 +191,7 @@ void BCoreApplicationPrivate::init()
     Q_INIT_RESOURCE(beqtcore);
 #endif
 #if defined(BEQT_BUILTIN_TRANSLATIONS)
-    Q_INIT_RESOURCE(beqttranslations);
+    Q_INIT_RESOURCE(beqt_translations);
 #endif
     initialized = false;
     portable = false;
