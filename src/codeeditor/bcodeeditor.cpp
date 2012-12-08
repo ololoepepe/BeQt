@@ -914,6 +914,11 @@ void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
     QMetaObject::invokeMethod( q_func(), "documentAvailableChanged", Q_ARG(bool, doc) );
 }
 
+void BCodeEditorPrivate::emitDocumentFileNameChanged(const QString &fileName)
+{
+    QMetaObject::invokeMethod( q_func(), "documentFileNameChanged", Q_ARG(QString, fileName) );
+}
+
 void BCodeEditorPrivate::emitFileTypesChanged()
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -1000,6 +1005,7 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                  this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
     }
     emitCurrentDocumentChanged(document);
+    emitDocumentFileNameChanged( document ? document->fileName() : QString() );
 }
 
 void BCodeEditorPrivate::twgtTabCloseRequested(int index)
@@ -1129,6 +1135,7 @@ void BCodeEditorPrivate::documentFileNameChanged(const QString &fn)
     updateDocumentTab(doc);
     if (doc == document)
     {
+        emitDocumentFileNameChanged( doc->fileName() );
         foreach (BAbstractEditorModule *module, modules)
             module->documentFileNameChanged(fn);
     }

@@ -50,7 +50,11 @@ SOURCES += \
     bopensaveeditormodule.cpp \
     bsearcheditormodule.cpp
 
+!contains(CONFIG, beqt_no_install) {
+
 include(../../prefix.pri)
 
 target.path = $${libsInstallsPath}
 INSTALLS = target
+
+} #end !contains(CONFIG, beqt_no_install)

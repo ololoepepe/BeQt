@@ -5,6 +5,8 @@ SUBDIRS = src
 
 contains(CONFIG, beqt_examples):SUBDIRS += examples
 
+!contains(CONFIG, beqt_no_install) {
+
 include(prefix.pri)
 
 ##############################################################################
@@ -112,3 +114,5 @@ INSTALLS += beqtInstallsTranslations
 beqtInstallsDepend.files=depend.pri
 beqtInstallsDepend.path=$${resourcesInstallsPath}
 INSTALLS += beqtInstallsDepend
+
+} #end !contains(CONFIG, beqt_no_install)

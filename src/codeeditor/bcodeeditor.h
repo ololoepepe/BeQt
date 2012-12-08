@@ -130,6 +130,7 @@ signals:
     void documentAdded(BCodeEditorDocument *doc);
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
+    void documentFileNameChanged(const QString &fileName);
     void documentAvailableChanged(bool available);
     void fileTypesChanged();
     void fileHistoryChanged(const QStringList &history);

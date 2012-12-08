@@ -44,6 +44,8 @@ contains(CONFIG, beqt_builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES
 }
 
+!contains(CONFIG, beqt_no_install) {
+
 include(../../prefix.pri)
 
 target.path = $${libsInstallsPath}
@@ -63,3 +65,5 @@ INSTALLS = target
     beqtInstallsInfos.path=$${resourcesInstallsPath}/infos
     INSTALLS += beqtInstallsInfos
 }
+
+} #end !contains(CONFIG, beqt_no_install)
