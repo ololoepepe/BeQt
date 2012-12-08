@@ -737,8 +737,8 @@ bool BCodeEditorPrivate::closeAllDocuments()
     }
     if ( !nslist.isEmpty() )
     {
-        if ( nslist.size() == 1 && !closeDocument( nslist.first() ) )
-            return false;
+        if (nslist.size() == 1)
+            return closeDocument( nslist.first() );
         BSelectDocumentsDialog sdlg(nslist);
         sdlg.exec();
         switch ( sdlg.decision() )
