@@ -381,3 +381,13 @@ void BTerminalWidget::clearEdit()
     else
         d->len = 0;
 }
+
+void BTerminalWidget::appendText(const QString &text)
+{
+    d_func()->appendText(text);
+}
+
+void BTerminalWidget::appendLine(const QString &text)
+{
+    d_func()->appendLine(text);
+}

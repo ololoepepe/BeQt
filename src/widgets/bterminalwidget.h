@@ -52,6 +52,8 @@ public slots:
     void terminate();
     void kill();
     void clearEdit();
+    void appendText(const QString &text);
+    void appendLine(const QString &text);
 signals:
     void finished(int exitCode);
 private:
