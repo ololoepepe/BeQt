@@ -51,6 +51,7 @@ public slots:
     void close();
     void terminate();
     void kill();
+    void clearEdit();
 signals:
     void finished(int exitCode);
 private:

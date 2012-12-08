@@ -371,3 +371,13 @@ void BTerminalWidget::kill()
         return;
     d_func()->driver->kill();
 }
+
+void BTerminalWidget::clearEdit()
+{
+    B_D(BTerminalWidget);
+    d->ptedt->clear();
+    if (d->NormalMode)
+        d->appendText( d->driver->prompt() );
+    else
+        d->len = 0;
+}
