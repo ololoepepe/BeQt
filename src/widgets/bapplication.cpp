@@ -207,6 +207,8 @@ void BApplicationPrivate::showHelp(const QString &file)
     QString fn = !file.isEmpty() ? file : index;
     BHelpBrowser *hb = new BHelpBrowser(helpSearchPaths(), index, fn);
     hb->setAttribute(Qt::WA_DeleteOnClose, true);
+    hb->resize(600, 800);
+    hb->move(200, 200);
     hb->show();
 }
 
