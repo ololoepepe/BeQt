@@ -104,6 +104,10 @@ When building BeQt, you may pass some parameters to qmake:
    Embed resources into library files
    See: http://qt-project.org/doc/qt-5.0/resources.html for details
 
+ * "CONFIG+=beqt_builtin_translations"
+   Embed translations (.qm) into library files. Works only if
+   the "beqt_builtin_resources" parameter is also passed
+
  * "CONFIG+=beqt_examples"
    Build demo examples (by default examples are not built)
 
@@ -191,11 +195,6 @@ linking). The repeated command execution will take at most few seconds.
 When building, BeQt generates translation files (.qm), containing translations
 of UI elements. These files are located in the "translations" subdirectory
 (for example, "translations/beqt_ru.qm").
-Dont' forget to copy these files into your project.
-
-Note: Translation files are not built into libraries when
-"beqt_builtin_resources" is used, because they may take up extra space.
-Include them into your project manually.
 
 ==============================================================================
  FAQ

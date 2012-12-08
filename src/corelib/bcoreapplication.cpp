@@ -88,6 +88,9 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtcore);
 #endif
+#if defined(BEQT_BUILTIN_TRANSLATIONS)
+    Q_CLEANUP_RESOURCE(beqttranslations);
+#endif
 }
 
 /*============================== Static public methods =====================*/
@@ -186,6 +189,9 @@ void BCoreApplicationPrivate::init()
 {
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_INIT_RESOURCE(beqtcore);
+#endif
+#if defined(BEQT_BUILTIN_TRANSLATIONS)
+    Q_INIT_RESOURCE(beqttranslations);
 #endif
     initialized = false;
     portable = false;
