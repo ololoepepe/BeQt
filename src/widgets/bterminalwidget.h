@@ -12,6 +12,7 @@ class QStringList;
 
 #include <QWidget>
 #include <QString>
+#include <QTextCharFormat>
 
 /*============================================================================
 ================================ BTerminalWidget =============================
@@ -27,6 +28,10 @@ public:
         NormalMode,
         ProgrammaticMode
     };
+public:
+    static const QTextCharFormat MessageFormat;
+    static const QTextCharFormat WarningFormat;
+    static const QTextCharFormat CriticalFormat;
 public:
     explicit BTerminalWidget(TerminalMode mode, QWidget *parent = 0);
     explicit BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent = 0);
@@ -52,8 +57,8 @@ public slots:
     void terminate();
     void kill();
     void clearEdit();
-    void appendText(const QString &text);
-    void appendLine(const QString &text);
+    void appendText( const QString &text, const QTextCharFormat &format = QTextCharFormat() );
+    void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
 signals:
     void finished(int exitCode);
 private:

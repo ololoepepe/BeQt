@@ -19,6 +19,9 @@
 #include <QDragMoveEvent>
 #include <QStringList>
 #include <QVBoxLayout>
+#include <QTextCharFormat>
+#include <QBrush>
+#include <QColor>
 
 #include <QDebug>
 
@@ -37,6 +40,29 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
 BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 {
     //
+}
+
+/*============================== Static public methods =====================*/
+
+QTextCharFormat BTerminalWidgetPrivate::createMessageFormat()
+{
+    QTextCharFormat fmt;
+    fmt.setForeground( QBrush( QColor("blue") ) );
+    return fmt;
+}
+
+QTextCharFormat BTerminalWidgetPrivate::createWarningFormat()
+{
+    QTextCharFormat fmt;
+    fmt.setForeground( QBrush( QColor("darkorange") ) );
+    return fmt;
+}
+
+QTextCharFormat BTerminalWidgetPrivate::createCriticalFormat()
+{
+    QTextCharFormat fmt;
+    fmt.setForeground( QBrush( QColor("red") ) );
+    return fmt;
 }
 
 /*============================== Public methods ============================*/
@@ -148,23 +174,23 @@ void BTerminalWidgetPrivate::scrollDown()
         sb->setValue( sb->maximum() );
 }
 
-void BTerminalWidgetPrivate::appendText(const QString &text)
+void BTerminalWidgetPrivate::appendText(const QString &text, const QTextCharFormat &format)
 {
     scrollDown();
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
-    tc.insertText(text);
+    tc.insertText(text, format);
     ptedt->setTextCursor(tc);
     len = ptedt->textCursor().block().length();
 }
 
-void BTerminalWidgetPrivate::appendLine(const QString &text)
+void BTerminalWidgetPrivate::appendLine(const QString &text, const QTextCharFormat &format)
 {
     scrollDown();
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertBlock();
-    tc.insertText(text);
+    tc.insertText(text, format);
     len = ptedt->textCursor().block().length();
 }
 
@@ -216,6 +242,12 @@ void BTerminalWidgetPrivate::unblockTerminal()
 /*============================================================================
 ================================ BTerminalWidget =============================
 ============================================================================*/
+
+/*============================== Static public constamts ===================*/
+
+const QTextCharFormat BTerminalWidget::MessageFormat = BTerminalWidgetPrivate::createMessageFormat();
+const QTextCharFormat BTerminalWidget::WarningFormat = BTerminalWidgetPrivate::createWarningFormat();
+const QTextCharFormat BTerminalWidget::CriticalFormat = BTerminalWidgetPrivate::createCriticalFormat();
 
 /*============================== Public constructors =======================*/
 
@@ -382,12 +414,12 @@ void BTerminalWidget::clearEdit()
         d->len = 0;
 }
 
-void BTerminalWidget::appendText(const QString &text)
+void BTerminalWidget::appendText(const QString &text, const QTextCharFormat &format)
 {
-    d_func()->appendText(text);
+    d_func()->appendText(text, format);
 }
 
-void BTerminalWidget::appendLine(const QString &text)
+void BTerminalWidget::appendLine(const QString &text, const QTextCharFormat &format)
 {
-    d_func()->appendLine(text);
+    d_func()->appendLine(text, format);
 }

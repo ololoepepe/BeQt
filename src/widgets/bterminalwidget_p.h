@@ -15,6 +15,7 @@ class QVBoxLayout;
 
 #include <QObject>
 #include <QCoreApplication>
+#include <QTextCharFormat>
 
 /*============================================================================
 ================================ BTerminalWidgetPrivate ======================
@@ -28,13 +29,17 @@ public:
     explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
     ~BTerminalWidgetPrivate();
 public:
+    static QTextCharFormat createMessageFormat();
+    static QTextCharFormat createWarningFormat();
+    static QTextCharFormat createCriticalFormat();
+public:
     void init();
     bool eventFilter(QObject *object, QEvent *event);
     void setDriver(BAbstractTerminalDriver *drv);
     bool handleKeyPress(int key, int modifiers);
     void scrollDown();
-    void appendText(const QString &text);
-    void appendLine( const QString &text = QString() );
+    void appendText( const QString &text, const QTextCharFormat &format = QTextCharFormat() );
+    void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
     QString constructErrorString(const QString &error) const;
 public slots:
     void read();

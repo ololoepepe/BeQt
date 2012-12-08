@@ -123,6 +123,8 @@ public slots:
     bool saveAllDocuments();
     bool closeCurrentDocument();
     bool closeAllDocuments();
+    void insertTextIntoCurrentDocument(const QString &text);
+    void setCurrentDocumentText(const QString &text);
 signals:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);
@@ -130,7 +132,7 @@ signals:
     void documentAdded(BCodeEditorDocument *doc);
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
-    void documentFileNameChanged(const QString &fileName);
+    void currentDocumentFileNameChanged(const QString &fileName);
     void documentAvailableChanged(bool available);
     void fileTypesChanged();
     void fileHistoryChanged(const QStringList &history);
