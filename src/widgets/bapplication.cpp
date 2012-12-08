@@ -33,6 +33,7 @@
 #include <QFont>
 #include <QFontInfo>
 #include <QPointer>
+#include <QRect>
 
 #include <QDebug>
 #include <QPointer>
@@ -143,6 +144,7 @@ void BApplicationPrivate::init()
 #endif
     iconCaching = false;
     navigation = BApplication::DefaultNavigation;
+    helpBrowserGeometry = QRect(200, 200, 800, 600);
     connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
@@ -207,8 +209,7 @@ void BApplicationPrivate::showHelp(const QString &file)
     QString fn = !file.isEmpty() ? file : index;
     BHelpBrowser *hb = new BHelpBrowser(helpSearchPaths(), index, fn);
     hb->setAttribute(Qt::WA_DeleteOnClose, true);
-    hb->resize(600, 800);
-    hb->move(200, 200);
+    hb->setGeometry(helpBrowserGeometry);
     hb->show();
 }
 
@@ -388,6 +389,13 @@ QFont BApplication::createMonospaceFont()
 {
     //Using such a construct to get default monospace font family name
     return QFont( QFontInfo( QFont("monospace") ).family() );
+}
+
+void BApplication::setHelpBrowserDefaultGeometry(const QRect &geometry)
+{
+    if ( !geometry.isValid() )
+        return;
+    ds_func()->helpBrowserGeometry = geometry;
 }
 
 /*============================== Public slots ==============================*/

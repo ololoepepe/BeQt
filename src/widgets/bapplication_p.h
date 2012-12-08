@@ -5,6 +5,7 @@ class BApplicationPrivate;
 
 class QStringList;
 class QAction;
+class QRect;
 
 #include "bapplication.h"
 
@@ -50,6 +51,7 @@ public:
     QMap<QString, QIcon> iconCache;
     bool iconCaching;
     QMap<QObject *, QAction *> actions;
+    QRect helpBrowserGeometry;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

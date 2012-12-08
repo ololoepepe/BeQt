@@ -67,6 +67,7 @@ public:
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
     static QFont createMonospaceFont();
+    static void setHelpBrowserDefaultGeometry(const QRect &geometry);
 public slots:
     void showAboutDialog();
     void showSettingsDialog();
