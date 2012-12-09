@@ -20,8 +20,6 @@
 #include <QStringList>
 #include <QVector>
 #include <QChar>
-#include <QFutureWatcher>
-#include <QFuture>
 #include <QMetaObject>
 #include <QSyntaxHighlighter>
 #include <QPoint>
@@ -29,7 +27,6 @@
 #include <QAction>
 #include <QFont>
 #include <QFontInfo>
-#include <QtConcurrentRun>
 #include <QApplication>
 #include <QClipboard>
 #include <QTextEdit>
@@ -56,6 +53,8 @@
 #include <QTextLine>
 #include <QScrollBar>
 #include <QVector>
+#include <QThreadPool>
+#include <QRunnable>
 
 #include <QDebug>
 
@@ -631,6 +630,7 @@ void BCodeEditPrivate::init()
     undoAvailable = false;
     redoAvailable = false;
     buisy = false;
+    parceTask = 0;
     highlighter = 0;
     bracketsHighlighting = true;
     B_Q(BCodeEdit);
@@ -911,10 +911,10 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
     {
         ptedt->setEnabled(false);
         ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
-        ProcessTextFuture fut = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
-        ProcessTextFutureWatcher *watcher = new ProcessTextFutureWatcher(this);
-        watcher->setFuture(fut);
-        connect( watcher, SIGNAL( finished() ), this, SLOT( futureWatcherFinished() ) );
+        parceTask = new BCodeEditParseTask(txt, lineLength, tabWidth);
+        parceTask->setAutoDelete(false);
+        connect(parceTask, SIGNAL( finished() ), this, SLOT( parceTaskFinished() ), Qt::QueuedConnection);
+        BCodeEditParseTask::pool()->start(parceTask);
     }
     else
     {
@@ -1682,13 +1682,13 @@ void BCodeEditPrivate::move(int key)
 
 /*============================== Public slots ==============================*/
 
-void BCodeEditPrivate::futureWatcherFinished()
+void BCodeEditPrivate::parceTaskFinished()
 {
-    ProcessTextFutureWatcher *watcher = static_cast<ProcessTextFutureWatcher *>( sender() );
-    if (!watcher)
+    if (!parceTask)
         return;
-    ProcessTextResult res = watcher->result();
-    watcher->deleteLater();
+    ProcessTextResult res = parceTask->result();
+    parceTask->deleteLater();
+    parceTask = 0;
     ptedt->setEnabled(true);
     if (highlighter)
         highlighter->setDocument(0);
@@ -1699,8 +1699,8 @@ void BCodeEditPrivate::futureWatcherFinished()
     if (highlighter)
         highlighter->setDocument( ptedt->document() );
     ptedt->setFocus();
-    emitLinesSplitted(res.splittedLinesRanges);
     setBuisy(false);
+    emitLinesSplitted(res.splittedLinesRanges);
 }
 
 void BCodeEditPrivate::popupMenu(const QPoint &pos)
@@ -2410,3 +2410,46 @@ BPlainTextEdit *BCodeEdit::innerEdit() const
 {
     return d_func()->ptedt;
 }
+
+/*============================================================================
+================================ BCodeEditParseTask ==========================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BCodeEditParseTask::BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth) :
+    QObject(0), Text(text), LineLength(lineLength), TabWidth(tabWidth)
+{
+    //
+}
+
+BCodeEditParseTask::~BCodeEditParseTask()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
+
+QThreadPool *BCodeEditParseTask::pool()
+{
+    if (!tp)
+        tp = new QThreadPool;
+    return tp;
+}
+
+/*============================== Public methods ============================*/
+
+void BCodeEditParseTask::run()
+{
+    res = BCodeEditPrivate::processText(Text, LineLength, TabWidth);
+    emit finished();
+}
+
+BCodeEditPrivate::ProcessTextResult BCodeEditParseTask::result() const
+{
+    return res;
+}
+
+/*============================== Static private variables ==================*/
+
+QThreadPool *BCodeEditParseTask::tp = 0;

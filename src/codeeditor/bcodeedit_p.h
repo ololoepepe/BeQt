@@ -3,6 +3,7 @@
 
 class BCodeEditPrivate;
 class BPlainTextEditExtendedPrivate;
+class BCodeEditParseTask;
 
 class QVBoxLayout;
 class QEvent;
@@ -17,6 +18,7 @@ class QPainter;
 class QBrush;
 class QTextCursor;
 class QPaintEvent;
+class QThreadPool;
 
 #include "bcodeedit.h"
 
@@ -28,8 +30,6 @@ class QPaintEvent;
 #include <QObject>
 #include <QCoreApplication>
 #include <QList>
-#include <QFuture>
-#include <QFutureWatcher>
 #include <QTextBlock>
 #include <QTextEdit>
 #include <QPlainTextEdit>
@@ -38,6 +38,7 @@ class QPaintEvent;
 #include <QAbstractTextDocumentLayout>
 #include <QPair>
 #include <QTextCharFormat>
+#include <QRunnable>
 
 /*============================================================================
 ================================ BCodeEditClipboardNotifier ==================
@@ -157,9 +158,6 @@ public:
         const BCodeEdit::BracketPair *endBr;
     };
 public:
-    typedef QFuture<ProcessTextResult> ProcessTextFuture;
-    typedef QFutureWatcher<ProcessTextResult> ProcessTextFutureWatcher;
-public:
     static const QList<QChar> UnsupportedSymbols;
     static const QTextCharFormat BracketsFormat;
     static const QTextCharFormat BracketsErrorFormat;
@@ -221,7 +219,7 @@ public:
     void handleCtrlRight();
     void move(int key);
 public slots:
-    void futureWatcherFinished();
+    void parceTaskFinished();
     void popupMenu(const QPoint &pos);
     void updateCursorPosition();
     void updateHasSelection();
@@ -247,6 +245,7 @@ public:
     bool undoAvailable;
     bool redoAvailable;
     bool buisy;
+    BCodeEditParseTask *parceTask;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QVBoxLayout *vlt;
       BPlainTextEditExtended *ptedt;
@@ -254,5 +253,33 @@ private:
     Q_DISABLE_COPY(BCodeEditPrivate)
 };
 
-#endif // BCODEEDIT_P_H
+/*============================================================================
+================================ BCodeEditParseTask ==========================
+============================================================================*/
 
+class B_CODEEDITOR_EXPORT BCodeEditParseTask : public QObject, public QRunnable
+{
+    Q_OBJECT
+public:
+    BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth);
+    ~BCodeEditParseTask();
+public:
+    static QThreadPool *pool();
+public:
+    void run();
+    BCodeEditPrivate::ProcessTextResult result() const;
+signals:
+    void finished();
+private:
+    static QThreadPool *tp;
+private:
+    const QString Text;
+    const int LineLength;
+    const BCodeEdit::TabWidth TabWidth;
+private:
+    BCodeEditPrivate::ProcessTextResult res;
+private:
+    Q_DISABLE_COPY(BCodeEditParseTask)
+};
+
+#endif // BCODEEDIT_P_H
