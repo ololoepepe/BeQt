@@ -3,6 +3,7 @@
 
 class QStringList;
 class QSyntaxHighlighter;
+class QObject;
 
 #include "bcodeedit.h"
 
@@ -30,7 +31,7 @@ public:
     virtual QString description() const = 0;
     virtual QStringList suffixes() const = 0;
     virtual bool matchesFileName(const QString &fileName) const = 0;
-    virtual QSyntaxHighlighter *createHighlighter() const = 0;
+    virtual QSyntaxHighlighter *createHighlighter(QObject *parent) const = 0;
     virtual QList<BCodeEdit::BracketPair> brackets() const = 0;
 protected:
     static BCodeEdit::BracketPair createBracketPair( const QString &op, const QString &cl,

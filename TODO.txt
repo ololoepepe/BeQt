@@ -2,6 +2,7 @@
 
 === This release ===
 
+* Add shortcuts for editor modules actions
 [done] Finish writing the Simple Editor example
 [done] Re-write README
 [done] Remove icons from the resources, install them to the Shared directory instead

@@ -25,7 +25,7 @@ public:
     QString description() const;
     QStringList suffixes() const;
     bool matchesFileName(const QString &fileName) const;
-    QSyntaxHighlighter *createHighlighter() const;
+    QSyntaxHighlighter *createHighlighter(QObject *parent) const;
     QList<BCodeEdit::BracketPair> brackets() const;
 };
 
@@ -72,7 +72,7 @@ bool BDefaultFileType::matchesFileName(const QString &fileName) const
     return true;
 }
 
-QSyntaxHighlighter *BDefaultFileType::createHighlighter() const
+QSyntaxHighlighter *BDefaultFileType::createHighlighter(QObject *parent) const
 {
     return 0;
 }

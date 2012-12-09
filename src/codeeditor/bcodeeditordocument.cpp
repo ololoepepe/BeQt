@@ -173,7 +173,7 @@ void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
     if (!ft && d->fileType && d->fileType->id() == "Text")
         return;
     d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
-    setHighlighter( ft->createHighlighter() );
+    setHighlighter( ft->createHighlighter(this) );
     setRecognizedBrackets( ft->brackets() );
     emit fileTypeChanged(ft);
 }
