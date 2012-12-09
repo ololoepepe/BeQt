@@ -16,6 +16,7 @@
 #include <QList>
 #include <QPointer>
 #include <QString>
+#include <QKeySequence>
 
 /*============================================================================
 ================================ BEditEditorModulePrivate ====================
@@ -42,14 +43,19 @@ void BEditEditorModulePrivate::init()
     //
     actCut = new QAction(this);
       actCut->setIcon( BApplication::icon("editcut") );
+      actCut->setShortcut( QKeySequence("Ctrl+X") );
     actCopy = new QAction(this);
       actCopy->setIcon( BApplication::icon("editcopy") );
+      actCopy->setShortcut( QKeySequence("Ctrl+C") );
     actPaste = new QAction(this);
       actPaste->setIcon( BApplication::icon("editpaste") );
+      actPaste->setShortcut( QKeySequence("Ctrl+V") );
     actUndo = new QAction(this);
       actUndo->setIcon( BApplication::icon("undo") );
+      actUndo->setShortcut( QKeySequence("Ctrl+Z") );
     actRedo = new QAction(this);
       actRedo->setIcon( BApplication::icon("redo") );
+      actRedo->setShortcut( QKeySequence("Ctrl+Shift+Z") );
     actSwitchMode = new QAction(this);
       connect( actSwitchMode.data(), SIGNAL( triggered() ), this, SLOT( actSwitchModeTriggered() ) );
     //

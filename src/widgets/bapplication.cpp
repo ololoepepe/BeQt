@@ -95,10 +95,8 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
         break;
     case BApplication::WhatsThisAction:
     {
-        QAction *wta = QWhatsThis::createAction();
-        act->setText( wta->text() );
-        act->setToolTip( wta->toolTip() );
-        wta->deleteLater();
+        act->setText( tr("What's this?", "act text") );
+        act->setToolTip( act->text() );
         break;
     }
     case BApplication::AboutAction:

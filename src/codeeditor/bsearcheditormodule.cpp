@@ -488,10 +488,12 @@ void BSearchEditorModulePrivate::init()
     actFind = new QAction(this);
       actFind->setEnabled(false);
       actFind->setIcon( BApplication::icon("find") );
+      actFind->setShortcut( QKeySequence("Ctrl+F") );
       connect( actFind.data(), SIGNAL( triggered() ), q, SLOT( find() ) );
     actFindNext = new QAction(this);
       actFindNext->setEnabled(false);
       actFindNext->setIcon( BApplication::icon("edit_find_next") );
+      actFindNext->setShortcut( QKeySequence("Ctrl+G") );
       connect( actFindNext.data(), SIGNAL( triggered() ), q, SLOT( findNext() ) );
       connect( sdlg, SIGNAL( findNextAvailableChanged(bool) ), actFindNext.data(), SLOT( setEnabled(bool) ) );
     //

@@ -2,7 +2,7 @@
 
 === This release ===
 
-* Add shortcuts for editor modules actions
+[done] Add shortcuts for editor modules actions
 [done] Fix bracket highlighting
 [done] Finish writing the Simple Editor example
 [done] Re-write README

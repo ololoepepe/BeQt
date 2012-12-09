@@ -23,6 +23,7 @@
 #include <QStringList>
 #include <QByteArray>
 #include <QFileInfo>
+#include <QKeySequence>
 
 #include <QDebug>
 
@@ -50,8 +51,10 @@ void BOpenSaveEditorModulePrivate::init()
 {
     actNewFile = new QAction(this);
       actNewFile->setIcon( BApplication::icon("filenew") );
+      actNewFile->setShortcut( QKeySequence("Ctrl+N") );
     actOpenFiles = new QAction(this);
       actOpenFiles->setIcon( BApplication::icon("fileopen") );
+      actOpenFiles->setShortcut( QKeySequence("Ctrl+O") );
     actReopenFile = new QAction(this);
       actReopenFile->setIcon( BApplication::icon("reload") );
       actReopenFile->setMenu( new QMenu() );
@@ -79,14 +82,18 @@ void BOpenSaveEditorModulePrivate::init()
       }
     actSaveFile = new QAction(this);
       actSaveFile->setIcon( BApplication::icon("filesave") );
+      actSaveFile->setShortcut( QKeySequence("Ctrl+S") );
     actSaveFileAs = new QAction(this);
       actSaveFileAs->setIcon( BApplication::icon("filesaveas") );
     actSaveAllFiles = new QAction(this);
       actSaveAllFiles->setIcon( BApplication::icon("save_all") );
+      actSaveAllFiles->setShortcut( QKeySequence("Ctrl+Shift+S") );
     actCloseFile = new QAction(this);
       actCloseFile->setIcon( BApplication::icon("fileclose") );
+      actCloseFile->setShortcut( QKeySequence("Ctrl+W") );
     actCloseAllFiles = new QAction(this);
       actCloseAllFiles->setIcon( BApplication::icon("fileclose") );
+      actCloseAllFiles->setShortcut( QKeySequence("Ctrl+Shift+W") );
     mnuFileHistory = new QMenu;
       mnuFileHistory->setIcon( BApplication::icon("history") );
     //
