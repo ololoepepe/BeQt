@@ -99,7 +99,13 @@ contains(BEQT, widgets) {
     BEQT *= core widgets
 }
 
+#Workaround for proper linking when building statically
+contains(BEQT, codeeditor):BEQT_ORDERED += codeeditor
+contains(BEQT, widgets):BEQT_ORDERED += widgets
+contains(BEQT, network):BEQT_ORDERED += network
+contains(BEQT, core):BEQT_ORDERED += core
+
 #Adds corresponding headers' and libs' paths for each valid BeQt module contained in BEQT variable
-for(shortName, BEQT) {
+for(shortName, BEQT_ORDERED) {
     addBeqtModule($${shortName})
 }
