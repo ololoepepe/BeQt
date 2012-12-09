@@ -34,6 +34,7 @@
 #include <QFontInfo>
 #include <QPointer>
 #include <QRect>
+#include <QMessageBox>
 
 #include <QDebug>
 #include <QPointer>
@@ -427,6 +428,19 @@ void BApplication::showSettingsDialog(SettingsTabNavigation navigation)
         break;
     }
     QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), nvg, QApplication::activeWindow() ) );
+    if ( !sd->isValid() )
+    {
+        QMessageBox msg( QApplication::activeWindow() );
+        msg.setWindowTitle( tr("No settings", "msgbox windowTitle") );
+        msg.setIcon(QMessageBox::Information);
+        msg.setText( tr("This application has no settings", "msgbox text") );
+        msg.setInformativeText( tr("This message may be shown due to a bug. Try contact the authors",
+                                   "msgbox informativeText") );
+        msg.setStandardButtons(QMessageBox::Ok);
+        msg.setDefaultButton(QMessageBox::Ok);
+        msg.exec();
+        return;
+    }
     if (sd->exec() != BSettingsDialog::Accepted)
         return;
     handleSettings( sd->settingsMap() );
