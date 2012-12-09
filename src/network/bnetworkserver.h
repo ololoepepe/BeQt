@@ -44,6 +44,9 @@ public:
 protected:
     virtual BNetworkConnection *createConnection(BGenericSocket *socket) const = 0;
     virtual BGenericSocket *createSocket() const;
+signals:
+    void connectionAdded(BNetworkConnection *connection);
+    void connectionAboutToBeRemoved(BNetworkConnection *connection);
 private:
     Q_DISABLE_COPY(BNetworkServer)
 };

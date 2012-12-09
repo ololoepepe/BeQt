@@ -18,7 +18,7 @@
 /*============================== Public constructors =======================*/
 
 BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *sp) :
-    QObject(0), serverPrivate(sp)
+    QObject(0), ServerPrivate(sp)
 {
     //
 }
@@ -32,10 +32,10 @@ BNetworkServerWorker::~BNetworkServerWorker()
 
 void BNetworkServerWorker::addConnection(int socketDescriptor)
 {
-    BGenericSocket *s = serverPrivate->createSocket();
+    BGenericSocket *s = ServerPrivate->createSocket();
     if ( !s || !s->setSocketDescriptor(socketDescriptor) || !s->isValid() )
         return;
-    BNetworkConnection *c = serverPrivate->createConnection(s);
+    BNetworkConnection *c = ServerPrivate->createConnection(s);
     if ( !c || !c->isValid() )
         return;
     connect( c, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
@@ -87,6 +87,7 @@ void BNetworkServerThread::connectionAdded(QObject *obj)
     if (!c)
         return;
     connections << c;
+    Worker->ServerPrivate->emitConnectionAdded(c);
 }
 
 void BNetworkServerThread::disconnected(QObject *obj)
@@ -94,6 +95,7 @@ void BNetworkServerThread::disconnected(QObject *obj)
     BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
     if (!c)
         return;
+    Worker->ServerPrivate->emitConnectionAboutToBeRemoved(c);
     connections.removeAll(c);
     c->deleteLater();
     if ( connections.isEmpty() )
@@ -176,6 +178,16 @@ int BNetworkServerPrivate::connectionCount() const
     foreach (BNetworkServerThread *t, threads)
         count += t->connectionCount();
     return count;
+}
+
+void BNetworkServerPrivate::emitConnectionAdded(BNetworkConnection *connection)
+{
+    QMetaObject::invokeMethod( q_func(), "connectionAdded", Q_ARG(BNetworkConnection *, connection) );
+}
+
+void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(BNetworkConnection *connection)
+{
+    QMetaObject::invokeMethod( q_func(), "connectionAboutToBeRemoved", Q_ARG(BNetworkConnection *, connection) );
 }
 
 /*============================== Public slots ==============================*/

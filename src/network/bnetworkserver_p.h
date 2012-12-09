@@ -39,7 +39,7 @@ signals:
     void connectionAdded(QObject *obj);
     void disconnected(QObject *obj);
 public:
-    BNetworkServerPrivate *const serverPrivate;
+    BNetworkServerPrivate *const ServerPrivate;
 private:
     Q_DISABLE_COPY(BNetworkServerWorker)
 };
@@ -85,6 +85,8 @@ public:
     BGenericSocket *createSocket() const;
     BNetworkServerThread *getOptimalThread();
     int connectionCount() const;
+    void emitConnectionAdded(BNetworkConnection *connection);
+    void emitConnectionAboutToBeRemoved(BNetworkConnection *connection);
 public slots:
     void newConnection(int socketDescriptor);
     void finished();
