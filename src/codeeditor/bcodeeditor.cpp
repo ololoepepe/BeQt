@@ -1699,7 +1699,7 @@ BAbstractFileType *BCodeEditor::fileType(const QString &id) const
 QList<BAbstractFileType *> BCodeEditor::fileTypes() const
 {
     QList<BAbstractFileType *> list = d_func()->fileTypes.values();
-    list << d_func()->defaultFileType;
+    list.prepend(d_func()->defaultFileType);
     return list;
 }
 
