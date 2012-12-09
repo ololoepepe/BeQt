@@ -1107,12 +1107,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
         QString text = removeTrailingSpaces( tb.text() );
         while (posInBlock >= 0)
         {
-            if ( testBracket(text, posInBlock, false, br) )
-            {
-                ++depth;
-                posInBlock -= br->closing.length();
-            }
-            else if ( testBracket(text, posInBlock, true, br) )
+            if ( testBracket(text, posInBlock, true, br) )
             {
                 --depth;
                 if (!depth)
@@ -1123,6 +1118,11 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
                     return res;
                 }
                 posInBlock -= br->opening.length();
+            }
+            else if ( testBracket(text, posInBlock, false, br) )
+            {
+                ++depth;
+                posInBlock -= br->closing.length();
             }
             else
             {
@@ -1159,12 +1159,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
         QString text = removeTrailingSpaces( tb.text() );
         while ( posInBlock <= ( (skipFrom >= 0) ? (skipFrom - 1) : text.length() ) )
         {
-            if ( testBracket(text, posInBlock, true, br) )
-            {
-                ++depth;
-                posInBlock += br->opening.length();
-            }
-            else if ( testBracket(text, posInBlock, false, br) )
+            if ( testBracket(text, posInBlock, false, br) )
             {
                 --depth;
                 if (!depth)
@@ -1175,6 +1170,11 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
                     return res;
                 }
                 posInBlock += br->closing.length();
+            }
+            else if ( testBracket(text, posInBlock, true, br) )
+            {
+                ++depth;
+                posInBlock += br->opening.length();
             }
             else
             {
