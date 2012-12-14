@@ -32,6 +32,7 @@ public:
 protected:
     explicit BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
 public:
+    void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
     void setDetailedLogMode(bool enabled);
@@ -46,6 +47,7 @@ public:
     const QUuid uniqueId() const;
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
+    int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;
     bool detailedLogMode() const;
@@ -55,6 +57,8 @@ public:
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
 protected:
     virtual void log(const QString &text);
+    BGenericSocket *socket() const;
+    BSocketWrapper *socketWrapper() const;
 signals:
     void connected();
     void disconnected();

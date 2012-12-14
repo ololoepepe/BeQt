@@ -267,6 +267,11 @@ BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *pa
 
 /*============================== Public methods ============================*/
 
+void BNetworkConnection::setCompressionLevel(int level)
+{
+    d_func()->socketWrapper->setCompressionLevel(level);
+}
+
 void BNetworkConnection::setCriticalBufferSize(qint64 size)
 {
     d_func()->socketWrapper->setCriticalBufferSize(size);
@@ -352,6 +357,11 @@ QString BNetworkConnection::errorString() const
     return isValid() ? d_func()->socket->errorString() : "";
 }
 
+int BNetworkConnection::compressionLevel() const
+{
+    return d_func()->socketWrapper->compressionLevel();
+}
+
 qint64 BNetworkConnection::criticalBufferSize() const
 {
     return d_func()->socketWrapper->criticalBufferSize();
@@ -413,4 +423,14 @@ void BNetworkConnection::log(const QString &text)
 {
     BTerminalIOHandler::writeLine("[" + QDateTime::currentDateTime().toString("dd/MMM/yyy hh:mm:ss") + "] [" +
                                   peerAddress() + "] " + text);
+}
+
+BGenericSocket *BNetworkConnection::socket() const
+{
+    return d_func()->socket.data();
+}
+
+BSocketWrapper *BNetworkConnection::socketWrapper() const
+{
+    return d_func()->socketWrapper.data();
 }
