@@ -1,6 +1,8 @@
 #include "bglobal.h"
 
 #include <QString>
+#include <QList>
+
 #include <QDebug>
 
 bool bTest(bool condition, const char *where, const char *what)
@@ -13,4 +15,20 @@ bool bTest(bool condition, const char *where, const char *what)
 const char *bVersion()
 {
     return "2.0.0pa1";
+}
+
+QList<int> bRange(int lb, int ub, int step)
+{
+    if (!step)
+        step = 1;
+    if ( (lb > ub && step > 0) || (lb < ub && step < 0) )
+        step *= -1;
+    QList<int> r;
+    if (lb < ub)
+        for (int i = lb; i <= ub; i += step)
+            r << i;
+    else
+        for (int i = lb; i >= ub; i += step)
+            r << i;
+    return r;
 }

@@ -2,6 +2,7 @@
 #define BGLOBAL_H
 
 #include <QtGlobal>
+#include <QList>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -71,5 +72,6 @@ static Class *qs_func() \
 
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
+B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 1);
 
 #endif // BGLOBAL_H
