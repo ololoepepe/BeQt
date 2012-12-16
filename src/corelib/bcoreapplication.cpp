@@ -129,12 +129,7 @@ bool BCoreApplicationPrivate::testCoreInit(const char *where)
 {
     const char *w = where ? where : "BCoreApplication";
     B_QS(BCoreApplication);
-    if ( !bTest(qs, w, "There must be a BCoreApplication instance") )
-        return false;
-    else if ( !bTest(qs->d_func()->initialized, w, "BCoreApplication must be initialized") )
-        return false;
-    else
-        return true;
+    return bTest(qs, w, "There must be a BCoreApplication instance");
 }
 
 bool BCoreApplicationPrivate::testCoreUnique()
@@ -193,66 +188,140 @@ void BCoreApplicationPrivate::init()
 #if defined(BEQT_BUILTIN_TRANSLATIONS)
     Q_INIT_RESOURCE(beqt_translations);
 #endif
-    initialized = false;
-    portable = false;
-    //checks
-    QString an = QCoreApplication::applicationName();
-    QString on = QCoreApplication::organizationName();
-    QString ap = QCoreApplication::applicationDirPath().remove( QRegExp("/(b|B)(i|I)(n|N)$") );
-    if ( !bTest(QCoreApplication::instance(), "BCoreApplication", "missing QCoreApplication instance") )
-        return;
-    if ( !bTest(!an.isEmpty(), "BCoreApplication", "missing application name") )
-        return;
-    if ( !bTest(!on.isEmpty(), "BCoreApplication", "missing organization name") )
-        return;
-    if ( !bTest(QFileInfo(ap).isDir(), "BCoreApplication", "unable to get application directory") )
-        return;
-    appName = an;
-    orgName = on;
-    appPath = ap;
-    QString anls = toLowerNoSpaces(appName);
-    //vars
-#if defined(Q_OS_MAC)
-    userPrefix = QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
-    sharedPrefix = "/Library/Application Support/" + orgName + "/" + appName;
-    bundlePrefix = QDir(appPath + "/../Resources").absolutePath();
-#elif defined (Q_OS_LINUX)
-    userPrefix = QDir::homePath() + "/." + anls;
-    sharedPrefix = "/usr/share/" + anls;
-#elif defined(Q_OS_WIN)
-    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
-        userPrefix = QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
-    else
-        userPrefix = QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
-    sharedPrefix = appPath;
-#endif
-    //app mode
-    portable = QFileInfo( confFileName(appPath, appName) ).isFile();
-    if (portable)
-    {
-        userPrefix = appPath;
-        sharedPrefix = appPath;
-#if defined(Q_OS_MAC)
-        bundlePrefix = appPath;
-#endif
-    }
+    bTest(QCoreApplication::instance(), "BCoreApplication", "Missing QCoreApplication instance");
     //localization
     locale = QLocale::system();
     appEventFilter = new BCoreApplicationEventFilter(this);
     QCoreApplication::instance()->installEventFilter(appEventFilter);
-    //initialized
-    initialized = true;
     //infos
     QStringList locs;
-    locs << sharedPrefix;
+    locs << getSharedPrefix(); //sharedPrefix;
 #if defined(Q_OS_MAC)
-    locs << bundlePrefix;
+    locs << getBundlePrefix(); //bundlePrefix;
 #endif
     locs << ":";
+    locs.removeAll("");
     QString spref = "beqt/infos/";
     beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
+}
+
+QString BCoreApplicationPrivate::getAppName() const
+{
+    if ( !appName.isEmpty() )
+        return appName;
+    QString an = QCoreApplication::applicationName();
+    if ( !bTest(!an.isEmpty(), "BCoreApplication", "missing application name") )
+        return "";
+    appName = an;
+    return an;
+}
+
+QString BCoreApplicationPrivate::getOrgName() const
+{
+    if ( !orgName.isEmpty() )
+        return orgName;
+    QString on = QCoreApplication::organizationName();
+    if ( !bTest(!on.isEmpty(), "BCoreApplication", "Missing organization name") )
+        return "";
+    orgName = on;
+    return on;
+}
+
+QString BCoreApplicationPrivate::getAppPath() const
+{
+    if ( !appPath.isEmpty() )
+        return appPath;
+    QString ap = QCoreApplication::applicationDirPath().remove( QRegExp("/(b|B)(i|I)(n|N)$") );
+    if ( !bTest(QFileInfo(ap).isDir(), "BCoreApplicationPrivate", "Unable to get application directory") )
+        return "";
+    appPath = ap;
+    return ap;
+}
+
+QString BCoreApplicationPrivate::getUserPrefix() const
+{
+    getIsPortable();
+    if ( !userPrefix.isEmpty() )
+        return userPrefix;
+    QString an = getAppName();
+    if ( an.isEmpty() )
+        return "";
+#if defined(Q_OS_MAC)
+    QString on = getOrgName();
+    if ( on.isEmpty() )
+        return "";
+    userPrefix = QDir::homePath() + "/Library/Application Support/" + on + "/" + an;
+#elif defined (Q_OS_LINUX)
+    userPrefix = QDir::homePath() + "/." + toLowerNoSpaces(an);
+#elif defined(Q_OS_WIN)
+    QString on = getOrgName();
+    if ( on.isEmpty() )
+        return "";
+    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
+        userPrefix = QDir::homePath() + "/Application Data/" + on + "/" + an;
+    else
+        userPrefix = QDir::homePath() + "/AppData/Roaming/" + on + "/" + an;
+#endif
+    return userPrefix;
+}
+
+QString BCoreApplicationPrivate::getSharedPrefix() const
+{
+    getIsPortable();
+    if ( !sharedPrefix.isEmpty() )
+        return sharedPrefix;
+#if defined(Q_OS_MAC)
+    QString an = getAppName();
+    QString on = getOrgName();
+    if ( an.isEmpty() || on.isEmpty() )
+        return "";
+    sharedPrefix = "/Library/Application Support/" + on + "/" + an;
+#elif defined (Q_OS_LINUX)
+    QString an = getAppName();
+    if ( an.isEmpty() )
+        return "";
+    sharedPrefix = "/usr/share/" + toLowerNoSpaces(an);
+#elif defined(Q_OS_WIN)
+    QString ap = getAppPath();
+    if ( ap.isEmpty() )
+        return "";
+    sharedPrefix = ap;
+#endif
+    return sharedPrefix;
+}
+
+#if defined(Q_OS_MAC)
+QString BCoreApplicationPrivate::getBundlePrefix() const
+{
+    getIsPortable();
+    if ( !bundlePrefix.isEmpty() )
+        return bundlePrefix;
+    QString ap = getAppPath();
+    if ( ap.isEmpty() )
+        return "";
+    bundlePrefix = QDir(ap + "/../Resources").absolutePath();
+    return bundlePrefix;
+}
+#endif
+
+bool BCoreApplicationPrivate::getIsPortable() const
+{
+    QString ap = getAppPath();
+    QString an = getAppName();
+    if ( ap.isEmpty() || an.isEmpty() )
+        return false;
+    bool b = QFileInfo( confFileName(ap, an) ).isFile();
+    if (b)
+    {
+        userPrefix = ap;
+        sharedPrefix = ap;
+#if defined(Q_OS_MAC)
+        bundlePrefix = ap;
+#endif
+    }
+    return b;
 }
 
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name) const
@@ -271,12 +340,12 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
     switch (type)
     {
     case BCoreApplication::UserResources :
-        return userPrefix;
+        return getUserPrefix();
     case BCoreApplication::SharedResources :
-        return sharedPrefix;
+        return getSharedPrefix();
 #if defined(Q_OS_MAC)
     case BCoreApplication::BundleResources :
-        return bundlePrefix;
+        return getBundlePrefix();
 #endif
     case BCoreApplication::BuiltinResources:
         return ":";
@@ -446,7 +515,7 @@ QSettings *BCoreApplication::createAppSettingsInstance()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return 0;
-    return BCoreApplicationPrivate::createSettingsInstance(ds_func()->appName);
+    return BCoreApplicationPrivate::createSettingsInstance( ds_func()->getAppName() );
 }
 
 void BCoreApplication::registerPluginWrapper(BPluginWrapper *plugin)

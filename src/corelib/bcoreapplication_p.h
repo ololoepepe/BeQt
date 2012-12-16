@@ -67,6 +67,15 @@ public:
     static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault = false);
 public:
     void init();
+    QString getAppName() const;
+    QString getOrgName() const;
+    QString getAppPath() const;
+    QString getUserPrefix() const;
+    QString getSharedPrefix() const;
+#if defined(Q_OS_MAC)
+    QString getBundlePrefix() const;
+#endif
+    bool getIsPortable() const;
     QString confFileName(const QString &path, const QString &name) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);
@@ -77,16 +86,14 @@ public:
     void loadSettings();
     void saveSettings();
 public:
-    bool initialized;
-    QString appName;
-    QString orgName;
-    QString appPath;
-    QString userPrefix;
-    QString sharedPrefix;
+    mutable QString appName;
+    mutable QString orgName;
+    mutable QString appPath;
+    mutable QString userPrefix;
+    mutable QString sharedPrefix;
 #if defined(Q_OS_MAC)
-    QString bundlePrefix;
+    mutable QString bundlePrefix;
 #endif
-    bool portable;
     QLocale locale;
     QStringList deactivatedPlugins;
     QMap<QString, BTranslator *> translators;
