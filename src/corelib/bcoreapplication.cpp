@@ -317,8 +317,19 @@ bool BCoreApplicationPrivate::getIsPortable() const
     {
         userPrefix = ap;
         sharedPrefix = ap;
-#if defined(Q_OS_MAC)
+    #if defined(Q_OS_MAC)
         bundlePrefix = ap;
+    #endif
+    }
+    else
+    {
+        if (ap == userPrefix)
+            userPrefix.clear();
+        if (ap == sharedPrefix)
+            sharedPrefix.clear();
+#if defined(Q_OS_MAC)
+        if (ap == bundlePrefix)
+            bundlePrefix.clear();
 #endif
     }
     return b;
