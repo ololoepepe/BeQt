@@ -5,6 +5,7 @@ class BAboutDialogPrivate;
 
 class QWidget;
 class QIcon;
+class QSize;
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -31,6 +32,9 @@ public:
     ~BAboutDialog();
 protected:
     explicit BAboutDialog(BAboutDialogPrivate &d, QWidget *parent = 0);
+public:
+    static void setDefaultMinimumSize(const QSize &sz);
+    static void setDefaultMinimumSize(int width, int height);
 public:
     void setAppName(const QString &name);
     void setAppVersion(const QString &version);

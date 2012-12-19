@@ -7,12 +7,13 @@
     * Revise application architecture approach (see README.txt)
     * Revise application resources system (see README.txt)
     * Fully revise the text editor and move it to a dedicated module
-    * Improve building, installing and deploying system ot the libraries (see README.txt)
+    * Improve building, installing and deploying system of the libraries
     * Add backup icons of the svgz format (see README.txt)
     * Add application examples
+    * Change the license back to GNU LGPL
 
 === BeQt 1.0.1 (20 October 2012) ===
-    * Make usage of <Backspace> possible when <Shift> key is pressed (BTextEditorDocument)
+    * Make usage of <Backspace> possible when <Shift> key is pressed
 
 === BeQt 1.0.0 (04 October 2012) ===
     * Implement new BCore interface

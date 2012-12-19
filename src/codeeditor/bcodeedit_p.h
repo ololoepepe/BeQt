@@ -4,8 +4,10 @@
 class BCodeEditPrivate;
 class BPlainTextEditExtendedPrivate;
 class BCodeEditParseTask;
+class BLineNumberWidget;
+class BCodeEdit;
 
-class QVBoxLayout;
+class QHBoxLayout;
 class QEvent;
 class QKeyEvent;
 class QMouseEvent;
@@ -19,6 +21,9 @@ class QBrush;
 class QTextCursor;
 class QPaintEvent;
 class QThreadPool;
+class QResizeEvent;
+class QRect;
+class QSize;
 
 #include "bcodeedit.h"
 
@@ -104,8 +109,31 @@ public:
     QVector<SelectionRange> selectionRanges() const;
 protected:
     void paintEvent(QPaintEvent *e);
+    void resizeEvent(QResizeEvent *e);
 private:
     Q_DISABLE_COPY(BPlainTextEditExtended)
+    friend class BLineNumberWidget;
+    friend class BCodeEdit;
+};
+
+/*============================================================================
+================================ BLineNumberWidget ===========================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BLineNumberWidget : public QWidget
+{
+    Q_OBJECT
+public:
+    explicit BLineNumberWidget(BPlainTextEditExtended *ptedt);
+    ~BLineNumberWidget();
+public:
+    QSize sizeHint() const;
+protected:
+    void paintEvent(QPaintEvent *e);
+public:
+    BPlainTextEditExtended *const Ptedt;
+private:
+    Q_DISABLE_COPY(BLineNumberWidget)
 };
 
 /*============================================================================
@@ -125,13 +153,18 @@ public:
 public:
     void init();
     void emulateShiftPress();
+    void lineNumberWidgetPaintEvent(QPaintEvent *e);
+    int lineNumberWidgetWidth() const;
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
 public slots:
     void selectionChanged();
+    void updateLineNumberWidgetWidth(int newBlockCount);
+    void updateLineNumberWidget(const QRect &rect, int dy);
 public:
     bool blockMode;
     bool hasSelection;
     QVector<BPlainTextEditExtended::SelectionRange> selectionRanges;
+    BLineNumberWidget *lnwgt;
 private:
     Q_DISABLE_COPY(BPlainTextEditExtendedPrivate)
 };
@@ -247,7 +280,7 @@ public:
     bool buisy;
     BCodeEditParseTask *parceTask;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
-    QVBoxLayout *vlt;
+    QHBoxLayout *hlt;
       BPlainTextEditExtended *ptedt;
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)

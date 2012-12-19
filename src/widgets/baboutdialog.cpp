@@ -33,6 +33,7 @@ class QWidget;
 #include <QToolButton>
 #include <QTextOption>
 #include <QDialogButtonBox>
+#include <QSize>
 
 #include <QDebug>
 
@@ -128,8 +129,7 @@ void BAboutDialogPrivate::init()
     aboutBeqtDlg = 0;
     //
     B_Q(BAboutDialog);
-    q->setMinimumHeight(400);
-    q->setMinimumWidth(600);
+    q->setMinimumSize(defMinSize);
     vlt = new QVBoxLayout(q);
       hltHeader = new QHBoxLayout;
         lblIcon = new QLabel(q);
@@ -284,6 +284,7 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const QString &text, bool html)
     if (!tab)
     {
         tab = new QTextBrowser;
+        tab->setLineWrapMode(QTextBrowser::NoWrap);
         tab->setOpenExternalLinks(true);
         twgt->insertTab( tabIndex(t), tab, tabTitle(t) );
     }
@@ -460,6 +461,10 @@ void BAboutDialogPrivate::tbtnAboutBeqtClicked()
     }
 }
 
+/*============================== Static public variables ===================*/
+
+QSize BAboutDialogPrivate::defMinSize = QSize(600, 400);
+
 /*============================================================================
 ================================ BAboutDialog ================================
 ============================================================================*/
@@ -491,6 +496,18 @@ BAboutDialog::BAboutDialog(BAboutDialogPrivate &d, QWidget *parent) :
     QDialog(parent), BBase(d)
 {
     d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
+
+void BAboutDialog::setDefaultMinimumSize(const QSize &sz)
+{
+    BAboutDialogPrivate::defMinSize = sz;
+}
+
+void BAboutDialog::setDefaultMinimumSize(int width, int height)
+{
+    setDefaultMinimumSize( QSize(width, height) );
 }
 
 /*============================== Public methods ============================*/

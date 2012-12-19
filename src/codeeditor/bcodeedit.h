@@ -76,6 +76,7 @@ public:
     void setHighlighter(QSyntaxHighlighter *hl);
     void setRecognizedBrackets(const QList<BracketPair> &list);
     void setBracketHighlightingEnabled(bool enabled);
+    void setLineNumberWidgetVisible(bool b);
     bool isReadOnly() const;
     bool isModified() const;
     bool hasSelection() const;
@@ -91,6 +92,7 @@ public:
     QSyntaxHighlighter *highlighter() const;
     QList<BracketPair> recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
+    bool isLineNumberWidgetVisible() const;
     QPoint cursorPosition() const;
     QString text() const;
     QString selectedText() const;

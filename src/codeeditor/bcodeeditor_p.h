@@ -267,6 +267,7 @@ public:
     int editLineLength;
     BCodeEdit::TabWidth editTabWidth;
     bool bracketsHighlighting;
+    bool lineNumberWidget;
     QTextCodec *defaultCodec;
     QString defaultFN;
     BAbstractDocumentDriver *driver;

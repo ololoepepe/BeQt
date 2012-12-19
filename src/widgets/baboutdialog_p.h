@@ -12,6 +12,7 @@ class QTabWidget;
 class QTextBrowser;
 class QToolButton;
 class QDialogButtonBox;
+class QSize;
 
 #include "baboutdialog.h"
 
@@ -85,6 +86,8 @@ public slots:
    void resetTranslations();
    void resetThanksTo();
    void tbtnAboutBeqtClicked();
+public:
+   static QSize defMinSize;
 public:
     QString appName;
     QString appVersion;

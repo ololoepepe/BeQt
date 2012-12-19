@@ -39,6 +39,7 @@ int main(int argc, char **argv)
     QApplication::setApplicationVersion("0.1.0pa1");
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
+    BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
     BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012");
     BApplication::aboutDialogInstance()->setWebsite("https://github.com/the-dark-angel");

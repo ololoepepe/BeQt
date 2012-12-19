@@ -9,7 +9,7 @@
 
 #include <QObject>
 #include <QWidget>
-#include <QVBoxLayout>
+#include <QHBoxLayout>
 #include <QEvent>
 #include <QString>
 #include <QTextCursor>
@@ -55,6 +55,8 @@
 #include <QVector>
 #include <QThreadPool>
 #include <QRunnable>
+#include <QResizeEvent>
+#include <QSize>
 
 #include <QDebug>
 
@@ -108,6 +110,37 @@ void BCodeEditClipboardNotifier::dataChanged()
 BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
 
 /*============================================================================
+================================ BLineNumberWidget ===========================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BLineNumberWidget::BLineNumberWidget(BPlainTextEditExtended *ptedt) :
+    QWidget(ptedt), Ptedt(ptedt)
+{
+    //
+}
+
+BLineNumberWidget::~BLineNumberWidget()
+{
+    //
+}
+
+/*============================== Public methods ============================*/
+
+QSize BLineNumberWidget::sizeHint() const
+{
+    return QSize(Ptedt->d_func()->lineNumberWidgetWidth(), 0);
+}
+
+/*============================== Protected methods =========================*/
+
+void BLineNumberWidget::paintEvent(QPaintEvent *e)
+{
+    Ptedt->d_func()->lineNumberWidgetPaintEvent(e);
+}
+
+/*============================================================================
 ================================ BPlainTextEditExtendedPrivate ===============
 ============================================================================*/
 
@@ -153,15 +186,60 @@ void BPlainTextEditExtendedPrivate::fillBackground(QPainter *painter, const QRec
 
 void BPlainTextEditExtendedPrivate::init()
 {
+    B_Q(BPlainTextEditExtended);
     blockMode = false;
     hasSelection = false;
-    connect( q_func(), SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
+    lnwgt = new BLineNumberWidget(q);
+    connect( q, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
+    connect( q, SIGNAL( blockCountChanged(int) ), this, SLOT( updateLineNumberWidgetWidth(int) ) );
+    connect( q, SIGNAL( updateRequest(QRect, int) ), this, SLOT( updateLineNumberWidget(QRect, int) ) );
+    updateLineNumberWidgetWidth(0);
 }
 
 void BPlainTextEditExtendedPrivate::emulateShiftPress()
 {
     QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
     QApplication::sendEvent(q_func(), &e);
+}
+
+void BPlainTextEditExtendedPrivate::lineNumberWidgetPaintEvent(QPaintEvent *e)
+{
+    if ( !lnwgt->isVisible() )
+        return;
+    QPainter painter(lnwgt);
+    painter.fillRect(e->rect(), Qt::lightGray);
+    QTextBlock block = q_func()->firstVisibleBlock();
+    int blockNumber = block.blockNumber();
+    int top = (int) q_func()->blockBoundingGeometry(block).translated( q_func()->contentOffset() ).top();
+    int bottom = top + (int) q_func()->blockBoundingRect(block).height();
+    while ( block.isValid() && top <= e->rect().bottom() )
+    {
+        if ( block.isVisible() && bottom >= e->rect().top() )
+        {
+            QString number = QString::number(blockNumber + 1);
+            painter.setPen(Qt::black);
+            painter.drawText(0, top, lnwgt->width(), q_func()->fontMetrics().height(), Qt::AlignRight, number);
+        }
+        block = block.next();
+        top = bottom;
+        bottom = top + (int) q_func()->blockBoundingRect(block).height();
+        ++blockNumber;
+    }
+}
+
+int BPlainTextEditExtendedPrivate::lineNumberWidgetWidth() const
+{
+    if ( !lnwgt->isVisible() )
+        return 0;
+    int digits = 1;
+    int max = qMax( 1, q_func()->blockCount() );
+    while (max >= 10)
+    {
+        max /= 10;
+        ++digits;
+    }
+    int space = 3 + q_func()->fontMetrics().width( QLatin1Char('9') ) * digits;
+    return space;
 }
 
 QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPaintContext() const
@@ -218,6 +296,22 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     }
     //Workaround to update the selection
     emulateShiftPress();
+}
+
+void BPlainTextEditExtendedPrivate::updateLineNumberWidgetWidth(int newBlockCount)
+{
+    q_func()->setViewportMargins(lineNumberWidgetWidth(), 0, 0, 0);
+}
+
+void BPlainTextEditExtendedPrivate::updateLineNumberWidget(const QRect &rect, int dy)
+{
+    if (dy)
+        lnwgt->scroll(0, dy);
+    else
+        lnwgt->update( 0, rect.y(), lnwgt->width(), rect.height() );
+
+    if ( rect.contains( q_func()->viewport()->rect() ) )
+        updateLineNumberWidgetWidth(0);
 }
 
 /*============================================================================
@@ -379,6 +473,16 @@ void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
          ( centerOnScroll() || verticalScrollBar()->maximum() == verticalScrollBar()->minimum() ) )
         painter.fillRect( QRect( QPoint( (int) er.left(), (int) offset.y() ),
                                  er.bottomRight() ), palette().background() );
+}
+
+void BPlainTextEditExtended::resizeEvent(QResizeEvent *e)
+{
+    BPlainTextEdit::resizeEvent(e);
+    if ( d_func()->lnwgt->isVisible() )
+    {
+        QRect cr = contentsRect();
+        d_func()->lnwgt->setGeometry( QRect( cr.left(), cr.top(), d_func()->lineNumberWidgetWidth(), cr.height() ) );
+    }
 }
 
 /*============================================================================
@@ -634,8 +738,8 @@ void BCodeEditPrivate::init()
     highlighter = 0;
     bracketsHighlighting = true;
     B_Q(BCodeEdit);
-    vlt = new QVBoxLayout(q);
-      vlt->setContentsMargins(0, 0, 0, 0);
+    hlt = new QHBoxLayout(q);
+      hlt->setContentsMargins(0, 0, 0, 0);
       ptedt = new BPlainTextEditExtended(q);
         ptedt->setLineWrapMode(QPlainTextEdit::NoWrap);
         ptedt->setWordWrapMode(QTextOption::NoWrap);
@@ -654,7 +758,7 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
         //
-      vlt->addWidget(ptedt);
+      hlt->addWidget(ptedt);
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -1947,6 +2051,12 @@ void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
     d->highlightBrackets();
 }
 
+void BCodeEdit::setLineNumberWidgetVisible(bool b)
+{
+    d_func()->ptedt->d_func()->lnwgt->setVisible(b);
+    update();
+}
+
 bool BCodeEdit::isReadOnly() const
 {
     return d_func()->ptedt->isReadOnly();
@@ -2024,6 +2134,11 @@ QList<BCodeEdit::BracketPair> BCodeEdit::recognizedBrackets() const
 bool BCodeEdit::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
+}
+
+bool BCodeEdit::isLineNumberWidgetVisible() const
+{
+    return d_func()->ptedt->d_func()->lnwgt->isVisible();
 }
 
 QPoint BCodeEdit::cursorPosition() const
