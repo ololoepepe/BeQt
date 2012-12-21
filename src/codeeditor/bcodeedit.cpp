@@ -204,33 +204,38 @@ void BPlainTextEditExtendedPrivate::emulateShiftPress()
 
 void BPlainTextEditExtendedPrivate::lineNumberWidgetPaintEvent(QPaintEvent *e)
 {
-    if ( !lnwgt->isVisible() )
-        return;
+    B_Q(BPlainTextEditExtended);
     QPainter painter(lnwgt);
     painter.fillRect(e->rect(), Qt::lightGray);
-    QTextBlock block = q_func()->firstVisibleBlock();
+    QTextBlock block = q->textCursor().block();
+    if ( block.isVisible() )
+    {
+        QRect r = e->rect();
+        r.setTop( (int) q->blockBoundingGeometry(block).translated( q->contentOffset() ).top() );
+        r.setBottom( r.top() + (int) q->blockBoundingRect(block).height() );
+        painter.fillRect(r, Qt::yellow);
+    }
+    block = q->firstVisibleBlock();
     int blockNumber = block.blockNumber();
-    int top = (int) q_func()->blockBoundingGeometry(block).translated( q_func()->contentOffset() ).top();
-    int bottom = top + (int) q_func()->blockBoundingRect(block).height();
+    int top = (int) q->blockBoundingGeometry(block).translated( q->contentOffset() ).top();
+    int bottom = top + (int) q->blockBoundingRect(block).height();
     while ( block.isValid() && top <= e->rect().bottom() )
     {
         if ( block.isVisible() && bottom >= e->rect().top() )
         {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
-            painter.drawText(0, top, lnwgt->width(), q_func()->fontMetrics().height(), Qt::AlignRight, number);
+            painter.drawText(0, top, lnwgt->width(), q->fontMetrics().height(), Qt::AlignRight, number);
         }
         block = block.next();
         top = bottom;
-        bottom = top + (int) q_func()->blockBoundingRect(block).height();
+        bottom = top + (int) q->blockBoundingRect(block).height();
         ++blockNumber;
     }
 }
 
 int BPlainTextEditExtendedPrivate::lineNumberWidgetWidth() const
 {
-    if ( !lnwgt->isVisible() )
-        return 0;
     int digits = 1;
     int max = qMax( 1, q_func()->blockCount() );
     while (max >= 10)
@@ -309,7 +314,6 @@ void BPlainTextEditExtendedPrivate::updateLineNumberWidget(const QRect &rect, in
         lnwgt->scroll(0, dy);
     else
         lnwgt->update( 0, rect.y(), lnwgt->width(), rect.height() );
-
     if ( rect.contains( q_func()->viewport()->rect() ) )
         updateLineNumberWidgetWidth(0);
 }
@@ -478,11 +482,8 @@ void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
 void BPlainTextEditExtended::resizeEvent(QResizeEvent *e)
 {
     BPlainTextEdit::resizeEvent(e);
-    if ( d_func()->lnwgt->isVisible() )
-    {
-        QRect cr = contentsRect();
-        d_func()->lnwgt->setGeometry( QRect( cr.left(), cr.top(), d_func()->lineNumberWidgetWidth(), cr.height() ) );
-    }
+    QRect cr = contentsRect();
+    d_func()->lnwgt->setGeometry( QRect( cr.left(), cr.top(), d_func()->lineNumberWidgetWidth(), cr.height() ) );
 }
 
 /*============================================================================
@@ -2051,12 +2052,6 @@ void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
     d->highlightBrackets();
 }
 
-void BCodeEdit::setLineNumberWidgetVisible(bool b)
-{
-    d_func()->ptedt->d_func()->lnwgt->setVisible(b);
-    update();
-}
-
 bool BCodeEdit::isReadOnly() const
 {
     return d_func()->ptedt->isReadOnly();
@@ -2134,11 +2129,6 @@ QList<BCodeEdit::BracketPair> BCodeEdit::recognizedBrackets() const
 bool BCodeEdit::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
-}
-
-bool BCodeEdit::isLineNumberWidgetVisible() const
-{
-    return d_func()->ptedt->d_func()->lnwgt->isVisible();
 }
 
 QPoint BCodeEdit::cursorPosition() const

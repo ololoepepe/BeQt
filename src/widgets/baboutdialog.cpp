@@ -185,6 +185,7 @@ void BAboutDialogPrivate::init()
 void BAboutDialogPrivate::initAboutBeqtDialog()
 {
     aboutBeqtDlg = new BAboutDialog( 0, "BeQt", bVersion() );
+    aboutBeqtDlg->setMinimumSize(800, 400);
     aboutBeqtDlg->setWindowModality(Qt::NonModal);
     aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012");
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");

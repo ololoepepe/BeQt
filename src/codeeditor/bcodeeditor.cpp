@@ -483,7 +483,6 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BCodeEdit::TabWidth4;
     bracketsHighlighting = true;
-    lineNumberWidget = true;
     driver = 0;
     q->setDriver(new BLocalDocumentDriver);
     defaultFileType = BAbstractFileType::defaultFileType();
@@ -578,7 +577,6 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     doc->setEditLineLength(editLineLength);
     doc->setEditTabWidth(editTabWidth);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
-    doc->setLineNumberWidgetVisible(lineNumberWidget);
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
     //
@@ -1443,16 +1441,6 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
         doc->setBracketHighlightingEnabled(enabled);
 }
 
-void BCodeEditor::setLineNumberWidgetVisible(bool b)
-{
-    B_D(BCodeEditor);
-    if (b == d->lineNumberWidget)
-        return;
-    d->lineNumberWidget = b;
-    foreach ( BCodeEditorDocument *doc, documents() )
-        doc->setLineNumberWidgetVisible(b);
-}
-
 void BCodeEditor::setDefaultCodec(QTextCodec *codec)
 {
     if ( !codec || !supportsCodec(codec) )
@@ -1641,11 +1629,6 @@ BCodeEdit::TabWidth BCodeEditor::editTabWidth() const
 bool BCodeEditor::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
-}
-
-bool BCodeEditor::isLineNumberWidgetVisible() const
-{
-    return d_func()->lineNumberWidget;
 }
 
 QTextCodec *BCodeEditor::defaultCodec() const

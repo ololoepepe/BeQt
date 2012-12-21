@@ -72,7 +72,6 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
-    void setLineNumberWidgetVisible(bool b);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
     void setDefaultFileName(const QString &fileName);
@@ -94,7 +93,6 @@ public:
     int editLineLength() const;
     BCodeEdit::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
-    bool isLineNumberWidgetVisible() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;
     QString defaultFileName() const;
