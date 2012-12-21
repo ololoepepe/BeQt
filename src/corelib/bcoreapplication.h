@@ -19,8 +19,10 @@ class QSettings;
 #include <QList>
 #include <QString>
 #include <QStringList>
+#include <QVariantMap>
 
 #define bApp BCoreApplication::instance()
+#define bSettings BCoreApplication::globalSettings()
 
 /*============================================================================
 ================================ BCoreApplication ============================
@@ -92,6 +94,7 @@ public:
     static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
+    static QVariantMap &globalSettings();
     static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);

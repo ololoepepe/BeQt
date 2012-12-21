@@ -21,6 +21,7 @@ class QEvent;
 #include <QList>
 #include <QMap>
 #include <QStringList>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BCoreApplicationEventFilter =================
@@ -85,6 +86,8 @@ public:
     void removeTranslator(BTranslator *translator, bool blockLC);
     void loadSettings();
     void saveSettings();
+public:
+    static QVariantMap globalSettings;
 public:
     mutable QString appName;
     mutable QString orgName;
