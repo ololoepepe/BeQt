@@ -120,9 +120,10 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
     QString bfn = QFileInfo(name).baseName();
     QStringList suffixes;
     suffixes << QFileInfo(name).suffix();
-    if ( QImageReader::supportedImageFormats().contains( QByteArray("svg") ) )
+    foreach ( const QByteArray &ba, QImageReader::supportedImageFormats() )
+        suffixes << QString(ba);
+    if ( suffixes.contains("svg") )
         suffixes << "svgz";
-    suffixes << "png";
     foreach (const QString &suff, suffixes)
     {
         if ( suff.isEmpty() )
@@ -264,10 +265,17 @@ QIcon BApplication::icon(const QString &name, const QString &theme)
         return ds->iconCache.value(name);
     QStringList pplist = QIcon::themeSearchPaths();
     QStringList plist = pplist;
+    QIcon icnfb;
+    if ( icnfb.isNull() )
+        icnfb.addFile( BApplicationPrivate::findImage("icons", name) );
+    if ( icnfb.isNull() )
+        icnfb.addFile( BApplicationPrivate::findImage("beqt/icons", name) );
+    if ( icnfb.isNull() )
+        icnfb = beqtIcon(name);
     foreach ( const QString &path, locations("icons") )
         plist.insert(plist.size() - 1, path);
     QIcon::setThemeSearchPaths(plist);
-    QIcon icn = QIcon::fromTheme( !theme.isEmpty() ? theme : QIcon::themeName(), beqtIcon(name) );
+    QIcon icn = QIcon::fromTheme(!theme.isEmpty() ? theme : QIcon::themeName(), icnfb);
     QIcon::setThemeSearchPaths(pplist);
     if ( ds->iconCaching && !icn.isNull() )
         ds->iconCache.insert(name, icn);
