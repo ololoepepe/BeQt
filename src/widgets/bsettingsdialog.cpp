@@ -45,8 +45,6 @@ void BSettingsDialogPrivate::init()
 {
     B_Q(BSettingsDialog);
     q->setWindowTitle( tr("Settings", "windowTitle") );
-    q->setMinimumHeight(120);
-    q->setMinimumWidth(240);
     vlt = new QVBoxLayout(q);
     if ( !TabMap.isEmpty() )
     {
