@@ -4,67 +4,67 @@
 <context>
     <name>BAboutDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="213"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="214"/>
         <source>About</source>
         <comment>windowTitle</comment>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="224"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="225"/>
         <source>Website</source>
         <comment>lbl text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="219"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="220"/>
         <source>Copyright</source>
         <comment>lbl text</comment>
         <translation>Авторские права</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="233"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="234"/>
         <source>Description</source>
         <comment>twgt tabText</comment>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="235"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="236"/>
         <source>Change log</source>
         <comment>twgt tabText</comment>
         <translation>История изменений</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="237"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="238"/>
         <source>Authors</source>
         <comment>twgt tabText</comment>
         <translation>Авторы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="239"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="240"/>
         <source>Translators</source>
         <comment>twgt tabText</comment>
         <translation>Переводчики</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="241"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="242"/>
         <source>Thanks to</source>
         <comment>twgt tabText</comment>
         <translation>Благодарности</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="243"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="244"/>
         <source>License</source>
         <comment>twgt tabText</comment>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="427"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="429"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="428"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="430"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>
@@ -73,19 +73,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="434"/>
+        <location filename="../src/widgets/bapplication.cpp" line="442"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="436"/>
+        <location filename="../src/widgets/bapplication.cpp" line="444"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="437"/>
+        <location filename="../src/widgets/bapplication.cpp" line="445"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -232,49 +232,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="913"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1018"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1711"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1816"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1717"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1822"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1724"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1829"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1730"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1835"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1736"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1841"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1742"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1847"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1749"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1854"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -513,25 +513,25 @@
 <context>
     <name>BCoreApplicationPrivate</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="173"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="169"/>
         <source>Name:</source>
         <comment>info</comment>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="175"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="171"/>
         <source>Role:</source>
         <comment>info</comment>
         <translation type="unfinished">Роль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="177"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="173"/>
         <source>Website:</source>
         <comment>info</comment>
         <translation>Веб-сайт:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="179"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="175"/>
         <source>E-mail:</source>
         <comment>info</comment>
         <translation>Электронная почта:</translation>
@@ -1219,15 +1219,15 @@
     </message>
 </context>
 <context>
-    <name>BSettingsDialog</name>
+    <name>BSettingsDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="75"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="46"/>
         <source>Settings</source>
         <comment>windowTitle</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="129"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="100"/>
         <source>invalid</source>
         <comment>windowTitle</comment>
         <translation>недействительно</translation>

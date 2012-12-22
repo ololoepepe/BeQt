@@ -16,3 +16,10 @@ BAbstractSettingsTab::~BAbstractSettingsTab()
 {
     //
 }
+
+/*============================== Public methods ============================*/
+
+bool BAbstractSettingsTab::preconfirm() const
+{
+    return true;
+}

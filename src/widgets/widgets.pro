@@ -31,6 +31,7 @@ HEADERS += \
     bpluginssettingstab.h \
     bpluginssettingstab_p.h \
     bsettingsdialog.h \
+    bsettingsdialog_p.h \
     bterminalwidget.h \
     bterminalwidget_p.h
 

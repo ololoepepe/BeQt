@@ -24,6 +24,7 @@ public:
     virtual QString title() const = 0;
     virtual QIcon icon() const = 0;
     virtual QVariantMap valueMap() const = 0;
+    virtual bool preconfirm() const;
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)
 };

@@ -1,4 +1,5 @@
 #include "bsettingsdialog.h"
+#include "bsettingsdialog_p.h"
 #include "babstractsettingstab.h"
 
 #include <BeQtCore/private/bbase_p.h>
@@ -18,36 +19,6 @@
 #include <QSplitter>
 #include <QDialogButtonBox>
 #include <QPushButton>
-
-/*============================================================================
-================================ BSettingsDialogPrivate ======================
-============================================================================*/
-
-class BSettingsDialogPrivate : public BBasePrivate
-{
-    Q_DECLARE_TR_FUNCTIONS(BSettingsDialog)
-    B_DECLARE_PUBLIC(BSettingsDialog)
-public:
-    BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
-                           BSettingsDialog::Navigation navigation);
-    ~BSettingsDialogPrivate();
-public:
-    void init();
-public:
-    const BSettingsDialog::SettingsTabMap TabMap;
-    const BSettingsDialog::Navigation Navigation;
-    //
-    QVBoxLayout *vlt;
-      QSplitter *hspltr;
-        QListWidget *lstwgt;
-        QStackedWidget *stkdwgt;
-      QTabWidget *twgt;
-      QDialogButtonBox *dlgbbox;
-        //Ok
-        //Cancel
-private:
-    Q_DISABLE_COPY(BSettingsDialogPrivate)
-};
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -131,9 +102,19 @@ void BSettingsDialogPrivate::init()
     }
     dlgbbox = new QDialogButtonBox(QDialogButtonBox::Ok | QDialogButtonBox::Cancel, Qt::Horizontal, q);
       dlgbbox->button(QDialogButtonBox::Ok)->setDefault(true);
-      connect( dlgbbox, SIGNAL( accepted() ), q, SLOT( accept() ) );
+      connect( dlgbbox, SIGNAL( accepted() ), this, SLOT( accepted() ) );
       connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
     vlt->addWidget(dlgbbox);
+}
+
+/*============================== Public slots ==============================*/
+
+void BSettingsDialogPrivate::accepted()
+{
+    foreach ( BAbstractSettingsTab *t, TabMap.values() )
+        if ( !t->preconfirm() )
+            return;
+    q_func()->accept();
 }
 
 /*============================================================================
