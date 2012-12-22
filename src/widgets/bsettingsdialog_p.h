@@ -7,6 +7,7 @@ class QDialogButtonBox;
 class QSplitter;
 class QListWidget;
 class QStackedWidget;
+class QCheckBox;
 
 #include "bsettingsdialog.h"
 
@@ -37,6 +38,7 @@ public:
     const BSettingsDialog::Navigation Navigation;
     //
     QVBoxLayout *vlt;
+      QCheckBox *cboxAdvancedMode;
       QSplitter *hspltr;
         QListWidget *lstwgt;
         QStackedWidget *stkdwgt;
@@ -46,6 +48,7 @@ public:
         //Cancel
 public slots:
     void accepted();
+    void cboxAdvancedModeStateChanged(int state);
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };

@@ -19,6 +19,7 @@
 #include <QSplitter>
 #include <QDialogButtonBox>
 #include <QPushButton>
+#include <QCheckBox>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -47,6 +48,22 @@ void BSettingsDialogPrivate::init()
     q->setMinimumHeight(120);
     q->setMinimumWidth(240);
     vlt = new QVBoxLayout(q);
+    if ( !TabMap.isEmpty() )
+    {
+        cboxAdvancedMode = new QCheckBox(q);
+        cboxAdvancedMode->setText( tr("Show additional settings", "cbox text") );
+        connect( cboxAdvancedMode, SIGNAL( stateChanged(int) ), this, SLOT( cboxAdvancedModeStateChanged(int) ) );
+        vlt->addWidget(cboxAdvancedMode);
+        cboxAdvancedMode->setVisible(false);
+        foreach (BAbstractSettingsTab *t, TabMap)
+        {
+            if ( t->hasAdvancedMode() )
+            {
+                cboxAdvancedMode->setVisible(true);
+                break;
+            }
+        }
+    }
     if (TabMap.size() > 1)
     {
         if (BSettingsDialog::ListNavigation == Navigation)
@@ -92,6 +109,7 @@ void BSettingsDialogPrivate::init()
     }
     else
     {
+        cboxAdvancedMode = 0;
         hspltr = 0;
         lstwgt = 0;
         stkdwgt = 0;
@@ -115,6 +133,13 @@ void BSettingsDialogPrivate::accepted()
         if ( !t->preconfirm() )
             return;
     q_func()->accept();
+}
+
+void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
+{
+    bool b = (Qt::Checked == state);
+    foreach (BAbstractSettingsTab *t, TabMap)
+        t->setAdvancedMode(b);
 }
 
 /*============================================================================

@@ -25,6 +25,8 @@ public:
     virtual QIcon icon() const = 0;
     virtual QVariantMap valueMap() const = 0;
     virtual bool preconfirm() const;
+    virtual bool hasAdvancedMode() const;
+    virtual void setAdvancedMode(bool enabled);
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)
 };

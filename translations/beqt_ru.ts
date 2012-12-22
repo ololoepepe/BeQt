@@ -1221,13 +1221,19 @@
 <context>
     <name>BSettingsDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="46"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="47"/>
         <source>Settings</source>
         <comment>windowTitle</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="100"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="54"/>
+        <source>Show additional settings</source>
+        <comment>cbox text</comment>
+        <translation>Показать дополнительные настройки</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="118"/>
         <source>invalid</source>
         <comment>windowTitle</comment>
         <translation>недействительно</translation>
