@@ -184,14 +184,14 @@ bool createUserLocation(BCoreApplication::Location loc)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
         return false;
-    return mkpath( BCoreApplicationPrivate::instance()->userPrefix + "/" + BCoreApplicationPrivate::subdir(loc) );
+    return mkpath( BCoreApplicationPrivate::instance()->getUserPrefix() + "/" + BCoreApplicationPrivate::subdir(loc) );
 }
 
 bool createUserLocation(const QString &subdir)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
         return false;
-    return mkpath(BCoreApplicationPrivate::instance()->userPrefix + "/" + subdir);
+    return mkpath(BCoreApplicationPrivate::instance()->getUserPrefix() + "/" + subdir);
 }
 
 bool createUserLocations(const QStringList &subdirs)
