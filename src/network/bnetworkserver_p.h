@@ -81,8 +81,8 @@ public:
     ~BNetworkServerPrivate();
 public:
     void init();
-    BNetworkConnection *createConnection(BGenericSocket *socket) const;
-    BGenericSocket *createSocket() const;
+    BNetworkConnection *createConnection(BGenericSocket *socket);
+    BGenericSocket *createSocket();
     BNetworkServerThread *getOptimalThread();
     int connectionCount() const;
     void emitConnectionAdded(BNetworkConnection *connection);

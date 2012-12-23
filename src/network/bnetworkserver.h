@@ -42,8 +42,8 @@ public:
     int currentThreadCount() const;
     QList<BNetworkConnection *> connections() const;
 protected:
-    virtual BNetworkConnection *createConnection(BGenericSocket *socket) const = 0;
-    virtual BGenericSocket *createSocket() const;
+    virtual BNetworkConnection *createConnection(BGenericSocket *socket) = 0;
+    virtual BGenericSocket *createSocket();
 signals:
     void connectionAdded(BNetworkConnection *connection);
     void connectionAboutToBeRemoved(BNetworkConnection *connection);

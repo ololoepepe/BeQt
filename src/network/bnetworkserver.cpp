@@ -132,12 +132,12 @@ void BNetworkServerPrivate::init()
     maxThreadCount = 0;
 }
 
-BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket) const
+BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket)
 {
     return q_func()->createConnection(socket);
 }
 
-BGenericSocket *BNetworkServerPrivate::createSocket() const
+BGenericSocket *BNetworkServerPrivate::createSocket()
 {
     return q_func()->createSocket();
 }
@@ -331,7 +331,7 @@ QList<BNetworkConnection *> BNetworkServer::connections() const
 
 /*============================== Protected methods =========================*/
 
-BGenericSocket *BNetworkServer::createSocket() const
+BGenericSocket *BNetworkServer::createSocket()
 {
     return new BGenericSocket(BGenericSocket::TcpSocket);
 }

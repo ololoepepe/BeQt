@@ -143,6 +143,8 @@ BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *pa
     QObject(parent), BBase(d)
 {
     d_func()->init();
+    BTerminalIOHandlerPrivate::testUnique();
+    _m_self = this;
 }
 
 /*============================== Static public methods =====================*/

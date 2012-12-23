@@ -5,6 +5,7 @@ class BNetworkConnectionPrivate;
 class BNetworkOperationMetaData;
 class BNetworkOperation;
 class BSocketWrapper;
+class BNetworkServer;
 
 class QString;
 class QByteArray;
@@ -35,7 +36,7 @@ class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
 public:
     typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
 public:
-    explicit BNetworkConnectionPrivate(BNetworkConnection *q);
+    explicit BNetworkConnectionPrivate(BNetworkConnection *q, BNetworkServer *server = 0);
     ~BNetworkConnectionPrivate();
 public:
     void init();
@@ -53,6 +54,7 @@ public slots:
     void operationDestroyed(QObject *obj);
 public:
     const QUuid UniqueId;
+    BNetworkServer *const Server;
 public:
     QPointer<BGenericSocket> socket;
     QPointer<BSocketWrapper> socketWrapper;

@@ -3,6 +3,7 @@
 
 class BNetworkConnectionPrivate;
 class BNetworkOperation;
+class BNetworkServer;
 
 class QString;
 class QUuid;
@@ -27,6 +28,7 @@ class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
     B_DECLARE_PRIVATE(BNetworkConnection)
 public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
+    BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
     explicit BNetworkConnection(BGenericSocket::SocketType type, QObject *parent = 0);
     ~BNetworkConnection();
 protected:
@@ -45,6 +47,7 @@ public:
     bool isValid() const;
     bool isConnected() const;
     const QUuid uniqueId() const;
+    BNetworkServer *server() const;
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
     int compressionLevel() const;

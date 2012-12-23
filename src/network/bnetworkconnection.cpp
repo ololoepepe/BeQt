@@ -22,8 +22,8 @@
 
 /*============================== Public constructors =======================*/
 
-BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q) :
-    BBasePrivate(q), UniqueId( QUuid::createUuid() )
+BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BNetworkServer *server) :
+    BBasePrivate(q), UniqueId( QUuid::createUuid() ), Server(server)
 {
     //
 }
@@ -241,6 +241,16 @@ BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) 
     log( tr("Incoming connection", "log text") );
 }
 
+BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *socket) :
+    QObject(0), BBase( *new BNetworkConnectionPrivate(this, server) )
+{
+    d_func()->init();
+    if ( !socket || socket->thread() != thread() || !socket->isOpen() )
+        return;
+    d_func()->setSocket(socket);
+    log( tr("Incoming connection", "log text") );
+}
+
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
     QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
 {
@@ -345,6 +355,11 @@ bool BNetworkConnection::isConnected() const
 const QUuid BNetworkConnection::uniqueId() const
 {
     return d_func()->UniqueId;
+}
+
+BNetworkServer *BNetworkConnection::server() const
+{
+    return d_func()->Server;
 }
 
 QAbstractSocket::SocketError BNetworkConnection::error() const
