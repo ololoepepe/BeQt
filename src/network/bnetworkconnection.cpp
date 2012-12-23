@@ -339,7 +339,7 @@ bool BNetworkConnection::isValid() const
 
 bool BNetworkConnection::isConnected() const
 {
-    return isValid() && d_func()->socket->isOpen();
+    return isValid() && d_func()->socket->state() == QAbstractSocket::ConnectedState;
 }
 
 const QUuid BNetworkConnection::uniqueId() const

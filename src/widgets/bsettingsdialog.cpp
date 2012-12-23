@@ -121,6 +121,9 @@ void BSettingsDialogPrivate::init()
       connect( dlgbbox, SIGNAL( accepted() ), this, SLOT( accepted() ) );
       connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
     vlt->addWidget(dlgbbox);
+    QWidget *wgt = cboxAdvancedMode ? cboxAdvancedMode->nextInFocusChain() : 0;
+    if (wgt)
+        wgt->setFocus();
 }
 
 /*============================== Public slots ==============================*/
@@ -138,6 +141,9 @@ void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
     bool b = (Qt::Checked == state);
     foreach (BAbstractSettingsTab *t, TabMap)
         t->setAdvancedMode(b);
+    QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
+    if (wgt)
+        wgt->setFocus();
 }
 
 /*============================================================================
