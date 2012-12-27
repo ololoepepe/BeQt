@@ -1990,7 +1990,12 @@ void BCodeEdit::setEditFont(const QFont &fnt)
         return;
     if (fnt.pointSize() < 1 && fnt.pixelSize() < 1)
         return;
-    d_func()->ptedt->setFont(fnt);
+    B_D(BCodeEdit);
+    QFont fntx = d->ptedt->font();
+    //Workaround to set font correctly (assigning fnt directly doesn't work)
+    fntx.setFamily( fnt.family() );
+    fntx.setPointSize( fnt.pointSize() );
+    d->ptedt->setFont(fntx);
 }
 
 void BCodeEdit::setEditMode(EditMode mode)

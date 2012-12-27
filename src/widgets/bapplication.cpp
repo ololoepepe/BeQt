@@ -395,7 +395,9 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
 QFont BApplication::createMonospaceFont()
 {
     //Using such a construct to get default monospace font family name
-    return QFont( QFontInfo( QFont("monospace") ).family() );
+    QFont fnt( QFontInfo( QFont("monospace") ).family() );
+    fnt.setPointSize( QApplication::font().pointSize() );
+    return fnt;
 }
 
 void BApplication::setHelpBrowserDefaultGeometry(const QRect &geometry)
