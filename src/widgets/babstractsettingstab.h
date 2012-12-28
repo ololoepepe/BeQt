@@ -32,6 +32,7 @@ public:
     virtual bool preconfirm() const;
     virtual bool hasAdvancedMode() const;
     virtual void setAdvancedMode(bool enabled);
+    virtual bool restoreDefault();
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)
 };

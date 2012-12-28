@@ -8,6 +8,7 @@ class QSplitter;
 class QListWidget;
 class QStackedWidget;
 class QCheckBox;
+class QPushButton;
 
 #include "bsettingsdialog.h"
 
@@ -36,9 +37,11 @@ public:
 public:
     const BSettingsDialog::SettingsTabMap TabMap;
     const BSettingsDialog::Navigation Navigation;
-    //
+public:
+    bool valid;
     QVBoxLayout *vlt;
       QCheckBox *cboxAdvancedMode;
+      QPushButton *btnRestoreDefault;
       QSplitter *hspltr;
         QListWidget *lstwgt;
         QStackedWidget *stkdwgt;
@@ -49,6 +52,7 @@ public:
 public slots:
     void accepted();
     void cboxAdvancedModeStateChanged(int state);
+    void btnRestoreDefaultClicked();
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };

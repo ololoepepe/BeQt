@@ -66,3 +66,8 @@ void BAbstractSettingsTab::setAdvancedMode(bool enabled)
 {
     //
 }
+
+bool BAbstractSettingsTab::restoreDefault()
+{
+    return true;
+}

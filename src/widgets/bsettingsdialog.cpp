@@ -20,6 +20,8 @@
 #include <QDialogButtonBox>
 #include <QPushButton>
 #include <QCheckBox>
+#include <QHBoxLayout>
+#include <QMessageBox>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -43,25 +45,29 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
 
 void BSettingsDialogPrivate::init()
 {
+    valid = !TabMap.isEmpty();
     B_Q(BSettingsDialog);
     q->setWindowTitle( tr("Settings", "windowTitle") );
     vlt = new QVBoxLayout(q);
-    if ( !TabMap.isEmpty() )
-    {
+      QHBoxLayout *hlt = new QHBoxLayout;
+        btnRestoreDefault = new QPushButton(q);
+          btnRestoreDefault->setText( tr("Restore default settings", "btn text") );
+          connect( btnRestoreDefault, SIGNAL( clicked() ), this, SLOT( btnRestoreDefaultClicked() ) );
+        hlt->addWidget(btnRestoreDefault);
         cboxAdvancedMode = new QCheckBox(q);
-        cboxAdvancedMode->setText( tr("Show additional settings", "cbox text") );
-        connect( cboxAdvancedMode, SIGNAL( stateChanged(int) ), this, SLOT( cboxAdvancedModeStateChanged(int) ) );
-        vlt->addWidget(cboxAdvancedMode);
-        cboxAdvancedMode->setVisible(false);
-        foreach (BAbstractSettingsTab *t, TabMap)
-        {
-            if ( t->hasAdvancedMode() )
-            {
-                cboxAdvancedMode->setVisible(true);
-                break;
-            }
-        }
-    }
+          cboxAdvancedMode->setText( tr("Show additional settings", "cbox text") );
+          connect( cboxAdvancedMode, SIGNAL( stateChanged(int) ), this, SLOT( cboxAdvancedModeStateChanged(int) ) );
+          cboxAdvancedMode->setEnabled(false);
+          foreach (BAbstractSettingsTab *t, TabMap)
+          {
+              if ( t->hasAdvancedMode() )
+              {
+                  cboxAdvancedMode->setEnabled(true);
+                  break;
+              }
+          }
+        hlt->addWidget(cboxAdvancedMode);
+      vlt->addLayout(hlt);
     if (TabMap.size() > 1)
     {
         if (BSettingsDialog::ListNavigation == Navigation)
@@ -107,7 +113,6 @@ void BSettingsDialogPrivate::init()
     }
     else
     {
-        cboxAdvancedMode = 0;
         hspltr = 0;
         lstwgt = 0;
         stkdwgt = 0;
@@ -121,7 +126,7 @@ void BSettingsDialogPrivate::init()
       connect( dlgbbox, SIGNAL( accepted() ), this, SLOT( accepted() ) );
       connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
     vlt->addWidget(dlgbbox);
-    QWidget *wgt = cboxAdvancedMode ? cboxAdvancedMode->nextInFocusChain() : 0;
+    QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
         wgt->setFocus();
 }
@@ -141,6 +146,25 @@ void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
     bool b = (Qt::Checked == state);
     foreach (BAbstractSettingsTab *t, TabMap)
         t->setAdvancedMode(b);
+    QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
+    if (wgt)
+        wgt->setFocus();
+}
+
+void BSettingsDialogPrivate::btnRestoreDefaultClicked()
+{
+    QMessageBox msg( q_func() );
+    msg.setWindowTitle( tr("", "msgbox windowTitle") );
+    msg.setIcon(QMessageBox::Question);
+    msg.setText( tr("You are about to restore the application settings to their default state", "msgbox text") );
+    msg.setInformativeText( tr("All settings changes will be discarded. Do you want to continue?",
+                               "msgbox informativeText") );
+    msg.setStandardButtons(QMessageBox::Cancel | QMessageBox::Yes);
+    msg.setDefaultButton(QMessageBox::Yes);
+    if (msg.exec() == QMessageBox::Yes)
+        foreach (BAbstractSettingsTab *t, TabMap)
+            if ( !t->restoreDefault() )
+                break;
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
         wgt->setFocus();
@@ -181,7 +205,7 @@ BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
 
 bool BSettingsDialog::isValid() const
 {
-    return d_func()->dlgbbox;
+    return d_func()->valid;
 }
 
 BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const

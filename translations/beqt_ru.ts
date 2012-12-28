@@ -73,19 +73,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="442"/>
+        <location filename="../src/widgets/bapplication.cpp" line="444"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="444"/>
+        <location filename="../src/widgets/bapplication.cpp" line="446"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="445"/>
+        <location filename="../src/widgets/bapplication.cpp" line="447"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -232,49 +232,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1018"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1059"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1816"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1858"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1822"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1864"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1829"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1871"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1835"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1877"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1841"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1883"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1847"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1889"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1854"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1896"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -775,6 +775,7 @@
     <name>BNetworkConnection</name>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="241"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="251"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
@@ -1221,7 +1222,7 @@
 <context>
     <name>BSettingsDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="47"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="50"/>
         <source>Settings</source>
         <comment>windowTitle</comment>
         <translation>Настройки</translation>
@@ -1233,10 +1234,28 @@
         <translation>Показать дополнительные настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="118"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="67"/>
+        <source>Restore default settings</source>
+        <comment>btn text</comment>
+        <translation>Восстановить настройки по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="121"/>
         <source>invalid</source>
         <comment>windowTitle</comment>
         <translation>недействительно</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="159"/>
+        <source>You are about to restore the application settings to their default state</source>
+        <comment>msgbox text</comment>
+        <translation>Вы собираетесь вернуть настройки приложения к их изначальному состоянию</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="160"/>
+        <source>All settings changes will be discarded. Do you want to continue?</source>
+        <comment>msgbox informativeText</comment>
+        <translation>Все изменения настроек будут сброшены. Хотите продолжить?</translation>
     </message>
 </context>
 <context>
