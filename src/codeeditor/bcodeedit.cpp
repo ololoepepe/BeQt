@@ -57,8 +57,49 @@
 #include <QRunnable>
 #include <QResizeEvent>
 #include <QSize>
+#include <QTextBlockUserData>
 
 #include <QDebug>
+
+/*============================================================================
+================================ BTextBlockUserData ==========================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BTextBlockUserData::BTextBlockUserData(int sf, int st)
+{
+    skipFrom = sf;
+    skipTo = st;
+}
+
+BTextBlockUserData::~BTextBlockUserData()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
+
+QString BTextBlockUserData::textWithoutComments(const BTextBlockUserData *ud, const QString &text)
+{
+    if (!ud || ud->skipFrom < 0)
+        return text;
+    QString ntext = text;
+    int len = ( ud->skipTo >= 0 ? ud->skipTo : text.length() ) - ud->skipFrom;
+    ntext.replace( ud->skipFrom, len, QString().fill(' ', len) );
+    return ntext;
+}
+
+QString BTextBlockUserData::textWithoutComments(const QTextBlock &block)
+{
+    return textWithoutComments( static_cast<BTextBlockUserData *>( block.userData() ), block.text() );
+}
+
+int BTextBlockUserData::blockSkipFrom(const QTextBlock &block)
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( block.userData() );
+    return ud ? ud->skipFrom : -1;
+}
 
 /*============================================================================
 ================================ BCodeEditClipboardNotifier ==================
@@ -1195,13 +1236,13 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
-    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
-    int skipFrom = ud ? ud->skipFrom : -1;
+    //BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
+    //int skipFrom = ud ? ud->skipFrom : -1;
     int posInBlock = tc.positionInBlock();
-    if (skipFrom >= 0 && posInBlock > skipFrom)
-        return res;
+    //if (skipFrom >= 0 && posInBlock > skipFrom)
+        //return res;
     const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(tb.text(), posInBlock, false, bracket) )
+    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket) ) //
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
@@ -1209,7 +1250,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
     const BCodeEdit::BracketPair *br = 0;
     while ( tb.isValid() )
     {
-        QString text = removeTrailingSpaces( tb.text() );
+        QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
         while (posInBlock >= 0)
         {
             if ( testBracket(text, posInBlock, true, br) )
@@ -1235,8 +1276,9 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
             }
         }
         tb = tb.previous();
-        ud = static_cast<BTextBlockUserData *>( tb.userData() );
-        skipFrom = ud ? ud->skipFrom : -1;
+        //BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
+        //int skipFrom = ud ? ud->skipFrom : -1;
+        int skipFrom = BTextBlockUserData::blockSkipFrom(tb);
         posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
     }
     return res;
@@ -1247,13 +1289,13 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
-    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
-    int skipFrom = ud ? ud->skipFrom : -1;
+    //BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
+    //int skipFrom = ud ? ud->skipFrom : -1;
     int posInBlock = tc.positionInBlock();
-    if (skipFrom >= 0 && posInBlock > skipFrom)
-        return res;
+    //if (skipFrom >= 0 && posInBlock > skipFrom)
+        //return res;
     const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(tb.text(), posInBlock, true, bracket) )
+    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket) )
         return res;
     res.start = tb.position() + posInBlock;
     posInBlock += bracket->opening.length();
@@ -1261,8 +1303,8 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
     const BCodeEdit::BracketPair *br = 0;
     while ( tb.isValid() )
     {
-        QString text = removeTrailingSpaces( tb.text() );
-        while ( posInBlock <= ( (skipFrom >= 0) ? (skipFrom - 1) : text.length() ) )
+        QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
+        while ( posInBlock <= ( /*(skipFrom >= 0) ? (skipFrom - 1) :*/ text.length() ) )
         {
             if ( testBracket(text, posInBlock, false, br) )
             {
@@ -1287,8 +1329,8 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
             }
         }
         tb = tb.next();
-        ud = static_cast<BTextBlockUserData *>( tb.userData() );
-        skipFrom = ud ? ud->skipFrom : -1;
+        //ud = static_cast<BTextBlockUserData *>( tb.userData() );
+        //skipFrom = ud ? ud->skipFrom : -1;
         posInBlock = 0;
     }
     return res;
@@ -1934,17 +1976,6 @@ void BCodeEditPrivate::setTextToEmptyLine()
 }
 
 /*============================================================================
-================================ BTextBlockUserData ==========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BTextBlockUserData::~BTextBlockUserData()
-{
-    skipFrom = -1;
-}
-
-/*============================================================================
 ================================ BCodeEdit ===================================
 ============================================================================*/
 
@@ -1967,6 +1998,25 @@ BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
     QWidget(parent), BBase(d)
 {
     d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
+
+void BCodeEdit::setBlockComment(QTextBlock block, int start, int end)
+{
+    BTextBlockUserData *ud = dynamic_cast<BTextBlockUserData *>( block.userData() );
+    if (!ud)
+    {
+        if (start < 0)
+            return;
+        ud = new BTextBlockUserData(start, end);
+    }
+    else
+    {
+        ud->skipFrom = start;
+        ud->skipTo = end;
+    }
+    block.setUserData(ud);
 }
 
 /*============================== Public methods ============================*/

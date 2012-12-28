@@ -15,19 +15,7 @@ class QSyntaxHighlighter;
 #include <QWidget>
 #include <QList>
 #include <QTextDocument>
-#include <QTextBlockUserData>
-
-/*============================================================================
-================================ BTextBlockUserData ==========================
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BTextBlockUserData : public QTextBlockUserData
-{
-public:
-    ~BTextBlockUserData();
-public:
-    int skipFrom;
-};
+#include <QTextBlock>
 
 /*============================================================================
 ================================ BCodeEdit ===================================
@@ -67,6 +55,8 @@ public:
     ~BCodeEdit();
 protected:
     explicit BCodeEdit(BCodeEditPrivate &d, QWidget *parent = 0);
+public:
+    static void setBlockComment(QTextBlock block, int start = -1, int end = -1);
 public:
     void setReadOnly(bool ro);
     void setEditFont(const QFont &fnt);
