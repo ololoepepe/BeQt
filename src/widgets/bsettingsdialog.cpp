@@ -67,6 +67,7 @@ void BSettingsDialogPrivate::init()
               }
           }
         hlt->addWidget(cboxAdvancedMode);
+        hlt->addStretch();
       vlt->addLayout(hlt);
     if (TabMap.size() > 1)
     {

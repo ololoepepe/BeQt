@@ -97,6 +97,7 @@ public slots:
     void insertText(const QString &txt);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
+    void selectText(int firstLine, int lastLine = -1);
     void selectAll();
     void deselectText();
     void cut();

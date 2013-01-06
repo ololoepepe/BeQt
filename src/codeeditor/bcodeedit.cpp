@@ -2473,6 +2473,19 @@ void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
     setFocus();
 }
 
+void BCodeEdit::selectText(int firstLine, int lastLine)
+{
+    B_D(BCodeEdit);
+    int bc = d_func()->ptedt->blockCount();
+    if ( firstLine < 0 || firstLine >= bc)
+        return;
+    QPoint start(0, firstLine);
+    QPoint end(d->lineLength, firstLine);
+    if (lastLine > 0 && lastLine < bc)
+        end.setY(lastLine);
+    selectText(start, end);
+}
+
 void BCodeEdit::selectAll()
 {
     d_func()->ptedt->selectAll();
