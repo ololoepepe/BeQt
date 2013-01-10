@@ -1638,7 +1638,7 @@ QTextCodec *BCodeEditor::defaultCodec() const
 
 QString BCodeEditor::defaultCodecName() const
 {
-    return QString::fromAscii( d_func()->defaultCodec->name().data() );
+    return QString::fromLatin1( d_func()->defaultCodec->name().data() );
 }
 
 QString BCodeEditor::defaultFileName() const

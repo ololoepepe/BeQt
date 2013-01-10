@@ -3,7 +3,7 @@ TARGET = simple-editor
 
 CONFIG += release
 
-QT = core gui
+QT = core gui widgets
 
 BEQT = core widgets codeeditor
 

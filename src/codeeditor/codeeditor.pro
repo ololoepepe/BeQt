@@ -3,7 +3,7 @@ TARGET = BeQtCodeEditor
 
 CONFIG += release
 
-QT = core gui #widgets #Qt5
+QT = core gui widgets
 
 BEQT = core widgets
 

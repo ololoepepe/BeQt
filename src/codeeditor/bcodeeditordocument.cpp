@@ -236,7 +236,7 @@ QTextCodec *BCodeEditorDocument::codec() const
 
 QString BCodeEditorDocument::codecName() const
 {
-    return d_func()->codec ? QString::fromAscii( d_func()->codec->name().data() ) : QString();
+    return d_func()->codec ? QString::fromLatin1( d_func()->codec->name().data() ) : QString();
 }
 
 int BCodeEditorDocument::asyncProcessingMinimumLength() const

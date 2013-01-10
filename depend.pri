@@ -84,7 +84,7 @@ contains(BEQT, all) {
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui #widgets #Qt5
+    QT *= core gui widgets
     BEQT *= core widgets
 }
 contains(BEQT,core) {
@@ -95,7 +95,7 @@ contains(BEQT, network) {
     BEQT *= core network
 }
 contains(BEQT, widgets) {
-    QT *= core gui #widgets #Qt5
+    QT *= core gui widgets
     BEQT *= core widgets
 }
 

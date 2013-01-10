@@ -128,7 +128,7 @@ void BFileDialog::selectFileType(BAbstractFileType *ft)
 {
     if (!ft)
         return;
-    selectFilter( ft->createFileDialogFilter() );
+    selectNameFilter( ft->createFileDialogFilter() );
 }
 
 void BFileDialog::selectFileType(const QString &id)
@@ -137,7 +137,7 @@ void BFileDialog::selectFileType(const QString &id)
         return;
     foreach (BAbstractFileType *ft, d_func()->fileTypes)
         if (ft->id() == id)
-            return selectFilter( ft->createFileDialogFilter() );
+            return selectNameFilter( ft->createFileDialogFilter() );
 }
 
 void BFileDialog::selectCodec(QTextCodec *codec)
@@ -195,7 +195,7 @@ QString BFileDialog::selectedCodecName() const
 
 BAbstractFileType *BFileDialog::selectedFileType() const
 {
-    QString sf = selectedFilter();
+    QString sf = selectedNameFilter();
     if ( sf.isEmpty() )
         return 0;
     foreach (BAbstractFileType *ft, d_func()->fileTypes)

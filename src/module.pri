@@ -69,7 +69,7 @@ contains(BEQT, all) {
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui #widgets #Qt5
+    QT *= core gui widgets
     BEQT *= core widgets
 }
 contains(BEQT,core) {
@@ -80,11 +80,17 @@ contains(BEQT, network) {
     BEQT *= core network
 }
 contains(BEQT, widgets) {
-    QT *= core gui #widgets #Qt5
+    QT *= core gui widgets
     BEQT *= core widgets
 }
 
+#Workaround for proper linking when building statically
+contains(BEQT, codeeditor):BEQT_ORDERED += codeeditor
+contains(BEQT, widgets):BEQT_ORDERED += widgets
+contains(BEQT, network):BEQT_ORDERED += network
+contains(BEQT, core):BEQT_ORDERED += core
+
 #Adds corresponding headers' and libs' paths for each valid BeQt module contained in BEQT variable
-for(shortName, BEQT) {
+for(shortName, BEQT_ORDERED) {
     addBeqtModule($${shortName})
 }
