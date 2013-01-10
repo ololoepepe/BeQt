@@ -28,10 +28,12 @@ public:
         NormalMode,
         ProgrammaticMode
     };
-public:
-    static const QTextCharFormat MessageFormat;
-    static const QTextCharFormat WarningFormat;
-    static const QTextCharFormat CriticalFormat;
+    enum StandardFormat
+    {
+        MessageFormat,
+        WarningFormat,
+        CriticalFormat
+    };
 public:
     explicit BTerminalWidget(TerminalMode mode, QWidget *parent = 0);
     explicit BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent = 0);
@@ -59,6 +61,8 @@ public slots:
     void clearEdit();
     void appendText( const QString &text, const QTextCharFormat &format = QTextCharFormat() );
     void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
+    void appendText(const QString &text, StandardFormat format);
+    void appendLine(const QString &text, StandardFormat format);
 signals:
     void finished(int exitCode);
 private:

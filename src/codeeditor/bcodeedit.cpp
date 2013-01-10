@@ -531,12 +531,6 @@ void BPlainTextEditExtended::resizeEvent(QResizeEvent *e)
 ================================ BCodeEditPrivate ============================
 ============================================================================*/
 
-/*============================== Static public constants ===================*/
-
-const QList<QChar> BCodeEditPrivate::UnsupportedSymbols = BCodeEditPrivate::createUnsupportedSymbols();
-const QTextCharFormat BCodeEditPrivate::BracketsFormat = BCodeEditPrivate::createBracketsFormat();
-const QTextCharFormat BCodeEditPrivate::BracketsErrorFormat = BCodeEditPrivate::createBracketsErrorFormat();
-
 /*============================== Public constructors =======================*/
 
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
@@ -619,7 +613,7 @@ QString BCodeEditPrivate::removeUnsupportedSymbols(const QString &s)
 
 void BCodeEditPrivate::removeUnsupportedSymbols(QString &text)
 {
-    foreach (const QChar &c, UnsupportedSymbols)
+    foreach ( const QChar &c, createUnsupportedSymbols() )
         text.remove(c);
 }
 
@@ -1207,12 +1201,12 @@ void BCodeEditPrivate::highlightBrackets()
         {
             if ( testBracketPairsEquality(*res.startBr, *res.endBr) )
             {
-                QTextEdit::ExtraSelection ess = createExtraSelection(ptedt, BracketsFormat);
+                QTextEdit::ExtraSelection ess = createExtraSelection( ptedt, createBracketsFormat() );
                 ess.cursor.setPosition(res.start);
                 ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
                 highlightedBrackets << ess;
                 selections << ess;
-                QTextEdit::ExtraSelection ese = createExtraSelection(ptedt, BracketsFormat);
+                QTextEdit::ExtraSelection ese = createExtraSelection( ptedt, createBracketsFormat() );
                 ese.cursor.setPosition( res.end - res.endBr->closing.length() );
                 ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
                 highlightedBrackets << ese;
@@ -1220,7 +1214,7 @@ void BCodeEditPrivate::highlightBrackets()
             }
             else
             {
-                QTextEdit::ExtraSelection es = createExtraSelection(ptedt, BracketsErrorFormat);
+                QTextEdit::ExtraSelection es = createExtraSelection( ptedt, createBracketsErrorFormat() );
                 es.cursor.setPosition(res.start);
                 es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
                 highlightedBrackets << es;

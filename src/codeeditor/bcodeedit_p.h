@@ -209,10 +209,6 @@ public:
         const BCodeEdit::BracketPair *endBr;
     };
 public:
-    static const QList<QChar> UnsupportedSymbols;
-    static const QTextCharFormat BracketsFormat;
-    static const QTextCharFormat BracketsErrorFormat;
-public:
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
 public:

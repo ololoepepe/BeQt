@@ -29,9 +29,7 @@ public:
     explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
     ~BTerminalWidgetPrivate();
 public:
-    static QTextCharFormat createMessageFormat();
-    static QTextCharFormat createWarningFormat();
-    static QTextCharFormat createCriticalFormat();
+    static QTextCharFormat createStandardFormat(BTerminalWidget::StandardFormat format);
 public:
     void init();
     bool eventFilter(QObject *object, QEvent *event);

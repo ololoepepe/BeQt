@@ -44,24 +44,23 @@ BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 
 /*============================== Static public methods =====================*/
 
-QTextCharFormat BTerminalWidgetPrivate::createMessageFormat()
+QTextCharFormat BTerminalWidgetPrivate::createStandardFormat(BTerminalWidget::StandardFormat format)
 {
     QTextCharFormat fmt;
-    fmt.setForeground( QBrush( QColor("blue") ) );
-    return fmt;
-}
-
-QTextCharFormat BTerminalWidgetPrivate::createWarningFormat()
-{
-    QTextCharFormat fmt;
-    fmt.setForeground( QBrush( QColor("darkorange") ) );
-    return fmt;
-}
-
-QTextCharFormat BTerminalWidgetPrivate::createCriticalFormat()
-{
-    QTextCharFormat fmt;
-    fmt.setForeground( QBrush( QColor("red") ) );
+    switch (format)
+    {
+    case BTerminalWidget::MessageFormat:
+        fmt.setForeground( QBrush( QColor("blue") ) );
+        break;
+    case BTerminalWidget::WarningFormat:
+        fmt.setForeground( QBrush( QColor("red") ) );
+        break;
+    case BTerminalWidget::CriticalFormat:
+        fmt.setForeground( QBrush( QColor("darkorange") ) );
+        break;
+    default:
+        break;
+    }
     return fmt;
 }
 
@@ -243,12 +242,6 @@ void BTerminalWidgetPrivate::unblockTerminal()
 ================================ BTerminalWidget =============================
 ============================================================================*/
 
-/*============================== Static public constamts ===================*/
-
-const QTextCharFormat BTerminalWidget::MessageFormat = BTerminalWidgetPrivate::createMessageFormat();
-const QTextCharFormat BTerminalWidget::WarningFormat = BTerminalWidgetPrivate::createWarningFormat();
-const QTextCharFormat BTerminalWidget::CriticalFormat = BTerminalWidgetPrivate::createCriticalFormat();
-
 /*============================== Public constructors =======================*/
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
@@ -422,4 +415,14 @@ void BTerminalWidget::appendText(const QString &text, const QTextCharFormat &for
 void BTerminalWidget::appendLine(const QString &text, const QTextCharFormat &format)
 {
     d_func()->appendLine(text, format);
+}
+
+void BTerminalWidget::appendText(const QString &text, StandardFormat format)
+{
+    appendText( text, BTerminalWidget::createStandardFormat(format) );
+}
+
+void BTerminalWidget::appendLine(const QString &text, StandardFormat format)
+{
+    appendLine( text, BTerminalWidget::createStandardFormat(format) );
 }
