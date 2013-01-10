@@ -339,6 +339,8 @@ void BSearchDialog::setDocument(BCodeEditorDocument *doc)
 
 void BSearchDialog::restoreState(const QByteArray &ba)
 {
+    if ( ba.isEmpty() )
+        return;
     QDataStream out(ba);
     out.setVersion(BSearchDialogPrivate::DSVersion);
     bool cs = false;

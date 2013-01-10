@@ -24,22 +24,6 @@ class QEvent;
 #include <QVariantMap>
 
 /*============================================================================
-================================ BCoreApplicationEventFilter =================
-============================================================================*/
-
-class B_CORE_EXPORT BCoreApplicationEventFilter : public QObject
-{
-    Q_OBJECT
-public:
-    explicit BCoreApplicationEventFilter(BCoreApplicationPrivate *p);
-    ~BCoreApplicationEventFilter();
-public:
-    bool eventFilter(QObject *o, QEvent *e);
-public:
-    BCoreApplicationPrivate *const _m_p;
-};
-
-/*============================================================================
 ================================ BCoreApplicationPrivate =====================
 ============================================================================*/
 
@@ -68,6 +52,7 @@ public:
     static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault = false);
 public:
     void init();
+    bool eventFilter(QObject *o, QEvent *e);
     QString getAppName() const;
     QString getOrgName() const;
     QString getAppPath() const;
@@ -100,7 +85,6 @@ public:
     QLocale locale;
     QStringList deactivatedPlugins;
     QMap<QString, BTranslator *> translators;
-    BCoreApplicationEventFilter *appEventFilter;
     bool blockLanguageChange;
     QList<BPluginWrapper *> plugins;
     BPersonInfoProvider *beqtAuthors;

@@ -53,10 +53,10 @@ QTextCharFormat BTerminalWidgetPrivate::createStandardFormat(BTerminalWidget::St
         fmt.setForeground( QBrush( QColor("blue") ) );
         break;
     case BTerminalWidget::WarningFormat:
-        fmt.setForeground( QBrush( QColor("red") ) );
+        fmt.setForeground( QBrush( QColor("darkorange") ) );
         break;
     case BTerminalWidget::CriticalFormat:
-        fmt.setForeground( QBrush( QColor("darkorange") ) );
+        fmt.setForeground( QBrush( QColor("red") ) );
         break;
     default:
         break;
@@ -419,10 +419,10 @@ void BTerminalWidget::appendLine(const QString &text, const QTextCharFormat &for
 
 void BTerminalWidget::appendText(const QString &text, StandardFormat format)
 {
-    appendText( text, BTerminalWidget::createStandardFormat(format) );
+    appendText( text, BTerminalWidgetPrivate::createStandardFormat(format) );
 }
 
 void BTerminalWidget::appendLine(const QString &text, StandardFormat format)
 {
-    appendLine( text, BTerminalWidget::createStandardFormat(format) );
+    appendLine( text, BTerminalWidgetPrivate::createStandardFormat(format) );
 }

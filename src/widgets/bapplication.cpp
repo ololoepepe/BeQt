@@ -56,7 +56,7 @@ BApplicationPrivate::~BApplicationPrivate()
     if ( !aboutDlg.isNull() )
     {
         aboutDlg->close();
-        aboutDlg->deleteLater();
+        delete aboutDlg;
     }
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtwidgets);

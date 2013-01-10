@@ -66,13 +66,15 @@ void BTranslatorPrivate::remove(bool blockLanguageChange)
 {
     if (!installed)
         return;
-    BCoreApplication::instance()->ds_func()->blockLanguageChange = blockLanguageChange;
+    if (bApp)
+        bApp->ds_func()->blockLanguageChange = blockLanguageChange;
     foreach (QTranslator *t, translators)
     {
         QCoreApplication::removeTranslator(t);
-        t->deleteLater();
+        delete t;
     }
-    BCoreApplication::instance()->ds_func()->blockLanguageChange = false;
+    if (bApp)
+        bApp->ds_func()->blockLanguageChange = false;
     translators.clear();
     installed = false;
 }

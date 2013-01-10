@@ -28,33 +28,6 @@
 #include <QDebug>
 
 /*============================================================================
-================================ BCoreApplicationEventFilter =================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BCoreApplicationEventFilter::BCoreApplicationEventFilter(BCoreApplicationPrivate *p) :
-    QObject(p), _m_p(p)
-{
-    //
-}
-
-BCoreApplicationEventFilter::~BCoreApplicationEventFilter()
-{
-    //
-}
-
-/*============================== Public methods ============================*/
-
-bool BCoreApplicationEventFilter::eventFilter(QObject *o, QEvent *e)
-{
-    if ( !_m_p->blockLanguageChange || e->type() != QEvent::LanguageChange ||
-         o != (QObject *) QCoreApplication::instance() )
-        return QObject::eventFilter(o, e);
-    return true;
-}
-
-/*============================================================================
 ================================ BCoreApplicationPrivate =====================
 ============================================================================*/
 
@@ -82,10 +55,11 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
 
 BCoreApplicationPrivate::~BCoreApplicationPrivate()
 {
+    qApp->removeEventFilter(this);
     foreach (BTranslator *t, translators)
-        removeTranslator(t, false);
+        delete t;
     foreach (BPluginWrapper *pw, plugins)
-        pw->deleteLater();
+        delete pw;
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtcore);
 #endif
@@ -192,8 +166,7 @@ void BCoreApplicationPrivate::init()
     bTest(QCoreApplication::instance(), "BCoreApplication", "Missing QCoreApplication instance");
     //localization
     locale = QLocale::system();
-    appEventFilter = new BCoreApplicationEventFilter(this);
-    QCoreApplication::instance()->installEventFilter(appEventFilter);
+    QCoreApplication::instance()->installEventFilter(this);
     //infos
     QStringList locs;
     locs << getSharedPrefix(); //sharedPrefix;
@@ -206,6 +179,14 @@ void BCoreApplicationPrivate::init()
     beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
+}
+
+bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if ( !blockLanguageChange || e->type() != QEvent::LanguageChange ||
+         o != (QObject *) QCoreApplication::instance() )
+        return BBasePrivate::eventFilter(o, e);
+    return true;
 }
 
 QString BCoreApplicationPrivate::getAppName() const
