@@ -889,6 +889,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
     case Qt::ShiftModifier:
         switch (key)
         {
+        case Qt::Key_Space:
+            handleSpace();
+            return true;
         case Qt::Key_Backspace:
             handleBackspace();
             return true;

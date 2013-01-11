@@ -111,7 +111,7 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
     }
 }
 
-QString BApplicationPrivate::findImage(const QString &subdir, const QString &name)
+QString BApplicationPrivate::findImage(const QString &subdir, const QString &name, const QStringList &preferredFormats)
 {
     if ( !testCoreInit("BApplication") )
         return "";
@@ -119,11 +119,22 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
         return "";
     QString bfn = QFileInfo(name).baseName();
     QStringList suffixes;
-    suffixes << QFileInfo(name).suffix();
+    //suffixes << QFileInfo(name).suffix();
+    //suffixes.removeAll("");
     foreach ( const QByteArray &ba, QImageReader::supportedImageFormats() )
         suffixes << QString(ba);
-    if ( suffixes.contains("svg") )
-        suffixes << "svgz";
+    int indsvg = suffixes.indexOf("svg");
+    if (indsvg >= 0)
+        suffixes.insert(indsvg, "svgz");
+    for (int i = preferredFormats.size() - 1; i >= 0; --i)
+    {
+        const QString &fmt = preferredFormats.at(i);
+        if ( suffixes.contains(fmt) )
+        {
+            suffixes.removeAll(fmt);
+            suffixes.prepend(fmt);
+        }
+    }
     foreach (const QString &suff, suffixes)
     {
         if ( suff.isEmpty() )
@@ -133,6 +144,18 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
             return fn;
     }
     return "";
+}
+
+QIcon BApplicationPrivate::iconFromTheme(const QString &name)
+{
+    QStringList sp = QIcon::themeSearchPaths();
+    QStringList spx = sp;
+    foreach ( const QString &path, BApplication::locations("icons") )
+        spx.insert(spx.size() - 1, path);
+    QIcon::setThemeSearchPaths(spx);
+    QIcon icn = QIcon::fromTheme(name);
+    QIcon::setThemeSearchPaths(sp);
+    return icn;
 }
 
 /*============================== Public methods ============================*/
@@ -145,6 +168,7 @@ void BApplicationPrivate::init()
     iconCaching = false;
     navigation = BApplication::DefaultNavigation;
     helpBrowserGeometry = QRect(200, 200, 800, 600);
+    themedIcons = true;
     connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
@@ -213,6 +237,13 @@ void BApplicationPrivate::showHelp(const QString &file)
     hb->show();
 }
 
+QIcon BApplicationPrivate::cacheIcon(const QIcon &icon, const QString &name)
+{
+    if ( iconCaching && !icon.isNull() )
+        iconCache.insert(name, icon);
+    return icon;
+}
+
 /*============================== Public slots ==============================*/
 
 void BApplicationPrivate::retranslateUi()
@@ -256,37 +287,35 @@ BApplication::BApplication(BApplicationPrivate &d) :
 
 /*============================== Static public methods =====================*/
 
-QIcon BApplication::icon(const QString &name, const QString &theme)
+QIcon BApplication::icon(const QString &name, const QIcon &fallback)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
     B_DS(BApplication);
     if ( ds->iconCaching && ds->iconCache.contains(name) )
         return ds->iconCache.value(name);
-    QStringList pplist = QIcon::themeSearchPaths();
-    QStringList plist = pplist;
-    QIcon icnfb;
-    if ( icnfb.isNull() )
-        icnfb.addFile( BApplicationPrivate::findImage("icons", name) );
-    if ( icnfb.isNull() )
-        icnfb.addFile( BApplicationPrivate::findImage("beqt/icons", name) );
-    if ( icnfb.isNull() )
-        icnfb = beqtIcon(name);
-    foreach ( const QString &path, locations("icons") )
-        plist.insert(plist.size() - 1, path);
-    QIcon::setThemeSearchPaths(plist);
-    QIcon icn = QIcon::fromTheme(!theme.isEmpty() ? theme : QIcon::themeName(), icnfb);
-    QIcon::setThemeSearchPaths(pplist);
-    if ( ds->iconCaching && !icn.isNull() )
-        ds->iconCache.insert(name, icn);
-    return icn;
+    QIcon icn;
+    if (ds->themedIcons)
+        icn = BApplicationPrivate::iconFromTheme(name);
+    if ( !icn.isNull() )
+        return ds->cacheIcon(icn, name);
+    icn.addFile( BApplicationPrivate::findImage("icons", name, ds->preferredIconFormats) );
+    if ( !icn.isNull() )
+        return ds->cacheIcon(icn, name);
+    icn.addFile( BApplicationPrivate::findImage("beqt/icons", name, QStringList() << "svgz") );
+    if ( !icn.isNull() )
+        return ds->cacheIcon(icn, name);
+    icn = beqtIcon(name);
+    if ( !icn.isNull() )
+        return ds->cacheIcon(icn, name);
+    return fallback;
 }
 
 QIcon BApplication::beqtIcon(const QString &name)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
-    QString fn = BApplicationPrivate::findImage("beqt/icons", name);
+    QString fn = BApplicationPrivate::findImage("beqt/icons", name, QStringList() << "svgz");
     if ( fn.isEmpty() )
         return QIcon();
     return QIcon(fn);
@@ -315,6 +344,34 @@ void BApplication::clearIconCache()
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return;
     ds_func()->iconCache.clear();
+}
+
+void BApplication::setThemedIconsEnabled(bool enabled)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->themedIcons = enabled;
+}
+
+bool BApplication::themedIconsEnabled()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return false;
+    return ds_func()->themedIcons;
+}
+
+void BApplication::setPreferredIconFormats(const QStringList &suffixes)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return;
+    ds_func()->preferredIconFormats = suffixes;
+}
+
+QStringList BApplication::preferredIconFormats()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+        return QStringList();
+    return ds_func()->preferredIconFormats;
 }
 
 BAboutDialog *BApplication::aboutDialogInstance()

@@ -68,12 +68,12 @@ void BPluginsSettingsTabPrivate::init()
       hlt->addWidget(lstwgt);
       vlt = new QVBoxLayout;
         btnSettings = new QPushButton(q);
-          btnSettings->setIcon( BApplication::beqtIcon("configure") );
+          btnSettings->setIcon( BApplication::icon("configure") );
           btnSettings->setText( tr("Configure plugin", "btn text") );
           connect( btnSettings, SIGNAL( clicked() ), this, SLOT( btnSettingsClicked() ) );
         vlt->addWidget(btnSettings);
         btnAbout = new QPushButton(q);
-          btnAbout->setIcon( BApplication::beqtIcon("help_about") );
+          btnAbout->setIcon( BApplication::icon("help_about") );
           btnAbout->setText( tr("About plugin", "btn text") );
           connect( btnAbout, SIGNAL( clicked() ), this, SLOT( btnAboutClicked() ) );
         vlt->addWidget(btnAbout);
@@ -192,7 +192,7 @@ QString BPluginsSettingsTab::title() const
 
 QIcon BPluginsSettingsTab::icon() const
 {
-    return BApplication::beqtIcon("binary");
+    return BApplication::icon("binary");
 }
 
 QVariantMap BPluginsSettingsTab::valueMap() const

@@ -3,7 +3,6 @@
 
 class BApplicationPrivate;
 
-class QStringList;
 class QAction;
 class QRect;
 
@@ -17,6 +16,7 @@ class QRect;
 #include <QMap>
 #include <QIcon>
 #include <QPointer>
+#include <QStringList>
 
 /*============================================================================
 ================================ BApplicationPrivate =========================
@@ -31,7 +31,9 @@ public:
     ~BApplicationPrivate();
 public:
     static void retranslateStandardAction(QAction *act);
-    static QString findImage(const QString &subdir, const QString &name);
+    static QString findImage( const QString &subdir, const QString &name,
+                              const QStringList &preferredFormats = QStringList() );
+    static QIcon iconFromTheme(const QString &name);
 public:
     void init();
     void initAboutDlg();
@@ -40,6 +42,7 @@ public:
     QString getHelpIndex() const;
     QStringList helpSearchPaths() const;
     void showHelp( const QString &file = QString() );
+    QIcon cacheIcon(const QIcon &icon, const QString &name);
 public slots:
     void retranslateUi();
     void actionDestroyed(QObject *act);
@@ -52,6 +55,8 @@ public:
     bool iconCaching;
     QMap<QObject *, QAction *> actions;
     QRect helpBrowserGeometry;
+    bool themedIcons;
+    QStringList preferredIconFormats;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

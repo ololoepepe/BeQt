@@ -6,7 +6,6 @@ class BAboutDialogPrivate;
 class BPersonInfoProvider;
 class BAboutDialog;
 
-class QIcon;
 class QPixmap;
 class QAction;
 class QFont;
@@ -20,6 +19,7 @@ class QFont;
 #include <QObject>
 #include <QSize>
 #include <QString>
+#include <QIcon>
 
 #if defined(bApp)
 #undef bApp
@@ -57,11 +57,15 @@ public:
 protected:
     explicit BApplication(BApplicationPrivate &d);
 public:
-    static QIcon icon( const QString &name, const QString &theme = QString() );
+    static QIcon icon( const QString &name, const QIcon &fallback = QIcon() );
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
     static void setIconCachingEnabled(bool enabled);
     static void clearIconCache();
+    static void setThemedIconsEnabled(bool enabled);
+    static bool themedIconsEnabled();
+    static void setPreferredIconFormats(const QStringList &suffixes);
+    static QStringList preferredIconFormats();
     static BAboutDialog *aboutDialogInstance();
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);

@@ -40,6 +40,7 @@ int main(int argc, char **argv)
     QApplication::setApplicationVersion("0.1.0pa1");
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
+    //BApplication::setThemedIconsEnabled(false);
     BApplication::installTranslator( new BTranslator("beqt") );
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
@@ -87,6 +88,7 @@ int main(int argc, char **argv)
     mnu->addSeparator();
     mnu->addActions( smdl->actions() );
     mnu->addSeparator();
+    mnu->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
     mnu = mw->menuBar()->addMenu("Help");
     mnu->addAction( BApplication::createStandardAction(BApplication::HomepageAction) );
     mnu->addSeparator();
@@ -103,6 +105,8 @@ int main(int argc, char **argv)
     tbar = mw->addToolBar("Undo/Redo");
     tbar->setObjectName("ToolBarUndoRedo");
     tbar->addActions( emdl->undoRedoActions() );
+    tbar->addSeparator();
+    tbar->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
     tbar = mw->addToolBar("Clipboard");
     tbar->setObjectName("ToolBarClipboard");
     tbar->addActions( emdl->clipboardActions() );

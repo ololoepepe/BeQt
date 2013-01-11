@@ -50,7 +50,7 @@ Thumbs.db
 *.qm
 moc_*
 qrc_*
-*.pro.user
+*.pro.user*
 *.autosave
 Makefile
 *.Debug
