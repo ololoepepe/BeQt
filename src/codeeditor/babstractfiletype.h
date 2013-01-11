@@ -20,7 +20,7 @@ class QObject;
 class B_CODEEDITOR_EXPORT BAbstractFileType
 {
 public:
-    BAbstractFileType();
+    explicit BAbstractFileType();
     virtual ~BAbstractFileType();
 public:
     static BAbstractFileType *defaultFileType();

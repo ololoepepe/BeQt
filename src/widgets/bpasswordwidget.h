@@ -60,4 +60,3 @@ private:
 };
 
 #endif // BPASSWORDWIDGET_H
-

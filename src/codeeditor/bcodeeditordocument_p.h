@@ -4,6 +4,7 @@
 class BCodeEditorDocumentPrivate;
 class BAbstractDocumentDriver;
 class BAbstractFileType;
+class BSplittedLinesDialog;
 
 class QString;
 class QTextCodec;
@@ -41,9 +42,9 @@ public:
     QTextCodec *codec;
     int asyncMin;
     BAbstractFileType *fileType;
+    BSplittedLinesDialog *sld;
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)
 };
 
 #endif // BCODEEDITORDOCUMENT_P_H
-

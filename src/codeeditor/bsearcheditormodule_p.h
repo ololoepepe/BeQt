@@ -165,4 +165,3 @@ private:
 };
 
 #endif // BSEARCHEDITORMODULE_P_H
-

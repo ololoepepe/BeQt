@@ -128,4 +128,3 @@ private:
 };
 
 #endif // BCODEEDIT_H
-

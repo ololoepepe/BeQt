@@ -70,4 +70,3 @@ private:
 };
 
 #endif // BSEARCHEDITORMODULE_H
-

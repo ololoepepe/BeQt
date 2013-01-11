@@ -22,7 +22,7 @@ class QFont;
 #include <QString>
 
 #if defined(bApp)
-#   undef bApp
+#undef bApp
 #endif
 #define bApp ( static_cast<BApplication *>( BCoreApplication::instance() ) )
 
@@ -52,7 +52,7 @@ public:
         AboutAction
     };
 public:
-    BApplication();
+    explicit BApplication();
     ~BApplication();
 protected:
     explicit BApplication(BApplicationPrivate &d);

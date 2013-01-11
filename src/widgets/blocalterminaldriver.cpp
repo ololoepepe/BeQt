@@ -26,9 +26,9 @@ class BLocalTerminalDriverPrivate : public BBasePrivate
 public:
     explicit BLocalTerminalDriverPrivate(BLocalTerminalDriver *q);
     ~BLocalTerminalDriverPrivate();
-    //
+public:
     void init();
-    //
+public:
     QProcess *process;
     QString workingDirectory;
 private:

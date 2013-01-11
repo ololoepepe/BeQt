@@ -102,4 +102,3 @@ private:
 };
 
 #endif // BLOCALDOCUMENTDRIVER_P_H
-

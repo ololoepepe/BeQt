@@ -26,7 +26,7 @@
 
 /*============================== Static public constants ===================*/
 
-const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
+const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 

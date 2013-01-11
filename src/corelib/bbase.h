@@ -15,10 +15,10 @@ class B_CORE_EXPORT BBase
 {
     B_DECLARE_PRIVATE(BBase)
 public:
-    BBase();
+    explicit BBase();
     virtual ~BBase();
 protected:
-    BBase(BBasePrivate &d);
+    explicit BBase(BBasePrivate &d);
 protected:
     BBasePrivate *const _m_d;
 private:

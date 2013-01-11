@@ -141,7 +141,7 @@ void BSocketWrapperPrivate::readyRead()
 
 /*============================== Static public constants ===================*/
 
-const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_4_8;
+const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 

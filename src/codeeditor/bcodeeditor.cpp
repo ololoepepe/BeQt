@@ -608,6 +608,12 @@ void BCodeEditorPrivate::removeDocument(BCodeEditorDocument *doc)
         return;
     emitDocumentAboutToBeRemoved(doc);
     twgt->removeTab( twgt->indexOf(doc) );
+    BSplittedLinesDialog *sld = doc->splittedLinesDialog();
+    if (sld)
+    {
+        sld->close();
+        sld->deleteLater();
+    }
     doc->deleteLater();
 }
 
@@ -877,11 +883,14 @@ BSplittedLinesDialog *BCodeEditorPrivate::createSplittedLinesDialog(BCodeEditorD
 {
     if ( !doc || !processedDocuments.contains(doc) )
         return 0;
-    BSplittedLinesDialog *sld = doc->findChild<BSplittedLinesDialog *>();
+    BSplittedLinesDialog *sld = doc->splittedLinesDialog();
     if (sld)
+    {
         sld->close();
-    sld = new BSplittedLinesDialog(ranges, doc->editLineLength(), doc);
-    sld->setAttribute(Qt::WA_DeleteOnClose);
+        sld->deleteLater();
+    }
+    sld = new BSplittedLinesDialog( ranges, doc->editLineLength(), q_func() );
+    doc->setSplittedLinesDialog(sld);
     connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( moveCursor(QPoint) ) );
     connect( sld, SIGNAL( selectLines(QPoint, QPoint) ), doc, SLOT( selectText(QPoint, QPoint) ) );
     connect( sld, SIGNAL( gotoLine(QPoint) ), doc, SLOT( activateWindow() ) );

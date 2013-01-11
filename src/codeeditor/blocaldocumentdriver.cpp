@@ -32,7 +32,7 @@
 
 /*============================== Static public constants ===================*/
 
-const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_4_8;
+const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 

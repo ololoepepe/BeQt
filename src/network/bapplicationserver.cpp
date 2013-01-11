@@ -23,13 +23,12 @@
 
 /*============================== Static public constants ===================*/
 
-const int BApplicationServerPrivate::OperationTimeout = 5 * BeQt::Second;
-const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_4_8;
+const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 
-BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q) :
-    BBasePrivate(q)
+BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, int timeout) :
+    BBasePrivate(q), OperationTimeout(timeout)
 {
     //
 }
@@ -47,8 +46,7 @@ void BApplicationServerPrivate::init()
 {
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
     server = new BGenericServer(BGenericServer::LocalServer);
-    //TODO (Qt5): Set socket options
-    //server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
+    server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
     connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
@@ -90,8 +88,8 @@ void BApplicationServerPrivate::newPendingConnection()
 
 /*============================== Public constructors =======================*/
 
-BApplicationServer::BApplicationServer() :
-    BBase( *new BApplicationServerPrivate(this) )
+BApplicationServer::BApplicationServer(int operationTimeout) :
+    BBase( *new BApplicationServerPrivate(this, operationTimeout) )
 {
     d_func()->init();
 }
@@ -128,9 +126,8 @@ bool BApplicationServer::tryListen(const QString &serverName)
     out << false;
     BGenericSocket s(BGenericSocket::LocalSocket);
     s.connectToHost(serverName);
-    bool b = s.waitForConnected(BApplicationServerPrivate::OperationTimeout) && s.write(data);
-    b = b && s.waitForBytesWritten(BApplicationServerPrivate::OperationTimeout);
-    b = b && s.waitForReadyRead(BApplicationServerPrivate::OperationTimeout);
+    int to = d->OperationTimeout;
+    bool b = s.waitForConnected(to) && s.write(data) && s.waitForBytesWritten(to) && s.waitForReadyRead(to);
     return b ? false : QLocalServer::removeServer(serverName) && d->server->listen(serverName);
 }
 
@@ -160,11 +157,11 @@ bool BApplicationServer::sendMessage(const QString &serverName, const QStringLis
     out << args;
     BGenericSocket s(BGenericSocket::LocalSocket);
     s.connectToHost(serverName);
-    if ( !s.waitForConnected(BApplicationServerPrivate::OperationTimeout) )
+    if ( !s.waitForConnected(d_func()->OperationTimeout) )
         return false;
     if ( !s.write(ba) )
         return false;
-    return s.waitForBytesWritten(BApplicationServerPrivate::OperationTimeout);
+    return s.waitForBytesWritten(d_func()->OperationTimeout);
 }
 
 /*============================== Protected methods =========================*/

@@ -40,4 +40,3 @@ private:
 };
 
 #endif // BPERSONINFOPROVIDER_P_H
-

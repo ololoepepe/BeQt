@@ -46,7 +46,7 @@
 /*============================== Static public constants ===================*/
 
 const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
-const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_4_8;
+const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 

@@ -52,4 +52,3 @@ private:
 };
 
 #endif // BINDICATORSEDITORMODULE_P_H
-

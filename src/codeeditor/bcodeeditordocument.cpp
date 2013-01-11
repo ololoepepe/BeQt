@@ -1,3 +1,5 @@
+class BSplittedLinesDialog;
+
 #include "bcodeeditordocument.h"
 #include "bcodeeditordocument_p.h"
 #include "babstractdocumentdriver.h"
@@ -46,6 +48,7 @@ void BCodeEditorDocumentPrivate::init()
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
     fileType = 0;
+    sld = 0;
     q_func()->setFileType( BAbstractFileType::defaultFileType() );
 }
 
@@ -178,6 +181,11 @@ void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
     emit fileTypeChanged(ft);
 }
 
+void BCodeEditorDocument::setSplittedLinesDialog(BSplittedLinesDialog *dlg)
+{
+    d_func()->sld = dlg;
+}
+
 bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
 {
     return load(driver, 0, fileName);
@@ -247,4 +255,9 @@ int BCodeEditorDocument::asyncProcessingMinimumLength() const
 BAbstractFileType *BCodeEditorDocument::fileType() const
 {
     return d_func()->fileType;
+}
+
+BSplittedLinesDialog *BCodeEditorDocument::splittedLinesDialog() const
+{
+    return d_func()->sld;
 }

@@ -5,6 +5,7 @@ class BApplicationServerPrivate;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 
 #include <QString>
 #include <QStringList>
@@ -17,7 +18,7 @@ class B_NETWORK_EXPORT BApplicationServer : public BBase
 {
     B_DECLARE_PRIVATE(BApplicationServer)
 public:
-    BApplicationServer();
+    explicit BApplicationServer(int operationTimeout = 5 * BeQt::Second);
     ~BApplicationServer();
 protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);
@@ -32,4 +33,3 @@ private:
 };
 
 #endif // BAPPLICATIONSERVER_H
-

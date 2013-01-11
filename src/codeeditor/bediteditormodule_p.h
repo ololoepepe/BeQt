@@ -48,4 +48,3 @@ private:
 };
 
 #endif // BEDITEDITORMODULE_P_H
-

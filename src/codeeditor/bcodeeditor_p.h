@@ -283,4 +283,3 @@ private:
 };
 
 #endif // BCODEEDITOR_P_H
-

@@ -55,4 +55,3 @@ private:
 };
 
 #endif // BOPENSAVEEDITORMODULE_P_H
-

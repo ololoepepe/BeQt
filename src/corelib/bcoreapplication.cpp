@@ -169,9 +169,9 @@ void BCoreApplicationPrivate::init()
     QCoreApplication::instance()->installEventFilter(this);
     //infos
     QStringList locs;
-    locs << getSharedPrefix(); //sharedPrefix;
+    locs << getSharedPrefix();
 #if defined(Q_OS_MAC)
-    locs << getBundlePrefix(); //bundlePrefix;
+    locs << getBundlePrefix();
 #endif
     locs << ":";
     locs.removeAll("");

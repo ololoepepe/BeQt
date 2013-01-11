@@ -18,9 +18,9 @@ class B_NETWORK_EXPORT BNetworkOperationMetaData : public BBase
 {
     B_DECLARE_PRIVATE(BNetworkOperationMetaData)
 public:
-    BNetworkOperationMetaData();
-    BNetworkOperationMetaData(const BNetworkOperationMetaData &other);
-    BNetworkOperationMetaData(const QUuid &id, bool request, const QString &operation);
+    explicit BNetworkOperationMetaData();
+    BNetworkOperationMetaData(const BNetworkOperationMetaData &other); //Should not be explicit
+    explicit BNetworkOperationMetaData(const QUuid &id, bool request, const QString &operation);
 protected:
     explicit BNetworkOperationMetaData(BNetworkOperationMetaDataPrivate &d);
 public:

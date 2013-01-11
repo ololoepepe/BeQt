@@ -5,8 +5,14 @@
 *.dll
 *.exe
 *.o
+*.obj
+*.manifest
+*.exp
 *.so*
 *.a
+*.lib
+*_resource.rc
+*_resource.res
 
 # Packages #
 ############

@@ -22,7 +22,7 @@ class BLocaleComboBoxPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocaleComboBox)
 public:
-    BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
+    explicit BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
     ~BLocaleComboBoxPrivate();
 public:
     static QString localeToString(const BApplication::LocaleSupportInfo &info);

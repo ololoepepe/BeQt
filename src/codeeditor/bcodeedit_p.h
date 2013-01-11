@@ -308,7 +308,7 @@ class B_CODEEDITOR_EXPORT BCodeEditParseTask : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth);
+    explicit BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth);
     ~BCodeEditParseTask();
 public:
     static QThreadPool *pool();

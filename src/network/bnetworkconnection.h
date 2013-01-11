@@ -28,7 +28,7 @@ class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
     B_DECLARE_PRIVATE(BNetworkConnection)
 public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
-    BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
+    explicit BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
     explicit BNetworkConnection(BGenericSocket::SocketType type, QObject *parent = 0);
     ~BNetworkConnection();
 protected:

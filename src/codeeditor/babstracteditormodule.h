@@ -70,4 +70,3 @@ private:
 };
 
 #endif // BABSTRACTEDITORMODULE_H
-

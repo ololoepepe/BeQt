@@ -58,6 +58,7 @@
 #include <QResizeEvent>
 #include <QSize>
 #include <QTextBlockUserData>
+#include <QRegularExpression>
 
 #include <QDebug>
 
@@ -626,14 +627,14 @@ QString BCodeEditPrivate::removeTrailingSpaces(const QString &s)
 
 void BCodeEditPrivate::removeTrailingSpaces(QString &s)
 {
-    //TODO (Qt5): Use the commented variant with Qt5's improved RegExp
-    //static QRegExp rx("\\s+(?=\\n|$)");
-    //text.remove(rx);
-    static QRegExp rx("\\s+$");
+    //static QRegularExpression rx("\\s+(?=\\n|$)"); //Maybe this pattern is better?
+    static QRegularExpression rx("\\s+$");
+    s.remove(rx);
+    /*static QRegExp rx("\\s+$"); //Leaving old code untill real testing
     QStringList sl = s.split('\n');
     for (int i = 0; i < sl.size(); ++i)
         sl[i].remove(rx);
-    s = sl.join("\n");
+    s = sl.join("\n");*/
 }
 
 QString BCodeEditPrivate::appendTrailingSpaces(const QString &s, int ll)
@@ -1230,13 +1231,9 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
-    //BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
-    //int skipFrom = ud ? ud->skipFrom : -1;
     int posInBlock = tc.positionInBlock();
-    //if (skipFrom >= 0 && posInBlock > skipFrom)
-        //return res;
     const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket) ) //
+    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket) )
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
@@ -1270,8 +1267,6 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
             }
         }
         tb = tb.previous();
-        //BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
-        //int skipFrom = ud ? ud->skipFrom : -1;
         int skipFrom = BTextBlockUserData::blockSkipFrom(tb);
         posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
     }
@@ -1283,11 +1278,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
-    //BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( tb.userData() );
-    //int skipFrom = ud ? ud->skipFrom : -1;
     int posInBlock = tc.positionInBlock();
-    //if (skipFrom >= 0 && posInBlock > skipFrom)
-        //return res;
     const BCodeEdit::BracketPair *bracket = 0;
     if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket) )
         return res;
@@ -1298,7 +1289,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
     while ( tb.isValid() )
     {
         QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
-        while ( posInBlock <= ( /*(skipFrom >= 0) ? (skipFrom - 1) :*/ text.length() ) )
+        while ( posInBlock <= text.length() )
         {
             if ( testBracket(text, posInBlock, false, br) )
             {
@@ -1323,8 +1314,6 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
             }
         }
         tb = tb.next();
-        //ud = static_cast<BTextBlockUserData *>( tb.userData() );
-        //skipFrom = ud ? ud->skipFrom : -1;
         posInBlock = 0;
     }
     return res;

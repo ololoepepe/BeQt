@@ -46,4 +46,3 @@ private:
 };
 
 #endif // BBOOKMARKSEDITORMODULE_P_H
-

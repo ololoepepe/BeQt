@@ -143,4 +143,3 @@ private:
 };
 
 #endif // BCODEEDITOR_H
-

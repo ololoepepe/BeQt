@@ -33,4 +33,3 @@ private:
 };
 
 #endif // BABSTRACTEDITORMODULE_P_H
-

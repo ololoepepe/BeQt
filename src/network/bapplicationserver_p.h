@@ -22,15 +22,16 @@ class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BApplicationServer)
 public:
-    static const int OperationTimeout;
     static const QDataStream::Version DSVersion;
 public:
-    explicit BApplicationServerPrivate(BApplicationServer *q);
+    explicit BApplicationServerPrivate(BApplicationServer *q, int timeout);
     ~BApplicationServerPrivate();
 public:
     void init();
 public slots:
     void newPendingConnection();
+public:
+    const int OperationTimeout;
 public:
     BGenericServer *server;
 private:
@@ -38,4 +39,3 @@ private:
 };
 
 #endif // BAPPLICATIONSERVER_P_H
-

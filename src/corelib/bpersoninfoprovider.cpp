@@ -107,6 +107,7 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
     if ( !f.open(QFile::ReadOnly) )
         return;
     QTextStream in(&f);
+    in.setCodec("UTF-8");
     infos.clear();
     QMap<QString, BPersonInfoProvider::PersonInfo> info;
     while ( !in.atEnd() )

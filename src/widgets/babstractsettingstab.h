@@ -20,7 +20,7 @@ class B_WIDGETS_EXPORT BAbstractSettingsTab : public QWidget
 {
     Q_OBJECT
 public:
-    BAbstractSettingsTab();
+    explicit BAbstractSettingsTab();
     ~BAbstractSettingsTab();
 public:
     static void setRowVisible(QFormLayout *flt, QWidget *field, bool visible);

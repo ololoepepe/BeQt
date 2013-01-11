@@ -22,7 +22,7 @@ class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginsSettingsTab)
 public:
-    BPluginsSettingsTab();
+    explicit BPluginsSettingsTab();
     ~BPluginsSettingsTab();
 protected:
     explicit BPluginsSettingsTab(BPluginsSettingsTabPrivate &d);
