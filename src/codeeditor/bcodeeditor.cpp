@@ -947,6 +947,11 @@ void BCodeEditorPrivate::emitCurrentDocumentFileNameChanged(const QString &fileN
     QMetaObject::invokeMethod( q_func(), "currentDocumentFileNameChanged", Q_ARG(QString, fileName) );
 }
 
+void BCodeEditorPrivate::emitCurrentDocumentModificationChanged(bool modified)
+{
+    QMetaObject::invokeMethod( q_func(), "currentDocumentModificationChanged", Q_ARG(bool, modified) );
+}
+
 void BCodeEditorPrivate::emitFileTypesChanged()
 {
     foreach (BAbstractEditorModule *module, modules)
@@ -1051,6 +1056,7 @@ void BCodeEditorPrivate::documentReadOnlyChanged(bool ro)
 void BCodeEditorPrivate::documentModificationChanged(bool modified)
 {
     updateDocumentTab(document);
+    emitCurrentDocumentModificationChanged(modified);
     foreach (BAbstractEditorModule *module, modules)
         module->documentModificationChanged(modified);
 }
@@ -1727,10 +1733,16 @@ bool BCodeEditor::documentAvailable() const
     return currentDocument();
 }
 
-QString BCodeEditor::currentFileName() const
+QString BCodeEditor::currentDocumentFileName() const
 {
     BCodeEditorDocument *doc = currentDocument();
     return doc ? doc->fileName() : QString();
+}
+
+bool BCodeEditor::isCurrentDocumentModified() const
+{
+    BCodeEditorDocument *doc = currentDocument();
+    return doc && doc->isModified();
 }
 
 QStringList BCodeEditor::fileNames() const

@@ -408,6 +408,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
         act = new QAction(parent);
         act->setObjectName("ActionSettings");
         act->setIcon( icon("configure") );
+        act->setShortcut(QKeySequence::Preferences);
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showSettingsDialog() ) );
         break;
     case HomepageAction:

@@ -43,19 +43,19 @@ void BEditEditorModulePrivate::init()
     //
     actCut = new QAction(this);
       actCut->setIcon( BApplication::icon("editcut") );
-      actCut->setShortcut( QKeySequence("Ctrl+X") );
+      actCut->setShortcut(QKeySequence::Cut);
     actCopy = new QAction(this);
       actCopy->setIcon( BApplication::icon("editcopy") );
-      actCopy->setShortcut( QKeySequence("Ctrl+C") );
+      actCopy->setShortcut(QKeySequence::Copy);
     actPaste = new QAction(this);
       actPaste->setIcon( BApplication::icon("editpaste") );
-      actPaste->setShortcut( QKeySequence("Ctrl+V") );
+      actPaste->setShortcut(QKeySequence::Paste);
     actUndo = new QAction(this);
       actUndo->setIcon( BApplication::icon("undo") );
-      actUndo->setShortcut( QKeySequence("Ctrl+Z") );
+      actUndo->setShortcut(QKeySequence::Undo);
     actRedo = new QAction(this);
       actRedo->setIcon( BApplication::icon("redo") );
-      actRedo->setShortcut( QKeySequence("Ctrl+Shift+Z") );
+      actRedo->setShortcut(QKeySequence::Redo);
     actSwitchMode = new QAction(this);
       connect( actSwitchMode.data(), SIGNAL( triggered() ), this, SLOT( actSwitchModeTriggered() ) );
     //

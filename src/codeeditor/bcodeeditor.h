@@ -107,7 +107,8 @@ public:
     QStringList fileHistory() const;
     int maxHistoryCount() const;
     bool documentAvailable() const;
-    QString currentFileName() const;
+    QString currentDocumentFileName() const;
+    bool isCurrentDocumentModified() const;
     QStringList fileNames() const;
     QObject *dropHandler() const;
 public slots:
@@ -133,6 +134,7 @@ signals:
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void currentDocumentFileNameChanged(const QString &fileName);
+    void currentDocumentModificationChanged(bool modified);
     void documentAvailableChanged(bool available);
     void fileTypesChanged();
     void fileHistoryChanged(const QStringList &history);

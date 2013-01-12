@@ -228,6 +228,7 @@ public:
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
     void emitCurrentDocumentFileNameChanged(const QString &fileName);
+    void emitCurrentDocumentModificationChanged(bool modified);
     void emitFileTypesChanged();
     void emitFileHistoryChanged(const QStringList &list);
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
