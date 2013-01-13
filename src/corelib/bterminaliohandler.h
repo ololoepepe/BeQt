@@ -33,7 +33,9 @@ public:
     static QStringList splitCommand(const QString &command);
     static QString readLine();
     static void write(const QString &text);
-    static void writeLine(const QString &text);
+    static void writeLine( const QString &text = QString() );
+    static void writeErr(const QString &text);
+    static void writeLineErr( const QString &text = QString() );
     static void setStdinEchoEnabled(bool enabled = true);
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(const QString &command, ExternalHandler handler);

@@ -115,7 +115,9 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 QMutex BTerminalIOHandlerPrivate::echoMutex;
 QMutex BTerminalIOHandlerPrivate::readMutex;
 QMutex BTerminalIOHandlerPrivate::writeMutex;
+QMutex BTerminalIOHandlerPrivate::writeErrMutex;
 QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly);
+QTextStream BTerminalIOHandlerPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
 
 /*============================================================================
 ================================ BTerminalIOHandler ==========================
@@ -206,6 +208,18 @@ void BTerminalIOHandler::write(const QString &text)
 void BTerminalIOHandler::writeLine(const QString &text)
 {
     write(text + "\n");
+}
+
+void BTerminalIOHandler::writeErr(const QString &text)
+{
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::writeErrMutex);
+    BTerminalIOHandlerPrivate::writeErrStream << text;
+    BTerminalIOHandlerPrivate::writeErrStream.flush();
+}
+
+void BTerminalIOHandler::writeLineErr(const QString &text)
+{
+    writeErr(text + "\n");
 }
 
 void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)

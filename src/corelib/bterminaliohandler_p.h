@@ -62,7 +62,9 @@ public:
     static QMutex echoMutex;
     static QMutex readMutex;
     static QMutex writeMutex;
+    static QMutex writeErrMutex;
     static QTextStream writeStream;
+    static QTextStream writeErrStream;
 public:
     BTerminalIOHandlerThread *const Thread;
 public:
