@@ -24,6 +24,8 @@ class QSettings;
 
 #define bApp BCoreApplication::instance()
 #define bSettings BCoreApplication::globalSettings()
+#define bLogger BCoreApplication::logger()
+#define bLog BCoreApplication::log
 
 /*============================================================================
 ================================ BCoreApplication ============================

@@ -180,7 +180,7 @@ void BCoreApplicationPrivate::init()
     beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
-    logger = 0;
+    logger = new BLogger(this);
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
@@ -740,7 +740,12 @@ void BCoreApplication::setLogger(BLogger *l)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
-    ds_func()->logger = l;
+    B_DS(BCoreApplication);
+    if ( ds->logger && (!ds->logger->parent() || ds->logger->parent() == _m_self) )
+        ds->logger->deleteLater();
+    ds->logger = l;
+    if ( l && !l->parent() )
+        l->setParent(_m_self);
 }
 
 BLogger *BCoreApplication::logger()

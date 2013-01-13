@@ -40,6 +40,8 @@ int main(int argc, char **argv)
     QApplication::setApplicationVersion("0.1.0pa1");
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
+    bLogger->setIncludeDateTime(false);
+    bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);
     BApplication::installTranslator( new BTranslator("beqt") );
     BAboutDialog::setDefaultMinimumSize(800, 400);

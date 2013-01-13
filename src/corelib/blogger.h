@@ -29,10 +29,11 @@ public:
         FatalLevel
     };
 public:
-    explicit BLogger( const QString &fileName = QString() );
+    explicit BLogger(QObject *parent = 0);
+    explicit BLogger(const QString &fileName, QObject *parent = 0);
     ~BLogger();
 protected:
-    explicit BLogger(BLoggerPrivate &d);
+    explicit BLogger(BLoggerPrivate &d, QObject *parent = 0);
 public:
     void setIncludeLevel(bool b);
     void setIncludeDateTime(bool b);

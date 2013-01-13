@@ -19,8 +19,11 @@ class BRemoteLogger : public BLogger
     Q_OBJECT
     B_DECLARE_PRIVATE(BRemoteLogger)
 public:
-    explicit BRemoteLogger( BGenericSocket *socket, const QString &fileName = QString() );
-    explicit BRemoteLogger( const QString &hostName, quint16 port, const QString &fileName = QString() );
+    explicit BRemoteLogger(QObject *parent = 0);
+    explicit BRemoteLogger(BGenericSocket *socket, QObject *parent = 0);
+    explicit BRemoteLogger(BGenericSocket *socket, const QString &fileName, QObject *parent = 0);
+    explicit BRemoteLogger(const QString &hostName, quint16 port, QObject *parent = 0);
+    explicit BRemoteLogger(const QString &hostName, quint16 port, const QString &fileName, QObject *parent = 0);
     ~BRemoteLogger();
 protected:
     explicit BRemoteLogger(BRemoteLoggerPrivate &d);

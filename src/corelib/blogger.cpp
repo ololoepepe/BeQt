@@ -1,6 +1,5 @@
 #include "blogger.h"
 #include "blogger_p.h"
-
 #include "bglobal.h"
 #include "bbase.h"
 #include "bbase_p.h"
@@ -79,6 +78,7 @@ void BLoggerPrivate::tryLogToConsole(const QString &text)
     if (!logToConsole)
         return;
     consoleStream << text;
+    consoleStream.flush();
 }
 
 void BLoggerPrivate::tryLogToFile(const QString &text)
@@ -102,7 +102,7 @@ QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl
         if ( !level.isEmpty() )
             msg += level + ": ";
     }
-    msg += text;
+    msg += text + "\n";
     return msg;
 }
 
@@ -112,8 +112,14 @@ QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl
 
 /*============================== Public constructors =======================*/
 
-BLogger::BLogger(const QString &fileName) :
-    BBase( *new BLoggerPrivate(this) )
+BLogger::BLogger(QObject *parent) :
+    QObject(parent), BBase( *new BLoggerPrivate(this) )
+{
+    d_func()->init();
+}
+
+BLogger::BLogger(const QString &fileName, QObject *parent) :
+    QObject(parent), BBase( *new BLoggerPrivate(this) )
 {
     d_func()->init();
     setFileName(fileName);
@@ -126,8 +132,8 @@ BLogger::~BLogger()
 
 /*============================== Protected constructors ====================*/
 
-BLogger::BLogger(BLoggerPrivate &d) :
-    BBase(d)
+BLogger::BLogger(BLoggerPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
 {
     d_func()->init();
 }

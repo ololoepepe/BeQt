@@ -72,6 +72,7 @@ void BRemoteLoggerPrivate::tryLogToRemote(const QString &text)
     if ( !logToRemote || socket.isNull() || socket->isWritable() )
         return;
     socket->write( text.toUtf8() );
+    socket->flush();
     socket->waitForBytesWritten(timeout);
 }
 
@@ -87,16 +88,36 @@ void BRemoteLoggerPrivate::removeSocket()
 
 /*============================== Public constructors =======================*/
 
-BRemoteLogger::BRemoteLogger(BGenericSocket *socket, const QString &fileName) :
-    BLogger( *new BLoggerPrivate(this) )
+BRemoteLogger::BRemoteLogger(QObject *parent) :
+    BLogger(*new BLoggerPrivate(this), parent)
+{
+    d_func()->init();
+}
+
+BRemoteLogger::BRemoteLogger(BGenericSocket *socket, QObject *parent) :
+    BLogger(*new BLoggerPrivate(this), parent)
+{
+    d_func()->init();
+    setRemote(socket);
+}
+
+BRemoteLogger::BRemoteLogger(BGenericSocket *socket, const QString &fileName, QObject *parent) :
+    BLogger(*new BLoggerPrivate(this), parent)
 {
     d_func()->init();
     setFileName(fileName);
     setRemote(socket);
 }
 
-BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, const QString &fileName) :
-    BLogger( *new BLoggerPrivate(this) )
+BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, QObject *parent) :
+    BLogger(*new BLoggerPrivate(this), parent)
+{
+    d_func()->init();
+    setRemote(hostName, port);
+}
+
+BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, const QString &fileName, QObject *parent) :
+    BLogger(*new BLoggerPrivate(this), parent)
 {
     d_func()->init();
     setFileName(fileName);
@@ -142,7 +163,7 @@ void BRemoteLogger::setRemote(const QString &hostName, quint16 port)
     s->connectToHost(hostName, port);
     if ( !s->waitForConnected(d->timeout) )
     {
-        delete s;
+        s->deleteLater();
         s = 0;
     }
     setRemote(s);
