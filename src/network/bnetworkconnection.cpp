@@ -5,7 +5,8 @@
 #include "bnetworkconnection_p.h"
 #include "bnetworkoperation_p.h"
 
-#include <BeQtCore/BTerminalIOHandler>
+#include <BeQtCore/BCoreApplication>
+#include <BeQtCore/BLogger>
 
 #include <QObject>
 #include <QDataStream>
@@ -39,6 +40,7 @@ void BNetworkConnectionPrivate::init()
 {
     detailedLog = false;
     autoDelete = true;
+    logger = 0;
     socketWrapper = new BSocketWrapper( q_func() );
     connect( socketWrapper, SIGNAL( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ),
              this, SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
@@ -434,10 +436,15 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
 
 /*============================== Protected methods =========================*/
 
-void BNetworkConnection::log(const QString &text)
+void BNetworkConnection::log(const QString &text, bool noLevel)
 {
-    BTerminalIOHandler::writeLine("[" + QDateTime::currentDateTime().toString("dd/MMM/yyy hh:mm:ss") + "] [" +
-                                  peerAddress() + "] " + text);
+    BLogger *logger = d_func()->logger;
+    if (!logger)
+        logger = BCoreApplication::logger();
+    if (!logger)
+        return;
+    QString msg = "[" + peerAddress() + "] " + text;
+    logger->log(msg, noLevel ? BLogger::NoLevel : BLogger::InfoLevel);
 }
 
 BGenericSocket *BNetworkConnection::socket() const

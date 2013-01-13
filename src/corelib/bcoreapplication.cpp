@@ -7,6 +7,7 @@
 #include "btranslator_p.h"
 #include "bpluginwrapper_p.h"
 #include "bpersoninfoprovider.h"
+#include "blogger.h"
 
 #include <QObject>
 #include <QString>
@@ -179,6 +180,7 @@ void BCoreApplicationPrivate::init()
     beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
+    logger = 0;
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
@@ -732,6 +734,30 @@ QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
     }
 #endif
     return BDirTools::readTextFile(fn, "UTF-8");
+}
+
+void BCoreApplication::setLogger(BLogger *l)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    ds_func()->logger = l;
+}
+
+BLogger *BCoreApplication::logger()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return 0;
+    return ds_func()->logger;
+}
+
+void BCoreApplication::log(const QString &text, BLogger::Level lvl)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    B_DS(BCoreApplication);
+    if (!ds->logger)
+        return;
+    ds->logger->log(text, lvl);
 }
 
 /*============================== Static protected variables ================*/

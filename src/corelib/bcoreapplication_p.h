@@ -7,6 +7,7 @@ class BPluginWrapperPrivate;
 class BTranslatorPrivate;
 class BPersonInfoProvider;
 class BCoreApplicationPrivate;
+class BLogger;
 
 class QString;
 class QLocale;
@@ -90,6 +91,7 @@ public:
     BPersonInfoProvider *beqtAuthors;
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
+    BLogger *logger;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;

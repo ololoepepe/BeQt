@@ -6,6 +6,7 @@ class BNetworkOperationMetaData;
 class BNetworkOperation;
 class BSocketWrapper;
 class BNetworkServer;
+class BLogger;
 
 class QString;
 class QByteArray;
@@ -64,6 +65,7 @@ public:
     QQueue<Data> dataQueue;
     bool detailedLog;
     bool autoDelete;
+    BLogger *logger;
 private:
     Q_DISABLE_COPY(BNetworkConnectionPrivate)
 };

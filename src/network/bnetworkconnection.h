@@ -4,6 +4,7 @@
 class BNetworkConnectionPrivate;
 class BNetworkOperation;
 class BNetworkServer;
+class BLogger;
 
 class QString;
 class QUuid;
@@ -39,6 +40,7 @@ public:
     void setCloseOnCriticalBufferSize(bool close);
     void setDetailedLogMode(bool enabled);
     void setAutoDeleteSentReplies(bool enabled);
+    void setLogger(BLogger *l);
     void connectToHost(const QString &hostName, quint16 port = 0);
     bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30000);
     void disconnectFromHost();
@@ -55,11 +57,12 @@ public:
     bool closeOnCriticalBufferSize() const;
     bool detailedLogMode() const;
     bool autoDeleteSentReplies() const;
+    BLogger *logger() const;
     QString peerAddress() const;
     BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
 protected:
-    virtual void log(const QString &text);
+    void log(const QString &text, bool noLevel = true);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
 signals:

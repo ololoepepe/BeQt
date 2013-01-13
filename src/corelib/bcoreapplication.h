@@ -13,6 +13,7 @@ class QSettings;
 
 #include "bglobal.h"
 #include "bbase.h"
+#include "blogger.h"
 
 #include <QObject>
 #include <QLocale>
@@ -96,6 +97,9 @@ public:
     static void saveSettings();
     static QVariantMap &globalSettings();
     static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
+    static void setLogger(BLogger *l);
+    static BLogger *logger();
+    static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);

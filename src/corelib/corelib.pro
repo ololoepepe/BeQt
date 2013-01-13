@@ -18,6 +18,7 @@ HEADERS += \
     bcoreapplication_p.h \
     bdirtools.h \
     bglobal.h \
+    blogger.h \
     bnamespace.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \
@@ -29,11 +30,13 @@ HEADERS += \
     btranslator.h \
     btranslator_p.h
 
+
 SOURCES += \
     bbase.cpp \
     bcoreapplication.cpp \
     bdirtools.cpp \
     bglobal.cpp \
+    blogger.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
     bterminaliohandler.cpp \
