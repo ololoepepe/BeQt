@@ -330,6 +330,14 @@ QString BGenericSocket::peerAddress() const
     return !d->asocket.isNull() ? d->asocket->peerAddress().toString() : d->lsocket->serverName();
 }
 
+quint16 BGenericSocket::peerPort() const
+{
+    if ( !isSocketSet() )
+        return 0;
+    const B_D(BGenericSocket);
+    return !d->asocket.isNull() ? d->asocket->peerPort() : 0;
+}
+
 QByteArray BGenericSocket::read(qint64 maxSize)
 {
     return isSocketSet() ? ioDevice()->read(maxSize) : QByteArray();

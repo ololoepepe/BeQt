@@ -19,6 +19,7 @@ HEADERS += \
     bdirtools.h \
     bglobal.h \
     blogger.h \
+    blogger_p.h \
     bnamespace.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \

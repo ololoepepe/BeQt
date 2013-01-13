@@ -1,4 +1,5 @@
 #include "blogger.h"
+#include "blogger_p.h"
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -16,45 +17,6 @@
 ================================ BLoggerPrivate ==============================
 ============================================================================*/
 
-class BLoggerPrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BLogger)
-public:
-    explicit BLoggerPrivate(BLogger *q);
-    ~BLoggerPrivate();
-public:
-    static QString levelToString(BLogger::Level lvl);
-public:
-    void init();
-    void tryLogToConsole(const QString &text);
-    void tryLogToFile(const QString &text);
-    void tryLogToRemote(const QString &text);
-    QString constructMessage(const QString &text, BLogger::Level lvl) const;
-public:
-    bool includeLevel;
-    bool includeDateTime;
-    QString format;
-    QString hostName;
-    quint16 port;
-    bool logToConsole;
-    bool logToFile;
-    bool logToRemote;
-    QFile file;
-    QFile stdoutWrapper;
-    QTextStream consoleStream;
-    QTextStream fileStream;
-    mutable QMutex formatMutex;
-    mutable QMutex consoleMutex;
-    mutable QMutex fileMutex;
-    mutable QMutex remoteMutex;
-private:
-    Q_DISABLE_COPY(BLoggerPrivate)
-};
-
-/*============================================================================
-================================ BLoggerPrivate ==============================
-============================================================================*/
-
 /*============================== Public constructors =======================*/
 
 BLoggerPrivate::BLoggerPrivate(BLogger *q) :
@@ -65,7 +27,8 @@ BLoggerPrivate::BLoggerPrivate(BLogger *q) :
 
 BLoggerPrivate::~BLoggerPrivate()
 {
-    //
+    if ( file.isOpen() )
+        file.close();
 }
 
 /*============================== Static public methods =====================*/
@@ -100,9 +63,14 @@ void BLoggerPrivate::init()
     format = "dd/MMM/yyy hh:mm:ss";
     logToConsole = true;
     logToFile = true;
-    logToRemote = true;
     stdoutWrapper.open(stdout, QFile::WriteOnly);
     consoleStream.setDevice(&stdoutWrapper);
+}
+
+void BLoggerPrivate::tryLog(const QString &msg)
+{
+    tryLogToConsole(msg);
+    tryLogToFile(msg);
 }
 
 void BLoggerPrivate::tryLogToConsole(const QString &text)
@@ -120,13 +88,6 @@ void BLoggerPrivate::tryLogToFile(const QString &text)
         return;
     fileStream << text;
     fileStream.flush();
-}
-
-void BLoggerPrivate::tryLogToRemote(const QString &text)
-{
-    QMutexLocker locker(&remoteMutex);
-    if (!logToRemote)
-        return;
 }
 
 QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl) const
@@ -151,26 +112,11 @@ QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl
 
 /*============================== Public constructors =======================*/
 
-BLogger::BLogger() :
-    BBase( *new BLoggerPrivate(this) )
-{
-    d_func()->init();
-}
-
-BLogger::BLogger(const QString &fileName, const QString &hostName, quint16 port) :
+BLogger::BLogger(const QString &fileName) :
     BBase( *new BLoggerPrivate(this) )
 {
     d_func()->init();
     setFileName(fileName);
-    setRemote(hostName, port);
-}
-
-BLogger::BLogger(const QString &hostName, quint16 port, const QString &fileName) :
-    BBase( *new BLoggerPrivate(this) )
-{
-    d_func()->init();
-    setFileName(fileName);
-    setRemote(hostName, port);
 }
 
 BLogger::~BLogger()
@@ -223,13 +169,6 @@ void BLogger::setLogToFileEnabled(bool enabled)
     d->logToFile = enabled;
 }
 
-void BLogger::setLogToRemoteEnabled(bool enabled)
-{
-    B_D(BLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    d->logToRemote = enabled;
-}
-
 void BLogger::setFileName(const QString &fileName)
 {
     B_D(BLogger);
@@ -241,16 +180,8 @@ void BLogger::setFileName(const QString &fileName)
     if ( fileName.isEmpty() )
         return;
     if ( !d->file.open(QFile::WriteOnly | QFile::Append) )
-        return;
+        return d->file.setFileName("");
     d->fileStream.setDevice(&d->file);
-}
-
-void BLogger::setRemote(const QString &hostName, quint16 port)
-{
-    B_D(BLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    d->hostName = hostName;
-    d->port = port;
 }
 
 bool BLogger::isLevelIncluded() const
@@ -288,13 +219,6 @@ bool BLogger::isLogToFileEnabled() const
     return d->logToFile;
 }
 
-bool BLogger::isLogToRemoteEnabled() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return d->logToRemote;
-}
-
 QString BLogger::fileName() const
 {
     const B_D(BLogger);
@@ -302,27 +226,11 @@ QString BLogger::fileName() const
     return d->file.fileName();
 }
 
-QString BLogger::hostName() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return d->hostName;
-}
-
-quint16 BLogger::port() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return d->port;
-}
-
 void BLogger::log(const QString &text, Level lvl)
 {
     B_D(BLogger);
     QString msg = d->constructMessage(text, lvl);
-    d->tryLogToConsole(msg);
-    d->tryLogToFile(msg);
-    d->tryLogToRemote(msg);
+    d->tryLog(msg);
 }
 
 /*============================== Public slots ==============================*/

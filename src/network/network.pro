@@ -25,6 +25,7 @@ HEADERS += \
     bnetworkoperationmetadata.h \
     bnetworkserver.h \
     bnetworkserver_p.h \
+    bremotelogger.h \
     bsocketwrapper.h \
     bsocketwrapper_p.h
 
@@ -36,8 +37,8 @@ SOURCES += \
     bnetworkoperation.cpp \
     bnetworkoperationmetadata.cpp \
     bnetworkserver.cpp \
+    bremotelogger.cpp \
     bsocketwrapper.cpp
-
 
 !contains(CONFIG, beqt_no_install) {
 

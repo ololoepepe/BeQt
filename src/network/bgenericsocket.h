@@ -68,6 +68,7 @@ public:
     bool isWritable() const;
     QIODevice::OpenMode openMode() const;
     QString peerAddress() const;
+    quint16 peerPort() const;
     QByteArray read(qint64 maxSize);
     QByteArray readAll();
     qint64 readBufferSize() const;

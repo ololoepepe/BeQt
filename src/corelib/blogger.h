@@ -29,9 +29,7 @@ public:
         FatalLevel
     };
 public:
-    explicit BLogger();
-    explicit BLogger(const QString &fileName, const QString &hostName = QString(), quint16 port = 0);
-    explicit BLogger( const QString &hostName, quint16 port, const QString &fileName = QString() );
+    explicit BLogger( const QString &fileName = QString() );
     ~BLogger();
 protected:
     explicit BLogger(BLoggerPrivate &d);
@@ -41,18 +39,13 @@ public:
     void setDateTimeFormat(const QString &format);
     void setLogToConsoleEnabled(bool enabled);
     void setLogToFileEnabled(bool enabled);
-    void setLogToRemoteEnabled(bool enabled);
     void setFileName(const QString &fileName);
-    void setRemote(const QString &hostName, quint16 port);
     bool isLevelIncluded() const;
     bool isDateTimeIncluded() const;
     QString dateTimeFormat() const;
     bool isLogToConsoleEnabled() const;
     bool isLogToFileEnabled() const;
-    bool isLogToRemoteEnabled() const;
     QString fileName() const;
-    QString hostName() const;
-    quint16 port() const;
     void log(const QString &text, Level lvl);
 public slots:
     void log(const QString &text);
@@ -67,4 +60,3 @@ private:
 };
 
 #endif // BLOGGER_H
-
