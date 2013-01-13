@@ -124,6 +124,11 @@ BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, const QStrin
     setRemote(hostName, port);
 }
 
+BRemoteLogger::~BRemoteLogger()
+{
+    //
+}
+
 /*============================== Protected constructors ====================*/
 
 BRemoteLogger::BRemoteLogger(BRemoteLoggerPrivate &d) :
