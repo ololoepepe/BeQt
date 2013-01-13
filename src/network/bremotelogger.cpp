@@ -23,7 +23,7 @@ public:
     ~BRemoteLoggerPrivate();
 public:
     void init();
-    virtual void tryLog(const QString &msg);
+    virtual void tryLog(const QString &msg, bool stderrLevel);
     void tryLogToRemote(const QString &text);
     void removeSocket();
 public:
@@ -60,9 +60,9 @@ void BRemoteLoggerPrivate::init()
     timeout = 10 * BeQt::Second;
 }
 
-void BRemoteLoggerPrivate::tryLog(const QString &msg)
+void BRemoteLoggerPrivate::tryLog(const QString &msg, bool stderrLevel)
 {
-    BLoggerPrivate::tryLog(msg);
+    BLoggerPrivate::tryLog(msg, stderrLevel);
     tryLogToRemote(msg);
 }
 

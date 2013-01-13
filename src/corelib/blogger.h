@@ -35,12 +35,14 @@ public:
 protected:
     explicit BLogger(BLoggerPrivate &d, QObject *parent = 0);
 public:
+    void setUseStderr(bool b);
     void setIncludeLevel(bool b);
     void setIncludeDateTime(bool b);
     void setDateTimeFormat(const QString &format);
     void setLogToConsoleEnabled(bool enabled);
     void setLogToFileEnabled(bool enabled);
     void setFileName(const QString &fileName);
+    bool isStderrUsed() const;
     bool isLevelIncluded() const;
     bool isDateTimeIncluded() const;
     QString dateTimeFormat() const;

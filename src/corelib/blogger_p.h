@@ -23,13 +23,15 @@ public:
     ~BLoggerPrivate();
 public:
     static QString levelToString(BLogger::Level lvl);
+    static bool isStderrLevel(BLogger::Level lvl);
 public:
     void init();
-    virtual void tryLog(const QString &msg);
-    void tryLogToConsole(const QString &text);
+    virtual void tryLog(const QString &msg, bool stderrLevel);
+    void tryLogToConsole(const QString &text, bool stderrLevel);
     void tryLogToFile(const QString &text);
     QString constructMessage(const QString &text, BLogger::Level lvl) const;
 public:
+    bool useStderr;
     bool includeLevel;
     bool includeDateTime;
     QString format;
@@ -37,7 +39,9 @@ public:
     bool logToFile;
     QFile file;
     QFile stdoutWrapper;
-    QTextStream consoleStream;
+    QFile stderrWrapper;
+    QTextStream stdoutStream;
+    QTextStream stderrStream;
     QTextStream fileStream;
     mutable QMutex formatMutex;
     mutable QMutex consoleMutex;

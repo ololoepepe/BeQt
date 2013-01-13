@@ -53,32 +53,57 @@ QString BLoggerPrivate::levelToString(BLogger::Level lvl)
     }
 }
 
+bool BLoggerPrivate::isStderrLevel(BLogger::Level lvl)
+{
+    switch (lvl)
+    {
+    case BLogger::DebugLevel:
+    case BLogger::WarningLevel:
+    case BLogger::CriticalLevel:
+    case BLogger::FatalLevel:
+        return true;
+    default:
+        return false;
+    }
+}
+
 /*============================== Public methods ============================*/
 
 void BLoggerPrivate::init()
 {
+    useStderr = true;
     includeLevel = true;
     includeDateTime = true;
     format = "dd/MMM/yyy hh:mm:ss";
     logToConsole = true;
     logToFile = true;
     stdoutWrapper.open(stdout, QFile::WriteOnly);
-    consoleStream.setDevice(&stdoutWrapper);
+    stdoutStream.setDevice(&stdoutWrapper);
+    stderrWrapper.open(stderr, QFile::WriteOnly);
+    stderrStream.setDevice(&stderrWrapper);
 }
 
-void BLoggerPrivate::tryLog(const QString &msg)
+void BLoggerPrivate::tryLog(const QString &msg, bool stderrLevel)
 {
-    tryLogToConsole(msg);
+    tryLogToConsole(msg, stderrLevel);
     tryLogToFile(msg);
 }
 
-void BLoggerPrivate::tryLogToConsole(const QString &text)
+void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
 {
     QMutexLocker locker(&consoleMutex);
     if (!logToConsole)
         return;
-    consoleStream << text;
-    consoleStream.flush();
+    if (stderrLevel && useStderr)
+    {
+        stderrStream << text;
+        stderrStream.flush();
+    }
+    else
+    {
+        stdoutStream << text;
+        stdoutStream.flush();
+    }
 }
 
 void BLoggerPrivate::tryLogToFile(const QString &text)
@@ -140,6 +165,13 @@ BLogger::BLogger(BLoggerPrivate &d, QObject *parent) :
 
 /*============================== Public methods ============================*/
 
+void BLogger::setUseStderr(bool b)
+{
+    B_D(BLogger);
+    QMutexLocker locker(&d->consoleMutex);
+    d->useStderr = b;
+}
+
 void BLogger::setIncludeLevel(bool b)
 {
     B_D(BLogger);
@@ -190,6 +222,13 @@ void BLogger::setFileName(const QString &fileName)
     d->fileStream.setDevice(&d->file);
 }
 
+bool BLogger::isStderrUsed() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->consoleMutex);
+    return d->useStderr;
+}
+
 bool BLogger::isLevelIncluded() const
 {
     const B_D(BLogger);
@@ -236,7 +275,7 @@ void BLogger::log(const QString &text, Level lvl)
 {
     B_D(BLogger);
     QString msg = d->constructMessage(text, lvl);
-    d->tryLog(msg);
+    d->tryLog( msg, BLoggerPrivate::isStderrLevel(lvl) );
 }
 
 /*============================== Public slots ==============================*/
