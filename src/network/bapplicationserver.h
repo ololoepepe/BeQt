@@ -18,14 +18,15 @@ class B_NETWORK_EXPORT BApplicationServer : public BBase
 {
     B_DECLARE_PRIVATE(BApplicationServer)
 public:
-    explicit BApplicationServer(int operationTimeout = 5 * BeQt::Second);
+    explicit BApplicationServer(const QString &serverName, int operationTimeout = 5 * BeQt::Second);
     ~BApplicationServer();
 protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);
 public:
-    bool tryListen(const QString &serverName);
-    bool sendMessage(const QString &serverName, int &argc, char **argv);
-    bool sendMessage( const QString &serverName, const QStringList &arguments = QStringList() );
+    bool isValid() const;
+    bool tryListen();
+    bool sendMessage(int &argc, char **argv);
+    bool sendMessage( const QStringList &arguments = QStringList() );
 protected:
     virtual void handleMessage(const QStringList &arguments);
 private:

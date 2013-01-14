@@ -1579,15 +1579,13 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
 void BCodeEditor::setFileHistory(const QStringList &list)
 {
     B_D(BCodeEditor);
-    if (!d->maxHistoryCount)
+    if (!d->maxHistoryCount || list == d->fileHistory)
         return;
-    bool b = (list == d->fileHistory);
     d->fileHistory = list;
     if (d->maxHistoryCount >= 0 && d->fileHistory.size() > d->maxHistoryCount)
         while (d->fileHistory.size() > d->maxHistoryCount)
             d->fileHistory.removeLast();
-    if (!b)
-        d->emitFileHistoryChanged(d->fileHistory);
+    d->emitFileHistoryChanged(d->fileHistory);
 }
 
 void BCodeEditor::setMaxHistoryCount(int count)

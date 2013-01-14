@@ -12,6 +12,7 @@ class BGenericServer;
 #include <QObject>
 #include <QCoreApplication>
 #include <QDataStream>
+#include <QString>
 
 /*============================================================================
 ================================ BApplicationServerPrivate ===================
@@ -24,14 +25,15 @@ class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
 public:
     static const QDataStream::Version DSVersion;
 public:
-    explicit BApplicationServerPrivate(BApplicationServer *q, int timeout);
+    explicit BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout);
     ~BApplicationServerPrivate();
 public:
     void init();
-    bool testServer(const QString &serverName) const;
+    bool testServer() const;
 public slots:
     void newPendingConnection();
 public:
+    const QString ServerName;
     const int OperationTimeout;
 public:
     BGenericServer *server;

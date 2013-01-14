@@ -27,8 +27,8 @@ const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Q
 
 /*============================== Public constructors =======================*/
 
-BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, int timeout) :
-    BBasePrivate(q), OperationTimeout(timeout)
+BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout) :
+    BBasePrivate(q), ServerName(serverName), OperationTimeout(timeout)
 {
     //
 }
@@ -50,20 +50,20 @@ void BApplicationServerPrivate::init()
     connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
-bool BApplicationServerPrivate::testServer(const QString &serverName) const
+bool BApplicationServerPrivate::testServer() const
 {
-    if ( serverName.isEmpty() )
+    if ( ServerName.isEmpty() )
         return false;
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
     out.setVersion(DSVersion);
     out << false;
     BGenericSocket s(BGenericSocket::LocalSocket);
-    s.connectToHost(serverName);
+    s.connectToHost(ServerName);
     bool b = s.waitForConnected(OperationTimeout) && s.write(data) &&
             s.waitForBytesWritten(OperationTimeout) && s.waitForReadyRead(OperationTimeout);
     if (!b)
-        QLocalServer::removeServer(serverName);
+        QLocalServer::removeServer(ServerName);
     return b;
 }
 
@@ -105,8 +105,8 @@ void BApplicationServerPrivate::newPendingConnection()
 
 /*============================== Public constructors =======================*/
 
-BApplicationServer::BApplicationServer(int operationTimeout) :
-    BBase( *new BApplicationServerPrivate(this, operationTimeout) )
+BApplicationServer::BApplicationServer(const QString &serverName, int operationTimeout) :
+    BBase( *new BApplicationServerPrivate(this, serverName, operationTimeout) )
 {
     d_func()->init();
 }
@@ -126,35 +126,41 @@ BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
 
 /*============================== Public methods ============================*/
 
-bool BApplicationServer::tryListen(const QString &serverName)
+bool BApplicationServer::isValid() const
+{
+    return !d_func()->ServerName.isEmpty();
+}
+
+bool BApplicationServer::tryListen()
 {
     if ( !QCoreApplication::instance() )
         return false;
-    if ( serverName.isEmpty() )
-        return false;
     B_D(BApplicationServer);
+    if ( d->ServerName.isEmpty() )
+        return false;
     if ( d->server->isListening() )
         return true;
-    if ( d->testServer(serverName) )
+    if ( d->testServer() )
         return false;
-    return d->server->listen(serverName);
+    return d->server->listen(d->ServerName);
 }
 
-bool BApplicationServer::sendMessage(const QString &serverName, int &argc, char **argv)
+bool BApplicationServer::sendMessage(int &argc, char **argv)
 {
-    if ( argc < 1 || !argv || serverName.isEmpty() )
+    if ( argc < 1 || !argv || d_func()->ServerName.isEmpty() )
         return false;
     QStringList args;
     for (int i = 1; i < argc; ++i)
         args << argv[i];
-    return sendMessage(serverName, args);
+    return sendMessage(args);
 }
 
-bool BApplicationServer::sendMessage(const QString &serverName, const QStringList &arguments)
+bool BApplicationServer::sendMessage(const QStringList &arguments)
 {
-    if ( d_func()->server->isListening() )
+    B_D(BApplicationServer);
+    if ( d->server->isListening() )
         return false;
-    if ( serverName.isEmpty() )
+    if ( d->ServerName.isEmpty() )
         return false;
     QStringList args = !arguments.isEmpty() ? arguments : QStringList( QCoreApplication::arguments().mid(1) );
     if ( args.isEmpty() )
@@ -165,12 +171,12 @@ bool BApplicationServer::sendMessage(const QString &serverName, const QStringLis
     out << true;
     out << args;
     BGenericSocket s(BGenericSocket::LocalSocket);
-    s.connectToHost(serverName);
-    if ( !s.waitForConnected(d_func()->OperationTimeout) )
+    s.connectToHost(d->ServerName);
+    if ( !s.waitForConnected(d->OperationTimeout) )
         return false;
     if ( !s.write(ba) )
         return false;
-    return s.waitForBytesWritten(d_func()->OperationTimeout);
+    return s.waitForBytesWritten(d->OperationTimeout);
 }
 
 /*============================== Protected methods =========================*/
