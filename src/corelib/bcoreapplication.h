@@ -97,7 +97,6 @@ public:
     static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
-    static QVariantMap &globalSettings();
     static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
     static void setLogger(BLogger *l);
     static BLogger *logger();

@@ -73,8 +73,6 @@ public:
     void loadSettings();
     void saveSettings();
 public:
-    static QVariantMap globalSettings;
-public:
     mutable QString appName;
     mutable QString orgName;
     mutable QString appPath;

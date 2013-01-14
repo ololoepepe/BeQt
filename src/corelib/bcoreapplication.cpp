@@ -420,10 +420,6 @@ void BCoreApplicationPrivate::saveSettings()
     s->deleteLater();
 }
 
-/*============================== Static public variables ====================*/
-
-QVariantMap BCoreApplicationPrivate::globalSettings;
-
 /*============================================================================
 ================================ BCoreApplication ============================
 ============================================================================*/
@@ -687,11 +683,6 @@ void BCoreApplication::saveSettings()
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     ds_func()->saveSettings();
-}
-
-QVariantMap &BCoreApplication::globalSettings()
-{
-    return BCoreApplicationPrivate::globalSettings;
 }
 
 QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
