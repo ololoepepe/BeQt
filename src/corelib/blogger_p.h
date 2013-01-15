@@ -15,7 +15,7 @@
 ================================ BLoggerPrivate ==============================
 ============================================================================*/
 
-class BLoggerPrivate : public BBasePrivate
+class B_CORE_EXPORT BLoggerPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLogger)
 public:

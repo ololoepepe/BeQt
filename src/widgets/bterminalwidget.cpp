@@ -22,6 +22,7 @@
 #include <QTextCharFormat>
 #include <QBrush>
 #include <QColor>
+#include <QTextBlockFormat>
 
 #include <QDebug>
 
@@ -179,7 +180,6 @@ void BTerminalWidgetPrivate::appendText(const QString &text, const QTextCharForm
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText(text, format);
-    ptedt->setTextCursor(tc);
     len = ptedt->textCursor().block().length();
 }
 
@@ -188,7 +188,7 @@ void BTerminalWidgetPrivate::appendLine(const QString &text, const QTextCharForm
     scrollDown();
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
-    tc.insertBlock();
+    tc.insertBlock(tc.blockFormat(), format);
     tc.insertText(text, format);
     len = ptedt->textCursor().block().length();
 }
@@ -332,16 +332,21 @@ void BTerminalWidget::terminalCommand(const QString &command)
 void BTerminalWidget::terminalCommand(const QString &command, const QStringList &arguments)
 {
     B_D(BTerminalWidget);
-    if ( !d->NormalMode || !d->driver || d->driver->isActive() )
+    if ( !d->driver || d->driver->isActive() )
         return;
     if ( command.isEmpty() )
-        return d->appendLine( d->driver->prompt() );
+    {
+        if (d->NormalMode)
+            d->appendLine( d->driver->prompt() );
+        return;
+    }
     d->appendLine();
     QString error;
     if ( !d->driver->terminalCommand(command, arguments, error) )
     {
         d->appendText( d->constructErrorString(error) );
-        d->appendLine( d->driver->prompt() );
+        if (d->NormalMode)
+            d->appendLine( d->driver->prompt() );
     }
 }
 
