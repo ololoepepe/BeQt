@@ -63,5 +63,8 @@
         <file>icons/undo.svgz</file>
         <file>pixmaps/beqt_logo.png</file>
         <file>pixmaps/qt_logo.png</file>
+        <file>icons/binary.svgz</file>
+        <file>icons/help_contents.png</file>
+        <file>icons/help_hint.png</file>
     </qresource>
 </RCC>
