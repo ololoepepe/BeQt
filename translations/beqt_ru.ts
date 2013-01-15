@@ -214,7 +214,7 @@
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="120"/>
         <source>Next bookmark</source>
         <comment>act text</comment>
-        <translation>Следйющая закладка</translation>
+        <translation type="unfinished">Следующая закладка</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="121"/>

@@ -176,21 +176,21 @@ void BTerminalWidgetPrivate::scrollDown()
 
 void BTerminalWidgetPrivate::appendText(const QString &text, const QTextCharFormat &format)
 {
-    scrollDown();
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertText(text, format);
     len = ptedt->textCursor().block().length();
+    scrollDown();
 }
 
 void BTerminalWidgetPrivate::appendLine(const QString &text, const QTextCharFormat &format)
 {
-    scrollDown();
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
     tc.insertBlock(tc.blockFormat(), format);
     tc.insertText(text, format);
     len = ptedt->textCursor().block().length();
+    scrollDown();
 }
 
 QString BTerminalWidgetPrivate::constructErrorString(const QString &error) const

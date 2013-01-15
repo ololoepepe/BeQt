@@ -119,8 +119,6 @@ QString BApplicationPrivate::findImage(const QString &subdir, const QString &nam
         return "";
     QString bfn = QFileInfo(name).baseName();
     QStringList suffixes;
-    //suffixes << QFileInfo(name).suffix();
-    //suffixes.removeAll("");
     foreach ( const QByteArray &ba, QImageReader::supportedImageFormats() )
         suffixes << QString(ba);
     int indsvg = suffixes.indexOf("svg");
@@ -299,10 +297,7 @@ QIcon BApplication::icon(const QString &name, const QIcon &fallback)
         icn = BApplicationPrivate::iconFromTheme(name);
     if ( !icn.isNull() )
         return ds->cacheIcon(icn, name);
-    icn.addFile( BApplicationPrivate::findImage("icons", name, ds->preferredIconFormats) );
-    if ( !icn.isNull() )
-        return ds->cacheIcon(icn, name);
-    icn.addFile( BApplicationPrivate::findImage("beqt/icons", name, QStringList() << "svgz") );
+    icn = QIcon( BApplicationPrivate::findImage("icons", name, ds->preferredIconFormats) );
     if ( !icn.isNull() )
         return ds->cacheIcon(icn, name);
     icn = beqtIcon(name);
@@ -315,7 +310,18 @@ QIcon BApplication::beqtIcon(const QString &name)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
         return QIcon();
-    QString fn = BApplicationPrivate::findImage("beqt/icons", name, QStringList() << "svgz");
+    B_DS(BApplication);
+    QString suff = "svgz";
+    int png = ds->preferredIconFormats.indexOf("png");
+    if (png >= 0)
+    {
+        int svg = ds->preferredIconFormats.indexOf("svg");
+        if (svg < 0)
+            svg = ds->preferredIconFormats.indexOf("svgz");
+        if (svg < 0 || png < svg)
+            suff = "png";
+    }
+    QString fn = BApplicationPrivate::findImage("beqt/icons", name, QStringList() << suff);
     if ( fn.isEmpty() )
         return QIcon();
     return QIcon(fn);

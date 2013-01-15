@@ -1485,6 +1485,8 @@ void BCodeEditor::addModule(BAbstractEditorModule *mdl)
         return;
     d->modules.insert(mdl->id(), mdl);
     d->setModuleEditor(mdl, this);
+    if ( !mdl->parent() )
+        mdl->setParent(this);
 }
 
 void BCodeEditor::addModule(StandardModule type)
