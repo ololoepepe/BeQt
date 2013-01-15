@@ -199,7 +199,7 @@ QString BIndicatorsEditorModule::id() const
     return "beqt/indicators";
 }
 
-QWidget *BIndicatorsEditorModule::indicator(Indicator type)
+QWidget *BIndicatorsEditorModule::widget(int type)
 {
     switch (type)
     {
@@ -214,7 +214,7 @@ QWidget *BIndicatorsEditorModule::indicator(Indicator type)
     }
 }
 
-QList<QWidget *> BIndicatorsEditorModule::indicators()
+QList<QWidget *> BIndicatorsEditorModule::widgets(bool extended)
 {
     B_D(BIndicatorsEditorModule);
     QList<QWidget *> list;

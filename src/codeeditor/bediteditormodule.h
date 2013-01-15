@@ -41,10 +41,10 @@ protected:
     explicit BEditEditorModule(BEditEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
-    QAction *action(Action type) const;
-    QList<QAction *> clipboardActions() const;
-    QList<QAction *> undoRedoActions() const;
-    QList<QAction *> actions() const;
+    QAction *action(int type);
+    QList<QAction *> actions(bool extended = false);
+    QList<QAction *> clipboardActions();
+    QList<QAction *> undoRedoActions();
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

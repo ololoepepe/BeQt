@@ -58,8 +58,7 @@ int main(int argc, char **argv)
     BEditEditorModule *emdl = static_cast<BEditEditorModule *>( cedtr->module(BCodeEditor::EditModule) );
     BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) );
     smdl->restoreDialogState( s ? s->value("editor/search_dialog_state").toByteArray() : QByteArray() );
-    BIndicatorsEditorModule *imdl =
-            static_cast<BIndicatorsEditorModule *>( cedtr->module(BCodeEditor::IndicatorsModule) );
+    BAbstractEditorModule *imdl = cedtr->module(BCodeEditor::IndicatorsModule);
     //Creating Main window
     QMainWindow *mw = new QMainWindow;
     mw->resize(1200, 800);
@@ -67,9 +66,9 @@ int main(int argc, char **argv)
     mw->installEventFilter( cedtr->dropHandler() );
     mw->setAcceptDrops(true);
     mw->setCentralWidget(cedtr);
-    mw->statusBar()->addPermanentWidget( imdl->indicator(BIndicatorsEditorModule::FileTypeIndicator) );
-    mw->statusBar()->addPermanentWidget( imdl->indicator(BIndicatorsEditorModule::CursorPositionIndicator) );
-    mw->statusBar()->addPermanentWidget( imdl->indicator(BIndicatorsEditorModule::EncodingIndicator) );
+    mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::FileTypeIndicator) );
+    mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::CursorPositionIndicator) );
+    mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::EncodingIndicator) );
     QObject::connect( smdl, SIGNAL( message(QString) ), mw->statusBar(), SLOT( showMessage(QString) ) );
     //Creating menus
     QMenu *mnu = mw->menuBar()->addMenu("File");

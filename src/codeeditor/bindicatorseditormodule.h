@@ -39,8 +39,8 @@ protected:
     explicit BIndicatorsEditorModule(BIndicatorsEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
-    QWidget *indicator(Indicator type);
-    QList<QWidget *> indicators();
+    QWidget *widget(int type);
+    QList<QWidget *> widgets(bool extended = false);
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

@@ -44,13 +44,13 @@ protected:
     explicit BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
-    QAction *action(Action type) const;
-    QList<QAction *> openActions(bool extended = false) const;
-    QList<QAction *> saveActions(bool extended = false) const;
-    QList<QAction *> closeActions(bool extended = false) const;
-    QList<QAction *> actions(bool extended = false) const;
-    QMenu *fileHistoryMenu() const;
-    QList<QAction *> fileHistoryActions() const;
+    QAction *action(int type);
+    QList<QAction *> actions(bool extended = false);
+    QList<QAction *> openActions(bool extended = false);
+    QList<QAction *> saveActions(bool extended = false);
+    QList<QAction *> closeActions(bool extended = false);
+    QMenu *fileHistoryMenu();
+    QList<QAction *> fileHistoryActions();
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

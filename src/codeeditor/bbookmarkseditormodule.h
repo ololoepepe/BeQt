@@ -41,8 +41,8 @@ public:
     QString id() const;
     void setMaximumBookmarkCount(int count);
     int maximumBookmarkCount() const;
-    QAction *action(Action type) const;
-    QList<QAction *> actions() const;
+    QAction *action(int type);
+    QList<QAction *> actions(bool extended = false);
 public slots:
     void makeBookmark();
     void removeBookmark(int index);

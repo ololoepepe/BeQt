@@ -194,7 +194,7 @@ int BBookmarksEditorModule::maximumBookmarkCount() const
     return d_func()->maxBookmarks;
 }
 
-QAction *BBookmarksEditorModule::action(Action type) const
+QAction *BBookmarksEditorModule::action(int type)
 {
     switch (type)
     {
@@ -207,7 +207,7 @@ QAction *BBookmarksEditorModule::action(Action type) const
     }
 }
 
-QList<QAction *> BBookmarksEditorModule::actions() const
+QList<QAction *> BBookmarksEditorModule::actions(bool extended)
 {
     const B_D(BBookmarksEditorModule);
     QList<QAction *> list;

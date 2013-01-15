@@ -203,7 +203,7 @@ QString BEditEditorModule::id() const
     return "beqt/edit";
 }
 
-QAction *BEditEditorModule::action(Action type) const
+QAction *BEditEditorModule::action(int type)
 {
     switch (type)
     {
@@ -224,7 +224,16 @@ QAction *BEditEditorModule::action(Action type) const
     }
 }
 
-QList<QAction *> BEditEditorModule::clipboardActions() const
+QList<QAction *> BEditEditorModule::actions(bool extended)
+{
+    QList<QAction *> list;
+    list << clipboardActions();
+    list << undoRedoActions();
+    list << d_func()->actSwitchMode.data();
+    return list;
+}
+
+QList<QAction *> BEditEditorModule::clipboardActions()
 {
     const B_D(BEditEditorModule);
     QList<QAction *> list;
@@ -237,7 +246,7 @@ QList<QAction *> BEditEditorModule::clipboardActions() const
     return list;
 }
 
-QList<QAction *> BEditEditorModule::undoRedoActions() const
+QList<QAction *> BEditEditorModule::undoRedoActions()
 {
     const B_D(BEditEditorModule);
     QList<QAction *> list;
@@ -245,15 +254,6 @@ QList<QAction *> BEditEditorModule::undoRedoActions() const
         list << d->actUndo.data();
     if ( !d->actRedo.isNull() )
         list << d->actRedo.data();
-    return list;
-}
-
-QList<QAction *> BEditEditorModule::actions() const
-{
-    QList<QAction *> list;
-    list << clipboardActions();
-    list << undoRedoActions();
-    list << d_func()->actSwitchMode.data();
     return list;
 }
 

@@ -37,8 +37,8 @@ protected:
     explicit BSearchEditorModule(BSearchEditorModulePrivate &d, QObject *parent = 0);
 public:
     QString id() const;
-    QAction *action(Action type) const;
-    QList<QAction *> actions() const;
+    QAction *action(int type);
+    QList<QAction *> actions(bool extended = false);
     void setCaseSensitivity(Qt::CaseSensitivity cs);
     void setMatchWholeWords(bool enabled);
     void setBackwardOrder(bool enabled);

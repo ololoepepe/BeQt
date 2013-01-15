@@ -600,7 +600,7 @@ QString BSearchEditorModule::id() const
     return "beqt/search";
 }
 
-QAction *BSearchEditorModule::action(Action type) const
+QAction *BSearchEditorModule::action(int type)
 {
     switch (type)
     {
@@ -613,7 +613,7 @@ QAction *BSearchEditorModule::action(Action type) const
     }
 }
 
-QList<QAction *> BSearchEditorModule::actions() const
+QList<QAction *> BSearchEditorModule::actions(bool extended)
 {
     const B_D(BSearchEditorModule);
     QList<QAction *> list;

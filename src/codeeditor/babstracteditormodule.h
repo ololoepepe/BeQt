@@ -9,6 +9,8 @@ class BAbstractFileType;
 
 class QString;
 class QStringList;
+class QAction;
+class QWidget;
 
 #include "bcodeedit.h"
 
@@ -35,6 +37,10 @@ protected:
 public:
     virtual QString id() const = 0;
     virtual bool isBuisy() const;
+    virtual QAction *action(int type);
+    virtual QList<QAction *> actions(bool extended = false);
+    virtual QWidget *widget(int type);
+    virtual QList<QWidget *> widgets(bool extended = false);
     BCodeEditor *editor() const;
 protected:
     virtual void editorSet(BCodeEditor *edr);

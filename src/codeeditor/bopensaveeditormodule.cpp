@@ -282,7 +282,7 @@ QString BOpenSaveEditorModule::id() const
     return "beqt/open_save";
 }
 
-QAction *BOpenSaveEditorModule::action(Action type) const
+QAction *BOpenSaveEditorModule::action(int type)
 {
     switch (type)
     {
@@ -307,7 +307,16 @@ QAction *BOpenSaveEditorModule::action(Action type) const
     }
 }
 
-QList<QAction *> BOpenSaveEditorModule::openActions(bool extended) const
+QList<QAction *> BOpenSaveEditorModule::actions(bool extended)
+{
+    QList<QAction *> list;
+    list << openActions(extended);
+    list << saveActions(extended);
+    list << closeActions(extended);
+    return list;
+}
+
+QList<QAction *> BOpenSaveEditorModule::openActions(bool extended)
 {
     const B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
@@ -320,7 +329,7 @@ QList<QAction *> BOpenSaveEditorModule::openActions(bool extended) const
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::saveActions(bool extended) const
+QList<QAction *> BOpenSaveEditorModule::saveActions(bool extended)
 {
     const B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
@@ -333,7 +342,7 @@ QList<QAction *> BOpenSaveEditorModule::saveActions(bool extended) const
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::closeActions(bool extended) const
+QList<QAction *> BOpenSaveEditorModule::closeActions(bool extended)
 {
     const B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
@@ -344,21 +353,12 @@ QList<QAction *> BOpenSaveEditorModule::closeActions(bool extended) const
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::actions(bool extended) const
-{
-    QList<QAction *> list;
-    list << openActions(extended);
-    list << saveActions(extended);
-    list << closeActions(extended);
-    return list;
-}
-
-QMenu *BOpenSaveEditorModule::fileHistoryMenu() const
+QMenu *BOpenSaveEditorModule::fileHistoryMenu()
 {
     return d_func()->mnuFileHistory.data();
 }
 
-QList<QAction *> BOpenSaveEditorModule::fileHistoryActions() const
+QList<QAction *> BOpenSaveEditorModule::fileHistoryActions()
 {
     const B_D(BOpenSaveEditorModule);
     return !d->mnuFileHistory.isNull() ? d->mnuFileHistory->actions() : QList<QAction *>();

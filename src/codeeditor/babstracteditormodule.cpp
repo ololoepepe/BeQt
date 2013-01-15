@@ -1,3 +1,6 @@
+class QAction;
+class QWidget;
+
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
 #include "bcodeeditor.h"
@@ -80,6 +83,26 @@ BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, QO
 bool BAbstractEditorModule::isBuisy() const
 {
     return false;
+}
+
+QAction *BAbstractEditorModule::action(int type)
+{
+    return 0;
+}
+
+QList<QAction *> BAbstractEditorModule::actions(bool extended)
+{
+    return QList<QAction *>();
+}
+
+QWidget *BAbstractEditorModule::widget(int type)
+{
+    return 0;
+}
+
+QList<QWidget *> BAbstractEditorModule::widgets(bool extended)
+{
+    return QList<QWidget *>();
 }
 
 BCodeEditor *BAbstractEditorModule::editor() const
