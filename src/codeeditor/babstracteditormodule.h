@@ -38,8 +38,10 @@ public:
     virtual QString id() const = 0;
     virtual bool isBuisy() const;
     virtual QAction *action(int type);
+    virtual QList<QAction *> actions(int group, bool extended = false);
     virtual QList<QAction *> actions(bool extended = false);
     virtual QWidget *widget(int type);
+    virtual QList<QWidget *> widgets(int group, bool extended = false);
     virtual QList<QWidget *> widgets(bool extended = false);
     BCodeEditor *editor() const;
 protected:

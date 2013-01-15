@@ -34,6 +34,11 @@ public:
         RedoAction,
         SwitchModeAction
     };
+    enum ActionGroup
+    {
+        ClipboardActionGroup,
+        UndoRedoActionGroup
+    };
 public:
     explicit BEditEditorModule(QObject *parent = 0);
     ~BEditEditorModule();
@@ -42,9 +47,8 @@ protected:
 public:
     QString id() const;
     QAction *action(int type);
+    QList<QAction *> actions(int group, bool extended = false);
     QList<QAction *> actions(bool extended = false);
-    QList<QAction *> clipboardActions();
-    QList<QAction *> undoRedoActions();
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);

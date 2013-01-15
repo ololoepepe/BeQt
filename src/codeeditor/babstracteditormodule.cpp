@@ -90,6 +90,11 @@ QAction *BAbstractEditorModule::action(int type)
     return 0;
 }
 
+QList<QAction *> BAbstractEditorModule::actions(int group, bool extended)
+{
+    return QList<QAction *>();
+}
+
 QList<QAction *> BAbstractEditorModule::actions(bool extended)
 {
     return QList<QAction *>();
@@ -98,6 +103,11 @@ QList<QAction *> BAbstractEditorModule::actions(bool extended)
 QWidget *BAbstractEditorModule::widget(int type)
 {
     return 0;
+}
+
+QList<QWidget *> BAbstractEditorModule::widgets(int group, bool extended)
+{
+    return QList<QWidget *>();
 }
 
 QList<QWidget *> BAbstractEditorModule::widgets(bool extended)

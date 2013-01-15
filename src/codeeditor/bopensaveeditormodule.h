@@ -37,6 +37,12 @@ public:
         CloseFileAction,
         CloseAllFilesAction
     };
+    enum ActionGroup
+    {
+        OpenActionGroup,
+        SaveActionGroup,
+        CloseActionGroup
+    };
 public:
     explicit BOpenSaveEditorModule(QObject *parent = 0);
     ~BOpenSaveEditorModule();
@@ -45,10 +51,8 @@ protected:
 public:
     QString id() const;
     QAction *action(int type);
+    QList<QAction *> actions(int group, bool extended = false);
     QList<QAction *> actions(bool extended = false);
-    QList<QAction *> openActions(bool extended = false);
-    QList<QAction *> saveActions(bool extended = false);
-    QList<QAction *> closeActions(bool extended = false);
     QMenu *fileHistoryMenu();
     QList<QAction *> fileHistoryActions();
 protected:

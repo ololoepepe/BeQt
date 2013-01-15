@@ -307,49 +307,46 @@ QAction *BOpenSaveEditorModule::action(int type)
     }
 }
 
+QList<QAction *> BOpenSaveEditorModule::actions(int group, bool extended)
+{
+    B_D(BOpenSaveEditorModule);
+    QList<QAction *> list;
+    switch (group)
+    {
+    case OpenActionGroup:
+        if ( !d->actNewFile.isNull() )
+            list << d->actNewFile.data();
+        if ( !d->actOpenFiles.isNull() )
+            list << d->actOpenFiles.data();
+        if ( extended && !d->actReopenFile.isNull() )
+            list << d->actReopenFile.data();
+        break;
+    case SaveActionGroup:
+        if ( !d->actSaveFile.isNull() )
+            list << d->actSaveFile.data();
+        if ( !d->actSaveFileAs.isNull() )
+            list << d->actSaveFileAs.data();
+        if ( extended && !d->actSaveAllFiles.isNull() )
+            list << d->actSaveAllFiles.data();
+        break;
+    case CloseActionGroup:
+        if ( !d->actCloseFile.isNull() )
+            list << d->actCloseFile.data();
+        if ( extended && !d->actCloseAllFiles.isNull() )
+            list << d->actCloseAllFiles.data();
+        break;
+    default:
+        break;
+    }
+    return list;
+}
+
 QList<QAction *> BOpenSaveEditorModule::actions(bool extended)
 {
     QList<QAction *> list;
-    list << openActions(extended);
-    list << saveActions(extended);
-    list << closeActions(extended);
-    return list;
-}
-
-QList<QAction *> BOpenSaveEditorModule::openActions(bool extended)
-{
-    const B_D(BOpenSaveEditorModule);
-    QList<QAction *> list;
-    if ( !d->actNewFile.isNull() )
-        list << d->actNewFile.data();
-    if ( !d->actOpenFiles.isNull() )
-        list << d->actOpenFiles.data();
-    if ( extended && !d->actReopenFile.isNull() )
-        list << d->actReopenFile.data();
-    return list;
-}
-
-QList<QAction *> BOpenSaveEditorModule::saveActions(bool extended)
-{
-    const B_D(BOpenSaveEditorModule);
-    QList<QAction *> list;
-    if ( !d->actSaveFile.isNull() )
-        list << d->actSaveFile.data();
-    if ( !d->actSaveFileAs.isNull() )
-        list << d->actSaveFileAs.data();
-    if ( extended && !d->actSaveAllFiles.isNull() )
-        list << d->actSaveAllFiles.data();
-    return list;
-}
-
-QList<QAction *> BOpenSaveEditorModule::closeActions(bool extended)
-{
-    const B_D(BOpenSaveEditorModule);
-    QList<QAction *> list;
-    if ( !d->actCloseFile.isNull() )
-        list << d->actCloseFile.data();
-    if ( extended && !d->actCloseAllFiles.isNull() )
-        list << d->actCloseAllFiles.data();
+    list << actions(OpenActionGroup, extended);
+    list << actions(SaveActionGroup, extended);
+    list << actions(CloseActionGroup, extended);
     return list;
 }
 

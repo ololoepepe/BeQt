@@ -224,36 +224,38 @@ QAction *BEditEditorModule::action(int type)
     }
 }
 
+QList<QAction *> BEditEditorModule::actions(int group, bool extended)
+{
+    B_D(BEditEditorModule);
+    QList<QAction *> list;
+    switch (group)
+    {
+    case ClipboardActionGroup:
+        if ( !d->actCut.isNull() )
+            list << d->actCut.data();
+        if ( !d->actCopy.isNull() )
+            list << d->actCopy.data();
+        if ( !d->actPaste.isNull() )
+            list << d->actPaste.data();
+        break;
+    case UndoRedoActionGroup:
+        if ( !d->actUndo.isNull() )
+            list << d->actUndo.data();
+        if ( !d->actRedo.isNull() )
+            list << d->actRedo.data();
+        break;
+    default:
+        break;
+    }
+    return list;
+}
+
 QList<QAction *> BEditEditorModule::actions(bool extended)
 {
     QList<QAction *> list;
-    list << clipboardActions();
-    list << undoRedoActions();
+    list << actions(ClipboardActionGroup, extended);
+    list << actions(UndoRedoActionGroup, extended);
     list << d_func()->actSwitchMode.data();
-    return list;
-}
-
-QList<QAction *> BEditEditorModule::clipboardActions()
-{
-    const B_D(BEditEditorModule);
-    QList<QAction *> list;
-    if ( !d->actCut.isNull() )
-        list << d->actCut.data();
-    if ( !d->actCopy.isNull() )
-        list << d->actCopy.data();
-    if ( !d->actPaste.isNull() )
-        list << d->actPaste.data();
-    return list;
-}
-
-QList<QAction *> BEditEditorModule::undoRedoActions()
-{
-    const B_D(BEditEditorModule);
-    QList<QAction *> list;
-    if ( !d->actUndo.isNull() )
-        list << d->actUndo.data();
-    if ( !d->actRedo.isNull() )
-        list << d->actRedo.data();
     return list;
 }
 
