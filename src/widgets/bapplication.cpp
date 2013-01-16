@@ -501,7 +501,8 @@ void BApplication::showSettingsDialog(SettingsTabNavigation navigation)
                                                            BSettingsDialog::ListNavigation;
         break;
     }
-    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), nvg, QApplication::activeWindow() ) );
+    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), nvg, settingsTabOrder(),
+                                                             QApplication::activeWindow() ) );
     if ( !sd->isValid() )
     {
         QMessageBox msg( QApplication::activeWindow() );
@@ -543,6 +544,11 @@ void BApplication::openHomepage()
 BSettingsDialog::SettingsTabMap BApplication::settingsTabMap() const
 {
     return BSettingsDialog::SettingsTabMap();
+}
+
+QStringList BApplication::settingsTabOrder() const
+{
+    return QStringList();
 }
 
 void BApplication::handleSettings(const BSettingsDialog::SettingsMap &s)

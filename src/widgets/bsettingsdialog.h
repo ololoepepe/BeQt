@@ -5,6 +5,7 @@ class BAbstractSettingsTab;
 class BSettingsDialogPrivate;
 
 class QWidget;
+class QStringList;
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -33,6 +34,9 @@ public:
 public:
     explicit BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent = 0);
     explicit BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent = 0);
+    explicit BSettingsDialog(const SettingsTabMap &tabs, const QStringList &tabOrder, QWidget *parent = 0);
+    explicit BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation,
+                             const QStringList &tabOrder, QWidget *parent = 0);
     ~BSettingsDialog();
 protected:
     explicit BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent = 0);

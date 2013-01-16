@@ -22,6 +22,7 @@
 #include <QCheckBox>
 #include <QHBoxLayout>
 #include <QMessageBox>
+#include <QStringList>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -30,8 +31,8 @@
 /*============================== Public constructors =======================*/
 
 BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
-                                               BSettingsDialog::Navigation navigation) :
-    BBasePrivate(q), TabMap(tabs), Navigation(navigation)
+                                               BSettingsDialog::Navigation navigation, const QStringList &tabOrder) :
+    BBasePrivate(q), TabMap(tabs), Navigation(navigation), TabOrder(tabOrder)
 {
     //
 }
@@ -71,6 +72,14 @@ void BSettingsDialogPrivate::init()
       vlt->addLayout(hlt);
     if (TabMap.size() > 1)
     {
+        QStringList keys = TabMap.keys();
+        foreach ( int i, bRange(TabOrder.size() - 1, 0) )
+        {
+            const QString &key = TabOrder.at(i);
+            if ( !keys.removeAll(key) )
+                continue;
+            keys.prepend(key);
+        }
         if (BSettingsDialog::ListNavigation == Navigation)
         {
             hspltr = new QSplitter(Qt::Horizontal, q);
@@ -81,8 +90,10 @@ void BSettingsDialogPrivate::init()
             hspltr->addWidget(stkdwgt);
             vlt->addWidget(hspltr);
             twgt = 0;
-            foreach (BAbstractSettingsTab *tab, TabMap)
+
+            foreach (const QString &key, keys)
             {
+                BAbstractSettingsTab *tab = TabMap.value(key);
                 stkdwgt->addWidget(tab);
                 QListWidgetItem *lwi = new QListWidgetItem;
                 lwi->setText( tab->title() );
@@ -98,8 +109,11 @@ void BSettingsDialogPrivate::init()
             stkdwgt = 0;
             twgt = new QTabWidget(q);
             vlt->addWidget(twgt);
-            foreach (BAbstractSettingsTab *tab, TabMap)
+            foreach (const QString &key, keys)
+            {
+                BAbstractSettingsTab *tab = TabMap.value(key);
                 twgt->addTab( tab, tab->icon(), tab->title() );
+            }
         }
     }
     else if ( !TabMap.isEmpty() )
@@ -178,13 +192,26 @@ void BSettingsDialogPrivate::btnRestoreDefaultClicked()
 /*============================== Public constructors =======================*/
 
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation) )
+    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs) )
 {
     d_func()->init();
 }
 
 BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation) )
+{
+    d_func()->init();
+}
+
+BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, const QStringList &tabOrder, QWidget *parent) :
+    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation, tabOrder) )
+{
+    d_func()->init();
+}
+
+BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation,
+                                 const QStringList &tabOrder, QWidget *parent) :
+    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation, tabOrder) )
 {
     d_func()->init();
 }

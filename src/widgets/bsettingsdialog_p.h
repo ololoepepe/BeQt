@@ -19,6 +19,7 @@ class QPushButton;
 #include <QList>
 #include <QMap>
 #include <QApplication>
+#include <QStringList>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -29,14 +30,16 @@ class BSettingsDialogPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)
 public:
-    explicit BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
-                                    BSettingsDialog::Navigation navigation);
+    explicit BSettingsDialogPrivate( BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
+                                     BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation,
+                                     const QStringList &tabOrder = QStringList() );
     ~BSettingsDialogPrivate();
 public:
     void init();
 public:
     const BSettingsDialog::SettingsTabMap TabMap;
     const BSettingsDialog::Navigation Navigation;
+    const QStringList TabOrder;
 public:
     bool valid;
     QVBoxLayout *vlt;

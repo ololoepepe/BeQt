@@ -9,6 +9,7 @@ class BAboutDialog;
 class QPixmap;
 class QAction;
 class QFont;
+class QStringList;
 
 #include "bsettingsdialog.h"
 
@@ -81,6 +82,7 @@ public slots:
     void openHomepage();
 protected:
     virtual BSettingsDialog::SettingsTabMap settingsTabMap() const;
+    virtual QStringList settingsTabOrder() const;
     virtual void handleSettings(const BSettingsDialog::SettingsMap &s);
 private:
     Q_DISABLE_COPY(BApplication)
