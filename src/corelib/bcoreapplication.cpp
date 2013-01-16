@@ -1,3 +1,5 @@
+class QWidget;
+
 #include "bcoreapplication.h"
 #include "bglobal.h"
 #include "bcoreapplication_p.h"
@@ -25,6 +27,7 @@
 #include <QPointer>
 #include <QEvent>
 #include <QVariantMap>
+#include <QSignalMapper>
 
 #include <QDebug>
 
@@ -152,6 +155,15 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, con
     if ( !s.isEmpty() )
         s.remove(s.length() - 1, 1);
     return s;
+}
+
+void BCoreApplicationPrivate::connectObjectToMapper(QSignalMapper *mapper, QObject *object,
+                                                    const char *signal, bool sender)
+{
+    if (sender)
+        connect( object, signal, mapper, SLOT( map(QObject *) ) );
+    else
+        connect( object, signal, mapper, SLOT( map() ) );
 }
 
 /*============================== Public methods ============================*/
@@ -754,6 +766,31 @@ void BCoreApplication::log(const QString &text, BLogger::Level lvl)
     if (!ds->logger)
         return;
     ds->logger->log(text, lvl);
+}
+
+void BCoreApplication::setMapping(QSignalMapper *mapper, QObject *object, const char *signal, bool sender)
+{
+    if (!mapper || !object || !signal)
+        return;
+    mapper->setMapping(object, object);
+    BCoreApplicationPrivate::connectObjectToMapper(mapper, object, signal, sender);
+}
+
+void BCoreApplication::setMapping(QSignalMapper *mapper, QObject *object, const char *signal, int id, bool sender)
+{
+    if (!mapper || !object || !signal)
+        return;
+    mapper->setMapping(object, id);
+    BCoreApplicationPrivate::connectObjectToMapper(mapper, object, signal, sender);
+}
+
+void BCoreApplication::setMapping(QSignalMapper *mapper, QObject *object, const char *signal,
+                                  const QString &text, bool sender)
+{
+    if (!mapper || !object || !signal)
+        return;
+    mapper->setMapping(object, text);
+    BCoreApplicationPrivate::connectObjectToMapper(mapper, object, signal, sender);
 }
 
 /*============================== Static protected variables ================*/

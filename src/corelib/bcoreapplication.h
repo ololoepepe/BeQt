@@ -10,6 +10,7 @@ class BPluginWrapper;
 
 class QLocale;
 class QSettings;
+class QSignalMapper;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -101,6 +102,10 @@ public:
     static void setLogger(BLogger *l);
     static BLogger *logger();
     static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
+    static void setMapping(QSignalMapper *mapper, QObject *object, const char *signal, bool sender = false);
+    static void setMapping(QSignalMapper *mapper, QObject *object, const char *signal, int id, bool sender = false);
+    static void setMapping(QSignalMapper *mapper, QObject *object, const char *signal,
+                           const QString &text, bool sender = false);
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);

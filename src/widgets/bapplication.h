@@ -10,6 +10,11 @@ class QPixmap;
 class QAction;
 class QFont;
 class QStringList;
+class QToolBar;
+class QToolButton;
+class QSignalMapper;
+class QWidget;
+class QObject;
 
 #include "bsettingsdialog.h"
 
@@ -73,6 +78,8 @@ public:
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
     static QFont createMonospaceFont();
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
+    static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
+    static void setMapping(QSignalMapper *mapper, QWidget *widget, const char *signal, bool sender = false);
 public slots:
     void showAboutDialog();
     void showSettingsDialog();
@@ -80,6 +87,7 @@ public slots:
     void showHelpContents();
     void showContextualHelp();
     void openHomepage();
+    void openLocalFile(const QString &fileName);
 protected:
     virtual BSettingsDialog::SettingsTabMap settingsTabMap() const;
     virtual QStringList settingsTabOrder() const;

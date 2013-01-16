@@ -389,10 +389,13 @@ QString BCodeEditorPrivate::createFileName(const QString &fileName, const QStrin
     if ( !fileName.isEmpty() )
         return fileName;
     QString fnbase = !defaultName.isEmpty() ? defaultName : defaultFileName();
+    QFileInfo fi(fnbase);
+    QString fnbasens = fi.baseName();
+    QString fnbasesuff = fi.suffix();
     int i = 1;
-    QString fn = fnbase + " " + QString::number(i++);
+    QString fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
     while ( existingNames.contains(fn) )
-        fn = fnbase + " " + QString::number(i++);
+        fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
     return fn;
 }
 

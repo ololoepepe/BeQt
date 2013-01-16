@@ -13,6 +13,7 @@ class QString;
 class QLocale;
 class QSettings;
 class QEvent;
+class QSignalMapper;
 
 #include "bcoreapplication.h"
 #include "bglobal.h"
@@ -51,6 +52,7 @@ public:
     static QSettings *createSettingsInstance(const QString &fileName);
     static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
     static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault = false);
+    static void connectObjectToMapper(QSignalMapper *mapper, QObject *object, const char *signal, bool sender = false);
 public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);

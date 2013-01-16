@@ -3,6 +3,7 @@
 #include "bglobal.h"
 #include "bbase.h"
 #include "bbase_p.h"
+#include "bterminaliohandler.h"
 
 #include <QObject>
 #include <QString>
@@ -77,10 +78,6 @@ void BLoggerPrivate::init()
     format = "dd/MMM/yyy hh:mm:ss";
     logToConsole = true;
     logToFile = true;
-    stdoutWrapper.open(stdout, QFile::WriteOnly);
-    stdoutStream.setDevice(&stdoutWrapper);
-    stderrWrapper.open(stderr, QFile::WriteOnly);
-    stderrStream.setDevice(&stderrWrapper);
 }
 
 void BLoggerPrivate::tryLog(const QString &msg, bool stderrLevel)
@@ -95,15 +92,9 @@ void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
     if (!logToConsole)
         return;
     if (stderrLevel && useStderr)
-    {
-        stderrStream << text;
-        stderrStream.flush();
-    }
+        BTerminalIOHandler::writeErr(text);
     else
-    {
-        stdoutStream << text;
-        stdoutStream.flush();
-    }
+        BTerminalIOHandler::write(text);
 }
 
 void BLoggerPrivate::tryLogToFile(const QString &text)

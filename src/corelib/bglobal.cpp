@@ -19,6 +19,8 @@ const char *bVersion()
 
 QList<int> bRange(int lb, int ub, int step)
 {
+    if (lb == ub)
+        return QList<int>() << lb;
     if (!step)
         step = 1;
     if ( (lb > ub && step > 0) || (lb < ub && step < 0) )

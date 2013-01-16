@@ -50,23 +50,6 @@ void BApplicationServerPrivate::init()
     connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
-bool BApplicationServerPrivate::testServer() const
-{
-    if ( ServerName.isEmpty() )
-        return false;
-    QByteArray data;
-    QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(DSVersion);
-    out << false;
-    BGenericSocket s(BGenericSocket::LocalSocket);
-    s.connectToHost(ServerName);
-    bool b = s.waitForConnected(OperationTimeout) && s.write(data) &&
-            s.waitForBytesWritten(OperationTimeout) && s.waitForReadyRead(OperationTimeout);
-    if (!b)
-        QLocalServer::removeServer(ServerName);
-    return b;
-}
-
 /*============================== Public slots ==============================*/
 
 void BApplicationServerPrivate::newPendingConnection()
@@ -131,7 +114,25 @@ bool BApplicationServer::isValid() const
     return !d_func()->ServerName.isEmpty();
 }
 
-bool BApplicationServer::tryListen()
+bool BApplicationServer::testServer() const
+{
+    const B_D(BApplicationServer);
+    if ( d->ServerName.isEmpty() )
+        return false;
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out.setVersion(BApplicationServerPrivate::DSVersion);
+    out << false;
+    BGenericSocket s(BGenericSocket::LocalSocket);
+    s.connectToHost(d->ServerName);
+    bool b = s.waitForConnected(d->OperationTimeout) && s.write(data) &&
+            s.waitForBytesWritten(d->OperationTimeout) && s.waitForReadyRead(d->OperationTimeout);
+    if (!b)
+        QLocalServer::removeServer(d->ServerName);
+    return b;
+}
+
+bool BApplicationServer::listen()
 {
     if ( !QCoreApplication::instance() )
         return false;
@@ -140,8 +141,6 @@ bool BApplicationServer::tryListen()
         return false;
     if ( d->server->isListening() )
         return true;
-    if ( d->testServer() )
-        return false;
     return d->server->listen(d->ServerName);
 }
 

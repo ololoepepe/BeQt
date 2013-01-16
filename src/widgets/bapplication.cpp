@@ -35,6 +35,10 @@
 #include <QPointer>
 #include <QRect>
 #include <QMessageBox>
+#include <QToolButton>
+#include <QToolBar>
+#include <QSignalMapper>
+#include <QWidget>
 
 #include <QDebug>
 #include <QPointer>
@@ -412,6 +416,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     {
     case SettingsAction:
         act = new QAction(parent);
+        act->setMenuRole(QAction::PreferencesRole);
         act->setObjectName("ActionSettings");
         act->setIcon( icon("configure") );
         act->setShortcut(QKeySequence::Preferences);
@@ -442,6 +447,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
         break;
     case AboutAction:
         act = new QAction(parent);
+        act->setMenuRole(QAction::AboutRole);
         act->setObjectName("ActionAbout");
         act->setIcon( icon("help_about") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( showAboutDialog() ) );
@@ -469,6 +475,21 @@ void BApplication::setHelpBrowserDefaultGeometry(const QRect &geometry)
     if ( !geometry.isValid() )
         return;
     ds_func()->helpBrowserGeometry = geometry;
+}
+
+QToolButton *BApplication::toolButtonForAction(QToolBar *toolBar, QAction *action)
+{
+    if (!toolBar || !action)
+        return 0;
+    return static_cast<QToolButton *>( toolBar->widgetForAction(action) );
+}
+
+void BApplication::setMapping(QSignalMapper *mapper, QWidget *widget, const char *signal, bool sender)
+{
+    if (!mapper || !widget || !signal)
+        return;
+    mapper->setMapping(widget, widget);
+    BApplicationPrivate::connectObjectToMapper(mapper, widget, signal, sender);
 }
 
 /*============================== Public slots ==============================*/
@@ -537,6 +558,11 @@ void BApplication::openHomepage()
     const B_D(BApplication);
     QString url = !d->homepage.isEmpty() ? d->homepage : QApplication::organizationDomain();
     QDesktopServices::openUrl( QUrl::fromUserInput(url) );
+}
+
+void BApplication::openLocalFile(const QString &fileName)
+{
+    QDesktopServices::openUrl( QUrl::fromLocalFile(fileName) );
 }
 
 /*============================== Protected methods =========================*/

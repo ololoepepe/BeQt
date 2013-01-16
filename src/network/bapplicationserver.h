@@ -24,7 +24,8 @@ protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);
 public:
     bool isValid() const;
-    bool tryListen();
+    bool testServer() const;
+    bool listen();
     bool sendMessage(int &argc, char **argv);
     bool sendMessage( const QStringList &arguments = QStringList() );
 protected:

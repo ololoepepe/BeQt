@@ -29,7 +29,6 @@ public:
     ~BApplicationServerPrivate();
 public:
     void init();
-    bool testServer() const;
 public slots:
     void newPendingConnection();
 public:

@@ -38,10 +38,6 @@ public:
     bool logToConsole;
     bool logToFile;
     QFile file;
-    QFile stdoutWrapper;
-    QFile stderrWrapper;
-    QTextStream stdoutStream;
-    QTextStream stderrStream;
     QTextStream fileStream;
     mutable QMutex formatMutex;
     mutable QMutex consoleMutex;
