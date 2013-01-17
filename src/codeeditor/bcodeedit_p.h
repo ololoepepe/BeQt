@@ -215,13 +215,13 @@ public:
     static QStringList processLine(const QString &line, int ll, BCodeEdit::TabWidth tw);
     static ProcessTextResult processText(const QString &text, int ll, BCodeEdit::TabWidth tw);
     static QString removeUnsupportedSymbols(const QString &text);
-    static void removeUnsupportedSymbols(QString &text);
+    static void removeUnsupportedSymbols(QString *text);
     static QString removeTrailingSpaces(const QString &s);
-    static void removeTrailingSpaces(QString &s);
+    static void removeTrailingSpaces(QString *s);
     static QString appendTrailingSpaces(const QString &s, int ll);
-    static void appendTrailingSpaces(QString &s, int ll);
+    static void appendTrailingSpaces(QString *s, int ll);
     static QString replaceTabs(const QString &s, BCodeEdit::TabWidth tw);
-    static void replaceTabs(QString &s, BCodeEdit::TabWidth tw);
+    static void replaceTabs(QString *s, BCodeEdit::TabWidth tw);
     static void removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
                                       const QList<QTextEdit::ExtraSelection> &what);
     static QList<QChar> createUnsupportedSymbols();
