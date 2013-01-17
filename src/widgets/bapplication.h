@@ -63,6 +63,8 @@ public:
 protected:
     explicit BApplication(BApplicationPrivate &d);
 public:
+    using BCoreApplication::setMapping;
+public:
     static QIcon icon( const QString &name, const QIcon &fallback = QIcon() );
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );

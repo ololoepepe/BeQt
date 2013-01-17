@@ -26,11 +26,12 @@ HEADERS += \
     bplugininterface.h \
     bpluginwrapper.h \
     bpluginwrapper_p.h \
+    bsignaldelayproxy.h \
+    bsignaldelayproxy_p.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
     btranslator.h \
     btranslator_p.h
-
 
 SOURCES += \
     bbase.cpp \
@@ -40,6 +41,7 @@ SOURCES += \
     blogger.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
+    bsignaldelayproxy.cpp \
     bterminaliohandler.cpp \
     btranslator.cpp
 

@@ -10,6 +10,7 @@
 #include "bpersoninfoprovider.h"
 #include "bplugin.h"
 #include "bplugininterface.h"
+#include "bsignaldelayproxy.h"
 #include "bterminaliohandler.h"
 #include "btranslator.h"
 
