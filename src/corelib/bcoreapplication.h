@@ -11,6 +11,7 @@ class BPluginWrapper;
 class QLocale;
 class QSettings;
 class QSignalMapper;
+class QTextCodec;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -98,6 +99,8 @@ public:
     static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
+    static void setSettingsCodec(QTextCodec *codec);
+    static void setSettingsCodec(const char *codecName);
     static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
     static void setLogger(BLogger *l);
     static BLogger *logger();

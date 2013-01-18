@@ -28,6 +28,7 @@ class QWidget;
 #include <QEvent>
 #include <QVariantMap>
 #include <QSignalMapper>
+#include <QTextCodec>
 
 #include <QDebug>
 
@@ -121,7 +122,10 @@ QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileNa
     if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
         return 0;
     B_QS(BCoreApplication);
-    return new QSettings(qs->d_func()->confFileName(qs->d_func()->userPrefix, fileName), QSettings::IniFormat);
+    QSettings *s = new QSettings(qs->d_func()->confFileName(qs->d_func()->userPrefix, fileName), QSettings::IniFormat);
+    if (qs->d_func()->settingsCodec)
+        s->setIniCodec(qs->d_func()->settingsCodec);
+    return s;
 }
 
 BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupportInfo()
@@ -193,6 +197,7 @@ void BCoreApplicationPrivate::init()
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
     logger = new BLogger(this);
+    settingsCodec = QTextCodec::codecForName("UTF-8");
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
@@ -695,6 +700,20 @@ void BCoreApplication::saveSettings()
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     ds_func()->saveSettings();
+}
+
+void BCoreApplication::setSettingsCodec(QTextCodec *codec)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    ds_func()->settingsCodec = codec;
+}
+
+void BCoreApplication::setSettingsCodec(const char *codecName)
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return;
+    setSettingsCodec(codecName ? QTextCodec::codecForName(codecName) : 0);
 }
 
 QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)

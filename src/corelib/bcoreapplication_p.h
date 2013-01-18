@@ -14,6 +14,7 @@ class QLocale;
 class QSettings;
 class QEvent;
 class QSignalMapper;
+class QTextCodec;
 
 #include "bcoreapplication.h"
 #include "bglobal.h"
@@ -92,6 +93,7 @@ public:
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
     BLogger *logger;
+    QTextCodec *settingsCodec;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;
