@@ -51,7 +51,7 @@ int main(int argc, char **argv)
     BApplication::aboutDialogInstance()->setDescription("Simple code editor.");
     //Creating code editor and loading related settings
     BCodeEditor *cedtr = new BCodeEditor;
-    QSettings *s = BApplication::createAppSettingsInstance();
+    QSettings *s = BApplication::settingsInstance();
     BLocalDocumentDriver *drv = static_cast<BLocalDocumentDriver *>( cedtr->driver() );
     drv->restoreDialogState( s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray() );
     BAbstractEditorModule *osmdl = cedtr->module(BCodeEditor::OpenSaveModule);

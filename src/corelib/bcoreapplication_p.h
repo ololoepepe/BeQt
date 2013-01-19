@@ -11,10 +11,8 @@ class BLogger;
 
 class QString;
 class QLocale;
-class QSettings;
 class QEvent;
 class QSignalMapper;
-class QTextCodec;
 
 #include "bcoreapplication.h"
 #include "bglobal.h"
@@ -25,6 +23,8 @@ class QTextCodec;
 #include <QMap>
 #include <QStringList>
 #include <QVariantMap>
+#include <QPointer>
+#include <QSettings>
 
 /*============================================================================
 ================================ BCoreApplicationPrivate =====================
@@ -37,10 +37,6 @@ class B_CORE_EXPORT BCoreApplicationPrivate : public BBasePrivate
     B_DECLARE_PUBLIC_S(BCoreApplication)
 public:
     static const QStringList PluginSuffixes;
-    static const QString SettingsGroupBeqt;
-      static const QString SettingsGroupCore;
-        static const QString SettingsKeyDeactivatedPlugins;
-        static const QString SettingsKeyLocale;
 public:
     explicit BCoreApplicationPrivate(BCoreApplication *q);
     virtual ~BCoreApplicationPrivate();
@@ -50,7 +46,6 @@ public:
     static QString subdir(BCoreApplication::Location loc);
     static bool testCoreInit(const char *where = 0);
     static bool testCoreUnique();
-    static QSettings *createSettingsInstance(const QString &fileName);
     static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
     static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault = false);
     static void connectObjectToMapper(QSignalMapper *mapper, QObject *object, const char *signal, bool sender = false);
@@ -66,6 +61,11 @@ public:
     QString getBundlePrefix() const;
 #endif
     bool getIsPortable() const;
+    QLocale getLocale() const;
+    QStringList getDeactivatedPlugins() const;
+    void setDeactivatedPlugins(const QStringList &list);
+    void addDeactivatedPlugin(const QString &pluginName);
+    QSettings *createSettingsInstance(const QString &fileName) const;
     QString confFileName(const QString &path, const QString &name) const;
     QString prefix(BCoreApplication::ResourcesType type) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);
@@ -75,6 +75,8 @@ public:
     void removeTranslator(BTranslator *translator, bool blockLC);
     void loadSettings();
     void saveSettings();
+public slots:
+    void initSettings();
 public:
     mutable QString appName;
     mutable QString orgName;
@@ -84,8 +86,7 @@ public:
 #if defined(Q_OS_MAC)
     mutable QString bundlePrefix;
 #endif
-    QLocale locale;
-    QStringList deactivatedPlugins;
+    QPointer<QSettings> settings;
     QMap<QString, BTranslator *> translators;
     bool blockLanguageChange;
     QList<BPluginWrapper *> plugins;
@@ -93,7 +94,6 @@ public:
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
     BLogger *logger;
-    QTextCodec *settingsCodec;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;

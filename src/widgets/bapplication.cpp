@@ -522,7 +522,7 @@ void BApplication::showSettingsDialog(SettingsTabNavigation navigation)
                                                            BSettingsDialog::ListNavigation;
         break;
     }
-    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( settingsTabMap(), nvg, settingsTabOrder(),
+    QScopedPointer<BSettingsDialog> sd( new BSettingsDialog( createSettingsTabs(), nvg,
                                                              QApplication::activeWindow() ) );
     if ( !sd->isValid() )
     {
@@ -537,9 +537,7 @@ void BApplication::showSettingsDialog(SettingsTabNavigation navigation)
         msg.exec();
         return;
     }
-    if (sd->exec() != BSettingsDialog::Accepted)
-        return;
-    handleSettings( sd->settingsMap() );
+    sd->exec();
 }
 
 void BApplication::showHelpContents()
@@ -567,17 +565,7 @@ void BApplication::openLocalFile(const QString &fileName)
 
 /*============================== Protected methods =========================*/
 
-BSettingsDialog::SettingsTabMap BApplication::settingsTabMap() const
+QList<BAbstractSettingsTab *> BApplication::createSettingsTabs() const
 {
-    return BSettingsDialog::SettingsTabMap();
-}
-
-QStringList BApplication::settingsTabOrder() const
-{
-    return QStringList();
-}
-
-void BApplication::handleSettings(const BSettingsDialog::SettingsMap &s)
-{
-    //
+    return QList<BAbstractSettingsTab *>();
 }

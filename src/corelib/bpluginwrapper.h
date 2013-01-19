@@ -31,7 +31,6 @@ public:
 protected:
     explicit BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent = 0);
 public:
-    static QSettings *createPluginSettingsInstance(BPluginInterface *iface);
     static void setAcceptableTypes(const QStringList &list);
     static void setInterfaceTestFunction(InterfaceTestFunction function);
     static QStringList acceptableFileTypes();
@@ -50,6 +49,7 @@ public:
     BPluginInterface::PluginInfoStatic staticInfo() const;
     QObject *instance() const;
     BPluginInterface *interface() const;
+    QSettings *settings() const;
 public slots:
     bool load();
     void unload();

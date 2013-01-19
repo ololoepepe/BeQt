@@ -30,16 +30,14 @@ class BSettingsDialogPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)
 public:
-    explicit BSettingsDialogPrivate( BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
-                                     BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation,
-                                     const QStringList &tabOrder = QStringList() );
+    explicit BSettingsDialogPrivate( BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
+                                     BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
     ~BSettingsDialogPrivate();
 public:
     void init();
 public:
-    const BSettingsDialog::SettingsTabMap TabMap;
+    const QList<BAbstractSettingsTab *> Tabs;
     const BSettingsDialog::Navigation Navigation;
-    const QStringList TabOrder;
 public:
     bool valid;
     QVBoxLayout *vlt;

@@ -11,8 +11,7 @@ class QStringList;
 #include <BeQtCore/BBase>
 
 #include <QDialog>
-#include <QMap>
-#include <QVariantMap>
+#include <QList>
 
 /*============================================================================
 ================================ BSettingsDialog =============================
@@ -29,20 +28,14 @@ public:
         TabbedNavigation
     };
 public:
-    typedef QMap<QString, BAbstractSettingsTab *> SettingsTabMap;
-    typedef QMap<QString, QVariantMap> SettingsMap;
-public:
-    explicit BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent = 0);
-    explicit BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent = 0);
-    explicit BSettingsDialog(const SettingsTabMap &tabs, const QStringList &tabOrder, QWidget *parent = 0);
-    explicit BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation,
-                             const QStringList &tabOrder, QWidget *parent = 0);
+    explicit BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, QWidget *parent = 0);
+    explicit BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, Navigation navigation, QWidget *parent = 0);
+    explicit BSettingsDialog(BAbstractSettingsTab *tab, QWidget *parent = 0);
     ~BSettingsDialog();
 protected:
     explicit BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent = 0);
 public:
     bool isValid() const;
-    SettingsMap settingsMap() const;
 private:
     Q_DISABLE_COPY(BSettingsDialog)
 };

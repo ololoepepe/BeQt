@@ -10,7 +10,6 @@ class QLayout;
 
 #include <QWidget>
 #include <QtGlobal>
-#include <QVariantMap>
 
 /*============================================================================
 ================================ BAbstractSettingsTab ========================
@@ -27,12 +26,11 @@ public:
     static void setRowVisible(QFormLayout *flt, QLayout *field, bool visible);
 public:
     virtual QString title() const = 0;
-    virtual QIcon icon() const = 0;
-    virtual QVariantMap valueMap() const = 0;
-    virtual bool preconfirm() const;
+    virtual QIcon icon() const;
     virtual bool hasAdvancedMode() const;
     virtual void setAdvancedMode(bool enabled);
     virtual bool restoreDefault();
+    virtual bool saveSettings();
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)
 };

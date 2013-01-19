@@ -45,10 +45,6 @@ const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.so");
 #elif defined(Q_OS_WIN)
 const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll");
 #endif
-const QString BCoreApplicationPrivate::SettingsGroupBeqt = "BeQt";
-  const QString BCoreApplicationPrivate::SettingsGroupCore = "Core";
-    const QString BCoreApplicationPrivate::SettingsKeyDeactivatedPlugins = "deactivated_plugins";
-    const QString BCoreApplicationPrivate::SettingsKeyLocale = "locale";
 
 /*============================== Public constructors =======================*/
 
@@ -65,6 +61,11 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
         delete t;
     foreach (BPluginWrapper *pw, plugins)
         delete pw;
+    if ( !settings.isNull() )
+    {
+        disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+        settings->deleteLater();
+    }
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtcore);
 #endif
@@ -115,17 +116,6 @@ bool BCoreApplicationPrivate::testCoreInit(const char *where)
 bool BCoreApplicationPrivate::testCoreUnique()
 {
     return bTest(!qs_func(), "BCoreApplication", "There must be only one instance of BCoreApplication");
-}
-
-QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileName)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
-        return 0;
-    B_QS(BCoreApplication);
-    QSettings *s = new QSettings(qs->d_func()->confFileName(qs->d_func()->userPrefix, fileName), QSettings::IniFormat);
-    if (qs->d_func()->settingsCodec)
-        s->setIniCodec(qs->d_func()->settingsCodec);
-    return s;
 }
 
 BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupportInfo()
@@ -181,8 +171,9 @@ void BCoreApplicationPrivate::init()
     Q_INIT_RESOURCE(beqt_translations);
 #endif
     bTest(QCoreApplication::instance(), "BCoreApplication", "Missing QCoreApplication instance");
+    initSettings();
     //localization
-    locale = QLocale::system();
+    settings->setValue( "BeQt/Core/locale", QLocale::system() );
     QCoreApplication::instance()->installEventFilter(this);
     //infos
     QStringList locs;
@@ -197,7 +188,6 @@ void BCoreApplicationPrivate::init()
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
     logger = new BLogger(this);
-    settingsCodec = QTextCodec::codecForName("UTF-8");
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
@@ -336,6 +326,42 @@ bool BCoreApplicationPrivate::getIsPortable() const
     return b;
 }
 
+QLocale BCoreApplicationPrivate::getLocale() const
+{
+    return settings->value( "BeQt/Core/locale", QLocale::system() ).toLocale();
+}
+
+QStringList BCoreApplicationPrivate::getDeactivatedPlugins() const
+{;
+    return settings->value("BeQt/Core/deactivated_plugins").toStringList();
+}
+
+void BCoreApplicationPrivate::setDeactivatedPlugins(const QStringList &list)
+{
+    QStringList nlist = list;
+    nlist.removeAll("");
+    nlist.removeDuplicates();
+    settings->setValue("BeQt/Core/deactivated_plugins", nlist);
+}
+
+void BCoreApplicationPrivate::addDeactivatedPlugin(const QString &pluginName)
+{
+    if ( pluginName.isEmpty() )
+        return;
+    QStringList list = getDeactivatedPlugins();
+    if ( list.contains(pluginName) )
+        return;
+    list << pluginName;
+    setDeactivatedPlugins(list);
+}
+
+QSettings *BCoreApplicationPrivate::createSettingsInstance(const QString &fileName) const
+{
+    QSettings *s = new QSettings(confFileName(getUserPrefix(), fileName), QSettings::IniFormat);
+    s->setIniCodec("UTF-8");
+    return s;
+}
+
 QString BCoreApplicationPrivate::confFileName(const QString &path, const QString &name) const
 {
     if ( path.isEmpty() || name.isEmpty() )
@@ -368,13 +394,13 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
 
 void BCoreApplicationPrivate::pluginActivated(BPluginWrapper *pluginWrapper)
 {
-    deactivatedPlugins.removeAll( pluginWrapper->name() );
+    getDeactivatedPlugins().removeAll( pluginWrapper->name() );
     QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
 void BCoreApplicationPrivate::pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
 {
-    deactivatedPlugins << pluginWrapper->name();
+    addDeactivatedPlugin( pluginWrapper->name() );
     QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
@@ -403,38 +429,27 @@ void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool blo
 
 void BCoreApplicationPrivate::loadSettings()
 {
-    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance();
-    if ( s.isNull() )
+    if ( settings.isNull() )
         return;
-    s->beginGroup(SettingsGroupBeqt);
-      s->beginGroup(SettingsGroupCore);
-        deactivatedPlugins = s->value(SettingsKeyDeactivatedPlugins).toStringList();
-        locale = s->value(SettingsKeyLocale, locale).toLocale();
-      s->endGroup();
-    s->endGroup();
-    QMetaObject::invokeMethod( q_func(), "settingsLoaded", Q_ARG( QSettings *, s.data() ) );
-    if ( s.isNull() )
-        return;
-    s->deleteLater();
+    QMetaObject::invokeMethod( q_func(), "settingsLoaded", Q_ARG( QSettings *, settings.data() ) );
 }
 
 void BCoreApplicationPrivate::saveSettings()
 {
-    QPointer<QSettings> s = BCoreApplication::createAppSettingsInstance();
-    if ( s.isNull() )
+    if ( settings.isNull() )
         return;
-    s->beginGroup(SettingsGroupBeqt);
-      s->beginGroup(SettingsGroupCore);
-        deactivatedPlugins.removeDuplicates();
-        s->setValue(SettingsKeyDeactivatedPlugins, deactivatedPlugins);
-        s->setValue(SettingsKeyLocale, locale);
-      s->endGroup();
-    s->endGroup();
-    QMetaObject::invokeMethod( q_func(), "settingsSaved", Q_ARG( QSettings *, s.data() ) );
-    if ( s.isNull() )
-        return;
-    s->sync();
-    s->deleteLater();
+    QMetaObject::invokeMethod( q_func(), "settingsSaved", Q_ARG( QSettings *, settings.data() ) );
+    if ( !settings.isNull() )
+        settings->sync();
+}
+
+/*============================== Public slots ==============================*/
+
+void BCoreApplicationPrivate::initSettings()
+{
+    settings = createSettingsInstance( getAppName() );
+    if ( !settings.isNull() )
+        connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
 }
 
 /*============================================================================
@@ -523,11 +538,11 @@ QStringList BCoreApplication::locations(const QString &subdir)
     return sl;
 }
 
-QSettings *BCoreApplication::createAppSettingsInstance()
+QSettings *BCoreApplication::settingsInstance()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return 0;
-    return BCoreApplicationPrivate::createSettingsInstance( ds_func()->getAppName() );
+    return ds_func()->settings.data();
 }
 
 void BCoreApplication::registerPluginWrapper(BPluginWrapper *plugin)
@@ -575,7 +590,7 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, Interface
                 pw->deleteLater();
                 continue;
             }
-            if ( ds->deactivatedPlugins.contains( pw->name() ) )
+            if ( ds->getDeactivatedPlugins().contains( pw->name() ) )
                 pw->unload();
             else
                 pw->activate();
@@ -614,9 +629,9 @@ void BCoreApplication::setLocale(const QLocale &l, bool noRetranslate)
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     B_DS(BCoreApplication);
-    if (l == ds->locale)
+    if ( l == locale() )
         return;
-    ds->locale = l;
+    ds->settings->setValue("BeQt/Core/locale", l);
     if (!noRetranslate)
         retranslateUi();
 }
@@ -625,7 +640,7 @@ QLocale BCoreApplication::locale()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return QLocale::system();
-    return ds_func()->locale;
+    return ds_func()->settings->value( "BeQt/Core/locale", QLocale::system() ).toLocale();
 }
 
 QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bool alwaysIncludeEnglish)
@@ -700,20 +715,6 @@ void BCoreApplication::saveSettings()
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     ds_func()->saveSettings();
-}
-
-void BCoreApplication::setSettingsCodec(QTextCodec *codec)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return;
-    ds_func()->settingsCodec = codec;
-}
-
-void BCoreApplication::setSettingsCodec(const char *codecName)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return;
-    setSettingsCodec(codecName ? QTextCodec::codecForName(codecName) : 0);
 }
 
 QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)

@@ -25,7 +25,7 @@ class QTextCodec;
 #include <QVariantMap>
 
 #define bApp BCoreApplication::instance()
-#define bSettings BCoreApplication::globalSettings()
+#define bSettings BCoreApplication::settingsInstance()
 #define bLogger BCoreApplication::logger()
 #define bLog BCoreApplication::log
 
@@ -86,7 +86,7 @@ public:
     static QString location(const QString &subdir, ResourcesType type);
     static QStringList locations(Location loc);
     static QStringList locations(const QString &subdir);
-    static QSettings *createAppSettingsInstance();
+    static QSettings *settingsInstance();
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(), InterfaceTestFunction function = 0);
@@ -99,8 +99,6 @@ public:
     static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
-    static void setSettingsCodec(QTextCodec *codec);
-    static void setSettingsCodec(const char *codecName);
     static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
     static void setLogger(BLogger *l);
     static BLogger *logger();

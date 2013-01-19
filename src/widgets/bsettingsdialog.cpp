@@ -30,9 +30,9 @@
 
 /*============================== Public constructors =======================*/
 
-BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const BSettingsDialog::SettingsTabMap &tabs,
-                                               BSettingsDialog::Navigation navigation, const QStringList &tabOrder) :
-    BBasePrivate(q), TabMap(tabs), Navigation(navigation), TabOrder(tabOrder)
+BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
+                                               BSettingsDialog::Navigation navigation) :
+    BBasePrivate(q), Tabs(tabs), Navigation(navigation)
 {
     //
 }
@@ -46,7 +46,7 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
 
 void BSettingsDialogPrivate::init()
 {
-    valid = !TabMap.isEmpty();
+    valid = !Tabs.isEmpty();
     B_Q(BSettingsDialog);
     q->setWindowTitle( tr("Settings", "windowTitle") );
     vlt = new QVBoxLayout(q);
@@ -59,7 +59,7 @@ void BSettingsDialogPrivate::init()
           cboxAdvancedMode->setText( tr("Show additional settings", "cbox text") );
           connect( cboxAdvancedMode, SIGNAL( stateChanged(int) ), this, SLOT( cboxAdvancedModeStateChanged(int) ) );
           cboxAdvancedMode->setEnabled(false);
-          foreach (BAbstractSettingsTab *t, TabMap)
+          foreach (BAbstractSettingsTab *t, Tabs)
           {
               if ( t->hasAdvancedMode() )
               {
@@ -70,16 +70,8 @@ void BSettingsDialogPrivate::init()
         hlt->addWidget(cboxAdvancedMode);
         hlt->addStretch();
       vlt->addLayout(hlt);
-    if (TabMap.size() > 1)
+    if (Tabs.size() > 1)
     {
-        QStringList keys = TabMap.keys();
-        foreach ( int i, bRange(TabOrder.size() - 1, 0) )
-        {
-            const QString &key = TabOrder.at(i);
-            if ( !keys.removeAll(key) )
-                continue;
-            keys.prepend(key);
-        }
         if (BSettingsDialog::ListNavigation == Navigation)
         {
             hspltr = new QSplitter(Qt::Horizontal, q);
@@ -90,10 +82,8 @@ void BSettingsDialogPrivate::init()
             hspltr->addWidget(stkdwgt);
             vlt->addWidget(hspltr);
             twgt = 0;
-
-            foreach (const QString &key, keys)
+            foreach (BAbstractSettingsTab *tab, Tabs)
             {
-                BAbstractSettingsTab *tab = TabMap.value(key);
                 stkdwgt->addWidget(tab);
                 QListWidgetItem *lwi = new QListWidgetItem;
                 lwi->setText( tab->title() );
@@ -109,16 +99,13 @@ void BSettingsDialogPrivate::init()
             stkdwgt = 0;
             twgt = new QTabWidget(q);
             vlt->addWidget(twgt);
-            foreach (const QString &key, keys)
-            {
-                BAbstractSettingsTab *tab = TabMap.value(key);
+            foreach (BAbstractSettingsTab *tab, Tabs)
                 twgt->addTab( tab, tab->icon(), tab->title() );
-            }
         }
     }
-    else if ( !TabMap.isEmpty() )
+    else if ( !Tabs.isEmpty() )
     {
-        BAbstractSettingsTab *tab = TabMap.value( TabMap.keys().first() );
+        BAbstractSettingsTab *tab = Tabs.first();
         vlt->addWidget(tab);
         hspltr = 0;
         lstwgt = 0;
@@ -150,8 +137,8 @@ void BSettingsDialogPrivate::init()
 
 void BSettingsDialogPrivate::accepted()
 {
-    foreach ( BAbstractSettingsTab *t, TabMap.values() )
-        if ( !t->preconfirm() )
+    foreach (BAbstractSettingsTab *t, Tabs)
+        if ( !t->saveSettings() )
             return;
     q_func()->accept();
 }
@@ -159,7 +146,7 @@ void BSettingsDialogPrivate::accepted()
 void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
 {
     bool b = (Qt::Checked == state);
-    foreach (BAbstractSettingsTab *t, TabMap)
+    foreach (BAbstractSettingsTab *t, Tabs)
         t->setAdvancedMode(b);
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
@@ -177,7 +164,7 @@ void BSettingsDialogPrivate::btnRestoreDefaultClicked()
     msg.setStandardButtons(QMessageBox::Cancel | QMessageBox::Yes);
     msg.setDefaultButton(QMessageBox::Yes);
     if (msg.exec() == QMessageBox::Yes)
-        foreach (BAbstractSettingsTab *t, TabMap)
+        foreach (BAbstractSettingsTab *t, Tabs)
             if ( !t->restoreDefault() )
                 break;
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
@@ -191,27 +178,20 @@ void BSettingsDialogPrivate::btnRestoreDefaultClicked()
 
 /*============================== Public constructors =======================*/
 
-BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, QWidget *parent) :
+BSettingsDialog::BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs) )
 {
     d_func()->init();
 }
 
-BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation, QWidget *parent) :
+BSettingsDialog::BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, Navigation navigation, QWidget *parent) :
     QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation) )
 {
     d_func()->init();
 }
 
-BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, const QStringList &tabOrder, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, ListNavigation, tabOrder) )
-{
-    d_func()->init();
-}
-
-BSettingsDialog::BSettingsDialog(const SettingsTabMap &tabs, Navigation navigation,
-                                 const QStringList &tabOrder, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation, tabOrder) )
+BSettingsDialog::BSettingsDialog(BAbstractSettingsTab *tab, QWidget *parent) :
+    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, QList<BAbstractSettingsTab *>() << tab) )
 {
     d_func()->init();
 }
@@ -234,13 +214,4 @@ BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
 bool BSettingsDialog::isValid() const
 {
     return d_func()->valid;
-}
-
-BSettingsDialog::SettingsMap BSettingsDialog::settingsMap() const
-{
-    SettingsMap m;
-    const BSettingsDialogPrivate *const d = d_func();
-    foreach ( const QString &key, d->TabMap.keys() )
-        m.insert( key, d->TabMap.value(key)->valueMap() );
-    return m;
 }

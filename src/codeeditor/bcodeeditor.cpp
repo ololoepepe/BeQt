@@ -1418,6 +1418,26 @@ void BCodeEditor::setEditFont(const QFont &fnt)
         doc->setEditFont(fnt);
 }
 
+void BCodeEditor::setEditFontFamily(const QString &family)
+{
+    if ( family.isEmpty() )
+        return;
+    B_D(BCodeEditor);
+    QFont fnt = d->editFont;
+    fnt.setFamily(family);
+    setEditFont(fnt);
+}
+
+void BCodeEditor::setEditFontPointSize(int pointSize)
+{
+    if (pointSize < 1)
+        return;
+    B_D(BCodeEditor);
+    QFont fnt = d->editFont;
+    fnt.setPointSize(pointSize);
+    setEditFont(fnt);
+}
+
 void BCodeEditor::setEditMode(BCodeEdit::EditMode mode)
 {
     B_D(BCodeEditor);

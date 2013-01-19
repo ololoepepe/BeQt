@@ -5,6 +5,7 @@ class BApplicationPrivate;
 class BAboutDialogPrivate;
 class BPersonInfoProvider;
 class BAboutDialog;
+class BAbstractSettingsTab;
 
 class QPixmap;
 class QAction;
@@ -15,8 +16,6 @@ class QToolButton;
 class QSignalMapper;
 class QWidget;
 class QObject;
-
-#include "bsettingsdialog.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BCoreApplication>
@@ -91,9 +90,7 @@ public slots:
     void openHomepage();
     void openLocalFile(const QString &fileName);
 protected:
-    virtual BSettingsDialog::SettingsTabMap settingsTabMap() const;
-    virtual QStringList settingsTabOrder() const;
-    virtual void handleSettings(const BSettingsDialog::SettingsMap &s);
+    virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:
     Q_DISABLE_COPY(BApplication)
     friend class BAboutDialogPrivate;

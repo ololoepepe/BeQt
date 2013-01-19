@@ -106,12 +106,10 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
     BAbstractSettingsTab *ast = gpi ? gpi->settingsTab() : 0;
     if (ast)
     {
-        BSettingsDialog::SettingsTabMap tabs;
-        tabs.insert("plugin", ast);
+        QList<BAbstractSettingsTab *> tabs;
+        tabs << ast;
         BSettingsDialog sd( tabs, q_func() );
-        if (sd.exec() != BSettingsDialog::Accepted)
-            return;
-        gpi->handleSettings( sd.settingsMap().value("plugin") );
+        sd.exec();
     }
     else
     {

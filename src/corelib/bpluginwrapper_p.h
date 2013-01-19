@@ -4,7 +4,6 @@
 class BPluginWrapper;
 
 class QPluginLoader;
-class QSettings;
 
 #include "bpluginwrapper.h"
 #include "bglobal.h"
@@ -16,6 +15,7 @@ class QSettings;
 #include <QStringList>
 #include <QMap>
 #include <QPointer>
+#include <QSettings>
 
 /*============================================================================
 ================================ BPluginWrapperPrivate =======================
@@ -29,8 +29,6 @@ public:
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
 public:
-    static QSettings *createPluginSettingsInstance(const QString &pluginName);
-public:
     void init();
     bool load();
     void unload();
@@ -38,6 +36,8 @@ public:
     void deactivate();
     void createLoader();
     void deleteLoader();
+public slots:
+    void initSettings();
 public:
     static QMap<QString, BPluginWrapper *> globalQMap;
     static QStringList acctptableTypes;
@@ -47,6 +47,7 @@ public:
     QPointer<QPluginLoader> loader;
     QObject *instance;
     BPluginInterface *interface;
+    QPointer<QSettings> settings;
     bool loaded;
     bool activated;
     QString type;

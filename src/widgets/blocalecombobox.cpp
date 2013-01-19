@@ -79,10 +79,25 @@ void BLocaleComboBoxPrivate::init()
 void BLocaleComboBoxPrivate::updateAvailableLocales()
 {
     B_Q(BLocaleComboBox);
+    q->blockSignals(true);
+    QLocale l = q->currentLocale();
     q->clear();
     QList<BApplication::LocaleSupportInfo> list = BApplication::availableLocales(AlwaysIncludeEnglish);
+    bool b = false;
     foreach (const BApplication::LocaleSupportInfo &info, list)
-        q->addItem(iconForLocale(info), localeToString(info), info.locale);
+    {
+        if (info.locale == l)
+        {
+            b = true;
+            break;
+        }
+    }
+    if (!b)
+        q->blockSignals(false);
+    foreach (const BApplication::LocaleSupportInfo &info, list)
+        q->addItem( iconForLocale(info), localeToString(info), info.locale.name() );
+    q->setCurrentLocale(l);
+    q->blockSignals(false);
 }
 
 /*============================================================================
@@ -120,14 +135,14 @@ BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
 
 QLocale BLocaleComboBox::currentLocale() const
 {
-    return itemData( currentIndex() ).toLocale();
+    return (currentIndex() >= 0) ? QLocale( itemData( currentIndex() ).toString() ) : QLocale(QLocale::English);
 }
 
 /*============================== Public slots ==============================*/
 
 void BLocaleComboBox::setCurrentLocale(const QLocale &locale)
 {
-    int ind = findData(locale);
+    int ind = findData( locale.name() );
     if (ind < 0)
         return;
     setCurrentIndex(ind);

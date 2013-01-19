@@ -68,6 +68,8 @@ public:
     static QStringList codecNamesForGroup(CodecGroup group);
 public:
     void setEditFont(const QFont &fnt);
+    void setEditFontFamily(const QString &family);
+    void setEditFontPointSize(int pointSize);
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(BCodeEdit::TabWidth tw);

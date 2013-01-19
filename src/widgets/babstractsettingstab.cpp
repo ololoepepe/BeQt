@@ -1,8 +1,10 @@
 #include "babstractsettingstab.h"
+#include "bapplication.h"
 
 #include <QWidget>
 #include <QFormLayout>
 #include <QList>
+#include <QIcon>
 
 /*============================================================================
 ================================ BAbstractSettingsTab ========================
@@ -52,9 +54,9 @@ void BAbstractSettingsTab::setRowVisible(QFormLayout *flt, QLayout *field, bool 
 
 /*============================== Public methods ============================*/
 
-bool BAbstractSettingsTab::preconfirm() const
+QIcon BAbstractSettingsTab::icon() const
 {
-    return true;
+    return BApplication::icon("configure");
 }
 
 bool BAbstractSettingsTab::hasAdvancedMode() const
@@ -68,6 +70,11 @@ void BAbstractSettingsTab::setAdvancedMode(bool enabled)
 }
 
 bool BAbstractSettingsTab::restoreDefault()
+{
+    return true;
+}
+
+bool BAbstractSettingsTab::saveSettings()
 {
     return true;
 }

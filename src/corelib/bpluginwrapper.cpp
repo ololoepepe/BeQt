@@ -33,13 +33,6 @@ BPluginWrapperPrivate::~BPluginWrapperPrivate()
     unload();
 }
 
-/*============================== Static public methods =====================*/
-
-QSettings *BPluginWrapperPrivate::createPluginSettingsInstance(const QString &pluginName)
-{
-    return BCoreApplicationPrivate::createSettingsInstance(pluginName);
-}
-
 /*============================== Public methods ============================*/
 
 void BPluginWrapperPrivate::init()
@@ -86,6 +79,7 @@ bool BPluginWrapperPrivate::load()
     info = interface->info();
     loaded = true;
     globalQMap.insert( nm, q_func() );
+    initSettings();
     return true;
 }
 
@@ -100,6 +94,11 @@ void BPluginWrapperPrivate::unload()
     interface = 0;
     loaded = false;
     globalQMap.remove(name);
+    if ( !settings.isNull() )
+    {
+        disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+        settings->deleteLater();
+    }
 }
 
 bool BPluginWrapperPrivate::activate()
@@ -154,6 +153,17 @@ void BPluginWrapperPrivate::deleteLoader()
     loader->deleteLater();
 }
 
+/*============================== Public slots ==============================*/
+
+void BPluginWrapperPrivate::initSettings()
+{
+    if (!interface)
+        return;
+    settings = BCoreApplication::ds_func()->createSettingsInstance( interface->name() );
+    if ( !settings.isNull() )
+        connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+}
+
 /*============================== Static public variables ===================*/
 
 QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
@@ -193,13 +203,6 @@ BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
 }
 
 /*============================== Static public methods =====================*/
-
-QSettings *BPluginWrapper::createPluginSettingsInstance(BPluginInterface *iface)
-{
-    if (!iface)
-        return 0;
-    return BPluginWrapperPrivate::createPluginSettingsInstance( iface->name() );
-}
 
 void BPluginWrapper::setAcceptableTypes(const QStringList &list)
 {
@@ -300,6 +303,11 @@ QObject *BPluginWrapper::instance() const
 BPluginInterface *BPluginWrapper::interface() const
 {
     return d_func()->interface;
+}
+
+QSettings *BPluginWrapper::settings() const
+{
+    return d_func()->settings.data();
 }
 
 /*============================== Public slots ==============================*/
