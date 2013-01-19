@@ -11,6 +11,7 @@
 #include "bplugin.h"
 #include "bplugininterface.h"
 #include "bsignaldelayproxy.h"
+#include "bspamnotifier.h"
 #include "bterminaliohandler.h"
 #include "btranslator.h"
 

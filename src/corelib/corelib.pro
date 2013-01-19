@@ -28,6 +28,8 @@ HEADERS += \
     bpluginwrapper_p.h \
     bsignaldelayproxy.h \
     bsignaldelayproxy_p.h \
+    bspamnotifier.h \
+    bspamnotifier_p.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
     btranslator.h \
@@ -42,6 +44,7 @@ SOURCES += \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
     bsignaldelayproxy.cpp \
+    bspamnotifier.cpp \
     bterminaliohandler.cpp \
     btranslator.cpp
 
