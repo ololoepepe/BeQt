@@ -59,6 +59,7 @@ public:
     static void setBlockComment(QTextBlock block, int start = -1, int end = -1);
 public:
     void setReadOnly(bool ro);
+    void setModification(bool modified);
     void setEditFont(const QFont &fnt);
     void setEditMode(EditMode mode);
     void setEditLineLength(int ll);

@@ -89,8 +89,11 @@ public:
     void setFileTypes(const QList<BAbstractFileType *> &list);
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
+    bool mergeWith(BCodeEditor *other);
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
     QFont editFont() const;
+    QString editFontFamily() const;
+    int editFontPointSize() const;
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
     BCodeEdit::TabWidth editTabWidth() const;
@@ -114,18 +117,18 @@ public:
     QStringList fileNames() const;
     QObject *dropHandler() const;
 public slots:
-    bool addDocument( const QString &fileName = QString() );
-    bool addDocument(const QString &fileName, const QString &text);
-    bool openDocuments();
-    bool openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
-    bool openDocument(const QString &fileName, QTextCodec *codec = 0);
+    BCodeEditorDocument *addDocument( const QString &fileName = QString() );
+    BCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
+    QList<BCodeEditorDocument *> openDocuments();
+    QList<BCodeEditorDocument *> openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
+    BCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool reopenCurrentDocument(QTextCodec *codec = 0);
     bool saveCurrentDocument();
     bool saveCurrentDocumentAs();
     bool saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec = 0);
     bool saveAllDocuments();
     bool closeCurrentDocument();
-    bool closeAllDocuments();
+    bool closeAllDocuments(bool save = true);
     void insertTextIntoCurrentDocument(const QString &text);
     void setCurrentDocumentText(const QString &text);
 signals:

@@ -386,12 +386,12 @@ QString BCodeEditorPrivate::defaultFileName()
 QString BCodeEditorPrivate::createFileName(const QString &fileName, const QString &defaultName,
                                            const QStringList &existingNames)
 {
-    if ( !fileName.isEmpty() )
-        return fileName;
-    QString fnbase = !defaultName.isEmpty() ? defaultName : defaultFileName();
-    QFileInfo fi(fnbase);
+    QFileInfo fi( !defaultName.isEmpty() ? defaultName : defaultFileName() );
     QString fnbasens = fi.baseName();
     QString fnbasesuff = fi.suffix();
+    QFileInfo fif(fileName);
+    if ( !fileName.isEmpty() && (fif.baseName().remove( QRegExp(" \\d$") ) != fnbasens || fif.suffix() != fnbasesuff) )
+        return fileName;
     int i = 1;
     QString fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
     while ( existingNames.contains(fn) )
@@ -570,11 +570,9 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
     BCodeEditorDocument *doc = new BCodeEditorDocument;
+    doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
     doc->innerEdit()->viewport()->installEventFilter(dropHandler);
     doc->innerEdit()->installEventFilter(this);
-    doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
-    if ( !text.isEmpty() )
-        doc->setText(text);
     doc->setEditFont(editFont);
     doc->setEditMode(editMode);
     doc->setEditLineLength(editLineLength);
@@ -591,6 +589,8 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
     connect( doc, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
+    if ( !text.isEmpty() )
+        doc->setText(text);
     return doc;
 }
 
@@ -631,20 +631,20 @@ BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocumen
     return defaultFileType;
 }
 
-bool BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec)
+BCodeEditorDocument *BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec)
 {
     if ( fileName.isEmpty() || findDocument(fileName) )
         return false;
     BCodeEditorDocument *doc = createDocument(fileName);
     openingDocuments.insert(doc, fileName);
-    bool b = doc->load(driver, codec, fileName);
-    if (!b)
+    if ( !doc->load(driver, codec, fileName) )
     {
         openingDocuments.remove(doc);
         doc->deleteLater();
+        doc = 0;
         failedToOpenMessage(fileName);
     }
-    return b;
+    return doc;
 }
 
 bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec)
@@ -725,58 +725,61 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
     }
 }
 
-bool BCodeEditorPrivate::closeAllDocuments()
+bool BCodeEditorPrivate::closeAllDocuments(bool save)
 {
     QList<BCodeEditorDocument *> list = q_func()->documents();
     if ( list.isEmpty() )
         return true;
-    QList<BCodeEditorDocument *> nslist;
-    for (int i = list.size() - 1; i >= 0; --i)
+    if (save)
     {
-        BCodeEditorDocument *doc = list.at(i);
-        if ( openingDocuments.contains(doc) || savingDocuments.contains(doc) )
+        QList<BCodeEditorDocument *> nslist;
+        for (int i = list.size() - 1; i >= 0; --i)
         {
-            list.removeAt(i);
-            continue;
-        }
-        if ( doc->isModified() )
-        {
-            list.removeAt(i);
-            nslist << doc;
-        }
-    }
-    if ( !nslist.isEmpty() )
-    {
-        if (nslist.size() == 1)
-            return closeDocument( nslist.first() );
-        BSelectDocumentsDialog sdlg(nslist);
-        sdlg.exec();
-        switch ( sdlg.decision() )
-        {
-        case QMessageBox::Save:
-        {
-            QList<BCodeEditorDocument *> selected = sdlg.selectedDocuments();
-            for (int i = nslist.size() - 1; i >= 0; --i)
+            BCodeEditorDocument *doc = list.at(i);
+            if ( openingDocuments.contains(doc) || savingDocuments.contains(doc) )
             {
-                BCodeEditorDocument *doc = nslist.at(i);
-                if ( !selected.contains(doc) )
-                {
-                    nslist.removeAt(i);
-                    list << doc;
-                }
+                list.removeAt(i);
+                continue;
             }
-            foreach (BCodeEditorDocument *doc, nslist)
-                if ( !tryCloseDocument(doc) )
-                    return false;
-            break;
+            if ( doc->isModified() )
+            {
+                list.removeAt(i);
+                nslist << doc;
+            }
         }
-        case QMessageBox::Discard:
-            foreach (BCodeEditorDocument *doc, nslist)
-                list << doc;
-            break;
-        case QMessageBox::Cancel:
-        default:
-            return false;
+        if ( !nslist.isEmpty() )
+        {
+            if (nslist.size() == 1)
+                return closeDocument( nslist.first() );
+            BSelectDocumentsDialog sdlg(nslist);
+            sdlg.exec();
+            switch ( sdlg.decision() )
+            {
+            case QMessageBox::Save:
+            {
+                QList<BCodeEditorDocument *> selected = sdlg.selectedDocuments();
+                for (int i = nslist.size() - 1; i >= 0; --i)
+                {
+                    BCodeEditorDocument *doc = nslist.at(i);
+                    if ( !selected.contains(doc) )
+                    {
+                        nslist.removeAt(i);
+                        list << doc;
+                    }
+                }
+                foreach (BCodeEditorDocument *doc, nslist)
+                    if ( !tryCloseDocument(doc) )
+                        return false;
+                break;
+            }
+            case QMessageBox::Discard:
+                foreach (BCodeEditorDocument *doc, nslist)
+                    list << doc;
+                break;
+            case QMessageBox::Cancel:
+            default:
+                return false;
+            }
         }
     }
     foreach (BCodeEditorDocument *doc, list)
@@ -1629,6 +1632,21 @@ void BCodeEditor::setMaxHistoryCount(int count)
     }
 }
 
+bool BCodeEditor::mergeWith(BCodeEditor *other)
+{
+    if (!other)
+        return true;
+    foreach ( BCodeEditorDocument *doc, other->documents() )
+    {
+        BCodeEditorDocument *ndoc = !doc->isBuisy() ? addDocument( doc->fileName(), doc->text() ) : 0;
+        if (!ndoc)
+            return false;
+        ndoc->setModification( doc->isModified() );
+    }
+    other->closeAllDocuments(false);
+    return true;
+}
+
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 {
     B_D(BCodeEditor);
@@ -1647,6 +1665,16 @@ bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 QFont BCodeEditor::editFont() const
 {
     return d_func()->editFont;
+}
+
+QString BCodeEditor::editFontFamily() const
+{
+    return editFont().family();
+}
+
+int BCodeEditor::editFontPointSize() const
+{
+    return editFont().pointSize();
 }
 
 BCodeEdit::EditMode BCodeEditor::editMode() const
@@ -1785,36 +1813,43 @@ QObject *BCodeEditor::dropHandler() const
 
 /*============================== Public slots ==============================*/
 
-bool BCodeEditor::addDocument(const QString &fileName)
+BCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName)
 {
     return addDocument(fileName, "");
 }
 
-bool BCodeEditor::addDocument(const QString &fileName, const QString &text)
+BCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName, const QString &text)
 {
     B_D(BCodeEditor);
     if ( d->findDocument( BCodeEditorPrivate::createFileName( fileName, d->defaultFN, fileNames() ) ) )
-        return false;
-    d->addDocument( d->createDocument(fileName, text) );
-    return true;
+        return 0;
+    BCodeEditorDocument *doc = d->createDocument(fileName, text);
+    d->addDocument(doc);
+    return doc;
 }
 
-bool BCodeEditor::openDocuments()
+QList<BCodeEditorDocument *> BCodeEditor::openDocuments()
 {
     QStringList list;
     QTextCodec *codec = d_func()->defaultCodec;
-    return d_func()->driver->getOpenFileNames(this, list, codec) && openDocuments(list, codec);
+    return d_func()->driver->getOpenFileNames(this, list, codec) ? openDocuments(list, codec) :
+                                                                   QList<BCodeEditorDocument *>();
 }
 
-bool BCodeEditor::openDocuments(const QStringList &fileNames, QTextCodec *codec)
+QList<BCodeEditorDocument *> BCodeEditor::openDocuments(const QStringList &fileNames, QTextCodec *codec)
 {
+    QList<BCodeEditorDocument *> list;
     foreach (const QString &fn, fileNames)
-        if ( !openDocument(fn, codec) )
-            return false;
-    return true;
+    {
+        BCodeEditorDocument *doc = openDocument(fn, codec);
+        if (!doc)
+            break;
+        list << doc;
+    }
+    return list;
 }
 
-bool BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
+BCodeEditorDocument *BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
 {
     return d_func()->openDocument(fileName, codec);
 }
@@ -1856,9 +1891,9 @@ bool BCodeEditor::closeCurrentDocument()
     return d_func()->closeDocument( currentDocument() );
 }
 
-bool BCodeEditor::closeAllDocuments()
+bool BCodeEditor::closeAllDocuments(bool save)
 {
-    return d_func()->closeAllDocuments();
+    return d_func()->closeAllDocuments(save);
 }
 
 void BCodeEditor::insertTextIntoCurrentDocument(const QString &text)

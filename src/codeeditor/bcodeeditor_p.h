@@ -206,12 +206,12 @@ public:
     void addDocument(BCodeEditorDocument *doc);
     void removeDocument(BCodeEditorDocument *doc);
     BAbstractFileType *selectDocumentFileType(BCodeEditorDocument *doc);
-    bool openDocument(const QString &fileName, QTextCodec *codec = 0);
+    BCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec = 0);
     bool saveDocument(BCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
     bool saveDocuments(const QList<BCodeEditorDocument *> &list);
     bool closeDocument(BCodeEditorDocument *doc);
-    bool closeAllDocuments();
+    bool closeAllDocuments(bool save = true);
     bool tryCloseDocument(BCodeEditorDocument *doc);
     void updateDocumentTab(BCodeEditorDocument *doc);
     void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
