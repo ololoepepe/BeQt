@@ -11,6 +11,7 @@ class QString;
 class QStringList;
 class QAction;
 class QWidget;
+class QByteArray;
 
 #include "bcodeedit.h"
 
@@ -43,6 +44,8 @@ public:
     virtual QWidget *widget(int type);
     virtual QList<QWidget *> widgets(int group, bool extended = false);
     virtual QList<QWidget *> widgets(bool extended = false);
+    virtual QByteArray saveState() const;
+    virtual void restoreState(const QByteArray &state);
     BCodeEditor *editor() const;
 protected:
     virtual void editorSet(BCodeEditor *edr);

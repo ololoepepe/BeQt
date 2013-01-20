@@ -348,6 +348,16 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     return true;
 }
 
+QByteArray BLocalDocumentDriver::saveState() const
+{
+    return d_func()->fileDialogState;
+}
+
+void BLocalDocumentDriver::restoreState(const QByteArray &state)
+{
+    d_func()->fileDialogState = state;
+}
+
 void BLocalDocumentDriver::setDefaultDir(const QString &dir)
 {
     if ( dir.isEmpty() )
@@ -358,16 +368,6 @@ void BLocalDocumentDriver::setDefaultDir(const QString &dir)
 void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
 {
     d_func()->nativeLineEnd = enabled;
-}
-
-void BLocalDocumentDriver::restoreDialogState(const QByteArray &state)
-{
-    d_func()->fileDialogState = state;
-}
-
-QByteArray BLocalDocumentDriver::saveDialogState() const
-{
-    return d_func()->fileDialogState;
 }
 
 /*============================== Protected methods =========================*/

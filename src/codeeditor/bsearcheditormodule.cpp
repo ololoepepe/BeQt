@@ -624,6 +624,16 @@ QList<QAction *> BSearchEditorModule::actions(bool extended)
     return list;
 }
 
+QByteArray BSearchEditorModule::saveState() const
+{
+    return d_func()->sdlg->saveState();
+}
+
+void BSearchEditorModule::restoreState(const QByteArray &state)
+{
+    d_func()->sdlg->restoreState(state);
+}
+
 void BSearchEditorModule::setCaseSensitivity(Qt::CaseSensitivity cs)
 {
     d_func()->sdlg->setCaseSensitivity(cs);
@@ -682,16 +692,6 @@ int BSearchEditorModule::maximumHistorySize() const
 bool BSearchEditorModule::replaceEnabled() const
 {
     return d_func()->sdlg->replaceEnabled();
-}
-
-void BSearchEditorModule::restoreDialogState(const QByteArray &state)
-{
-    d_func()->sdlg->restoreState(state);
-}
-
-QByteArray BSearchEditorModule::saveDialogState() const
-{
-    return d_func()->sdlg->saveState();
 }
 
 /*============================== Public slots ==============================*/

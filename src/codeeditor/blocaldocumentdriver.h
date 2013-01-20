@@ -35,10 +35,10 @@ public:
     bool testFileReadOnly(const QString &fileName);
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
     bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec);
+    QByteArray saveState() const;
+    void restoreState(const QByteArray &state);
     void setDefaultDir(const QString &dir);
     void setNativeLineEnd(bool enabled);
-    void restoreDialogState(const QByteArray &state);
-    QByteArray saveDialogState() const;
 protected:
     bool handleSaveOperation(const Operation &op);
     bool handleLoadOperation(const Operation &op);

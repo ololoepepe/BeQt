@@ -8,6 +8,7 @@ class BAbstractDocumentDriverPrivate;
 
 class QWidget;
 class QTextCodec;
+class QByteArray;
 
 #include <BeQtCore/BBase>
 #include <BeQtCore/BeQtGlobal>
@@ -43,6 +44,8 @@ public:
     virtual bool testFileReadOnly(const QString &fileName) = 0;
     virtual bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec) = 0;
     virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec) = 0;
+    virtual QByteArray saveState() const;
+    virtual void restoreState(const QByteArray &state);
     bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
     bool load( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
     bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );

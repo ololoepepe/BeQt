@@ -16,6 +16,7 @@ class QWidget;
 #include <QList>
 #include <QString>
 #include <QStringList>
+#include <QByteArray>
 
 #include <QDebug>
 
@@ -113,6 +114,16 @@ QList<QWidget *> BAbstractEditorModule::widgets(int group, bool extended)
 QList<QWidget *> BAbstractEditorModule::widgets(bool extended)
 {
     return QList<QWidget *>();
+}
+
+QByteArray BAbstractEditorModule::saveState() const
+{
+    return QByteArray();
+}
+
+void BAbstractEditorModule::restoreState(const QByteArray &state)
+{
+    //
 }
 
 BCodeEditor *BAbstractEditorModule::editor() const

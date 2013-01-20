@@ -39,6 +39,8 @@ public:
     QString id() const;
     QAction *action(int type);
     QList<QAction *> actions(bool extended = false);
+    QByteArray saveState() const;
+    void restoreState(const QByteArray &state);
     void setCaseSensitivity(Qt::CaseSensitivity cs);
     void setMatchWholeWords(bool enabled);
     void setBackwardOrder(bool enabled);
@@ -51,8 +53,6 @@ public:
     bool cyclicSearch() const;
     int maximumHistorySize() const;
     bool replaceEnabled() const;
-    void restoreDialogState(const QByteArray &state);
-    QByteArray saveDialogState() const;
 public slots:
     void find();
     void findNext(bool showDialog = true);

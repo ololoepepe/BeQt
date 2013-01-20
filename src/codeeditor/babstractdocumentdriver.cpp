@@ -10,6 +10,7 @@ class QTextCodec;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
+#include <QByteArray>
 
 #include <QDebug>
 
@@ -68,6 +69,16 @@ BAbstractDocumentDriver::BAbstractDocumentDriver(BAbstractDocumentDriverPrivate 
 }
 
 /*============================== Public methods ============================*/
+
+QByteArray BAbstractDocumentDriver::saveState() const
+{
+    return QByteArray();
+}
+
+void BAbstractDocumentDriver::restoreState(const QByteArray &state)
+{
+    //
+}
 
 bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
 {

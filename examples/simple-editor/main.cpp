@@ -52,12 +52,11 @@ int main(int argc, char **argv)
     //Creating code editor and loading related settings
     BCodeEditor *cedtr = new BCodeEditor;
     QSettings *s = BApplication::settingsInstance();
-    BLocalDocumentDriver *drv = static_cast<BLocalDocumentDriver *>( cedtr->driver() );
-    drv->restoreDialogState( s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray() );
+    cedtr->driver()->restoreState( s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray() );
     BAbstractEditorModule *osmdl = cedtr->module(BCodeEditor::OpenSaveModule);
     BAbstractEditorModule *emdl = cedtr->module(BCodeEditor::EditModule);
     BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) );
-    smdl->restoreDialogState( s ? s->value("editor/search_dialog_state").toByteArray() : QByteArray() );
+    smdl->restoreState( s ? s->value("editor/search_dialog_state").toByteArray() : QByteArray() );
     BAbstractEditorModule *imdl = cedtr->module(BCodeEditor::IndicatorsModule);
     //Creating Main window
     QMainWindow *mw = new QMainWindow;
@@ -123,8 +122,8 @@ int main(int argc, char **argv)
     //Saving settings
     if (s)
     {
-        s->setValue( "editor/driver_dialog_state", drv->saveDialogState() );
-        s->setValue( "editor/search_dialog_state", smdl->saveDialogState() );
+        s->setValue( "editor/driver_dialog_state", cedtr->driver()->saveState() );
+        s->setValue( "editor/search_dialog_state", smdl->saveState() );
         s->setValue( "main_window/geometry", mw->saveGeometry() );
         s->setValue( "main_window/state", mw->saveState() );
         s->sync();
