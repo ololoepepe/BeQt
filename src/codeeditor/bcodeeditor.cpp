@@ -489,6 +489,7 @@ void BCodeEditorPrivate::init()
     driver = 0;
     q->setDriver(new BLocalDocumentDriver);
     defaultFileType = BAbstractFileType::defaultFileType();
+    preferredFileType = defaultFileType;
     defaultCodec = QTextCodec::codecForName("UTF-8");
     defaultFN = defaultFileName();
     maxHistoryCount = 20;
@@ -542,6 +543,8 @@ bool BCodeEditorPrivate::tryRemoveFileType(const QString &id)
     foreach ( BCodeEditorDocument *doc, q_func()->documents() )
         if (doc->fileType() == ft)
             doc->setFileType( selectDocumentFileType(doc) );
+    if (ft == preferredFileType)
+        preferredFileType = defaultFileType;
     delete ft;
     return true;
 }
@@ -1604,6 +1607,23 @@ void BCodeEditor::setFileTypes(const QList<BAbstractFileType *> &list)
         d_func()->emitFileTypesChanged();
 }
 
+void BCodeEditor::setPreferredFileType(BAbstractFileType *ft)
+{
+    if (!ft)
+        return;
+    setPreferredFileType( ft->id() );
+}
+
+void BCodeEditor::setPreferredFileType(const QString &id)
+{
+    if ( id.isEmpty() )
+        return;
+    B_D(BCodeEditor);
+    if ( !d->fileTypes.contains(id) )
+        return;
+    d->preferredFileType = d->fileTypes.value(id);
+}
+
 void BCodeEditor::setFileHistory(const QStringList &list)
 {
     B_D(BCodeEditor);
@@ -1765,8 +1785,18 @@ BAbstractFileType *BCodeEditor::fileType(const QString &id) const
 QList<BAbstractFileType *> BCodeEditor::fileTypes() const
 {
     QList<BAbstractFileType *> list = d_func()->fileTypes.values();
-    list.prepend(d_func()->defaultFileType);
+    list << d_func()->defaultFileType;
     return list;
+}
+
+BAbstractFileType *BCodeEditor::preferredFileType() const
+{
+    return d_func()->preferredFileType;
+}
+
+QString BCodeEditor::preferredFileTypeId() const
+{
+    return preferredFileType()->id();
 }
 
 QStringList BCodeEditor::fileHistory() const

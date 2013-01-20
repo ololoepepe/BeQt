@@ -273,6 +273,7 @@ public:
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;
+    BAbstractFileType *preferredFileType;
     BDropHandler *dropHandler;
     QStringList fileHistory;
     int maxHistoryCount;

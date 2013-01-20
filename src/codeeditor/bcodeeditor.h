@@ -87,6 +87,8 @@ public:
     void removeFileType(BAbstractFileType *ft);
     void removeFileType(const QString &id);
     void setFileTypes(const QList<BAbstractFileType *> &list);
+    void setPreferredFileType(BAbstractFileType *ft);
+    void setPreferredFileType(const QString &id);
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
     bool mergeWith(BCodeEditor *other);
@@ -109,6 +111,8 @@ public:
     BAbstractDocumentDriver *driver() const;
     BAbstractFileType *fileType(const QString &id) const;
     QList<BAbstractFileType *> fileTypes() const;
+    BAbstractFileType *preferredFileType() const;
+    QString preferredFileTypeId() const;
     QStringList fileHistory() const;
     int maxHistoryCount() const;
     bool documentAvailable() const;
