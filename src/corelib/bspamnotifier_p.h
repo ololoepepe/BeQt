@@ -14,7 +14,7 @@ class QTimer;
 ================================ BSpamNotifierPrivate
 ============================================================================*/
 
-class BSpamNotifierPrivate : public BBasePrivate
+class B_CORE_EXPORT BSpamNotifierPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSpamNotifier)
@@ -33,6 +33,7 @@ public:
     int limit;
     int count;
     int elapsed;
+    bool enabled;
 private:
     Q_DISABLE_COPY(BSpamNotifierPrivate)
 };

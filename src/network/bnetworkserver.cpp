@@ -3,6 +3,11 @@
 #include "bnetworkserver_p.h"
 #include "bgenericserver.h"
 
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BSpamNotifier>
+
 #include <QObject>
 #include <QList>
 #include <QThread>
@@ -10,6 +15,7 @@
 #include <QMetaObject>
 #include <QMutex>
 #include <QMutexLocker>
+#include <QMap>
 
 /*============================================================================
 ================================ BNetworkServerWorker ========================
@@ -130,6 +136,9 @@ void BNetworkServerPrivate::init()
 {
     maxConnectionCount = 0;
     maxThreadCount = 0;
+    spamNotifier = new BSpamNotifier(this);
+    spamNotifier->setEnabled(false);
+    connect( spamNotifier, SIGNAL( spammed(int) ), this, SLOT( spammed() ) );
 }
 
 BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket)
@@ -139,7 +148,10 @@ BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *sock
 
 BGenericSocket *BNetworkServerPrivate::createSocket()
 {
-    return q_func()->createSocket();
+    BGenericSocket *s = q_func()->createSocket();
+    if (s)
+        spamNotifier->spam();
+    return s;
 }
 
 BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
@@ -220,6 +232,11 @@ void BNetworkServerPrivate::finished()
         return;
     threads.removeAll(t);
     t->deleteLater();
+}
+
+void BNetworkServerPrivate::spammed()
+{
+    //
 }
 
 /*============================================================================
@@ -318,6 +335,11 @@ int BNetworkServer::maxThreadCount() const
 int BNetworkServer::currentThreadCount() const
 {
     return d_func()->threads.size();
+}
+
+BSpamNotifier *BNetworkServer::spamNotifier() const
+{
+    return d_func()->spamNotifier;
 }
 
 QList<BNetworkConnection *> BNetworkServer::connections() const

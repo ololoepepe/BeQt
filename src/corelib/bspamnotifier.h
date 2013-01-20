@@ -12,7 +12,7 @@ class BSpamNotifierPrivate;
 ================================ BSpamNotifier ===============================
 ============================================================================*/
 
-class BSpamNotifier : public QObject, public BBase
+class B_CORE_EXPORT BSpamNotifier : public QObject, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSpamNotifier)
@@ -29,9 +29,11 @@ public:
     int eventLimit() const;
     int eventCount() const;
     int timeElapsed() const;
+    bool isEnabled() const;
     bool isActive() const;
 public slots:
-    void spam(int eventWeight = 0);
+    void setEnabled(bool enabled);
+    void spam(int eventWeight = 1);
 signals:
     void spammed(int msecsElapsed);
 private:

@@ -36,6 +36,7 @@ void BSpamNotifierPrivate::init()
     limit = 0;
     count = 0;
     elapsed = 0;
+    enabled = true;
 }
 
 /*============================== Public slots ==============================*/
@@ -134,6 +135,11 @@ int BSpamNotifier::timeElapsed() const
     return d_func()->timeElapsed();
 }
 
+bool BSpamNotifier::isEnabled() const
+{
+    return d_func()->enabled;
+}
+
 bool BSpamNotifier::isActive() const
 {
     return d_func()->timer->isActive();
@@ -141,11 +147,18 @@ bool BSpamNotifier::isActive() const
 
 /*============================== Public slots ==============================*/
 
+void BSpamNotifier::setEnabled(bool enabled)
+{
+    d_func()->enabled = enabled;
+}
+
 void BSpamNotifier::spam(int eventWeight)
 {
     if (eventWeight <= 0)
         return;
     B_D(BSpamNotifier);
+    if (!d->enabled)
+        return;
     if ( !d->timer->isActive() )
         d->timer->start(d->interval);
     d_func()->testSpam(eventWeight);

@@ -7,6 +7,7 @@ class BNetworkServerThread;
 class BNetworkServerPrivate;
 class BNetworkServer;
 class BGenericSocket;
+class BSpamNotifier;
 
 #include "bnetworkserver.h"
 #include "bgenericserver.h"
@@ -90,11 +91,13 @@ public:
 public slots:
     void newConnection(int socketDescriptor);
     void finished();
+    void spammed();
 public:
     QPointer<BGenericServer> server;
     QList<BNetworkServerThread *> threads;
     int maxConnectionCount;
     int maxThreadCount;
+    BSpamNotifier *spamNotifier;
     mutable QMutex connectionMutex;
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)

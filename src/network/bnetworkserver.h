@@ -4,6 +4,7 @@
 class BNetworkServerPrivate;
 class BNetworkConnection;
 class BGenericSocket;
+class BSpamNotifier;
 
 class QString;
 
@@ -41,6 +42,7 @@ public:
     int maxThreadCount() const;
     int currentThreadCount() const;
     QList<BNetworkConnection *> connections() const;
+    BSpamNotifier *spamNotifier() const;
 protected:
     virtual BNetworkConnection *createConnection(BGenericSocket *socket) = 0;
     virtual BGenericSocket *createSocket();

@@ -14,7 +14,7 @@ class QTimer;
 ================================ BSignalDelayProxyPrivate ====================
 ============================================================================*/
 
-class BSignalDelayProxyPrivate : public BBasePrivate
+class B_CORE_EXPORT BSignalDelayProxyPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSignalDelayProxy)
