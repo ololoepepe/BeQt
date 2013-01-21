@@ -107,10 +107,13 @@ When building BeQt, you may pass some parameters to qmake:
  * "CONFIG+=beqt_examples"
    Build demo examples (by default examples are not built)
 
+ * "CONFIG+=beqt_no_install"
+   Don't install any files (building only)
+
  * "CONFIG+=beqt_no_headers"
    Don't install headers
 
- * "PREFIX=<path>"
+ * "BEQT_PREFIX=<path>"
    Set install path. See the note below
 
 Note: In Windows systems BeQt is installed to the "C:\Program files\BeQt"
