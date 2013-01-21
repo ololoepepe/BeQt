@@ -45,16 +45,9 @@ BTerminalIOHandlerThread::~BTerminalIOHandlerThread()
 
 void BTerminalIOHandlerThread::run()
 {
-    QMutexLocker locker(&readMutex);
     forever
-    {
         _m_p->lineRead( readStream.readLine() );
-    }
 }
-
-/*============================== Static public variables ===================*/
-
-QMutex BTerminalIOHandlerThread::readMutex;
 
 /*============================================================================
 ================================ BTerminalIOHandlerPrivate
@@ -70,7 +63,8 @@ BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
 
 BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 {
-    //
+    Thread->terminate();
+    Thread->wait();
 }
 
 /*============================== Static public methods =====================*/

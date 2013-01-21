@@ -31,8 +31,6 @@ public:
 protected:
     void run();
 public:
-    static QMutex readMutex;
-public:
     BTerminalIOHandlerPrivate *const _m_p;
 public:
     QTextStream readStream;

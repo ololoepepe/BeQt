@@ -99,12 +99,8 @@ BeQt рассчитан на использование совместно с Qt
    Не собирать модуль BeQtCodeEditor
 
  * "CONFIG+=beqt_builtin_resources"
-   Встроить ресурсы в файлы библиотек
+   Встроить ресурсы (включая переводы) в файлы библиотек
    Подробнее см.: http://qt-project.org/doc/qt-5.0/resources.html
-
- * "CONFIG+=beqt_builtin_translations"
-   Встроить переводы (.qm) в файлы библиотек. Действует только если
-   передан параметр "beqt_builtin_resources"
 
  * "CONFIG+=beqt_examples"
    Собрать демонстрационные примеры (по умолчанию примеры не собираются)

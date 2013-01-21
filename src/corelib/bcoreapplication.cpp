@@ -68,8 +68,6 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
     }
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtcore);
-#endif
-#if defined(BEQT_BUILTIN_TRANSLATIONS)
     Q_CLEANUP_RESOURCE(beqt_translations);
 #endif
 }
@@ -166,8 +164,6 @@ void BCoreApplicationPrivate::init()
 {
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_INIT_RESOURCE(beqtcore);
-#endif
-#if defined(BEQT_BUILTIN_TRANSLATIONS)
     Q_INIT_RESOURCE(beqt_translations);
 #endif
     bTest(QCoreApplication::instance(), "BCoreApplication", "Missing QCoreApplication instance");

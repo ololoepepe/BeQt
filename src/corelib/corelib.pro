@@ -49,12 +49,10 @@ SOURCES += \
     btranslator.cpp
 
 contains(CONFIG, beqt_builtin_resources) {
-    RESOURCES += beqtcore.qrc
     DEFINES += BEQT_BUILTIN_RESOURCES
-    contains(CONFIG, beqt_builtin_translations) {
-        RESOURCES += ../../translations/beqt_translations.qrc
-        DEFINES += BEQT_BUILTIN_TRANSLATIONS
-    }
+    RESOURCES += \
+        beqtcore.qrc \
+        ../../translations/beqt_translations.qrc
 }
 
 !contains(CONFIG, beqt_no_install) {

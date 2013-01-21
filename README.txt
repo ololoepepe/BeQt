@@ -101,12 +101,8 @@ When building BeQt, you may pass some parameters to qmake:
    Don't build the BeQtCodeEditor module
 
  * "CONFIG+=beqt_builtin_resources"
-   Embed resources into library files
+   Embed resources (including translations) into library files
    See: http://qt-project.org/doc/qt-5.0/resources.html for details
-
- * "CONFIG+=beqt_builtin_translations"
-   Embed translations (.qm) into library files. Works only if
-   the "beqt_builtin_resources" parameter is also passed
 
  * "CONFIG+=beqt_examples"
    Build demo examples (by default examples are not built)
