@@ -426,7 +426,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     case HomepageAction:
         act = new QAction(parent);
         act->setObjectName("ActionHomepage");
-        act->setIcon( icon("network") );
+        act->setIcon( icon("gohome") );
         connect( act, SIGNAL( triggered() ), _m_self, SLOT( openHomepage() ) );
         break;
     case HelpContentsAction:
