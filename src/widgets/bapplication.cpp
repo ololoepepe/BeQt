@@ -193,8 +193,9 @@ void BApplicationPrivate::showAbout()
     }
     else
     {
+        aboutDlg->setParent( QApplication::activeWindow(), aboutDlg->windowFlags() );
         aboutDlg->resetTabs();
-        aboutDlg->open();
+        aboutDlg->exec();
     }
 }
 

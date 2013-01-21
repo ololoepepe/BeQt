@@ -184,7 +184,7 @@ void BAboutDialogPrivate::init()
 
 void BAboutDialogPrivate::initAboutBeqtDialog()
 {
-    aboutBeqtDlg = new BAboutDialog( 0, "BeQt", bVersion() );
+    aboutBeqtDlg = new BAboutDialog( q_func(), "BeQt", bVersion() );
     aboutBeqtDlg->setMinimumSize(800, 400);
     aboutBeqtDlg->setWindowModality(Qt::NonModal);
     aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012");
@@ -306,9 +306,11 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoProvider::Person
             continue;
         s += "<b>" + inf.name + "</b><br>" + HtmlSpaceDouble + inf.role + "<br>";
         if ( !inf.site.isEmpty() )
-            s += HtmlSpaceDouble + "<i>Website</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a><br>";
+            s += HtmlSpaceDouble + "<i>" + tr("Website", "personInfo text") +
+                    "</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a><br>";
         if ( !inf.mail.isEmpty() )
-            s += HtmlSpaceDouble + "<i>E-mail</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a><br>";
+            s += HtmlSpaceDouble + "<i>" + tr("E-mail", "personInfo text") +
+                    "</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a><br>";
         if (i < infos.size() - 1)
             s += "<br>";
     }
@@ -458,7 +460,7 @@ void BAboutDialogPrivate::tbtnAboutBeqtClicked()
     else
     {
         aboutBeqtDlg->resetTabs();
-        aboutBeqtDlg->open();
+        aboutBeqtDlg->exec();
     }
 }
 

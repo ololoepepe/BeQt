@@ -97,6 +97,7 @@ public:
     QString defaultDir;
     bool nativeLineEnd;
     QByteArray fileDialogState;
+    BAbstractFileType *lastFileType;
 private:
     Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
 };

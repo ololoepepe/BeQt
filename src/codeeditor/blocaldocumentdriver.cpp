@@ -246,6 +246,7 @@ void BLocalDocumentDriverPrivate::init()
 {
     defaultDir = QDir::homePath();
     nativeLineEnd = true;
+    lastFileType = 0;
 }
 
 /*============================================================================
@@ -302,19 +303,21 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
 {
     if ( !editor() )
         return false;
+    B_D(BLocalDocumentDriver);
     BFileDialog bfd(parent);
-    bfd.restoreState(d_func()->fileDialogState);
-    if ( d_func()->fileDialogState.isEmpty() )
-        bfd.setDirectory(d_func()->defaultDir);
+    bfd.restoreState(d->fileDialogState);
+    if ( d->fileDialogState.isEmpty() )
+        bfd.setDirectory(d->defaultDir);
     bfd.setFileTypes( editor()->fileTypes() );
-    bfd.selectFileType( editor()->preferredFileType() );
+    bfd.selectFileType( d->lastFileType ? d->lastFileType : editor()->preferredFileType() );
     bfd.setCodecs( editor()->supportedCodecs() );
     if (codec)
         bfd.selectCodec(codec);
     bfd.setAcceptMode(BFileDialog::AcceptOpen);
     bfd.setFileMode(QFileDialog::ExistingFiles);
     int ret = bfd.exec();
-    d_func()->fileDialogState = bfd.saveState();
+    d->fileDialogState = bfd.saveState();
+    d->lastFileType = bfd.selectedFileType();
     if (BFileDialog::Accepted != ret)
         return false;
     fileNames = bfd.selectedFiles();
