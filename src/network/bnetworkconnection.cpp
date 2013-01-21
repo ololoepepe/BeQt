@@ -322,15 +322,11 @@ bool BNetworkConnection::connectToHostBlocking(const QString &hostName, quint16 
 
 void BNetworkConnection::disconnectFromHost()
 {
-    if ( !isConnected() )
-        return;
     d_func()->socket->disconnectFromHost();
 }
 
 bool BNetworkConnection::disconnectFromHostBlocking(int msecs)
 {
-    if ( !isConnected() )
-        return true;
     B_D(BNetworkConnection);
     d->socket->disconnectFromHost();
     return d->socket->waitForDisconnected(msecs);
@@ -338,9 +334,12 @@ bool BNetworkConnection::disconnectFromHostBlocking(int msecs)
 
 void BNetworkConnection::close()
 {
-    if ( !isConnected() )
-        return;
     d_func()->socket->close();
+}
+
+void BNetworkConnection::abort()
+{
+    d_func()->socket->abort();
 }
 
 bool BNetworkConnection::isValid() const

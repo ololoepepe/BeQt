@@ -46,6 +46,7 @@ public:
     void disconnectFromHost();
     bool disconnectFromHostBlocking(int msecs = 30000);
     void close();
+    void abort();
     bool isValid() const;
     bool isConnected() const;
     const QUuid uniqueId() const;
