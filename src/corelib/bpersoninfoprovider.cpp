@@ -55,6 +55,7 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     if ( what.isEmpty() )
         return;
     QStringList keys = what.keys();
+    QString defName = what.value("en").name;
     QString defSite = what.value("en").site;
     QString defMail = what.value("en").mail;
     if ( defSite.isEmpty() )
@@ -81,6 +82,8 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     }
     for (int i = 0; i < keys.size(); ++i)
     {
+        if ( what.value( keys.at(i) ).name.isEmpty() )
+            what[keys.at(i)].name = defName;
         if ( what.value( keys.at(i) ).site.isEmpty() )
             what[keys.at(i)].site = defSite;
         if ( what.value( keys.at(i) ).mail.isEmpty() )

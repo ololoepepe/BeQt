@@ -1,5 +1,4 @@
 Name=Oxygen
 Role=BeQt uses Oxygen as a default icon set
-Site=http://www.oxygen-icons.org
-Name[ru]=Oxygen
 Role[ru]=BeQt использует Oxygen как набор иконок по умолчанию
+Site=http://www.oxygen-icons.org
