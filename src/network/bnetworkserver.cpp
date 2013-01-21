@@ -353,6 +353,11 @@ QList<BNetworkConnection *> BNetworkServer::connections() const
 
 /*============================== Protected methods =========================*/
 
+BNetworkConnection *BNetworkServer::createConnection(BGenericSocket *socket)
+{
+    return new BNetworkConnection(this, socket);
+}
+
 BGenericSocket *BNetworkServer::createSocket()
 {
     return new BGenericSocket(BGenericSocket::TcpSocket);

@@ -44,7 +44,7 @@ public:
     QList<BNetworkConnection *> connections() const;
     BSpamNotifier *spamNotifier() const;
 protected:
-    virtual BNetworkConnection *createConnection(BGenericSocket *socket) = 0;
+    virtual BNetworkConnection *createConnection(BGenericSocket *socket);
     virtual BGenericSocket *createSocket();
 signals:
     void connectionAdded(BNetworkConnection *connection);

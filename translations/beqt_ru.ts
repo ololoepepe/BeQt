@@ -799,13 +799,13 @@
         <location filename="../src/network/bnetworkconnection.cpp" line="97"/>
         <source>Connected</source>
         <comment>log text</comment>
-        <translation type="unfinished">Подключился</translation>
+        <translation>Подключен</translation>
     </message>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="104"/>
         <source>Disconnected</source>
         <comment>log text</comment>
-        <translation type="unfinished">Отключился</translation>
+        <translation>Отключен</translation>
     </message>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="111"/>
