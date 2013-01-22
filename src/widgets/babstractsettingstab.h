@@ -22,8 +22,8 @@ public:
     explicit BAbstractSettingsTab();
     ~BAbstractSettingsTab();
 public:
-    static void setRowVisible(QFormLayout *flt, QWidget *field, bool visible);
-    static void setRowVisible(QFormLayout *flt, QLayout *field, bool visible);
+    static void setRowVisible(QWidget *field, bool visible);
+    static void setRowVisible(QLayout *field, bool visible);
 public:
     virtual QString title() const = 0;
     virtual QIcon icon() const;

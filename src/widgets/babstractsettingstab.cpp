@@ -25,9 +25,12 @@ BAbstractSettingsTab::~BAbstractSettingsTab()
 
 /*============================== Static public methods =====================*/
 
-void BAbstractSettingsTab::setRowVisible(QFormLayout *flt, QWidget *field, bool visible)
+void BAbstractSettingsTab::setRowVisible(QWidget *field, bool visible)
 {
-    if (!flt || !field)
+    if (!field)
+        return;
+    QFormLayout *flt = static_cast<QFormLayout *>( field->parentWidget()->layout() );
+    if (!flt)
         return;
     field->setVisible(visible);
     QWidget *l = flt->labelForField(field);
@@ -36,9 +39,12 @@ void BAbstractSettingsTab::setRowVisible(QFormLayout *flt, QWidget *field, bool 
     l->setVisible(visible);
 }
 
-void BAbstractSettingsTab::setRowVisible(QFormLayout *flt, QLayout *field, bool visible)
+void BAbstractSettingsTab::setRowVisible(QLayout *field, bool visible)
 {
-    if (!flt || !field)
+    if (!field)
+        return;
+    QFormLayout *flt = static_cast<QFormLayout *>( field->parentWidget()->layout() );
+    if (!flt)
         return;
     foreach ( int i, bRange(0, field->count() - 1) )
     {
