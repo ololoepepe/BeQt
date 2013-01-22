@@ -273,7 +273,7 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
 
 /*============================== Protected methods =========================*/
 
-void BTerminalIOHandler::handleCommand(const QString &command, const QStringList &arguments)
+void BTerminalIOHandler::handleCommand(const QString &, const QStringList &)
 {
     //
 }

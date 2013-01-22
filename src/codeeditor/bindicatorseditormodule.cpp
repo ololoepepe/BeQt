@@ -214,7 +214,7 @@ QWidget *BIndicatorsEditorModule::widget(int type)
     }
 }
 
-QList<QWidget *> BIndicatorsEditorModule::widgets(bool extended)
+QList<QWidget *> BIndicatorsEditorModule::widgets(bool)
 {
     B_D(BIndicatorsEditorModule);
     QList<QWidget *> list;
@@ -229,41 +229,41 @@ QList<QWidget *> BIndicatorsEditorModule::widgets(bool extended)
 
 /*============================== Protected methods =========================*/
 
-void BIndicatorsEditorModule::editorSet(BCodeEditor *edr)
+void BIndicatorsEditorModule::editorSet(BCodeEditor *)
 {
     d_func()->updateCursorPosIndicator();
     d_func()->updateEncodingIndicator();
     d_func()->updateFileTypeIndicator();
 }
 
-void BIndicatorsEditorModule::editorUnset(BCodeEditor *edr)
+void BIndicatorsEditorModule::editorUnset(BCodeEditor *)
 {
     d_func()->updateCursorPosIndicator();
     d_func()->updateEncodingIndicator();
     d_func()->updateFileTypeIndicator();
 }
 
-void BIndicatorsEditorModule::documentCursorPositionChanged(const QPoint &pos)
+void BIndicatorsEditorModule::documentCursorPositionChanged(const QPoint &)
 {
     d_func()->updateCursorPosIndicator();
 }
 
-void BIndicatorsEditorModule::documentCodecChanged(const QString &codecName)
+void BIndicatorsEditorModule::documentCodecChanged(const QString &)
 {
     d_func()->updateEncodingIndicator();
 }
 
-void BIndicatorsEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
+void BIndicatorsEditorModule::documentFileTypeChanged(BAbstractFileType *)
 {
     d_func()->updateFileTypeIndicator();
 }
 
-void BIndicatorsEditorModule::defaultCodecChanged(const QString &codecName)
+void BIndicatorsEditorModule::defaultCodecChanged(const QString &)
 {
     d_func()->updateEncodingIndicator();
 }
 
-void BIndicatorsEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+void BIndicatorsEditorModule::currentDocumentChanged(BCodeEditorDocument *)
 {
     d_func()->updateCursorPosIndicator();
     d_func()->updateEncodingIndicator();

@@ -28,6 +28,9 @@ class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkConnection)
 public:
+    typedef void (BNetworkConnection::*InternalHandler)(BNetworkOperation *);
+    typedef void (*ExternalHandler)(BNetworkOperation *);
+public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
     explicit BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
     explicit BNetworkConnection(BGenericSocket::SocketType type, QObject *parent = 0);
@@ -47,6 +50,10 @@ public:
     bool disconnectFromHostBlocking(int msecs = 30000);
     void close();
     void abort();
+    void installReplyHandler(const QString &operation, InternalHandler handler);
+    void installReplyHandler(const QString &operation, ExternalHandler handler);
+    void installRequestHandler(const QString &operation, InternalHandler handler);
+    void installRequestHandler(const QString &operation, ExternalHandler handler);
     bool isValid() const;
     bool isConnected() const;
     const QUuid uniqueId() const;
@@ -63,6 +70,8 @@ public:
     BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
 protected:
+    virtual void handleReply(BNetworkOperation *op);
+    virtual void handleRequest(BNetworkOperation *op);
     void log(const QString &text, bool noLevel = true);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;

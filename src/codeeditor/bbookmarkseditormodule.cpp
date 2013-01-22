@@ -207,7 +207,7 @@ QAction *BBookmarksEditorModule::action(int type)
     }
 }
 
-QList<QAction *> BBookmarksEditorModule::actions(bool extended)
+QList<QAction *> BBookmarksEditorModule::actions(bool)
 {
     const B_D(BBookmarksEditorModule);
     QList<QAction *> list;
@@ -297,17 +297,17 @@ bool BBookmarksEditorModule::gotoNextBookmark()
 
 /*============================== Protected methods =========================*/
 
-void BBookmarksEditorModule::editorSet(BCodeEditor *edr)
+void BBookmarksEditorModule::editorSet(BCodeEditor *)
 {
     d_func()->checkBookmarks();
 }
 
-void BBookmarksEditorModule::editorUnset(BCodeEditor *edr)
+void BBookmarksEditorModule::editorUnset(BCodeEditor *)
 {
     d_func()->checkBookmarks();
 }
 
-void BBookmarksEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+void BBookmarksEditorModule::currentDocumentChanged(BCodeEditorDocument *)
 {
     d_func()->checkBookmarks();
 }

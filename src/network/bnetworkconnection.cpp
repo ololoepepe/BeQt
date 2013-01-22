@@ -169,6 +169,12 @@ void BNetworkConnectionPrivate::dataReceived(const QByteArray &data, const BNetw
         if (detailedLog)
             q->log( tr("Request received:", "log text") + " " + metaData.operation() );
         QMetaObject::invokeMethod( q, "requestReceived", Q_ARG(BNetworkOperation *, op) );
+        QString opp = op->metaData().operation();
+        if ( internalRequestHandlers.contains(opp) )
+            return ( q->*internalRequestHandlers.value(opp) )(op);
+        if ( externalRequestHandlers.contains(opp) )
+            return externalRequestHandlers.value(opp)(op);
+        q->handleRequest(op);
     }
     else
     {
@@ -184,6 +190,12 @@ void BNetworkConnectionPrivate::dataReceived(const QByteArray &data, const BNetw
         if (detailedLog)
             q->log( tr("Reply received:", "log text") + " " + metaData.operation() );
         QMetaObject::invokeMethod( q, "replyReceived", Q_ARG(BNetworkOperation *, op) );
+        QString opp = op->metaData().operation();
+        if ( internalReplyHandlers.contains(opp) )
+            return ( q->*internalReplyHandlers.value(opp) )(op);
+        if ( externalReplyHandlers.contains(opp) )
+            return externalReplyHandlers.value(opp)(op);
+        q->handleReply(op);
     }
 }
 
@@ -342,6 +354,46 @@ void BNetworkConnection::abort()
     d_func()->socket->abort();
 }
 
+void BNetworkConnection::installReplyHandler(const QString &operation, InternalHandler handler)
+{
+    if (operation.isEmpty() || !handler)
+        return;
+    B_D(BNetworkConnection);
+    if ( d->internalReplyHandlers.contains(operation) )
+        return;
+    d->internalReplyHandlers.insert(operation, handler);
+}
+
+void BNetworkConnection::installReplyHandler(const QString &operation, ExternalHandler handler)
+{
+    if (operation.isEmpty() || !handler)
+        return;
+    B_D(BNetworkConnection);
+    if ( d->externalReplyHandlers.contains(operation) )
+        return;
+    d->externalReplyHandlers.insert(operation, handler);
+}
+
+void BNetworkConnection::installRequestHandler(const QString &operation, InternalHandler handler)
+{
+    if (operation.isEmpty() || !handler)
+        return;
+    B_D(BNetworkConnection);
+    if ( d->internalRequestHandlers.contains(operation) )
+        return;
+    d->internalRequestHandlers.insert(operation, handler);
+}
+
+void BNetworkConnection::installRequestHandler(const QString &operation, ExternalHandler handler)
+{
+    if (operation.isEmpty() || !handler)
+        return;
+    B_D(BNetworkConnection);
+    if ( d->externalRequestHandlers.contains(operation) )
+        return;
+    d->externalRequestHandlers.insert(operation, handler);
+}
+
 bool BNetworkConnection::isValid() const
 {
     const B_D(BNetworkConnection);
@@ -434,6 +486,16 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
 }
 
 /*============================== Protected methods =========================*/
+
+void BNetworkConnection::handleReply(BNetworkOperation *)
+{
+    //
+}
+
+void BNetworkConnection::handleRequest(BNetworkOperation *)
+{
+    //
+}
 
 void BNetworkConnection::log(const QString &text, bool noLevel)
 {

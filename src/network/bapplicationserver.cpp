@@ -180,7 +180,7 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
 
 /*============================== Protected methods =========================*/
 
-void BApplicationServer::handleMessage(const QStringList &arguments)
+void BApplicationServer::handleMessage(const QStringList &)
 {
     //
 }

@@ -64,7 +64,7 @@ bool BAbstractSettingsTab::hasAdvancedMode() const
     return false;
 }
 
-void BAbstractSettingsTab::setAdvancedMode(bool enabled)
+void BAbstractSettingsTab::setAdvancedMode(bool)
 {
     //
 }

@@ -86,32 +86,32 @@ bool BAbstractEditorModule::isBuisy() const
     return false;
 }
 
-QAction *BAbstractEditorModule::action(int type)
+QAction *BAbstractEditorModule::action(int)
 {
     return 0;
 }
 
-QList<QAction *> BAbstractEditorModule::actions(int group, bool extended)
+QList<QAction *> BAbstractEditorModule::actions(int, bool)
 {
     return QList<QAction *>();
 }
 
-QList<QAction *> BAbstractEditorModule::actions(bool extended)
+QList<QAction *> BAbstractEditorModule::actions(bool)
 {
     return QList<QAction *>();
 }
 
-QWidget *BAbstractEditorModule::widget(int type)
+QWidget *BAbstractEditorModule::widget(int)
 {
     return 0;
 }
 
-QList<QWidget *> BAbstractEditorModule::widgets(int group, bool extended)
+QList<QWidget *> BAbstractEditorModule::widgets(int, bool)
 {
     return QList<QWidget *>();
 }
 
-QList<QWidget *> BAbstractEditorModule::widgets(bool extended)
+QList<QWidget *> BAbstractEditorModule::widgets(bool)
 {
     return QList<QWidget *>();
 }
@@ -121,7 +121,7 @@ QByteArray BAbstractEditorModule::saveState() const
     return QByteArray();
 }
 
-void BAbstractEditorModule::restoreState(const QByteArray &state)
+void BAbstractEditorModule::restoreState(const QByteArray &)
 {
     //
 }
@@ -133,22 +133,22 @@ BCodeEditor *BAbstractEditorModule::editor() const
 
 /*============================== Protected methods =========================*/
 
-void BAbstractEditorModule::editorSet(BCodeEditor *edr)
+void BAbstractEditorModule::editorSet(BCodeEditor *)
 {
     //
 }
 
-void BAbstractEditorModule::editorUnset(BCodeEditor *edr)
+void BAbstractEditorModule::editorUnset(BCodeEditor *)
 {
     //
 }
 
-void BAbstractEditorModule::documentReadOnlyChanged(bool ro)
+void BAbstractEditorModule::documentReadOnlyChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentModificationChanged(bool modified)
+void BAbstractEditorModule::documentModificationChanged(bool)
 {
     //
 }
@@ -158,92 +158,92 @@ void BAbstractEditorModule::documentSelectionChanged()
     //
 }
 
-void BAbstractEditorModule::documentHasSelectionChanged(bool hasSelection)
+void BAbstractEditorModule::documentHasSelectionChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentCutAvailableChanged(bool available)
+void BAbstractEditorModule::documentCutAvailableChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentCopyAvailableChanged(bool available)
+void BAbstractEditorModule::documentCopyAvailableChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentPasteAvailableChanged(bool available)
+void BAbstractEditorModule::documentPasteAvailableChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentUndoAvailableChanged(bool available)
+void BAbstractEditorModule::documentUndoAvailableChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentRedoAvailableChanged(bool available)
+void BAbstractEditorModule::documentRedoAvailableChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentEditModeChanged(BCodeEdit::EditMode mode)
+void BAbstractEditorModule::documentEditModeChanged(BCodeEdit::EditMode)
 {
     //
 }
 
-void BAbstractEditorModule::documentCursorPositionChanged(const QPoint &pos)
+void BAbstractEditorModule::documentCursorPositionChanged(const QPoint &)
 {
     //
 }
 
-void BAbstractEditorModule::documentBuisyChanged(bool buisy)
+void BAbstractEditorModule::documentBuisyChanged(bool)
 {
     //
 }
 
-void BAbstractEditorModule::documentFileNameChanged(const QString &fn)
+void BAbstractEditorModule::documentFileNameChanged(const QString &)
 {
     //
 }
 
-void BAbstractEditorModule::documentCodecChanged(const QString &codecName)
+void BAbstractEditorModule::documentCodecChanged(const QString &)
 {
     //
 }
 
-void BAbstractEditorModule::documentFileTypeChanged(BAbstractFileType *ft)
+void BAbstractEditorModule::documentFileTypeChanged(BAbstractFileType *)
 {
     //
 }
 
-void BAbstractEditorModule::defaultCodecChanged(const QString &codecName)
+void BAbstractEditorModule::defaultCodecChanged(const QString &)
 {
     //
 }
 
-void BAbstractEditorModule::editModeChanged(BCodeEdit::EditMode mode)
+void BAbstractEditorModule::editModeChanged(BCodeEdit::EditMode)
 {
     //
 }
 
-void BAbstractEditorModule::documentAboutToBeAdded(BCodeEditorDocument *doc)
+void BAbstractEditorModule::documentAboutToBeAdded(BCodeEditorDocument *)
 {
     //
 }
 
-void BAbstractEditorModule::documentAdded(BCodeEditorDocument *doc)
+void BAbstractEditorModule::documentAdded(BCodeEditorDocument *)
 {
     //
 }
 
-void BAbstractEditorModule::documentAboutToBeRemoved(BCodeEditorDocument *doc)
+void BAbstractEditorModule::documentAboutToBeRemoved(BCodeEditorDocument *)
 {
     //
 }
 
-void BAbstractEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+void BAbstractEditorModule::currentDocumentChanged(BCodeEditorDocument *)
 {
     //
 }
@@ -253,7 +253,7 @@ void BAbstractEditorModule::fileTypesChanged()
     //
 }
 
-void BAbstractEditorModule::fileHistoryChanged(const QStringList &list)
+void BAbstractEditorModule::fileHistoryChanged(const QStringList &)
 {
     //
 }

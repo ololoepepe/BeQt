@@ -613,7 +613,7 @@ QAction *BSearchEditorModule::action(int type)
     }
 }
 
-QList<QAction *> BSearchEditorModule::actions(bool extended)
+QList<QAction *> BSearchEditorModule::actions(bool)
 {
     const B_D(BSearchEditorModule);
     QList<QAction *> list;
@@ -723,7 +723,7 @@ void BSearchEditorModule::editorSet(BCodeEditor *edr)
     d->actFind->setEnabled(doc);
 }
 
-void BSearchEditorModule::editorUnset(BCodeEditor *edr)
+void BSearchEditorModule::editorUnset(BCodeEditor *)
 {
     B_D(BSearchEditorModule);
     d->setDialogParent(0);

@@ -224,7 +224,7 @@ QAction *BEditEditorModule::action(int type)
     }
 }
 
-QList<QAction *> BEditEditorModule::actions(int group, bool extended)
+QList<QAction *> BEditEditorModule::actions(int group, bool)
 {
     B_D(BEditEditorModule);
     QList<QAction *> list;
@@ -267,38 +267,38 @@ void BEditEditorModule::editorSet(BCodeEditor *edr)
     d_func()->checkActions();
 }
 
-void BEditEditorModule::editorUnset(BCodeEditor *edr)
+void BEditEditorModule::editorUnset(BCodeEditor *)
 {
     d_func()->setDocument(0);
     d_func()->checkActions();
 }
 
-void BEditEditorModule::documentCutAvailableChanged(bool available)
+void BEditEditorModule::documentCutAvailableChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BEditEditorModule::documentCopyAvailableChanged(bool available)
+void BEditEditorModule::documentCopyAvailableChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BEditEditorModule::documentPasteAvailableChanged(bool available)
+void BEditEditorModule::documentPasteAvailableChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BEditEditorModule::documentUndoAvailableChanged(bool available)
+void BEditEditorModule::documentUndoAvailableChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BEditEditorModule::documentRedoAvailableChanged(bool available)
+void BEditEditorModule::documentRedoAvailableChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BEditEditorModule::editModeChanged(BCodeEdit::EditMode mode)
+void BEditEditorModule::editModeChanged(BCodeEdit::EditMode)
 {
     d_func()->checkSwitchModeAction();
 }

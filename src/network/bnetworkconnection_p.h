@@ -63,6 +63,10 @@ public:
     QMap<BNetworkOperationMetaData, BNetworkOperation *> replies;
     QMap<QObject *, BNetworkOperationMetaData> operations;
     QQueue<Data> dataQueue;
+    QMap<QString, BNetworkConnection::InternalHandler> internalReplyHandlers;
+    QMap<QString, BNetworkConnection::ExternalHandler> externalReplyHandlers;
+    QMap<QString, BNetworkConnection::InternalHandler> internalRequestHandlers;
+    QMap<QString, BNetworkConnection::ExternalHandler> externalRequestHandlers;
     bool detailedLog;
     bool autoDelete;
     BLogger *logger;

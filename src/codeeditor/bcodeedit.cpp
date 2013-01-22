@@ -345,7 +345,7 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     emulateShiftPress();
 }
 
-void BPlainTextEditExtendedPrivate::updateLineNumberWidgetWidth(int newBlockCount)
+void BPlainTextEditExtendedPrivate::updateLineNumberWidgetWidth(int)
 {
     q_func()->setViewportMargins(lineNumberWidgetWidth(), 0, 0, 0);
 }
@@ -961,7 +961,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
     return false;
 }
 
-bool BCodeEditPrivate::mouseDoubleClickEvent(QMouseEvent *e)
+bool BCodeEditPrivate::mouseDoubleClickEvent(QMouseEvent *)
 {
     QTextCursor tc = ptedt->textCursor();
     QString text = tc.block().text();

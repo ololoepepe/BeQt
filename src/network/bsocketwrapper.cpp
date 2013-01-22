@@ -75,7 +75,7 @@ void BSocketWrapperPrivate::disconnected()
     resetOut();
 }
 
-void BSocketWrapperPrivate::error(QAbstractSocket::SocketError socketError)
+void BSocketWrapperPrivate::error(QAbstractSocket::SocketError)
 {
     //
 }

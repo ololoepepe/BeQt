@@ -75,7 +75,7 @@ QByteArray BAbstractDocumentDriver::saveState() const
     return QByteArray();
 }
 
-void BAbstractDocumentDriver::restoreState(const QByteArray &state)
+void BAbstractDocumentDriver::restoreState(const QByteArray &)
 {
     //
 }

@@ -67,12 +67,12 @@ QStringList BDefaultFileType::suffixes() const
     return QStringList() << "*";
 }
 
-bool BDefaultFileType::matchesFileName(const QString &fileName) const
+bool BDefaultFileType::matchesFileName(const QString &) const
 {
     return true;
 }
 
-QSyntaxHighlighter *BDefaultFileType::createHighlighter(QObject *parent) const
+QSyntaxHighlighter *BDefaultFileType::createHighlighter(QObject *) const
 {
     return 0;
 }

@@ -27,13 +27,13 @@ QString BAbstractTerminalDriver::prompt() const
     return "$";
 }
 
-bool BAbstractTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments, QString &error)
+bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &)
 {
     emitFinished(0);
     return true;
 }
 
-void BAbstractTerminalDriver::setWorkingDirectory(const QString &path)
+void BAbstractTerminalDriver::setWorkingDirectory(const QString &)
 {
     //
 }

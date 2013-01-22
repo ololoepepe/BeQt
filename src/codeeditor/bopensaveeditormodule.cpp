@@ -415,22 +415,22 @@ void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
     d->resetFileHistory();
 }
 
-void BOpenSaveEditorModule::documentReadOnlyChanged(bool ro)
+void BOpenSaveEditorModule::documentReadOnlyChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BOpenSaveEditorModule::documentModificationChanged(bool modified)
+void BOpenSaveEditorModule::documentModificationChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BOpenSaveEditorModule::documentBuisyChanged(bool buisy)
+void BOpenSaveEditorModule::documentBuisyChanged(bool)
 {
     d_func()->checkActions();
 }
 
-void BOpenSaveEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+void BOpenSaveEditorModule::currentDocumentChanged(BCodeEditorDocument *)
 {
     d_func()->checkActions();
 }
