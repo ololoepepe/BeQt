@@ -99,8 +99,16 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
     else
     {
         QStringList args = BTerminalIOHandler::splitCommand(text);
-        QString cmd = !args.isEmpty() ? args.first() : QString();
-        q_func()->handleCommand(cmd, args);
+        QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
+        if ( cmd.isEmpty() )
+            return;
+        B_Q(BTerminalIOHandler);
+        QMetaObject::invokeMethod( q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args) );
+        if ( internalHandlers.contains(cmd) )
+            return ( q->*internalHandlers.value(cmd) )(cmd, args);
+        if ( externalHandlers.contains(cmd) )
+            return externalHandlers.value(cmd)(cmd, args);
+        q->handleCommand(cmd, args);
     }
 }
 
@@ -267,14 +275,7 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
 
 void BTerminalIOHandler::handleCommand(const QString &command, const QStringList &arguments)
 {
-    if ( command.isEmpty() )
-        return;
-    B_D(BTerminalIOHandler);
-    if ( d->internalHandlers.contains(command) )
-        return ( this->*d->internalHandlers.value(command) )(command, arguments);
-    if ( d->externalHandlers.contains(command) )
-        return d->externalHandlers.value(command)(command, arguments);
-    emit commandEntered(command, arguments);
+    //
 }
 
 /*============================== Static protected variables ================*/
