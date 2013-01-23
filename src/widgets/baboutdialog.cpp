@@ -204,6 +204,7 @@ void BAboutDialogPrivate::retranslateAboutBeqtDialog()
 {
     if (!aboutBeqtDlg)
         return;
+    aboutBeqtDlg->setWindowTitle( tr("About BeQt", "adlg windowTitle") );
     aboutBeqtDlg->setDescription( BApplication::beqtInfo(BApplication::Description) );
     aboutBeqtDlg->setChangeLog( BApplication::beqtInfo(BApplication::ChangeLog) );
     aboutBeqtDlg->setLicense( BApplication::beqtInfo(BApplication::License) );
