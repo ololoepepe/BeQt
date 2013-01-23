@@ -16,6 +16,7 @@
 #include <QThread>
 #include <QDateTime>
 #include <QMetaObject>
+#include <QVariant>
 
 /*============================================================================
 ================================ BNetworkConnectionPrivate ===================
@@ -472,6 +473,11 @@ BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, con
     return op;
 }
 
+BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, const QVariant &variant)
+{
+    return sendRequest( operation, BSocketWrapper::variantToData(variant) );
+}
+
 bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArray &data)
 {
     if ( !isConnected() || !operation || !operation->isValid() || operation->isRequest() )
@@ -483,6 +489,11 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
     d->dataQueue.enqueue(dat);
     d->sendNext();
     return true;
+}
+
+bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QVariant &variant)
+{
+    return sendReply( operation, BSocketWrapper::variantToData(variant) );
 }
 
 /*============================== Protected methods =========================*/

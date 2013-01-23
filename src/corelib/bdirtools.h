@@ -24,6 +24,7 @@ enum ResourceLookupMode
     UserOnly
 };
 
+B_CORE_EXPORT bool touch(const QString &filePath);
 B_CORE_EXPORT bool mkpath(const QString &dirPath);
 B_CORE_EXPORT bool rmdir(const QString &dirName);
 B_CORE_EXPORT bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );

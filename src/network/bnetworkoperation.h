@@ -4,6 +4,9 @@
 class BNetworkOperationPrivate;
 class BNetworkConnectionPrivate;
 
+class QVariant;
+class QByteArray;
+
 #include "bsocketwrapper.h"
 #include "bnetworkoperationmetadata.h"
 
@@ -11,9 +14,6 @@ class BNetworkConnectionPrivate;
 #include <BeQtCore/BBase>
 
 #include <QObject>
-#include <QString>
-#include <QUuid>
-#include <QByteArray>
 
 /*============================================================================
 ================================ BNetworkOperation ===========================
@@ -31,6 +31,7 @@ private:
     explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent = 0);
 public:
     const QByteArray &data() const;
+    QVariant variantData() const;
     BNetworkOperationMetaData metaData() const;
     bool isRequest() const;
     bool isValid() const;

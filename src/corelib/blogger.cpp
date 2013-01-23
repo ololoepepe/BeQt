@@ -111,7 +111,7 @@ QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl
     QMutexLocker locker(&formatMutex);
     QString msg;
     if ( includeDateTime && !format.isEmpty() )
-        msg += "[" + QDateTime::currentDateTime().toString(format) + "] ";
+        msg += QDateTime::currentDateTime().toString(format) + " ";
     if (includeLevel)
     {
         QString level = levelToString(lvl);

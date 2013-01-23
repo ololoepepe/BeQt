@@ -11,6 +11,7 @@
 #include <QByteArray>
 #include <QTimer>
 #include <QEventLoop>
+#include <QVariant>
 
 /*============================================================================
 ================================ BNetworkOperationPrivate ====================
@@ -108,6 +109,11 @@ BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, 
 const QByteArray &BNetworkOperation::data() const
 {
     return d_func()->data;
+}
+
+QVariant BNetworkOperation::variantData() const
+{
+    return BSocketWrapper::dataToVariant( data() );
 }
 
 BNetworkOperationMetaData BNetworkOperation::metaData() const

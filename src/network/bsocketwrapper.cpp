@@ -11,6 +11,7 @@
 #include <QThread>
 #include <QUuid>
 #include <QMetaObject>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSocketWrapperPrivate =======================
@@ -178,6 +179,26 @@ BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
     d_func()->init();
 }
 
+/*============================== Static public methods =====================*/
+
+QByteArray BSocketWrapper::variantToData(const QVariant &variant)
+{
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(DataStreamVersion);
+    out << variant;
+    return ba;
+}
+
+QVariant BSocketWrapper::dataToVariant(const QByteArray &data)
+{
+    QDataStream in(data);
+    in.setVersion(DataStreamVersion);
+    QVariant v;
+    in >> v;
+    return v;
+}
+
 /*============================== Public methods ============================*/
 
 void BSocketWrapper::setSocket(BGenericSocket *socket)
@@ -297,4 +318,9 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
         emit uploadProgress(d->metaOut, d->bytesOutReady, d->bytesOutReady);
     d->socket->flush();
     return true;
+}
+
+bool BSocketWrapper::sendData(const QVariant &variant, const BNetworkOperationMetaData &metaData)
+{
+    return sendData(variantToData(variant), metaData);
 }

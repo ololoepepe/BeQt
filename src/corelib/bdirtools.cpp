@@ -22,6 +22,22 @@
 namespace BDirTools
 {
 
+bool touch(const QString &filePath)
+{
+    if ( filePath.isEmpty() )
+        return false;
+    QFileInfo fi(filePath);
+    if ( fi.exists() && fi.isFile() )
+        return true;
+    if ( !mkpath( fi.path() ) )
+        return false;
+    QFile f(filePath);
+    if ( !f.open(QFile::WriteOnly) )
+        return false;
+    f.close();
+    return true;
+}
+
 bool mkpath(const QString &dirPath)
 {
     return QDir(dirPath).mkpath(dirPath);

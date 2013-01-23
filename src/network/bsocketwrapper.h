@@ -4,6 +4,7 @@
 class BSocketWrapperPrivate;
 
 class QByteArray;
+class QVariant;
 
 #include "bgenericsocket.h"
 #include "bnetworkoperationmetadata.h"
@@ -32,6 +33,9 @@ public:
 protected:
     explicit BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
 public:
+    static QByteArray variantToData(const QVariant &variant);
+    static QVariant dataToVariant(const QByteArray &data);
+public:
     void setSocket(BGenericSocket *socket);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
@@ -43,6 +47,7 @@ public:
     bool closeOnCriticalBufferSize() const;
     bool isBuisy() const;
     bool sendData( const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
+    bool sendData( const QVariant &variant, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
 signals:
     void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);

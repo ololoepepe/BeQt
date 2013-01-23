@@ -8,6 +8,8 @@ class BLogger;
 
 class QString;
 class QUuid;
+class QByteArray;
+class QVariant;
 
 #include "bgenericsocket.h"
 #include "bsocketwrapper.h"
@@ -68,7 +70,9 @@ public:
     BLogger *logger() const;
     QString peerAddress() const;
     BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
+    BNetworkOperation *sendRequest(const QString &operation, const QVariant &variant);
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
+    bool sendReply(BNetworkOperation *operation, const QVariant &variant);
 protected:
     virtual void handleReply(BNetworkOperation *op);
     virtual void handleRequest(BNetworkOperation *op);
