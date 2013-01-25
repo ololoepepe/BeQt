@@ -142,6 +142,18 @@ QByteArray readFile(const QString &fileName, qint64 maxlen)
     return ba;
 }
 
+bool writeFile(const QString &fileName, const QByteArray &data)
+{
+    if ( fileName.isEmpty() )
+        return false;
+    QFile f(fileName);
+    if ( !touch(fileName) || !f.open(QFile::WriteOnly) )
+        return false;
+    bool b = ( f.write(data) == data.size() );
+    f.close();
+    return b;
+}
+
 QString readTextFile(const QString &fileName, QTextCodec *codec)
 {
     if ( fileName.isEmpty() )
@@ -160,6 +172,27 @@ QString readTextFile(const QString &fileName, QTextCodec *codec)
 QString readTextFile(const QString &fileName, const QString &codecName)
 {
     return readTextFile( fileName, QTextCodec::codecForName( codecName.toLatin1() ) );
+}
+
+bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *codec)
+{
+    if ( fileName.isEmpty() )
+        return false;
+    QFile f(fileName);
+    if ( !touch(fileName) || !f.open(QFile::WriteOnly) )
+        return false;
+    QTextStream out(&f);
+    if (codec)
+        out.setCodec(codec);
+    out << text;
+    bool b = (out.status() != QTextStream::WriteFailed);
+    f.close();
+    return b;
+}
+
+bool writeTextFile(const QString &fileName, const QString &text, const QString &codecName)
+{
+    return writeTextFile( fileName, text, QTextCodec::codecForName( codecName.toLatin1() ) );
 }
 
 QString findResource(const QString &subpath, ResourceLookupMode mode)
