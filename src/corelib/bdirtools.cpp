@@ -130,6 +130,18 @@ QString localeBasedDirName(const QString &path, const QString &subpath, const QL
     return d.path();
 }
 
+QByteArray readFile(const QString &fileName, qint64 maxlen)
+{
+    if ( fileName.isEmpty() )
+        return QByteArray();
+    QFile f(fileName);
+    if ( !f.open(QFile::ReadOnly) )
+        return QByteArray();
+    QByteArray ba = (maxlen < 0) ? f.readAll() : f.read(maxlen);
+    f.close();
+    return ba;
+}
+
 QString readTextFile(const QString &fileName, QTextCodec *codec)
 {
     if ( fileName.isEmpty() )
