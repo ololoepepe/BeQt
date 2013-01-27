@@ -114,7 +114,7 @@ void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
 }
 
 void BNetworkConnectionPrivate::downloadProgress(const BNetworkOperationMetaData &metaData,
-                                                       qint64 bytesReady, qint64 bytesTotal)
+                                                 qint64 bytesReady, qint64 bytesTotal)
 {
     B_Q(BNetworkConnection);
     if ( metaData.isRequest() )
@@ -129,6 +129,7 @@ void BNetworkConnectionPrivate::downloadProgress(const BNetworkOperationMetaData
         else
         {
             op = createOperation(mdat);
+            op->d_func()->setDownloadProgress(bytesReady, bytesTotal);
             replies.insert(mdat, op);
             op->d_func()->setStarted();
             if (detailedLog)

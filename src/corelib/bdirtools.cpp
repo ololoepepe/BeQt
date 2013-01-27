@@ -92,6 +92,13 @@ bool copyDir(const QString &dirName, const QString &newDirName, bool recursively
     return true;
 }
 
+bool renameDir(const QString &oldName, const QString &newName)
+{
+    if ( oldName.isEmpty() || newName.isEmpty() )
+        return false;
+    return QDir(oldName).rename(oldName, newName);
+}
+
 QString localeBasedFileName(const QString &fileName, const QLocale &loc)
 {
     if ( fileName.isEmpty() )
@@ -130,8 +137,10 @@ QString localeBasedDirName(const QString &path, const QString &subpath, const QL
     return d.path();
 }
 
-QByteArray readFile(const QString &fileName, qint64 maxlen)
+QByteArray readFile(const QString &fileName, qint64 maxlen, bool *ok)
 {
+    if (ok)
+        *ok = false;
     if ( fileName.isEmpty() )
         return QByteArray();
     QFile f(fileName);
@@ -139,6 +148,8 @@ QByteArray readFile(const QString &fileName, qint64 maxlen)
         return QByteArray();
     QByteArray ba = (maxlen < 0) ? f.readAll() : f.read(maxlen);
     f.close();
+    if (ok)
+        *ok = true;
     return ba;
 }
 
@@ -154,8 +165,10 @@ bool writeFile(const QString &fileName, const QByteArray &data)
     return b;
 }
 
-QString readTextFile(const QString &fileName, QTextCodec *codec)
+QString readTextFile(const QString &fileName, QTextCodec *codec, bool *ok)
 {
+    if (ok)
+        *ok = false;
     if ( fileName.isEmpty() )
         return "";
     QFile f(fileName);
@@ -166,12 +179,14 @@ QString readTextFile(const QString &fileName, QTextCodec *codec)
         in.setCodec(codec);
     QString text = in.readAll();
     f.close();
+    if (ok)
+        *ok = true;
     return text;
 }
 
-QString readTextFile(const QString &fileName, const QString &codecName)
+QString readTextFile(const QString &fileName, const QString &codecName, bool *ok)
 {
-    return readTextFile( fileName, QTextCodec::codecForName( codecName.toLatin1() ) );
+    return readTextFile(fileName, QTextCodec::codecForName( codecName.toLatin1() ), ok);
 }
 
 bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *codec)

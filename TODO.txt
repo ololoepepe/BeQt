@@ -1,5 +1,7 @@
 === Next patch ===
 
+* Fix cursor positioning after insertion of text
+
 === This release ===
 
 [done] Add shortcuts for editor modules actions

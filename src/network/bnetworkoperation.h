@@ -37,8 +37,12 @@ public:
     bool isValid() const;
     bool isStarted() const;
     bool isError() const;
-    int downloadProgress() const;
-    int uploadProgress() const;
+    qint64 downloadBytesReady() const;
+    qint64 downloadBytesTotal() const;
+    qint64 uploadBytesReady() const;
+    qint64 uploadBytesTotal() const;
+    int downloadProgress(int nth = 100) const;
+    int uploadProgress(int nth = 100) const;
     bool isFinished() const;
     bool waitForFinished(int msecs = 30 * BeQt::Second);
 signals:
@@ -46,6 +50,8 @@ signals:
     void error();
     void downloadProgress(qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(qint64 bytesReady, qint64 bytesTotal);
+    void downloadProgress(int bytesReady, int bytesTotal);
+    void uploadProgress(int bytesReady, int bytesTotal);
     void finished();
 private:
     Q_DISABLE_COPY(BNetworkOperation)

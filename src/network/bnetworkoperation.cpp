@@ -60,6 +60,7 @@ void BNetworkOperationPrivate::setDownloadProgress(qint64 bytesReady, qint64 byt
     bytesInReady = bytesReady;
     bytesInTotal = bytesTotal;
     QMetaObject::invokeMethod( q_func(), "downloadProgress", Q_ARG(qint64, bytesReady), Q_ARG(qint64, bytesTotal) );
+    QMetaObject::invokeMethod( q_func(), "downloadProgress", Q_ARG(int, bytesReady), Q_ARG(int, bytesTotal) );
 }
 
 void BNetworkOperationPrivate::setUploadProgress(qint64 bytesReady, qint64 bytesTotal)
@@ -67,6 +68,7 @@ void BNetworkOperationPrivate::setUploadProgress(qint64 bytesReady, qint64 bytes
     bytesOutReady = bytesReady;
     bytesOutTotal = bytesTotal;
     QMetaObject::invokeMethod( q_func(), "uploadProgress", Q_ARG(qint64, bytesReady), Q_ARG(qint64, bytesTotal) );
+    QMetaObject::invokeMethod( q_func(), "uploadProgress", Q_ARG(int, bytesReady), Q_ARG(int, bytesTotal) );
 }
 
 void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
@@ -141,16 +143,40 @@ bool BNetworkOperation::isError() const
     return d_func()->isError;
 }
 
-int BNetworkOperation::downloadProgress() const
+qint64 BNetworkOperation::downloadBytesReady() const
 {
-    const B_D(BNetworkOperation);
-    return d->bytesInTotal != 0 ? ( (qreal) d->bytesInReady / (qreal) d->bytesInTotal ) * 100 : 100;
+    return d_func()->bytesInReady;
 }
 
-int BNetworkOperation::uploadProgress() const
+qint64 BNetworkOperation::downloadBytesTotal() const
 {
+    return d_func()->bytesInTotal;
+}
+
+qint64 BNetworkOperation::uploadBytesReady() const
+{
+    return d_func()->bytesOutReady;
+}
+
+qint64 BNetworkOperation::uploadBytesTotal() const
+{
+    return d_func()->bytesOutTotal;
+}
+
+int BNetworkOperation::downloadProgress(int nth) const
+{
+    if (nth < 1)
+        nth = 100;
     const B_D(BNetworkOperation);
-    return d->bytesOutTotal != 0 ? ( (qreal) d->bytesOutReady / (qreal) d->bytesOutTotal ) * 100 : 100;
+    return (d->bytesInTotal != 0) ? ( (qreal) d->bytesInReady / (qreal) d->bytesInTotal ) * nth : 100;
+}
+
+int BNetworkOperation::uploadProgress(int nth) const
+{
+    if (nth < 1)
+        nth = 100;
+    const B_D(BNetworkOperation);
+    return (d->bytesOutTotal != 0) ? ( (qreal) d->bytesOutReady / (qreal) d->bytesOutTotal ) * nth : 100;
 }
 
 bool BNetworkOperation::isFinished() const
