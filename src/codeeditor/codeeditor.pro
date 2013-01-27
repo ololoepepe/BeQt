@@ -27,6 +27,7 @@ HEADERS += \
     bcodeeditordocument_p.h \
     bediteditormodule.h \
     bediteditormodule_p.h \
+    bfiledialog.h \
     bindicatorseditormodule.h \
     bindicatorseditormodule_p.h \
     blocaldocumentdriver.h \
@@ -45,6 +46,7 @@ SOURCES += \
     bcodeeditor.cpp \
     bcodeeditordocument.cpp \
     bediteditormodule.cpp \
+    bfiledialog.cpp \
     bindicatorseditormodule.cpp \
     blocaldocumentdriver.cpp \
     bopensaveeditormodule.cpp \
