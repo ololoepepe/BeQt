@@ -1,0 +1,19 @@
+#ifndef BEQT_BEQTWIDGETS_MODULE_H
+#define BEQT_BEQTWIDGETS_MODULE_H
+
+#include "baboutdialog.h"
+#include "babstractsettingstab.h"
+#include "babstractterminaldriver.h"
+#include "bapplication.h"
+#include "bflowlayout.h"
+#include "bguiplugininterface.h"
+#include "bhelpbrowser.h"
+#include "blocalecombobox.h"
+#include "blocalterminaldriver.h"
+#include "bpasswordwidget.h"
+#include "bplaintextedit.h"
+#include "bpluginssettingstab.h"
+#include "bsettingsdialog.h"
+#include "bterminalwidget.h"
+
+#endif //BEQT_BEQTWIDGETS_MODULE_H

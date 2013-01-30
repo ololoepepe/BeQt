@@ -1,21 +1,22 @@
 === Next patch ===
 
-[done] Make usage of <Backspace> possible when <Shift> key is pressed (bgui/BTextEditorDocument)
+* Fix cursor positioning after insertion of text
 
-=== Next release ===
+=== This release ===
 
-* Remove icons from the resources, install them to the Shared directory instead
-* Remove bcore/BCryptor
-* Move bgui/"About Qt" to the "About" dialog
-* Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
+[done] Add shortcuts for editor modules actions
+[done] Fix bracket highlighting
+[done] Finish writing the Simple Editor example
+[done] Re-write README
+[done] Remove icons from the resources, install them to the Shared directory instead
+[done] Remove bcore/BCryptor
+[done] Move bgui/"About Qt" to the "About" dialog
+[done] Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
+[done] Handle comments that are shorter than entire line
 
 === Global ===
 
-* Fix dragging from BPlainTextEdit
-* Create user manual
-* Add comments to the code and make docs
-[done] Add tooltips for elements of SwitchDocumentCmbox in BTextEditor
-
-=== History ===
-
-[done] Improve the README
+* Fix dragging from BPlainTextEdit. Note: not sure if needed
+* Add comments to the code and make docs; write detailed user manual
+* Improve installing process
+* Improve MacOS support

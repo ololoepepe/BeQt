@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>changelog/ChangeLog.txt</file>
+        <file>changelog/ChangeLog_ru.txt</file>
+        <file>copying/COPYING.txt</file>
+        <file>description/DESCRIPTION.txt</file>
+        <file>description/DESCRIPTION_ru.txt</file>
+        <file>infos/authors.beqt-info</file>
+        <file>infos/thanks-to.beqt-info</file>
+        <file>infos/translators.beqt-info</file>
+    </qresource>
+</RCC>

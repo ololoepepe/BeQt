@@ -1,0 +1,18 @@
+#ifndef BEQT_BEQTCORE_MODULE_H
+#define BEQT_BEQTCORE_MODULE_H
+
+#include "bbase.h"
+#include "bcoreapplication.h"
+#include "bdirtools.h"
+#include "bglobal.h"
+#include "blogger.h"
+#include "bnamespace.h"
+#include "bpersoninfoprovider.h"
+#include "bplugin.h"
+#include "bplugininterface.h"
+#include "bsignaldelayproxy.h"
+#include "bspamnotifier.h"
+#include "bterminaliohandler.h"
+#include "btranslator.h"
+
+#endif //BEQT_BEQTCORE_MODULE_H

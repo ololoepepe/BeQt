@@ -1,0 +1,1 @@
+#include "../BeQtCodeEditor/bindicatorseditormodule.h"
