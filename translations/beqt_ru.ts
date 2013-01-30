@@ -91,19 +91,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="531"/>
+        <location filename="../src/widgets/bapplication.cpp" line="555"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="533"/>
+        <location filename="../src/widgets/bapplication.cpp" line="557"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="534"/>
+        <location filename="../src/widgets/bapplication.cpp" line="558"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -112,97 +112,97 @@
 <context>
     <name>BApplicationPrivate</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="82"/>
+        <location filename="../src/widgets/bapplication.cpp" line="86"/>
         <source>Settings...</source>
         <comment>act text</comment>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="83"/>
+        <location filename="../src/widgets/bapplication.cpp" line="87"/>
         <source>Show application settings</source>
         <comment>act toolTip</comment>
         <translation>Показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="84"/>
+        <location filename="../src/widgets/bapplication.cpp" line="88"/>
         <source>Use this action to show application settings</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="87"/>
+        <location filename="../src/widgets/bapplication.cpp" line="91"/>
         <source>Homepage</source>
         <comment>act text</comment>
         <translation>Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="88"/>
+        <location filename="../src/widgets/bapplication.cpp" line="92"/>
         <source>Open homepage</source>
         <comment>act toolTip</comment>
         <translation>Открыть домашнюю страницу</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="89"/>
+        <location filename="../src/widgets/bapplication.cpp" line="93"/>
         <source>Use this action to open application homepage with your browser</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть домашнюю страницу приложения в вашем браузере</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="92"/>
+        <location filename="../src/widgets/bapplication.cpp" line="96"/>
         <source>Help contents</source>
         <comment>act text</comment>
         <translation>Содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="93"/>
+        <location filename="../src/widgets/bapplication.cpp" line="97"/>
         <source>Show Help contents</source>
         <comment>act toolTip</comment>
         <translation>Показать содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="94"/>
+        <location filename="../src/widgets/bapplication.cpp" line="98"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы показать содержание (указатель) справки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="97"/>
+        <location filename="../src/widgets/bapplication.cpp" line="101"/>
         <source>Contextual Help</source>
         <comment>act text</comment>
         <translation>Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="98"/>
+        <location filename="../src/widgets/bapplication.cpp" line="102"/>
         <source>Show contextual Help</source>
         <comment>act toolTip</comment>
         <translation>Показать контекстную справку</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="99"/>
+        <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие, чтобы открыть страницу справки, соответствующую контексту</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="103"/>
+        <location filename="../src/widgets/bapplication.cpp" line="107"/>
         <source>What&apos;s this?</source>
         <comment>act text</comment>
         <translation>Что это?</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="108"/>
+        <location filename="../src/widgets/bapplication.cpp" line="112"/>
         <source>About</source>
         <comment>act text</comment>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="109"/>
+        <location filename="../src/widgets/bapplication.cpp" line="113"/>
         <source>Show info about this application</source>
         <comment>act toolTip</comment>
         <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="110"/>
+        <location filename="../src/widgets/bapplication.cpp" line="114"/>
         <source>Use this action to show information about the application, it&apos;s authors, etc.</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать информацию о приложении, его авторах и т.д.</translation>
@@ -531,25 +531,25 @@
 <context>
     <name>BCoreApplicationPrivate</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="139"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="140"/>
         <source>Name:</source>
         <comment>info</comment>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="141"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="142"/>
         <source>Role:</source>
         <comment>info</comment>
         <translation type="unfinished">Роль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="143"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="144"/>
         <source>Website:</source>
         <comment>info</comment>
         <translation>Веб-сайт:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="145"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="146"/>
         <source>E-mail:</source>
         <comment>info</comment>
         <translation>Электронная почта:</translation>
@@ -696,7 +696,7 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/blocaldocumentdriver.cpp" line="57"/>
+        <location filename="../src/codeeditor/bfiledialog.cpp" line="78"/>
         <source>Encoding</source>
         <comment>lbl text</comment>
         <translation>Кодировка</translation>
@@ -792,8 +792,8 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="256"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="266"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="257"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="267"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
@@ -820,31 +820,31 @@
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="135"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="136"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation type="unfinished">Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="171"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="172"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="192"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="193"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="212"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="213"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="223"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="224"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>
