@@ -1,4 +1,4 @@
-Copyright (c) 2012 Andrey Bogdanov
+Copyright (С) 2012 Andrey Bogdanov
 
                    GNU LESSER GENERAL PUBLIC LICENSE
                        Version 3, 29 June 2007
