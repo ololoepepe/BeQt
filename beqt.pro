@@ -5,6 +5,28 @@ SUBDIRS = src
 
 contains(CONFIG, beqt_examples):SUBDIRS += examples
 
+##############################################################################
+################################ Generating translations #####################
+##############################################################################
+
+#Gets a file name
+#Returns the given file name.
+#On Windows slash characters will be replaced by backslashes
+defineReplace(nativeFileName) {
+    fileName=$${1}
+    win32:fileName=$$replace(fileName, "/", "\\")
+    return($${fileName})
+}
+
+beqtTranslationsTs=$$files($${PWD}/translations/*.ts)
+for(fileName, beqtTranslationsTs) {
+    system(lrelease $$nativeFileName($${fileName}))
+}
+
+##############################################################################
+################################ Installing ##################################
+##############################################################################
+
 !contains(CONFIG, beqt_no_install) {
 
 include(prefix.pri)
@@ -90,19 +112,6 @@ defineReplace(getActualHeaders) {
 ################################ Translations ################################
 ##############################################################################
 
-#Gets a file name
-#Returns the given file name.
-#On Windows slash characters will be replaced by backslashes
-defineReplace(nativeFileName) {
-    fileName=$${1}
-    win32:fileName=$$replace(fileName, "/", "\\")
-    return($${fileName})
-}
-
-beqtTranslationsTs=$$files($${PWD}/translations/*.ts)
-for(fileName, beqtTranslationsTs) {
-    system(lrelease $$nativeFileName($${fileName}))
-}
 beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
 beqtInstallsTranslations.path=$${resourcesInstallsPath}/translations
 INSTALLS += beqtInstallsTranslations
