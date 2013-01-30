@@ -16,6 +16,8 @@ class QToolButton;
 class QSignalMapper;
 class QWidget;
 class QObject;
+class QVBoxLayout;
+class QLayout;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BCoreApplication>
@@ -81,6 +83,8 @@ public:
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
     static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
     static void setMapping(QSignalMapper *mapper, QWidget *widget, const char *signal, bool sender = false);
+    static void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field);
+    static void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field);
 public slots:
     void showAboutDialog();
     void showSettingsDialog();

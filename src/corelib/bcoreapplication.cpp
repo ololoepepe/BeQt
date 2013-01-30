@@ -64,7 +64,8 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
     if ( !settings.isNull() )
     {
         disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
-        settings->deleteLater();
+        settings->sync();
+        delete settings;
     }
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_CLEANUP_RESOURCE(beqtcore);

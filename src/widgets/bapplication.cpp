@@ -39,6 +39,10 @@
 #include <QToolBar>
 #include <QSignalMapper>
 #include <QWidget>
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLayout>
 
 #include <QDebug>
 #include <QPointer>
@@ -491,6 +495,26 @@ void BApplication::setMapping(QSignalMapper *mapper, QWidget *widget, const char
         return;
     mapper->setMapping(widget, widget);
     BApplicationPrivate::connectObjectToMapper(mapper, widget, signal, sender);
+}
+
+void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)
+{
+    if (!vlt || !field)
+        return;
+    QHBoxLayout *hlt = new QHBoxLayout;
+    hlt->addWidget( new QLabel(label) );
+    hlt->addWidget(field);
+    vlt->addLayout(hlt);
+}
+
+void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QLayout *field)
+{
+    if (!vlt || !field)
+        return;
+    QHBoxLayout *hlt = new QHBoxLayout;
+    hlt->addWidget( new QLabel(label) );
+    hlt->addLayout(field);
+    vlt->addLayout(hlt);
 }
 
 /*============================== Public slots ==============================*/
