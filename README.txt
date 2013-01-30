@@ -8,7 +8,7 @@ Homepage: https://github.com/the-dark-angel/BeQt
 
 Author: Andrey Bogdanov (ololoepepe@gmail.com)
 
-License: GNU LGPL (см. COPYING.txt)
+License: GNU LGPL (see: COPYING.txt)
 
 BeQt is a library set developed as an extension of Qt.
 That is where the project's name comes from. BeQt may be useful

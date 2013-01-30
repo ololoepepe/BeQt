@@ -37,7 +37,7 @@ int main(int argc, char **argv)
     QApplication::setApplicationName("Simple Editor");
     QApplication::setOrganizationName("Andrey Bogdanov");
     QApplication::setOrganizationDomain("https://github.com/the-dark-angel");
-    QApplication::setApplicationVersion("0.1.0pa1");
+    QApplication::setApplicationVersion("0.1.0-beta1");
     //Creating BApplication instance
     BApplication *bapp = new BApplication;
     bLogger->setIncludeDateTime(false);
