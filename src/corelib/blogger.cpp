@@ -4,6 +4,7 @@
 #include "bbase.h"
 #include "bbase_p.h"
 #include "bterminaliohandler.h"
+#include "bdirtools.h"
 
 #include <QObject>
 #include <QString>
@@ -208,7 +209,7 @@ void BLogger::setFileName(const QString &fileName)
     d->fileStream.setDevice(0);
     if ( fileName.isEmpty() )
         return;
-    if ( !d->file.open(QFile::WriteOnly | QFile::Append) )
+    if ( !BDirTools::touch(fileName) || !d->file.open(QFile::WriteOnly | QFile::Append) )
         return d->file.setFileName("");
     d->fileStream.setDevice(&d->file);
 }
