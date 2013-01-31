@@ -17,6 +17,8 @@
 #include <QIcon>
 #include <QDataStream>
 #include <QIODevice>
+#include <QTimer>
+#include <QEvent>
 
 #include <QDebug>
 
@@ -66,17 +68,36 @@ void BPasswordWidgetPrivate::init()
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
       tbtnSave->setIcon( BApplication::icon("filesave") );
+      tbtnSave->installEventFilter(this);
       connect( tbtnSave, SIGNAL( clicked() ), this, SLOT( resetSave() ) );
       resetSave();
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
       tbtnShow->setIcon( BApplication::icon("decrypted") );
+      tbtnShow->installEventFilter(this);
       connect( tbtnShow, SIGNAL( clicked() ), this, SLOT( resetShow() ) );
       resetShow();
     hlt->addWidget(tbtnShow);
     //
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+}
+
+bool BPasswordWidgetPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() != QEvent::FocusIn && e->type() != QEvent::FocusOut)
+        return false;
+    if (o == tbtnSave)
+    {
+        save = !save;
+        QTimer::singleShot( 0, this, SLOT( resetSave() ) );
+    }
+    if (o == tbtnShow)
+    {
+        show = !show;
+        QTimer::singleShot( 0, this, SLOT( resetShow() ) );
+    }
+    return false;
 }
 
 /*============================== Public slots ==============================*/
