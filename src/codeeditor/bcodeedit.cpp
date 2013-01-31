@@ -2171,6 +2171,26 @@ QString BCodeEdit::text() const
     return BCodeEditPrivate::removeTrailingSpaces( d->ptedt->toPlainText().replace(QChar::ParagraphSeparator, '\n') );
 }
 
+QPoint BCodeEdit::selectionStart() const
+{
+    const B_D(BCodeEdit);
+    if ( !hasSelection() )
+        return cursorPosition();
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = d->ptedt->document()->findBlock( tc.selectionStart() );
+    return QPoint( tc.selectionStart() - tb.position(), tb.blockNumber() );
+}
+
+QPoint BCodeEdit::selectionEnd() const
+{
+    const B_D(BCodeEdit);
+    if ( !hasSelection() )
+        return cursorPosition();
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = d->ptedt->document()->findBlock( tc.selectionEnd() );
+    return QPoint( tc.selectionEnd() - tb.position(), tb.blockNumber() );
+}
+
 QString BCodeEdit::selectedText() const
 {
     const B_D(BCodeEdit);
