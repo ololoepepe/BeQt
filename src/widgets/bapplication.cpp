@@ -109,7 +109,7 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
         break;
     }
     case BApplication::AboutAction:
-        act->setText( tr("About", "act text") );
+        act->setText( tr("About...", "act text") );
         act->setToolTip( tr("Show info about this application", "act toolTip") );
         act->setWhatsThis( tr("Use this action to show information about the application, it's authors, etc.",
                                "act whatsThis") );

@@ -191,9 +191,9 @@
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="112"/>
-        <source>About</source>
+        <source>About...</source>
         <comment>act text</comment>
-        <translation>О программе</translation>
+        <translation>О программе...</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="113"/>
@@ -871,6 +871,12 @@
         <translation>Используйте это действие чтобы создать новый документ. Файл на диске создан не будет</translation>
     </message>
     <message>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="167"/>
+        <source>Open...</source>
+        <comment>act text</comment>
+        <translation>Открыть...</translation>
+    </message>
+    <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="168"/>
         <source>Open existing files</source>
         <comment>act toolTip</comment>
@@ -935,12 +941,6 @@
         <source>Use this action to close the current document. If the document is modified, you will be asked to save it before closing</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы закрыть текущий документ. Если документ был изменён, будет предложено сохранить его перед закрытием</translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="167"/>
-        <source>Open</source>
-        <comment>act text</comment>
-        <translation>Открыть</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="174"/>
@@ -1169,9 +1169,9 @@
     </message>
     <message>
         <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="524"/>
-        <source>Find and replace</source>
+        <source>Find and replace...</source>
         <comment>act text</comment>
-        <translation>Найти и заменить</translation>
+        <translation>Найти и заменить...</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="525"/>

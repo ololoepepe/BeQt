@@ -164,7 +164,7 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actOpenFiles.isNull() )
     {
-        actOpenFiles->setText( tr("Open", "act text") );
+        actOpenFiles->setText( tr("Open...", "act text") );
         actOpenFiles->setToolTip( tr("Open existing files", "act toolTip") );
         actOpenFiles->setWhatsThis( tr("Use this action to open one or more files existing on your drive",
                                        "act whatsThis") );

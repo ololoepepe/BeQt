@@ -521,7 +521,7 @@ void BSearchEditorModulePrivate::retranslateUi()
 {
     if ( !actFind.isNull() )
     {
-        actFind->setText( tr("Find and replace", "act text") );
+        actFind->setText( tr("Find and replace...", "act text") );
         actFind->setToolTip( tr("Find and replace text", "act toolTip") );
         actFind->setWhatsThis( tr("Use this action to open a find and replace dialog", "act whatsThis") );
     }
