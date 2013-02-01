@@ -186,14 +186,9 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
 {
     aboutBeqtDlg = new BAboutDialog( q_func(), "BeQt", bVersion() );
     aboutBeqtDlg->setMinimumSize(800, 400);
-    aboutBeqtDlg->setWindowModality(Qt::NonModal);
     aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012");
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
-    QString loc = BApplication::location(BApplication::BeqtPath, BApplication::SharedResources) + "/";
-    aboutBeqtDlg->setDescriptionFile(loc + "description/DESCRIPTION.txt");
-    aboutBeqtDlg->setChangeLogFile(loc + "changelog/ChangeLog.txt");
-    aboutBeqtDlg->setLicenseFile(loc + "copying/COPYING.txt");
     aboutBeqtDlg->setAuthorsProvider(BApplication::ds_func()->beqtAuthors);
     aboutBeqtDlg->setTranslatorsProvider(BApplication::ds_func()->beqtTranslations);
     aboutBeqtDlg->setThanksToProvider(BApplication::ds_func()->beqtThanksTo);
