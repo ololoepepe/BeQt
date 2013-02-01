@@ -28,7 +28,8 @@ enum ResourceLookupMode
 B_CORE_EXPORT bool touch(const QString &filePath);
 B_CORE_EXPORT bool mkpath(const QString &dirPath);
 B_CORE_EXPORT bool rmdir(const QString &dirName);
-B_CORE_EXPORT bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList() );
+B_CORE_EXPORT bool removeFilesInDir( const QString &dirName, const QStringList &nameFilters = QStringList(),
+                                     const QStringList &excluding = QStringList() );
 B_CORE_EXPORT bool copyDir(const QString &dirName, const QString &newDirName, bool recursively = false);
 B_CORE_EXPORT bool renameDir(const QString &oldName, const QString &newName);
 B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QLocale &loc = BCoreApplication::locale() );
