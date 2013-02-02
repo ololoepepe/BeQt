@@ -87,7 +87,7 @@ void BOpenSaveEditorModulePrivate::init()
       actSaveFileAs->setIcon( BApplication::icon("filesaveas") );
     actSaveAllFiles = new QAction(this);
       actSaveAllFiles->setIcon( BApplication::icon("save_all") );
-      actSaveAllFiles->setShortcut(QKeySequence::SaveAs); //Yep, this shortcut is really used for a different action
+      actSaveAllFiles->setShortcut( QKeySequence("Ctrl+Shift+S") );
     actCloseFile = new QAction(this);
       actCloseFile->setIcon( BApplication::icon("fileclose") );
       actCloseFile->setShortcut(QKeySequence::Close);
