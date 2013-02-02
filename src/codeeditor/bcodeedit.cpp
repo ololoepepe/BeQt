@@ -878,6 +878,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Right:
             handleCtrlRight();
             return true;
+        case Qt::Key_S:
+            return !q_func()->isModified(); //Workaround to prevent entering 'S' when 'Save' action is disabled
+            //Very "dirty" workaround. Maybe a Qt bug?
         default:
             break;
         }
@@ -2473,6 +2476,7 @@ void BCodeEdit::insertText(const QString &txt)
     d->setBuisy(false);
     d->emitLinesSplitted(ranges);
     setFocus();
+    d->ptedt->ensureCursorVisible();
 }
 
 void BCodeEdit::moveCursor(const QPoint &pos)
