@@ -2345,7 +2345,8 @@ void BCodeEdit::insertText(const QString &txt)
     tc = d->ptedt->textCursor();
     int posb = tc.positionInBlock();
     QString btext = tc.block().text();
-    int tcpos = (BCodeEditPrivate::removeTrailingSpaces(btext).lastIndexOf(' ') >= posb) ? (tc.position() + 1) : -1;
+    int lind = BCodeEditPrivate::removeTrailingSpaces(btext).lastIndexOf(' ');
+    int tcpos = ( lind >= posb && (d->lineLength - lind) >= txt.length() ) ? ( tc.position() + txt.length() ) : -1;
     QString ltext = btext.left(posb);
     QString rtext = BCodeEditPrivate::removeTrailingSpaces( btext.right(btext.length() - posb) );
     //Workaround for lines containing spaces only
