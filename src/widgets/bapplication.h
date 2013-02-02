@@ -92,7 +92,7 @@ public slots:
     void showHelpContents();
     void showContextualHelp();
     void openHomepage();
-    void openLocalFile(const QString &fileName);
+    bool openLocalFile(const QString &fileName);
 protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:

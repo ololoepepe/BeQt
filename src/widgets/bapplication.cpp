@@ -583,9 +583,9 @@ void BApplication::openHomepage()
     QDesktopServices::openUrl( QUrl::fromUserInput(url) );
 }
 
-void BApplication::openLocalFile(const QString &fileName)
+bool BApplication::openLocalFile(const QString &fileName)
 {
-    QDesktopServices::openUrl( QUrl::fromLocalFile(fileName) );
+    return !fileName.isEmpty() && QDesktopServices::openUrl( QUrl::fromLocalFile(fileName) );
 }
 
 /*============================== Protected methods =========================*/
