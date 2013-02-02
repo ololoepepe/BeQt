@@ -1772,13 +1772,17 @@ void BCodeEditPrivate::move(int key)
         {
             QStringList sl = text.split(QChar::ParagraphSeparator);
             if (Qt::Key_Left == key)
-                for (int i = 0; i < sl.size(); ++i)
-                    if ( !sl[i].isEmpty() )
+            {
+                foreach ( int i, bRange(0, sl.size() - 1) )
+                    if ( !sl.at(i).isEmpty() )
                         sl[i].remove(0, 1).append(' ');
+            }
             else
-               for (int i = 0; i < sl.size(); ++i)
-                   if ( !sl[i].isEmpty() )
+            {
+               foreach ( int i, bRange(0, sl.size() - 1) )
+                   if ( !sl.at(i).isEmpty() )
                        sl[i].remove(sl.at(i).length() - 1, 1).prepend(' ');
+            }
             tc.insertText( sl.join("\n") );
         }
         else if (Qt::Key_Up == key)
