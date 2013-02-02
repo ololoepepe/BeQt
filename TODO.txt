@@ -18,5 +18,4 @@
 
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
-* Improve installing process
 * Improve MacOS support

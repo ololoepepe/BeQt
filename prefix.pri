@@ -1,7 +1,9 @@
-mac {
+#mac {
     #isEmpty(BEQT_PREFIX):BEQT_PREFIX=/Library
     #TODO: Add ability to create bundles
-} else:unix:!mac {
+#} else:unix:!mac {
+#TODO: Add MacOS support
+mac|unix {
     isEmpty(BEQT_PREFIX)BEQT_:PREFIX=/usr
     equals(BEQT_PREFIX, "/")|equals(BEQT_PREFIX, "/usr")|equals(BEQT_PREFIX, "/usr/local") {
         headersInstallsPath=$${BEQT_PREFIX}/include/beqt

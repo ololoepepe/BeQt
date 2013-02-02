@@ -2345,6 +2345,7 @@ void BCodeEdit::insertText(const QString &txt)
     tc = d->ptedt->textCursor();
     int posb = tc.positionInBlock();
     QString btext = tc.block().text();
+    int tcpos = (BCodeEditPrivate::removeTrailingSpaces(btext).lastIndexOf(' ') >= posb) ? (tc.position() + 1) : -1;
     QString ltext = btext.left(posb);
     QString rtext = BCodeEditPrivate::removeTrailingSpaces( btext.right(btext.length() - posb) );
     //Workaround for lines containing spaces only
@@ -2467,7 +2468,10 @@ void BCodeEdit::insertText(const QString &txt)
                 ranges[i].lastLineNumber += boffset;
             }
         }
-        tc.setPosition(tc.block().position() + pos + posmod);
+        if (tcpos > 0)
+            tc.setPosition(tcpos);
+        else
+            tc.setPosition(tc.block().position() + pos + posmod);
     }
     d->ptedt->setTextCursor(tc);
     if (d->highlighter)
