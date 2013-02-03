@@ -2261,8 +2261,9 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
     int count = ptext.count(txt, cs);
     if (!count)
         return 0;
-    selectAll();
-    insertText( ptext.replace(txt, newText, cs) );
+    int lind = ptext.lastIndexOf(txt, -1, cs) + txt.length();
+    selectText( QPoint(), QPoint(lind % d->lineLength, lind / d->lineLength) );
+    insertText( ptext.left(lind).replace(txt, newText, cs) );
     return count;
 }
 
