@@ -1460,8 +1460,9 @@ void BCodeEditor::setEditLineLength(int ll)
     if (ll < 1)
         return;
     B_D(BCodeEditor);
-    if (d->editLineLength == ll)
+    if (ll == d->editLineLength)
         return;
+    d->editLineLength = ll;
     foreach ( BCodeEditorDocument *doc, documents() )
         doc->setEditLineLength(ll);
 }

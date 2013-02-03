@@ -2048,8 +2048,9 @@ void BCodeEdit::setEditLineLength(int ll)
     d->lineLength = ll;
     QString text = d->ptedt->toPlainText();
     bool pm = d->ptedt->document()->isModified();
-    setText(text);
+    d->setText(text, -1);
     d->ptedt->document()->setModified(pm);
+    setFocus();
 }
 
 void BCodeEdit::setEditTabWidth(TabWidth tw)
