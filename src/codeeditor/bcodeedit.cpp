@@ -1537,7 +1537,7 @@ void BCodeEditPrivate::handleDelete()
     QString text = tb.text();
     int pos = tc.position();
     bool b = posb < removeTrailingSpaces(text).length();
-    if ( !b && !tb.next().isValid() )
+    if ( !b && ( posb < lineLength || ( posb == lineLength && !tb.next().isValid() ) ) )
         return;
     tc.beginEditBlock();
     if (b)
@@ -2216,7 +2216,7 @@ QString BCodeEdit::selectedText() const
     {
         QTextBlock tb = d->ptedt->document()->findBlock(range.start);
         int offset = tb.position();
-        lines << tb.text().mid(range.start - offset, range.end - offset);
+        lines << tb.text().mid(range.start - offset, range.end - range.start);
     }
     return lines.join("\n");
 }
@@ -2350,16 +2350,8 @@ void BCodeEdit::insertText(const QString &txt)
     int tcpos = ( lind >= posb && (d->lineLength - lind) >= txt.length() ) ? ( tc.position() + txt.length() ) : -1;
     QString ltext = btext.left(posb);
     QString rtext = BCodeEditPrivate::removeTrailingSpaces( btext.right(btext.length() - posb) );
-    //Workaround for lines containing spaces only
     QStringList sl = BCodeEditPrivate::replaceTabs(BCodeEditPrivate::removeUnsupportedSymbols(txt),
                                                    d->tabWidth).split('\n');
-    foreach ( int i, bRange(0, sl.size() - 1) )
-    {
-        QString l = BCodeEditPrivate::removeTrailingSpaces( sl.at(i) );
-        if ( !l.isEmpty() )
-            sl[i] = l;
-    }
-    //End of the workaround
     bool b = false;
     if ( d->blockMode && sl.size() > 1 && sl.size() < d->ptedt->blockCount() )
     {
@@ -2422,6 +2414,14 @@ void BCodeEdit::insertText(const QString &txt)
     }
     else
     {
+        //Workaround for lines containing spaces only
+        foreach ( int i, bRange(0, sl.size() - 1) )
+        {
+            QString l = BCodeEditPrivate::removeTrailingSpaces( sl.at(i) );
+            if ( !l.isEmpty() )
+                sl[i] = l;
+        }
+        //End of the workaround
         sl.first().prepend(ltext);
         sl.last().append(rtext);
         BCodeEditPrivate::ProcessTextResult res = BCodeEditPrivate::processText(sl.join("\n"), d->lineLength,
