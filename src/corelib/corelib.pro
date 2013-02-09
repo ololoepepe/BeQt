@@ -59,21 +59,21 @@ contains(CONFIG, beqt_builtin_resources) {
 
 include(../../prefix.pri)
 
-target.path = $${libsInstallsPath}
+target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
 !contains(CONFIG, beqt_builtin_resources) {
     beqtInstallsChangelog.files=$$files($${PWD}/changelog/*.txt)
-    beqtInstallsChangelog.path=$${resourcesInstallsPath}/changelog
+    beqtInstallsChangelog.path=$${BEQT_RESOURCES_INSTALLS_PATH}/changelog
     INSTALLS += beqtInstallsChangelog
     beqtInstallsCopying.files=$$files($${PWD}/copying/*.txt)
-    beqtInstallsCopying.path=$${resourcesInstallsPath}/copying
+    beqtInstallsCopying.path=$${BEQT_RESOURCES_INSTALLS_PATH}/copying
     INSTALLS += beqtInstallsCopying
     beqtInstallsDescription.files=$$files($${PWD}/description/*.txt)
-    beqtInstallsDescription.path=$${resourcesInstallsPath}/description
+    beqtInstallsDescription.path=$${BEQT_RESOURCES_INSTALLS_PATH}/description
     INSTALLS += beqtInstallsDescription
     beqtInstallsInfos.files=$$files($${PWD}/infos/*.beqt-info)
-    beqtInstallsInfos.path=$${resourcesInstallsPath}/infos
+    beqtInstallsInfos.path=$${BEQT_RESOURCES_INSTALLS_PATH}/infos
     INSTALLS += beqtInstallsInfos
 }
 

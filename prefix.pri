@@ -6,22 +6,22 @@
 mac|unix {
     isEmpty(BEQT_PREFIX)BEQT_:PREFIX=/usr
     equals(BEQT_PREFIX, "/")|equals(BEQT_PREFIX, "/usr")|equals(BEQT_PREFIX, "/usr/local") {
-        headersInstallsPath=$${BEQT_PREFIX}/include/beqt
-        libsInstallsPath=$${BEQT_PREFIX}/lib
-        resourcesInstallsPath=$${BEQT_PREFIX}/share/beqt
+        isEmpty(BEQT_HEADERS_INSTALLS_PATH):BEQT_HEADERS_INSTALLS_PATH=$${BEQT_PREFIX}/include/beqt
+        isEmpty(BEQT_LIBS_INSTALLS_PATH):BEQT_LIBS_INSTALLS_PATH=$${BEQT_PREFIX}/lib
+        isEmpty(BEQT_RESOURCES_INSTALLS_PATH):BEQT_RESOURCES_INSTALLS_PATH=$${BEQT_PREFIX}/share/beqt
     } else {
-        headersInstallsPath=$${BEQT_PREFIX}/include
-        libsInstallsPath=$${BEQT_PREFIX}/lib
-        resourcesInstallsPath=$${BEQT_PREFIX}
+        isEmpty(BEQT_HEADERS_INSTALLS_PATH):BEQT_HEADERS_INSTALLS_PATH=$${BEQT_PREFIX}/include
+        isEmpty(BEQT_LIBS_INSTALLS_PATH):BEQT_LIBS_INSTALLS_PATH=$${BEQT_PREFIX}/lib
+        isEmpty(BEQT_RESOURCES_INSTALLS_PATH):BEQT_RESOURCES_INSTALLS_PATH=$${BEQT_PREFIX}
     }
 } else:win32 {
     isEmpty(BEQT_PREFIX):BEQT_PREFIX=$$(systemdrive)/PROGRA~1/BeQt
-    headersInstallsPath=$${BEQT_PREFIX}/include
-    libsInstallsPath=$${BEQT_PREFIX}/lib
-    resourcesInstallsPath=$${BEQT_PREFIX}
+    isEmpty(BEQT_HEADERS_INSTALLS_PATH):BEQT_HEADERS_INSTALLS_PATH=$${BEQT_PREFIX}/include
+    isEmpty(BEQT_LIBS_INSTALLS_PATH):BEQT_LIBS_INSTALLS_PATH=$${BEQT_PREFIX}/lib
+    isEmpty(BEQT_RESOURCES_INSTALLS_PATH):BEQT_RESOURCES_INSTALLS_PATH=$${BEQT_PREFIX}
 }
 
-export(BEQT_PREFIX)
-export(headersInstallsPath)
-export(libsInstallsPath)
-export(resourcesInstallsPath)
+isEmpty(BEQT_PREFIX):export(BEQT_PREFIX)
+isEmpty(BEQT_HEADERS_INSTALLS_PATH):export(BEQT_HEADERS_INSTALLS_PATH)
+isEmpty(BEQT_LIBS_INSTALLS_PATH):export(BEQT_LIBS_INSTALLS_PATH)
+isEmpty(BEQT_RESOURCES_INSTALLS_PATH):export(BEQT_RESOURCES_INSTALLS_PATH)

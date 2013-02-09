@@ -44,7 +44,7 @@ SOURCES += \
 
 include(../../prefix.pri)
 
-target.path = $${libsInstallsPath}
+target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
 } #end !contains(CONFIG, beqt_no_install)

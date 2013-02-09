@@ -116,6 +116,15 @@ When building BeQt, you may pass some parameters to qmake:
  * "BEQT_PREFIX=<path>"
    Set install path. See the note below
 
+ * "BEQT_HEADERS_INSTALLS_PATH=<path>"
+   Set install path for headers. See the note below
+
+ * "BEQT_LIBS_INSTALLS_PATH=<path>"
+   Set install path for library files. See the note below
+
+ * "BEQT_RESOURCES_INSTALLS_PATH=<path>"
+   Set install path for resources. See the note below
+
 Note: In Windows systems BeQt is installed to the "C:\Program files\BeQt"
 directory (or other similar directory, depending on your system) by default.
 Headers, libraries and resources are installed
