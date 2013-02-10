@@ -38,6 +38,7 @@ public slots:
     void retranslateUi();
     void codecTriggered();
     void fileTriggered();
+    void resetFileHistoryMenuToolTip();
 public:
     QPointer<QAction> actNewFile;
     QPointer<QAction> actOpenFiles;

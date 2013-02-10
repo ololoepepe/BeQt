@@ -24,6 +24,7 @@
 #include <QByteArray>
 #include <QFileInfo>
 #include <QKeySequence>
+#include <QMetaObject>
 
 #include <QDebug>
 
@@ -147,6 +148,7 @@ void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
         act->setProperty( "beqt/file_name", list.at(i) );
         act->setText( QFileInfo( list.at(i) ).fileName() );
         connect( act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ) );
+        connect(act, SIGNAL(hovered()), this, SLOT(resetFileHistoryMenuToolTip()));
     }
     mnuFileHistory->setEnabled( !mnuFileHistory->isEmpty() );
 }
@@ -224,7 +226,6 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     if ( !mnuFileHistory.isNull() )
     {
         mnuFileHistory->setTitle( tr("Recent files", "mnu title") );
-        mnuFileHistory->setToolTip( tr("Recently opened files", "mnu toolTip") );
         mnuFileHistory->setWhatsThis( tr("Use this action to open one of the recently opened files",
                                          "mnu whatsThis") );
     }
@@ -248,6 +249,14 @@ void BOpenSaveEditorModulePrivate::fileTriggered()
     if ( fn.isEmpty() )
         return;
     editor->openDocument(fn);
+}
+
+void BOpenSaveEditorModulePrivate::resetFileHistoryMenuToolTip()
+{
+    if ( mnuFileHistory.isNull() )
+        return;
+    QObject *s = sender();
+    mnuFileHistory->setToolTip( s ? s->property("beqt/file_name").toString() : QString() );
 }
 
 /*============================================================================

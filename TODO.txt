@@ -1,6 +1,7 @@
 === Next patch ===
 
 * Fix cursor positioning after insertion of text
+* Improve BCodeEditor codec list
 
 === This release ===
 

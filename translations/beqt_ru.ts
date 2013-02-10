@@ -853,163 +853,157 @@
 <context>
     <name>BOpenSaveEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="160"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="162"/>
         <source>Create</source>
         <comment>act text</comment>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="161"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="163"/>
         <source>Create new document</source>
         <comment>act toolTip</comment>
         <translation>Создать новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="162"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="164"/>
         <source>Use this action to create a new document. No file will be created on your drive</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы создать новый документ. Файл на диске создан не будет</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="167"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="169"/>
         <source>Open...</source>
         <comment>act text</comment>
         <translation>Открыть...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="168"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="170"/>
         <source>Open existing files</source>
         <comment>act toolTip</comment>
         <translation>Открыть существующие файлы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="169"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="171"/>
         <source>Use this action to open one or more files existing on your drive</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы открыть один или несколько файлов, существующих на диске</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="175"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="177"/>
         <source>Reopen current file</source>
         <comment>act toolTip</comment>
         <translation>Повторно открыть текущий файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="176"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="178"/>
         <source>Use this file to reload current document. Use the down arrow to reopen the document using another encoding</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы перезагрузить текущий файл. Воспользуйтесь символом стрелки чтобы открыть документ с использованием другой кодировки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="188"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="190"/>
         <source>Save current document</source>
         <comment>act toolTip</comment>
         <translation>Сохранить текущий документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="189"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="191"/>
         <source>Use this action to save the current document on your drive. If the corresponding file doesn&apos;t exist, you will be proposed to select it&apos;s location</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы сохранить текущий документ на диске. Если соответствующий файл не существует, будет предложено выбрать его расположение</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="197"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="199"/>
         <source>Use this action to save the current document on your drive. You will be proposed to select file location and encoding</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы сохранить текущий документ на диске. Будет предложено выбрать расположение файла и кодировку</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="203"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="205"/>
         <source>Save all opened documents</source>
         <comment>act toolTip</comment>
         <translation>Сохранить все открытые документы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="204"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="206"/>
         <source>Use this action to save all modified documents. This is the same as using the Save action at every modified document</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы сохранить все изменённые документы. Это то же самое, что использовать действие Сохранить для каждого изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="211"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="213"/>
         <source>Close current document</source>
         <comment>act toolTip</comment>
         <translation>Закрыть текущий документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="212"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="214"/>
         <source>Use this action to close the current document. If the document is modified, you will be asked to save it before closing</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы закрыть текущий документ. Если документ был изменён, будет предложено сохранить его перед закрытием</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="174"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="176"/>
         <source>Reopen</source>
         <comment>act text</comment>
         <translation>Открыть заново</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="187"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="189"/>
         <source>Save</source>
         <comment>act text</comment>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="195"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="197"/>
         <source>Save as...</source>
         <comment>act text</comment>
         <translation>Сохранить как...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="196"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="198"/>
         <source>Save current document as...</source>
         <comment>act toolTip</comment>
         <translation>Сохранить текущий документ как...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="202"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="204"/>
         <source>Save all</source>
         <comment>act text</comment>
         <translation>Сохранить все</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="210"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="212"/>
         <source>Close</source>
         <comment>act text</comment>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="218"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="220"/>
         <source>Close all</source>
         <comment>act text</comment>
         <translation>Закрыть все</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="219"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="221"/>
         <source>Close all opened documents</source>
         <comment>act toolTip</comment>
         <translation>Закрыть все открытые документы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="220"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="222"/>
         <source>Use this action to close all opened documents. If any documents are modified, you will be asked to save them before closing</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы закрыть все открытые документы. Если какие-то документы были изменены, будет предложено сохранить их перед закрытием</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="226"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="228"/>
         <source>Recent files</source>
         <comment>mnu title</comment>
         <translation>Недавние файлы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="227"/>
-        <source>Recently opened files</source>
-        <comment>mnu toolTip</comment>
-        <translation>Недавно открытые файлы</translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="228"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="229"/>
         <source>Use this action to open one of the recently opened files</source>
         <comment>mnu whatsThis</comment>
         <translation>Используйте это действие чтобы снова открыть один из недавно открытых документов</translation>
