@@ -16,6 +16,7 @@ class QVariant;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QByteArray>
@@ -47,9 +48,11 @@ public:
     void setAutoDeleteSentReplies(bool enabled);
     void setLogger(BLogger *l);
     void connectToHost(const QString &hostName, quint16 port = 0);
-    bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30000);
+    bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30 * BeQt::Second);
     void disconnectFromHost();
-    bool disconnectFromHostBlocking(int msecs = 30000);
+    bool disconnectFromHostBlocking(int msecs = 30 * BeQt::Second);
+    bool waitForConnected(int msecs = 30 * BeQt::Second);
+    bool waitForDisconnected(int msecs = 30 * BeQt::Second);
     void close();
     void abort();
     void installReplyHandler(const QString &operation, InternalHandler handler);

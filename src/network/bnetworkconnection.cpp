@@ -346,6 +346,16 @@ bool BNetworkConnection::disconnectFromHostBlocking(int msecs)
     return d->socket->waitForDisconnected(msecs);
 }
 
+bool BNetworkConnection::waitForConnected(int msecs)
+{
+    return d_func()->socket->waitForConnected(msecs);
+}
+
+bool BNetworkConnection::waitForDisconnected(int msecs)
+{
+    return d_func()->socket->waitForDisconnected(msecs);
+}
+
 void BNetworkConnection::close()
 {
     d_func()->socket->close();

@@ -38,7 +38,7 @@ interaction model, based on Qt classes.
 Entire module is dedicated to a simple yet powerfull text editor,
 capable of selecting text by rectangular blocks.
 
-Important: BeQt does not QtQuick.
+Important: BeQt does not deal with QtQuick.
 
 ==============================================================================
  Dependencies
