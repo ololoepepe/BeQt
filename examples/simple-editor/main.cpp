@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     BApplication::installTranslator( new BTranslator("beqt") );
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
-    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012");
+    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2013");
     BApplication::aboutDialogInstance()->setWebsite("https://github.com/the-dark-angel");
     BApplication::aboutDialogInstance()->setDescription("Simple code editor.");
     //Creating code editor and loading related settings
