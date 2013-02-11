@@ -186,7 +186,7 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
 {
     aboutBeqtDlg = new BAboutDialog( q_func(), "BeQt", bVersion() );
     aboutBeqtDlg->setMinimumSize(800, 400);
-    aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012");
+    aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012-2013");
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
     aboutBeqtDlg->setAuthorsProvider(BApplication::ds_func()->beqtAuthors);
