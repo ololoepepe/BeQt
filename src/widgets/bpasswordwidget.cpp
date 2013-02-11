@@ -65,6 +65,7 @@ void BPasswordWidgetPrivate::init()
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
     ledt = new QLineEdit(q);
+      connect(ledt, SIGNAL(textChanged(QString)), q, SIGNAL(passwordChanged()));
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
       tbtnSave->setIcon( BApplication::icon("filesave") );

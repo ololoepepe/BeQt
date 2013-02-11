@@ -59,6 +59,8 @@ public:
     bool showPasswordVisible() const;
     QByteArray saveState() const;
     QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
+signals:
+    void passwordChanged();
 private:
     Q_DISABLE_COPY(BPasswordWidget)
 };
