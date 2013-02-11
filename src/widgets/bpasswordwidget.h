@@ -44,6 +44,8 @@ public:
     void setSavePassword(bool b);
     void setShowPassword(bool b);
     void setData(const PasswordWidgetData &pd);
+    void setSavePasswordVisible(bool visible);
+    void setShowPasswordVisible(bool visible);
     void clear();
     void restoreState(const QByteArray &ba);
     QString password() const;
@@ -53,6 +55,8 @@ public:
     bool showPassword() const;
     PasswordWidgetData data() const;
     PasswordWidgetData encryptedData(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
+    bool savePasswordVisible() const;
+    bool showPasswordVisible() const;
     QByteArray saveState() const;
     QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
 private:

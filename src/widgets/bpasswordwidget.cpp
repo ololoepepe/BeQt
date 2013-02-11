@@ -244,6 +244,16 @@ void BPasswordWidget::setData(const PasswordWidgetData &pd)
     setShowPassword(pd.show);
 }
 
+void BPasswordWidget::setSavePasswordVisible(bool visible)
+{
+    d_func()->tbtnSave->setVisible(visible);
+}
+
+void BPasswordWidget::setShowPasswordVisible(bool visible)
+{
+    d_func()->tbtnShow->setVisible(visible);
+}
+
 void BPasswordWidget::clear()
 {
     B_D(BPasswordWidget);
@@ -302,6 +312,16 @@ BPasswordWidget::PasswordWidgetData BPasswordWidget::encryptedData(QCryptographi
     pd.save = savePassword();
     pd.show = showPassword();
     return pd;
+}
+
+bool BPasswordWidget::savePasswordVisible() const
+{
+    return d_func()->tbtnSave->isVisible();
+}
+
+bool BPasswordWidget::showPasswordVisible() const
+{
+    return d_func()->tbtnShow->isVisible();
 }
 
 QByteArray BPasswordWidget::saveState() const
