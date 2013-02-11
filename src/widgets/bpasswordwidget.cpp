@@ -260,6 +260,8 @@ void BPasswordWidget::clear()
     B_D(BPasswordWidget);
     d->encPassword.clear();
     d->ledt->clear();
+    d->charCount = 0;
+    d->ledt->setPlaceholderText("");
 }
 
 void BPasswordWidget::restoreState(const QByteArray &ba)
