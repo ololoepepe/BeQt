@@ -79,6 +79,7 @@ public:
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
+    static QAction *createSeparator(QObject *parent = 0);
     static QFont createMonospaceFont();
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
     static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);

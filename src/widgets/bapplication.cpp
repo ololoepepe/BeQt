@@ -467,6 +467,13 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     return act;
 }
 
+QAction *BApplication::createSeparator(QObject *parent)
+{
+    QAction *act = new QAction(parent);
+    act->setSeparator(true);
+    return act;
+}
+
 QFont BApplication::createMonospaceFont()
 {
     //Using such a construct to get default monospace font family name
