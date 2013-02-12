@@ -211,37 +211,37 @@
 <context>
     <name>BBookmarksEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="113"/>
+        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="116"/>
         <source>Make bookmark</source>
         <comment>act text</comment>
         <translation>Сделать закладку</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="114"/>
+        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="117"/>
         <source>Make a bookmark at cursor position</source>
         <comment>act toolTip</comment>
         <translation type="unfinished">Сделать закладку в местоположении курсора</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="115"/>
+        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="118"/>
         <source>Use this action to make a bookmark at the current cursor position</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы сделать закладку в текущем местоположении курсора</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="120"/>
+        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="123"/>
         <source>Next bookmark</source>
         <comment>act text</comment>
         <translation type="unfinished">Следующая закладка</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="121"/>
+        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="124"/>
         <source>Go to next bookmark</source>
         <comment>act toolTip</comment>
         <translation>Перейти к следующей закладке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="122"/>
+        <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="125"/>
         <source>Use this action to go to next bookmark in current document</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы перейти к следующей закладке в этом документе</translation>
@@ -250,49 +250,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1053"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1056"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1827"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1850"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1833"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1856"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1840"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1863"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1846"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1869"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1852"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1875"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1858"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1881"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1865"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1888"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
