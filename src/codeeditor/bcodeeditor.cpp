@@ -645,7 +645,6 @@ BCodeEditorDocument *BCodeEditorPrivate::openDocument(const QString &fileName, Q
         openingDocuments.remove(doc);
         doc->deleteLater();
         doc = 0;
-        failedToOpenMessage(fileName);
     }
     return doc;
 }
@@ -656,10 +655,7 @@ bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *co
         return false;
     if ( doc->isModified() && reopenModifiedMessage( doc->fileName() ) != QMessageBox::Yes)
         return false;
-    bool b = doc->load(driver, codec);
-    if (!b)
-        failedToOpenMessage( doc->fileName() );
-    return b;
+    return doc->load(driver, codec);
 }
 
 bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
