@@ -1318,13 +1318,13 @@
 <context>
     <name>BTerminalWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bterminalwidget.cpp" line="198"/>
+        <location filename="../src/widgets/bterminalwidget.cpp" line="201"/>
         <source>Error:</source>
         <comment>text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bterminalwidget.cpp" line="198"/>
+        <location filename="../src/widgets/bterminalwidget.cpp" line="201"/>
         <source>Unknown error</source>
         <comment>text</comment>
         <translation>Неизвестная ошибка</translation>
