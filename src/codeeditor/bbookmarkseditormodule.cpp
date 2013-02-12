@@ -85,11 +85,11 @@ void BBookmarksEditorModulePrivate::init()
     //
     actMakeBookmark = new QAction(this);
       actMakeBookmark->setIcon( BApplication::icon("bookmark_add") );
-      actMakeBookmark->setShortcut(QKeySequence("Ctrl+K"));
+      actMakeBookmark->setShortcut(QKeySequence("Ctrl+Shift+K"));
       connect( actMakeBookmark.data(), SIGNAL( triggered() ), q, SLOT( makeBookmark() ) );
     actGotoNextBookmark = new QAction(this);
       actGotoNextBookmark->setIcon( BApplication::icon("bookmark") );
-      actGotoNextBookmark->setShortcut(QKeySequence("Ctrl+Shift+K"));
+      actGotoNextBookmark->setShortcut(QKeySequence("Ctrl+K"));
       connect( actGotoNextBookmark.data(), SIGNAL( triggered() ), q, SLOT( gotoNextBookmark() ) );
     //
     checkBookmarks();
