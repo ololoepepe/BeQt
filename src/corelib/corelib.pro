@@ -41,6 +41,7 @@ SOURCES += \
     bdirtools.cpp \
     bglobal.cpp \
     blogger.cpp \
+    bnamespace.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
     bsignaldelayproxy.cpp \

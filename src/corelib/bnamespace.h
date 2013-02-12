@@ -19,6 +19,8 @@ const int Kilobyte = 1024;
 const int Megabyte = 1024 * Kilobyte;
 const int Gigabyte = 1024 * Megabyte;
 
+B_CORE_EXPORT void waitNonBlocking(int msecs);
+
 }
 
 #endif // BNAMESPACE_H
