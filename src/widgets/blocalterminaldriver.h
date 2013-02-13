@@ -26,7 +26,6 @@ public:
 protected:
     explicit BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent = 0);
 public:
-    bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     bool isActive() const;
     QString read();
     void close();
@@ -34,6 +33,7 @@ public:
     void kill();
     QString prompt() const;
     bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
+    bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     void setWorkingDirectory(const QString &path);
     QString workingDirectory() const;
 private:

@@ -1,9 +1,12 @@
 #include "bnamespace.h"
+#include "bterminaliohandler.h"
 
 #include <QEventLoop>
 #include <QTimer>
 #include <QUuid>
 #include <QString>
+#include <QProcess>
+#include <QStringList>
 
 namespace BeQt
 {
@@ -65,6 +68,20 @@ QString unwrapped(const QString &text, const QString &wrappingText)
     if (ntext.right(wl) == wrappingText)
         ntext.remove(ntext.length() - wl, wl);
     return ntext;
+}
+
+void startProcess(QProcess *proc, const QString &command, const QStringList &arguments)
+{
+    if (!proc)
+        return;
+    //Workaround to handle long arguments on Windows
+#if defined(Q_OS_WIN)
+    proc->setNativeArguments(BTerminalIOHandler::mergeArguments(arguments));
+    proc->start(command);
+#else
+    proc->start(command, arguments);
+#endif
+    //End of the workaround
 }
 
 }

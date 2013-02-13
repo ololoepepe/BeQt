@@ -771,19 +771,19 @@
 <context>
     <name>BLocalTerminalDriver</name>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="98"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="158"/>
         <source>No process is running</source>
         <comment>processCommand return</comment>
         <translation>Отсутствуют запущенные процессы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="147"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="130"/>
         <source>Another process is running</source>
         <comment>terminalCommand return</comment>
         <translation>Выполняется другой процесс</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="172"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="148"/>
         <source>Could not find or start programm</source>
         <comment>terminalCommand return</comment>
         <translation>Не удалось найти или запустить программу</translation>

@@ -3,6 +3,8 @@
 
 class QUuid;
 class QString;
+class QProcess;
+class QStringList;
 
 #include "bglobal.h"
 
@@ -29,6 +31,7 @@ B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments);
 
 }
 

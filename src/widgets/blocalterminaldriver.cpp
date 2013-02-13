@@ -1,6 +1,6 @@
 #include "blocalterminaldriver.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BTerminalIOHandler>
@@ -91,23 +91,6 @@ BLocalTerminalDriver::BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObje
 
 /*============================== Public methods ============================*/
 
-bool BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments, QString &error)
-{
-    if ( !isActive() )
-    {
-        error = tr("No process is running", "processCommand return");
-        return false;
-    }
-    QTextStream out(d_func()->process);
-    out.setCodec("UTF-8");
-    QString cmd = command;
-    foreach (const QString &arg, arguments)
-        cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
-    cmd += "\n";
-    out << (cmd);
-    return true;
-}
-
 bool BLocalTerminalDriver::isActive() const
 {
     return d_func()->process->isOpen();
@@ -158,20 +141,30 @@ bool BLocalTerminalDriver::terminalCommand(const QString &command, const QString
     }
     //end test
     d->process->setWorkingDirectory(d->workingDirectory);
-    //Workaround to handle long arguments on Windows
-#if defined(Q_OS_WIN)
-    d->process->setNativeArguments(BTerminalIOHandler::mergeArguments(arguments));
-    d->process->start(command);
-#else
-    d->process->start(command, arguments);
-#endif
-    //End of the workaround
+    BeQt::startProcess(d->process, command, arguments);
     if ( !d->process->waitForStarted() )
     {
         d->process->close();
         error = tr("Could not find or start programm", "terminalCommand return");
         return false;
     }
+    return true;
+}
+
+bool BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments, QString &error)
+{
+    if ( !isActive() )
+    {
+        error = tr("No process is running", "processCommand return");
+        return false;
+    }
+    QTextStream out(d_func()->process);
+    out.setCodec("UTF-8");
+    QString cmd = command;
+    foreach (const QString &arg, arguments)
+        cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
+    cmd += "\n";
+    out << (cmd);
     return true;
 }
 

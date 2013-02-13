@@ -20,7 +20,6 @@ public:
     explicit BAbstractTerminalDriver(QObject *parent = 0);
     ~BAbstractTerminalDriver();
 public:
-    virtual bool processCommand(const QString &command, const QStringList &arguments, QString &error) = 0;
     virtual bool isActive() const = 0;
     virtual QString read() = 0;
     virtual void close() = 0;
@@ -29,6 +28,7 @@ public:
     virtual QString prompt() const;
     virtual bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
     virtual bool terminalCommand(const QVariant &data, QString &error);
+    virtual bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     virtual void setWorkingDirectory(const QString &path);
     virtual QString workingDirectory() const;
 protected slots:

@@ -49,6 +49,11 @@ bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &)
     return true;
 }
 
+bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &)
+{
+    return true;
+}
+
 void BAbstractTerminalDriver::setWorkingDirectory(const QString &)
 {
     //
