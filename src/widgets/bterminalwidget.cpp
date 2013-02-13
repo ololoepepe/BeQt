@@ -353,6 +353,21 @@ void BTerminalWidget::terminalCommand(const QString &command, const QStringList 
     }
 }
 
+void BTerminalWidget::terminalCommand(const QVariant &data)
+{
+    B_D(BTerminalWidget);
+    if (!d->driver || d->driver->isActive() || !data.isValid())
+        return;
+    d->appendLine();
+    QString error;
+    if (!d->driver->terminalCommand(data, error))
+    {
+        d->appendText(d->constructErrorString(error));
+        if (d->NormalMode)
+            d->appendLine(d->driver->prompt());
+    }
+}
+
 void BTerminalWidget::processCommand(const QString &command)
 {
     QStringList args = BTerminalIOHandler::splitCommand(command);

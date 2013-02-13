@@ -3,6 +3,7 @@
 
 class QString;
 class QStringList;
+class QVariant;
 
 #include <BeQtCore/BeQtGlobal>
 
@@ -27,6 +28,7 @@ public:
     virtual void kill() = 0;
     virtual QString prompt() const;
     virtual bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
+    virtual bool terminalCommand(const QVariant &data, QString &error);
     virtual void setWorkingDirectory(const QString &path);
     virtual QString workingDirectory() const;
 protected slots:

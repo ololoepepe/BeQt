@@ -6,6 +6,7 @@ class BAbstractTerminalDriver;
 
 class QWidget;
 class QStringList;
+class QVariant;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -52,6 +53,7 @@ public:
 public slots:
     void terminalCommand(const QString &command);
     void terminalCommand(const QString &command, const QStringList &arguments);
+    void terminalCommand(const QVariant &data);
     void processCommand(const QString &command);
     void processCommand(const QString &command, const QStringList &arguments);
     void emulateUserInput(const QString &command);
