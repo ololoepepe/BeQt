@@ -27,6 +27,8 @@ B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
+B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
 
 }
 

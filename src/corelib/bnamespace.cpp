@@ -41,4 +41,30 @@ QUuid uuidFromText(const QString &uuidText)
     return QUuid(canonicalUuidText(uuidText));
 }
 
+QString wrapped(const QString &text, const QString &wrappingText)
+{
+    if (text.isEmpty() || wrappingText.isEmpty())
+        return "";
+    int wl = wrappingText.length();
+    QString ntext = text;
+    if (text.left(wl) != wrappingText)
+        ntext.prepend(wrappingText);
+    if (text.right(wl) != wrappingText)
+        ntext.append(wrappingText);
+    return ntext;
+}
+
+QString unwrapped(const QString &text, const QString &wrappingText)
+{
+    if (text.isEmpty() || wrappingText.isEmpty())
+        return "";
+    int wl = wrappingText.length();
+    QString ntext = text;
+    if (ntext.left(wl) == wrappingText)
+        ntext.remove(0, wl);
+    if (ntext.right(wl) == wrappingText)
+        ntext.remove(ntext.length() - wl, wl);
+    return ntext;
+}
+
 }
