@@ -22,6 +22,16 @@ BAbstractTerminalDriver::~BAbstractTerminalDriver()
 
 /*============================== Public methods ============================*/
 
+void BAbstractTerminalDriver::terminate()
+{
+    close();
+}
+
+void BAbstractTerminalDriver::kill()
+{
+    terminate();
+}
+
 QString BAbstractTerminalDriver::prompt() const
 {
     return "$";
