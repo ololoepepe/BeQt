@@ -101,20 +101,57 @@ template<typename T, typename U, typename V> void bRet(T *t, const T &tt, U *u, 
 
 template<typename T> T bRet(T *t, const T &tt)
 {
-    bRet(t, tt);
+    if (t)
+        *t = tt;
     return tt;
 }
 
 template<typename T, typename U> T bRet(T *t, const T &tt, U *u, const U &uu)
 {
-    bRet(t, tt, u, uu);
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
     return tt;
 }
 
 template<typename T, typename U, typename V> T bRet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
 {
-    bRet(t, tt, u, uu, v, vv);
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
     return tt;
+}
+
+template<typename T, typename U> U bRet(T *t, const T &tt, const U &uu)
+{
+    if (t)
+        *t = tt;
+    return uu;
+}
+
+template<typename T, typename U, typename V> V bRet(T *t, const T &tt, U *u, const U &uu, const V &vv)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    return vv;
+}
+
+template<typename T, typename U, typename V, typename W> W bRet(T *t, const T &tt, U *u, const U &uu,
+                                                                V *v, const V &vv, const W &ww)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+    return ww;
 }
 
 #endif // BGLOBAL_H
