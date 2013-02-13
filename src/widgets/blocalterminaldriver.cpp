@@ -158,19 +158,14 @@ bool BLocalTerminalDriver::terminalCommand(const QString &command, const QString
     }
     //end test
     d->process->setWorkingDirectory(d->workingDirectory);
-#if defined(Q_OS_WIN)
     //Workaround to handle long arguments on Windows
-    QString nargs;
-    foreach (const QString &a, arguments)
-        nargs += ( (a.contains(' ') && a.at(0) != '\"') ? ("\"" + a + "\"") : a ) + " ";
-    if ( !nargs.isEmpty() )
-        nargs.remove(nargs.length() - 1, 1);
-    d->process->setNativeArguments(nargs);
+#if defined(Q_OS_WIN)
+    d->process->setNativeArguments(BTerminalIOHandler::mergeArguments(arguments));
     d->process->start(command);
-    //End of the workaround
 #else
     d->process->start(command, arguments);
 #endif
+    //End of the workaround
     if ( !d->process->waitForStarted() )
     {
         d->process->close();

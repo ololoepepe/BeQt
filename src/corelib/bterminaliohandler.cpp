@@ -193,6 +193,16 @@ QStringList BTerminalIOHandler::splitCommand(const QString &command)
     return args;
 }
 
+QString BTerminalIOHandler::mergeArguments(const QStringList &arguments)
+{
+    QString args;
+    foreach (const QString &a, arguments)
+        args += ( (a.contains(' ') && a.at(0) != '\"') ? ("\"" + a + "\"") : a ) + " ";
+    if ( !args.isEmpty() )
+        args.remove(args.length() - 1, 1);
+    return args;
+}
+
 QString BTerminalIOHandler::readLine()
 {
     QMutexLocker locker(&BTerminalIOHandlerPrivate::readMutex);

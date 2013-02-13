@@ -783,7 +783,7 @@
         <translation>Выполняется другой процесс</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="177"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="172"/>
         <source>Could not find or start programm</source>
         <comment>terminalCommand return</comment>
         <translation>Не удалось найти или запустить программу</translation>
