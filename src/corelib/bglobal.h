@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 #include <QList>
+#include <QString>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -73,5 +74,47 @@ static Class *qs_func() \
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
 B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 1);
+
+template<typename T> void bRet(T *t, const T &tt)
+{
+    if (t)
+        *t = tt;
+}
+
+template<typename T, typename U> void bRet(T *t, const T &tt, U *u, const U &uu)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+}
+
+template<typename T, typename U, typename V> void bRet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+}
+
+template<typename T> T bRet(T *t, const T &tt)
+{
+    bRet(t, tt);
+    return tt;
+}
+
+template<typename T, typename U> T bRet(T *t, const T &tt, U *u, const U &uu)
+{
+    bRet(t, tt, u, uu);
+    return tt;
+}
+
+template<typename T, typename U, typename V> T bRet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
+{
+    bRet(t, tt, u, uu, v, vv);
+    return tt;
+}
 
 #endif // BGLOBAL_H
