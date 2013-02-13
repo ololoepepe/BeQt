@@ -1,6 +1,9 @@
 #ifndef BNAMESPACE_H
 #define BNAMESPACE_H
 
+class QUuid;
+class QString;
+
 #include "bglobal.h"
 
 #include <QtGlobal>
@@ -20,6 +23,10 @@ const int Megabyte = 1024 * Kilobyte;
 const int Gigabyte = 1024 * Megabyte;
 
 B_CORE_EXPORT void waitNonBlocking(int msecs);
+B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
+B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
+B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
+B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
 
 }
 
