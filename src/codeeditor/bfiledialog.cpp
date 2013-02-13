@@ -28,6 +28,7 @@
 
 class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
 {
+    Q_DECLARE_TR_FUNCTIONS(BFileDialogPrivate)
     B_DECLARE_PUBLIC(BFileDialog)
 public:
     static const QDataStream::Version DSVersion;

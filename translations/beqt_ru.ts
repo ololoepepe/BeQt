@@ -696,7 +696,7 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bfiledialog.cpp" line="78"/>
+        <location filename="../src/codeeditor/bfiledialog.cpp" line="79"/>
         <source>Encoding</source>
         <comment>lbl text</comment>
         <translation>Кодировка</translation>
