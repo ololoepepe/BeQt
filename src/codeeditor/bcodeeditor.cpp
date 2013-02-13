@@ -1757,6 +1757,16 @@ BCodeEditorDocument *BCodeEditor::currentDocument() const
     return d_func()->document;
 }
 
+BCodeEditorDocument *BCodeEditor::document(const QString &fileName) const
+{
+    if (fileName.isEmpty())
+        return 0;
+    foreach (BCodeEditorDocument *doc, documents())
+        if (doc->fileName() == fileName)
+            return doc;
+    return 0;
+}
+
 QList<BCodeEditorDocument *> BCodeEditor::documents() const
 {
     const B_D(BCodeEditor);

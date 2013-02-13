@@ -107,6 +107,7 @@ public:
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
+    BCodeEditorDocument *document(const QString &fileName) const;
     QList<BCodeEditorDocument *> documents() const;
     BAbstractDocumentDriver *driver() const;
     BAbstractFileType *fileType(const QString &id) const;
