@@ -2,6 +2,7 @@
 #include "bterminaliohandler_p.h"
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "bnamespace.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -197,7 +198,7 @@ QString BTerminalIOHandler::mergeArguments(const QStringList &arguments)
 {
     QString args;
     foreach (const QString &a, arguments)
-        args += ( (a.contains(' ') && a.at(0) != '\"') ? ("\"" + a + "\"") : a ) + " ";
+        args += (a.contains(' ') ? BeQt::wrapped(a) : a) + " ";
     if ( !args.isEmpty() )
         args.remove(args.length() - 1, 1);
     return args;
