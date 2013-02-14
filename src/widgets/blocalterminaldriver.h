@@ -4,6 +4,7 @@
 class BLocalTerminalDriverPrivate;
 
 class QString;
+class QTextCodec;
 
 #include "babstractterminaldriver.h"
 
@@ -36,6 +37,10 @@ public:
     bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     void setWorkingDirectory(const QString &path);
     QString workingDirectory() const;
+    void setCodec(QTextCodec *codec);
+    void setCodec(const QString &codecName);
+    QTextCodec *codec() const;
+    QString codecName() const;
 private:
     Q_DISABLE_COPY(BLocalTerminalDriver)
 };

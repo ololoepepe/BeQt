@@ -13,6 +13,7 @@
 #include <QObject>
 #include <QDir>
 #include <QMap>
+#include <QTextCodec>
 
 #include <QDebug>
 
@@ -31,6 +32,7 @@ public:
 public:
     QProcess *process;
     QString workingDirectory;
+    QTextCodec *codec;
 private:
     Q_DISABLE_COPY(BLocalTerminalDriverPrivate)
 };
@@ -60,6 +62,7 @@ void BLocalTerminalDriverPrivate::init()
     process = new QProcess(this);
     workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
+    codec = QTextCodec::codecForLocale();
     connect( process, SIGNAL( finished(int) ), q, SLOT( emitFinished(int) ) );
     connect( process, SIGNAL( readyRead() ), q, SLOT( emitReadyRead() ) );
 }
@@ -99,7 +102,7 @@ bool BLocalTerminalDriver::isActive() const
 QString BLocalTerminalDriver::read()
 {
     QTextStream in(d_func()->process);
-    in.setCodec("UTF-8");
+    in.setCodec(d_func()->codec);
     return in.readAll();
 }
 
@@ -159,7 +162,7 @@ bool BLocalTerminalDriver::processCommand(const QString &command, const QStringL
         return false;
     }
     QTextStream out(d_func()->process);
-    out.setCodec("UTF-8");
+    out.setCodec(d_func()->codec);
     QString cmd = command;
     foreach (const QString &arg, arguments)
         cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
@@ -178,4 +181,24 @@ void BLocalTerminalDriver::setWorkingDirectory(const QString &path)
 QString BLocalTerminalDriver::workingDirectory() const
 {
     return d_func()->workingDirectory;
+}
+
+void BLocalTerminalDriver::setCodec(QTextCodec *codec)
+{
+    d_func()->codec = codec;
+}
+
+void BLocalTerminalDriver::setCodec(const QString &codecName)
+{
+    d_func()->codec = QTextCodec::codecForName(codecName.toLatin1());
+}
+
+QTextCodec *BLocalTerminalDriver::codec() const
+{
+    return d_func()->codec;
+}
+
+QString BLocalTerminalDriver::codecName() const
+{
+    return QString::fromLatin1(d_func()->codec->name());
 }
