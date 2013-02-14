@@ -43,6 +43,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QFrame>
 
 #include <QDebug>
 #include <QPointer>
@@ -472,6 +473,19 @@ QAction *BApplication::createSeparator(QObject *parent)
     QAction *act = new QAction(parent);
     act->setSeparator(true);
     return act;
+}
+
+QFrame *BApplication::createFrame(QFrame::Shape shape, QWidget *parent)
+{
+    return createFrame(shape, QFrame::Plain, parent);
+}
+
+QFrame *BApplication::createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent)
+{
+    QFrame *fr = new QFrame(parent);
+    fr->setFrameShape(shape);
+    fr->setFrameShadow(shadow);
+    return fr;
 }
 
 QFont BApplication::createMonospaceFont()

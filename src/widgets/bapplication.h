@@ -27,6 +27,7 @@ class QLayout;
 #include <QSize>
 #include <QString>
 #include <QIcon>
+#include <QFrame>
 
 #if defined(bApp)
 #undef bApp
@@ -80,6 +81,8 @@ public:
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
     static QAction *createSeparator(QObject *parent = 0);
+    static QFrame *createFrame(QFrame::Shape shape, QWidget *parent = 0);
+    static QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent = 0);
     static QFont createMonospaceFont();
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
     static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
