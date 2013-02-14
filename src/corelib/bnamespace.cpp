@@ -7,6 +7,8 @@
 #include <QString>
 #include <QProcess>
 #include <QStringList>
+#include <QByteArray>
+#include <QTextCodec>
 
 namespace BeQt
 {
@@ -82,6 +84,30 @@ void startProcess(QProcess *proc, const QString &command, const QStringList &arg
     proc->start(command, arguments);
 #endif
     //End of the workaround
+}
+
+int execProcess(const QString &command, const QStringList &arguments,
+                int startTimeout, int finishTimeout, QString *output, QTextCodec *codec)
+{
+    return execProcess("", command, arguments, startTimeout, finishTimeout, output, codec);
+}
+
+int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,
+                int startTimeout, int finishTimeout, QString *output, QTextCodec *codec)
+{
+    if (command.isEmpty())
+        return 0;
+    QProcess proc;
+    if (!workingDir.isEmpty())
+        proc.setWorkingDirectory(workingDir);
+    proc.setProcessChannelMode(QProcess::MergedChannels);
+    startProcess(&proc, command, arguments);
+    if (!proc.waitForStarted(startTimeout) || !proc.waitForFinished(finishTimeout))
+        return -2;
+    if (!codec)
+        codec = QTextCodec::codecForLocale();
+    return (proc.exitStatus() == QProcess::NormalExit) ?
+                bRet(output, codec->toUnicode(proc.readAll()), proc.exitCode()) : -1;
 }
 
 }
