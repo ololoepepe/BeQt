@@ -230,6 +230,14 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
     sendNext();
 }
 
+void BNetworkConnectionPrivate::operationCanceled()
+{
+    q_func()->abort();
+    foreach (BNetworkOperation *op, QList<BNetworkOperation *>() << requests.values() << replies.values())
+        if (!op->isFinished() && !op->isError())
+            op->d_func()->setError();
+}
+
 void BNetworkConnectionPrivate::operationDestroyed(QObject *obj)
 {
     if ( !operations.contains(obj) )

@@ -792,8 +792,8 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="257"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="267"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="265"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="275"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
