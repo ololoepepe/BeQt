@@ -86,7 +86,8 @@ BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOper
 {
     BNetworkOperation *op = new BNetworkOperation( metaData, q_func() );
     operations.insert(op, metaData);
-    connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( operationDestroyed(QObject *) ) );
+    connect(op, SIGNAL(canceled()), this, SLOT(operationCanceled()));
+    connect(op, SIGNAL(destroyed(QObject *)), this, SLOT(operationDestroyed(QObject *)));
     return op;
 }
 

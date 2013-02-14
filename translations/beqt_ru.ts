@@ -792,8 +792,8 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="265"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="275"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="266"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="276"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
@@ -802,49 +802,49 @@
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="98"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="99"/>
         <source>Connected</source>
         <comment>log text</comment>
         <translation>Подключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="105"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="106"/>
         <source>Disconnected</source>
         <comment>log text</comment>
         <translation>Отключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="112"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="113"/>
         <source>Error:</source>
         <comment>log text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="136"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="137"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation type="unfinished">Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="172"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="173"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="193"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="194"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="213"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="214"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="224"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="225"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>
