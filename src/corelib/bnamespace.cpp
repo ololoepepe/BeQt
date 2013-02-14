@@ -9,6 +9,7 @@
 #include <QStringList>
 #include <QByteArray>
 #include <QTextCodec>
+#include <QTextStream>
 
 namespace BeQt
 {
@@ -107,10 +108,10 @@ int execProcess(const QString &workingDir, const QString &command, const QString
         proc.kill();
         return -2;
     }
-    if (!codec)
-        codec = QTextCodec::codecForLocale();
-    return (proc.exitStatus() == QProcess::NormalExit) ?
-                bRet(output, codec->toUnicode(proc.readAll()), proc.exitCode()) : -1;
+    QTextStream in(&proc);
+    if (codec)
+        in.setCodec(codec);
+    return (proc.exitStatus() == QProcess::NormalExit) ? bRet(output, in.readAll(), proc.exitCode()) : -1;
 }
 
 }

@@ -102,7 +102,8 @@ bool BLocalTerminalDriver::isActive() const
 QString BLocalTerminalDriver::read()
 {
     QTextStream in(d_func()->process);
-    in.setCodec(d_func()->codec);
+    if (d_func()->codec)
+        in.setCodec(d_func()->codec);
     return in.readAll();
 }
 
@@ -162,7 +163,8 @@ bool BLocalTerminalDriver::processCommand(const QString &command, const QStringL
         return false;
     }
     QTextStream out(d_func()->process);
-    out.setCodec(d_func()->codec);
+    if (d_func()->codec)
+        out.setCodec(d_func()->codec);
     QString cmd = command;
     foreach (const QString &arg, arguments)
         cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
