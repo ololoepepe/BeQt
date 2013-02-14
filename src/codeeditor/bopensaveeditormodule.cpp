@@ -147,7 +147,7 @@ void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
         QAction *act = acts.at(i);
         act->setProperty( "beqt/file_name", list.at(i) );
         act->setText( QFileInfo( list.at(i) ).fileName() );
-        connect( act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ) );
+        connect(act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ), Qt::UniqueConnection);
         connect(act, SIGNAL(hovered()), this, SLOT(resetFileHistoryMenuToolTip()));
     }
     mnuFileHistory->setEnabled( !mnuFileHistory->isEmpty() );
