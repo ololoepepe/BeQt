@@ -588,6 +588,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
              this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
     connect( doc, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
              this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
+    connect( doc, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
     connect( doc, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
@@ -1003,7 +1004,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
     if (document)
     {
         disconnect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
-        disconnect( document, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
         disconnect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
         disconnect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
         disconnect( document, SIGNAL( cutAvailableChanged(bool) ), this, SLOT( documentCutAvailableChanged(bool) ) );
@@ -1024,7 +1024,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
     if (document)
     {
         connect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
-        connect( document, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
         connect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
         connect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
         connect( document, SIGNAL( cutAvailableChanged(bool) ), this, SLOT( documentCutAvailableChanged(bool) ) );
@@ -1060,10 +1059,16 @@ void BCodeEditorPrivate::documentReadOnlyChanged(bool ro)
 
 void BCodeEditorPrivate::documentModificationChanged(bool modified)
 {
-    updateDocumentTab(document);
-    emitCurrentDocumentModificationChanged(modified);
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentModificationChanged(modified);
+    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    if (!doc)
+        return;
+    updateDocumentTab(doc);
+    if (doc == document)
+    {
+        emitCurrentDocumentModificationChanged(modified);
+        foreach (BAbstractEditorModule *module, modules)
+            module->documentModificationChanged(modified);
+    }
 }
 
 void BCodeEditorPrivate::documentSelectionChanged()

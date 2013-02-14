@@ -301,37 +301,37 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1362"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1367"/>
         <source>Unicode</source>
         <comment>encodingGroup name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1364"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1369"/>
         <source>Eastern Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1366"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1371"/>
         <source>Western Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1368"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1373"/>
         <source>East Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1370"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1375"/>
         <source>South-East and South-West Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1372"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1377"/>
         <source>Middle East</source>
         <comment>encodingGroup name</comment>
         <translation>Центральный Восток</translation>
@@ -472,57 +472,57 @@
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="838"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="839"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="840"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="853"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="841"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="854"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="851"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="852"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="855"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="856"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="865"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="866"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="867"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="879"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="868"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="880"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="868"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="869"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="877"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="878"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="880"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="881"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
