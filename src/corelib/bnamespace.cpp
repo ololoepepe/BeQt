@@ -103,7 +103,10 @@ int execProcess(const QString &workingDir, const QString &command, const QString
     proc.setProcessChannelMode(QProcess::MergedChannels);
     startProcess(&proc, command, arguments);
     if (!proc.waitForStarted(startTimeout) || !proc.waitForFinished(finishTimeout))
+    {
+        proc.kill();
         return -2;
+    }
     if (!codec)
         codec = QTextCodec::codecForLocale();
     return (proc.exitStatus() == QProcess::NormalExit) ?
