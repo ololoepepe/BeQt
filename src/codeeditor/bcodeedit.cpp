@@ -1255,7 +1255,15 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
                     res.endBr = bracket;
                     return res;
                 }
-                posInBlock -= br->opening.length();
+                if (testBracket(text, posInBlock, false, br))
+                {
+                    ++depth;
+                    posInBlock -= br->closing.length();
+                }
+                else
+                {
+                    --posInBlock;
+                }
             }
             else if ( testBracket(text, posInBlock, false, br) )
             {
@@ -1302,7 +1310,15 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
                     res.endBr = br;
                     return res;
                 }
-                posInBlock += br->closing.length();
+                if (testBracket(text, posInBlock, true, br))
+                {
+                    ++depth;
+                    posInBlock += br->opening.length();
+                }
+                else
+                {
+                    ++posInBlock;
+                }
             }
             else if ( testBracket(text, posInBlock, true, br) )
             {
