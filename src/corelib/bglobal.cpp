@@ -22,15 +22,25 @@ QList<int> bRange(int lb, int ub, int step)
     if (lb == ub)
         return QList<int>() << lb;
     if (!step)
-        step = 1;
-    if ( (lb > ub && step > 0) || (lb < ub && step < 0) )
-        step *= -1;
+        step = (lb < ub) ? 1 : -1;
+    if ((lb < ub && step < 0) || (lb > ub && step > 0))
+        return QList<int>();
     QList<int> r;
-    if (lb <= ub)
+    if (lb < ub)
         for (int i = lb; i <= ub; i += step)
             r << i;
     else
         for (int i = lb; i >= ub; i += step)
             r << i;
     return r;
+}
+
+QList<int> bRangeD(int lb, int ub, unsigned step)
+{
+    return bRange(lb, ub, (step ? step : 1));
+}
+
+QList<int> bRangeR(int lb, int ub, unsigned step)
+{
+    return bRange(lb, ub, -1 * (step ? step : 1));
 }

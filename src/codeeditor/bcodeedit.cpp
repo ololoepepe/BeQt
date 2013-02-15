@@ -627,7 +627,7 @@ void BCodeEditPrivate::removeTrailingSpaces(QString *s)
         return;
     QStringList sl = s->split('\n');
     static QRegularExpression rx("\\s+$");
-    foreach ( int i, bRange(0, sl.size() - 1) )
+    foreach ( int i, bRangeD(0, sl.size() - 1) )
         sl[i].remove(rx);
     *s = sl.join('\n');
 }
@@ -1808,13 +1808,13 @@ void BCodeEditPrivate::move(int key)
             QStringList sl = text.split(QChar::ParagraphSeparator);
             if (Qt::Key_Left == key)
             {
-                foreach ( int i, bRange(0, sl.size() - 1) )
+                foreach ( int i, bRangeD(0, sl.size() - 1) )
                     if ( !sl.at(i).isEmpty() )
                         sl[i].remove(0, 1).append(' ');
             }
             else
             {
-               foreach ( int i, bRange(0, sl.size() - 1) )
+               foreach ( int i, bRangeD(0, sl.size() - 1) )
                    if ( !sl.at(i).isEmpty() )
                        sl[i].remove(sl.at(i).length() - 1, 1).prepend(' ');
             }
@@ -2422,7 +2422,7 @@ void BCodeEdit::insertText(const QString &txt)
     else
     {
         //Workaround for lines containing spaces only
-        foreach ( int i, bRange(0, sl.size() - 1) )
+        foreach ( int i, bRangeD(0, sl.size() - 1) )
         {
             QString l = BCodeEditPrivate::removeTrailingSpaces( sl.at(i) );
             if ( !l.isEmpty() )

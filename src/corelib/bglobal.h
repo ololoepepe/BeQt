@@ -73,7 +73,9 @@ static Class *qs_func() \
 
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
-B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 1);
+B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
+B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
 
 template<typename T> void bRet(T *t, const T &tt)
 {

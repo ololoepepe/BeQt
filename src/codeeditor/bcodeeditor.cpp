@@ -461,9 +461,7 @@ QString BCodeEditorPrivate::createFileName(const QString &fileName, const QStrin
 
 void BCodeEditorPrivate::removeUnsupportedCodecNames(QStringList &list)
 {
-    if (list.isEmpty())
-        return;
-    foreach (int i, bRange(list.size() - 1, 0))
+    foreach (int i, bRangeR(list.size() - 1, 0))
         if (!QTextCodec::codecForName(list.at(i).toLatin1()))
             list.removeAt(i);
 }
@@ -1686,9 +1684,7 @@ void BCodeEditor::retranslateCodecsComboBox(QComboBox *cmbox)
     StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
     if (scmbox)
         return scmbox->retranslate();
-    if (!cmbox->count())
-        return;
-    foreach (int i, bRange(0, cmbox->count() - 1))
+    foreach (int i, bRangeD(0, cmbox->count() - 1))
     {
         QString cn = cmbox->itemData(i).toString();
         if (cn.isEmpty() || !supportedCodecNames().contains(cn))
