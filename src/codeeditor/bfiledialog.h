@@ -30,16 +30,17 @@ protected:
     explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
     void setFileTypes(const QList<BAbstractFileType *> &list);
-    void setCodecs(const QList<QTextCodec *> &list);
     void selectFileType(BAbstractFileType *ft);
     void selectFileType(const QString &id);
+    void setCodecSelectionEnabled(bool b);
     void selectCodec(QTextCodec *codec);
     void selectCodec(const QString &codecName);
     void restoreState(const QByteArray &ba, bool includeGeometry = true);
-    QTextCodec *selectedCodec() const;
-    QString selectedCodecName() const;
     BAbstractFileType *selectedFileType() const;
     QString selectedFileTypeId() const;
+    bool codecSelectionEnabled() const;
+    QTextCodec *selectedCodec() const;
+    QString selectedCodecName() const;
     QByteArray saveState(bool includeGeometry = true) const;
 private:
     Q_DISABLE_COPY(BFileDialog)

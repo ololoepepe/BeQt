@@ -10,6 +10,7 @@ class BAbstractFileType;
 class QStringList;
 class QTextCodec;
 class QMenu;
+class QComboBox;
 
 #include "bcodeedit.h"
 
@@ -72,6 +73,13 @@ public:
     static QMenu *createPlainCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
     static QMenu *createStructuredCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
     static void retranslateCodecsMenu(QMenu *mnu);
+    static QComboBox *createPlainCodecsComboBox(QWidget *parent = 0);
+    static QComboBox *createStructuredCodecsComboBox(QWidget *parent = 0);
+    static void retranslateCodecsComboBox(QComboBox *cmbox);
+    static void selectCodec(QComboBox *cmbox, QTextCodec *codec);
+    static void selectCodec(QComboBox *cmbox, const QString &codecName);
+    static QTextCodec *selectedCodec(QComboBox *cmbox);
+    static QString selectedCodecName(QComboBox *cmbox);
 public:
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);

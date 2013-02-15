@@ -53,11 +53,89 @@
 #include <QMenu>
 #include <QVariant>
 #include <QSignalMapper>
+#include <QComboBox>
+#include <QCursor>
 
 #include <QDebug>
 
 /*============================================================================
-================================ Select Documents Dialog Private
+================================ StructuredCodecsComboBox ====================
+============================================================================*/
+
+class StructuredCodecsComboBox : public QComboBox
+{
+public:
+    explicit StructuredCodecsComboBox(QWidget *parent = 0);
+public:
+    void retranslate();
+    void setCodecName(const QString &codecName);
+    QString codecName() const;
+protected:
+    void showPopup();
+    void hidePopup();
+private:
+    QMenu *mnu;
+    QString cn;
+};
+
+/*============================================================================
+================================ StructuredCodecsComboBox ====================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+StructuredCodecsComboBox::StructuredCodecsComboBox(QWidget *parent) :
+    QComboBox(parent)
+{
+    mnu = BCodeEditor::createStructuredCodecsMenu(0, 0, this);
+    QAction *act = mnu->actions().first()->menu()->actions().first();
+    cn = act->property("beqt/codec_name").toString();
+    addItem(act->text());
+}
+
+/*============================== Public methods ============================*/
+
+void StructuredCodecsComboBox::retranslate()
+{
+    BCodeEditor::retranslateCodecsMenu(mnu);
+}
+
+void StructuredCodecsComboBox::setCodecName(const QString &codecName)
+{
+    if (codecName.isEmpty() || !BCodeEditor::supportedCodecNames().contains(codecName, Qt::CaseInsensitive))
+        return;
+    cn = codecName;
+    setItemText(0, BCodeEditor::fullCodecName(cn));
+}
+
+QString StructuredCodecsComboBox::codecName() const
+{
+    return cn;
+}
+
+/*============================== Protected methods =========================*/
+
+void StructuredCodecsComboBox::showPopup()
+{
+    mnu->setMinimumWidth(width());
+    QWidget *p = parentWidget();
+    QAction *act = mnu->exec(p ? p->mapToGlobal(pos()) : pos());
+    QComboBox::hidePopup();
+    if (act)
+    {
+        cn = act->property("beqt/codec_name").toString();
+        setItemText(0, act->text());
+    }
+}
+
+void StructuredCodecsComboBox::hidePopup()
+{
+    mnu->close();
+    QComboBox::hidePopup();
+}
+
+/*============================================================================
+================================ SelectDocumentsDialogPrivate ================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
@@ -1561,6 +1639,75 @@ void BCodeEditor::retranslateCodecsMenu(QMenu *mnu)
             continue;
         act->setText(fullCodecName(cn));
     }
+}
+
+QComboBox *BCodeEditor::createPlainCodecsComboBox(QWidget *parent)
+{
+    QComboBox *cmbox = new QComboBox(parent);
+    foreach (const QString &cn, supportedCodecNames())
+        cmbox->addItem("", cn);
+    retranslateCodecsComboBox(cmbox);
+    return cmbox;
+}
+
+QComboBox *BCodeEditor::createStructuredCodecsComboBox(QWidget *parent)
+{
+    StructuredCodecsComboBox *cmbox = new StructuredCodecsComboBox(parent);
+    cmbox->retranslate();
+    return cmbox;
+}
+
+void BCodeEditor::retranslateCodecsComboBox(QComboBox *cmbox)
+{
+    if (!cmbox)
+        return;
+    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
+    if (scmbox)
+        return scmbox->retranslate();
+    if (!cmbox->count())
+        return;
+    foreach (int i, bRange(0, cmbox->count() - 1))
+    {
+        QString cn = cmbox->itemData(i).toString();
+        if (cn.isEmpty() || !supportedCodecNames().contains(cn))
+            continue;
+        cmbox->setItemText(i, fullCodecName(cn));
+    }
+}
+
+void BCodeEditor::selectCodec(QComboBox *cmbox, QTextCodec *codec)
+{
+    if (!codec)
+        return;
+    selectCodec(cmbox, QString::fromLatin1(codec->name()));
+}
+
+void BCodeEditor::selectCodec(QComboBox *cmbox, const QString &codecName)
+{
+    if (!cmbox || codecName.isEmpty() || !supportedCodecNames().contains(codecName, Qt::CaseInsensitive))
+        return;
+    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
+    if (scmbox)
+        return scmbox->setCodecName(codecName);
+    int ind = cmbox->findData(codecName, Qt::UserRole, 0);
+    if (ind >= 0)
+        cmbox->setCurrentIndex(ind);
+}
+
+QTextCodec *BCodeEditor::selectedCodec(QComboBox *cmbox)
+{
+    return QTextCodec::codecForName(selectedCodecName(cmbox).toLatin1());
+}
+
+QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
+{
+    if (!cmbox)
+        return "";
+    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
+    if (scmbox)
+        return scmbox->codecName();
+    int ind = cmbox->currentIndex();
+    return (ind >= 0) ? cmbox->itemData(ind).toString() : QString();
 }
 
 /*============================== Public methods ============================*/

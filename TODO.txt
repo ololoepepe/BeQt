@@ -1,7 +1,6 @@
 === Next patch ===
 
 * Fix cursor positioning after insertion of text
-* Improve codecs list in BFileDialog
 
 === This release ===
 
@@ -14,6 +13,7 @@
 [done] Move bgui/"About Qt" to the "About" dialog
 [done] Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
 [done] Handle comments that are shorter than entire line
+[done] Improve codecs list in BFileDialog
 
 === Global ===
 
