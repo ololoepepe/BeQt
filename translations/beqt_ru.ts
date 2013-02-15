@@ -500,13 +500,13 @@
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="1030"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
-        <translation type="unfinished"></translation>
+        <translation>Файл уже открыт</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="1032"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
-        <translation type="unfinished"></translation>
+        <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="1041"/>
