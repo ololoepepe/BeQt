@@ -58,29 +58,7 @@ void BOpenSaveEditorModulePrivate::init()
       actOpenFiles->setShortcut(QKeySequence::Open);
     actReopenFile = new QAction(this);
       actReopenFile->setIcon( BApplication::icon("reload") );
-      actReopenFile->setMenu( new QMenu() );
-      QList<BCodeEditor::CodecGroup> list;
-      list << BCodeEditor::UnicodeGroup;
-      list << BCodeEditor::EastEuropeanGroup;
-      list << BCodeEditor::WestEuropeanGroup;
-      list << BCodeEditor::EastAsianGroup;
-      list << BCodeEditor::SouthEastSouthWestAsianGroup;
-      list << BCodeEditor::MiddleEastGroup;
-      foreach (BCodeEditor::CodecGroup gr, list)
-      {
-          QMenu *mnu = new QMenu( actReopenFile->menu() );
-            mnu->setProperty("beqt/codec_group", gr);
-            foreach ( const QString &cn, BCodeEditor::codecNamesForGroup(gr) )
-            {
-                QAction *act = new QAction(mnu);
-                  act->setProperty("beqt/codec_name", cn);
-                  connect( act, SIGNAL( triggered() ), this, SLOT( codecTriggered() ) );
-                mnu->addAction(act);
-                codecs << act;
-            }
-          actReopenFile->menu()->addMenu(mnu);
-          codecGroups << mnu;
-      }
+      actReopenFile->setMenu(BCodeEditor::createStructuredCodecsMenu(this, SLOT(codecTriggered(QString))));
     actSaveFile = new QAction(this);
       actSaveFile->setIcon( BApplication::icon("filesave") );
       actSaveFile->setShortcut(QKeySequence::Save);
@@ -178,11 +156,7 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
         actReopenFile->setWhatsThis( tr("Use this file to reload current document. "
                                         "Use the down arrow to reopen the document using another encoding",
                                         "act whatsThis") );
-        foreach (QMenu *mnu, codecGroups)
-            mnu->setTitle( BCodeEditor::codecGroupName( static_cast<BCodeEditor::CodecGroup>(
-                                                            mnu->property("beqt/codec_group").toInt() ) ) );
-        foreach (QAction *act, codecs)
-            act->setText( BCodeEditor::fullCodecName( act->property("beqt/codec_name").toString() ) );
+        BCodeEditor::retranslateCodecsMenu(actReopenFile->menu());
     }
     if ( !actSaveFile.isNull() )
     {
@@ -231,14 +205,11 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
 }
 
-void BOpenSaveEditorModulePrivate::codecTriggered()
+void BOpenSaveEditorModulePrivate::codecTriggered(const QString &codecName)
 {
     if (!editor)
         return;
-    QString cn = sender()->property("beqt/codec_name").toString();
-    if ( cn.isEmpty() )
-        return;
-    editor->reopenCurrentDocument( QTextCodec::codecForName( cn.toLatin1() ) );
+    editor->reopenCurrentDocument(codecName);
 }
 
 void BOpenSaveEditorModulePrivate::fileTriggered()

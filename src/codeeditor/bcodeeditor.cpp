@@ -50,6 +50,9 @@
 #include <QMimeData>
 #include <QKeyEvent>
 #include <QCheckBox>
+#include <QMenu>
+#include <QVariant>
+#include <QSignalMapper>
 
 #include <QDebug>
 
@@ -1435,6 +1438,13 @@ QString BCodeEditor::fullCodecName(const QString &codecName)
     return !codecName.isEmpty() ? fullCodecName( QTextCodec::codecForName( codecName.toLatin1() ) ) : QString();
 }
 
+QList<BCodeEditor::CodecGroup> BCodeEditor::codecGroups()
+{
+    static QList<CodecGroup> list = QList<CodecGroup>() << UnicodeGroup << EastEuropeanGroup << WestEuropeanGroup
+        << EastAsianGroup << SouthEastSouthWestAsianGroup << MiddleEastGroup;
+    return list;
+}
+
 QString BCodeEditor::codecGroupName(CodecGroup group)
 {
     switch (group)
@@ -1482,6 +1492,74 @@ QStringList BCodeEditor::codecNamesForGroup(CodecGroup group)
         return BCodeEditorPrivate::supportedMiddleEastCodecNames();
     default:
         return QStringList();
+    }
+}
+
+QMenu *BCodeEditor::createPlainCodecsMenu(QObject *receiver, const char *member, QWidget *parent)
+{
+    QMenu *mnu = new QMenu(parent);
+    QSignalMapper *mpr = (receiver && member) ? new QSignalMapper(mnu) : 0;
+    if (mpr)
+        connect(mpr, SIGNAL(mapped(QString)), receiver, member);
+    foreach (const QString &cn, supportedCodecNames())
+    {
+        QAction *act = mnu->addAction("");
+        act->setProperty("beqt/codec_name", cn);
+        if (mpr)
+            BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+    }
+    retranslateCodecsMenu(mnu);
+    return mnu;
+}
+
+QMenu *BCodeEditor::createStructuredCodecsMenu(QObject *receiver, const char *member, QWidget *parent)
+{
+    QMenu *mnu = new QMenu(parent);
+    QSignalMapper *mpr = (receiver && member) ? new QSignalMapper(mnu) : 0;
+    if (mpr)
+        connect(mpr, SIGNAL(mapped(QString)), receiver, member);
+    foreach (CodecGroup gr, codecGroups())
+    {
+        QMenu *submnu = mnu->addMenu("");
+        submnu->setProperty("beqt/codec_group", gr);
+        foreach (const QString &cn, codecNamesForGroup(gr))
+        {
+            QAction *act = submnu->addAction("");
+            act->setProperty("beqt/codec_name", cn);
+            if (mpr)
+                BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+        }
+    }
+    retranslateCodecsMenu(mnu);
+    return mnu;
+}
+
+void BCodeEditor::retranslateCodecsMenu(QMenu *mnu)
+{
+    if (!mnu)
+        return;
+    QList<QAction *> actions;
+    foreach (QAction *act, mnu->actions())
+    {
+        QMenu *submnu = act->menu();
+        if (!submnu)
+        {
+            actions << act;
+            continue;
+        }
+        bool ok = false;
+        CodecGroup gr = static_cast<CodecGroup>(submnu->property("beqt/codec_group").toInt(&ok));
+        if (!ok || InvalidGroup == gr)
+            continue;
+        submnu->setTitle(codecGroupName(gr));
+        actions << submnu->actions();
+    }
+    foreach (QAction *act, actions)
+    {
+        QString cn = act->property("beqt/codec_name").toString();
+        if (cn.isEmpty() || !supportedCodecNames().contains(cn))
+            continue;
+        act->setText(fullCodecName(cn));
     }
 }
 
@@ -1980,6 +2058,11 @@ bool BCodeEditor::saveCurrentDocument()
 bool BCodeEditor::reopenCurrentDocument(QTextCodec *codec)
 {
     return currentDocument() && d_func()->reopenDocument(currentDocument(), codec);
+}
+
+bool BCodeEditor::reopenCurrentDocument(const QString &codecName)
+{
+    return reopenCurrentDocument(QTextCodec::codecForName(codecName.toLatin1()));
 }
 
 bool BCodeEditor::saveCurrentDocumentAs()
