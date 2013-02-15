@@ -821,7 +821,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     if ( !doc || savingDocuments.contains(doc) )
         return false;
     QString nfn = newFileName;
-    if (nfn.isEmpty() || !driver->testFileExistance( doc->fileName() ))
+    if (nfn.isEmpty() && !driver->testFileExistance(doc->fileName()))
     {
         if (!codec)
             codec = doc->codec();
@@ -833,10 +833,14 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
             return false;
         }
     }
-    else if (doc->isReadOnly())
+    else
     {
-        failedToSaveMessage(nfn);
-        return false;
+        if (doc->isReadOnly())
+        {
+            failedToSaveMessage(nfn);
+            return false;
+        }
+        nfn = doc->fileName();
     }
     savingDocuments.insert(doc, nfn);
     bool b = doc->save(driver, codec, nfn);
