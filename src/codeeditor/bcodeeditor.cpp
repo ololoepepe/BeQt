@@ -471,7 +471,7 @@ void BCodeEditorPrivate::removeUnsupportedCodecNames(QStringList &list)
 QStringList BCodeEditorPrivate::supportedUnicodeCodecNames()
 {
     static bool constructed = false;
-    static QStringList list = QStringList() << "UTF-16" << "UTF-8";
+    static QStringList list = QStringList() << "UTF-8" << "UTF-16";
     if (!constructed)
     {
         removeUnsupportedCodecNames(list);
@@ -821,21 +821,22 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     if ( !doc || savingDocuments.contains(doc) )
         return false;
     QString nfn = newFileName;
-    bool ssa = !nfn.isEmpty() || !driver->testFileExistance( doc->fileName() );
-    if (ssa)
+    if (nfn.isEmpty() || !driver->testFileExistance( doc->fileName() ))
     {
         if (!codec)
             codec = doc->codec();
-        bool b = !nfn.isEmpty() || driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
-        if ( !b || nfn.isEmpty() || findDocument(nfn) )
+        if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec))
             return false;
+        if (findDocument(nfn))
+        {
+            alreadyOpenedMessage(nfn);
+            return false;
+        }
     }
-    else
+    else if (doc->isReadOnly())
     {
-        if ( !doc->isModified() )
-            return true;
-        else if ( doc->isReadOnly() )
-            return false;
+        failedToSaveMessage(nfn);
+        return false;
     }
     savingDocuments.insert(doc, nfn);
     bool b = doc->save(driver, codec, nfn);
@@ -852,8 +853,12 @@ bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
     if ( list.isEmpty() )
         return true;
     foreach (BCodeEditorDocument *doc, list)
+    {
+        if (!doc->isModified())
+            continue;
         if ( !saveDocument(doc) )
             return false;
+    }
     return true;
 }
 
@@ -1012,6 +1017,19 @@ void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QStr
     if (!newFileName.isEmpty() && fileName != newFileName)
         text += "\n" + tr("as:", "msgbox text") + "\n" + newFileName;
     msg.setText(text);
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
+}
+
+void BCodeEditorPrivate::alreadyOpenedMessage(const QString &fileName)
+{
+    if (fileName.isEmpty())
+        return;
+    QMessageBox msg(q_func());
+    msg.setWindowTitle(tr("File already opened", "msgbox windowTitle"));
+    msg.setIcon(QMessageBox::Warning);
+    msg.setText(tr("The file is already opened:", "msgbox text") + "\n" + fileName);
     msg.setStandardButtons(QMessageBox::Ok);
     msg.setDefaultButton(QMessageBox::Ok);
     msg.exec();
@@ -2199,7 +2217,8 @@ BCodeEditorDocument *BCodeEditor::openDocument(const QString &fileName, QTextCod
 
 bool BCodeEditor::saveCurrentDocument()
 {
-    return currentDocument() && d_func()->saveDocument( currentDocument() );
+    BCodeEditorDocument *doc = currentDocument();
+    return doc && (!doc->isModified() || d_func()->saveDocument(doc));
 }
 
 bool BCodeEditor::reopenCurrentDocument(QTextCodec *codec)
@@ -2219,7 +2238,7 @@ bool BCodeEditor::saveCurrentDocumentAs()
     QString nfn;
     QTextCodec *codec = currentDocument()->codec();
     return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&
-            saveCurrentDocumentAs(nfn, codec);
+            d_func()->saveDocument(currentDocument(), nfn, codec);
 }
 
 bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec)
