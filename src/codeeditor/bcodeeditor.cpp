@@ -340,27 +340,6 @@ bool BDropHandler::eventFilter(QObject *o, QEvent *e)
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
-/*============================== Static public constants ===================*/
-
-const QStringList BCodeEditorPrivate::UnicodeCodecs = QStringList() << "UTF-16" << "UTF-8";
-const QStringList BCodeEditorPrivate::EastEuropeanCodecs = QStringList() << "ISO 8859-13" << "ISO 8859-4"
-    << "Windows-1257" << "ISO 8859-5" << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2"
-    << "Windows-1250";
-const QStringList BCodeEditorPrivate::WestEuropeanCodecs = QStringList() << "ISO 8859-7" << "Windows-1253" << "IBM 850"
-    << "ISO 8859-1" << "ISO 8859-15" << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10"
-    << "ISO 8859-3";
-const QStringList BCodeEditorPrivate::EastAsianCodecs = QStringList() << "Windows-1258" << "Big5" << "Big5-HKSCS"
-    << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS";
-const QStringList BCodeEditorPrivate::SouthEastSouthWestAsianCodecs = QStringList() << "TIS-620" << "ISO 8859-9"
-    << "Windows-1254";
-const QStringList BCodeEditorPrivate::MiddleEastCodecs = QStringList() << "ISO 8859-6" << "Windows-1256"
-    << "Windows-1255" << "ISO 8859-8";
-const QStringList BCodeEditorPrivate::SupportedCodecs = QStringList() << BCodeEditorPrivate::UnicodeCodecs
-    << BCodeEditorPrivate::EastEuropeanCodecs << BCodeEditorPrivate::WestEuropeanCodecs
-    << BCodeEditorPrivate::EastAsianCodecs << BCodeEditorPrivate::SouthEastSouthWestAsianCodecs
-    << BCodeEditorPrivate::MiddleEastCodecs;
-const QMap<QTextCodec *, QString> BCodeEditorPrivate::CodecNames = BCodeEditorPrivate::createCodecNamesMap();
-
 /*============================== Public constructors =======================*/
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
@@ -399,21 +378,118 @@ QString BCodeEditorPrivate::createFileName(const QString &fileName, const QStrin
     return fn;
 }
 
-QMap<QTextCodec *, QString> BCodeEditorPrivate::createCodecNamesMap()
+void BCodeEditorPrivate::removeUnsupportedCodecNames(QStringList &list)
 {
-    QMap<QTextCodec *, QString> m;
-    foreach (const QString &cn, SupportedCodecs)
-        m.insert(QTextCodec::codecForName( cn.toLatin1() ), cn);
+    if (list.isEmpty())
+        return;
+    foreach (int i, bRange(list.size() - 1, 0))
+        if (!QTextCodec::codecForName(list.at(i).toLatin1()))
+            list.removeAt(i);
+}
+
+QStringList BCodeEditorPrivate::supportedUnicodeCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "UTF-16" << "UTF-8";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedEastEuropeanCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257" << "ISO 8859-5"
+        << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2" << "Windows-1250";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedWestEuropeanCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "ISO 8859-7" << "Windows-1253" << "IBM 850" << "ISO 8859-1"
+        << "ISO 8859-15" << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10" << "ISO 8859-3";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedEastAsianCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "Windows-1258" << "Big5" << "Big5-HKSCS" << "GB18030-0" << "EUC-KR"
+        << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedSouthEastSouthWestAsianCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "TIS-620" << "ISO 8859-9" << "Windows-1254";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedMiddleEastCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList()  << "ISO 8859-6" << "Windows-1256" << "Windows-1255" << "ISO 8859-8";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedCodecNames()
+{
+    static QStringList list = QStringList() << supportedUnicodeCodecNames() << supportedEastEuropeanCodecNames()
+        << supportedWestEuropeanCodecNames() << supportedEastAsianCodecNames()
+        << supportedSouthEastSouthWestAsianCodecNames() << supportedMiddleEastCodecNames();
+    return list;
+}
+
+QMap<QTextCodec *, QString> BCodeEditorPrivate::supportedCodecsMap()
+{
+    static bool constructed = false;
+    static QMap<QTextCodec *, QString> m;
+    if (!constructed)
+    {
+        foreach (const QString &cn, supportedCodecNames())
+            m.insert(QTextCodec::codecForName(cn.toLatin1()), cn);
+        constructed = true;
+    }
     return m;
 }
 
 QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
 {
-    if ( UnicodeCodecs.contains(codecName) )
+    if ( supportedUnicodeCodecNames().contains(codecName) )
     {
         return tr("Unicode", "codec descriptiveName");
     }
-    else if ( EastEuropeanCodecs.contains(codecName) )
+    else if ( supportedEastEuropeanCodecNames().contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257").contains(codecName,
                                                                                          Qt::CaseInsensitive) )
@@ -428,7 +504,7 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
         else if ( (QStringList() << "ISO 8859-2" << "Windows-1250").contains(codecName, Qt::CaseInsensitive) )
             return tr("Central European", "codec descriptiveName");
     }
-    else if ( WestEuropeanCodecs.contains(codecName) )
+    else if ( supportedWestEuropeanCodecNames().contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-7" << "Windows-1253").contains(codecName, Qt::CaseInsensitive) )
             return tr("Greek", "codec descriptiveName");
@@ -442,7 +518,7 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
         else if ( !codecName.compare("ISO 8859-3", Qt::CaseInsensitive) )
             return tr("South European", "codec descriptiveName");
     }
-    else if ( EastAsianCodecs.contains(codecName) )
+    else if ( supportedEastAsianCodecNames().contains(codecName) )
     {
         if ( !codecName.compare("Windows-1258", Qt::CaseInsensitive) )
             return tr("Vietnamese", "codec descriptiveName");
@@ -456,14 +532,14 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
                                                                                        Qt::CaseInsensitive) )
             return tr("Japanese", "codec descriptiveName");
     }
-    else if ( SouthEastSouthWestAsianCodecs.contains(codecName) )
+    else if ( supportedSouthEastSouthWestAsianCodecNames().contains(codecName) )
     {
         if ( !codecName.compare("TIS-620", Qt::CaseInsensitive) )
             return tr("Thai", "codec descriptiveName");
         else if ( (QStringList() << "ISO 8859-9" << "Windows-1254").contains(codecName, Qt::CaseInsensitive) )
             return tr("Turkish", "codec descriptiveName");
     }
-    else if ( MiddleEastCodecs.contains(codecName) )
+    else if ( supportedMiddleEastCodecNames().contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-6" << "Windows-1256").contains(codecName, Qt::CaseInsensitive) )
             return tr("Arabic", "codec descriptiveName");
@@ -1323,7 +1399,7 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
 
 bool BCodeEditor::supportsCodec(QTextCodec *codec)
 {
-    return codec && BCodeEditorPrivate::CodecNames.contains(codec);
+    return codec && BCodeEditorPrivate::supportedCodecsMap().contains(codec);
 }
 
 bool BCodeEditor::supportsCodec(const QString &codecName)
@@ -1333,24 +1409,24 @@ bool BCodeEditor::supportsCodec(const QString &codecName)
 
 QList<QTextCodec *> BCodeEditor::supportedCodecs()
 {
-    return BCodeEditorPrivate::CodecNames.keys();
+    return BCodeEditorPrivate::supportedCodecsMap().keys();
 }
 
 QStringList BCodeEditor::supportedCodecNames()
 {
-    return BCodeEditorPrivate::SupportedCodecs;
+    return BCodeEditorPrivate::supportedCodecNames();
 }
 
 QString BCodeEditor::codecName(QTextCodec *codec)
 {
-    return BCodeEditorPrivate::CodecNames.value(codec);
+    return BCodeEditorPrivate::supportedCodecsMap().value(codec);
 }
 
 QString BCodeEditor::fullCodecName(QTextCodec *codec)
 {
-    if ( !codec || !BCodeEditorPrivate::CodecNames.contains(codec) )
+    if ( !codec || !BCodeEditorPrivate::supportedCodecsMap().contains(codec) )
         return "";
-    QString cn = BCodeEditorPrivate::CodecNames.value(codec);
+    QString cn = BCodeEditorPrivate::supportedCodecsMap().value(codec);
     return BCodeEditorPrivate::codecDescriptiveName(cn) + " (" + cn + ")";
 }
 
@@ -1393,17 +1469,17 @@ QStringList BCodeEditor::codecNamesForGroup(CodecGroup group)
     switch (group)
     {
     case UnicodeGroup:
-        return BCodeEditorPrivate::UnicodeCodecs;
+        return BCodeEditorPrivate::supportedUnicodeCodecNames();
     case EastEuropeanGroup:
-        return BCodeEditorPrivate::EastEuropeanCodecs;
+        return BCodeEditorPrivate::supportedEastEuropeanCodecNames();
     case WestEuropeanGroup:
-        return BCodeEditorPrivate::WestEuropeanCodecs;
+        return BCodeEditorPrivate::supportedWestEuropeanCodecNames();
     case EastAsianGroup:
-        return BCodeEditorPrivate::EastAsianCodecs;
+        return BCodeEditorPrivate::supportedEastAsianCodecNames();
     case SouthEastSouthWestAsianGroup:
-        return BCodeEditorPrivate::SouthEastSouthWestAsianCodecs;
+        return BCodeEditorPrivate::supportedSouthEastSouthWestAsianCodecNames();
     case MiddleEastGroup:
-        return BCodeEditorPrivate::MiddleEastCodecs;
+        return BCodeEditorPrivate::supportedMiddleEastCodecNames();
     default:
         return QStringList();
     }
