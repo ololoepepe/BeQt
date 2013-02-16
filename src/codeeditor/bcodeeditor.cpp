@@ -825,7 +825,7 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
             codec = doc->codec();
         if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec))
             return false;
-        if (findDocument(nfn))
+        if (doc->fileName() != nfn && findDocument(nfn))
         {
             alreadyOpenedMessage(nfn);
             return false;
@@ -852,8 +852,6 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
 
 bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
 {
-    if ( list.isEmpty() )
-        return true;
     foreach (BCodeEditorDocument *doc, list)
     {
         if (!doc->isModified())
@@ -866,13 +864,11 @@ bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
 
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
-    if ( !doc || openingDocuments.contains(doc) || savingDocuments.contains(doc) )
+    if (!doc || openingDocuments.contains(doc) || savingDocuments.contains(doc))
         return false;
-    if (!driver->testFileExistance(doc->fileName()) && !saveDocument(doc))
-        return false;
-    if ( doc->isModified() )
+    if (!driver->testFileExistance(doc->fileName()) || doc->isModified())
     {
-        switch ( closeModifiedMessage( doc->fileName() ) )
+        switch (closeModifiedMessage(doc->fileName()))
         {
         case QMessageBox::Save:
             return tryCloseDocument(doc);
