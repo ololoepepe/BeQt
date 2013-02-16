@@ -868,6 +868,8 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
     if ( !doc || openingDocuments.contains(doc) || savingDocuments.contains(doc) )
         return false;
+    if (!driver->testFileExistance(doc->fileName()) && !saveDocument(doc))
+        return false;
     if ( doc->isModified() )
     {
         switch ( closeModifiedMessage( doc->fileName() ) )
