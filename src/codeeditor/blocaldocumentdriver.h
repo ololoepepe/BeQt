@@ -12,6 +12,7 @@ class QString;
 class QByteArray;
 
 #include "babstractdocumentdriver.h"
+#include "bfiledialog.h"
 
 #include <BeQtCore/BeQtGlobal>
 
@@ -39,6 +40,7 @@ public:
     void restoreState(const QByteArray &state);
     void setDefaultDir(const QString &dir);
     void setNativeLineEnd(bool enabled);
+    void setCodecsComboBoxStyle(BFileDialog::CodecsComboBoxStyle style);
 protected:
     bool handleSaveOperation(const Operation &op);
     bool handleLoadOperation(const Operation &op);

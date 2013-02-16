@@ -33,10 +33,12 @@ class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
 public:
     static const QDataStream::Version DSVersion;
 public:
-    explicit BFileDialogPrivate(BFileDialog *q);
+    explicit BFileDialogPrivate(BFileDialog *q, BFileDialog::CodecsComboBoxStyle cmboxStyle);
     ~BFileDialogPrivate();
 public:
     void init();
+public:
+    const BFileDialog::CodecsComboBoxStyle CmboxStyle;
 public:
     QList<BAbstractFileType *> fileTypes;
     QLayout *lt;
@@ -56,8 +58,8 @@ const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 
-BFileDialogPrivate::BFileDialogPrivate(BFileDialog *q) :
-    BBasePrivate(q)
+BFileDialogPrivate::BFileDialogPrivate(BFileDialog *q, BFileDialog::CodecsComboBoxStyle cmboxStyle) :
+    BBasePrivate(q), CmboxStyle(cmboxStyle)
 {
     //
 }
@@ -72,11 +74,13 @@ BFileDialogPrivate::~BFileDialogPrivate()
 void BFileDialogPrivate::init()
 {
     B_Q(BFileDialog);
+    q->setOption(BFileDialog::DontUseNativeDialog, true);
     lt = q->layout();
       lblEncodings = new QLabel(q);
         lblEncodings->setText(tr("Encoding", "lbl text") + ":");
       lt->addWidget(lblEncodings);
-      cmboxEncodings = BCodeEditor::createStructuredCodecsComboBox(q);
+      cmboxEncodings = (CmboxStyle == BFileDialog::PlainStyle) ? BCodeEditor::createPlainCodecsComboBox(q) :
+                                                                 BCodeEditor::createStructuredCodecsComboBox(q);
       lt->addWidget(cmboxEncodings);
 }
 
@@ -87,7 +91,13 @@ void BFileDialogPrivate::init()
 /*============================== Public constructors =======================*/
 
 BFileDialog::BFileDialog(QWidget *parent) :
-    QFileDialog(parent), BBase( *new BFileDialogPrivate(this) )
+    QFileDialog(parent), BBase( *new BFileDialogPrivate(this, StructuredStyle) )
+{
+    d_func()->init();
+}
+
+BFileDialog::BFileDialog(QWidget *parent, CodecsComboBoxStyle cmboxStyle) :
+    QFileDialog(parent), BBase( *new BFileDialogPrivate(this, cmboxStyle) )
 {
     d_func()->init();
 }

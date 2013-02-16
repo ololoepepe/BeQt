@@ -10,7 +10,6 @@ class BAbstractFileType;
 
 class QVBoxLayout;
 class QTabWidget;
-class QString;
 class QPoint;
 class QFont;
 class QLabel;
@@ -23,6 +22,7 @@ class QEvent;
 class QCheckBox;
 class QPushButton;
 class QListWidgetItem;
+class QMenu;
 
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
@@ -37,6 +37,28 @@ class QListWidgetItem;
 #include <QString>
 #include <QList>
 #include <QDialog>
+#include <QComboBox>
+
+/*============================================================================
+================================ StructuredCodecsComboBox ====================
+============================================================================*/
+
+class StructuredCodecsComboBox : public QComboBox
+{
+    Q_OBJECT
+public:
+    explicit StructuredCodecsComboBox(QWidget *parent = 0);
+public:
+    void retranslate();
+    void setCodecName(const QString &codecName);
+    QString codecName() const;
+protected:
+    void showPopup();
+    void hidePopup();
+private:
+    QMenu *mnu;
+    QString cn;
+};
 
 /*============================================================================
 ================================ BSelectDocumentsDialog ======================

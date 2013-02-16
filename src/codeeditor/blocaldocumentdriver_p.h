@@ -7,6 +7,7 @@ class QTextCodec;
 
 #include "blocaldocumentdriver.h"
 #include "babstractdocumentdriver_p.h"
+#include "bfiledialog.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -33,6 +34,7 @@ public:
     bool nativeLineEnd;
     QByteArray fileDialogState;
     BAbstractFileType *lastFileType;
+    BFileDialog::CodecsComboBoxStyle codecsCmboxStyle;
 private:
     Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
 };

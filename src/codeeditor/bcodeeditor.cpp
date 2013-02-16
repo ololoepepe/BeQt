@@ -62,26 +62,6 @@
 ================================ StructuredCodecsComboBox ====================
 ============================================================================*/
 
-class StructuredCodecsComboBox : public QComboBox
-{
-public:
-    explicit StructuredCodecsComboBox(QWidget *parent = 0);
-public:
-    void retranslate();
-    void setCodecName(const QString &codecName);
-    QString codecName() const;
-protected:
-    void showPopup();
-    void hidePopup();
-private:
-    QMenu *mnu;
-    QString cn;
-};
-
-/*============================================================================
-================================ StructuredCodecsComboBox ====================
-============================================================================*/
-
 /*============================== Public constructors =======================*/
 
 StructuredCodecsComboBox::StructuredCodecsComboBox(QWidget *parent) :
@@ -1679,9 +1659,8 @@ void BCodeEditor::retranslateCodecsComboBox(QComboBox *cmbox)
 {
     if (!cmbox)
         return;
-    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
-    if (scmbox)
-        return scmbox->retranslate();
+    if (!QString::compare(cmbox->metaObject()->className(), StructuredCodecsComboBox::staticMetaObject.className()))
+        return static_cast<StructuredCodecsComboBox *>(cmbox)->retranslate();
     foreach (int i, bRangeD(0, cmbox->count() - 1))
     {
         QString cn = cmbox->itemData(i).toString();
@@ -1702,9 +1681,8 @@ void BCodeEditor::selectCodec(QComboBox *cmbox, const QString &codecName)
 {
     if (!cmbox || codecName.isEmpty() || !supportedCodecNames().contains(codecName, Qt::CaseInsensitive))
         return;
-    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
-    if (scmbox)
-        return scmbox->setCodecName(codecName);
+    if (!QString::compare(cmbox->metaObject()->className(), StructuredCodecsComboBox::staticMetaObject.className()))
+        return static_cast<StructuredCodecsComboBox *>(cmbox)->setCodecName(codecName);
     int ind = cmbox->findData(codecName, Qt::UserRole, 0);
     if (ind >= 0)
         cmbox->setCurrentIndex(ind);
@@ -1719,9 +1697,8 @@ QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
 {
     if (!cmbox)
         return "";
-    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
-    if (scmbox)
-        return scmbox->codecName();
+    if (!QString::compare(cmbox->metaObject()->className(), StructuredCodecsComboBox::staticMetaObject.className()))
+        return static_cast<StructuredCodecsComboBox *>(cmbox)->codecName();
     int ind = cmbox->currentIndex();
     return (ind >= 0) ? cmbox->itemData(ind).toString() : QString();
 }

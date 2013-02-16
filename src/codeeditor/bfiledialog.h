@@ -24,7 +24,14 @@ class B_CODEEDITOR_EXPORT BFileDialog : public QFileDialog, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BFileDialog)
 public:
+    enum CodecsComboBoxStyle
+    {
+        StructuredStyle = 0,
+        PlainStyle
+    };
+public:
     explicit BFileDialog(QWidget *parent = 0);
+    explicit BFileDialog(QWidget *parent, CodecsComboBoxStyle cmboxStyle);
     ~BFileDialog();
 protected:
     explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
