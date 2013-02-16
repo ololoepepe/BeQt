@@ -45,6 +45,8 @@ public:
     int uploadProgress(int nth = 100) const;
     bool isFinished() const;
     bool waitForFinished(int msecs = 30 * BeQt::Second);
+public slots:
+    void cancel();
 signals:
     void started();
     void error();
@@ -53,6 +55,7 @@ signals:
     void downloadProgress(int bytesReady, int bytesTotal);
     void uploadProgress(int bytesReady, int bytesTotal);
     void finished();
+    void canceled();
 private:
     Q_DISABLE_COPY(BNetworkOperation)
     friend class BNetworkConnectionPrivate;

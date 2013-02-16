@@ -86,7 +86,8 @@ BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOper
 {
     BNetworkOperation *op = new BNetworkOperation( metaData, q_func() );
     operations.insert(op, metaData);
-    connect( op, SIGNAL( destroyed(QObject *) ), this, SLOT( operationDestroyed(QObject *) ) );
+    connect(op, SIGNAL(canceled()), this, SLOT(operationCanceled()));
+    connect(op, SIGNAL(destroyed(QObject *)), this, SLOT(operationDestroyed(QObject *)));
     return op;
 }
 
@@ -230,6 +231,14 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
     sendNext();
 }
 
+void BNetworkConnectionPrivate::operationCanceled()
+{
+    q_func()->abort();
+    foreach (BNetworkOperation *op, QList<BNetworkOperation *>() << requests.values() << replies.values())
+        if (!op->isFinished() && !op->isError())
+            op->d_func()->setError();
+}
+
 void BNetworkConnectionPrivate::operationDestroyed(QObject *obj)
 {
     if ( !operations.contains(obj) )
@@ -344,6 +353,16 @@ bool BNetworkConnection::disconnectFromHostBlocking(int msecs)
     B_D(BNetworkConnection);
     d->socket->disconnectFromHost();
     return d->socket->waitForDisconnected(msecs);
+}
+
+bool BNetworkConnection::waitForConnected(int msecs)
+{
+    return d_func()->socket->waitForConnected(msecs);
+}
+
+bool BNetworkConnection::waitForDisconnected(int msecs)
+{
+    return d_func()->socket->waitForDisconnected(msecs);
 }
 
 void BNetworkConnection::close()

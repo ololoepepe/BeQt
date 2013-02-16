@@ -223,14 +223,26 @@ void BSearchDialogPrivate::actSelectionTriggered()
 {
     QString oldText = cmboxSearch->lineEdit()->text();
     QString newText = cmboxReplace->lineEdit()->text();
-    emitTextReplaced(document->replaceInSelection( oldText, newText, q_func()->caseSensitivity() ), oldText, newText);
+    int count = document->replaceInSelection( oldText, newText, q_func()->caseSensitivity() );
+    if (count > 0)
+    {
+        appendHistory(cmboxSearch);
+        appendHistory(cmboxReplace);
+    }
+    emitTextReplaced(count, oldText, newText);
 }
 
 void BSearchDialogPrivate::actDocumentTriggered()
 {
     QString oldText = cmboxSearch->lineEdit()->text();
     QString newText = cmboxReplace->lineEdit()->text();
-    emitTextReplaced(document->replaceInDocument( oldText, newText, q_func()->caseSensitivity() ), oldText, newText);
+    int count = document->replaceInDocument( oldText, newText, q_func()->caseSensitivity() );
+    if (count > 0)
+    {
+        appendHistory(cmboxSearch);
+        appendHistory(cmboxReplace);
+    }
+    emitTextReplaced(count, oldText, newText);
 }
 
 /*============================================================================
@@ -448,7 +460,10 @@ void BSearchDialog::findNext()
         return;
     B_D(BSearchDialog);
     QString text = d->cmboxSearch->lineEdit()->text();
-    emit textFound(d->document->findNext( text, d->createFindFlags(), cyclicSearch() ), text);
+    bool b = d->document->findNext( text, d->createFindFlags(), cyclicSearch() );
+    if (b)
+        d->appendHistory(d->cmboxSearch);
+    emit textFound(b, text);
 }
 
 void BSearchDialog::replaceNext()
@@ -456,9 +471,13 @@ void BSearchDialog::replaceNext()
     if ( !replaceNextAvailable() )
         return;
     B_D(BSearchDialog);
-    QString text = d->cmboxReplace->lineEdit()->text();
-    emit textReplaced(d->document->replaceNext(text), d->cmboxSearch->lineEdit()->text(), text);
-    findNext();
+    QString text = d->cmboxSearch->lineEdit()->text();
+    QString ntext = d->cmboxReplace->lineEdit()->text();
+    bool b = d->document->replaceNext(ntext);
+    if (b)
+        d->appendHistory(d->cmboxReplace);
+    emit textReplaced(b, text, ntext);
+    d->document->findNext( d->cmboxSearch->lineEdit()->text(), d->createFindFlags(), cyclicSearch() );
 }
 
 /*============================================================================
@@ -521,7 +540,7 @@ void BSearchEditorModulePrivate::retranslateUi()
 {
     if ( !actFind.isNull() )
     {
-        actFind->setText( tr("Find and replace", "act text") );
+        actFind->setText( tr("Find and replace...", "act text") );
         actFind->setToolTip( tr("Find and replace text", "act toolTip") );
         actFind->setWhatsThis( tr("Use this action to open a find and replace dialog", "act whatsThis") );
     }

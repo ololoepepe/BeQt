@@ -53,15 +53,18 @@ bool rmdir(const QString &dirName)
     return removeFilesInDir(dirName) && d.rmdir(dirName);
 }
 
-bool removeFilesInDir(const QString &dirName, const QStringList &nameFilters)
+bool removeFilesInDir(const QString &dirName, const QStringList &nameFilters, const QStringList &excluding)
 {
     QDir d(dirName);
     if ( !QFileInfo(dirName).isDir() )
         return false;
-    QStringList files = d.entryList(nameFilters, QDir::Files);
-    for (int i = 0; i < files.size(); ++i)
-        if ( !d.remove( files.at(i) ) )
+    foreach ( const QString &fn, d.entryList(nameFilters, QDir::Files) )
+    {
+        if ( excluding.contains(fn) )
+            continue;
+        if ( !d.remove(fn) )
             return false;
+    }
     return true;
 }
 

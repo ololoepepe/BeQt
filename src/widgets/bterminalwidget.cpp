@@ -104,11 +104,14 @@ void BTerminalWidgetPrivate::setDriver(BAbstractTerminalDriver *drv)
         disconnect( driver, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
         disconnect( driver, SIGNAL( blockTerminal() ), this, SLOT( blockTerminal() ) );
         disconnect( driver, SIGNAL( unblockTerminal() ), this, SLOT( unblockTerminal() ) );
+        if (!driver->parent() || driver->parent() == q_func())
+            delete driver;
     }
     driver = drv;
     if (!driver)
         return;
-    driver->setParent( q_func() );
+    if (!driver->parent())
+        driver->setParent(q_func());
     connect( driver, SIGNAL( readyRead() ), this, SLOT( read() ) );
     connect( driver, SIGNAL( finished(int) ), this, SLOT( finished(int) ) );
     connect( driver, SIGNAL( blockTerminal() ), this, SLOT( blockTerminal() ) );
@@ -347,6 +350,21 @@ void BTerminalWidget::terminalCommand(const QString &command, const QStringList 
         d->appendText( d->constructErrorString(error) );
         if (d->NormalMode)
             d->appendLine( d->driver->prompt() );
+    }
+}
+
+void BTerminalWidget::terminalCommand(const QVariant &data)
+{
+    B_D(BTerminalWidget);
+    if (!d->driver || d->driver->isActive() || !data.isValid())
+        return;
+    d->appendLine();
+    QString error;
+    if (!d->driver->terminalCommand(data, error))
+    {
+        d->appendText(d->constructErrorString(error));
+        if (d->NormalMode)
+            d->appendLine(d->driver->prompt());
     }
 }
 

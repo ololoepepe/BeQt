@@ -24,6 +24,7 @@
 #include <QByteArray>
 #include <QFileInfo>
 #include <QKeySequence>
+#include <QMetaObject>
 
 #include <QDebug>
 
@@ -57,29 +58,7 @@ void BOpenSaveEditorModulePrivate::init()
       actOpenFiles->setShortcut(QKeySequence::Open);
     actReopenFile = new QAction(this);
       actReopenFile->setIcon( BApplication::icon("reload") );
-      actReopenFile->setMenu( new QMenu() );
-      QList<BCodeEditor::CodecGroup> list;
-      list << BCodeEditor::UnicodeGroup;
-      list << BCodeEditor::EastEuropeanGroup;
-      list << BCodeEditor::WestEuropeanGroup;
-      list << BCodeEditor::EastAsianGroup;
-      list << BCodeEditor::SouthEastSouthWestAsianGroup;
-      list << BCodeEditor::MiddleEastGroup;
-      foreach (BCodeEditor::CodecGroup gr, list)
-      {
-          QMenu *mnu = new QMenu( actReopenFile->menu() );
-            mnu->setProperty("beqt/codec_group", gr);
-            foreach ( const QString &cn, BCodeEditor::codecNamesForGroup(gr) )
-            {
-                QAction *act = new QAction(mnu);
-                  act->setProperty("beqt/codec_name", cn);
-                  connect( act, SIGNAL( triggered() ), this, SLOT( codecTriggered() ) );
-                mnu->addAction(act);
-                codecs << act;
-            }
-          actReopenFile->menu()->addMenu(mnu);
-          codecGroups << mnu;
-      }
+      actReopenFile->setMenu(BCodeEditor::createStructuredCodecsMenu(this, SLOT(codecTriggered(QString))));
     actSaveFile = new QAction(this);
       actSaveFile->setIcon( BApplication::icon("filesave") );
       actSaveFile->setShortcut(QKeySequence::Save);
@@ -87,7 +66,7 @@ void BOpenSaveEditorModulePrivate::init()
       actSaveFileAs->setIcon( BApplication::icon("filesaveas") );
     actSaveAllFiles = new QAction(this);
       actSaveAllFiles->setIcon( BApplication::icon("save_all") );
-      actSaveAllFiles->setShortcut(QKeySequence::SaveAs); //Yep, this shortcut is really used for a different action
+      actSaveAllFiles->setShortcut( QKeySequence("Ctrl+Shift+S") );
     actCloseFile = new QAction(this);
       actCloseFile->setIcon( BApplication::icon("fileclose") );
       actCloseFile->setShortcut(QKeySequence::Close);
@@ -146,7 +125,8 @@ void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
         QAction *act = acts.at(i);
         act->setProperty( "beqt/file_name", list.at(i) );
         act->setText( QFileInfo( list.at(i) ).fileName() );
-        connect( act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ) );
+        connect(act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ), Qt::UniqueConnection);
+        connect(act, SIGNAL(hovered()), this, SLOT(resetFileHistoryMenuToolTip()));
     }
     mnuFileHistory->setEnabled( !mnuFileHistory->isEmpty() );
 }
@@ -164,7 +144,7 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     }
     if ( !actOpenFiles.isNull() )
     {
-        actOpenFiles->setText( tr("Open", "act text") );
+        actOpenFiles->setText( tr("Open...", "act text") );
         actOpenFiles->setToolTip( tr("Open existing files", "act toolTip") );
         actOpenFiles->setWhatsThis( tr("Use this action to open one or more files existing on your drive",
                                        "act whatsThis") );
@@ -176,11 +156,7 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
         actReopenFile->setWhatsThis( tr("Use this file to reload current document. "
                                         "Use the down arrow to reopen the document using another encoding",
                                         "act whatsThis") );
-        foreach (QMenu *mnu, codecGroups)
-            mnu->setTitle( BCodeEditor::codecGroupName( static_cast<BCodeEditor::CodecGroup>(
-                                                            mnu->property("beqt/codec_group").toInt() ) ) );
-        foreach (QAction *act, codecs)
-            act->setText( BCodeEditor::fullCodecName( act->property("beqt/codec_name").toString() ) );
+        BCodeEditor::retranslateCodecsMenu(actReopenFile->menu());
     }
     if ( !actSaveFile.isNull() )
     {
@@ -224,20 +200,16 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     if ( !mnuFileHistory.isNull() )
     {
         mnuFileHistory->setTitle( tr("Recent files", "mnu title") );
-        mnuFileHistory->setToolTip( tr("Recently opened files", "mnu toolTip") );
         mnuFileHistory->setWhatsThis( tr("Use this action to open one of the recently opened files",
                                          "mnu whatsThis") );
     }
 }
 
-void BOpenSaveEditorModulePrivate::codecTriggered()
+void BOpenSaveEditorModulePrivate::codecTriggered(const QString &codecName)
 {
     if (!editor)
         return;
-    QString cn = sender()->property("beqt/codec_name").toString();
-    if ( cn.isEmpty() )
-        return;
-    editor->reopenCurrentDocument( QTextCodec::codecForName( cn.toLatin1() ) );
+    editor->reopenCurrentDocument(codecName);
 }
 
 void BOpenSaveEditorModulePrivate::fileTriggered()
@@ -248,6 +220,14 @@ void BOpenSaveEditorModulePrivate::fileTriggered()
     if ( fn.isEmpty() )
         return;
     editor->openDocument(fn);
+}
+
+void BOpenSaveEditorModulePrivate::resetFileHistoryMenuToolTip()
+{
+    if ( mnuFileHistory.isNull() )
+        return;
+    QObject *s = sender();
+    mnuFileHistory->setToolTip( s ? s->property("beqt/file_name").toString() : QString() );
 }
 
 /*============================================================================

@@ -31,6 +31,7 @@ protected:
 public:
     static BTerminalIOHandler *instance();
     static QStringList splitCommand(const QString &command);
+    static QString mergeArguments(const QStringList &arguments);
     static QString readLine();
     static void write(const QString &text);
     static void writeLine( const QString &text = QString() );

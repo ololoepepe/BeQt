@@ -85,6 +85,8 @@ public:
     QPoint cursorPosition() const;
     QString text() const;
     QString selectedText() const;
+    QPoint selectionStart() const;
+    QPoint selectionEnd() const;
     bool isBuisy() const;
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);

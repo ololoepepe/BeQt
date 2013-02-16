@@ -28,6 +28,7 @@
 
 class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
 {
+    Q_DECLARE_TR_FUNCTIONS(BFileDialogPrivate)
     B_DECLARE_PUBLIC(BFileDialog)
 public:
     static const QDataStream::Version DSVersion;
@@ -36,9 +37,7 @@ public:
     ~BFileDialogPrivate();
 public:
     void init();
-    void addEncoding(QTextCodec *codec);
 public:
-    QMap<QTextCodec *, int> codecIndexes;
     QList<BAbstractFileType *> fileTypes;
     QLayout *lt;
       QLabel *lblEncodings;
@@ -77,19 +76,8 @@ void BFileDialogPrivate::init()
       lblEncodings = new QLabel(q);
         lblEncodings->setText(tr("Encoding", "lbl text") + ":");
       lt->addWidget(lblEncodings);
-      cmboxEncodings = new QComboBox(q);
-        addEncoding( QTextCodec::codecForName("UTF-8") );
+      cmboxEncodings = BCodeEditor::createStructuredCodecsComboBox(q);
       lt->addWidget(cmboxEncodings);
-}
-
-void BFileDialogPrivate::addEncoding(QTextCodec *codec)
-{
-    if ( !codec || codecIndexes.contains(codec) )
-        return;
-    codecIndexes.insert( codec, cmboxEncodings->count() );
-    QString fcn = BCodeEditor::fullCodecName(codec);
-    QString cn = BCodeEditor::codecName(codec);
-    cmboxEncodings->addItem(!fcn.isEmpty() ? fcn : cn, cn);
 }
 
 /*============================================================================
@@ -133,18 +121,6 @@ void BFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
     setNameFilters(filters);
 }
 
-void BFileDialog::setCodecs(const QList<QTextCodec *> &list)
-{
-    if ( list.isEmpty() )
-        return;
-    B_D(BFileDialog);
-    d->cmboxEncodings->clear();
-    d->codecIndexes.clear();
-    foreach (QTextCodec *c, list)
-        d->addEncoding(c);
-    selectCodec("UTF-8");
-}
-
 void BFileDialog::selectFileType(BAbstractFileType *ft)
 {
     if (!ft)
@@ -161,21 +137,19 @@ void BFileDialog::selectFileType(const QString &id)
             return selectNameFilter( ft->createFileDialogFilter() );
 }
 
+void BFileDialog::setCodecSelectionEnabled(bool b)
+{
+    d_func()->cmboxEncodings->setVisible(b);
+}
+
 void BFileDialog::selectCodec(QTextCodec *codec)
 {
-    if (!codec)
-        return;
-    B_D(BFileDialog);
-    if ( !d->codecIndexes.contains(codec) )
-        return;
-    d->cmboxEncodings->setCurrentIndex( d->codecIndexes.value(codec) );
+    BCodeEditor::selectCodec(d_func()->cmboxEncodings, codec);
 }
 
 void BFileDialog::selectCodec(const QString &codecName)
 {
-    if ( codecName.isEmpty() )
-        return;
-    selectCodec( QTextCodec::codecForName( codecName.toLatin1() ) );
+    BCodeEditor::selectCodec(d_func()->cmboxEncodings, codecName);
 }
 
 void BFileDialog::restoreState(const QByteArray &ba, bool includeGeometry)
@@ -202,18 +176,6 @@ void BFileDialog::restoreState(const QByteArray &ba, bool includeGeometry)
     }
 }
 
-QTextCodec *BFileDialog::selectedCodec() const
-{
-    int ind = d_func()->cmboxEncodings->currentIndex();
-    return (ind >= 0) ? QTextCodec::codecForName( selectedCodecName().toLatin1() ) : 0;
-}
-
-QString BFileDialog::selectedCodecName() const
-{
-    int ind = d_func()->cmboxEncodings->currentIndex();
-    return (ind >= 0 ) ? d_func()->cmboxEncodings->itemData(ind).toString() : QString();
-}
-
 BAbstractFileType *BFileDialog::selectedFileType() const
 {
     QString sf = selectedNameFilter();
@@ -229,6 +191,21 @@ QString BFileDialog::selectedFileTypeId() const
 {
     BAbstractFileType *ft = selectedFileType();
     return ft ? ft->id() : QString();
+}
+
+bool BFileDialog::codecSelectionEnabled() const
+{
+    return d_func()->cmboxEncodings->isVisible();
+}
+
+QTextCodec *BFileDialog::selectedCodec() const
+{
+    return BCodeEditor::selectedCodec(d_func()->cmboxEncodings);
+}
+
+QString BFileDialog::selectedCodecName() const
+{
+    return BCodeEditor::selectedCodecName(d_func()->cmboxEncodings);
 }
 
 QByteArray BFileDialog::saveState(bool includeGeometry) const

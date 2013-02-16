@@ -169,8 +169,6 @@ void BCoreApplicationPrivate::init()
 #endif
     bTest(QCoreApplication::instance(), "BCoreApplication", "Missing QCoreApplication instance");
     initSettings();
-    //localization
-    settings->setValue( "BeQt/Core/locale", QLocale::system() );
     QCoreApplication::instance()->installEventFilter(this);
     //infos
     QStringList locs;

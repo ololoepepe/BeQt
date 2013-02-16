@@ -50,11 +50,92 @@
 #include <QMimeData>
 #include <QKeyEvent>
 #include <QCheckBox>
+#include <QMenu>
+#include <QVariant>
+#include <QSignalMapper>
+#include <QComboBox>
+#include <QCursor>
 
 #include <QDebug>
 
 /*============================================================================
-================================ Select Documents Dialog Private
+================================ StructuredCodecsComboBox ====================
+============================================================================*/
+
+class StructuredCodecsComboBox : public QComboBox
+{
+public:
+    explicit StructuredCodecsComboBox(QWidget *parent = 0);
+public:
+    void retranslate();
+    void setCodecName(const QString &codecName);
+    QString codecName() const;
+protected:
+    void showPopup();
+    void hidePopup();
+private:
+    QMenu *mnu;
+    QString cn;
+};
+
+/*============================================================================
+================================ StructuredCodecsComboBox ====================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+StructuredCodecsComboBox::StructuredCodecsComboBox(QWidget *parent) :
+    QComboBox(parent)
+{
+    mnu = BCodeEditor::createStructuredCodecsMenu(0, 0, this);
+    QAction *act = mnu->actions().first()->menu()->actions().first();
+    cn = act->property("beqt/codec_name").toString();
+    addItem(act->text());
+}
+
+/*============================== Public methods ============================*/
+
+void StructuredCodecsComboBox::retranslate()
+{
+    BCodeEditor::retranslateCodecsMenu(mnu);
+}
+
+void StructuredCodecsComboBox::setCodecName(const QString &codecName)
+{
+    if (codecName.isEmpty() || !BCodeEditor::supportedCodecNames().contains(codecName, Qt::CaseInsensitive))
+        return;
+    cn = codecName;
+    setItemText(0, BCodeEditor::fullCodecName(cn));
+}
+
+QString StructuredCodecsComboBox::codecName() const
+{
+    return cn;
+}
+
+/*============================== Protected methods =========================*/
+
+void StructuredCodecsComboBox::showPopup()
+{
+    mnu->setMinimumWidth(width());
+    QWidget *p = parentWidget();
+    QAction *act = mnu->exec(p ? p->mapToGlobal(pos()) : pos());
+    QComboBox::hidePopup();
+    if (act)
+    {
+        cn = act->property("beqt/codec_name").toString();
+        setItemText(0, act->text());
+    }
+}
+
+void StructuredCodecsComboBox::hidePopup()
+{
+    mnu->close();
+    QComboBox::hidePopup();
+}
+
+/*============================================================================
+================================ SelectDocumentsDialogPrivate ================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
@@ -340,27 +421,6 @@ bool BDropHandler::eventFilter(QObject *o, QEvent *e)
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
-/*============================== Static public constants ===================*/
-
-const QStringList BCodeEditorPrivate::UnicodeCodecs = QStringList() << "UTF-16" << "UTF-8";
-const QStringList BCodeEditorPrivate::EastEuropeanCodecs = QStringList() << "ISO 8859-13" << "ISO 8859-4"
-    << "Windows-1257" << "ISO 8859-5" << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2"
-    << "Windows-1250";
-const QStringList BCodeEditorPrivate::WestEuropeanCodecs = QStringList() << "ISO 8859-7" << "Windows-1253" << "IBM 850"
-    << "ISO 8859-1" << "ISO 8859-15" << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10"
-    << "ISO 8859-3";
-const QStringList BCodeEditorPrivate::EastAsianCodecs = QStringList() << "Windows-1258" << "Big5" << "Big5-HKSCS"
-    << "GB18030-0" << "EUC-KR" << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS";
-const QStringList BCodeEditorPrivate::SouthEastSouthWestAsianCodecs = QStringList() << "TIS-620" << "ISO 8859-9"
-    << "Windows-1254";
-const QStringList BCodeEditorPrivate::MiddleEastCodecs = QStringList() << "ISO 8859-6" << "Windows-1256"
-    << "Windows-1255" << "ISO 8859-8";
-const QStringList BCodeEditorPrivate::SupportedCodecs = QStringList() << BCodeEditorPrivate::UnicodeCodecs
-    << BCodeEditorPrivate::EastEuropeanCodecs << BCodeEditorPrivate::WestEuropeanCodecs
-    << BCodeEditorPrivate::EastAsianCodecs << BCodeEditorPrivate::SouthEastSouthWestAsianCodecs
-    << BCodeEditorPrivate::MiddleEastCodecs;
-const QMap<QTextCodec *, QString> BCodeEditorPrivate::CodecNames = BCodeEditorPrivate::createCodecNamesMap();
-
 /*============================== Public constructors =======================*/
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
@@ -399,21 +459,116 @@ QString BCodeEditorPrivate::createFileName(const QString &fileName, const QStrin
     return fn;
 }
 
-QMap<QTextCodec *, QString> BCodeEditorPrivate::createCodecNamesMap()
+void BCodeEditorPrivate::removeUnsupportedCodecNames(QStringList &list)
 {
-    QMap<QTextCodec *, QString> m;
-    foreach (const QString &cn, SupportedCodecs)
-        m.insert(QTextCodec::codecForName( cn.toLatin1() ), cn);
+    foreach (int i, bRangeR(list.size() - 1, 0))
+        if (!QTextCodec::codecForName(list.at(i).toLatin1()))
+            list.removeAt(i);
+}
+
+QStringList BCodeEditorPrivate::supportedUnicodeCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "UTF-8" << "UTF-16";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedEastEuropeanCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257" << "ISO 8859-5"
+        << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2" << "Windows-1250";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedWestEuropeanCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "ISO 8859-7" << "Windows-1253" << "IBM 850" << "ISO 8859-1"
+        << "ISO 8859-15" << "Apple Roman" << "Windows-1252" << "ISO 8859-14" << "ISO 8859-10" << "ISO 8859-3";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedEastAsianCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "Windows-1258" << "Big5" << "Big5-HKSCS" << "GB18030-0" << "EUC-KR"
+        << "JOHAB" << "EUC-JP" << "ISO 2022-JP" << "Shift-JIS";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedSouthEastSouthWestAsianCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList() << "TIS-620" << "ISO 8859-9" << "Windows-1254";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedMiddleEastCodecNames()
+{
+    static bool constructed = false;
+    static QStringList list = QStringList()  << "ISO 8859-6" << "Windows-1256" << "Windows-1255" << "ISO 8859-8";
+    if (!constructed)
+    {
+        removeUnsupportedCodecNames(list);
+        constructed = true;
+    }
+    return list;
+}
+
+QStringList BCodeEditorPrivate::supportedCodecNames()
+{
+    static QStringList list = QStringList() << supportedUnicodeCodecNames() << supportedEastEuropeanCodecNames()
+        << supportedWestEuropeanCodecNames() << supportedEastAsianCodecNames()
+        << supportedSouthEastSouthWestAsianCodecNames() << supportedMiddleEastCodecNames();
+    return list;
+}
+
+QMap<QTextCodec *, QString> BCodeEditorPrivate::supportedCodecsMap()
+{
+    static bool constructed = false;
+    static QMap<QTextCodec *, QString> m;
+    if (!constructed)
+    {
+        foreach (const QString &cn, supportedCodecNames())
+            m.insert(QTextCodec::codecForName(cn.toLatin1()), cn);
+        constructed = true;
+    }
     return m;
 }
 
 QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
 {
-    if ( UnicodeCodecs.contains(codecName) )
+    if ( supportedUnicodeCodecNames().contains(codecName) )
     {
         return tr("Unicode", "codec descriptiveName");
     }
-    else if ( EastEuropeanCodecs.contains(codecName) )
+    else if ( supportedEastEuropeanCodecNames().contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257").contains(codecName,
                                                                                          Qt::CaseInsensitive) )
@@ -428,7 +583,7 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
         else if ( (QStringList() << "ISO 8859-2" << "Windows-1250").contains(codecName, Qt::CaseInsensitive) )
             return tr("Central European", "codec descriptiveName");
     }
-    else if ( WestEuropeanCodecs.contains(codecName) )
+    else if ( supportedWestEuropeanCodecNames().contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-7" << "Windows-1253").contains(codecName, Qt::CaseInsensitive) )
             return tr("Greek", "codec descriptiveName");
@@ -442,7 +597,7 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
         else if ( !codecName.compare("ISO 8859-3", Qt::CaseInsensitive) )
             return tr("South European", "codec descriptiveName");
     }
-    else if ( EastAsianCodecs.contains(codecName) )
+    else if ( supportedEastAsianCodecNames().contains(codecName) )
     {
         if ( !codecName.compare("Windows-1258", Qt::CaseInsensitive) )
             return tr("Vietnamese", "codec descriptiveName");
@@ -456,14 +611,14 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
                                                                                        Qt::CaseInsensitive) )
             return tr("Japanese", "codec descriptiveName");
     }
-    else if ( SouthEastSouthWestAsianCodecs.contains(codecName) )
+    else if ( supportedSouthEastSouthWestAsianCodecNames().contains(codecName) )
     {
         if ( !codecName.compare("TIS-620", Qt::CaseInsensitive) )
             return tr("Thai", "codec descriptiveName");
         else if ( (QStringList() << "ISO 8859-9" << "Windows-1254").contains(codecName, Qt::CaseInsensitive) )
             return tr("Turkish", "codec descriptiveName");
     }
-    else if ( MiddleEastCodecs.contains(codecName) )
+    else if ( supportedMiddleEastCodecNames().contains(codecName) )
     {
         if ( (QStringList() << "ISO 8859-6" << "Windows-1256").contains(codecName, Qt::CaseInsensitive) )
             return tr("Arabic", "codec descriptiveName");
@@ -588,6 +743,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
              this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
     connect( doc, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
              this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
+    connect( doc, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
     connect( doc, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
@@ -645,7 +801,6 @@ BCodeEditorDocument *BCodeEditorPrivate::openDocument(const QString &fileName, Q
         openingDocuments.remove(doc);
         doc->deleteLater();
         doc = 0;
-        failedToOpenMessage(fileName);
     }
     return doc;
 }
@@ -656,10 +811,7 @@ bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *co
         return false;
     if ( doc->isModified() && reopenModifiedMessage( doc->fileName() ) != QMessageBox::Yes)
         return false;
-    bool b = doc->load(driver, codec);
-    if (!b)
-        failedToOpenMessage( doc->fileName() );
-    return b;
+    return doc->load(driver, codec);
 }
 
 bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
@@ -667,21 +819,26 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     if ( !doc || savingDocuments.contains(doc) )
         return false;
     QString nfn = newFileName;
-    bool ssa = !nfn.isEmpty() || !driver->testFileExistance( doc->fileName() );
-    if (ssa)
+    if (nfn.isEmpty() && !driver->testFileExistance(doc->fileName()))
     {
         if (!codec)
             codec = doc->codec();
-        bool b = !nfn.isEmpty() || driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec);
-        if ( !b || nfn.isEmpty() || findDocument(nfn) )
+        if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec))
             return false;
+        if (doc->fileName() != nfn && findDocument(nfn))
+        {
+            alreadyOpenedMessage(nfn);
+            return false;
+        }
     }
     else
     {
-        if ( !doc->isModified() )
-            return true;
-        else if ( doc->isReadOnly() )
+        if (doc->isReadOnly())
+        {
+            failedToSaveMessage(nfn);
             return false;
+        }
+        nfn = doc->fileName();
     }
     savingDocuments.insert(doc, nfn);
     bool b = doc->save(driver, codec, nfn);
@@ -695,21 +852,23 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
 
 bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
 {
-    if ( list.isEmpty() )
-        return true;
     foreach (BCodeEditorDocument *doc, list)
+    {
+        if (!doc->isModified())
+            continue;
         if ( !saveDocument(doc) )
             return false;
+    }
     return true;
 }
 
 bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
-    if ( !doc || openingDocuments.contains(doc) || savingDocuments.contains(doc) )
+    if (!doc || openingDocuments.contains(doc) || savingDocuments.contains(doc))
         return false;
-    if ( doc->isModified() )
+    if (!driver->testFileExistance(doc->fileName()) || doc->isModified())
     {
-        switch ( closeModifiedMessage( doc->fileName() ) )
+        switch (closeModifiedMessage(doc->fileName()))
         {
         case QMessageBox::Save:
             return tryCloseDocument(doc);
@@ -863,6 +1022,19 @@ void BCodeEditorPrivate::failedToSaveMessage(const QString &fileName, const QStr
     msg.exec();
 }
 
+void BCodeEditorPrivate::alreadyOpenedMessage(const QString &fileName)
+{
+    if (fileName.isEmpty())
+        return;
+    QMessageBox msg(q_func());
+    msg.setWindowTitle(tr("File already opened", "msgbox windowTitle"));
+    msg.setIcon(QMessageBox::Warning);
+    msg.setText(tr("The file is already opened:", "msgbox text") + "\n" + fileName);
+    msg.setStandardButtons(QMessageBox::Ok);
+    msg.setDefaultButton(QMessageBox::Ok);
+    msg.exec();
+}
+
 int BCodeEditorPrivate::reopenModifiedMessage(const QString &fileName)
 {
     QMessageBox msg( q_func() );
@@ -1007,7 +1179,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
     if (document)
     {
         disconnect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
-        disconnect( document, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
         disconnect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
         disconnect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
         disconnect( document, SIGNAL( cutAvailableChanged(bool) ), this, SLOT( documentCutAvailableChanged(bool) ) );
@@ -1028,7 +1199,6 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
     if (document)
     {
         connect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
-        connect( document, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
         connect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
         connect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
         connect( document, SIGNAL( cutAvailableChanged(bool) ), this, SLOT( documentCutAvailableChanged(bool) ) );
@@ -1064,10 +1234,16 @@ void BCodeEditorPrivate::documentReadOnlyChanged(bool ro)
 
 void BCodeEditorPrivate::documentModificationChanged(bool modified)
 {
-    updateDocumentTab(document);
-    emitCurrentDocumentModificationChanged(modified);
-    foreach (BAbstractEditorModule *module, modules)
-        module->documentModificationChanged(modified);
+    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    if (!doc)
+        return;
+    updateDocumentTab(doc);
+    if (doc == document)
+    {
+        emitCurrentDocumentModificationChanged(modified);
+        foreach (BAbstractEditorModule *module, modules)
+            module->documentModificationChanged(modified);
+    }
 }
 
 void BCodeEditorPrivate::documentSelectionChanged()
@@ -1322,7 +1498,7 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
 
 bool BCodeEditor::supportsCodec(QTextCodec *codec)
 {
-    return codec && BCodeEditorPrivate::CodecNames.contains(codec);
+    return codec && BCodeEditorPrivate::supportedCodecsMap().contains(codec);
 }
 
 bool BCodeEditor::supportsCodec(const QString &codecName)
@@ -1332,30 +1508,37 @@ bool BCodeEditor::supportsCodec(const QString &codecName)
 
 QList<QTextCodec *> BCodeEditor::supportedCodecs()
 {
-    return BCodeEditorPrivate::CodecNames.keys();
+    return BCodeEditorPrivate::supportedCodecsMap().keys();
 }
 
 QStringList BCodeEditor::supportedCodecNames()
 {
-    return BCodeEditorPrivate::SupportedCodecs;
+    return BCodeEditorPrivate::supportedCodecNames();
 }
 
 QString BCodeEditor::codecName(QTextCodec *codec)
 {
-    return BCodeEditorPrivate::CodecNames.value(codec);
+    return BCodeEditorPrivate::supportedCodecsMap().value(codec);
 }
 
 QString BCodeEditor::fullCodecName(QTextCodec *codec)
 {
-    if ( !codec || !BCodeEditorPrivate::CodecNames.contains(codec) )
+    if ( !codec || !BCodeEditorPrivate::supportedCodecsMap().contains(codec) )
         return "";
-    QString cn = BCodeEditorPrivate::CodecNames.value(codec);
+    QString cn = BCodeEditorPrivate::supportedCodecsMap().value(codec);
     return BCodeEditorPrivate::codecDescriptiveName(cn) + " (" + cn + ")";
 }
 
 QString BCodeEditor::fullCodecName(const QString &codecName)
 {
     return !codecName.isEmpty() ? fullCodecName( QTextCodec::codecForName( codecName.toLatin1() ) ) : QString();
+}
+
+QList<BCodeEditor::CodecGroup> BCodeEditor::codecGroups()
+{
+    static QList<CodecGroup> list = QList<CodecGroup>() << UnicodeGroup << EastEuropeanGroup << WestEuropeanGroup
+        << EastAsianGroup << SouthEastSouthWestAsianGroup << MiddleEastGroup;
+    return list;
 }
 
 QString BCodeEditor::codecGroupName(CodecGroup group)
@@ -1392,20 +1575,155 @@ QStringList BCodeEditor::codecNamesForGroup(CodecGroup group)
     switch (group)
     {
     case UnicodeGroup:
-        return BCodeEditorPrivate::UnicodeCodecs;
+        return BCodeEditorPrivate::supportedUnicodeCodecNames();
     case EastEuropeanGroup:
-        return BCodeEditorPrivate::EastEuropeanCodecs;
+        return BCodeEditorPrivate::supportedEastEuropeanCodecNames();
     case WestEuropeanGroup:
-        return BCodeEditorPrivate::WestEuropeanCodecs;
+        return BCodeEditorPrivate::supportedWestEuropeanCodecNames();
     case EastAsianGroup:
-        return BCodeEditorPrivate::EastAsianCodecs;
+        return BCodeEditorPrivate::supportedEastAsianCodecNames();
     case SouthEastSouthWestAsianGroup:
-        return BCodeEditorPrivate::SouthEastSouthWestAsianCodecs;
+        return BCodeEditorPrivate::supportedSouthEastSouthWestAsianCodecNames();
     case MiddleEastGroup:
-        return BCodeEditorPrivate::MiddleEastCodecs;
+        return BCodeEditorPrivate::supportedMiddleEastCodecNames();
     default:
         return QStringList();
     }
+}
+
+QMenu *BCodeEditor::createPlainCodecsMenu(QObject *receiver, const char *member, QWidget *parent)
+{
+    QMenu *mnu = new QMenu(parent);
+    QSignalMapper *mpr = (receiver && member) ? new QSignalMapper(mnu) : 0;
+    if (mpr)
+        connect(mpr, SIGNAL(mapped(QString)), receiver, member);
+    foreach (const QString &cn, supportedCodecNames())
+    {
+        QAction *act = mnu->addAction("");
+        act->setProperty("beqt/codec_name", cn);
+        if (mpr)
+            BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+    }
+    retranslateCodecsMenu(mnu);
+    return mnu;
+}
+
+QMenu *BCodeEditor::createStructuredCodecsMenu(QObject *receiver, const char *member, QWidget *parent)
+{
+    QMenu *mnu = new QMenu(parent);
+    QSignalMapper *mpr = (receiver && member) ? new QSignalMapper(mnu) : 0;
+    if (mpr)
+        connect(mpr, SIGNAL(mapped(QString)), receiver, member);
+    foreach (CodecGroup gr, codecGroups())
+    {
+        QMenu *submnu = mnu->addMenu("");
+        submnu->setProperty("beqt/codec_group", gr);
+        foreach (const QString &cn, codecNamesForGroup(gr))
+        {
+            QAction *act = submnu->addAction("");
+            act->setProperty("beqt/codec_name", cn);
+            if (mpr)
+                BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+        }
+    }
+    retranslateCodecsMenu(mnu);
+    return mnu;
+}
+
+void BCodeEditor::retranslateCodecsMenu(QMenu *mnu)
+{
+    if (!mnu)
+        return;
+    QList<QAction *> actions;
+    foreach (QAction *act, mnu->actions())
+    {
+        QMenu *submnu = act->menu();
+        if (!submnu)
+        {
+            actions << act;
+            continue;
+        }
+        bool ok = false;
+        CodecGroup gr = static_cast<CodecGroup>(submnu->property("beqt/codec_group").toInt(&ok));
+        if (!ok || InvalidGroup == gr)
+            continue;
+        submnu->setTitle(codecGroupName(gr));
+        actions << submnu->actions();
+    }
+    foreach (QAction *act, actions)
+    {
+        QString cn = act->property("beqt/codec_name").toString();
+        if (cn.isEmpty() || !supportedCodecNames().contains(cn))
+            continue;
+        act->setText(fullCodecName(cn));
+    }
+}
+
+QComboBox *BCodeEditor::createPlainCodecsComboBox(QWidget *parent)
+{
+    QComboBox *cmbox = new QComboBox(parent);
+    foreach (const QString &cn, supportedCodecNames())
+        cmbox->addItem("", cn);
+    retranslateCodecsComboBox(cmbox);
+    return cmbox;
+}
+
+QComboBox *BCodeEditor::createStructuredCodecsComboBox(QWidget *parent)
+{
+    StructuredCodecsComboBox *cmbox = new StructuredCodecsComboBox(parent);
+    cmbox->retranslate();
+    return cmbox;
+}
+
+void BCodeEditor::retranslateCodecsComboBox(QComboBox *cmbox)
+{
+    if (!cmbox)
+        return;
+    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
+    if (scmbox)
+        return scmbox->retranslate();
+    foreach (int i, bRangeD(0, cmbox->count() - 1))
+    {
+        QString cn = cmbox->itemData(i).toString();
+        if (cn.isEmpty() || !supportedCodecNames().contains(cn))
+            continue;
+        cmbox->setItemText(i, fullCodecName(cn));
+    }
+}
+
+void BCodeEditor::selectCodec(QComboBox *cmbox, QTextCodec *codec)
+{
+    if (!codec)
+        return;
+    selectCodec(cmbox, QString::fromLatin1(codec->name()));
+}
+
+void BCodeEditor::selectCodec(QComboBox *cmbox, const QString &codecName)
+{
+    if (!cmbox || codecName.isEmpty() || !supportedCodecNames().contains(codecName, Qt::CaseInsensitive))
+        return;
+    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
+    if (scmbox)
+        return scmbox->setCodecName(codecName);
+    int ind = cmbox->findData(codecName, Qt::UserRole, 0);
+    if (ind >= 0)
+        cmbox->setCurrentIndex(ind);
+}
+
+QTextCodec *BCodeEditor::selectedCodec(QComboBox *cmbox)
+{
+    return QTextCodec::codecForName(selectedCodecName(cmbox).toLatin1());
+}
+
+QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
+{
+    if (!cmbox)
+        return "";
+    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
+    if (scmbox)
+        return scmbox->codecName();
+    int ind = cmbox->currentIndex();
+    return (ind >= 0) ? cmbox->itemData(ind).toString() : QString();
 }
 
 /*============================== Public methods ============================*/
@@ -1460,8 +1778,9 @@ void BCodeEditor::setEditLineLength(int ll)
     if (ll < 1)
         return;
     B_D(BCodeEditor);
-    if (d->editLineLength == ll)
+    if (ll == d->editLineLength)
         return;
+    d->editLineLength = ll;
     foreach ( BCodeEditorDocument *doc, documents() )
         doc->setEditLineLength(ll);
 }
@@ -1760,6 +2079,16 @@ BCodeEditorDocument *BCodeEditor::currentDocument() const
     return d_func()->document;
 }
 
+BCodeEditorDocument *BCodeEditor::document(const QString &fileName) const
+{
+    if (fileName.isEmpty())
+        return 0;
+    foreach (BCodeEditorDocument *doc, documents())
+        if (doc->fileName() == fileName)
+            return doc;
+    return 0;
+}
+
 QList<BCodeEditorDocument *> BCodeEditor::documents() const
 {
     const B_D(BCodeEditor);
@@ -1886,12 +2215,18 @@ BCodeEditorDocument *BCodeEditor::openDocument(const QString &fileName, QTextCod
 
 bool BCodeEditor::saveCurrentDocument()
 {
-    return currentDocument() && d_func()->saveDocument( currentDocument() );
+    BCodeEditorDocument *doc = currentDocument();
+    return doc && (!doc->isModified() || d_func()->saveDocument(doc));
 }
 
 bool BCodeEditor::reopenCurrentDocument(QTextCodec *codec)
 {
     return currentDocument() && d_func()->reopenDocument(currentDocument(), codec);
+}
+
+bool BCodeEditor::reopenCurrentDocument(const QString &codecName)
+{
+    return reopenCurrentDocument(QTextCodec::codecForName(codecName.toLatin1()));
 }
 
 bool BCodeEditor::saveCurrentDocumentAs()
@@ -1901,7 +2236,7 @@ bool BCodeEditor::saveCurrentDocumentAs()
     QString nfn;
     QTextCodec *codec = currentDocument()->codec();
     return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&
-            saveCurrentDocumentAs(nfn, codec);
+            d_func()->saveDocument(currentDocument(), nfn, codec);
 }
 
 bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec)

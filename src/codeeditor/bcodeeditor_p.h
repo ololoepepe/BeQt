@@ -179,22 +179,21 @@ public:
         SaveOperation
     };
 public:
-    static const QStringList UnicodeCodecs;
-    static const QStringList EastEuropeanCodecs;
-    static const QStringList WestEuropeanCodecs;
-    static const QStringList EastAsianCodecs;
-    static const QStringList SouthEastSouthWestAsianCodecs;
-    static const QStringList MiddleEastCodecs;
-    static const QStringList SupportedCodecs;
-    static const QMap<QTextCodec *, QString> CodecNames;
-public:
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
 public:
     static QString defaultFileName();
     static QString createFileName(const QString &fileName, const QString &defaultName,
                                   const QStringList &existingNames);
-    static QMap<QTextCodec *, QString> createCodecNamesMap();
+    static void removeUnsupportedCodecNames(QStringList &list);
+    static QStringList supportedUnicodeCodecNames();
+    static QStringList supportedEastEuropeanCodecNames();
+    static QStringList supportedWestEuropeanCodecNames();
+    static QStringList supportedEastAsianCodecNames();
+    static QStringList supportedSouthEastSouthWestAsianCodecNames();
+    static QStringList supportedMiddleEastCodecNames();
+    static QStringList supportedCodecNames();
+    static QMap<QTextCodec *, QString> supportedCodecsMap();
     static QString codecDescriptiveName(const QString &codecName);
 public:
     void init();
@@ -217,6 +216,7 @@ public:
     void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
     void failedToOpenMessage(const QString &fileName);
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
+    void alreadyOpenedMessage(const QString &fileName);
     int reopenModifiedMessage(const QString &fileName);
     int closeModifiedMessage(const QString &fileName);
     BSplittedLinesDialog *createSplittedLinesDialog(BCodeEditorDocument *doc,

@@ -42,6 +42,7 @@ public:
     void setLogToConsoleEnabled(bool enabled);
     void setLogToFileEnabled(bool enabled);
     void setFileName(const QString &fileName);
+    void setFileFlushInterval(int msecs);
     bool isStderrUsed() const;
     bool isLevelIncluded() const;
     bool isDateTimeIncluded() const;
@@ -49,6 +50,7 @@ public:
     bool isLogToConsoleEnabled() const;
     bool isLogToFileEnabled() const;
     QString fileName() const;
+    int fileFlushInterval() const;
     void log(const QString &text, Level lvl);
 public slots:
     void log(const QString &text);
@@ -58,6 +60,7 @@ public slots:
     void logWarning(const QString &text);
     void logCritical(const QString &text);
     void logFatal(const QString &text);
+    void flushFile();
 private:
     Q_DISABLE_COPY(BLogger)
 };

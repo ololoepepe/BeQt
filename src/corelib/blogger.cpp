@@ -4,6 +4,8 @@
 #include "bbase.h"
 #include "bbase_p.h"
 #include "bterminaliohandler.h"
+#include "bdirtools.h"
+#include "bnamespace.h"
 
 #include <QObject>
 #include <QString>
@@ -12,6 +14,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QDateTime>
+#include <QTimer>
 
 /*============================================================================
 ================================ BLoggerPrivate ==============================
@@ -29,6 +32,7 @@ BLoggerPrivate::~BLoggerPrivate()
 {
     if ( file.isOpen() )
         file.close();
+    delete fileFlushTimer;
 }
 
 /*============================== Static public methods =====================*/
@@ -78,6 +82,10 @@ void BLoggerPrivate::init()
     format = "dd/MMM/yyy hh:mm:ss";
     logToConsole = true;
     logToFile = true;
+    fileFlushInterval = 10 * BeQt::Second; // < 0 - instant; == 0 -never; > 0 - periodically
+    fileFlushTimer = new QTimer(this);
+    connect( fileFlushTimer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
+    resetFileFlushTimer();
 }
 
 void BLoggerPrivate::tryLog(const QString &msg, bool stderrLevel)
@@ -103,7 +111,8 @@ void BLoggerPrivate::tryLogToFile(const QString &text)
     if ( !logToFile || !file.isOpen() )
         return;
     fileStream << text;
-    fileStream.flush();
+    if (fileFlushInterval < 0)
+        fileStream.flush();
 }
 
 QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl) const
@@ -120,6 +129,21 @@ QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl
     }
     msg += text + "\n";
     return msg;
+}
+
+void BLoggerPrivate::resetFileFlushTimer()
+{
+    fileFlushTimer->stop();
+    if (fileFlushInterval > 0)
+        fileFlushTimer->start(fileFlushInterval);
+}
+
+/*============================== Public slots ==============================*/
+
+void BLoggerPrivate::timeout()
+{
+    if ( file.isOpen() )
+        fileStream.flush();
 }
 
 /*============================================================================
@@ -208,9 +232,20 @@ void BLogger::setFileName(const QString &fileName)
     d->fileStream.setDevice(0);
     if ( fileName.isEmpty() )
         return;
-    if ( !d->file.open(QFile::WriteOnly | QFile::Append) )
+    if ( !BDirTools::touch(fileName) || !d->file.open(QFile::WriteOnly | QFile::Append) )
         return d->file.setFileName("");
     d->fileStream.setDevice(&d->file);
+}
+
+void BLogger::setFileFlushInterval(int msecs)
+{
+    if (msecs < 0)
+        msecs = -1;
+    B_D(BLogger);
+    if (msecs == d->fileFlushInterval)
+        return;
+    d->fileFlushInterval = msecs;
+    d->resetFileFlushTimer();
 }
 
 bool BLogger::isStderrUsed() const
@@ -262,6 +297,11 @@ QString BLogger::fileName() const
     return d->file.fileName();
 }
 
+int BLogger::fileFlushInterval() const
+{
+    return d_func()->fileFlushInterval;
+}
+
 void BLogger::log(const QString &text, Level lvl)
 {
     B_D(BLogger);
@@ -304,4 +344,13 @@ void BLogger::logCritical(const QString &text)
 void BLogger::logFatal(const QString &text)
 {
     log(text, FatalLevel);
+}
+
+void BLogger::flushFile()
+{
+    B_D(BLogger);
+    if ( !d->file.isOpen() )
+        return;
+    d->fileStream.flush();
+    d->resetFileFlushTimer();
 }

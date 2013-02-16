@@ -3,6 +3,7 @@
 
 #include <QtGlobal>
 #include <QList>
+#include <QString>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -72,6 +73,87 @@ static Class *qs_func() \
 
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
-B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 1);
+B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
+B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
+
+template<typename T> void bRet(T *t, const T &tt)
+{
+    if (t)
+        *t = tt;
+}
+
+template<typename T, typename U> void bRet(T *t, const T &tt, U *u, const U &uu)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+}
+
+template<typename T, typename U, typename V> void bRet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+}
+
+template<typename T> T bRet(T *t, const T &tt)
+{
+    if (t)
+        *t = tt;
+    return tt;
+}
+
+template<typename T, typename U> T bRet(T *t, const T &tt, U *u, const U &uu)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    return tt;
+}
+
+template<typename T, typename U, typename V> T bRet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+    return tt;
+}
+
+template<typename T, typename U> U bRet(T *t, const T &tt, const U &uu)
+{
+    if (t)
+        *t = tt;
+    return uu;
+}
+
+template<typename T, typename U, typename V> V bRet(T *t, const T &tt, U *u, const U &uu, const V &vv)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    return vv;
+}
+
+template<typename T, typename U, typename V, typename W> W bRet(T *t, const T &tt, U *u, const U &uu,
+                                                                V *v, const V &vv, const W &ww)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+    return ww;
+}
 
 #endif // BGLOBAL_H

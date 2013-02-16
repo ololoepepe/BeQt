@@ -59,17 +59,17 @@ contains(CONFIG, beqt_builtin_resources) {
 
 include(../../prefix.pri)
 
-target.path = $${libsInstallsPath}
+target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
 !contains(CONFIG, beqt_builtin_resources) {
     beqtInstallsIcons.files= \
         $$files($${PWD}/icons/*.png) \
         $$files($${PWD}/icons/*.svgz)
-    beqtInstallsIcons.path=$${resourcesInstallsPath}/icons
+    beqtInstallsIcons.path=$${BEQT_RESOURCES_INSTALLS_PATH}/icons
     INSTALLS += beqtInstallsIcons
     beqtInstallsPixmaps.files=$$files($${PWD}/pixmaps/*.png)
-    beqtInstallsPixmaps.path=$${resourcesInstallsPath}/pixmaps
+    beqtInstallsPixmaps.path=$${BEQT_RESOURCES_INSTALLS_PATH}/pixmaps
     INSTALLS += beqtInstallsPixmaps
 }
 

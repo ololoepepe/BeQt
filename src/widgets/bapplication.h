@@ -27,6 +27,7 @@ class QLayout;
 #include <QSize>
 #include <QString>
 #include <QIcon>
+#include <QFrame>
 
 #if defined(bApp)
 #undef bApp
@@ -79,6 +80,9 @@ public:
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
+    static QAction *createSeparator(QObject *parent = 0);
+    static QFrame *createFrame(QFrame::Shape shape, QWidget *parent = 0);
+    static QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent = 0);
     static QFont createMonospaceFont();
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
     static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
@@ -92,7 +96,7 @@ public slots:
     void showHelpContents();
     void showContextualHelp();
     void openHomepage();
-    void openLocalFile(const QString &fileName);
+    bool openLocalFile(const QString &fileName);
 protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:

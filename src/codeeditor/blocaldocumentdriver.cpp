@@ -112,7 +112,6 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
         bfd.setDirectory(d->defaultDir);
     bfd.setFileTypes( editor()->fileTypes() );
     bfd.selectFileType( d->lastFileType ? d->lastFileType : editor()->preferredFileType() );
-    bfd.setCodecs( editor()->supportedCodecs() );
     if (codec)
         bfd.selectCodec(codec);
     bfd.setAcceptMode(BFileDialog::AcceptOpen);
@@ -135,7 +134,6 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     BFileDialog bfd(parent);
     bfd.restoreState(d_func()->fileDialogState);
     bfd.setFileTypes( editor()->fileTypes() );
-    bfd.setCodecs( editor()->supportedCodecs() );
     bfd.selectCodec(codec);
     bfd.setAcceptMode(BFileDialog::AcceptSave);
     bfd.setFileMode(QFileDialog::AnyFile);

@@ -22,6 +22,16 @@ BAbstractTerminalDriver::~BAbstractTerminalDriver()
 
 /*============================== Public methods ============================*/
 
+void BAbstractTerminalDriver::terminate()
+{
+    close();
+}
+
+void BAbstractTerminalDriver::kill()
+{
+    terminate();
+}
+
 QString BAbstractTerminalDriver::prompt() const
 {
     return "$";
@@ -30,6 +40,17 @@ QString BAbstractTerminalDriver::prompt() const
 bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &)
 {
     emitFinished(0);
+    return true;
+}
+
+bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &)
+{
+    emitFinished(0);
+    return true;
+}
+
+bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &)
+{
     return true;
 }
 

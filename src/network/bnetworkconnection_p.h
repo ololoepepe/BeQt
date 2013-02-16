@@ -52,6 +52,7 @@ public slots:
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
     void dataSent(const BNetworkOperationMetaData &metaData);
+    void operationCanceled();
     void operationDestroyed(QObject *obj);
 public:
     const QUuid UniqueId;

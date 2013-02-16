@@ -43,6 +43,7 @@
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QFrame>
 
 #include <QDebug>
 #include <QPointer>
@@ -109,7 +110,7 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
         break;
     }
     case BApplication::AboutAction:
-        act->setText( tr("About", "act text") );
+        act->setText( tr("About...", "act text") );
         act->setToolTip( tr("Show info about this application", "act toolTip") );
         act->setWhatsThis( tr("Use this action to show information about the application, it's authors, etc.",
                                "act whatsThis") );
@@ -467,6 +468,26 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     return act;
 }
 
+QAction *BApplication::createSeparator(QObject *parent)
+{
+    QAction *act = new QAction(parent);
+    act->setSeparator(true);
+    return act;
+}
+
+QFrame *BApplication::createFrame(QFrame::Shape shape, QWidget *parent)
+{
+    return createFrame(shape, QFrame::Plain, parent);
+}
+
+QFrame *BApplication::createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent)
+{
+    QFrame *fr = new QFrame(parent);
+    fr->setFrameShape(shape);
+    fr->setFrameShadow(shadow);
+    return fr;
+}
+
 QFont BApplication::createMonospaceFont()
 {
     //Using such a construct to get default monospace font family name
@@ -583,9 +604,9 @@ void BApplication::openHomepage()
     QDesktopServices::openUrl( QUrl::fromUserInput(url) );
 }
 
-void BApplication::openLocalFile(const QString &fileName)
+bool BApplication::openLocalFile(const QString &fileName)
 {
-    QDesktopServices::openUrl( QUrl::fromLocalFile(fileName) );
+    return !fileName.isEmpty() && QDesktopServices::openUrl( QUrl::fromLocalFile(fileName) );
 }
 
 /*============================== Protected methods =========================*/

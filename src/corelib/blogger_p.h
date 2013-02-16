@@ -1,8 +1,9 @@
 #ifndef BLOGGER_P_H
 #define BLOGGER_P_H
 
-#include "blogger.h"
+class QTimer;
 
+#include "blogger.h"
 #include "bglobal.h"
 #include "bbase_p.h"
 
@@ -17,6 +18,7 @@
 
 class B_CORE_EXPORT BLoggerPrivate : public BBasePrivate
 {
+    Q_OBJECT
     B_DECLARE_PUBLIC(BLogger)
 public:
     explicit BLoggerPrivate(BLogger *q);
@@ -30,6 +32,9 @@ public:
     void tryLogToConsole(const QString &text, bool stderrLevel);
     void tryLogToFile(const QString &text);
     QString constructMessage(const QString &text, BLogger::Level lvl) const;
+    void resetFileFlushTimer();
+public slots:
+    void timeout();
 public:
     bool useStderr;
     bool includeLevel;
@@ -38,6 +43,8 @@ public:
     bool logToConsole;
     bool logToFile;
     QFile file;
+    int fileFlushInterval;
+    QTimer *fileFlushTimer;
     QTextStream fileStream;
     mutable QMutex formatMutex;
     mutable QMutex consoleMutex;

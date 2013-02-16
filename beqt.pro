@@ -5,6 +5,28 @@ SUBDIRS = src
 
 contains(CONFIG, beqt_examples):SUBDIRS += examples
 
+##############################################################################
+################################ Generating translations #####################
+##############################################################################
+
+#Gets a file name
+#Returns the given file name.
+#On Windows slash characters will be replaced by backslashes
+defineReplace(nativeFileName) {
+    fileName=$${1}
+    win32:fileName=$$replace(fileName, "/", "\\")
+    return($${fileName})
+}
+
+beqtTranslationsTs=$$files($${PWD}/translations/*.ts)
+for(fileName, beqtTranslationsTs) {
+    system(lrelease $$nativeFileName($${fileName}))
+}
+
+##############################################################################
+################################ Installing ##################################
+##############################################################################
+
 !contains(CONFIG, beqt_no_install) {
 
 include(prefix.pri)
@@ -60,48 +82,30 @@ defineReplace(getActualHeaders) {
 !contains(CONFIG, beqt_no_headers) {
     #Global
     beqtInstallsHeadersGlobal.files=$$getActualHeaders(BeQt)
-    beqtInstallsHeadersGlobal.path=$${headersInstallsPath}/BeQt
+    beqtInstallsHeadersGlobal.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQt
     INSTALLS += beqtInstallsHeadersGlobal
     #Core
     beqtInstallsHeadersCore.files=$$getActualHeaders(BeQtCore)
-    beqtInstallsHeadersCore.path=$${headersInstallsPath}/BeQtCore
+    beqtInstallsHeadersCore.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCore
     INSTALLS += beqtInstallsHeadersCore
     #Network
     !contains(CONFIG, beqt_no_network) {
         beqtInstallsHeadersNetwork.files=$$getActualHeaders(BeQtNetwork)
-        beqtInstallsHeadersNetwork.path=$${headersInstallsPath}/BeQtNetwork
+        beqtInstallsHeadersNetwork.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetwork
         INSTALLS += beqtInstallsHeadersNetwork
     }
     #Widgets
     !contains(CONFIG, beqt_no_widgets) {
         beqtInstallsHeadersWidgets.files=$$getActualHeaders(BeQtWidgets)
-        beqtInstallsHeadersWidgets.path=$${headersInstallsPath}/BeQtWidgets
+        beqtInstallsHeadersWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtWidgets
         INSTALLS += beqtInstallsHeadersWidgets
     }
     #CodeEditor
     !contains(CONFIG, beqt_no_codeeditor) {
         beqtInstallsHeadersCodeeditor.files=$$getActualHeaders(BeQtCodeEditor)
-        beqtInstallsHeadersCodeeditor.path=$${headersInstallsPath}/BeQtCodeEditor
+        beqtInstallsHeadersCodeeditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor
         INSTALLS += beqtInstallsHeadersCodeeditor
     }
-}
-
-##############################################################################
-################################ Translations ################################
-##############################################################################
-
-#Gets a file name
-#Returns the given file name.
-#On Windows slash characters will be replaced by backslashes
-defineReplace(nativeFileName) {
-    fileName=$${1}
-    win32:fileName=$$replace(fileName, "/", "\\")
-    return($${fileName})
-}
-
-beqtTranslationsTs=$$files($${PWD}/translations/*.ts)
-for(fileName, beqtTranslationsTs) {
-    system(lrelease $$nativeFileName($${fileName}))
 }
 beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
 beqtInstallsTranslations.path=$${resourcesInstallsPath}/translations
@@ -111,8 +115,20 @@ INSTALLS += beqtInstallsTranslations
 ################################ Other resources #############################
 ##############################################################################
 
+##############################################################################
+################################ Translations ################################
+##############################################################################
+
+beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
+beqtInstallsTranslations.path=$${BEQT_RESOURCES_INSTALLS_PATH}/translations
+INSTALLS += beqtInstallsTranslations
+
+##############################################################################
+################################ Other resources #############################
+##############################################################################
+
 beqtInstallsDepend.files=depend.pri
-beqtInstallsDepend.path=$${resourcesInstallsPath}
+beqtInstallsDepend.path=$${BEQT_RESOURCES_INSTALLS_PATH}
 INSTALLS += beqtInstallsDepend
 
 } #end !contains(CONFIG, beqt_no_install)

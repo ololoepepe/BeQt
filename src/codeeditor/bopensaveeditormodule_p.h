@@ -36,8 +36,9 @@ public:
     void resetFileHistory( const QStringList &list = QStringList() );
 public slots:
     void retranslateUi();
-    void codecTriggered();
+    void codecTriggered(const QString &codecName);
     void fileTriggered();
+    void resetFileHistoryMenuToolTip();
 public:
     QPointer<QAction> actNewFile;
     QPointer<QAction> actOpenFiles;
@@ -47,8 +48,6 @@ public:
     QPointer<QAction> actSaveAllFiles;
     QPointer<QAction> actCloseFile;
     QPointer<QAction> actCloseAllFiles;
-    QList<QMenu *> codecGroups;
-    QList<QAction *> codecs;
     QPointer<QMenu> mnuFileHistory;
 private:
     Q_DISABLE_COPY(BOpenSaveEditorModulePrivate)

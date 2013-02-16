@@ -17,6 +17,8 @@
 #include <QIcon>
 #include <QDataStream>
 #include <QIODevice>
+#include <QTimer>
+#include <QEvent>
 
 #include <QDebug>
 
@@ -63,20 +65,40 @@ void BPasswordWidgetPrivate::init()
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
     ledt = new QLineEdit(q);
+      connect(ledt, SIGNAL(textChanged(QString)), q, SIGNAL(passwordChanged()));
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
       tbtnSave->setIcon( BApplication::icon("filesave") );
+      tbtnSave->installEventFilter(this);
       connect( tbtnSave, SIGNAL( clicked() ), this, SLOT( resetSave() ) );
       resetSave();
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
       tbtnShow->setIcon( BApplication::icon("decrypted") );
+      tbtnShow->installEventFilter(this);
       connect( tbtnShow, SIGNAL( clicked() ), this, SLOT( resetShow() ) );
       resetShow();
     hlt->addWidget(tbtnShow);
     //
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+}
+
+bool BPasswordWidgetPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() != QEvent::FocusIn && e->type() != QEvent::FocusOut)
+        return false;
+    if (o == tbtnSave)
+    {
+        save = !save;
+        QTimer::singleShot( 0, this, SLOT( resetSave() ) );
+    }
+    if (o == tbtnShow)
+    {
+        show = !show;
+        QTimer::singleShot( 0, this, SLOT( resetShow() ) );
+    }
+    return false;
 }
 
 /*============================== Public slots ==============================*/
@@ -223,10 +245,22 @@ void BPasswordWidget::setData(const PasswordWidgetData &pd)
     setShowPassword(pd.show);
 }
 
+void BPasswordWidget::setSavePasswordVisible(bool visible)
+{
+    d_func()->tbtnSave->setVisible(visible);
+}
+
+void BPasswordWidget::setShowPasswordVisible(bool visible)
+{
+    d_func()->tbtnShow->setVisible(visible);
+}
+
 void BPasswordWidget::clear()
 {
     B_D(BPasswordWidget);
     d->encPassword.clear();
+    d->charCount = 0;
+    d->ledt->setPlaceholderText("");
     d->ledt->clear();
 }
 
@@ -281,6 +315,16 @@ BPasswordWidget::PasswordWidgetData BPasswordWidget::encryptedData(QCryptographi
     pd.save = savePassword();
     pd.show = showPassword();
     return pd;
+}
+
+bool BPasswordWidget::savePasswordVisible() const
+{
+    return d_func()->tbtnSave->isVisible();
+}
+
+bool BPasswordWidget::showPasswordVisible() const
+{
+    return d_func()->tbtnShow->isVisible();
 }
 
 QByteArray BPasswordWidget::saveState() const

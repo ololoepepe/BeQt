@@ -9,6 +9,7 @@ class QUdpSocket;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QAbstractSocket>
@@ -80,9 +81,9 @@ public:
     SocketType socketType() const;
     QAbstractSocket::SocketState state() const;
     bool waitForBytesWritten(int msecs);
-    bool waitForConnected(int msecs = 30000);
-    bool waitForDisconnected(int msecs = 30000);
-    bool waitForReadyRead(int msecs);
+    bool waitForConnected(int msecs = 30 * BeQt::Second);
+    bool waitForDisconnected(int msecs = 30 * BeQt::Second);
+    bool waitForReadyRead(int msecs = 30 * BeQt::Second);
     qint64 write(const QByteArray &byteArray);
 signals:
     void aboutToClose();

@@ -198,3 +198,12 @@ bool BNetworkOperation::waitForFinished(int msecs)
     el.exec();
     return isFinished() || isError();
 }
+
+/*============================== Public slots ==============================*/
+
+void BNetworkOperation::cancel()
+{
+    if (isFinished() || isError())
+        return;
+    emit canceled();
+}

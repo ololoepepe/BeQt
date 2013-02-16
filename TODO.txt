@@ -13,10 +13,10 @@
 [done] Move bgui/"About Qt" to the "About" dialog
 [done] Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
 [done] Handle comments that are shorter than entire line
+[done] Improve codecs list in BFileDialog
 
 === Global ===
 
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
-* Improve installing process
 * Improve MacOS support

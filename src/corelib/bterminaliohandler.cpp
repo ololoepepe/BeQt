@@ -2,6 +2,7 @@
 #include "bterminaliohandler_p.h"
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "bnamespace.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -190,6 +191,16 @@ QStringList BTerminalIOHandler::splitCommand(const QString &command)
         args << arg;
     if ( !args.isEmpty() )
         args.first().toLower();
+    return args;
+}
+
+QString BTerminalIOHandler::mergeArguments(const QStringList &arguments)
+{
+    QString args;
+    foreach (const QString &a, arguments)
+        args += (a.contains(' ') ? BeQt::wrapped(a) : a) + " ";
+    if ( !args.isEmpty() )
+        args.remove(args.length() - 1, 1);
     return args;
 }
 

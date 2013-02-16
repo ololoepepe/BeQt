@@ -46,7 +46,7 @@ void BAbstractSettingsTab::setRowVisible(QLayout *field, bool visible)
     QFormLayout *flt = static_cast<QFormLayout *>( field->parentWidget()->layout() );
     if (!flt)
         return;
-    foreach ( int i, bRange(0, field->count() - 1) )
+    foreach ( int i, bRangeD(0, field->count() - 1) )
     {
         QWidget *wgt = field->itemAt(i)->widget();
         if (wgt)

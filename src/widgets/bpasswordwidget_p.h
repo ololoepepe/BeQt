@@ -7,6 +7,7 @@ class QByteArray;
 class QHBoxLayout;
 class QLineEdit;
 class QToolButton;
+class QEvent;
 
 #include "bpasswordwidget.h"
 
@@ -34,6 +35,7 @@ public:
     static BPasswordWidget::PasswordWidgetData createPasswordWidgetData();
 public:
     void init();
+    bool eventFilter(QObject *o, QEvent *e);
 public slots:
     void retranslateUi();
     void resetSave();

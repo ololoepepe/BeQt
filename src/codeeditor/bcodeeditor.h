@@ -9,6 +9,8 @@ class BAbstractFileType;
 
 class QStringList;
 class QTextCodec;
+class QMenu;
+class QComboBox;
 
 #include "bcodeedit.h"
 
@@ -38,6 +40,7 @@ public:
     };
     enum CodecGroup
     {
+        InvalidGroup = 0,
         UnicodeGroup,
         EastEuropeanGroup,
         WestEuropeanGroup,
@@ -63,9 +66,20 @@ public:
     static QString codecName(QTextCodec *codec);
     static QString fullCodecName(QTextCodec *codec);
     static QString fullCodecName(const QString &codecName);
+    static QList<CodecGroup> codecGroups();
     static QString codecGroupName(CodecGroup group);
     static QList<QTextCodec *> codecsForGroup(CodecGroup group);
     static QStringList codecNamesForGroup(CodecGroup group);
+    static QMenu *createPlainCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
+    static QMenu *createStructuredCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
+    static void retranslateCodecsMenu(QMenu *mnu);
+    static QComboBox *createPlainCodecsComboBox(QWidget *parent = 0);
+    static QComboBox *createStructuredCodecsComboBox(QWidget *parent = 0);
+    static void retranslateCodecsComboBox(QComboBox *cmbox);
+    static void selectCodec(QComboBox *cmbox, QTextCodec *codec);
+    static void selectCodec(QComboBox *cmbox, const QString &codecName);
+    static QTextCodec *selectedCodec(QComboBox *cmbox);
+    static QString selectedCodecName(QComboBox *cmbox);
 public:
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
@@ -107,6 +121,7 @@ public:
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;
     BCodeEditorDocument *currentDocument() const;
+    BCodeEditorDocument *document(const QString &fileName) const;
     QList<BCodeEditorDocument *> documents() const;
     BAbstractDocumentDriver *driver() const;
     BAbstractFileType *fileType(const QString &id) const;
@@ -127,6 +142,7 @@ public slots:
     QList<BCodeEditorDocument *> openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
     BCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool reopenCurrentDocument(QTextCodec *codec = 0);
+    bool reopenCurrentDocument(const QString &codecName);
     bool saveCurrentDocument();
     bool saveCurrentDocumentAs();
     bool saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec = 0);
