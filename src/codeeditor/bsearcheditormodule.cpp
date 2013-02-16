@@ -531,7 +531,8 @@ void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
 
 QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
 {
-    return tr("Text", "msg text") + " \"" + text + "\" " + tr("not found", "msg text");
+    QString t = (text.length() > 50) ? (text.left(47) + "...") : text;
+    return tr("Text", "msg text") + " \"" + t + "\" " + tr("not found", "msg text");
 }
 
 /*============================== Public slots ==============================*/

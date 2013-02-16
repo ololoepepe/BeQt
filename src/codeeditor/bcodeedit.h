@@ -83,8 +83,8 @@ public:
     QList<BracketPair> recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
     QPoint cursorPosition() const;
-    QString text() const;
-    QString selectedText() const;
+    QString text(bool full = false) const;
+    QString selectedText(bool full = false) const;
     QPoint selectionStart() const;
     QPoint selectionEnd() const;
     bool isBuisy() const;
@@ -100,7 +100,8 @@ public slots:
     void insertText(const QString &txt);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
-    void selectText(int firstLine, int lastLine = -1);
+    void selectText(int start, int end);
+    void selectLines(int firstLine, int lastLine);
     void selectAll();
     void deselectText();
     void cut();
