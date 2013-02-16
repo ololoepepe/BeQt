@@ -4,85 +4,85 @@
 <context>
     <name>BAboutDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="210"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="209"/>
         <source>About</source>
         <comment>windowTitle</comment>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="221"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="220"/>
         <source>Website</source>
         <comment>lbl text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="216"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="215"/>
         <source>Copyright</source>
         <comment>lbl text</comment>
         <translation>Авторские права</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="202"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="201"/>
         <source>About BeQt</source>
         <comment>adlg windowTitle</comment>
         <translation>О библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="230"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="229"/>
         <source>Description</source>
         <comment>twgt tabText</comment>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="232"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="231"/>
         <source>Change log</source>
         <comment>twgt tabText</comment>
         <translation>История изменений</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="234"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="233"/>
         <source>Authors</source>
         <comment>twgt tabText</comment>
         <translation>Авторы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="236"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="235"/>
         <source>Translators</source>
         <comment>twgt tabText</comment>
         <translation>Переводчики</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="238"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="237"/>
         <source>Thanks to</source>
         <comment>twgt tabText</comment>
         <translation>Благодарности</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="240"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="239"/>
         <source>License</source>
         <comment>twgt tabText</comment>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="305"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="304"/>
         <source>Website</source>
         <comment>personInfo text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="308"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="307"/>
         <source>E-mail</source>
         <comment>personInfo text</comment>
         <translation>Электронная почта</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="427"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="426"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="428"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="427"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>
