@@ -106,22 +106,20 @@ defineReplace(getActualHeaders) {
         beqtInstallsHeadersCodeeditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor
         INSTALLS += beqtInstallsHeadersCodeeditor
     }
+    #Depend
+    beqtInstallsDepend.files=depend.pri
+    beqtInstallsDepend.path=$${BEQT_RESOURCES_INSTALLS_PATH}
+    INSTALLS += beqtInstallsDepend
 }
 
 ##############################################################################
 ################################ Translations ################################
 ##############################################################################
 
-beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
-beqtInstallsTranslations.path=$${BEQT_RESOURCES_INSTALLS_PATH}/translations
-INSTALLS += beqtInstallsTranslations
-
-##############################################################################
-################################ Other resources #############################
-##############################################################################
-
-beqtInstallsDepend.files=depend.pri
-beqtInstallsDepend.path=$${BEQT_RESOURCES_INSTALLS_PATH}
-INSTALLS += beqtInstallsDepend
+!contains(CONFIG, beqt_builtin_resources) {
+    beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
+    beqtInstallsTranslations.path=$${BEQT_RESOURCES_INSTALLS_PATH}/translations
+    INSTALLS += beqtInstallsTranslations
+}
 
 } #end !contains(CONFIG, beqt_no_install)
