@@ -426,16 +426,16 @@ QString BCodeEditorPrivate::defaultFileName()
 QString BCodeEditorPrivate::createFileName(const QString &fileName, const QString &defaultName,
                                            const QStringList &existingNames)
 {
-    QFileInfo fi( !defaultName.isEmpty() ? defaultName : defaultFileName() );
+    QFileInfo fi(!defaultName.isEmpty() ? defaultName : defaultFileName());
     QString fnbasens = fi.baseName();
     QString fnbasesuff = fi.suffix();
     QFileInfo fif(fileName);
     if ( !fileName.isEmpty() && (fif.baseName().remove( QRegExp(" \\d$") ) != fnbasens || fif.suffix() != fnbasesuff) )
         return fileName;
     int i = 1;
-    QString fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
-    while ( existingNames.contains(fn) )
-        fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
+    QString fn = fnbasens + " " + QString::number(i++) + (!fnbasesuff.isEmpty() ? ("." + fnbasesuff) : "");
+    while (existingNames.contains(fn))
+        fn = fnbasens + " " + QString::number(i++) + (!fnbasesuff.isEmpty() ? ("." + fnbasesuff) : "");
     return fn;
 }
 
@@ -846,7 +846,7 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
     if (!doc || openingDocuments.contains(doc) || savingDocuments.contains(doc))
         return false;
-    if (!driver->testFileExistance(doc->fileName()) || doc->isModified())
+    if ((!isDefaultFileName(doc->fileName()) && !driver->testFileExistance(doc->fileName())) || doc->isModified())
     {
         switch (closeModifiedMessage(doc->fileName()))
         {
@@ -943,6 +943,23 @@ bool BCodeEditorPrivate::tryCloseDocument(BCodeEditorDocument *doc)
         closingDocuments.removeAll(doc);
         return false;
     }
+}
+
+bool BCodeEditorPrivate::isDefaultFileName(const QString &fileName) const
+{
+    if (fileName.isEmpty())
+        return false;
+    QFileInfo fi(fileName);
+    QFileInfo fid(!defaultFN.isEmpty() ? defaultFN : defaultFileName());
+    if (fi.suffix() != fid.suffix())
+        return false;
+    QStringList sl = fi.baseName().split(' ');
+    if (sl.isEmpty())
+        return false;
+    bool ok = false;
+    if (sl.takeLast().toInt(&ok) < 1 || !ok)
+        return false;
+    return sl.join(' ') == fid.baseName();
 }
 
 void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)

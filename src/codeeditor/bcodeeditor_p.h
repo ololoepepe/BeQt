@@ -234,6 +234,7 @@ public:
     bool closeDocument(BCodeEditorDocument *doc);
     bool closeAllDocuments(bool save = true);
     bool tryCloseDocument(BCodeEditorDocument *doc);
+    bool isDefaultFileName(const QString &fileName) const;
     void updateDocumentTab(BCodeEditorDocument *doc);
     void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
     void failedToOpenMessage(const QString &fileName);
