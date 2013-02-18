@@ -56,6 +56,7 @@ public slots:
     void accepted();
     void cboxAdvancedModeStateChanged(int state);
     void btnRestoreDefaultClicked();
+    void resize();
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };

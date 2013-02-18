@@ -1246,37 +1246,37 @@
 <context>
     <name>BSettingsDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="51"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="53"/>
         <source>Settings</source>
         <comment>windowTitle</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="59"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="61"/>
         <source>Show additional settings</source>
         <comment>cbox text</comment>
         <translation>Показать дополнительные настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="55"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="57"/>
         <source>Restore default settings</source>
         <comment>btn text</comment>
         <translation>Восстановить настройки по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="123"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="125"/>
         <source>invalid</source>
         <comment>windowTitle</comment>
         <translation>недействительно</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="165"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="164"/>
         <source>You are about to restore the application settings to their default state</source>
         <comment>msgbox text</comment>
         <translation>Вы собираетесь вернуть настройки приложения к их изначальному состоянию</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="166"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="165"/>
         <source>All settings changes will be discarded. Do you want to continue?</source>
         <comment>msgbox informativeText</comment>
         <translation>Все изменения настроек будут сброшены. Хотите продолжить?</translation>
