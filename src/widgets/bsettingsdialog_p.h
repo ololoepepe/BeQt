@@ -20,7 +20,6 @@ class QPushButton;
 #include <QMap>
 #include <QApplication>
 #include <QStringList>
-#include <QSize>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -31,8 +30,8 @@ class BSettingsDialogPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)
 public:
-    explicit BSettingsDialogPrivate( BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
-                                     BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
+    explicit BSettingsDialogPrivate(BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
+                                    BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
     ~BSettingsDialogPrivate();
 public:
     void init();
@@ -41,7 +40,6 @@ public:
     const BSettingsDialog::Navigation Navigation;
 public:
     bool valid;
-    QSize previousSize;
     QVBoxLayout *vlt;
       QCheckBox *cboxAdvancedMode;
       QPushButton *btnRestoreDefault;
@@ -56,7 +54,6 @@ public slots:
     void accepted();
     void cboxAdvancedModeStateChanged(int state);
     void btnRestoreDefaultClicked();
-    void resize();
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };
