@@ -1270,13 +1270,13 @@
         <translation>недействительно</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="161"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="165"/>
         <source>You are about to restore the application settings to their default state</source>
         <comment>msgbox text</comment>
         <translation>Вы собираетесь вернуть настройки приложения к их изначальному состоянию</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="162"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="166"/>
         <source>All settings changes will be discarded. Do you want to continue?</source>
         <comment>msgbox informativeText</comment>
         <translation>Все изменения настроек будут сброшены. Хотите продолжить?</translation>

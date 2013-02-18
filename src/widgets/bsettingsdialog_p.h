@@ -20,6 +20,7 @@ class QPushButton;
 #include <QMap>
 #include <QApplication>
 #include <QStringList>
+#include <QSize>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -40,6 +41,7 @@ public:
     const BSettingsDialog::Navigation Navigation;
 public:
     bool valid;
+    QSize previousSize;
     QVBoxLayout *vlt;
       QCheckBox *cboxAdvancedMode;
       QPushButton *btnRestoreDefault;

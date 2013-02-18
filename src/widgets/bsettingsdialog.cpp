@@ -128,6 +128,7 @@ void BSettingsDialogPrivate::init()
       connect( dlgbbox, SIGNAL( accepted() ), this, SLOT( accepted() ) );
       connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
     vlt->addWidget(dlgbbox);
+    previousSize = q->size();
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
         wgt->setFocus();
@@ -148,6 +149,9 @@ void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
     bool b = (Qt::Checked == state);
     foreach (BAbstractSettingsTab *t, Tabs)
         t->setAdvancedMode(b);
+    QSize sz = previousSize;
+    previousSize = q_func()->size();
+    q_func()->resize(sz);
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
         wgt->setFocus();
