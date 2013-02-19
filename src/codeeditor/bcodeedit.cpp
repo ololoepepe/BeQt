@@ -752,6 +752,43 @@ bool BCodeEditPrivate::testBracketPairListsEquality(const QList<BCodeEdit::Brack
     return true;
 }
 
+QString BCodeEditPrivate::makeBlock(const QString &text, int *length)
+{
+    QStringList sl = text.split('\n');
+    if (sl.isEmpty())
+        return text;
+    int maxLen = sl.first().length();
+    foreach (const QString &line, sl)
+        if (line.length() > maxLen)
+            maxLen = line.length();
+    foreach (int i, bRangeD(0, sl.size() - 1))
+        sl[i].append(QString().fill(' ', maxLen - sl.at(i).length()));
+    return bRet(length, maxLen, sl.join('\n'));
+}
+
+void BCodeEditPrivate::makeBlock(QString *text, int *length)
+{
+    if (!text)
+        return;
+    *text = makeBlock(*text, length);
+}
+
+bool BCodeEditPrivate::testBlock(const QString &text, int *length)
+{
+    return !text.isEmpty() ? testBlock(text.split('\n'), length) : false;
+}
+
+bool BCodeEditPrivate::testBlock(const QStringList &lines, int *length)
+{
+    if (lines.isEmpty())
+        return false;
+    int len = lines.first().length();
+    foreach (const QString &line, lines)
+        if (line.length() != len)
+            return false;
+    return bRet(length, len, true);
+}
+
 /*============================== Public methods ============================*/
 
 void BCodeEditPrivate::init()
@@ -961,7 +998,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
     {
         QChar c = text.at(0);
         if (c.isPrint() || c == '\t')
-            q_func()->insertText( QString(c) );
+            insertText(QString(c), true);
         return true;
     }
     return false;
@@ -1002,6 +1039,9 @@ BCodeEdit::SplittedLinesRange BCodeEditPrivate::deleteSelection()
     if (blockMode)
     {
         QVector<BPlainTextEditExtended::SelectionRange> ranges = ptedt->selectionRanges();
+        const BPlainTextEditExtended::SelectionRange r = ranges.first();
+        if (r.end == pos)
+            pos -= (r.end - r.start);
         foreach(const BPlainTextEditExtended::SelectionRange &range, ranges)
         {
             tc.setPosition(range.start);
@@ -1084,109 +1124,148 @@ void BCodeEditPrivate::setBuisy(bool b)
     QMetaObject::invokeMethod( q_func(), "buisyChanged", Q_ARG(bool, b) );
 }
 
-int BCodeEditPrivate::replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
+void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
 {
-    if (blockMode)
-        return -1;
-    B_Q(BCodeEdit);
-    if ( !q->hasSelection() )
-        return -1;
-    QString ntext = q->selectedText(true);
-    int count = ntext.count(text, cs);
-    if (!count)
-        return 0;
+    if (q_func()->isBuisy())
+        return;
+    setBuisy(true);
     QTextCursor tc = ptedt->textCursor();
     tc.beginEditBlock();
-    int start = tc.selectionStart();
-    int end = tc.selectionEnd();
-    int len = ntext.length();
-    ntext.replace(text, newText, cs);
-    q->insertText(ntext);
-    if (start < end)
-        end += (ntext.length() - len);
-    else
-        start += (ntext.length() - len);
-    q->selectText(start, end);
-    tc.endEditBlock();
-    if (highlighter)
+    QList<BCodeEdit::SplittedLinesRange> ranges;
+    BCodeEdit::SplittedLinesRange range = deleteSelection();
+    if (range.firstLineNumber >= 0)
+        ranges << range;
+    if ( txt.isEmpty() )
     {
-        QTextBlock tb = ptedt->document()->findBlock( qMin<int>(start, end) );
-        QTextBlock tbe = ptedt->document()->findBlock( qMax<int>(start, end) );
-        while ( tb.isValid() && tb.blockNumber() < tbe.blockNumber() )
+        tc.endEditBlock();
+        return setBuisy(false);
+    }
+    tc = ptedt->textCursor();
+    int posb = tc.positionInBlock();
+    QString btext = tc.block().text();
+    int lind = removeTrailingSpaces(btext).lastIndexOf(' ');
+    int tcpos = (lind >= posb && (lineLength - lind) >= txt.length()) ? (tc.position() + txt.length()) : -1;
+    QString ltext = btext.left(posb);
+    QString rtext = removeTrailingSpaces( btext.right(btext.length() - posb) );
+    QStringList sl = replaceTabs(removeUnsupportedSymbols(txt), tabWidth).split('\n');
+    int blen = 0;
+    bool b = blockMode && !asKeyPress && testBlock(sl, &blen);
+    if (b)
+    {
+        //TODO (release 3.0.0): Improve text insertion in block mode
+        int offset = ltext.length();
+        QTextBlock tb = tc.block();
+        int  i = 0;
+        while (tb.isValid() && i < sl.size())
         {
-            highlighter->rehighlightBlock(tb);
+            int bpos = tb.position();
+            QString t = tb.text();
+            t.insert(offset, sl.at(i));
+            if (t.length() > lineLength)
+                t.truncate(lineLength);
+            appendTrailingSpaces(&t, lineLength);
+            tc.setPosition(bpos);
+            tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+            tc.insertText(t);
             tb = tb.next();
+            ++i;
+        }
+        QString spaces;
+        spaces.fill(' ', offset);
+        while (i < sl.size())
+        {
+            tc.insertBlock();
+            QString &t = sl[i];
+            t.prepend(spaces);
+            if (t.length() > lineLength)
+                t.truncate(lineLength);
+            appendTrailingSpaces(&t, lineLength);
+            tc.insertText(t);
+            ++i;
+        }
+        tb = tc.block().next();
+        if (!tb.isValid())
+        {
+            tc.movePosition(QTextCursor::EndOfBlock);
+            tc.insertBlock();
+            tc.insertText(QString().fill(' ', lineLength));
+            tc.setPosition(tc.block().position() + offset);
+        }
+        else
+        {
+            tc.setPosition(tb.position() + offset);
         }
     }
-    return count;
-}
-
-int BCodeEditPrivate::replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
-{
-    //TODO (release 3.0.0): Improve replacing
-    if (!blockMode)
-        return -1;
-    B_Q(BCodeEdit);
-    if ( !q->hasSelection() )
-        return -1;
-    int count = 0;
-    int maxlen = 0;
-    QStringList sl;
-    QTextCursor tcr = ptedt->textCursor();
-    QVector<BPlainTextEditExtended::SelectionRange> ranges = ptedt->selectionRanges();
-    foreach (const BPlainTextEditExtended::SelectionRange &range, ranges)
-    {
-        tcr.setPosition(range.start);
-        tcr.setPosition(range.end, QTextCursor::KeepAnchor);
-        QString st = tcr.selectedText();
-        int slen = st.length();
-        count += st.count(text, cs);
-        removeTrailingSpaces(&st);
-        st.replace(text, newText, cs);
-        if (st.length() > maxlen)
-            maxlen = st.length();
-        QTextBlock tbr = tcr.block();
-        QString txt = removeTrailingSpaces( tbr.text() );
-        sl << txt.replace(tcr.selectionStart() - tbr.position(), slen, st);
-        if (txt.length() > lineLength) //TODO (release 3.0.0): This must be fixed
-            return -1;
-    }
-    QTextCursor tc = ptedt->textCursor();
-    tc.beginEditBlock();
-    QTextBlock tbf = ptedt->document()->findBlock(ranges.first().start);
-    int offset = ranges.first().start - tbf.position();
-    int bpos = tc.block().position();
-    int dlen = maxlen - (ranges.first().end - ranges.first().start);
-    int start = tc.selectionStart();
-    int end = tc.selectionEnd();
-    foreach (const QString &txt, sl)
-    {
-        tc.movePosition(QTextCursor::StartOfBlock);
-        tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        tc.insertText(txt);
-    }
-    if (start < end)
-    {
-        if (start > bpos + offset)
-            start += dlen;
-        else
-            end += dlen;
-    }
     else
     {
-        if (end > bpos + offset)
-            end += dlen;
+        //Workaround for lines containing spaces only
+        foreach (int i, bRangeD(0, sl.size() - 1))
+        {
+            QString l = removeTrailingSpaces(sl.at(i));
+            if (!l.isEmpty())
+                sl[i] = l;
+        }
+        //End of the workaround
+        sl.first().prepend(ltext);
+        sl.last().append(rtext);
+        ProcessTextResult res = processText(sl.join('\n'), lineLength, tabWidth);
+        int boffset = tc.block().blockNumber();
+        tc.movePosition(QTextCursor::StartOfBlock);
+        tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+        int posmod = 0;
+        //Workaround for correct text splitting
+        QString nbt;
+        if (asKeyPress && tc.block().next().isValid() && res.newText.length() <= lineLength * 2 + 1)
+            nbt = removeTrailingSpaces(tc.block().next().text());
+        QStringList ntl;
+        if (!nbt.isEmpty())
+            ntl = res.newText.split('\n');
+        if (ntl.size() > 1 && !sl.last().isEmpty())
+        {
+            QStringList ntl = res.newText.split('\n');
+            if (nbt.length() + removeTrailingSpaces(ntl.last()).length() < lineLength)
+            {
+                removeTrailingSpaces(&ntl.last());
+                ntl.last() += nbt;
+                posmod -= nbt.length();
+                appendTrailingSpaces(&ntl.last(), lineLength);
+                res.newText = ntl.join('\n');
+                tc.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
+                tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
+            }
+        }
+        //End of the workaround
+        tc.insertText(res.newText);
+        int pos = lineLength;
+        QString btext = tc.block().text();
+        while (pos > 0 && btext.at(pos - 1) == ' ')
+            --pos;
+        if (pos > 0)
+            pos -= rtext.length();
+        if (!res.splittedLinesRanges.isEmpty())
+        {
+            if (ltext.length() + txt.length() <= lineLength)
+                pos -= 1;
+            ranges = res.splittedLinesRanges;
+            foreach (int i, bRangeD(0, ranges.size() - 1))
+            {
+                ranges[i].firstLineNumber += boffset;
+                ranges[i].lastLineNumber += boffset;
+            }
+        }
+        if (tcpos > 0)
+            tc.setPosition(tcpos);
         else
-            start += dlen;
+            tc.setPosition(tc.block().position() + pos + posmod);
     }
-    tc.setPosition(start);
-    tc.setPosition(end, QTextCursor::KeepAnchor);
     ptedt->setTextCursor(tc);
-    tc.endEditBlock();
     if (highlighter)
-        foreach (const BPlainTextEditExtended::SelectionRange &range, ranges)
-            highlighter->rehighlightBlock( ptedt->document()->findBlock(range.start) );
-    return count;
+        highlighter->rehighlight();
+    tc.endEditBlock();
+    setBuisy(false);
+    emitLinesSplitted(ranges);
+    q_func()->setFocus();
+    ptedt->ensureCursorVisible();
 }
 
 void BCodeEditPrivate::highlightBrackets()
@@ -2291,12 +2370,70 @@ bool BCodeEdit::replaceNext(const QString &newText)
     return true;
 }
 
-int BCodeEdit::replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
 {
     B_D(BCodeEdit);
-    if ( isReadOnly() || txt.isEmpty() || txt == newText || txt.length() > d->lineLength)
+    if (isReadOnly() || !hasSelection() || text.isEmpty() || text == newText || text.length() > d->lineLength)
         return -1;
-    return d->blockMode ? d->replaceInSelectionBlocks(txt, newText, cs) : d->replaceInSelectionLines(txt, newText, cs);
+    QString ntext = selectedText(true);
+    int count = ntext.count(text, cs);
+    if (!count)
+        return 0;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.beginEditBlock();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    if (d->blockMode)
+    {
+        //TODO (release 3.0.0): Improve replacing
+        BPlainTextEditExtended::SelectionRange r = d->ptedt->selectionRanges().first();
+        int plen = r.end - r.start;
+        int min = r.start;
+        int bpos = d->ptedt->document()->findBlock(min).position();
+        int offset = min - bpos;
+        ntext.replace(text, newText, cs).split('\n');
+        int dlen = 0;
+        BCodeEditPrivate::makeBlock(&ntext, &dlen);
+        dlen -= plen;
+        insertText(ntext);
+        if (start < end)
+        {
+            if (start > bpos + offset)
+                start += dlen;
+            else
+                end += dlen;
+        }
+        else
+        {
+            if (end > bpos + offset)
+                end += dlen;
+            else
+                start += dlen;
+        }
+    }
+    else
+    {
+        int len = ntext.length();
+        ntext.replace(text, newText, cs);
+        insertText(ntext);
+        if (start < end)
+            end += (ntext.length() - len);
+        else
+            start += (ntext.length() - len);
+    }
+    selectText(start, end);
+    tc.endEditBlock();
+    if (d->highlighter)
+    {
+        QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+        QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+        while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
+        {
+            d->highlighter->rehighlightBlock(tb);
+            tb = tb.next();
+        }
+    }
+    return count;
 }
 
 int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
@@ -2345,161 +2482,7 @@ void BCodeEdit::switchMode()
 
 void BCodeEdit::insertText(const QString &txt)
 {
-    if ( isBuisy() )
-        return;
-    B_D(BCodeEdit);
-    d->setBuisy(true);
-    QTextCursor tc = d->ptedt->textCursor();
-    tc.beginEditBlock();
-    QList<SplittedLinesRange> ranges;
-    SplittedLinesRange range = d->deleteSelection();
-    if (range.firstLineNumber >= 0)
-        ranges << range;
-    if ( txt.isEmpty() )
-    {
-        tc.endEditBlock();
-        return d->setBuisy(false);
-    }
-    tc = d->ptedt->textCursor();
-    int posb = tc.positionInBlock();
-    QString btext = tc.block().text();
-    int lind = BCodeEditPrivate::removeTrailingSpaces(btext).lastIndexOf(' ');
-    int tcpos = ( lind >= posb && (d->lineLength - lind) >= txt.length() ) ? ( tc.position() + txt.length() ) : -1;
-    QString ltext = btext.left(posb);
-    QString rtext = BCodeEditPrivate::removeTrailingSpaces( btext.right(btext.length() - posb) );
-    QStringList sl = BCodeEditPrivate::replaceTabs(BCodeEditPrivate::removeUnsupportedSymbols(txt),
-                                                   d->tabWidth).split('\n');
-    bool b = false;
-    if ( d->blockMode && sl.size() > 1 && sl.size() < d->ptedt->blockCount() )
-    {
-        b = true;
-        int len = sl.first().length();
-        for (int i = 0; i < sl.size(); ++i)
-        {
-            if (sl.at(i).length() != len)
-            {
-                b = false;
-                break;
-            }
-        }
-    }
-    if (b)
-    {
-        //TODO (release 3.0.0): Improve text insertion in block mode
-        int offset = ltext.length();
-        QTextBlock tb = tc.block();
-        int  i = 0;
-        while ( tb.isValid() && i < sl.size() )
-        {
-            int bpos = tb.position();
-            QString t = tb.text();
-            t.insert( offset, sl.at(i) );
-            if (t.length() > d->lineLength)
-                t.truncate(d->lineLength);
-            BCodeEditPrivate::appendTrailingSpaces(&t, d->lineLength);
-            tc.setPosition(bpos);
-            tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-            tc.insertText(t);
-            tb = tb.next();
-            ++i;
-        }
-        QString spaces;
-        spaces.fill(' ', offset);
-        while ( i < sl.size() )
-        {
-            tc.insertBlock();
-            QString &t = sl[i];
-            t.prepend(spaces);
-            if (t.length() > d->lineLength)
-                t.truncate(d->lineLength);
-            BCodeEditPrivate::appendTrailingSpaces(&t, d->lineLength);
-            tc.insertText(t);
-            ++i;
-        }
-        tb = tc.block().next();
-        if ( !tb.isValid() )
-        {
-            tc.movePosition(QTextCursor::EndOfBlock);
-            tc.insertBlock();
-            tc.insertText( QString().fill(' ', d->lineLength) );
-            tc.setPosition(tc.block().position() + offset);
-        }
-        else
-        {
-            tc.setPosition(tb.position() + offset);
-        }
-    }
-    else
-    {
-        //Workaround for lines containing spaces only
-        foreach ( int i, bRangeD(0, sl.size() - 1) )
-        {
-            QString l = BCodeEditPrivate::removeTrailingSpaces( sl.at(i) );
-            if ( !l.isEmpty() )
-                sl[i] = l;
-        }
-        //End of the workaround
-        sl.first().prepend(ltext);
-        sl.last().append(rtext);
-        BCodeEditPrivate::ProcessTextResult res = BCodeEditPrivate::processText(sl.join("\n"), d->lineLength,
-                                                                                d->tabWidth);
-        int boffset = tc.block().blockNumber();
-        tc.movePosition(QTextCursor::StartOfBlock);
-        tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-        int posmod = 0;
-        //Workaround for correct text wrapping
-        QString nbt;
-        if (tc.block().next().isValid() && res.newText.length() <= d->lineLength * 2 + 1)
-            nbt = BCodeEditPrivate::removeTrailingSpaces( tc.block().next().text() );
-        QStringList ntl;
-        if ( !nbt.isEmpty() )
-            ntl = res.newText.split('\n');
-        if (ntl.size() > 1 && !sl.last().isEmpty())
-        {
-            QStringList ntl = res.newText.split('\n');
-            if (nbt.length() + BCodeEditPrivate::removeTrailingSpaces( ntl.last() ).length() < d->lineLength)
-            {
-                BCodeEditPrivate::removeTrailingSpaces( &ntl.last() );
-                ntl.last() += nbt;
-                posmod -= nbt.length();
-                BCodeEditPrivate::appendTrailingSpaces(&ntl.last(), d->lineLength);
-                res.newText = ntl.join("\n");
-                tc.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
-                tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
-            }
-        }
-        //End of the workaround
-        tc.insertText(res.newText);
-        int pos = d->lineLength;
-        QString btext = tc.block().text();
-        while (pos > 0 && btext.at(pos - 1) == ' ')
-            --pos;
-        if (pos > 0)
-            pos -= rtext.length();
-        if ( !res.splittedLinesRanges.isEmpty() )
-        {
-            if (ltext.length() + txt.length() <= d->lineLength)
-                pos -= 1;
-            ranges = res.splittedLinesRanges;
-            for (int i = 0; i < ranges.size(); ++i)
-            {
-                ranges[i].firstLineNumber += boffset;
-                ranges[i].lastLineNumber += boffset;
-            }
-        }
-        if (tcpos > 0)
-            tc.setPosition(tcpos);
-        else
-            tc.setPosition(tc.block().position() + pos + posmod);
-    }
-    d->ptedt->setTextCursor(tc);
-    if (d->highlighter)
-        d->highlighter->rehighlight();
-    tc.endEditBlock();
-    d->setBuisy(false);
-    d->emitLinesSplitted(ranges);
-    setFocus();
-    d->ptedt->ensureCursorVisible();
+    d_func()->insertText(txt);
 }
 
 void BCodeEdit::moveCursor(const QPoint &pos)

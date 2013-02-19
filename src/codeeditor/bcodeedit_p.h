@@ -234,6 +234,10 @@ public:
     static bool testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2);
     static bool testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
                                              const QList<BCodeEdit::BracketPair> &l2);
+    static QString makeBlock(const QString &text, int *length = 0);
+    static void makeBlock(QString *text, int *length = 0);
+    static bool testBlock(const QString &text, int *length = 0);
+    static bool testBlock(const QStringList &lines, int *length = 0);
 public:
     void init();
     bool eventFilter(QObject *obj, QEvent *e);
@@ -244,8 +248,7 @@ public:
     void seletAll();
     void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);
-    int replaceInSelectionLines(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
-    int replaceInSelectionBlocks(const QString &text, const QString &newText, Qt::CaseSensitivity cs);
+    void insertText(const QString &txt, bool asKeyPress = false);
     void highlightBrackets();
     FindBracketPairResult findLeftBracketPair() const;
     FindBracketPairResult findRightBracketPair() const;
