@@ -343,11 +343,6 @@ bool BNetworkConnection::connectToHostBlocking(const QString &hostName, quint16 
     return d->socket->waitForConnected(msecs);
 }
 
-void BNetworkConnection::disconnectFromHost()
-{
-    d_func()->socket->disconnectFromHost();
-}
-
 bool BNetworkConnection::disconnectFromHostBlocking(int msecs)
 {
     B_D(BNetworkConnection);
@@ -363,16 +358,6 @@ bool BNetworkConnection::waitForConnected(int msecs)
 bool BNetworkConnection::waitForDisconnected(int msecs)
 {
     return d_func()->socket->waitForDisconnected(msecs);
-}
-
-void BNetworkConnection::close()
-{
-    d_func()->socket->close();
-}
-
-void BNetworkConnection::abort()
-{
-    d_func()->socket->abort();
 }
 
 void BNetworkConnection::installReplyHandler(const QString &operation, InternalHandler handler)
@@ -514,6 +499,23 @@ bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArra
 bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QVariant &variant)
 {
     return sendReply( operation, BSocketWrapper::variantToData(variant) );
+}
+
+/*============================== Public slots ==============================*/
+
+void BNetworkConnection::disconnectFromHost()
+{
+    d_func()->socket->disconnectFromHost();
+}
+
+void BNetworkConnection::close()
+{
+    d_func()->socket->close();
+}
+
+void BNetworkConnection::abort()
+{
+    d_func()->socket->abort();
 }
 
 /*============================== Protected methods =========================*/

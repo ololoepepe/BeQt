@@ -49,12 +49,9 @@ public:
     void setLogger(BLogger *l);
     void connectToHost(const QString &hostName, quint16 port = 0);
     bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30 * BeQt::Second);
-    void disconnectFromHost();
     bool disconnectFromHostBlocking(int msecs = 30 * BeQt::Second);
     bool waitForConnected(int msecs = 30 * BeQt::Second);
     bool waitForDisconnected(int msecs = 30 * BeQt::Second);
-    void close();
-    void abort();
     void installReplyHandler(const QString &operation, InternalHandler handler);
     void installReplyHandler(const QString &operation, ExternalHandler handler);
     void installRequestHandler(const QString &operation, InternalHandler handler);
@@ -76,6 +73,10 @@ public:
     BNetworkOperation *sendRequest(const QString &operation, const QVariant &variant);
     bool sendReply(BNetworkOperation *operation, const QByteArray &data);
     bool sendReply(BNetworkOperation *operation, const QVariant &variant);
+public slots:
+    void disconnectFromHost();
+    void close();
+    void abort();
 protected:
     virtual void handleReply(BNetworkOperation *op);
     virtual void handleRequest(BNetworkOperation *op);
