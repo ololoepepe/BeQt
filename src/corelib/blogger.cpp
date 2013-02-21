@@ -58,20 +58,6 @@ QString BLoggerPrivate::levelToString(BLogger::Level lvl)
     }
 }
 
-bool BLoggerPrivate::isStderrLevel(BLogger::Level lvl)
-{
-    switch (lvl)
-    {
-    case BLogger::DebugLevel:
-    case BLogger::WarningLevel:
-    case BLogger::CriticalLevel:
-    case BLogger::FatalLevel:
-        return true;
-    default:
-        return false;
-    }
-}
-
 /*============================== Public methods ============================*/
 
 void BLoggerPrivate::init()
@@ -176,6 +162,13 @@ BLogger::BLogger(BLoggerPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
 {
     d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
+
+bool BLogger::isStderrLevel(Level lvl)
+{
+    return lvl >= DebugLevel;
 }
 
 /*============================== Public methods ============================*/
@@ -306,7 +299,7 @@ void BLogger::log(const QString &text, Level lvl)
 {
     B_D(BLogger);
     QString msg = d->constructMessage(text, lvl);
-    d->tryLog( msg, BLoggerPrivate::isStderrLevel(lvl) );
+    d->tryLog(msg, isStderrLevel(lvl));
 }
 
 /*============================== Public slots ==============================*/

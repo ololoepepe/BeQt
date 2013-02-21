@@ -25,7 +25,6 @@ public:
     ~BLoggerPrivate();
 public:
     static QString levelToString(BLogger::Level lvl);
-    static bool isStderrLevel(BLogger::Level lvl);
 public:
     void init();
     virtual void tryLog(const QString &msg, bool stderrLevel);

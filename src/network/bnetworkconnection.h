@@ -4,7 +4,6 @@
 class BNetworkConnectionPrivate;
 class BNetworkOperation;
 class BNetworkServer;
-class BLogger;
 
 class QString;
 class QUuid;
@@ -17,6 +16,7 @@ class QVariant;
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BLogger>
 
 #include <QObject>
 #include <QByteArray>
@@ -80,7 +80,7 @@ public slots:
 protected:
     virtual void handleReply(BNetworkOperation *op);
     virtual void handleRequest(BNetworkOperation *op);
-    void log(const QString &text, bool noLevel = true);
+    virtual void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
 signals:

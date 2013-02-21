@@ -7,6 +7,7 @@
 
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BLogger>
+#include <BeQtCore/BTerminalIOHandler>
 
 #include <QObject>
 #include <QDataStream>
@@ -530,15 +531,16 @@ void BNetworkConnection::handleRequest(BNetworkOperation *)
     //
 }
 
-void BNetworkConnection::log(const QString &text, bool noLevel)
+void BNetworkConnection::log(const QString &text, BLogger::Level lvl)
 {
-    BLogger *logger = d_func()->logger;
-    if (!logger)
-        logger = BCoreApplication::logger();
-    if (!logger)
-        return;
     QString msg = "[" + peerAddress() + "] " + text;
-    logger->log(msg, noLevel ? BLogger::NoLevel : BLogger::InfoLevel);
+    BLogger *logger = d_func()->logger ? d_func()->logger : BCoreApplication::logger();
+    if (logger)
+        logger->log(msg, lvl);
+    else if (BLogger::isStderrLevel(lvl))
+        BTerminalIOHandler::writeLineErr(msg);
+    else
+        BTerminalIOHandler::writeLine(msg);
 }
 
 BGenericSocket *BNetworkConnection::socket() const
