@@ -6,10 +6,13 @@ class QString;
 class QProcess;
 class QStringList;
 class QTextCodec;
+class QObject;
 
 #include "bglobal.h"
 
 #include <QtGlobal>
+#include <QList>
+#include <QPair>
 
 /*============================================================================
 ================================ BeQt ========================================
@@ -17,6 +20,8 @@ class QTextCodec;
 
 namespace BeQt
 {
+
+typedef QPair<QObject *, const char *> Until;
 
 const int Second = 1000;
 const int Minute = 60 * Second;
@@ -26,6 +31,11 @@ const int Megabyte = 1024 * Kilobyte;
 const int Gigabyte = 1024 * Megabyte;
 
 B_CORE_EXPORT void waitNonBlocking(int msecs);
+B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,
+                                   int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
+B_CORE_EXPORT Until until(QObject *object, const char *signal);
 B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);

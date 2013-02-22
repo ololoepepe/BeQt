@@ -1983,15 +1983,9 @@ bool BCodeEditor::mergeWith(BCodeEditor *other)
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 {
     B_D(BCodeEditor);
-    if ( d->processedDocuments.isEmpty() )
+    if (d->processedDocuments.isEmpty())
         return true;
-    if (!msecs)
-        return d->processedDocuments.isEmpty();
-    QEventLoop el;
-    if (msecs > 0)
-        QTimer::singleShot( msecs, &el, SLOT( quit() ) );
-    connect( this, SIGNAL( allDocumentsProcessed() ), &el, SLOT( quit() ) );
-    el.exec();
+    BeQt::waitNonBlocking(this, SIGNAL(allDocumentsProcessed()), msecs);
     return d->processedDocuments.isEmpty();
 }
 

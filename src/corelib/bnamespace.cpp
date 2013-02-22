@@ -10,17 +10,52 @@
 #include <QByteArray>
 #include <QTextCodec>
 #include <QTextStream>
+#include <QObject>
+#include <QList>
+#include <QPair>
 
 namespace BeQt
 {
 
 void waitNonBlocking(int msecs)
 {
-    if (msecs <= 0)
-        return;
+    waitNonBlocking(QList<Until>(), msecs);
+}
+
+void waitNonBlocking(QObject *sender, const char *signal, int msecs)
+{
+    waitNonBlocking(QList<Until>() << until(sender, signal), msecs);
+}
+
+void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2, int msecs)
+{
+    waitNonBlocking(QList<Until>() << until(sender1, signal1) << until(sender2, signal2), msecs);
+}
+
+void waitNonBlocking(const QList<Until> &list, int msecs)
+{
     QEventLoop el;
-    QTimer::singleShot(msecs, &el, SLOT(quit()));
+    bool b = false;
+    foreach (const Until &u, list)
+    {
+        if (!u.first || !u.second)
+            continue;
+        QObject::connect(u.first, u.second, &el, SLOT(quit()));
+        b = true;
+    }
+    if (msecs > 0)
+        QTimer::singleShot(msecs, &el, SLOT(quit()));
+    else if (!b)
+        return;
     el.exec();
+}
+
+Until until(QObject *object, const char *signal)
+{
+    Until p;
+    p.first = object;
+    p.second = signal;
+    return p;
 }
 
 QString pureUuidText(const QUuid &uuid)

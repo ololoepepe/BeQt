@@ -4,6 +4,7 @@
 
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QString>
@@ -186,16 +187,9 @@ bool BNetworkOperation::isFinished() const
 
 bool BNetworkOperation::waitForFinished(int msecs)
 {
-    if ( isFinished() || isError() )
+    if (isFinished() || isError())
         return true;
-    if (!msecs)
-        return isFinished() || isError();
-    QEventLoop el;
-    if (msecs > 0)
-        QTimer::singleShot( msecs, &el, SLOT( quit() ) );
-    connect( this, SIGNAL( finished() ), &el, SLOT( quit() ) );
-    connect( this, SIGNAL( error() ), &el, SLOT( quit() ) );
-    el.exec();
+    BeQt::waitNonBlocking(this, SIGNAL(finished()), this, SIGNAL(error()), msecs);
     return isFinished() || isError();
 }
 
