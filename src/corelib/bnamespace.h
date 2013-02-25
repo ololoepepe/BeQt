@@ -13,6 +13,7 @@ class QObject;
 #include <QtGlobal>
 #include <QList>
 #include <QPair>
+#include <QSysInfo>
 
 /*============================================================================
 ================================ BeQt ========================================
@@ -47,6 +48,14 @@ B_CORE_EXPORT int execProcess(const QString &command, const QStringList &argumen
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
+#if defined(Q_OS_MAC)
+B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
+B_CORE_EXPORT QString macVersionString();
+#endif
+#if defined(Q_OS_WIN)
+B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
+B_CORE_EXPORT QString windowsVersionString();
+#endif
 
 }
 
