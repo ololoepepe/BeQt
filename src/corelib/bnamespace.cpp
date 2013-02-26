@@ -238,7 +238,7 @@ QString windowsVersion()
 }
 #endif
 
-QString osVersionString()
+QString osVersion()
 {
 #if defined(Q_OS_MAC)
     return macVersion();
