@@ -1254,7 +1254,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
                 ranges[i].lastLineNumber += boffset;
             }
         }
-        if (tcpos > 0)
+        if (tcpos > 0 && sl.size() == 1)
             tc.setPosition(tcpos);
         else
             tc.setPosition(tc.block().position() + (!kostyleeque ? (pos + posmod) : 0));
