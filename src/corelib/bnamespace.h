@@ -52,10 +52,14 @@ B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command,
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
 B_CORE_EXPORT QString macVersionString();
 #endif
+#if defined(Q_OS_LINUX)
+B_CORE_EXPORT QString linuxVersionString();
+#endif
 #if defined(Q_OS_WIN)
 B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
 B_CORE_EXPORT QString windowsVersionString();
 #endif
+B_CORE_EXPORT QString osVersionString();
 
 }
 

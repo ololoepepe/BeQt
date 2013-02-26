@@ -1,5 +1,6 @@
 #include "bnamespace.h"
 #include "bterminaliohandler.h"
+#include "bdirtools.h"
 
 #include <QEventLoop>
 #include <QTimer>
@@ -151,7 +152,7 @@ int execProcess(const QString &workingDir, const QString &command, const QString
 }
 
 #if defined(Q_OS_MAC)
-B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version)
+QString macVersionToString(QSysInfo::MacVersion version)
 {
     switch (version)
     {
@@ -180,14 +181,26 @@ B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version)
     }
 }
 
-B_CORE_EXPORT QString macVersionString()
+QString macVersionString()
 {
     return macVersionToString(QSysInfo::macVersion());
 }
 #endif
 
+#if defined(Q_OS_LINUX)
+QString linuxVersionString()
+{
+    bool ok = false;
+    QStringList sl = BDirTools::readTextFile("/etc/lsb-release", "Latin-1", &ok).split('\n', QString::SkipEmptyParts);
+    if (!ok || sl.isEmpty())
+        return "Unknown";
+    sl = sl.last().split('=', QString::SkipEmptyParts);
+    return (sl.size() == 2) ? unwrapped(sl.last()) : QString("Unknown");
+}
+#endif
+
 #if defined(Q_OS_WIN)
-B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version)
+QString windowsVersionToString(QSysInfo::WinVersion version)
 {
     switch (version)
     {
@@ -219,10 +232,21 @@ B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version)
     }
 }
 
-B_CORE_EXPORT QString windowsVersionString()
+QString windowsVersionString()
 {
     return windowsVersionToString(QSysInfo::windowsVersion());
 }
 #endif
+
+QString osVersionString()
+{
+#if defined(Q_OS_MAC)
+    return macVersionString();
+#elif defined(Q_OS_LINUX)
+    return linuxVersionString();
+#elif defined(Q_OS_WIN)
+    return windowsVersionString();
+#endif
+}
 
 }
