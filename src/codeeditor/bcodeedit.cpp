@@ -1206,6 +1206,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
                 sl[i] = l;
         }
         //End of the workaround
+        bool kostyleeque = sl.last().isEmpty();
         sl.first().prepend(ltext);
         sl.last().append(rtext);
         ProcessTextResult res = processText(sl.join('\n'), lineLength, tabWidth);
@@ -1256,7 +1257,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         if (tcpos > 0)
             tc.setPosition(tcpos);
         else
-            tc.setPosition(tc.block().position() + pos + posmod);
+            tc.setPosition(tc.block().position() + (!kostyleeque ? (pos + posmod) : 0));
     }
     ptedt->setTextCursor(tc);
     if (highlighter)
