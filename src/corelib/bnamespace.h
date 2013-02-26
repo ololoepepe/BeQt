@@ -50,16 +50,16 @@ B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
-B_CORE_EXPORT QString macVersionString();
+B_CORE_EXPORT QString macVersion();
 #endif
 #if defined(Q_OS_LINUX)
-B_CORE_EXPORT QString linuxVersionString();
+B_CORE_EXPORT QString linuxVersion();
 #endif
 #if defined(Q_OS_WIN)
 B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
-B_CORE_EXPORT QString windowsVersionString();
+B_CORE_EXPORT QString windowsVersion();
 #endif
-B_CORE_EXPORT QString osVersionString();
+B_CORE_EXPORT QString osVersion();
 
 }
 

@@ -181,21 +181,21 @@ QString macVersionToString(QSysInfo::MacVersion version)
     }
 }
 
-QString macVersionString()
+QString macVersion()
 {
     return macVersionToString(QSysInfo::macVersion());
 }
 #endif
 
 #if defined(Q_OS_LINUX)
-QString linuxVersionString()
+QString linuxVersion()
 {
     bool ok = false;
     QStringList sl = BDirTools::readTextFile("/etc/lsb-release", "Latin-1", &ok).split('\n', QString::SkipEmptyParts);
     if (!ok || sl.isEmpty())
         return "Unknown";
     sl = sl.last().split('=', QString::SkipEmptyParts);
-    return (sl.size() == 2) ? unwrapped(sl.last()) : QString("Unknown");
+    return (sl.size() == 2) ? ("Linux " + unwrapped(sl.last())) : QString("Unknown");
 }
 #endif
 
@@ -232,7 +232,7 @@ QString windowsVersionToString(QSysInfo::WinVersion version)
     }
 }
 
-QString windowsVersionString()
+QString windowsVersion()
 {
     return windowsVersionToString(QSysInfo::windowsVersion());
 }
@@ -241,11 +241,11 @@ QString windowsVersionString()
 QString osVersionString()
 {
 #if defined(Q_OS_MAC)
-    return macVersionString();
+    return macVersion();
 #elif defined(Q_OS_LINUX)
-    return linuxVersionString();
+    return linuxVersion();
 #elif defined(Q_OS_WIN)
-    return windowsVersionString();
+    return windowsVersion();
 #endif
 }
 
