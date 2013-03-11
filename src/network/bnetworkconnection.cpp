@@ -303,6 +303,11 @@ BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *pa
 
 /*============================== Public methods ============================*/
 
+void BNetworkConnection::setDataStreamVersion(QDataStream::Version version)
+{
+    d_func()->socketWrapper->setDataStreamVersion(version);
+}
+
 void BNetworkConnection::setCompressionLevel(int level)
 {
     d_func()->socketWrapper->setCompressionLevel(level);
@@ -432,6 +437,11 @@ QString BNetworkConnection::errorString() const
     return isValid() ? d_func()->socket->errorString() : "";
 }
 
+QDataStream::Version BNetworkConnection::dataStreamVersion() const
+{
+    return d_func()->socketWrapper->dataStreamVersion();
+}
+
 int BNetworkConnection::compressionLevel() const
 {
     return d_func()->socketWrapper->compressionLevel();
@@ -462,44 +472,44 @@ QString BNetworkConnection::peerAddress() const
     return isValid() ? d_func()->socket->peerAddress() : "";
 }
 
-BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, const QByteArray &data)
+BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QByteArray &data)
 {
-    if ( !isConnected() || operation.isEmpty() )
+    if (!isConnected() || op.isEmpty())
         return 0;
     B_D(BNetworkConnection);
     BNetworkConnectionPrivate::Data dat;
     dat.first = data;
-    dat.second.setId( QUuid::createUuid() );
+    dat.second.setId(QUuid::createUuid());
     dat.second.setIsRequest(true);
-    dat.second.setOperation(operation);
-    BNetworkOperation *op = d->createOperation(dat.second);
-    d->requests.insert(dat.second, op);
+    dat.second.setOperation(op);
+    BNetworkOperation *nop = d->createOperation(dat.second);
+    d->requests.insert(dat.second, nop);
     d->dataQueue.enqueue(dat);
     d->sendNext();
-    return op;
+    return nop;
 }
 
-BNetworkOperation *BNetworkConnection::sendRequest(const QString &operation, const QVariant &variant)
+BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QVariant &variant)
 {
-    return sendRequest( operation, BSocketWrapper::variantToData(variant) );
+    return sendRequest(op, BSocketWrapper::variantToData(variant, d_func()->socketWrapper->dataStreamVersion()));
 }
 
-bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QByteArray &data)
+bool BNetworkConnection::sendReply(BNetworkOperation *op, const QByteArray &data)
 {
-    if ( !isConnected() || !operation || !operation->isValid() || operation->isRequest() )
+    if (!isConnected() || !op || !op->isValid() || op->isRequest())
         return false;
     B_D(BNetworkConnection);
     BNetworkConnectionPrivate::Data dat;
     dat.first = data;
-    dat.second = operation->metaData();
+    dat.second = op->metaData();
     d->dataQueue.enqueue(dat);
     d->sendNext();
     return true;
 }
 
-bool BNetworkConnection::sendReply(BNetworkOperation *operation, const QVariant &variant)
+bool BNetworkConnection::sendReply(BNetworkOperation *op, const QVariant &variant)
 {
-    return sendReply( operation, BSocketWrapper::variantToData(variant) );
+    return sendReply(op, BSocketWrapper::variantToData(variant, d_func()->socketWrapper->dataStreamVersion()));
 }
 
 /*============================== Public slots ==============================*/

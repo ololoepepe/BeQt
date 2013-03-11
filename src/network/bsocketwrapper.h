@@ -24,8 +24,6 @@ class B_NETWORK_EXPORT BSocketWrapper : public QObject, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BSocketWrapper)
 public:
-    static const QDataStream::Version DataStreamVersion;
-public:
     explicit BSocketWrapper(QObject *parent = 0);
     explicit BSocketWrapper(BGenericSocket *socket, QObject *parent = 0);
     explicit BSocketWrapper(BGenericSocket::SocketType type, QObject *parent = 0);
@@ -33,15 +31,17 @@ public:
 protected:
     explicit BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
 public:
-    static QByteArray variantToData(const QVariant &variant);
-    static QVariant dataToVariant(const QByteArray &data);
+    static QByteArray variantToData(const QVariant &variant, QDataStream::Version version = QDataStream::Qt_5_0);
+    static QVariant dataToVariant(const QByteArray &data, QDataStream::Version version = QDataStream::Qt_5_0);
 public:
     void setSocket(BGenericSocket *socket);
+    void setDataStreamVersion(QDataStream::Version version);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
     bool unsetSocket();
     BGenericSocket *socket() const;
+    QDataStream::Version dataStreamVersion() const;
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;

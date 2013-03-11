@@ -21,6 +21,7 @@ class QVariant;
 #include <QObject>
 #include <QByteArray>
 #include <QAbstractSocket>
+#include <QDataStream>
 
 /*============================================================================
 ================================ BNetworkConnection ==========================
@@ -41,6 +42,7 @@ public:
 protected:
     explicit BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
 public:
+    void setDataStreamVersion(QDataStream::Version version);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
@@ -62,6 +64,7 @@ public:
     BNetworkServer *server() const;
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
+    QDataStream::Version dataStreamVersion() const;
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;
@@ -69,10 +72,10 @@ public:
     bool autoDeleteSentReplies() const;
     BLogger *logger() const;
     QString peerAddress() const;
-    BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
-    BNetworkOperation *sendRequest(const QString &operation, const QVariant &variant);
-    bool sendReply(BNetworkOperation *operation, const QByteArray &data);
-    bool sendReply(BNetworkOperation *operation, const QVariant &variant);
+    BNetworkOperation *sendRequest(const QString &op, const QByteArray &data = QByteArray());
+    BNetworkOperation *sendRequest(const QString &op, const QVariant &variant);
+    bool sendReply(BNetworkOperation *op, const QByteArray &data);
+    bool sendReply(BNetworkOperation *op, const QVariant &variant);
 public slots:
     void disconnectFromHost();
     void close();
