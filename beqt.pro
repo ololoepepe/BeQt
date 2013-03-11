@@ -67,7 +67,7 @@ defineReplace(getActualHeader) {
 }
 
 #Gets include subdirectory name
-#Returns a list of actual headers' paths to which headers in the given subdir points
+#Returns a list of actual headers' paths to which headers in the given subdir point
 defineReplace(getActualHeaders) {
     subdirName=$${1}
     headerPaths=$$files($${PWD}/include/$${subdirName}/*)

@@ -256,43 +256,43 @@
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1946"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1955"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1952"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1961"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1959"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1968"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1965"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1974"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1971"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1980"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1977"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1986"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1984"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1993"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>

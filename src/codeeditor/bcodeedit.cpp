@@ -1141,6 +1141,8 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         return setBuisy(false);
     }
     tc = ptedt->textCursor();
+    int initialPos = tc.position();
+    int finalPos = -1;
     int posb = tc.positionInBlock();
     QString btext = tc.block().text();
     int lind = removeTrailingSpaces(btext).lastIndexOf(' ');
@@ -1189,11 +1191,11 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
             tc.movePosition(QTextCursor::EndOfBlock);
             tc.insertBlock();
             tc.insertText(QString().fill(' ', lineLength));
-            tc.setPosition(tc.block().position() + offset);
+            finalPos = tc.block().position() + offset;
         }
         else
         {
-            tc.setPosition(tb.position() + offset);
+            finalPos = tb.position() + offset;
         }
     }
     else
@@ -1255,13 +1257,20 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
             }
         }
         if (tcpos > 0 && sl.size() == 1)
-            tc.setPosition(tcpos);
+            finalPos = tcpos;
         else
-            tc.setPosition(tc.block().position() + (!kostyleeque ? (pos + posmod) : 0));
+            finalPos = tc.block().position() + (!kostyleeque ? (pos + posmod) : 0);
     }
+    tc.setPosition(finalPos);
     ptedt->setTextCursor(tc);
     if (highlighter)
-        highlighter->rehighlight();
+    {
+        QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
+        QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
+        highlighter->rehighlightBlock(initialBlock);
+        if (initialBlock != finalBlock)
+            highlighter->rehighlightBlock(finalBlock);
+    }
     tc.endEditBlock();
     setBuisy(false);
     emitLinesSplitted(ranges);
