@@ -25,6 +25,9 @@ defineReplace(beqtModuleSubdir) {
     return($${moduleSubdir})
 }
 
+#Defining BeQt subdir name
+isEmpty(BEQT_SUBDIR_NAME):BEQT_SUBDIR_NAME=beqt
+
 #Searching for headers
 beqtHeadersPath=
 mac:exists($${PWD}/../Headers):beqtHeadersPath=$${PWD}/../Headers
@@ -35,10 +38,10 @@ isEmpty(beqtHeadersPath):error("BeQt headers not found")
 beqtLibsPath=
 mac:exists($${PWD}/../Frameworks):beqtLibsPath=$${PWD}/../Frameworks
 else:exists($${PWD}/lib):beqtLibsPath=$${PWD}/lib
-else:exists($${OUT_PWD}/beqt/src):beqtLibsPath=$${OUT_PWD}/beqt/src
-else:exists($${OUT_PWD}/../beqt/src):beqtLibsPath=$${OUT_PWD}/../beqt/src
-else:exists($${OUT_PWD}/../../beqt/src):beqtLibsPath=$${OUT_PWD}/../../beqt/src
-else:exists($${OUT_PWD}/../../../beqt/src):beqtLibsPath=$${OUT_PWD}/../../../beqt/src
+else:exists($${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src
+else:exists($${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src
+else:exists($${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src
+else:exists($${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src
 
 #If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {

@@ -66,6 +66,22 @@ defineReplace(getActualHeader) {
     return($${headerPath})
 }
 
+#Gets path to a private header
+#Returns corresponding actual private header path
+defineReplace(getActualPrivateHeader) {
+    headerPath=$${1}
+    headerContents=$$cat($${headerPath})
+    isEmpty(headerContents) {
+        headerPath=
+    } else:!equals(headerContents, $$replace(headerContents, "\\.\\./\\.\\./\\.\\./", "")) {
+        headerPath=$$replace(headerContents, "$${LITERAL_HASH}include", "")
+        headerPath=$$replace(headerPath, "\\.\\./\\.\\./\\.\\./", "")
+        headerPath=$$replace(headerPath, "\"", "")
+        headerPath=$${PWD}/$${headerPath}
+    }
+    return($${headerPath})
+}
+
 #Gets include subdirectory name
 #Returns a list of actual headers' paths to which headers in the given subdir point
 defineReplace(getActualHeaders) {
@@ -74,6 +90,19 @@ defineReplace(getActualHeaders) {
     actualHeaderPaths=
     for(headerPath, headerPaths) {
         actualHeaderPath=$$getActualHeader($${headerPath})
+        !isEmpty(actualHeaderPath):!equals(actualHeaderPath, $${PWD}/):actualHeaderPaths+=$${actualHeaderPath}
+    }
+    return($${actualHeaderPaths})
+}
+
+#Gets include subdirectory name
+#Returns a list of actual private headers' paths to which headers in the given subdir point
+defineReplace(getActualPrivateHeaders) {
+    subdirName=$${1}
+    headerPaths=$$files($${PWD}/include/$${subdirName}/private/*)
+    actualHeaderPaths=
+    for(headerPath, headerPaths) {
+        actualHeaderPath=$$getActualPrivateHeader($${headerPath})
         !isEmpty(actualHeaderPath):!equals(actualHeaderPath, $${PWD}/):actualHeaderPaths+=$${actualHeaderPath}
     }
     return($${actualHeaderPaths})
@@ -88,23 +117,43 @@ defineReplace(getActualHeaders) {
     beqtInstallsHeadersCore.files=$$getActualHeaders(BeQtCore)
     beqtInstallsHeadersCore.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCore
     INSTALLS += beqtInstallsHeadersCore
+    contains(CONFIG, beqt_private_headers) {
+        beqtInstallsPrivateHeadersCore.files=$$getActualPrivateHeaders(BeQtCore)
+        beqtInstallsPrivateHeadersCore.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCore/private
+        INSTALLS += beqtInstallsPrivateHeadersCore
+    }
     #Network
     !contains(CONFIG, beqt_no_network) {
         beqtInstallsHeadersNetwork.files=$$getActualHeaders(BeQtNetwork)
         beqtInstallsHeadersNetwork.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetwork
         INSTALLS += beqtInstallsHeadersNetwork
+        contains(CONFIG, beqt_private_headers) {
+            beqtInstallsPrivateHeadersNetwork.files=$$getActualPrivateHeaders(BeQtNetwork)
+            beqtInstallsPrivateHeadersNetwork.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetwork/private
+            INSTALLS += beqtInstallsPrivateHeadersNetwork
+        }
     }
     #Widgets
     !contains(CONFIG, beqt_no_widgets) {
         beqtInstallsHeadersWidgets.files=$$getActualHeaders(BeQtWidgets)
         beqtInstallsHeadersWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtWidgets
         INSTALLS += beqtInstallsHeadersWidgets
+        contains(CONFIG, beqt_private_headers) {
+            beqtInstallsPrivateHeadersWidgets.files=$$getActualPrivateHeaders(BeQtWidgets)
+            beqtInstallsPrivateHeadersWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtWidgets/private
+            INSTALLS += beqtInstallsPrivateHeadersWidgets
+        }
     }
     #CodeEditor
     !contains(CONFIG, beqt_no_codeeditor) {
         beqtInstallsHeadersCodeeditor.files=$$getActualHeaders(BeQtCodeEditor)
         beqtInstallsHeadersCodeeditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor
         INSTALLS += beqtInstallsHeadersCodeeditor
+        contains(CONFIG, beqt_private_headers) {
+            beqtInstallsPrivateHeadersCodeEditor.files=$$getActualPrivateHeaders(BeQtCodeEditor)
+            beqtInstallsPrivateHeadersCodeEditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor/private
+            INSTALLS += beqtInstallsPrivateHeadersCodeEditor
+        }
     }
     #Depend
     beqtInstallsDepend.files=depend.pri
