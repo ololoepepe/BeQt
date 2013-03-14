@@ -36,8 +36,15 @@ else:exists($${PWD}/include):beqtHeadersPath=$${PWD}/include
 isEmpty(beqtHeadersPath):error("BeQt headers not found")
 #Searching for libraries
 beqtLibsPath=
-mac:exists($${PWD}/../Frameworks):beqtLibsPath=$${PWD}/../Frameworks
-else:exists($${PWD}/lib):beqtLibsPath=$${PWD}/lib
+beqtLibsOneFolder=
+mac:exists($${PWD}/../Frameworks) {
+    beqtLibsPath=$${PWD}/../Frameworks
+    beqtLibsOneFolder=true
+}
+else:exists($${PWD}/lib) {
+    beqtLibsPath=$${PWD}/lib
+    beqtLibsOneFolder=true
+}
 else:exists($${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src
 else:exists($${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src
 else:exists($${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src
@@ -58,10 +65,12 @@ defineTest(addBeqtModule) {
     INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
     DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
     !isEmpty(beqtLibsPath) {
+        beqtModuleSubdir=
+        isEmpty(beqtLibsOneFolder):beqtModuleSubdir=/$$beqtModuleSubdir($${shortName})
         mac:contains(CONFIG, lib_bundle) {
-            LIBS *= -F$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -framework $${fullName}
+            LIBS *= -F$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}/ -framework $${fullName}
         } else {
-            LIBS *= -L$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -l$${fullName}
+            LIBS *= -L$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}/ -l$${fullName}
         }
     } else {
         mac:LIBS *= -framework $${fullName}
