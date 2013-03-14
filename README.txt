@@ -113,6 +113,9 @@ When building BeQt, you may pass some parameters to qmake:
  * "CONFIG+=beqt_no_headers"
    Don't install headers
 
+ * "CONFIG+=beqt_private_headers"
+   Install private headers along with the public ones
+
  * "BEQT_PREFIX=<path>"
    Set install path. See the note below
 
@@ -124,6 +127,9 @@ When building BeQt, you may pass some parameters to qmake:
 
  * "BEQT_RESOURCES_INSTALLS_PATH=<path>"
    Set install path for resources. See the note below
+
+ * "BEQT_SUBDIR_NAME"
+   Set name of the BeQt subdirectory when BeQt is used as a submodule
 
 Note: In Windows systems BeQt is installed to the "C:\Program files\BeQt"
 directory (or other similar directory, depending on your system) by default.
