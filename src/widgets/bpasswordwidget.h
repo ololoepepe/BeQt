@@ -41,8 +41,6 @@ public:
 public:
     void setPassword(const QString &password);
     void setEncryptedPassword(const QByteArray &password, int charCount = -1);
-    void setSavePassword(bool b);
-    void setShowPassword(bool b);
     void setData(const PasswordWidgetData &pd);
     void setSavePasswordVisible(bool visible);
     void setShowPasswordVisible(bool visible);
@@ -59,7 +57,12 @@ public:
     bool showPasswordVisible() const;
     QByteArray saveState() const;
     QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
+public slots:
+    void setSavePassword(bool b);
+    void setShowPassword(bool b);
 signals:
+    void savePasswordChanged(bool b);
+    void showPasswordChanged(bool b);
     void passwordChanged();
 private:
     Q_DISABLE_COPY(BPasswordWidget)

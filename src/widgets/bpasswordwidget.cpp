@@ -19,6 +19,7 @@
 #include <QIODevice>
 #include <QTimer>
 #include <QEvent>
+#include <QMetaObject>
 
 #include <QDebug>
 
@@ -113,6 +114,7 @@ void BPasswordWidgetPrivate::resetSave()
 {
     save = !save;
     tbtnSave->setDown(save);
+    QMetaObject::invokeMethod(q_func(), "savePasswordChanged", Q_ARG(bool, save));
 }
 
 void BPasswordWidgetPrivate::resetShow()
@@ -120,6 +122,7 @@ void BPasswordWidgetPrivate::resetShow()
     show = !show;
     tbtnShow->setDown(show);
     ledt->setEchoMode(show ? QLineEdit::Normal : QLineEdit::Password);
+    QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, save));
 }
 
 /*============================================================================
@@ -217,22 +220,6 @@ void BPasswordWidget::setEncryptedPassword(const QByteArray &password, int charC
         ph.fill('*', charCount > 0 ? charCount : 8);
     d->ledt->setPlaceholderText(ph);
     d->charCount = charCount;
-}
-
-void BPasswordWidget::setSavePassword(bool b)
-{
-    B_D(BPasswordWidget);
-    if (b == d->save)
-        return;
-    d->resetSave();
-}
-
-void BPasswordWidget::setShowPassword(bool b)
-{
-    B_D(BPasswordWidget);
-    if (b == d->show)
-        return;
-    d->resetShow();
 }
 
 void BPasswordWidget::setData(const PasswordWidgetData &pd)
@@ -335,4 +322,22 @@ QByteArray BPasswordWidget::saveState() const
 QByteArray BPasswordWidget::saveStateEncrypted(QCryptographicHash::Algorithm method) const
 {
     return dataToState( encryptedData(method) );
+}
+
+/*============================== Public slots ==============================*/
+
+void BPasswordWidget::setSavePassword(bool b)
+{
+    B_D(BPasswordWidget);
+    if (b == d->save)
+        return;
+    d->resetSave();
+}
+
+void BPasswordWidget::setShowPassword(bool b)
+{
+    B_D(BPasswordWidget);
+    if (b == d->show)
+        return;
+    d->resetShow();
 }
