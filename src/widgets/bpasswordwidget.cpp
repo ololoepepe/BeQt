@@ -122,7 +122,7 @@ void BPasswordWidgetPrivate::resetShow()
     show = !show;
     tbtnShow->setDown(show);
     ledt->setEchoMode(show ? QLineEdit::Normal : QLineEdit::Password);
-    QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, save));
+    QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, show));
 }
 
 /*============================================================================
