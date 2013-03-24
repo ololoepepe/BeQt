@@ -4,6 +4,8 @@
 #include <QtGlobal>
 #include <QList>
 #include <QString>
+#include <QObject>
+#include <QSignalMapper>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -76,6 +78,29 @@ B_CORE_EXPORT const char *bVersion();
 B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
 B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
 B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
+
+template<typename T> bool bSetMapping(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
+{
+    if (!mapper || !sender || !signal)
+        return false;
+    mapper->setMapping(sender, t);
+    QObject::connect(sender, signal, mapper, SLOT(map()));
+    return true;
+}
+
+template<typename T> bool bSetMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
+{
+    if (!mapper || !sender || !signal)
+        return false;
+    mapper->setMapping(sender, t);
+    QObject::connect(sender, signal, mapper, SLOT(map(QObject *)));
+    return true;
+}
+
+template<typename T> void bRet(const T &)
+{
+    //
+}
 
 template<typename T> void bRet(T *t, const T &tt)
 {

@@ -24,15 +24,6 @@ class QEvent;
 #include <QVariantMap>
 #include <QPointer>
 #include <QSettings>
-#include <QSignalMapper>
-
-template <typename T> bool bSetMapping(QSignalMapper *mapper, QObject *sender, const char *signal, T t)
-{
-    if (!mapper || !sender || !signal)
-        return false;
-    mapper->setMapping(sender, t);
-    return true;
-}
 
 /*============================================================================
 ================================ BCoreApplicationPrivate =====================
@@ -56,8 +47,6 @@ public:
     static bool testCoreUnique();
     static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
     static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault = false);
-    static void connectObjectToMapper(QSignalMapper *mapper, QObject *sender, const char *signal,
-                                      bool senderBased = false);
 public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);

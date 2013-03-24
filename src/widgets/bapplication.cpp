@@ -37,7 +37,6 @@
 #include <QMessageBox>
 #include <QToolButton>
 #include <QToolBar>
-#include <QSignalMapper>
 #include <QWidget>
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -508,20 +507,6 @@ QToolButton *BApplication::toolButtonForAction(QToolBar *toolBar, QAction *actio
     if (!toolBar || !action)
         return 0;
     return static_cast<QToolButton *>( toolBar->widgetForAction(action) );
-}
-
-void BApplication::setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, QWidget *widget)
-{
-    if (!bSetMapping(mapper, sender, signal, widget))
-        return;
-    BApplicationPrivate::connectObjectToMapper(mapper, sender, signal);
-}
-
-void BApplication::setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, QWidget *widget)
-{
-    if (!bSetMapping(mapper, sender, signal, widget))
-        return;
-    BApplicationPrivate::connectObjectToMapper(mapper, sender, signal, true);
 }
 
 void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)

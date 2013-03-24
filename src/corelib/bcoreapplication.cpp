@@ -27,7 +27,6 @@ class QWidget;
 #include <QPointer>
 #include <QEvent>
 #include <QVariantMap>
-#include <QSignalMapper>
 #include <QTextCodec>
 
 #include <QDebug>
@@ -148,15 +147,6 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, con
     if ( !s.isEmpty() )
         s.remove(s.length() - 1, 1);
     return s;
-}
-
-void BCoreApplicationPrivate::connectObjectToMapper(QSignalMapper *mapper, QObject *sender, const char *signal,
-                                                    bool senderBased)
-{
-    if (senderBased)
-        connect(sender, signal, mapper, SLOT(map(QObject *)));
-    else
-        connect(sender, signal, mapper, SLOT(map()));
 }
 
 /*============================== Public methods ============================*/
@@ -781,49 +771,6 @@ void BCoreApplication::log(const QString &text, BLogger::Level lvl)
     if (!ds->logger)
         return;
     ds->logger->log(text, lvl);
-}
-
-void BCoreApplication::setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, int id)
-{
-    if (!bSetMapping(mapper, sender, signal, id))
-        return;
-    BCoreApplicationPrivate::connectObjectToMapper(mapper, sender, signal);
-}
-
-void BCoreApplication::setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, int id)
-{
-    if (!bSetMapping(mapper, sender, signal, id))
-        return;
-    BCoreApplicationPrivate::connectObjectToMapper(mapper, sender, signal, true);
-}
-
-void BCoreApplication::setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, const QString &text)
-{
-    if (!bSetMapping(mapper, sender, signal, text))
-        return;
-    BCoreApplicationPrivate::connectObjectToMapper(mapper, sender, signal);
-}
-
-void BCoreApplication::setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal,
-                                        const QString &text)
-{
-    if (!bSetMapping(mapper, sender, signal, text))
-        return;
-    BCoreApplicationPrivate::connectObjectToMapper(mapper, sender, signal, true);
-}
-
-void BCoreApplication::setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, QObject *object)
-{
-    if (!bSetMapping(mapper, sender, signal, object))
-        return;
-    BCoreApplicationPrivate::connectObjectToMapper(mapper, sender, signal);
-}
-
-void BCoreApplication::setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, QObject *object)
-{
-    if (!bSetMapping(mapper, sender, signal, object))
-        return;
-    BCoreApplicationPrivate::connectObjectToMapper(mapper, sender, signal, true);
 }
 
 /*============================== Static protected variables ================*/

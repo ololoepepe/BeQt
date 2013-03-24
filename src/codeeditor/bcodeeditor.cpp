@@ -1598,8 +1598,7 @@ QMenu *BCodeEditor::createPlainCodecsMenu(QObject *receiver, const char *member,
     {
         QAction *act = mnu->addAction("");
         act->setProperty("beqt/codec_name", cn);
-        if (mpr)
-            BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+        bSetMapping(mpr, act, SIGNAL(triggered()), cn);
     }
     retranslateCodecsMenu(mnu);
     return mnu;
@@ -1619,8 +1618,7 @@ QMenu *BCodeEditor::createStructuredCodecsMenu(QObject *receiver, const char *me
         {
             QAction *act = submnu->addAction("");
             act->setProperty("beqt/codec_name", cn);
-            if (mpr)
-                BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+            bSetMapping(mpr, act, SIGNAL(triggered()), cn);
         }
     }
     retranslateCodecsMenu(mnu);

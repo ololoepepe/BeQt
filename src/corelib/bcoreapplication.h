@@ -10,7 +10,6 @@ class BPluginWrapper;
 
 class QLocale;
 class QSettings;
-class QSignalMapper;
 class QTextCodec;
 
 #include "bglobal.h"
@@ -103,12 +102,6 @@ public:
     static void setLogger(BLogger *l);
     static BLogger *logger();
     static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
-    static void setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, int id);
-    static void setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, int id);
-    static void setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, const QString &text);
-    static void setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, const QString &text);
-    static void setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, QObject *object);
-    static void setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, QObject *object);
 signals:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
