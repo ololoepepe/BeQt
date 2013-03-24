@@ -510,12 +510,18 @@ QToolButton *BApplication::toolButtonForAction(QToolBar *toolBar, QAction *actio
     return static_cast<QToolButton *>( toolBar->widgetForAction(action) );
 }
 
-void BApplication::setMapping(QSignalMapper *mapper, QWidget *widget, const char *signal, bool sender)
+void BApplication::setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, QWidget *widget)
 {
-    if (!mapper || !widget || !signal)
+    if (!bSetMapping(mapper, sender, signal, widget))
         return;
-    mapper->setMapping(widget, widget);
-    BApplicationPrivate::connectObjectToMapper(mapper, widget, signal, sender);
+    BApplicationPrivate::connectObjectToMapper(mapper, sender, signal);
+}
+
+void BApplication::setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, QWidget *widget)
+{
+    if (!bSetMapping(mapper, sender, signal, widget))
+        return;
+    BApplicationPrivate::connectObjectToMapper(mapper, sender, signal, true);
 }
 
 void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)

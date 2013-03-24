@@ -86,7 +86,8 @@ public:
     static QFont createMonospaceFont();
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
     static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
-    static void setMapping(QSignalMapper *mapper, QWidget *widget, const char *signal, bool sender = false);
+    static void setMapping(QSignalMapper *mapper, QObject *sender, const char *signal, QWidget *widget);
+    static void setMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, QWidget *widget);
     static void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field);
     static void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field);
 public slots:
