@@ -91,19 +91,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="576"/>
+        <location filename="../src/widgets/bapplication.cpp" line="567"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="578"/>
+        <location filename="../src/widgets/bapplication.cpp" line="569"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="579"/>
+        <location filename="../src/widgets/bapplication.cpp" line="570"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -112,97 +112,97 @@
 <context>
     <name>BApplicationPrivate</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="87"/>
+        <location filename="../src/widgets/bapplication.cpp" line="86"/>
         <source>Settings...</source>
         <comment>act text</comment>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="88"/>
+        <location filename="../src/widgets/bapplication.cpp" line="87"/>
         <source>Show application settings</source>
         <comment>act toolTip</comment>
         <translation>Показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="89"/>
+        <location filename="../src/widgets/bapplication.cpp" line="88"/>
         <source>Use this action to show application settings</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="92"/>
+        <location filename="../src/widgets/bapplication.cpp" line="91"/>
         <source>Homepage</source>
         <comment>act text</comment>
         <translation>Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="93"/>
+        <location filename="../src/widgets/bapplication.cpp" line="92"/>
         <source>Open homepage</source>
         <comment>act toolTip</comment>
         <translation>Открыть домашнюю страницу</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="94"/>
+        <location filename="../src/widgets/bapplication.cpp" line="93"/>
         <source>Use this action to open application homepage with your browser</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть домашнюю страницу приложения в вашем браузере</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="97"/>
+        <location filename="../src/widgets/bapplication.cpp" line="96"/>
         <source>Help contents</source>
         <comment>act text</comment>
         <translation>Содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="98"/>
+        <location filename="../src/widgets/bapplication.cpp" line="97"/>
         <source>Show Help contents</source>
         <comment>act toolTip</comment>
         <translation>Показать содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="99"/>
+        <location filename="../src/widgets/bapplication.cpp" line="98"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие чтобы показать содержание (указатель) справки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="102"/>
+        <location filename="../src/widgets/bapplication.cpp" line="101"/>
         <source>Contextual Help</source>
         <comment>act text</comment>
         <translation>Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="103"/>
+        <location filename="../src/widgets/bapplication.cpp" line="102"/>
         <source>Show contextual Help</source>
         <comment>act toolTip</comment>
         <translation>Показать контекстную справку</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="104"/>
+        <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
         <translation type="unfinished">Используйте это действие, чтобы открыть страницу справки, соответствующую контексту</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="108"/>
+        <location filename="../src/widgets/bapplication.cpp" line="107"/>
         <source>What&apos;s this?</source>
         <comment>act text</comment>
         <translation>Что это?</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="113"/>
+        <location filename="../src/widgets/bapplication.cpp" line="112"/>
         <source>About...</source>
         <comment>act text</comment>
         <translation>О программе...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="114"/>
+        <location filename="../src/widgets/bapplication.cpp" line="113"/>
         <source>Show info about this application</source>
         <comment>act toolTip</comment>
         <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="115"/>
+        <location filename="../src/widgets/bapplication.cpp" line="114"/>
         <source>Use this action to show information about the application, it&apos;s authors, etc.</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать информацию о приложении, его авторах и т.д.</translation>
@@ -250,49 +250,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1056"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1096"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1866"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1955"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1872"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1961"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1879"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1968"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1885"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1974"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1891"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1980"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1897"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1986"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1904"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1993"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -301,37 +301,37 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1549"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1546"/>
         <source>Unicode</source>
         <comment>encodingGroup name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1551"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1548"/>
         <source>Eastern Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1553"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1550"/>
         <source>Western Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1555"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1552"/>
         <source>East Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1557"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1554"/>
         <source>South-East and South-West Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1559"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1556"/>
         <source>Middle East</source>
         <comment>encodingGroup name</comment>
         <translation>Центральный Восток</translation>
@@ -340,7 +340,7 @@
 <context>
     <name>BCodeEditorPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="443"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="423"/>
         <source>New document</source>
         <comment>fileName</comment>
         <translation>Новый документ</translation>
@@ -349,195 +349,195 @@
 <context>
     <name>BCodeEditorPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="569"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="549"/>
         <source>Unicode</source>
         <comment>codec descriptiveName</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="575"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="555"/>
         <source>Baltic</source>
         <comment>codec descriptiveName</comment>
         <translation>Балтийская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="578"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="558"/>
         <source>Cyrillic</source>
         <comment>codec descriptiveName</comment>
         <translation>Кириллица</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="580"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="560"/>
         <source>Cyrillic (Ukrainian)</source>
         <comment>codec descriptiveName</comment>
         <translation>Кириллица (украинская)</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="582"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="562"/>
         <source>Romanic</source>
         <comment>codec descriptiveName</comment>
         <translation>Романская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="584"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="564"/>
         <source>Central European</source>
         <comment>codec descriptiveName</comment>
         <translation>Центральноевропейская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="589"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="569"/>
         <source>Greek</source>
         <comment>codec descriptiveName</comment>
         <translation>Греческая</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="592"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="572"/>
         <source>Western</source>
         <comment>codec descriptiveName</comment>
         <translation>Западная</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="594"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="574"/>
         <source>Celtic</source>
         <comment>codec descriptiveName</comment>
         <translation>Кельтская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="596"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="576"/>
         <source>Nordic</source>
         <comment>codec descriptiveName</comment>
         <translation>Северная</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="598"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="578"/>
         <source>South European</source>
         <comment>codec descriptiveName</comment>
         <translation>Восточноевропейская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="603"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="583"/>
         <source>Vietnamese</source>
         <comment>codec descriptiveName</comment>
         <translation>Вьетнамская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="605"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="585"/>
         <source>Traditional Chinese</source>
         <comment>codec descriptiveName</comment>
         <translation>Китайская традиционная</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="607"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="587"/>
         <source>Simplified Chinese</source>
         <comment>codec descriptiveName</comment>
         <translation>Китайская упрощённая</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="609"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="589"/>
         <source>Korean</source>
         <comment>codec descriptiveName</comment>
         <translation>Корейская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="612"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="592"/>
         <source>Japanese</source>
         <comment>codec descriptiveName</comment>
         <translation>Японская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="617"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="597"/>
         <source>Thai</source>
         <comment>codec descriptiveName</comment>
         <translation>Тайская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="619"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="599"/>
         <source>Turkish</source>
         <comment>codec descriptiveName</comment>
         <translation>Турецкая</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="624"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="604"/>
         <source>Arabic</source>
         <comment>codec descriptiveName</comment>
         <translation>Арабская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="626"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="606"/>
         <source>Hebrew</source>
         <comment>codec descriptiveName</comment>
         <translation>Еврейская</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="628"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="608"/>
         <source>Hebrew (visual)</source>
         <comment>codec descriptiveName</comment>
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1001"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="998"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1003"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1016"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1000"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1013"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1014"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1011"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1018"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1015"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1030"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1027"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1032"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1029"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1041"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1038"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1043"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1055"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1040"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1052"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1044"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1041"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1053"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1050"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1056"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1053"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
@@ -546,25 +546,25 @@
 <context>
     <name>BCoreApplicationPrivate</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="140"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="139"/>
         <source>Name:</source>
         <comment>info</comment>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="142"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="141"/>
         <source>Role:</source>
         <comment>info</comment>
         <translation type="unfinished">Роль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="144"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="143"/>
         <source>Website:</source>
         <comment>info</comment>
         <translation>Веб-сайт:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="146"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="145"/>
         <source>E-mail:</source>
         <comment>info</comment>
         <translation>Электронная почта:</translation>
@@ -711,7 +711,7 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bfiledialog.cpp" line="77"/>
+        <location filename="../src/codeeditor/bfiledialog.cpp" line="80"/>
         <source>Encoding</source>
         <comment>lbl text</comment>
         <translation>Кодировка</translation>
@@ -753,7 +753,7 @@
         <location filename="../src/widgets/bhelpbrowser.cpp" line="133"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
-        <translation>Результаты посика</translation>
+        <translation type="unfinished">Результаты поиска</translation>
     </message>
     <message>
         <location filename="../src/widgets/bhelpbrowser.cpp" line="136"/>
@@ -810,8 +810,8 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="266"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="276"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="267"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="277"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
@@ -820,7 +820,7 @@
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="99"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="100"/>
         <source>Connected</source>
         <comment>log text</comment>
         <translation>Подключен</translation>
@@ -829,7 +829,7 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="106"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="107"/>
         <source>Disconnected</source>
         <comment>log text</comment>
         <translation>Отключен</translation>
@@ -838,37 +838,37 @@
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="113"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="114"/>
         <source>Error:</source>
         <comment>log text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="137"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="138"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation type="unfinished">Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="173"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="174"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="194"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="195"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="214"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="215"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="225"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="226"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>
@@ -1036,13 +1036,13 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="108"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="109"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="109"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="110"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
@@ -1174,61 +1174,61 @@
 <context>
     <name>BSearchEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="534"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="535"/>
         <source>Text</source>
         <comment>msg text</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="534"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="535"/>
         <source>not found</source>
         <comment>msg text</comment>
         <translation>не найден</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="543"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="544"/>
         <source>Find and replace...</source>
         <comment>act text</comment>
         <translation>Найти и заменить...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="544"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="545"/>
         <source>Find and replace text</source>
         <comment>act toolTip</comment>
         <translation>Найти и заменить текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="545"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="546"/>
         <source>Use this action to open a find and replace dialog</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть диалог поиска и замены</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="549"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="550"/>
         <source>Find next</source>
         <comment>act text</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="550"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="551"/>
         <source>Find next</source>
         <comment>act toolTip</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="551"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="552"/>
         <source>Use this action to find next occurrence of the text</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы найти следующее вхождение текста</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="578"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="579"/>
         <source>Found and replaced</source>
         <comment>msg text</comment>
         <translation>Найдено и заменено</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="579"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="580"/>
         <source>entries</source>
         <comment>msg text</comment>
         <translation>вхождений</translation>
@@ -1237,19 +1237,19 @@
 <context>
     <name>BSelectDocumentsDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="168"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="148"/>
         <source>Some documents are modified. Do you want to save them before closing?</source>
         <comment>lbl text</comment>
         <translation>Некоторые документы изменены. Хотите сохранить их перед закрытием?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="172"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="152"/>
         <source>Choose documents that you want to save:</source>
         <comment>lbl text</comment>
         <translation>Выберите документы, которые хотите сохранить:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="187"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="167"/>
         <source>If you don&apos;t save the documents, all changes will be lost</source>
         <comment>lbl text</comment>
         <translation>Если вы не сохраните документы, все изменения будут потеряны</translation>
@@ -1297,43 +1297,43 @@
 <context>
     <name>BSplittedLinesDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="288"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="268"/>
         <source>Lines:</source>
         <comment>lstwgti text</comment>
         <translation>Строки:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="289"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="269"/>
         <source>lines</source>
         <comment>lstwgti text</comment>
         <translation>строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="299"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="279"/>
         <source>Splitted lines</source>
         <comment>windowTitle</comment>
         <translation>Разделённые строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="304"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="284"/>
         <source>Some lines in this document were too long, so they were splitted into several lines</source>
         <comment>lbl text</comment>
         <translation>Некоторые строки в этом документе оказались слишком длинными, поэтому они были разделены на несколько строк</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="310"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="290"/>
         <source>Doubleclick an item to go to the corresponding line</source>
         <comment>lstwgt toolTip</comment>
         <translation>Используйте двойной щелчок для перехода к соответствующей строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="316"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="296"/>
         <source>Select text when going to line</source>
         <comment>cbox text</comment>
         <translation>Выделять текст при переходе к строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="323"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="303"/>
         <source>Go to line</source>
         <comment>btn text</comment>
         <translation>Перейти к строке</translation>

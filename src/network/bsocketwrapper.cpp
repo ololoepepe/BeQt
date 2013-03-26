@@ -36,6 +36,7 @@ void BSocketWrapperPrivate::init()
 {
     resetIn();
     resetOut();
+    dsVersion = QDataStream::Qt_5_0;
     comprLvl = 0;
     criticalBufferSize = 0;
     closeOnCriticalBufferSize = false;
@@ -84,8 +85,8 @@ void BSocketWrapperPrivate::error(QAbstractSocket::SocketError)
 void BSocketWrapperPrivate::readyRead()
 {
     B_Q(BSocketWrapper);
-    QDataStream in( socket->ioDevice() );
-    in.setVersion(BSocketWrapper::DataStreamVersion);
+    QDataStream in(socket->ioDevice());
+    in.setVersion(dsVersion);
     forever
     {
         if (criticalBufferSize > 0 && socket->bytesAvailable() >= criticalBufferSize)
@@ -140,10 +141,6 @@ void BSocketWrapperPrivate::readyRead()
 ================================ BSocketWrapper ==============================
 ============================================================================*/
 
-/*============================== Static public constants ===================*/
-
-const QDataStream::Version BSocketWrapper::DataStreamVersion = QDataStream::Qt_5_0;
-
 /*============================== Public constructors =======================*/
 
 BSocketWrapper::BSocketWrapper(QObject *parent) :
@@ -181,19 +178,19 @@ BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
 
 /*============================== Static public methods =====================*/
 
-QByteArray BSocketWrapper::variantToData(const QVariant &variant)
+QByteArray BSocketWrapper::variantToData(const QVariant &variant, QDataStream::Version version)
 {
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(DataStreamVersion);
+    out.setVersion(version);
     out << variant;
     return ba;
 }
 
-QVariant BSocketWrapper::dataToVariant(const QByteArray &data)
+QVariant BSocketWrapper::dataToVariant(const QByteArray &data, QDataStream::Version version)
 {
     QDataStream in(data);
-    in.setVersion(DataStreamVersion);
+    in.setVersion(version);
     QVariant v;
     in >> v;
     return v;
@@ -212,6 +209,11 @@ void BSocketWrapper::setSocket(BGenericSocket *socket)
     connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
              d, SLOT( error(QAbstractSocket::SocketError) ) );
     connect( socket, SIGNAL( readyRead() ), d, SLOT( readyRead() ) );
+}
+
+void BSocketWrapper::setDataStreamVersion(QDataStream::Version version)
+{
+    d_func()->dsVersion = version;
 }
 
 void BSocketWrapper::setCompressionLevel(int level)
@@ -256,6 +258,11 @@ BGenericSocket *BSocketWrapper::socket() const
     return d_func()->socket.data();
 }
 
+QDataStream::Version BSocketWrapper::dataStreamVersion() const
+{
+    return d_func()->dsVersion;
+}
+
 int BSocketWrapper::compressionLevel() const
 {
     return d_func()->comprLvl;
@@ -288,7 +295,7 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
         d->metaOut = metaData;
         QByteArray bam;
         QDataStream outm(&bam, QIODevice::WriteOnly);
-        outm.setVersion(DataStreamVersion);
+        outm.setVersion(d->dsVersion);
         outm << (qint64) 0;
         outm << true;
         outm << metaData.id();
@@ -304,7 +311,7 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
     }
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(DataStreamVersion);
+    out.setVersion(d->dsVersion);
     out << (qint64) 0;
     out << false;
     out << qCompress(data, d->comprLvl);

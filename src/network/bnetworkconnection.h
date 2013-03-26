@@ -4,7 +4,6 @@
 class BNetworkConnectionPrivate;
 class BNetworkOperation;
 class BNetworkServer;
-class BLogger;
 
 class QString;
 class QUuid;
@@ -17,10 +16,12 @@ class QVariant;
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BLogger>
 
 #include <QObject>
 #include <QByteArray>
 #include <QAbstractSocket>
+#include <QDataStream>
 
 /*============================================================================
 ================================ BNetworkConnection ==========================
@@ -41,6 +42,7 @@ public:
 protected:
     explicit BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
 public:
+    void setDataStreamVersion(QDataStream::Version version);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
@@ -49,12 +51,9 @@ public:
     void setLogger(BLogger *l);
     void connectToHost(const QString &hostName, quint16 port = 0);
     bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30 * BeQt::Second);
-    void disconnectFromHost();
     bool disconnectFromHostBlocking(int msecs = 30 * BeQt::Second);
     bool waitForConnected(int msecs = 30 * BeQt::Second);
     bool waitForDisconnected(int msecs = 30 * BeQt::Second);
-    void close();
-    void abort();
     void installReplyHandler(const QString &operation, InternalHandler handler);
     void installReplyHandler(const QString &operation, ExternalHandler handler);
     void installRequestHandler(const QString &operation, InternalHandler handler);
@@ -65,6 +64,7 @@ public:
     BNetworkServer *server() const;
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
+    QDataStream::Version dataStreamVersion() const;
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;
@@ -72,14 +72,18 @@ public:
     bool autoDeleteSentReplies() const;
     BLogger *logger() const;
     QString peerAddress() const;
-    BNetworkOperation *sendRequest( const QString &operation, const QByteArray &data = QByteArray() );
-    BNetworkOperation *sendRequest(const QString &operation, const QVariant &variant);
-    bool sendReply(BNetworkOperation *operation, const QByteArray &data);
-    bool sendReply(BNetworkOperation *operation, const QVariant &variant);
+    BNetworkOperation *sendRequest(const QString &op, const QByteArray &data = QByteArray());
+    BNetworkOperation *sendRequest(const QString &op, const QVariant &variant);
+    bool sendReply(BNetworkOperation *op, const QByteArray &data);
+    bool sendReply(BNetworkOperation *op, const QVariant &variant);
+public slots:
+    void disconnectFromHost();
+    void close();
+    void abort();
 protected:
     virtual void handleReply(BNetworkOperation *op);
     virtual void handleRequest(BNetworkOperation *op);
-    void log(const QString &text, bool noLevel = true);
+    virtual void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
 signals:

@@ -62,26 +62,6 @@
 ================================ StructuredCodecsComboBox ====================
 ============================================================================*/
 
-class StructuredCodecsComboBox : public QComboBox
-{
-public:
-    explicit StructuredCodecsComboBox(QWidget *parent = 0);
-public:
-    void retranslate();
-    void setCodecName(const QString &codecName);
-    QString codecName() const;
-protected:
-    void showPopup();
-    void hidePopup();
-private:
-    QMenu *mnu;
-    QString cn;
-};
-
-/*============================================================================
-================================ StructuredCodecsComboBox ====================
-============================================================================*/
-
 /*============================== Public constructors =======================*/
 
 StructuredCodecsComboBox::StructuredCodecsComboBox(QWidget *parent) :
@@ -446,16 +426,16 @@ QString BCodeEditorPrivate::defaultFileName()
 QString BCodeEditorPrivate::createFileName(const QString &fileName, const QString &defaultName,
                                            const QStringList &existingNames)
 {
-    QFileInfo fi( !defaultName.isEmpty() ? defaultName : defaultFileName() );
+    QFileInfo fi(!defaultName.isEmpty() ? defaultName : defaultFileName());
     QString fnbasens = fi.baseName();
     QString fnbasesuff = fi.suffix();
     QFileInfo fif(fileName);
     if ( !fileName.isEmpty() && (fif.baseName().remove( QRegExp(" \\d$") ) != fnbasens || fif.suffix() != fnbasesuff) )
         return fileName;
     int i = 1;
-    QString fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
-    while ( existingNames.contains(fn) )
-        fn = fnbasens + " " + QString::number(i++) + (!fnbasens.isEmpty() ? ("." + fnbasesuff) : "");
+    QString fn = fnbasens + " " + QString::number(i++) + (!fnbasesuff.isEmpty() ? ("." + fnbasesuff) : "");
+    while (existingNames.contains(fn))
+        fn = fnbasens + " " + QString::number(i++) + (!fnbasesuff.isEmpty() ? ("." + fnbasesuff) : "");
     return fn;
 }
 
@@ -866,7 +846,7 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 {
     if (!doc || openingDocuments.contains(doc) || savingDocuments.contains(doc))
         return false;
-    if (!driver->testFileExistance(doc->fileName()) || doc->isModified())
+    if ((!isDefaultFileName(doc->fileName()) && !driver->testFileExistance(doc->fileName())) || doc->isModified())
     {
         switch (closeModifiedMessage(doc->fileName()))
         {
@@ -963,6 +943,23 @@ bool BCodeEditorPrivate::tryCloseDocument(BCodeEditorDocument *doc)
         closingDocuments.removeAll(doc);
         return false;
     }
+}
+
+bool BCodeEditorPrivate::isDefaultFileName(const QString &fileName) const
+{
+    if (fileName.isEmpty())
+        return false;
+    QFileInfo fi(fileName);
+    QFileInfo fid(!defaultFN.isEmpty() ? defaultFN : defaultFileName());
+    if (fi.suffix() != fid.suffix())
+        return false;
+    QStringList sl = fi.baseName().split(' ');
+    if (sl.isEmpty())
+        return false;
+    bool ok = false;
+    if (sl.takeLast().toInt(&ok) < 1 || !ok)
+        return false;
+    return sl.join(' ') == fid.baseName();
 }
 
 void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
@@ -1601,8 +1598,7 @@ QMenu *BCodeEditor::createPlainCodecsMenu(QObject *receiver, const char *member,
     {
         QAction *act = mnu->addAction("");
         act->setProperty("beqt/codec_name", cn);
-        if (mpr)
-            BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+        bSetMapping(mpr, act, SIGNAL(triggered()), cn);
     }
     retranslateCodecsMenu(mnu);
     return mnu;
@@ -1622,8 +1618,7 @@ QMenu *BCodeEditor::createStructuredCodecsMenu(QObject *receiver, const char *me
         {
             QAction *act = submnu->addAction("");
             act->setProperty("beqt/codec_name", cn);
-            if (mpr)
-                BApplication::setMapping(mpr, act, SIGNAL(triggered()), cn);
+            bSetMapping(mpr, act, SIGNAL(triggered()), cn);
         }
     }
     retranslateCodecsMenu(mnu);
@@ -1679,9 +1674,8 @@ void BCodeEditor::retranslateCodecsComboBox(QComboBox *cmbox)
 {
     if (!cmbox)
         return;
-    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
-    if (scmbox)
-        return scmbox->retranslate();
+    if (!QString::compare(cmbox->metaObject()->className(), StructuredCodecsComboBox::staticMetaObject.className()))
+        return static_cast<StructuredCodecsComboBox *>(cmbox)->retranslate();
     foreach (int i, bRangeD(0, cmbox->count() - 1))
     {
         QString cn = cmbox->itemData(i).toString();
@@ -1702,9 +1696,8 @@ void BCodeEditor::selectCodec(QComboBox *cmbox, const QString &codecName)
 {
     if (!cmbox || codecName.isEmpty() || !supportedCodecNames().contains(codecName, Qt::CaseInsensitive))
         return;
-    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
-    if (scmbox)
-        return scmbox->setCodecName(codecName);
+    if (!QString::compare(cmbox->metaObject()->className(), StructuredCodecsComboBox::staticMetaObject.className()))
+        return static_cast<StructuredCodecsComboBox *>(cmbox)->setCodecName(codecName);
     int ind = cmbox->findData(codecName, Qt::UserRole, 0);
     if (ind >= 0)
         cmbox->setCurrentIndex(ind);
@@ -1719,9 +1712,8 @@ QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
 {
     if (!cmbox)
         return "";
-    StructuredCodecsComboBox *scmbox = static_cast<StructuredCodecsComboBox *>(cmbox);
-    if (scmbox)
-        return scmbox->codecName();
+    if (!QString::compare(cmbox->metaObject()->className(), StructuredCodecsComboBox::staticMetaObject.className()))
+        return static_cast<StructuredCodecsComboBox *>(cmbox)->codecName();
     int ind = cmbox->currentIndex();
     return (ind >= 0) ? cmbox->itemData(ind).toString() : QString();
 }
@@ -1989,15 +1981,9 @@ bool BCodeEditor::mergeWith(BCodeEditor *other)
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
 {
     B_D(BCodeEditor);
-    if ( d->processedDocuments.isEmpty() )
+    if (d->processedDocuments.isEmpty())
         return true;
-    if (!msecs)
-        return d->processedDocuments.isEmpty();
-    QEventLoop el;
-    if (msecs > 0)
-        QTimer::singleShot( msecs, &el, SLOT( quit() ) );
-    connect( this, SIGNAL( allDocumentsProcessed() ), &el, SLOT( quit() ) );
-    el.exec();
+    BeQt::waitNonBlocking(this, SIGNAL(allDocumentsProcessed()), msecs);
     return d->processedDocuments.isEmpty();
 }
 

@@ -204,8 +204,10 @@ QString BTerminalIOHandler::mergeArguments(const QStringList &arguments)
     return args;
 }
 
-QString BTerminalIOHandler::readLine()
+QString BTerminalIOHandler::readLine(const QString &text)
 {
+    if (!text.isEmpty())
+        write(text);
     QMutexLocker locker(&BTerminalIOHandlerPrivate::readMutex);
     ds_func()->readEventLoop.exec();
     return ds_func()->lastLine;
@@ -213,6 +215,8 @@ QString BTerminalIOHandler::readLine()
 
 void BTerminalIOHandler::write(const QString &text)
 {
+    if (text.isEmpty())
+        return;
     QMutexLocker locker(&BTerminalIOHandlerPrivate::writeMutex);
     BTerminalIOHandlerPrivate::writeStream << text;
     BTerminalIOHandlerPrivate::writeStream.flush();

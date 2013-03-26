@@ -49,6 +49,7 @@ void BLocalDocumentDriverPrivate::init()
     defaultDir = QDir::homePath();
     nativeLineEnd = true;
     lastFileType = 0;
+    codecsCmboxStyle = BFileDialog::StructuredStyle;
 }
 
 /*============================================================================
@@ -106,7 +107,7 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
     if ( !editor() )
         return false;
     B_D(BLocalDocumentDriver);
-    BFileDialog bfd(parent);
+    BFileDialog bfd(parent, d->codecsCmboxStyle);
     bfd.restoreState(d->fileDialogState);
     if ( d->fileDialogState.isEmpty() )
         bfd.setDirectory(d->defaultDir);
@@ -131,7 +132,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
 {
     if ( !editor() )
         return false;
-    BFileDialog bfd(parent);
+    BFileDialog bfd(parent, d_func()->codecsCmboxStyle);
     bfd.restoreState(d_func()->fileDialogState);
     bfd.setFileTypes( editor()->fileTypes() );
     bfd.selectCodec(codec);
@@ -172,6 +173,11 @@ void BLocalDocumentDriver::setDefaultDir(const QString &dir)
 void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
 {
     d_func()->nativeLineEnd = enabled;
+}
+
+void BLocalDocumentDriver::setCodecsComboBoxStyle(BFileDialog::CodecsComboBoxStyle style)
+{
+    d_func()->codecsCmboxStyle = style;
 }
 
 /*============================== Protected methods =========================*/

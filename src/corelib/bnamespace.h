@@ -6,10 +6,14 @@ class QString;
 class QProcess;
 class QStringList;
 class QTextCodec;
+class QObject;
 
 #include "bglobal.h"
 
 #include <QtGlobal>
+#include <QList>
+#include <QPair>
+#include <QSysInfo>
 
 /*============================================================================
 ================================ BeQt ========================================
@@ -17,6 +21,8 @@ class QTextCodec;
 
 namespace BeQt
 {
+
+typedef QPair<QObject *, const char *> Until;
 
 const int Second = 1000;
 const int Minute = 60 * Second;
@@ -26,6 +32,11 @@ const int Megabyte = 1024 * Kilobyte;
 const int Gigabyte = 1024 * Megabyte;
 
 B_CORE_EXPORT void waitNonBlocking(int msecs);
+B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,
+                                   int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
+B_CORE_EXPORT Until until(QObject *object, const char *signal);
 B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
@@ -37,6 +48,18 @@ B_CORE_EXPORT int execProcess(const QString &command, const QStringList &argumen
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
+#if defined(Q_OS_MAC)
+B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
+B_CORE_EXPORT QString macVersion();
+#endif
+#if defined(Q_OS_LINUX)
+B_CORE_EXPORT QString linuxVersion();
+#endif
+#if defined(Q_OS_WIN)
+B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
+B_CORE_EXPORT QString windowsVersion();
+#endif
+B_CORE_EXPORT QString osVersion();
 
 }
 

@@ -30,8 +30,8 @@ class BSettingsDialogPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)
 public:
-    explicit BSettingsDialogPrivate( BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
-                                     BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
+    explicit BSettingsDialogPrivate(BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
+                                    BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
     ~BSettingsDialogPrivate();
 public:
     void init();

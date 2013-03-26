@@ -45,12 +45,19 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     if ( !c || !c->isValid() )
         return;
     connect( c, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
+    connect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
     emit connectionAdded(c);
 }
 
 void BNetworkServerWorker::disconnected()
 {
-    emit disconnected( sender() );
+    BNetworkConnection *c = static_cast<BNetworkConnection *>(sender());
+    if (!c)
+        return;
+    disconnect(c, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    disconnect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
+    c->close();
+    emit disconnected(c);
 }
 
 /*============================================================================

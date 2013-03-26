@@ -1,5 +1,6 @@
 #include "bnamespace.h"
 #include "bterminaliohandler.h"
+#include "bdirtools.h"
 
 #include <QEventLoop>
 #include <QTimer>
@@ -10,17 +11,53 @@
 #include <QByteArray>
 #include <QTextCodec>
 #include <QTextStream>
+#include <QObject>
+#include <QList>
+#include <QPair>
+#include <QSysInfo>
 
 namespace BeQt
 {
 
 void waitNonBlocking(int msecs)
 {
-    if (msecs <= 0)
-        return;
+    waitNonBlocking(QList<Until>(), msecs);
+}
+
+void waitNonBlocking(QObject *sender, const char *signal, int msecs)
+{
+    waitNonBlocking(QList<Until>() << until(sender, signal), msecs);
+}
+
+void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2, int msecs)
+{
+    waitNonBlocking(QList<Until>() << until(sender1, signal1) << until(sender2, signal2), msecs);
+}
+
+void waitNonBlocking(const QList<Until> &list, int msecs)
+{
     QEventLoop el;
-    QTimer::singleShot(msecs, &el, SLOT(quit()));
+    bool b = false;
+    foreach (const Until &u, list)
+    {
+        if (!u.first || !u.second)
+            continue;
+        QObject::connect(u.first, u.second, &el, SLOT(quit()));
+        b = true;
+    }
+    if (msecs > 0)
+        QTimer::singleShot(msecs, &el, SLOT(quit()));
+    else if (!b)
+        return;
     el.exec();
+}
+
+Until until(QObject *object, const char *signal)
+{
+    Until p;
+    p.first = object;
+    p.second = signal;
+    return p;
 }
 
 QString pureUuidText(const QUuid &uuid)
@@ -112,6 +149,104 @@ int execProcess(const QString &workingDir, const QString &command, const QString
     if (codec)
         in.setCodec(codec);
     return (proc.exitStatus() == QProcess::NormalExit) ? bRet(output, in.readAll(), proc.exitCode()) : -1;
+}
+
+#if defined(Q_OS_MAC)
+QString macVersionToString(QSysInfo::MacVersion version)
+{
+    switch (version)
+    {
+    case QSysInfo::MV_9:
+        return "Mac OS 9";
+    case QSysInfo::MV_10_0:
+        return "Mac OS X 10.0 Cheetah";
+    case QSysInfo::MV_10_1:
+        return "Mac OS X 10.1 Puma";
+    case QSysInfo::MV_10_2:
+        return "Mac OS X 10.2 Jaguar";
+    case QSysInfo::MV_10_3:
+        return "Mac OS X 10.3 Panther";
+    case QSysInfo::MV_10_4:
+        return "Mac OS X 10.4 Tiger";
+    case QSysInfo::MV_10_5:
+        return "Mac OS X 10.5 Leopard";
+    case QSysInfo::MV_10_6:
+        return "Mac OS X 10.6 Snow Leopard";
+    case QSysInfo::MV_10_7:
+        return "Mac OS X 10.7 Lion";
+    case QSysInfo::MV_10_8:
+        return "Mac OS X 10.8 Mountain Lion";
+    default:
+        return "Unknown";
+    }
+}
+
+QString macVersion()
+{
+    return macVersionToString(QSysInfo::macVersion());
+}
+#endif
+
+#if defined(Q_OS_LINUX)
+QString linuxVersion()
+{
+    bool ok = false;
+    QStringList sl = BDirTools::readTextFile("/etc/lsb-release", "Latin-1", &ok).split('\n', QString::SkipEmptyParts);
+    if (!ok || sl.isEmpty())
+        return "Unknown";
+    sl = sl.last().split('=', QString::SkipEmptyParts);
+    return (sl.size() == 2) ? ("Linux " + unwrapped(sl.last())) : QString("Unknown");
+}
+#endif
+
+#if defined(Q_OS_WIN)
+QString windowsVersionToString(QSysInfo::WinVersion version)
+{
+    switch (version)
+    {
+    case QSysInfo::WV_32s:
+        return "Windows 3.1";
+    case QSysInfo::WV_95:
+        return "Windows 95";
+    case QSysInfo::WV_98:
+        return "Windows 98";
+    case QSysInfo::WV_Me:
+        return "Windows Me";
+    case QSysInfo::WV_NT:
+        return "Windows NT (4.0)";
+    case QSysInfo::WV_2000:
+        return "Windows 2000 (5.0)";
+    case QSysInfo::WV_XP:
+        return "Windows XP (5.1)";
+    case QSysInfo::WV_2003:
+        return "Windows Server 2003 / Windows Server 2003 R2 / "
+                "Windows Home Server / Windows XP Professional x64 (5.2)";
+    case QSysInfo::WV_VISTA:
+        return "Windows Vista / Windows Server 2008 (6.0)";
+    case QSysInfo::WV_WINDOWS7:
+        return "Windows 7 / Windows Server 2008 R2 (6.1)";
+    case QSysInfo::WV_WINDOWS8:
+        return "Windows 8 (6.2)";
+    default:
+        return "Unknown";
+    }
+}
+
+QString windowsVersion()
+{
+    return windowsVersionToString(QSysInfo::windowsVersion());
+}
+#endif
+
+QString osVersion()
+{
+#if defined(Q_OS_MAC)
+    return macVersion();
+#elif defined(Q_OS_LINUX)
+    return linuxVersion();
+#elif defined(Q_OS_WIN)
+    return windowsVersion();
+#endif
 }
 
 }

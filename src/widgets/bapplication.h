@@ -13,7 +13,6 @@ class QFont;
 class QStringList;
 class QToolBar;
 class QToolButton;
-class QSignalMapper;
 class QWidget;
 class QObject;
 class QVBoxLayout;
@@ -65,8 +64,6 @@ public:
 protected:
     explicit BApplication(BApplicationPrivate &d);
 public:
-    using BCoreApplication::setMapping;
-public:
     static QIcon icon( const QString &name, const QIcon &fallback = QIcon() );
     static QIcon beqtIcon(const QString &name);
     static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
@@ -86,7 +83,6 @@ public:
     static QFont createMonospaceFont();
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
     static QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
-    static void setMapping(QSignalMapper *mapper, QWidget *widget, const char *signal, bool sender = false);
     static void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field);
     static void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field);
 public slots:

@@ -25,6 +25,9 @@ defineReplace(beqtModuleSubdir) {
     return($${moduleSubdir})
 }
 
+#Defining BeQt subdir name
+isEmpty(BEQT_SUBDIR_NAME):BEQT_SUBDIR_NAME=beqt
+
 #Searching for headers
 beqtHeadersPath=
 mac:exists($${PWD}/../Headers):beqtHeadersPath=$${PWD}/../Headers
@@ -33,12 +36,20 @@ else:exists($${PWD}/include):beqtHeadersPath=$${PWD}/include
 isEmpty(beqtHeadersPath):error("BeQt headers not found")
 #Searching for libraries
 beqtLibsPath=
-mac:exists($${PWD}/../Frameworks):beqtLibsPath=$${PWD}/../Frameworks
-else:exists($${PWD}/lib):beqtLibsPath=$${PWD}/lib
-else:exists($${OUT_PWD}/beqt/src):beqtLibsPath=$${OUT_PWD}/beqt/src
-else:exists($${OUT_PWD}/../beqt/src):beqtLibsPath=$${OUT_PWD}/../beqt/src
-else:exists($${OUT_PWD}/../../beqt/src):beqtLibsPath=$${OUT_PWD}/../../beqt/src
-else:exists($${OUT_PWD}/../../../beqt/src):beqtLibsPath=$${OUT_PWD}/../../../beqt/src
+beqtLibsOneFolder=
+mac:exists($${PWD}/../Frameworks) {
+    beqtLibsPath=$${PWD}/../Frameworks
+    beqtLibsOneFolder=true
+}
+else:exists($${PWD}/lib) {
+    beqtLibsPath=$${PWD}/lib
+    beqtLibsOneFolder=true
+}
+else:exists($${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src
+else:exists($${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src
+else:exists($${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src
+else:exists($${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src
+else:beqtLibsOneFolder=true
 
 #If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {
@@ -55,10 +66,12 @@ defineTest(addBeqtModule) {
     INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
     DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
     !isEmpty(beqtLibsPath) {
+        beqtModuleSubdir=
+        isEmpty(beqtLibsOneFolder):beqtModuleSubdir=/$$beqtModuleSubdir($${shortName})
         mac:contains(CONFIG, lib_bundle) {
-            LIBS *= -F$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -framework $${fullName}
+            LIBS *= -F$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}/ -framework $${fullName}
         } else {
-            LIBS *= -L$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -l$${fullName}
+            LIBS *= -L$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}/ -l$${fullName}
         }
     } else {
         mac:LIBS *= -framework $${fullName}
