@@ -157,6 +157,7 @@ signals:
     void documentAboutToBeAdded(BCodeEditorDocument *doc);
     void documentAdded(BCodeEditorDocument *doc);
     void documentAboutToBeRemoved(BCodeEditorDocument *doc);
+    void documentRemoved(const QString &fileName);
     void currentDocumentChanged(BCodeEditorDocument *doc);
     void currentDocumentFileNameChanged(const QString &fileName);
     void currentDocumentModificationChanged(bool modified);
