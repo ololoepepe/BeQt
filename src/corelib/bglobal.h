@@ -6,6 +6,7 @@
 #include <QString>
 #include <QObject>
 #include <QSignalMapper>
+#include <QVariant>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -95,6 +96,16 @@ template<typename T> bool bSetMappingSender(QSignalMapper *mapper, QObject *send
     mapper->setMapping(sender, t);
     QObject::connect(sender, signal, mapper, SLOT(map(QObject *)));
     return true;
+}
+
+template <typename T> T* bPointer(const QVariant &v)
+{
+    return (T *) v.value<void *>();
+}
+
+template <typename T> QVariant bVariant(T *ptr)
+{
+    return QVariant::fromValue((void *) ptr);
 }
 
 template<typename T> void bRet(const T &)
