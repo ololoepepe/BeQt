@@ -15,9 +15,23 @@
 #include <QList>
 #include <QPair>
 #include <QSysInfo>
+#include <QRect>
+#include <QRectF>
+#include <QSize>
+#include <QSizeF>
 
 namespace BeQt
 {
+
+int area(const QRect &r)
+{
+    return r.size().width() * r.size().height();
+}
+
+qreal area(const QRectF &r)
+{
+    return r.size().width() * r.size().height();
+}
 
 void waitNonBlocking(int msecs)
 {
