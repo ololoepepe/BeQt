@@ -529,6 +529,70 @@ void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QLayout *field
     vlt->addLayout(hlt);
 }
 
+void BApplication::setRowVisible(QWidget *field, bool visible)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setVisible(visible);
+    field->setVisible(visible);
+}
+
+void BApplication::setRowVisible(QLayout *field, bool visible)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setVisible(visible);
+    QStack<QLayout *> s;
+    s.push(field);
+    while (!s.isEmpty())
+    {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        foreach (int i, bRangeD(0, lt->count() - 1))
+        {
+            s.push(lt->itemAt(i)->layout());
+            QWidget *w = lt->itemAt(i)->widget();
+            if (w)
+                w->setVisible(visible);
+        }
+    }
+}
+
+void BApplication::setRowEnabled(QWidget *field, bool enabled)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setEnabled(enabled);
+    field->setEnabled(enabled);
+}
+
+void BApplication::setRowEnabled(QLayout *field, bool enabled)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setEnabled(enabled);
+    QStack<QLayout *> s;
+    s.push(field);
+    while (!s.isEmpty())
+    {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        foreach (int i, bRangeD(0, lt->count() - 1))
+        {
+            s.push(lt->itemAt(i)->layout());
+            QWidget *w = lt->itemAt(i)->widget();
+            if (w)
+                w->setEnabled(enabled);
+        }
+    }
+}
+
 /*============================== Public slots ==============================*/
 
 void BApplication::showAboutDialog()
