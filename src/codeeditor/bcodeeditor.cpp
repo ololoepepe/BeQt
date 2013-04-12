@@ -266,7 +266,7 @@ QListWidgetItem *BSplittedLinesDialogPrivate::createListWidgetItem(const BCodeEd
     lwi->setData( Qt::UserRole, QPoint(0, lb) );
     lwi->setData( Qt::UserRole + 1, QPoint(lineLength, ub) );
     QString text = tr("Lines:", "lstwgti text") + " " + QString::number(lb + 1) + " - " + QString::number(ub + 1);
-    text += " (" + QString::number(ub - lb + 1) + " " + tr("lines", "lstwgti text") + ")";
+    text += " (" + tr("total:", "lstwgti text") + QString::number(ub - lb + 1) + ")";
     lwi->setText(text);
     return lwi;
 }
@@ -748,15 +748,17 @@ void BCodeEditorPrivate::removeDocument(BCodeEditorDocument *doc)
 {
     if (!doc)
         return;
+    QString fn = doc->fileName();
     emitDocumentAboutToBeRemoved(doc);
-    twgt->removeTab( twgt->indexOf(doc) );
+    twgt->removeTab(twgt->indexOf(doc));
     BSplittedLinesDialog *sld = doc->splittedLinesDialog();
     if (sld)
     {
         sld->close();
         sld->deleteLater();
     }
-    doc->deleteLater();
+    delete doc;
+    emitDocumentRemoved(fn);
 }
 
 BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocument *doc)
@@ -1110,6 +1112,13 @@ void BCodeEditorPrivate::emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc)
     foreach (BAbstractEditorModule *module, modules)
         module->documentAboutToBeRemoved(doc);
     QMetaObject::invokeMethod( q_func(), "documentAboutToBeRemoved", Q_ARG(BCodeEditorDocument *, doc) );
+}
+
+void BCodeEditorPrivate::emitDocumentRemoved(const QString &fileName)
+{
+    foreach (BAbstractEditorModule *module, modules)
+        module->documentRemoved(fileName);
+    QMetaObject::invokeMethod(q_func(), "documentRemoved", Q_ARG(QString, fileName));
 }
 
 void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)

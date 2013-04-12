@@ -7,6 +7,8 @@ class QProcess;
 class QStringList;
 class QTextCodec;
 class QObject;
+class QRect;
+class QRectF;
 
 #include "bglobal.h"
 
@@ -31,6 +33,8 @@ const int Kilobyte = 1024;
 const int Megabyte = 1024 * Kilobyte;
 const int Gigabyte = 1024 * Megabyte;
 
+B_CORE_EXPORT int area(const QRect &r);
+B_CORE_EXPORT qreal area(const QRectF &r);
 B_CORE_EXPORT void waitNonBlocking(int msecs);
 B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,

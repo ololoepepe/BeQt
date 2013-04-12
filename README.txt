@@ -128,7 +128,7 @@ When building BeQt, you may pass some parameters to qmake:
  * "BEQT_RESOURCES_INSTALLS_PATH=<path>"
    Set install path for resources. See the note below
 
- * "BEQT_SUBDIR_NAME"
+ * "BEQT_SUBDIR_NAME=<name>"
    Set name of the BeQt subdirectory when BeQt is used as a submodule
 
 Note: In Windows systems BeQt is installed to the "C:\Program files\BeQt"

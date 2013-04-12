@@ -4,6 +4,8 @@
 
 === This release ===
 
+[done] Fix depend.pri on Windows
+[done] Improve BAbstractSettingsTab::setRowVisible()
 [done] Add shortcuts for editor modules actions
 [done] Fix bracket highlighting
 [done] Finish writing the Simple Editor example

@@ -249,6 +249,7 @@ public:
     void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
     void emitDocumentAdded(BCodeEditorDocument *doc);
     void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
+    void emitDocumentRemoved(const QString &fileName);
     void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
     void emitCurrentDocumentFileNameChanged(const QString &fileName);
     void emitCurrentDocumentModificationChanged(bool modified);

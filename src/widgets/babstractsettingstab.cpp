@@ -23,39 +23,26 @@ BAbstractSettingsTab::~BAbstractSettingsTab()
     //
 }
 
-/*============================== Static public methods =====================*/
+/*============================== Static public methods======================*/
 
 void BAbstractSettingsTab::setRowVisible(QWidget *field, bool visible)
 {
-    if (!field)
-        return;
-    QFormLayout *flt = static_cast<QFormLayout *>( field->parentWidget()->layout() );
-    if (!flt)
-        return;
-    field->setVisible(visible);
-    QWidget *l = flt->labelForField(field);
-    if (!l)
-        return;
-    l->setVisible(visible);
+    BApplication::setRowVisible(field, visible);
 }
 
 void BAbstractSettingsTab::setRowVisible(QLayout *field, bool visible)
 {
-    if (!field)
-        return;
-    QFormLayout *flt = static_cast<QFormLayout *>( field->parentWidget()->layout() );
-    if (!flt)
-        return;
-    foreach ( int i, bRangeD(0, field->count() - 1) )
-    {
-        QWidget *wgt = field->itemAt(i)->widget();
-        if (wgt)
-            wgt->setVisible(visible);
-    }
-    QWidget *l = flt->labelForField(field);
-    if (!l)
-        return;
-    l->setVisible(visible);
+    BApplication::setRowVisible(field, visible);
+}
+
+void BAbstractSettingsTab::setRowEnabled(QWidget *field, bool enabled)
+{
+    BApplication::setRowEnabled(field, enabled);
+}
+
+void BAbstractSettingsTab::setRowEnabled(QLayout *field, bool enabled)
+{
+    BApplication::setRowEnabled(field, enabled);
 }
 
 /*============================== Public methods ============================*/

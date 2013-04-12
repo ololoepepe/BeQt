@@ -70,6 +70,7 @@ protected:
     virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);
     virtual void documentAdded(BCodeEditorDocument *doc);
     virtual void documentAboutToBeRemoved(BCodeEditorDocument *doc);
+    virtual void documentRemoved(const QString &fileName);
     virtual void currentDocumentChanged(BCodeEditorDocument *doc);
     virtual void fileTypesChanged();
     virtual void fileHistoryChanged(const QStringList &list);

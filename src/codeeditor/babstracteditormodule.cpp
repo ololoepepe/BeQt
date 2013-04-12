@@ -243,6 +243,11 @@ void BAbstractEditorModule::documentAboutToBeRemoved(BCodeEditorDocument *)
     //
 }
 
+void BAbstractEditorModule::documentRemoved(const QString &)
+{
+    //
+}
+
 void BAbstractEditorModule::currentDocumentChanged(BCodeEditorDocument *)
 {
     //

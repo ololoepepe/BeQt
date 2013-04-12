@@ -68,10 +68,12 @@ defineTest(addBeqtModule) {
     !isEmpty(beqtLibsPath) {
         beqtModuleSubdir=
         isEmpty(beqtLibsOneFolder):beqtModuleSubdir=/$$beqtModuleSubdir($${shortName})
+        beqtFinalLibPah=$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}
+        !exists($${beqtFinalLibPah}):beqtFinalLibPah=$${beqtLibsPath}$${beqtModuleSubdir}
         mac:contains(CONFIG, lib_bundle) {
-            LIBS *= -F$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}/ -framework $${fullName}
+            LIBS *= -F$${beqtFinalLibPah}/ -framework $${fullName}
         } else {
-            LIBS *= -L$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}/ -l$${fullName}
+            LIBS *= -L$${beqtFinalLibPah}/ -l$${fullName}
         }
     } else {
         mac:LIBS *= -framework $${fullName}
