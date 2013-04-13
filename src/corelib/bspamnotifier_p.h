@@ -10,6 +10,10 @@ class QTimer;
 
 #include <QObject>
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+class QElapsedTimer;
+#endif
+
 /*============================================================================
 ================================ BSpamNotifierPrivate
 ============================================================================*/
@@ -29,6 +33,9 @@ public slots:
     void timeout();
 public:
     QTimer *timer;
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    QElapsedTimer *etimer;
+#endif
     int interval;
     int limit;
     int count;

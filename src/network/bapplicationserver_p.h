@@ -25,14 +25,22 @@ class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
 public:
     static const QDataStream::Version DSVersion;
 public:
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    explicit BApplicationServerPrivate(BApplicationServer *q, quint16 port, int timeout);
+#else
     explicit BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout);
+#endif
     ~BApplicationServerPrivate();
 public:
     void init();
 public slots:
     void newPendingConnection();
 public:
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    const quint16 Port;
+#else
     const QString ServerName;
+#endif
     const int OperationTimeout;
 public:
     BGenericServer *server;

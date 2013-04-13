@@ -1,4 +1,4 @@
-=== BeQt 2.0.0 (11 February 2013) ===
+=== BeQt 2.0.0 (13 April 2013) ===
     * Fully revise library structure (in particular, use D-pointers)
     * Make most of internal classes available externally
     * Change most of classes' interfaces

@@ -961,7 +961,7 @@ bool BCodeEditorPrivate::isDefaultFileName(const QString &fileName) const
     bool ok = false;
     if (sl.takeLast().toInt(&ok) < 1 || !ok)
         return false;
-    return sl.join(' ') == fid.baseName();
+    return sl.join(" ") == fid.baseName();
 }
 
 void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)

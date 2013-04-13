@@ -36,7 +36,11 @@ void BSocketWrapperPrivate::init()
 {
     resetIn();
     resetOut();
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    dsVersion = QDataStream::Qt_4_8;
+#else
     dsVersion = QDataStream::Qt_5_0;
+#endif
     comprLvl = 0;
     criticalBufferSize = 0;
     closeOnCriticalBufferSize = false;

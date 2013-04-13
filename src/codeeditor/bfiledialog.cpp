@@ -54,7 +54,11 @@ private:
 
 /*============================== Static public constants ===================*/
 
-const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_5_0;
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_4_8;
+#else
+    const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_5_0;
+#endif
 
 /*============================== Public constructors =======================*/
 

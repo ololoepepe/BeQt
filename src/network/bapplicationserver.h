@@ -18,7 +18,11 @@ class B_NETWORK_EXPORT BApplicationServer : public BBase
 {
     B_DECLARE_PRIVATE(BApplicationServer)
 public:
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    explicit BApplicationServer(quint16 port, int operationTimeout = 5 * BeQt::Second);
+#else
     explicit BApplicationServer(const QString &serverName, int operationTimeout = 5 * BeQt::Second);
+#endif
     ~BApplicationServer();
 protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);
