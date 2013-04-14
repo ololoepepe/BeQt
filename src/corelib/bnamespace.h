@@ -9,6 +9,8 @@ class QTextCodec;
 class QObject;
 class QRect;
 class QRectF;
+class QVatiant;
+class QByterray;
 
 #include "bglobal.h"
 
@@ -37,6 +39,8 @@ const QDataStream::Version DataStreamVersion = QDataStream::Qt_4_8;
 
 B_CORE_EXPORT int area(const QRect &r);
 B_CORE_EXPORT qreal area(const QRectF &r);
+B_CORE_EXPORT QByteArray variantToData(const QVariant &variant);
+B_CORE_EXPORT QVariant dataToVariant(const QByteArray &data);
 B_CORE_EXPORT void waitNonBlocking(int msecs);
 B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,

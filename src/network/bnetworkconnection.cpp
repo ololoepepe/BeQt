@@ -481,11 +481,7 @@ BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QByt
 
 BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QVariant &variant)
 {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    out << variant;
-    return sendRequest(op, ba);
+    return sendRequest(op, BeQt::variantToData(variant));
 }
 
 bool BNetworkConnection::sendReply(BNetworkOperation *op, const QByteArray &data)
@@ -503,11 +499,7 @@ bool BNetworkConnection::sendReply(BNetworkOperation *op, const QByteArray &data
 
 bool BNetworkConnection::sendReply(BNetworkOperation *op, const QVariant &variant)
 {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    out << variant;
-    return sendReply(op, ba);
+    return sendReply(op, BeQt::variantToData(variant));
 }
 
 /*============================== Public slots ==============================*/

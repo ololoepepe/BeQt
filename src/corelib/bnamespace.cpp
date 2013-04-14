@@ -19,6 +19,7 @@
 #include <QRectF>
 #include <QSize>
 #include <QSizeF>
+#include <QVariant>
 
 namespace BeQt
 {
@@ -31,6 +32,24 @@ int area(const QRect &r)
 qreal area(const QRectF &r)
 {
     return r.size().width() * r.size().height();
+}
+
+QByteArray variantToData(const QVariant &variant)
+{
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(DataStreamVersion);
+    out << variant;
+    return ba;
+}
+
+QVariant dataToVariant(const QByteArray &data)
+{
+    QDataStream in(data);
+    in.setVersion(DataStreamVersion);
+    QVariant v;
+    in >> v;
+    return v;
 }
 
 void waitNonBlocking(int msecs)

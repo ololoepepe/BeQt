@@ -124,11 +124,7 @@ const QByteArray &BNetworkOperation::data() const
 
 QVariant BNetworkOperation::variantData() const
 {
-    QDataStream in(data());
-    in.setVersion(BeQt::DataStreamVersion);
-    QVariant v;
-    in >> v;
-    return v;
+    return BeQt::dataToVariant(data());
 }
 
 BNetworkOperationMetaData BNetworkOperation::metaData() const

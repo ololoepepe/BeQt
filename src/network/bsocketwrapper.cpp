@@ -300,9 +300,5 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
 
 bool BSocketWrapper::sendData(const QVariant &variant, const BNetworkOperationMetaData &metaData)
 {
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    out << variant;
-    return sendData(ba, metaData);
+    return sendData(BeQt::variantToData(variant), metaData);
 }
