@@ -21,7 +21,6 @@ class QVariant;
 #include <QObject>
 #include <QByteArray>
 #include <QAbstractSocket>
-#include <QDataStream>
 
 /*============================================================================
 ================================ BNetworkConnection ==========================
@@ -42,7 +41,6 @@ public:
 protected:
     explicit BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent = 0);
 public:
-    void setDataStreamVersion(QDataStream::Version version);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
@@ -64,7 +62,6 @@ public:
     BNetworkServer *server() const;
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
-    QDataStream::Version dataStreamVersion() const;
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;

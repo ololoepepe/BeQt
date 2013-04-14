@@ -16,7 +16,6 @@ class QEvent;
 
 #include <QObject>
 #include <QApplication>
-#include <QDataStream>
 
 /*============================================================================
 ================================ BPasswordWidgetPrivate ======================
@@ -26,8 +25,6 @@ class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BPasswordWidget)
-public:
-    static const QDataStream::Version DSVersion;
 public:
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);
     ~BPasswordWidgetPrivate();

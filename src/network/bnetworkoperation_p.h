@@ -2,6 +2,7 @@
 #define BNETWORKOPERATION_P_H
 
 class BNetworkConnectionPrivate;
+class BNetworkConnection;
 
 #include "bnetworkoperation.h"
 #include "bnetworkoperationmetadata.h"
@@ -20,7 +21,8 @@ class B_NETWORK_EXPORT BNetworkOperationPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkOperation)
 public:
-    explicit BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md);
+    explicit BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md,
+                                      BNetworkConnection *connection);
     ~BNetworkOperationPrivate();
 public:
     void init();
@@ -31,6 +33,7 @@ public:
     void setFinished( const QByteArray &dt = QByteArray() );
 public:
     const BNetworkOperationMetaData MetaData;
+    BNetworkConnection *const Connection;
 public:
     bool isStarted;
     bool isError;

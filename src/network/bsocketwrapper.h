@@ -13,7 +13,6 @@ class QVariant;
 #include <BeQtCore/BBase>
 
 #include <QObject>
-#include <QDataStream>
 
 /*============================================================================
 ================================ BSocketWrapper ==============================
@@ -31,22 +30,12 @@ public:
 protected:
     explicit BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
 public:
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    static QByteArray variantToData(const QVariant &variant, QDataStream::Version version = QDataStream::Qt_4_8);
-    static QVariant dataToVariant(const QByteArray &data, QDataStream::Version version = QDataStream::Qt_4_8);
-#else
-    static QByteArray variantToData(const QVariant &variant, QDataStream::Version version = QDataStream::Qt_5_0);
-    static QVariant dataToVariant(const QByteArray &data, QDataStream::Version version = QDataStream::Qt_5_0);
-#endif
-public:
     void setSocket(BGenericSocket *socket);
-    void setDataStreamVersion(QDataStream::Version version);
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
     bool unsetSocket();
     BGenericSocket *socket() const;
-    QDataStream::Version dataStreamVersion() const;
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;

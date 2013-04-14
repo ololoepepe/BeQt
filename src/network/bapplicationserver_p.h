@@ -11,7 +11,6 @@ class BGenericServer;
 
 #include <QObject>
 #include <QCoreApplication>
-#include <QDataStream>
 #include <QString>
 
 /*============================================================================
@@ -22,8 +21,6 @@ class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BApplicationServer)
-public:
-    static const QDataStream::Version DSVersion;
 public:
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     explicit BApplicationServerPrivate(BApplicationServer *q, quint16 port, int timeout);

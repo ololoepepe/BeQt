@@ -2,6 +2,8 @@
 #include "bgenericsocket.h"
 #include "bsocketwrapper_p.h"
 
+#include <BeQtCore/BeQt>
+
 #include <QDataStream>
 #include <QObject>
 #include <QAbstractSocket>
@@ -36,11 +38,6 @@ void BSocketWrapperPrivate::init()
 {
     resetIn();
     resetOut();
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    dsVersion = QDataStream::Qt_4_8;
-#else
-    dsVersion = QDataStream::Qt_5_0;
-#endif
     comprLvl = 0;
     criticalBufferSize = 0;
     closeOnCriticalBufferSize = false;
@@ -90,7 +87,7 @@ void BSocketWrapperPrivate::readyRead()
 {
     B_Q(BSocketWrapper);
     QDataStream in(socket->ioDevice());
-    in.setVersion(dsVersion);
+    in.setVersion(BeQt::DataStreamVersion);
     forever
     {
         if (criticalBufferSize > 0 && socket->bytesAvailable() >= criticalBufferSize)
@@ -180,26 +177,6 @@ BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
     d_func()->init();
 }
 
-/*============================== Static public methods =====================*/
-
-QByteArray BSocketWrapper::variantToData(const QVariant &variant, QDataStream::Version version)
-{
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(version);
-    out << variant;
-    return ba;
-}
-
-QVariant BSocketWrapper::dataToVariant(const QByteArray &data, QDataStream::Version version)
-{
-    QDataStream in(data);
-    in.setVersion(version);
-    QVariant v;
-    in >> v;
-    return v;
-}
-
 /*============================== Public methods ============================*/
 
 void BSocketWrapper::setSocket(BGenericSocket *socket)
@@ -213,11 +190,6 @@ void BSocketWrapper::setSocket(BGenericSocket *socket)
     connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
              d, SLOT( error(QAbstractSocket::SocketError) ) );
     connect( socket, SIGNAL( readyRead() ), d, SLOT( readyRead() ) );
-}
-
-void BSocketWrapper::setDataStreamVersion(QDataStream::Version version)
-{
-    d_func()->dsVersion = version;
 }
 
 void BSocketWrapper::setCompressionLevel(int level)
@@ -262,11 +234,6 @@ BGenericSocket *BSocketWrapper::socket() const
     return d_func()->socket.data();
 }
 
-QDataStream::Version BSocketWrapper::dataStreamVersion() const
-{
-    return d_func()->dsVersion;
-}
-
 int BSocketWrapper::compressionLevel() const
 {
     return d_func()->comprLvl;
@@ -299,7 +266,7 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
         d->metaOut = metaData;
         QByteArray bam;
         QDataStream outm(&bam, QIODevice::WriteOnly);
-        outm.setVersion(d->dsVersion);
+        outm.setVersion(BeQt::DataStreamVersion);
         outm << (qint64) 0;
         outm << true;
         outm << metaData.id();
@@ -315,7 +282,7 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
     }
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(d->dsVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << (qint64) 0;
     out << false;
     out << qCompress(data, d->comprLvl);
@@ -333,5 +300,9 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
 
 bool BSocketWrapper::sendData(const QVariant &variant, const BNetworkOperationMetaData &metaData)
 {
-    return sendData(variantToData(variant), metaData);
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(BeQt::DataStreamVersion);
+    out << variant;
+    return sendData(ba, metaData);
 }

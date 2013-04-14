@@ -91,19 +91,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="567"/>
+        <location filename="../src/widgets/bapplication.cpp" line="631"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="569"/>
+        <location filename="../src/widgets/bapplication.cpp" line="633"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="570"/>
+        <location filename="../src/widgets/bapplication.cpp" line="634"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -250,49 +250,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1096"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1095"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1955"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1954"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1961"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1960"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1968"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1967"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1974"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1973"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1980"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1979"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1986"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1985"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1993"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1992"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -708,7 +708,7 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bfiledialog.cpp" line="80"/>
+        <location filename="../src/codeeditor/bfiledialog.cpp" line="75"/>
         <source>Encoding</source>
         <comment>lbl text</comment>
         <translation>Кодировка</translation>
@@ -1024,13 +1024,13 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="109"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="106"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="110"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="107"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>

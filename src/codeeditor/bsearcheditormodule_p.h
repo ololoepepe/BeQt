@@ -30,7 +30,6 @@ class QEvent;
 
 #include <QObject>
 #include <QDialog>
-#include <QDataStream>
 #include <QTextDocument>
 #include <QPointer>
 
@@ -93,7 +92,6 @@ class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BSearchDialog)
 public:
     static const int DefMaximumHistorySize;
-    static const QDataStream::Version DSVersion;
 public:
     explicit BSearchDialogPrivate(BSearchDialog *q);
     ~BSearchDialogPrivate();

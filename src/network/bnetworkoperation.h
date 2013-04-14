@@ -1,6 +1,7 @@
 #ifndef BNETWORKOPERATION_H
 #define BNETWORKOPERATION_H
 
+class BNetworkConnection;
 class BNetworkOperationPrivate;
 class BNetworkConnectionPrivate;
 
@@ -28,8 +29,9 @@ public:
 protected:
     explicit BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent = 0);
 private:
-    explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent = 0);
+    explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, BNetworkConnection *parent);
 public:
+    BNetworkConnection *connection() const;
     const QByteArray &data() const;
     QVariant variantData() const;
     BNetworkOperationMetaData metaData() const;

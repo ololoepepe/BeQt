@@ -4,6 +4,7 @@
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QWidget>
@@ -26,14 +27,6 @@
 /*============================================================================
 ================================ BPasswordWidgetPrivate ======================
 ============================================================================*/
-
-/*============================== Static public constants ===================*/
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_4_8;
-#else
-    const QDataStream::Version BPasswordWidgetPrivate::DSVersion = QDataStream::Qt_5_0;
-#endif
 
 /*============================== Public constructors =======================*/
 
@@ -164,7 +157,7 @@ QByteArray BPasswordWidget::encrypt(const QString &string, QCryptographicHash::A
 BPasswordWidget::PasswordWidgetData BPasswordWidget::stateToData(const QByteArray &ba)
 {
     QDataStream in(ba);
-    in.setVersion(BPasswordWidgetPrivate::DSVersion);
+    in.setVersion(BeQt::DataStreamVersion);
     bool enc = false;
     in >> enc;
     PasswordWidgetData pd;
@@ -186,7 +179,7 @@ QByteArray BPasswordWidget::dataToState(const PasswordWidgetData &dt)
 {
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BPasswordWidgetPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     bool enc = !dt.encryptedPassword.isEmpty();
     out << enc;
     if (enc)

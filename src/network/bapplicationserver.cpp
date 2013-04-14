@@ -21,14 +21,6 @@
 ================================ BApplicationServerPrivate ===================
 ============================================================================*/
 
-/*============================== Static public constants ===================*/
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_4_8;
-#else
-    const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_5_0;
-#endif
-
 /*============================== Public constructors =======================*/
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -75,7 +67,7 @@ void BApplicationServerPrivate::newPendingConnection()
         return;
     QByteArray ba = s->readAll();
     QDataStream in(ba);
-    in.setVersion(DSVersion);
+    in.setVersion(BeQt::DataStreamVersion);
     bool message = false;
     QStringList args;
     in >> message;
@@ -88,7 +80,7 @@ void BApplicationServerPrivate::newPendingConnection()
     {
         QByteArray data;
         QDataStream out(&data, QIODevice::WriteOnly);
-        out.setVersion(BApplicationServerPrivate::DSVersion);
+        out.setVersion(BeQt::DataStreamVersion);
         out << true;
         s->write(data);
         s->waitForBytesWritten(OperationTimeout);
@@ -147,7 +139,7 @@ bool BApplicationServer::testServer() const
     const B_D(BApplicationServer);
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(BApplicationServerPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << false;
     BGenericSocket s(BGenericSocket::LocalSocket);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -198,7 +190,7 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
         return false;
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BApplicationServerPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << true;
     out << args;
     BGenericSocket s(BGenericSocket::LocalSocket);

@@ -1,6 +1,7 @@
 #include "bnetworkoperation.h"
 #include "bsocketwrapper.h"
 #include "bnetworkoperation_p.h"
+#include "bnetworkconnection.h"
 
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQtGlobal>
@@ -13,6 +14,7 @@
 #include <QTimer>
 #include <QEventLoop>
 #include <QVariant>
+#include <QDataStream>
 
 /*============================================================================
 ================================ BNetworkOperationPrivate ====================
@@ -20,8 +22,9 @@
 
 /*============================== Public constructors =======================*/
 
-BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md) :
-    BBasePrivate(q), MetaData(md)
+BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md,
+                                                   BNetworkConnection *connection) :
+    BBasePrivate(q), MetaData(md), Connection(connection)
 {
     //
 }
@@ -101,13 +104,18 @@ BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *paren
 
 /*============================== Private constructors ======================*/
 
-BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData) )
+BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, BNetworkConnection *parent) :
+    QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData, parent) )
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
+
+BNetworkConnection *BNetworkOperation::connection() const
+{
+    return d_func()->Connection;
+}
 
 const QByteArray &BNetworkOperation::data() const
 {
@@ -116,7 +124,11 @@ const QByteArray &BNetworkOperation::data() const
 
 QVariant BNetworkOperation::variantData() const
 {
-    return BSocketWrapper::dataToVariant( data() );
+    QDataStream in(data());
+    in.setVersion(BeQt::DataStreamVersion);
+    QVariant v;
+    in >> v;
+    return v;
 }
 
 BNetworkOperationMetaData BNetworkOperation::metaData() const
