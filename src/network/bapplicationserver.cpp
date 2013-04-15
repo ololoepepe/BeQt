@@ -21,17 +21,21 @@
 ================================ BApplicationServerPrivate ===================
 ============================================================================*/
 
-/*============================== Static public constants ===================*/
-
-const QDataStream::Version BApplicationServerPrivate::DSVersion = QDataStream::Qt_5_0;
-
 /*============================== Public constructors =======================*/
 
-BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout) :
-    BBasePrivate(q), ServerName(serverName), OperationTimeout(timeout)
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, quint16 port, int timeout) :
+        BBasePrivate(q), Port(port), OperationTimeout(timeout)
 {
     //
 }
+#else
+BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout) :
+    BBasePrivate(q), ServerName(serverName), OperationTimeout(timeout)
+{
+        //
+}
+#endif
 
 BApplicationServerPrivate::~BApplicationServerPrivate()
 {
@@ -46,7 +50,9 @@ void BApplicationServerPrivate::init()
 {
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
     server = new BGenericServer(BGenericServer::LocalServer);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
+#endif
     connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
 }
 
@@ -61,7 +67,7 @@ void BApplicationServerPrivate::newPendingConnection()
         return;
     QByteArray ba = s->readAll();
     QDataStream in(ba);
-    in.setVersion(DSVersion);
+    in.setVersion(BeQt::DataStreamVersion);
     bool message = false;
     QStringList args;
     in >> message;
@@ -74,7 +80,7 @@ void BApplicationServerPrivate::newPendingConnection()
     {
         QByteArray data;
         QDataStream out(&data, QIODevice::WriteOnly);
-        out.setVersion(BApplicationServerPrivate::DSVersion);
+        out.setVersion(BeQt::DataStreamVersion);
         out << true;
         s->write(data);
         s->waitForBytesWritten(OperationTimeout);
@@ -88,11 +94,19 @@ void BApplicationServerPrivate::newPendingConnection()
 
 /*============================== Public constructors =======================*/
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+BApplicationServer::BApplicationServer(quint16 port, int operationTimeout) :
+    BBase( *new BApplicationServerPrivate(this, port, operationTimeout) )
+{
+    d_func()->init();
+}
+#else
 BApplicationServer::BApplicationServer(const QString &serverName, int operationTimeout) :
     BBase( *new BApplicationServerPrivate(this, serverName, operationTimeout) )
 {
     d_func()->init();
 }
+#endif
 
 BApplicationServer::~BApplicationServer()
 {
@@ -111,42 +125,54 @@ BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
 
 bool BApplicationServer::isValid() const
 {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    return d_func()->Port;
+#else
     return !d_func()->ServerName.isEmpty();
+#endif
 }
 
 bool BApplicationServer::testServer() const
 {
-    const B_D(BApplicationServer);
-    if ( d->ServerName.isEmpty() )
+    if (!isValid())
         return false;
+    const B_D(BApplicationServer);
     QByteArray data;
     QDataStream out(&data, QIODevice::WriteOnly);
-    out.setVersion(BApplicationServerPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << false;
     BGenericSocket s(BGenericSocket::LocalSocket);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    s.connectToHost("127.0.0.1", d->Port);
+#else
     s.connectToHost(d->ServerName);
+#endif
     bool b = s.waitForConnected(d->OperationTimeout) && s.write(data) &&
             s.waitForBytesWritten(d->OperationTimeout) && s.waitForReadyRead(d->OperationTimeout);
+#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     if (!b)
         QLocalServer::removeServer(d->ServerName);
+#endif
     return b;
 }
 
 bool BApplicationServer::listen()
 {
-    if ( !QCoreApplication::instance() )
+    if (!QCoreApplication::instance() || !isValid())
         return false;
     B_D(BApplicationServer);
-    if ( d->ServerName.isEmpty() )
-        return false;
     if ( d->server->isListening() )
         return true;
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    return d->server->listen("127.0.0.1", d->Port);
+#else
     return d->server->listen(d->ServerName);
+#endif
 }
 
 bool BApplicationServer::sendMessage(int &argc, char **argv)
 {
-    if ( argc < 1 || !argv || d_func()->ServerName.isEmpty() )
+    if (argc < 1 || !argv || !isValid())
         return false;
     QStringList args;
     for (int i = 1; i < argc; ++i)
@@ -157,20 +183,22 @@ bool BApplicationServer::sendMessage(int &argc, char **argv)
 bool BApplicationServer::sendMessage(const QStringList &arguments)
 {
     B_D(BApplicationServer);
-    if ( d->server->isListening() )
-        return false;
-    if ( d->ServerName.isEmpty() )
+    if (d->server->isListening() || !isValid())
         return false;
     QStringList args = !arguments.isEmpty() ? arguments : QStringList( QCoreApplication::arguments().mid(1) );
     if ( args.isEmpty() )
         return false;
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BApplicationServerPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << true;
     out << args;
     BGenericSocket s(BGenericSocket::LocalSocket);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    s.connectToHost("127.0.0.1", d->Port);
+#else
     s.connectToHost(d->ServerName);
+#endif
     if ( !s.waitForConnected(d->OperationTimeout) )
         return false;
     if ( !s.write(ba) )

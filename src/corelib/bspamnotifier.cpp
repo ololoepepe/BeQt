@@ -9,6 +9,10 @@
 #include <QTimer>
 #include <QMetaObject>
 
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+#include <QElapsedTimer>
+#endif
+
 /*============================================================================
 ================================ BSpamNotifierPrivate ========================
 ============================================================================*/
@@ -23,7 +27,9 @@ BSpamNotifierPrivate::BSpamNotifierPrivate(BSpamNotifier *q) :
 
 BSpamNotifierPrivate::~BSpamNotifierPrivate()
 {
-    //
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    delete etimer;
+#endif
 }
 
 /*============================== Public methods ============================*/
@@ -31,6 +37,9 @@ BSpamNotifierPrivate::~BSpamNotifierPrivate()
 void BSpamNotifierPrivate::init()
 {
     timer = new QTimer(this);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    etimer = 0;
+#endif
     connect( timer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
     interval = 0;
     limit = 0;
@@ -55,13 +64,24 @@ void BSpamNotifierPrivate::testSpam(int dcount)
     {
         elapsed = timeElapsed();
         timer->stop();
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+        if (etimer)
+            etimer->invalidate();
+        delete etimer;
+        etimer = 0;
+#endif
         QMetaObject::invokeMethod( q_func(), "spammed", Q_ARG(int, elapsed) );
     }
 }
 
 int BSpamNotifierPrivate::timeElapsed() const
 {
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    return (timer->isActive() && etimer) ? etimer->elapsed() : elapsed;
+#else
     return timer->isActive() ? ( timer->interval() - timer->remainingTime() ) : elapsed;
+#endif
+
 }
 
 /*============================================================================
@@ -160,6 +180,12 @@ void BSpamNotifier::spam(int eventWeight)
     if (!d->enabled)
         return;
     if ( !d->timer->isActive() )
+    {
         d->timer->start(d->interval);
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+        d->etimer = new QElapsedTimer;
+        d->etimer->start();
+#endif
+    }
     d_func()->testSpam(eventWeight);
 }

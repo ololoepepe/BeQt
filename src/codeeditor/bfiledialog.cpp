@@ -4,6 +4,7 @@
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
@@ -31,8 +32,6 @@ class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
     Q_DECLARE_TR_FUNCTIONS(BFileDialogPrivate)
     B_DECLARE_PUBLIC(BFileDialog)
 public:
-    static const QDataStream::Version DSVersion;
-public:
     explicit BFileDialogPrivate(BFileDialog *q, BFileDialog::CodecsComboBoxStyle cmboxStyle);
     ~BFileDialogPrivate();
 public:
@@ -51,10 +50,6 @@ private:
 /*============================================================================
 ================================ BFileDialogPrivate ==========================
 ============================================================================*/
-
-/*============================== Static public constants ===================*/
-
-const QDataStream::Version BFileDialogPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 
@@ -165,7 +160,7 @@ void BFileDialog::selectCodec(const QString &codecName)
 void BFileDialog::restoreState(const QByteArray &ba, bool includeGeometry)
 {
     QDataStream in(ba);
-    in.setVersion(BFileDialogPrivate::DSVersion);
+    in.setVersion(BeQt::DataStreamVersion);
     QByteArray fdstate;
     QString scn;
     QString sft;
@@ -222,7 +217,7 @@ QByteArray BFileDialog::saveState(bool includeGeometry) const
 {
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BFileDialogPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << QFileDialog::saveState();
     out << selectedCodecName();
     out << selectedFileTypeId();

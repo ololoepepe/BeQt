@@ -85,7 +85,7 @@ void BNetworkConnectionPrivate::sendNext()
 
 BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOperationMetaData &metaData)
 {
-    BNetworkOperation *op = new BNetworkOperation( metaData, q_func() );
+    BNetworkOperation *op = new BNetworkOperation(metaData, q_func());
     operations.insert(op, metaData);
     connect(op, SIGNAL(canceled()), this, SLOT(operationCanceled()));
     connect(op, SIGNAL(destroyed(QObject *)), this, SLOT(operationDestroyed(QObject *)));
@@ -303,11 +303,6 @@ BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *pa
 
 /*============================== Public methods ============================*/
 
-void BNetworkConnection::setDataStreamVersion(QDataStream::Version version)
-{
-    d_func()->socketWrapper->setDataStreamVersion(version);
-}
-
 void BNetworkConnection::setCompressionLevel(int level)
 {
     d_func()->socketWrapper->setCompressionLevel(level);
@@ -437,11 +432,6 @@ QString BNetworkConnection::errorString() const
     return isValid() ? d_func()->socket->errorString() : "";
 }
 
-QDataStream::Version BNetworkConnection::dataStreamVersion() const
-{
-    return d_func()->socketWrapper->dataStreamVersion();
-}
-
 int BNetworkConnection::compressionLevel() const
 {
     return d_func()->socketWrapper->compressionLevel();
@@ -491,7 +481,7 @@ BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QByt
 
 BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QVariant &variant)
 {
-    return sendRequest(op, BSocketWrapper::variantToData(variant, d_func()->socketWrapper->dataStreamVersion()));
+    return sendRequest(op, BeQt::variantToData(variant));
 }
 
 bool BNetworkConnection::sendReply(BNetworkOperation *op, const QByteArray &data)
@@ -509,7 +499,7 @@ bool BNetworkConnection::sendReply(BNetworkOperation *op, const QByteArray &data
 
 bool BNetworkConnection::sendReply(BNetworkOperation *op, const QVariant &variant)
 {
-    return sendReply(op, BSocketWrapper::variantToData(variant, d_func()->socketWrapper->dataStreamVersion()));
+    return sendReply(op, BeQt::variantToData(variant));
 }
 
 /*============================== Public slots ==============================*/

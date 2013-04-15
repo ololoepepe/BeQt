@@ -7,6 +7,7 @@
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
 
@@ -46,7 +47,6 @@
 /*============================== Static public constants ===================*/
 
 const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
-const QDataStream::Version BSearchDialogPrivate::DSVersion = QDataStream::Qt_5_0;
 
 /*============================== Public constructors =======================*/
 
@@ -354,7 +354,7 @@ void BSearchDialog::restoreState(const QByteArray &ba)
     if ( ba.isEmpty() )
         return;
     QDataStream out(ba);
-    out.setVersion(BSearchDialogPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     bool cs = false;
     bool wholeWords = false;
     bool backward = false;
@@ -442,7 +442,7 @@ QByteArray BSearchDialog::saveState() const
 {
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BSearchDialogPrivate::DSVersion);
+    out.setVersion(BeQt::DataStreamVersion);
     out << (caseSensitivity() == Qt::CaseSensitive);
     out << matchWholeWords();
     out << backwardOrder();

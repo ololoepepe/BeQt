@@ -13,7 +13,6 @@ class BSocketWrapperPrivate;
 #include <QObject>
 #include <QAbstractSocket>
 #include <QPointer>
-#include <QDataStream>
 
 /*============================================================================
 ================================ BSocketWrapperPrivate =======================
@@ -42,7 +41,6 @@ public:
     qint64 bytesOutTotal;
     qint64 bytesOutReady;
     BNetworkOperationMetaData metaOut;
-    QDataStream::Version dsVersion;
     int comprLvl;
     qint64 criticalBufferSize;
     bool closeOnCriticalBufferSize;

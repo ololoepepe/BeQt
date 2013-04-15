@@ -49,11 +49,13 @@ as for every other project using Qt.
 
 See: http://qt-project.org/resources/getting_started for details.
 
-BeQt is intended for use with Qt 5.
-Support of Qt libraries' versions lower than 5.0.0 us not guaranteed.
+BeQt is intended for use with Qt 5, or with Qt 4.8. Classes interface may
+slightly vary depending on the version of Qt used. In case of using Qt 4.8,
+some features may be missing.
+Support of Qt libraries' versions lower than 4.8.0 is not guaranteed.
 
 Note: in order to use all BeQt features you will need
-the following Qt modules: QtCore, QtNetwork, QtGui, QtWidgets.
+the following Qt modules: QtCore, QtNetwork, QtGui, QtWidgets (for Qt 5).
 
 In order to use builtin .svgz icons you will also need
 the corresponding plugin.
@@ -210,6 +212,10 @@ When building, BeQt generates translation files (.qm), containing translations
 of UI elements. These files are located in the "translations" subdirectory
 (for example, "translations/beqt_ru.qm").
 
+If you wish to use BeQt whith different versions of Qt, the following link
+may be useful for you:
+http://qt-project.org/doc/qt-5.0/qtcore/qtglobal.html#QT_VERSION_CHECK
+
 ==============================================================================
  FAQ
 ==============================================================================
@@ -217,6 +223,9 @@ of UI elements. These files are located in the "translations" subdirectory
 Q: Ho do I start using BeQt?
 A: See "Building and installing", "Using",
 and demos in the "examples" directory.
+
+В: Why the BeQtWidgets module is called so? Qt 4.8 has no Widgets module!
+О: In Qt 5, all widgets were moved to a separate module (QtWidgets).
 
 Q: What are BeQt license restrictions?
 A: There are almost no restrictions. You may use BeQt as you wish,

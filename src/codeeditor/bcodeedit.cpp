@@ -58,7 +58,6 @@
 #include <QResizeEvent>
 #include <QSize>
 #include <QTextBlockUserData>
-#include <QRegularExpression>
 
 #include <QDebug>
 
@@ -625,11 +624,11 @@ void BCodeEditPrivate::removeTrailingSpaces(QString *s)
 {
     if (!s || s->isEmpty())
         return;
+    static QRegExp rx("\\s+$");
     QStringList sl = s->split('\n');
-    static QRegularExpression rx("\\s+$");
-    foreach ( int i, bRangeD(0, sl.size() - 1) )
+    foreach (int i, bRangeD(0, sl.size() - 1))
         sl[i].remove(rx);
-    *s = sl.join('\n');
+    *s = sl.join("\n");
 }
 
 QString BCodeEditPrivate::appendTrailingSpaces(const QString &s, int ll)
@@ -763,7 +762,7 @@ QString BCodeEditPrivate::makeBlock(const QString &text, int *length)
             maxLen = line.length();
     foreach (int i, bRangeD(0, sl.size() - 1))
         sl[i].append(QString().fill(' ', maxLen - sl.at(i).length()));
-    return bRet(length, maxLen, sl.join('\n'));
+    return bRet(length, maxLen, sl.join("\n"));
 }
 
 void BCodeEditPrivate::makeBlock(QString *text, int *length)
@@ -1211,7 +1210,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         bool kostyleeque = sl.last().isEmpty();
         sl.first().prepend(ltext);
         sl.last().append(rtext);
-        ProcessTextResult res = processText(sl.join('\n'), lineLength, tabWidth);
+        ProcessTextResult res = processText(sl.join("\n"), lineLength, tabWidth);
         int boffset = tc.block().blockNumber();
         tc.movePosition(QTextCursor::StartOfBlock);
         tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
@@ -1232,7 +1231,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
                 ntl.last() += nbt;
                 posmod -= nbt.length();
                 appendTrailingSpaces(&ntl.last(), lineLength);
-                res.newText = ntl.join('\n');
+                res.newText = ntl.join("\n");
                 tc.movePosition(QTextCursor::NextBlock, QTextCursor::KeepAnchor);
                 tc.movePosition(QTextCursor::EndOfBlock, QTextCursor::KeepAnchor);
             }
