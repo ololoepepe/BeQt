@@ -53,9 +53,12 @@ else:beqtLibsOneFolder=true
 
 #If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {
+    #If CONFIG contains "release" or "debug", set special suffix for libs' path
     releaseDebugSuffix=
     CONFIG(release, debug|release):releaseDebugSuffix=/release
     CONFIG(debug, debug|release):releaseDebugSuffix=/debug
+    #Set suffix for libraries names
+    libNameSuffix=2
 }
 
 #Gets short module name, for example "core", "widgets", etc.
@@ -73,11 +76,11 @@ defineTest(addBeqtModule) {
         mac:contains(CONFIG, lib_bundle) {
             LIBS *= -F$${beqtFinalLibPah}/ -framework $${fullName}
         } else {
-            LIBS *= -L$${beqtFinalLibPah}/ -l$${fullName}
+            LIBS *= -L$${beqtFinalLibPah}/ -l$${fullName}$${libNameSuffix}
         }
     } else {
         mac:LIBS *= -framework $${fullName}
-        else:LIBS *= -l$${fullName}
+        else:LIBS *= -l$${fullName}$${libNameSuffix}
     }
     export(INCLUDEPATH)
     export(DEPENDPATH)

@@ -22,11 +22,13 @@ defineReplace(beqtModuleSubdir) {
     return($${moduleSubdir})
 }
 
-#If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {
+    #If CONFIG contains "release" or "debug", set special suffix for libs' path
     releaseDebugSuffix=
     CONFIG(release, debug|release):releaseDebugSuffix=/release
     CONFIG(debug, debug|release):releaseDebugSuffix=/debug
+    #Set suffix for libraries names
+    libNameSuffix=2
 }
 
 #Gets full module name, for example "BeQtCore", "BeQtWidgets", etc.
@@ -36,10 +38,11 @@ defineTest(addBeqtModule) {
     fullName=$$fullBeqtModuleName($${shortName})
     INCLUDEPATH *= $${PWD}/../include/$${fullName}
     DEPENDPATH *= $${PWD}/../include/$${fullName}
+    libFinalPath=$${OUT_PWD}/../../src/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/
     mac:contains(CONFIG, lib_bundle) {
-        LIBS *= -F$${OUT_PWD}/../../src/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -framework $${fullName}
+        LIBS *= -F$${libFinalPath} -framework $${fullName}
     } else {
-        LIBS *= -L$${OUT_PWD}/../../src/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/ -l$${fullName}
+        LIBS *= -L$${libFinalPath} -l$${fullName}$${libNameSuffix}
     }
     export(INCLUDEPATH)
     export(DEPENDPATH)
