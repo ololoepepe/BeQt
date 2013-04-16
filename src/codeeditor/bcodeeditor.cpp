@@ -775,7 +775,7 @@ BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocumen
 BCodeEditorDocument *BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec)
 {
     if ( fileName.isEmpty() || findDocument(fileName) )
-        return false;
+        return 0;
     BCodeEditorDocument *doc = createDocument(fileName);
     openingDocuments.insert(doc, fileName);
     if ( !doc->load(driver, codec, fileName) )
@@ -820,7 +820,8 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
             failedToSaveMessage(nfn);
             return false;
         }
-        nfn = doc->fileName();
+        if (nfn.isEmpty())
+            nfn = doc->fileName();
     }
     savingDocuments.insert(doc, nfn);
     bool b = doc->save(driver, codec, nfn);
