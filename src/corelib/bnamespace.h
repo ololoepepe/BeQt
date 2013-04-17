@@ -70,6 +70,7 @@ B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
 B_CORE_EXPORT QString windowsVersion();
 #endif
 B_CORE_EXPORT QString osVersion();
+B_CORE_EXPORT void handleQuit(const QString &command, const QStringList &arguments);
 
 }
 
