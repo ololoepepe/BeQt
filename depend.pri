@@ -51,7 +51,6 @@ else:exists($${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}
 else:exists($${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src
 else:beqtLibsOneFolder=true
 
-#If CONFIG contains "release" or "debug", set special suffix for libs' path
 win32 {
     #If CONFIG contains "release" or "debug", set special suffix for libs' path
     releaseDebugSuffix=

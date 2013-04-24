@@ -1,6 +1,7 @@
 === Next patch ===
 
 * Fix cursor positioning after insertion of text
+* Use some other variable instead of CONFIG for project configuration
 
 === This release ===
 

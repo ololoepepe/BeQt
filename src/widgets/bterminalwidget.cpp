@@ -40,7 +40,12 @@ BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
 
 BTerminalWidgetPrivate::~BTerminalWidgetPrivate()
 {
-    //
+    if (driver)
+    {
+        driver->terminate();
+        if (!driver->parent() || driver->parent() == q_func())
+            delete driver;
+    }
 }
 
 /*============================== Static public methods =====================*/

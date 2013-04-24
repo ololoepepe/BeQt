@@ -74,6 +74,11 @@ static Class *qs_func() \
 
 #define B_QS(Class) Class *const qs = qs_func()
 
+#define init_once(type, name, value) \
+static type name = value; \
+static bool _b_##name##Init = false; \
+if (!_b_##name##Init && (_b_##name##Init = true))
+
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
 B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
