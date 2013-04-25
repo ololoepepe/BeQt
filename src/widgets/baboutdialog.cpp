@@ -393,7 +393,8 @@ void BAboutDialogPrivate::resetLicenseFile(const QString &fileName)
 void BAboutDialogPrivate::resetDescription()
 {
     QString fn = BDirTools::localeBasedFileName(descriptionFileName);
-    fillTab(DescriptionTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : description, false);
+    QString s = !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : description;
+    fillTab(DescriptionTab, s, Qt::mightBeRichText(s));
 }
 
 void BAboutDialogPrivate::resetChangeLog()
@@ -405,7 +406,8 @@ void BAboutDialogPrivate::resetChangeLog()
 void BAboutDialogPrivate::resetLicense()
 {
     QString fn = BDirTools::localeBasedFileName(licenseFileName);
-    fillTab(LicenseTab, !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : license, false);
+    QString s = !fn.isEmpty() ? BDirTools::readTextFile(fn, "UTF-8") : license;
+    fillTab(LicenseTab, s, Qt::mightBeRichText(s));
 }
 
 /*============================== Public slots ==============================*/
@@ -461,7 +463,7 @@ void BAboutDialogPrivate::tbtnAboutBeqtClicked()
 
 /*============================== Static public variables ===================*/
 
-QSize BAboutDialogPrivate::defMinSize = QSize(600, 400);
+QSize BAboutDialogPrivate::defMinSize = QSize(700, 500);
 
 /*============================================================================
 ================================ BAboutDialog ================================

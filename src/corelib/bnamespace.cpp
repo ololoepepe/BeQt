@@ -20,6 +20,7 @@
 #include <QSize>
 #include <QSizeF>
 #include <QVariant>
+#include <QCoreApplication>
 
 namespace BeQt
 {
@@ -280,6 +281,11 @@ QString osVersion()
 #elif defined(Q_OS_WIN)
     return windowsVersion();
 #endif
+}
+
+void handleQuit(const QString &, const QStringList &)
+{
+    QCoreApplication::quit();
 }
 
 }

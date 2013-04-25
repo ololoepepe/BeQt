@@ -1,5 +1,11 @@
+class QTextCharFormat;
+class QColor;
+class QFont;
+
 #include "bcodeedit.h"
 #include "bcodeedit_p.h"
+#include "babstractfiletype.h"
+#include "btextblockuserdata.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -62,43 +68,79 @@
 #include <QDebug>
 
 /*============================================================================
-================================ BTextBlockUserData ==========================
+================================ BSyntaxHighlighter ==========================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
 
-BTextBlockUserData::BTextBlockUserData(int sf, int st)
-{
-    skipFrom = sf;
-    skipTo = st;
-}
-
-BTextBlockUserData::~BTextBlockUserData()
+BSyntaxHighlighter::BSyntaxHighlighter(BCodeEdit *edt, QTextDocument *parent) :
+    QSyntaxHighlighter(parent), Edit(edt)
 {
     //
 }
 
-/*============================== Static public methods =====================*/
+/*============================== Public methods ============================*/
 
-QString BTextBlockUserData::textWithoutComments(const BTextBlockUserData *ud, const QString &text)
+QTextBlock BSyntaxHighlighter::currentBlock() const
 {
-    if (!ud || ud->skipFrom < 0)
-        return text;
-    QString ntext = text;
-    int len = ( ud->skipTo >= 0 ? ud->skipTo : text.length() ) - ud->skipFrom;
-    ntext.replace( ud->skipFrom, len, QString().fill(' ', len) );
-    return ntext;
+    return QSyntaxHighlighter::currentBlock();
 }
 
-QString BTextBlockUserData::textWithoutComments(const QTextBlock &block)
+int BSyntaxHighlighter::currentBlockState() const
 {
-    return textWithoutComments( static_cast<BTextBlockUserData *>( block.userData() ), block.text() );
+    return QSyntaxHighlighter::currentBlockState();
 }
 
-int BTextBlockUserData::blockSkipFrom(const QTextBlock &block)
+BTextBlockUserData *BSyntaxHighlighter::currentBlockUserData() const
 {
-    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( block.userData() );
-    return ud ? ud->skipFrom : -1;
+    return dynamic_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
+}
+
+QTextCharFormat BSyntaxHighlighter::format(int position) const
+{
+    return QSyntaxHighlighter::format(position);
+}
+
+int BSyntaxHighlighter::previousBlockState() const
+{
+    return QSyntaxHighlighter::previousBlockState();
+}
+
+void BSyntaxHighlighter::setCurrentBlockState(int newState)
+{
+    QSyntaxHighlighter::setCurrentBlockState(newState);
+}
+
+void BSyntaxHighlighter::setCurrentBlockUserData(BTextBlockUserData *data)
+{
+    QSyntaxHighlighter::setCurrentBlockUserData(data);
+}
+
+void BSyntaxHighlighter::setFormat(int start, int count, const QTextCharFormat &format)
+{
+    QSyntaxHighlighter::setFormat(start, count, format);
+}
+
+void BSyntaxHighlighter::setFormat(int start, int count, const QColor &color)
+{
+    QSyntaxHighlighter::setFormat(start, count, color);
+}
+
+void BSyntaxHighlighter::setFormat(int start, int count, const QFont &font)
+{
+    QSyntaxHighlighter::setFormat(start, count, font);
+}
+
+/*============================== Protected methods =========================*/
+
+void BSyntaxHighlighter::highlightBlock(const QString &text)
+{
+    BAbstractFileType *ft = Edit ? Edit->fileType() : 0;
+    if (!ft)
+        return;
+    ft->setCurrentHighlighter(this);
+    ft->highlightBlock(text);
+    ft->setCurrentHighlighter(0);
 }
 
 /*============================================================================
@@ -541,8 +583,7 @@ BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
 
 BCodeEditPrivate::~BCodeEditPrivate()
 {
-    if (highlighter)
-        highlighter->deleteLater();
+    //
 }
 
 /*============================== Static public methods =====================*/
@@ -807,8 +848,8 @@ void BCodeEditPrivate::init()
     redoAvailable = false;
     buisy = false;
     parceTask = 0;
-    highlighter = 0;
     bracketsHighlighting = true;
+    fileType = 0;
     B_Q(BCodeEdit);
     hlt = new QHBoxLayout(q);
       hlt->setContentsMargins(0, 0, 0, 0);
@@ -831,6 +872,8 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
         //
       hlt->addWidget(ptedt);
+    highlighter = new BSyntaxHighlighter(q, ptedt->document());
+    q->setFileType(BAbstractFileType::defaultFileType());
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -1101,14 +1144,12 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
     else
     {
         ProcessTextResult res = processText(txt, lineLength, tabWidth);
-        if (highlighter)
-            highlighter->setDocument(0);
+        highlighter->setDocument(0);
         ptedt->setPlainText(res.newText);
         QTextCursor tc = ptedt->textCursor();
         tc.movePosition(QTextCursor::Start);
         ptedt->setTextCursor(tc);
-        if (highlighter)
-            highlighter->setDocument( ptedt->document() );
+        highlighter->setDocument(ptedt->document());
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
         setBuisy(false);
@@ -1262,13 +1303,13 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     }
     tc.setPosition(finalPos);
     ptedt->setTextCursor(tc);
-    if (highlighter)
+    QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
+    QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
+    highlighter->rehighlightBlock(initialBlock);
+    while (initialBlock != finalBlock)
     {
-        QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
-        QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
+        initialBlock = initialBlock.next();
         highlighter->rehighlightBlock(initialBlock);
-        if (initialBlock != finalBlock)
-            highlighter->rehighlightBlock(finalBlock);
     }
     tc.endEditBlock();
     setBuisy(false);
@@ -1282,6 +1323,8 @@ void BCodeEditPrivate::highlightBrackets()
     QList<QTextEdit::ExtraSelection> selections = ptedt->extraSelections();
     removeExtraSelections(selections, highlightedBrackets);
     highlightedBrackets.clear();
+    if (!bracketsHighlighting)
+        return ptedt->setExtraSelections(selections);
     QList<FindBracketPairResult> list;
     list << findLeftBracketPair();
     list << findRightBracketPair();
@@ -1495,9 +1538,7 @@ void BCodeEditPrivate::handleReturn()
     tc.setPosition(tc.position() + i);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
-    //Not sure if this is necessary
-    if (highlighter)
-        highlighter->rehighlightBlock(tbp);
+    highlighter->rehighlightBlock(tbp); //Not sure if this is necessary
 }
 
 void BCodeEditPrivate::handleSpace()
@@ -1933,14 +1974,12 @@ void BCodeEditPrivate::parceTaskFinished()
     parceTask->deleteLater();
     parceTask = 0;
     ptedt->setEnabled(true);
-    if (highlighter)
-        highlighter->setDocument(0);
+    highlighter->setDocument(0);
     ptedt->setPlainText(res.newText);
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
-    if (highlighter)
-        highlighter->setDocument( ptedt->document() );
+    highlighter->setDocument( ptedt->document() );
     ptedt->setFocus();
     setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
@@ -1999,8 +2038,7 @@ void BCodeEditPrivate::popupMenu(const QPoint &pos)
 
 void BCodeEditPrivate::updateCursorPosition()
 {
-    if (bracketsHighlighting)
-        highlightBrackets();
+    highlightBrackets();
     QTextCursor tc = ptedt->textCursor();
     cursorPosition = QPoint( tc.positionInBlock(), tc.blockNumber() );
     QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
@@ -2181,14 +2219,19 @@ void BCodeEdit::setEditTabWidth(TabWidth tw)
     d->tabWidth = tw;
 }
 
-void BCodeEdit::setHighlighter(QSyntaxHighlighter *hl)
-{;
+void BCodeEdit::setFileType(BAbstractFileType *ft)
+{
     B_D(BCodeEdit);
-    if (d->highlighter)
-        d->highlighter->deleteLater();
-    d->highlighter = hl;
-    if (d->highlighter)
-        d->highlighter->setDocument( d->ptedt->document() );
+    if (ft == d->fileType)
+        return;
+    if (ft && d->fileType && ft->id() == d->fileType->id())
+        return;
+    if (!ft && d->fileType && d->fileType->id() == "Text")
+        return;
+    d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
+    setRecognizedBrackets(ft->brackets());
+    emit fileTypeChanged(ft);
+    d->highlighter->rehighlight();
 }
 
 void BCodeEdit::setRecognizedBrackets(const QList<BracketPair> &list)
@@ -2273,9 +2316,9 @@ BCodeEdit::TabWidth BCodeEdit::editTabWidth() const
     return d_func()->tabWidth;
 }
 
-QSyntaxHighlighter *BCodeEdit::highlighter() const
+BAbstractFileType *BCodeEdit::fileType() const
 {
-    return d_func()->highlighter;
+    return d_func()->fileType;
 }
 
 QList<BCodeEdit::BracketPair> BCodeEdit::recognizedBrackets() const
@@ -2432,15 +2475,12 @@ int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Q
     }
     selectText(start, end);
     tc.endEditBlock();
-    if (d->highlighter)
+    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
     {
-        QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
-        QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
-        while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
-        {
-            d->highlighter->rehighlightBlock(tb);
-            tb = tb.next();
-        }
+        d->highlighter->rehighlightBlock(tb);
+        tb = tb.next();
     }
     return count;
 }
@@ -2634,6 +2674,12 @@ void BCodeEdit::redo()
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
     setFocus();
+}
+
+void BCodeEdit::rehighlight()
+{
+    d_func()->highlighter->rehighlight();
+    d_func()->highlightBrackets();
 }
 
 /*============================== Protected methods =========================*/

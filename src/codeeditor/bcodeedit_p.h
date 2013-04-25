@@ -6,6 +6,9 @@ class BPlainTextEditExtendedPrivate;
 class BCodeEditParseTask;
 class BLineNumberWidget;
 class BCodeEdit;
+class BAbstractFileType;
+class BTextBlockUserData;
+class BSyntaxHighlighter;
 
 class QHBoxLayout;
 class QEvent;
@@ -14,7 +17,6 @@ class QMouseEvent;
 class QString;
 class QChar;
 class QStringList;
-class QSyntaxHighlighter;
 class QPoint;
 class QPainter;
 class QBrush;
@@ -24,6 +26,11 @@ class QThreadPool;
 class QResizeEvent;
 class QRect;
 class QSize;
+class QTextDocument;
+class QTextBlock;
+class QTextCharFormat;
+class QColor;
+class QFont;
 
 #include "bcodeedit.h"
 
@@ -44,23 +51,31 @@ class QSize;
 #include <QPair>
 #include <QTextCharFormat>
 #include <QRunnable>
+#include <QSyntaxHighlighter>
 
 /*============================================================================
-================================ BTextBlockUserData ==========================
+================================ BSyntaxHighlighter ==========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BTextBlockUserData : public QTextBlockUserData
+class B_CODEEDITOR_EXPORT BSyntaxHighlighter : public QSyntaxHighlighter
 {
 public:
-    explicit BTextBlockUserData(int sf = -1, int st = -1);
-    ~BTextBlockUserData();
+    explicit BSyntaxHighlighter(BCodeEdit *edt, QTextDocument *parent);
 public:
-    static QString textWithoutComments(const BTextBlockUserData *ud, const QString &text);
-    static QString textWithoutComments(const QTextBlock &block);
-    static int blockSkipFrom(const QTextBlock &block);
+    QTextBlock currentBlock() const;
+    int currentBlockState() const;
+    BTextBlockUserData *currentBlockUserData() const;
+    QTextCharFormat format(int position) const;
+    int previousBlockState() const;
+    void setCurrentBlockState(int newState);
+    void setCurrentBlockUserData(BTextBlockUserData *data);
+    void setFormat(int start, int count, const QTextCharFormat &format);
+    void setFormat(int start, int count, const QColor &color);
+    void setFormat(int start, int count, const QFont &font);
+protected:
+    void highlightBlock(const QString &text);
 public:
-    int skipFrom;
-    int skipTo;
+    BCodeEdit *const Edit;
 };
 
 /*============================================================================
@@ -284,7 +299,7 @@ public:
     bool blockMode;
     int lineLength;
     BCodeEdit::TabWidth tabWidth;
-    QSyntaxHighlighter *highlighter;
+    BSyntaxHighlighter *highlighter;
     QList<BCodeEdit::BracketPair> recognizedBrackets;
     bool bracketsHighlighting;
     QPoint cursorPosition;
@@ -295,6 +310,7 @@ public:
     bool undoAvailable;
     bool redoAvailable;
     bool buisy;
+    BAbstractFileType *fileType;
     BCodeEditParseTask *parceTask;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QHBoxLayout *hlt;

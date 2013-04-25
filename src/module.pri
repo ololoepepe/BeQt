@@ -30,7 +30,6 @@ defineReplace(beqtModuleSubdir) {
 beqtHeadersPath=$${PWD}/../include
 beqtLibsPath=$${OUT_PWD}/..
 
-
 win32 {
     #If CONFIG contains "release" or "debug", set special suffix for libs' path
     releaseDebugSuffix=

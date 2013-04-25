@@ -7,7 +7,7 @@ class BPlainTextEdit;
 class QString;
 class QPoint;
 class QFont;
-class QSyntaxHighlighter;
+class BAbstractFileType;
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -64,7 +64,7 @@ public:
     void setEditMode(EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(TabWidth tw);
-    void setHighlighter(QSyntaxHighlighter *hl);
+    void setFileType(BAbstractFileType *ft);
     void setRecognizedBrackets(const QList<BracketPair> &list);
     void setBracketHighlightingEnabled(bool enabled);
     bool isReadOnly() const;
@@ -79,7 +79,7 @@ public:
     EditMode editMode() const;
     int editLineLength() const;
     TabWidth editTabWidth() const;
-    QSyntaxHighlighter *highlighter() const;
+    BAbstractFileType *fileType() const;
     QList<BracketPair> recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
     QPoint cursorPosition() const;
@@ -110,6 +110,7 @@ public slots:
     void deleteSelection();
     void undo();
     void redo();
+    void rehighlight();
 protected:
     BPlainTextEdit *innerEdit() const;
 signals:
@@ -127,6 +128,7 @@ signals:
     void buisyChanged(bool buisy);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
+    void fileTypeChanged(BAbstractFileType *ft);
 private:
     Q_DISABLE_COPY(BCodeEdit)
 };

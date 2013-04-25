@@ -151,6 +151,8 @@ public slots:
     bool closeAllDocuments(bool save = true);
     void insertTextIntoCurrentDocument(const QString &text);
     void setCurrentDocumentText(const QString &text);
+protected:
+    virtual BCodeEditorDocument *createDocument(BCodeEditor *editor) const;
 signals:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);

@@ -47,8 +47,10 @@ int main(int argc, char **argv)
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
     BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2013");
-    BApplication::aboutDialogInstance()->setWebsite("https://github.com/the-dark-angel");
-    BApplication::aboutDialogInstance()->setDescription("Simple code editor.");
+    BApplication::aboutDialogInstance()->setWebsite(QApplication::organizationDomain());
+    BApplication::aboutDialogInstance()->setDescription("<center>Simple code editor.<br><a href="
+                                                        + QApplication::organizationDomain()
+                                                        + ">homepage</a></center>");
     //Creating code editor and loading related settings
     BCodeEditor *cedtr = new BCodeEditor;
     QSettings *s = BApplication::settingsInstance();

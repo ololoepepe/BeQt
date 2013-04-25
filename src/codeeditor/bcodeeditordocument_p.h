@@ -3,8 +3,8 @@
 
 class BCodeEditorDocumentPrivate;
 class BAbstractDocumentDriver;
-class BAbstractFileType;
 class BSplittedLinesDialog;
+class BCodeEditor;
 
 class QString;
 class QTextCodec;
@@ -28,7 +28,7 @@ class B_CODEEDITOR_EXPORT BCodeEditorDocumentPrivate : public BCodeEditPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BCodeEditorDocument)
 public:
-    explicit BCodeEditorDocumentPrivate(BCodeEditorDocument *q);
+    explicit BCodeEditorDocumentPrivate(BCodeEditorDocument *q, BCodeEditor *edr);
     ~BCodeEditorDocumentPrivate();
 public:
     void init();
@@ -38,10 +38,11 @@ public slots:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 public:
+    BCodeEditor *const Editor;
+public:
     QString fileName;
     QTextCodec *codec;
     int asyncMin;
-    BAbstractFileType *fileType;
     BSplittedLinesDialog *sld;
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)
