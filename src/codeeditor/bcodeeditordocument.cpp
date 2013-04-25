@@ -5,7 +5,6 @@ class BSplittedLinesDialog;
 #include "babstractdocumentdriver.h"
 #include "bcodeedit.h"
 #include "bcodeedit_p.h"
-#include "babstractfiletype.h"
 #include "bcodeeditor.h"
 
 #include <BeQtCore/BeQt>
@@ -47,9 +46,7 @@ void BCodeEditorDocumentPrivate::init()
 {
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
-    fileType = 0;
     sld = 0;
-    q_func()->setFileType( BAbstractFileType::defaultFileType() );
 }
 
 void BCodeEditorDocumentPrivate::setFileName(const QString &fn)
@@ -166,21 +163,6 @@ void BCodeEditorDocument::setAsyncProcessingMinimumLength(int length)
     d_func()->asyncMin = length;
 }
 
-void BCodeEditorDocument::setFileType(BAbstractFileType *ft)
-{
-    B_D(BCodeEditorDocument);
-    if (ft == d->fileType)
-        return;
-    if ( ft && d->fileType && ft->id() == d->fileType->id() )
-        return;
-    if (!ft && d->fileType && d->fileType->id() == "Text")
-        return;
-    d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
-    setHighlighter( ft->createHighlighter(this) );
-    setRecognizedBrackets( ft->brackets() );
-    emit fileTypeChanged(ft);
-}
-
 void BCodeEditorDocument::setSplittedLinesDialog(BSplittedLinesDialog *dlg)
 {
     d_func()->sld = dlg;
@@ -250,11 +232,6 @@ QString BCodeEditorDocument::codecName() const
 int BCodeEditorDocument::asyncProcessingMinimumLength() const
 {
     return d_func()->asyncMin;
-}
-
-BAbstractFileType *BCodeEditorDocument::fileType() const
-{
-    return d_func()->fileType;
 }
 
 BSplittedLinesDialog *BCodeEditorDocument::splittedLinesDialog() const

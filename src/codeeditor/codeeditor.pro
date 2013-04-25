@@ -35,7 +35,8 @@ HEADERS += \
     bopensaveeditormodule.h \
     bopensaveeditormodule_p.h \
     bsearcheditormodule.h \
-    bsearcheditormodule_p.h
+    bsearcheditormodule_p.h \
+    btextblockuserdata.h
 
 SOURCES += \
     babstractdocumentdriver.cpp \
@@ -50,7 +51,8 @@ SOURCES += \
     bindicatorseditormodule.cpp \
     blocaldocumentdriver.cpp \
     bopensaveeditormodule.cpp \
-    bsearcheditormodule.cpp
+    bsearcheditormodule.cpp \
+    btextblockuserdata.cpp
 
 !contains(CONFIG, beqt_no_install) {
 

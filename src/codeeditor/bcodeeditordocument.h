@@ -3,7 +3,6 @@
 
 class BCodeEditorDocumentPrivate;
 class BAbstractDocumentDriver;
-class BAbstractFileType;
 class BCodeEditorPrivate;
 class BSplittedLinesDialog;
 
@@ -37,7 +36,6 @@ public:
     void setCodec(QTextCodec *codec);
     void setCodec(const char *codecName);
     void setAsyncProcessingMinimumLength(int length);
-    void setFileType(BAbstractFileType *ft);
     void setSplittedLinesDialog(BSplittedLinesDialog *dlg);
     bool load( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
     bool load( BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString() );
@@ -47,14 +45,12 @@ public:
     QTextCodec *codec() const;
     QString codecName() const;
     int asyncProcessingMinimumLength() const;
-    BAbstractFileType *fileType() const;
     BSplittedLinesDialog *splittedLinesDialog() const;
 signals:
     void fileNameChanged(const QString &fn);
     void codecChanged(const QString &codecName);
     void loadingFinished(bool success);
     void savingFinished(bool success);
-    void fileTypeChanged(BAbstractFileType *ft);
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
     friend class BCodeEditorPrivate;
