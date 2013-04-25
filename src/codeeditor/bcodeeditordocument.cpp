@@ -29,8 +29,8 @@ class BSplittedLinesDialog;
 
 /*============================== Public constructors =======================*/
 
-BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q) :
-    BCodeEditPrivate(q)
+BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q, BCodeEditor *edr) :
+    BCodeEditPrivate(q), Editor(edr)
 {
     //
 }
@@ -116,8 +116,8 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
 
 /*============================== Public constructors =======================*/
 
-BCodeEditorDocument::BCodeEditorDocument(QWidget *parent) :
-    BCodeEdit(*new BCodeEditorDocumentPrivate(this), parent)
+BCodeEditorDocument::BCodeEditorDocument(BCodeEditor *editor, QWidget *parent) :
+    BCodeEdit(*new BCodeEditorDocumentPrivate(this, editor), parent)
 {
     d_func()->init();
 }
@@ -237,4 +237,9 @@ int BCodeEditorDocument::asyncProcessingMinimumLength() const
 BSplittedLinesDialog *BCodeEditorDocument::splittedLinesDialog() const
 {
     return d_func()->sld;
+}
+
+BCodeEditor *BCodeEditorDocument::editor() const
+{
+    return d_func()->Editor;
 }

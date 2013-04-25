@@ -679,7 +679,7 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 
 BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
-    BCodeEditorDocument *doc = q_func()->createDocument();
+    BCodeEditorDocument *doc = q_func()->createDocument(q_func());
     doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
     doc->innerEdit()->viewport()->installEventFilter(dropHandler);
     doc->innerEdit()->installEventFilter(this);
@@ -2245,7 +2245,7 @@ void BCodeEditor::setCurrentDocumentText(const QString &text)
 
 /*============================== Protected methods =========================*/
 
-BCodeEditorDocument *BCodeEditor::createDocument() const
+BCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) const
 {
-    return new BCodeEditorDocument;
+    return new BCodeEditorDocument(editor);
 }

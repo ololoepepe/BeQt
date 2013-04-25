@@ -5,6 +5,7 @@ class BCodeEditorDocumentPrivate;
 class BAbstractDocumentDriver;
 class BCodeEditorPrivate;
 class BSplittedLinesDialog;
+class BCodeEditor;
 
 class QTextCodec;
 class QWidget;
@@ -27,7 +28,7 @@ class B_CODEEDITOR_EXPORT BCodeEditorDocument : public BCodeEdit
     Q_OBJECT
     B_DECLARE_PRIVATE(BCodeEditorDocument)
 public:
-    explicit BCodeEditorDocument(QWidget *parent = 0);
+    explicit BCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
     ~BCodeEditorDocument();
 protected:
     explicit BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
@@ -46,6 +47,7 @@ public:
     QString codecName() const;
     int asyncProcessingMinimumLength() const;
     BSplittedLinesDialog *splittedLinesDialog() const;
+    BCodeEditor *editor() const;
 signals:
     void fileNameChanged(const QString &fn);
     void codecChanged(const QString &codecName);

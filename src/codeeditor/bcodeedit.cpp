@@ -74,7 +74,7 @@ class QFont;
 /*============================== Public constructors =======================*/
 
 BSyntaxHighlighter::BSyntaxHighlighter(BCodeEdit *edt, QTextDocument *parent) :
-    QSyntaxHighlighter(parent), edit(edt)
+    QSyntaxHighlighter(parent), Edit(edt)
 {
     //
 }
@@ -135,7 +135,7 @@ void BSyntaxHighlighter::setFormat(int start, int count, const QFont &font)
 
 void BSyntaxHighlighter::highlightBlock(const QString &text)
 {
-    BAbstractFileType *ft = edit ? edit->fileType() : 0;
+    BAbstractFileType *ft = Edit ? Edit->fileType() : 0;
     if (!ft)
         return;
     ft->setCurrentHighlighter(this);

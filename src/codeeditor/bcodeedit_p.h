@@ -75,7 +75,7 @@ public:
 protected:
     void highlightBlock(const QString &text);
 public:
-    BCodeEdit *const edit;
+    BCodeEdit *const Edit;
 };
 
 /*============================================================================
