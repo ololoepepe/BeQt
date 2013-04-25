@@ -463,7 +463,7 @@ void BAboutDialogPrivate::tbtnAboutBeqtClicked()
 
 /*============================== Static public variables ===================*/
 
-QSize BAboutDialogPrivate::defMinSize = QSize(600, 400);
+QSize BAboutDialogPrivate::defMinSize = QSize(700, 500);
 
 /*============================================================================
 ================================ BAboutDialog ================================
