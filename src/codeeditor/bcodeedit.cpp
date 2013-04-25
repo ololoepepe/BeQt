@@ -1310,8 +1310,11 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
         QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
         highlighter->rehighlightBlock(initialBlock);
-        if (initialBlock != finalBlock)
-            highlighter->rehighlightBlock(finalBlock);
+        while (initialBlock != finalBlock)
+        {
+            initialBlock = initialBlock.next();
+            highlighter->rehighlightBlock(initialBlock);
+        }
     }
     tc.endEditBlock();
     setBuisy(false);
