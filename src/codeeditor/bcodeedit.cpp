@@ -1323,6 +1323,8 @@ void BCodeEditPrivate::highlightBrackets()
     QList<QTextEdit::ExtraSelection> selections = ptedt->extraSelections();
     removeExtraSelections(selections, highlightedBrackets);
     highlightedBrackets.clear();
+    if (!bracketsHighlighting)
+        return ptedt->setExtraSelections(selections);
     QList<FindBracketPairResult> list;
     list << findLeftBracketPair();
     list << findRightBracketPair();
@@ -2036,8 +2038,7 @@ void BCodeEditPrivate::popupMenu(const QPoint &pos)
 
 void BCodeEditPrivate::updateCursorPosition()
 {
-    if (bracketsHighlighting)
-        highlightBrackets();
+    highlightBrackets();
     QTextCursor tc = ptedt->textCursor();
     cursorPosition = QPoint( tc.positionInBlock(), tc.blockNumber() );
     QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
@@ -2678,6 +2679,7 @@ void BCodeEdit::redo()
 void BCodeEdit::rehighlight()
 {
     d_func()->highlighter->rehighlight();
+    d_func()->highlightBrackets();
 }
 
 /*============================== Protected methods =========================*/
