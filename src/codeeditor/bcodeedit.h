@@ -110,6 +110,7 @@ public slots:
     void deleteSelection();
     void undo();
     void redo();
+    void rehighlight();
 protected:
     BPlainTextEdit *innerEdit() const;
 signals:

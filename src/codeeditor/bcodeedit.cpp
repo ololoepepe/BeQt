@@ -1144,14 +1144,12 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
     else
     {
         ProcessTextResult res = processText(txt, lineLength, tabWidth);
-        if (highlighter)
-            highlighter->setDocument(0);
+        highlighter->setDocument(0);
         ptedt->setPlainText(res.newText);
         QTextCursor tc = ptedt->textCursor();
         tc.movePosition(QTextCursor::Start);
         ptedt->setTextCursor(tc);
-        if (highlighter)
-            highlighter->setDocument( ptedt->document() );
+        highlighter->setDocument(ptedt->document());
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
         setBuisy(false);
@@ -1305,16 +1303,13 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     }
     tc.setPosition(finalPos);
     ptedt->setTextCursor(tc);
-    if (highlighter)
+    QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
+    QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
+    highlighter->rehighlightBlock(initialBlock);
+    while (initialBlock != finalBlock)
     {
-        QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
-        QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
+        initialBlock = initialBlock.next();
         highlighter->rehighlightBlock(initialBlock);
-        while (initialBlock != finalBlock)
-        {
-            initialBlock = initialBlock.next();
-            highlighter->rehighlightBlock(initialBlock);
-        }
     }
     tc.endEditBlock();
     setBuisy(false);
@@ -1541,9 +1536,7 @@ void BCodeEditPrivate::handleReturn()
     tc.setPosition(tc.position() + i);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
-    //Not sure if this is necessary
-    if (highlighter)
-        highlighter->rehighlightBlock(tbp);
+    highlighter->rehighlightBlock(tbp); //Not sure if this is necessary
 }
 
 void BCodeEditPrivate::handleSpace()
@@ -1979,14 +1972,12 @@ void BCodeEditPrivate::parceTaskFinished()
     parceTask->deleteLater();
     parceTask = 0;
     ptedt->setEnabled(true);
-    if (highlighter)
-        highlighter->setDocument(0);
+    highlighter->setDocument(0);
     ptedt->setPlainText(res.newText);
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
-    if (highlighter)
-        highlighter->setDocument( ptedt->document() );
+    highlighter->setDocument( ptedt->document() );
     ptedt->setFocus();
     setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
@@ -2483,15 +2474,12 @@ int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Q
     }
     selectText(start, end);
     tc.endEditBlock();
-    if (d->highlighter)
+    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
     {
-        QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
-        QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
-        while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
-        {
-            d->highlighter->rehighlightBlock(tb);
-            tb = tb.next();
-        }
+        d->highlighter->rehighlightBlock(tb);
+        tb = tb.next();
     }
     return count;
 }
@@ -2685,6 +2673,11 @@ void BCodeEdit::redo()
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
     setFocus();
+}
+
+void BCodeEdit::rehighlight()
+{
+    d_func()->highlighter->rehighlight();
 }
 
 /*============================== Protected methods =========================*/
