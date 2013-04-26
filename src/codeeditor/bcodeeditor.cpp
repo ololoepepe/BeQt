@@ -946,7 +946,7 @@ void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
         return;
     twgt->setTabText( ind, QFileInfo( doc->fileName() ).fileName() );
     twgt->setTabIcon( ind, BApplication::icon(doc->isModified() ? "filesave" : "") );
-    twgt->setTabToolTip( ind, doc->fileName() );
+    twgt->setTabToolTip(ind, QDir::toNativeSeparators(doc->fileName()));
 }
 
 void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QString &oldFileName)
