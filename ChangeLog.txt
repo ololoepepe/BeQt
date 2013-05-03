@@ -1,5 +1,6 @@
 === BeQt 2.0.1 (xx xxxx 2013) ===
     * Fix BApplicationServer (Qt 4)
+    * Fix BCodeEditor document tab tooltip on Windows
 
 === BeQt 2.0.0 (25 April 2013) ===
     * Fully revise library structure (in particular, use D-pointers)

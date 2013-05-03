@@ -7,6 +7,8 @@
 
 * Add image support to person info system
 * Add spell checking support to code editor
+* Add ability to set maximum file size for BCodeEditor
+* Add alternative BBasePrivate class not inherited from QObject
 
 === This release ===
 
