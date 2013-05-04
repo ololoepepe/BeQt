@@ -1,4 +1,4 @@
-=== BeQt 2.0.1 (xx xxxx 2013) ===
+=== BeQt 2.0.1 (04 May 2013) ===
     * Fix BApplicationServer (Qt 4)
     * Fix BCodeEditor document tab tooltip on Windows
 
