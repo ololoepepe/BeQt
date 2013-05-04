@@ -3,6 +3,13 @@
 * Fix cursor positioning after insertion of text
 * Use some other variable instead of CONFIG for project configuration
 
+=== Next release ===
+
+* Add image support to person info system
+* Add spell checking support to code editor
+* Add ability to set maximum file size for BCodeEditor
+* Add alternative BBasePrivate class not inherited from QObject
+
 === This release ===
 
 [done] Fix depend.pri on Windows

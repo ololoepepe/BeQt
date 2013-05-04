@@ -49,8 +49,10 @@ BApplicationServerPrivate::~BApplicationServerPrivate()
 void BApplicationServerPrivate::init()
 {
     bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    server = new BGenericServer(BGenericServer::TcpServer);
+#else
     server = new BGenericServer(BGenericServer::LocalServer);
-#if (QT_VERSION >= QT_VERSION_CHECK(5, 0, 0))
     server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
 #endif
     connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
@@ -141,10 +143,11 @@ bool BApplicationServer::testServer() const
     QDataStream out(&data, QIODevice::WriteOnly);
     out.setVersion(BeQt::DataStreamVersion);
     out << false;
-    BGenericSocket s(BGenericSocket::LocalSocket);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    BGenericSocket s(BGenericSocket::TcpSocket);
     s.connectToHost("127.0.0.1", d->Port);
 #else
+    BGenericSocket s(BGenericSocket::LocalSocket);
     s.connectToHost(d->ServerName);
 #endif
     bool b = s.waitForConnected(d->OperationTimeout) && s.write(data) &&
@@ -193,10 +196,11 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
     out.setVersion(BeQt::DataStreamVersion);
     out << true;
     out << args;
-    BGenericSocket s(BGenericSocket::LocalSocket);
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    BGenericSocket s(BGenericSocket::TcpSocket);
     s.connectToHost("127.0.0.1", d->Port);
 #else
+    BGenericSocket s(BGenericSocket::LocalSocket);
     s.connectToHost(d->ServerName);
 #endif
     if ( !s.waitForConnected(d->OperationTimeout) )
