@@ -68,11 +68,11 @@ void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
     if ( lblCursorPos.isNull() )
         return;
     QPoint pos = q_func()->currentDocument() ? q_func()->currentDocument()->cursorPosition() : QPoint(-1, -1);
-    QString rowVal = (pos.y() >= 0) ? QString::number(pos.y() + 1) : QString();
-    QString columnVal = (pos.x() >= 0) ? QString::number(pos.x() + 1) : QString();
-    int len = qMax( rowVal.length(), columnVal.length() );
+    QString rowVal = (pos.x() >= 0) ? QString::number(pos.x() + 1) : QString();
+    QString columnVal = (pos.y() >= 0) ? QString::number(pos.y() + 1) : QString();
+    int len = qMax(rowVal.length(), columnVal.length());
     len = qMax(len, 4);
-    if ( rowVal.isEmpty() || columnVal.isEmpty() )
+    if (rowVal.isEmpty() || columnVal.isEmpty())
     {
         rowVal.fill('-', len);
         columnVal.fill('-', len);
@@ -80,11 +80,11 @@ void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
     else
     {
         if (rowVal.length() < len)
-            rowVal.prepend( QString().fill( ' ', len - rowVal.length() ) );
+            rowVal.prepend(QString().fill(' ', len - rowVal.length()));
         if (columnVal.length() < len)
-            columnVal.prepend( QString().fill( ' ', len - columnVal.length() ) );
+            columnVal.prepend(QString().fill(' ', len - columnVal.length()));
     }
-    lblCursorPos->setText(tr("Row:", "lbl text") + " " + rowVal + ", " + tr("Column:", "lbl text") + " " + columnVal);
+    lblCursorPos->setText(tr("Column:", "lbl text") + " " + columnVal + ", " + tr("Row:", "lbl text") + " " + rowVal);
 }
 
 void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
