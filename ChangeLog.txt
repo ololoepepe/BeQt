@@ -1,4 +1,4 @@
-=== BeQt 2.0.2 (xx May 2013) ===
+=== BeQt 2.0.2 (16 May 2013) ===
     * Fix row and column indication in BIndicatorsEditorModule
     * Optimize BCodeEdit text deletion operations
     * Fix BRemoteLogger
