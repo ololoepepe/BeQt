@@ -1,3 +1,10 @@
+=== BeQt 2.0.2 (16 мая 2013) ===
+    * Исправлено отображение столбца и строки в классе BIndicatorsEditorModule
+    * Оптимизированы операции по удалению текста в BCodeEdit
+    * Исправлен класс BRemoteLogger
+    * Исправлен класс BNetworkConnection
+    * Исправлен класс BTerminalIOHandler
+
 === BeQt 2.0.1 (04 мая 2013) ===
     * Исправлен BApplicationServer (Qt 4)
     * Исправлены всплывающие подсказки вкладок документов BCodeEditor на Windows

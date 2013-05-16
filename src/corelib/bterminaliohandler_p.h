@@ -56,6 +56,10 @@ public:
 public:
     void init();
     void lineRead(const QString &text);
+public slots:
+    void executeInternalHandler(const QString &cmd, const QStringList &args);
+    void executeExternalHandler(const QString &cmd, const QStringList &args);
+    void executeHandleCommand(const QString &cmd, const QStringList &args);
 public:
     static QMutex echoMutex;
     static QMutex readMutex;
