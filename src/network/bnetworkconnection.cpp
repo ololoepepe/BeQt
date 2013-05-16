@@ -328,6 +328,16 @@ void BNetworkConnection::setAutoDeleteSentReplies(bool enabled)
     d_func()->autoDelete = enabled;
 }
 
+void BNetworkConnection::setLogger(BLogger *l)
+{
+    B_D(BNetworkConnection);
+    if (d->logger && (!d->logger->parent() || d->logger->parent() == this))
+        d->logger->deleteLater();
+    d->logger = l;
+    if (l && !l->parent())
+        l->setParent(this);
+}
+
 void BNetworkConnection::connectToHost(const QString &hostName, quint16 port)
 {
     if ( isConnected() || hostName.isEmpty() )
@@ -455,6 +465,11 @@ bool BNetworkConnection::detailedLogMode() const
 bool BNetworkConnection::autoDeleteSentReplies() const
 {
     return d_func()->autoDelete;
+}
+
+BLogger *BNetworkConnection::logger() const
+{
+    return d_func()->logger;
 }
 
 QString BNetworkConnection::peerAddress() const

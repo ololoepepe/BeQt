@@ -92,7 +92,7 @@ void BTerminalIOHandlerPrivate::init()
 void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 {
     QMutexLocker locker(&loopMutex);
-    if ( readEventLoop.isRunning() )
+    if (readEventLoop.isRunning())
     {
         lastLine = text;
         readEventLoop.quit();
@@ -101,16 +101,46 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
     {
         QStringList args = BTerminalIOHandler::splitCommand(text);
         QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
-        if ( cmd.isEmpty() )
+        if (cmd.isEmpty())
             return;
         B_Q(BTerminalIOHandler);
-        QMetaObject::invokeMethod( q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args) );
-        if ( internalHandlers.contains(cmd) )
-            return ( q->*internalHandlers.value(cmd) )(cmd, args);
-        if ( externalHandlers.contains(cmd) )
-            return externalHandlers.value(cmd)(cmd, args);
-        q->handleCommand(cmd, args);
+        QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args));
+        if (internalHandlers.contains(cmd))
+        {
+            QMetaObject::invokeMethod(this, "executeInternalHandler", Qt::QueuedConnection, Q_ARG(QString, cmd),
+                                      Q_ARG(QStringList, args));
+            return;
+        }
+        if (externalHandlers.contains(cmd))
+        {
+            QMetaObject::invokeMethod(this, "executeExternalHandler", Qt::QueuedConnection, Q_ARG(QString, cmd),
+                                      Q_ARG(QStringList, args));
+            return;
+        }
+        QMetaObject::invokeMethod(this, "executeHandleCommand", Qt::QueuedConnection, Q_ARG(QString, cmd),
+                                  Q_ARG(QStringList, args));
     }
+}
+
+/*============================== Public slots ==============================*/
+
+void BTerminalIOHandlerPrivate::executeInternalHandler(const QString &cmd, const QStringList &args)
+{
+    if (!internalHandlers.contains(cmd))
+        return;
+    (q_func()->*internalHandlers.value(cmd))(cmd, args);
+}
+
+void BTerminalIOHandlerPrivate::executeExternalHandler(const QString &cmd, const QStringList &args)
+{
+    if (!externalHandlers.contains(cmd))
+        return;
+    externalHandlers.value(cmd)(cmd, args);
+}
+
+void BTerminalIOHandlerPrivate::executeHandleCommand(const QString &cmd, const QStringList &args)
+{
+    q_func()->handleCommand(cmd, args);
 }
 
 /*============================== Static public variables ===================*/

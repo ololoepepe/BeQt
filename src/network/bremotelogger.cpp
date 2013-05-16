@@ -23,7 +23,7 @@ public:
     ~BRemoteLoggerPrivate();
 public:
     void init();
-    virtual void tryLog(const QString &msg, bool stderrLevel);
+    void tryLog(const QString &msg, bool stderrLevel);
     void tryLogToRemote(const QString &text);
     void removeSocket();
 public:
@@ -69,7 +69,7 @@ void BRemoteLoggerPrivate::tryLog(const QString &msg, bool stderrLevel)
 void BRemoteLoggerPrivate::tryLogToRemote(const QString &text)
 {
     QMutexLocker locker(&remoteMutex);
-    if ( !logToRemote || socket.isNull() || socket->isWritable() )
+    if ( !logToRemote || socket.isNull() || !socket->isWritable() )
         return;
     socket->write( text.toUtf8() );
     socket->flush();
@@ -89,20 +89,20 @@ void BRemoteLoggerPrivate::removeSocket()
 /*============================== Public constructors =======================*/
 
 BRemoteLogger::BRemoteLogger(QObject *parent) :
-    BLogger(*new BLoggerPrivate(this), parent)
+    BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
 }
 
 BRemoteLogger::BRemoteLogger(BGenericSocket *socket, QObject *parent) :
-    BLogger(*new BLoggerPrivate(this), parent)
+    BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
     setRemote(socket);
 }
 
 BRemoteLogger::BRemoteLogger(BGenericSocket *socket, const QString &fileName, QObject *parent) :
-    BLogger(*new BLoggerPrivate(this), parent)
+    BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
     setFileName(fileName);
@@ -110,14 +110,14 @@ BRemoteLogger::BRemoteLogger(BGenericSocket *socket, const QString &fileName, QO
 }
 
 BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, QObject *parent) :
-    BLogger(*new BLoggerPrivate(this), parent)
+    BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
     setRemote(hostName, port);
 }
 
 BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, const QString &fileName, QObject *parent) :
-    BLogger(*new BLoggerPrivate(this), parent)
+    BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
     setFileName(fileName);

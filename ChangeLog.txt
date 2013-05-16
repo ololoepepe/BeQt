@@ -1,6 +1,9 @@
 === BeQt 2.0.2 (xx May 2013) ===
     * Fix row and column indication in BIndicatorsEditorModule
     * Optimize BCodeEdit text deletion operations
+    * Fix BRemoteLogger
+    * Fix BNetworkConnection
+    * Fix BTerminalIOHandler
 
 === BeQt 2.0.1 (04 May 2013) ===
     * Fix BApplicationServer (Qt 4)
