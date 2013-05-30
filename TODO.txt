@@ -9,9 +9,12 @@
 * Add spell checking support to code editor
 * Add ability to set maximum file size for BCodeEditor
 * Add alternative BBasePrivate class not inherited from QObject
-* Add ability to set BNetworkConnection as BNetworkLogger target
+* Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BNetworkLogger target
 * Add virtual sockets for internal use
 * Move BLoggerPrivate::tryLog method to BLogger
+* Add entryList() function to BDirTools
+* Implement locking for BNetworkServer
+* Return bool in BTerminalIOHandler handler methods
 
 === This release ===
 
