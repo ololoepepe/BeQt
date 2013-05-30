@@ -345,9 +345,6 @@
         <comment>fileName</comment>
         <translation>Новый документ</translation>
     </message>
-</context>
-<context>
-    <name>BCodeEditorPrivate</name>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="521"/>
         <source>Unicode</source>
@@ -797,9 +794,6 @@
         <comment>terminalCommand return</comment>
         <translation>Выполняется другой процесс</translation>
     </message>
-</context>
-<context>
-    <name>BLocalTerminalDriver</name>
     <message>
         <location filename="../src/widgets/blocalterminaldriver.cpp" line="152"/>
         <source>Could not find or start programm</source>
@@ -816,6 +810,11 @@
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
     </message>
+    <message>
+        <source>Disconnected</source>
+        <comment>log text</comment>
+        <translation type="obsolete">Отключен</translation>
+    </message>
 </context>
 <context>
     <name>BNetworkConnectionPrivate</name>
@@ -825,18 +824,12 @@
         <comment>log text</comment>
         <translation>Подключен</translation>
     </message>
-</context>
-<context>
-    <name>BNetworkConnection</name>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="107"/>
         <source>Disconnected</source>
         <comment>log text</comment>
-        <translation>Отключен</translation>
+        <translation type="unfinished">Отключен</translation>
     </message>
-</context>
-<context>
-    <name>BNetworkConnectionPrivate</name>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="114"/>
         <source>Error:</source>

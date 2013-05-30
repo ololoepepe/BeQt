@@ -160,13 +160,6 @@ defineReplace(getActualPrivateHeaders) {
     beqtInstallsDepend.path=$${BEQT_RESOURCES_INSTALLS_PATH}
     INSTALLS += beqtInstallsDepend
 }
-beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
-beqtInstallsTranslations.path=$${resourcesInstallsPath}/translations
-INSTALLS += beqtInstallsTranslations
-
-##############################################################################
-################################ Other resources #############################
-##############################################################################
 
 ##############################################################################
 ################################ Translations ################################
