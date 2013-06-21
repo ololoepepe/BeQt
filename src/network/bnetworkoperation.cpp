@@ -207,5 +207,5 @@ void BNetworkOperation::cancel()
 {
     if (isFinished() || isError())
         return;
-    emit canceled();
+    Q_EMIT canceled();
 }

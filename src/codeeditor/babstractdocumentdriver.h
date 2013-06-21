@@ -56,7 +56,7 @@ protected:
     virtual bool handleLoadOperation(const Operation &op) = 0;
     void emitLoadingFinished( const Operation &operation, bool success, const QString &text = QString() );
     void emitSavingFinished(const Operation &operation, bool success);
-signals:
+Q_SIGNALS:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 private:

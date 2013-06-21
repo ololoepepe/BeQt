@@ -85,7 +85,7 @@ public:
     bool waitForDisconnected(int msecs = 30 * BeQt::Second);
     bool waitForReadyRead(int msecs = 30 * BeQt::Second);
     qint64 write(const QByteArray &byteArray);
-signals:
+Q_SIGNALS:
     void aboutToClose();
     void connected();
     void bytesWritten(qint64 bytes);

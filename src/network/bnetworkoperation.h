@@ -47,9 +47,9 @@ public:
     int uploadProgress(int nth = 100) const;
     bool isFinished() const;
     bool waitForFinished(int msecs = 30 * BeQt::Second);
-public slots:
+public Q_SLOTS:
     void cancel();
-signals:
+Q_SIGNALS:
     void started();
     void error();
     void downloadProgress(qint64 bytesReady, qint64 bytesTotal);

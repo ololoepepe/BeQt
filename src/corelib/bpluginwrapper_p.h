@@ -36,7 +36,7 @@ public:
     void deactivate();
     void createLoader();
     void deleteLoader();
-public slots:
+public Q_SLOTS:
     void initSettings();
 public:
     static QMap<QString, BPluginWrapper *> globalQMap;

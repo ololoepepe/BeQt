@@ -56,7 +56,7 @@ public:
 public:
     void init();
     void lineRead(const QString &text);
-public slots:
+public Q_SLOTS:
     void executeInternalHandler(const QString &cmd, const QStringList &args);
     void executeExternalHandler(const QString &cmd, const QStringList &args);
     void executeHandleCommand(const QString &cmd, const QStringList &args);

@@ -135,7 +135,7 @@ public:
     bool isCurrentDocumentModified() const;
     QStringList fileNames() const;
     QObject *dropHandler() const;
-public slots:
+public Q_SLOTS:
     BCodeEditorDocument *addDocument( const QString &fileName = QString() );
     BCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
     QList<BCodeEditorDocument *> openDocuments();
@@ -153,7 +153,7 @@ public slots:
     void setCurrentDocumentText(const QString &text);
 protected:
     virtual BCodeEditorDocument *createDocument(BCodeEditor *editor) const;
-signals:
+Q_SIGNALS:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);
     void documentAboutToBeAdded(BCodeEditorDocument *doc);

@@ -46,7 +46,7 @@ public:
 protected:
     virtual BNetworkConnection *createConnection(BGenericSocket *socket);
     virtual BGenericSocket *createSocket();
-signals:
+Q_SIGNALS:
     void connectionAdded(BNetworkConnection *connection);
     void connectionAboutToBeRemoved(BNetworkConnection *connection);
 private:

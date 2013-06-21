@@ -32,7 +32,7 @@ public:
     void checkActions();
     void checkSwitchModeAction();
     void resetSwitchModeAction(bool bm);
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void actSwitchModeTriggered();
 public:

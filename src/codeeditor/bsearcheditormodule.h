@@ -53,14 +53,14 @@ public:
     bool cyclicSearch() const;
     int maximumHistorySize() const;
     bool replaceEnabled() const;
-public slots:
+public Q_SLOTS:
     void find();
     void findNext(bool showDialog = true);
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
     void currentDocumentChanged(BCodeEditorDocument *doc);
-signals:
+Q_SIGNALS:
     void textFound(const QString &text);
     void textNotFound(const QString &text);
     void textReplaced(int count, const QString &oldText, const QString &newText);

@@ -39,7 +39,7 @@ public:
     int maxBookmarks;
     QPointer<QAction> actMakeBookmark;
     QPointer<QAction> actGotoNextBookmark;
-public slots:
+public Q_SLOTS:
     void retranslateUi();
 private:
     Q_DISABLE_COPY(BBookmarksEditorModulePrivate)

@@ -121,10 +121,10 @@ BCodeEditor *BAbstractDocumentDriver::editor() const
 
 void BAbstractDocumentDriver::emitLoadingFinished(const Operation &operation, bool success, const QString &text)
 {
-    emit loadingFinished(operation, success, text);
+    Q_EMIT loadingFinished(operation, success, text);
 }
 
 void BAbstractDocumentDriver::emitSavingFinished(const Operation &operation, bool success)
 {
-    emit savingFinished(operation, success);
+    Q_EMIT savingFinished(operation, success);
 }

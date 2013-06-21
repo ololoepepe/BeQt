@@ -93,7 +93,7 @@ public:
     ~BSelectDocumentsDialogPrivate();
 public:
     void init();
-public slots:
+public Q_SLOTS:
     void dlgbboxClicked(QAbstractButton *button);
 public:
     const QList<BCodeEditorDocument *> Documents;
@@ -126,7 +126,7 @@ public:
     ~BSplittedLinesDialog();
 protected:
     explicit BSplittedLinesDialog(BSplittedLinesDialogPrivate &d, QWidget *parent = 0);
-signals:
+Q_SIGNALS:
     void gotoLine(const QPoint &pos);
     void selectLines(const QPoint &start, const QPoint &end);
 private:
@@ -149,7 +149,7 @@ public:
     static QListWidgetItem *createListWidgetItem(const BCodeEdit::SplittedLinesRange &range, int lineLength);
 public:
     void init();
-public slots:
+public Q_SLOTS:
     void lstwgtItemDoubleClicked(QListWidgetItem *item);
     void btnGotoClicked();
 public:
@@ -257,7 +257,7 @@ public:
     void emitFileHistoryChanged(const QStringList &list);
     void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
-public slots:
+public Q_SLOTS:
     void createDropHandler();
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);

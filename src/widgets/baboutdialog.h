@@ -59,7 +59,7 @@ public:
     void setThanksToProvider(BPersonInfoProvider *prov);
     void setAboutQtShown(bool b);
     void setAboutBeqtShown(bool b);
-public slots:
+public Q_SLOTS:
     void resetTabs();
 private:
     Q_DISABLE_COPY(BAboutDialog)

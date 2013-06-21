@@ -48,7 +48,7 @@ public:
     int asyncProcessingMinimumLength() const;
     BSplittedLinesDialog *splittedLinesDialog() const;
     BCodeEditor *editor() const;
-signals:
+Q_SIGNALS:
     void fileNameChanged(const QString &fn);
     void codecChanged(const QString &codecName);
     void loadingFinished(bool success);

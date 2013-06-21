@@ -70,10 +70,10 @@ public:
     bool findNextAvailable() const;
     bool replaceNextAvailable() const;
     QByteArray saveState() const;
-public slots:
+public Q_SLOTS:
     void findNext();
     void replaceNext();
-signals:
+Q_SIGNALS:
     void findNextAvailableChanged(bool available);
     void replaceNextAvailableChanged(bool available);
     void textFound(bool found, const QString &text);
@@ -102,7 +102,7 @@ public:
     void emitTextReplaced(int count, const QString &oldText, const QString &newText);
     QTextDocument::FindFlags createFindFlags() const;
     QString windowTitle() const;
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void checkSearchReplace();
     void actSelectionTriggered();
@@ -150,7 +150,7 @@ public:
     void init();
     void setDialogParent(QWidget *parent = 0);
     QString createNotFoundMessage(const QString &text);
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void textFound(bool found, const QString &text);
     void textReplaced(int count, const QString &oldText, const QString &newText);

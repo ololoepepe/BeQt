@@ -32,7 +32,7 @@ public:
     void tryLogToFile(const QString &text);
     QString constructMessage(const QString &text, BLogger::Level lvl) const;
     void resetFileFlushTimer();
-public slots:
+public Q_SLOTS:
     void timeout();
 public:
     bool useStderr;

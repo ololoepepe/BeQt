@@ -54,7 +54,7 @@ public:
     QString fileName() const;
     int fileFlushInterval() const;
     void log(const QString &text, Level lvl);
-public slots:
+public Q_SLOTS:
     void log(const QString &text);
     void logInfo(const QString &text);
     void logTrace(const QString &text);

@@ -30,7 +30,7 @@ public:
     ~BLocalServer();
 protected:
     void incomingConnection(quintptr socketDescriptor);
-signals:
+Q_SIGNALS:
     void newConnection(int socketDescriptor);
 };
 
@@ -46,7 +46,7 @@ public:
     ~BTcpServer();
 protected:
     void incomingConnection(int handle);
-signals:
+Q_SIGNALS:
     void newConnection(int socketDescriptor);
 };
 
@@ -63,7 +63,7 @@ public:
     ~BGenericServerPrivate();
 public:
     void init();
-public slots:
+public Q_SLOTS:
     void newConnection(int socketDescriptor);
 public:
     QPointer<QTcpServer> tserver;

@@ -1,3 +1,8 @@
+=== BeQt 2.0.3 (22 June 2013) ===
+    * Use BEQT_CONFIG variable instead of CONFIG for project configuration
+    * Replace Qt keywords (signals, etc.)
+    * Fix BCodeEditPrivate::removeExtraSelections method (SIGSEGV bug)
+
 === BeQt 2.0.2 (16 May 2013) ===
     * Fix row and column indication in BIndicatorsEditorModule
     * Optimize BCodeEdit text deletion operations

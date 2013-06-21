@@ -40,7 +40,7 @@ public:
     void updateCursorPosIndicator();
     void updateEncodingIndicator();
     void updateFileTypeIndicator();
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void cmboxFileTypeCurrentIndexChanged(int index);
 public:

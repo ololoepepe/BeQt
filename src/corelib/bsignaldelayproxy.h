@@ -33,11 +33,11 @@ public:
     void setConnection(QObject *sender, const char *signal, QObject *receiver, const char *method);
     void setIntConnection(QObject *sender, const char *signal, QObject *receiver, const char *method);
     void setStringConnection(QObject *sender, const char *signal, QObject *receiver, const char *method);
-public slots:
+public Q_SLOTS:
     void trigger();
     void trigger(int number);
     void trigger(const QString &string);
-signals:
+Q_SIGNALS:
     void triggered();
     void triggered(int number);
     void triggered(const QString &string);

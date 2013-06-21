@@ -33,7 +33,7 @@ public:
 public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void resetSave();
     void resetShow();

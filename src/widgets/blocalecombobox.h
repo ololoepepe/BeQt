@@ -27,10 +27,10 @@ protected:
     explicit BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent = 0);
 public:
     QLocale currentLocale() const;
-public slots:
+public Q_SLOTS:
     void setCurrentLocale(const QLocale &locale);
     void updateAvailableLocales();
-signals:
+Q_SIGNALS:
     void currentLocaleChanged(const QLocale &locale);
 private:
     Q_DISABLE_COPY(BLocaleComboBox)

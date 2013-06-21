@@ -44,7 +44,7 @@ public:
     void setSocket(BGenericSocket *s);
     void sendNext();
     BNetworkOperation *createOperation(const BNetworkOperationMetaData &metaData);
-public slots:
+public Q_SLOTS:
     void connected();
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);

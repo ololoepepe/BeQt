@@ -31,12 +31,12 @@ public:
     virtual bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     virtual void setWorkingDirectory(const QString &path);
     virtual QString workingDirectory() const;
-protected slots:
+protected Q_SLOTS:
     void emitReadyRead();
     void emitFinished(int exitCode);
     void emitBlockTerminal();
     void emitUnblockTerminal();
-signals:
+Q_SIGNALS:
     void readyRead();
     void finished(int exitCode);
     void blockTerminal();

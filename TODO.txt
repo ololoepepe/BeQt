@@ -1,7 +1,7 @@
 === Next patch ===
 
 * Fix cursor positioning after insertion of text
-* Use some other variable instead of CONFIG for project configuration
+* Improve BTerminalIOHandler: start thread on first readLine() call
 
 === Next release ===
 
@@ -15,21 +15,11 @@
 * Add entryList() function to BDirTools
 * Implement locking for BNetworkServer
 * Return bool in BTerminalIOHandler handler methods
-
-=== This release ===
-
-[done] Fix depend.pri on Windows
-[done] Improve BAbstractSettingsTab::setRowVisible()
-[done] Add shortcuts for editor modules actions
-[done] Fix bracket highlighting
-[done] Finish writing the Simple Editor example
-[done] Re-write README
-[done] Remove icons from the resources, install them to the Shared directory instead
-[done] Remove bcore/BCryptor
-[done] Move bgui/"About Qt" to the "About" dialog
-[done] Improve bgui/BPasswordWidget (use placeholders, don't actually set password)
-[done] Handle comments that are shorter than entire line
-[done] Improve codecs list in BFileDialog
+* Add ability to disable loggint to BNetworkConnection and BNetworkServer
+* Add isPortable() method to BCoreApplication
+* Add isRegistered() template function (for testing user type being registered)
+* Add translators() method to BTranslator
+* Add translate() method to BTranslator
 
 === Global ===
 

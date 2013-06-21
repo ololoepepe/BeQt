@@ -42,9 +42,9 @@ public:
     QString fileName() const;
     PersonInfoList infos( bool noDefault = false, const QLocale &locale = BCoreApplication::locale() ) const;
     PersonInfoList infos(const QString &localeName, bool noDefault = false) const;
-public slots:
+public Q_SLOTS:
     void reload();
-signals:
+Q_SIGNALS:
     void reloaded();
 private:
     Q_DISABLE_COPY(BPersonInfoProvider)

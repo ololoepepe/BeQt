@@ -34,7 +34,7 @@ public:
     void init();
     void checkActions();
     void resetFileHistory( const QStringList &list = QStringList() );
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void codecTriggered(const QString &codecName);
     void fileTriggered();

@@ -33,10 +33,10 @@ class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
 public:
     explicit BNetworkServerWorker(BNetworkServerPrivate *sp);
     ~BNetworkServerWorker();
-public slots:
+public Q_SLOTS:
     void addConnection(int socketDescriptor);
     void disconnected();
-signals:
+Q_SIGNALS:
     void connectionAdded(QObject *obj);
     void disconnected(QObject *obj);
 public:
@@ -58,7 +58,7 @@ public:
 public:
     void addConnection(int socketDescriptor);
     int connectionCount() const;
-public slots:
+public Q_SLOTS:
     void connectionAdded(QObject *obj);
     void disconnected(QObject *obj);
 public:
@@ -88,7 +88,7 @@ public:
     int connectionCount() const;
     void emitConnectionAdded(BNetworkConnection *connection);
     void emitConnectionAboutToBeRemoved(BNetworkConnection *connection);
-public slots:
+public Q_SLOTS:
     void newConnection(int socketDescriptor);
     void finished();
     void spammed();

@@ -31,7 +31,7 @@ public:
     ~BPluginsSettingsTabPrivate();
 public:
     void init();
-public slots:
+public Q_SLOTS:
     void lstwgtCurrentRowChanged(int currentRow);
     void lstwgtItemChanged(QListWidgetItem *item);
     void btnSettingsClicked();

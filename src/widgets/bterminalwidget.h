@@ -50,7 +50,7 @@ public:
     QString workingDirectory() const;
     bool isValid() const;
     bool isActive() const;
-public slots:
+public Q_SLOTS:
     void terminalCommand(const QString &command);
     void terminalCommand(const QString &command, const QStringList &arguments);
     void terminalCommand(const QVariant &data);
@@ -65,7 +65,7 @@ public slots:
     void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
     void appendText(const QString &text, StandardFormat format);
     void appendLine(const QString &text, StandardFormat format);
-signals:
+Q_SIGNALS:
     void finished(int exitCode);
 private:
     Q_DISABLE_COPY(BTerminalWidget)
