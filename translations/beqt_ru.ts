@@ -810,11 +810,6 @@
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
     </message>
-    <message>
-        <source>Disconnected</source>
-        <comment>log text</comment>
-        <translation type="obsolete">Отключен</translation>
-    </message>
 </context>
 <context>
     <name>BNetworkConnectionPrivate</name>
@@ -828,7 +823,7 @@
         <location filename="../src/network/bnetworkconnection.cpp" line="107"/>
         <source>Disconnected</source>
         <comment>log text</comment>
-        <translation type="unfinished">Отключен</translation>
+        <translation>Отключен</translation>
     </message>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="114"/>
