@@ -1,3 +1,8 @@
+=== BeQt 2.0.3 (22 июня 2013) ===
+    * Использована переменная BEQT_CONFIG вместо CONFIG для конфигурирования проекта
+    * Заменены ключевые слова Qt (signals, и т.д.)
+    * Исправлен метод BCodeEditPrivate::removeExtraSelections (баг SIGSEGV)
+
 === BeQt 2.0.2 (16 мая 2013) ===
     * Исправлено отображение столбца и строки в классе BIndicatorsEditorModule
     * Оптимизированы операции по удалению текста в BCodeEdit

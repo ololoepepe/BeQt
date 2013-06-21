@@ -30,7 +30,7 @@ public:
     ~BApplicationServerPrivate();
 public:
     void init();
-public slots:
+public Q_SLOTS:
     void newPendingConnection();
 public:
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))

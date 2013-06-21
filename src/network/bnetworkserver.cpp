@@ -46,7 +46,7 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
         return;
     connect( c, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
     connect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
-    emit connectionAdded(c);
+    Q_EMIT connectionAdded(c);
 }
 
 void BNetworkServerWorker::disconnected()
@@ -57,7 +57,7 @@ void BNetworkServerWorker::disconnected()
     disconnect(c, SIGNAL(disconnected()), this, SLOT(disconnected()));
     disconnect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
     c->close();
-    emit disconnected(c);
+    Q_EMIT disconnected(c);
 }
 
 /*============================================================================

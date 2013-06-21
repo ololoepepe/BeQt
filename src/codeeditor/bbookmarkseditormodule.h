@@ -43,7 +43,7 @@ public:
     int maximumBookmarkCount() const;
     QAction *action(int type);
     QList<QAction *> actions(bool extended = false);
-public slots:
+public Q_SLOTS:
     void makeBookmark();
     void removeBookmark(int index);
     void removeLastBookmark();

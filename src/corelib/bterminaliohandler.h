@@ -42,7 +42,7 @@ public:
     static void installHandler(const QString &command, ExternalHandler handler);
 protected:
     virtual void handleCommand(const QString &command, const QStringList &arguments);
-signals:
+Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:
     static BTerminalIOHandler *_m_self;

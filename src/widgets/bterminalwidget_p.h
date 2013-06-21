@@ -39,7 +39,7 @@ public:
     void appendText( const QString &text, const QTextCharFormat &format = QTextCharFormat() );
     void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
     QString constructErrorString(const QString &error) const;
-public slots:
+public Q_SLOTS:
     void read();
     void finished(int exitCode);
     void blockTerminal();

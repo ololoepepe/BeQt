@@ -43,7 +43,7 @@ public:
     QStringList helpSearchPaths() const;
     void showHelp( const QString &file = QString() );
     QIcon cacheIcon(const QIcon &icon, const QString &name);
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void actionDestroyed(QObject *act);
 public:

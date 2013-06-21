@@ -185,7 +185,7 @@ void BCodeEditClipboardNotifier::dataChanged()
     bool bb = (b != dataAvailable);
     dataAvailable = b;
     if (bb)
-        emit clipboardDataAvailableChanged(b);
+        Q_EMIT clipboardDataAvailableChanged(b);
 }
 
 /*============================== Static protected variables ================*/
@@ -717,10 +717,14 @@ void BCodeEditPrivate::replaceTabs(QString *s, BCodeEdit::TabWidth tw)
 void BCodeEditPrivate::removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
                                              const QList<QTextEdit::ExtraSelection> &what)
 {
-    for (int i = from.size() - 1; i >= 0; --i)
-        foreach (const QTextEdit::ExtraSelection &es, what)
+    foreach (const QTextEdit::ExtraSelection &es, what)
+    {
+        for (int i = from.size() - 1; i >= 0; --i)
+        {
             if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
                 from.removeAt(i);
+        }
+    }
 }
 
 QList<QChar> BCodeEditPrivate::createUnsupportedSymbols()
@@ -2176,7 +2180,7 @@ void BCodeEdit::setReadOnly(bool ro)
     if (d->ptedt->isReadOnly() == ro)
         return;
     d->ptedt->setReadOnly(ro);
-    emit readOnlyChanged(ro);
+    Q_EMIT readOnlyChanged(ro);
     d->updateCopyAvailable(d->copyAvailable);
     d->updatePasteAvailable(d->pasteAvailable);
     d->updateUndoAvailable(d->undoAvailable);
@@ -2210,7 +2214,7 @@ void BCodeEdit::setEditMode(EditMode mode)
         return;
     d->blockMode = b;
     d->ptedt->setBlockMode(b);
-    emit editModeChanged(mode);
+    Q_EMIT editModeChanged(mode);
 }
 
 void BCodeEdit::setEditLineLength(int ll)
@@ -2245,7 +2249,7 @@ void BCodeEdit::setFileType(BAbstractFileType *ft)
         return;
     d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
     setRecognizedBrackets(ft->brackets());
-    emit fileTypeChanged(ft);
+    Q_EMIT fileTypeChanged(ft);
     d->highlighter->rehighlight();
 }
 
@@ -2735,7 +2739,7 @@ QThreadPool *BCodeEditParseTask::pool()
 void BCodeEditParseTask::run()
 {
     res = BCodeEditPrivate::processText(Text, LineLength, TabWidth);
-    emit finished();
+    Q_EMIT finished();
 }
 
 BCodeEditPrivate::ProcessTextResult BCodeEditParseTask::result() const

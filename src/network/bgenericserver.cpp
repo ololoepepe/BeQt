@@ -35,7 +35,7 @@ BLocalServer::~BLocalServer()
 
 void BLocalServer::incomingConnection(quintptr socketDescriptor)
 {
-    emit newConnection(socketDescriptor);
+    Q_EMIT newConnection(socketDescriptor);
 }
 
 /*============================================================================
@@ -59,7 +59,7 @@ BTcpServer::~BTcpServer()
 
 void BTcpServer::incomingConnection(int handle)
 {
-    emit newConnection(handle);
+    Q_EMIT newConnection(handle);
 }
 
 /*============================================================================

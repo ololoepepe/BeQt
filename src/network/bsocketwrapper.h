@@ -42,7 +42,7 @@ public:
     bool isBuisy() const;
     bool sendData( const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
     bool sendData( const QVariant &variant, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
-signals:
+Q_SIGNALS:
     void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);

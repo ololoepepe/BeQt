@@ -40,11 +40,11 @@ SOURCES += \
     bremotelogger.cpp \
     bsocketwrapper.cpp
 
-!contains(CONFIG, beqt_no_install) {
+!contains(BEQT_CONFIG, beqt_no_install) {
 
 include(../../prefix.pri)
 
 target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
-} #end !contains(CONFIG, beqt_no_install)
+} #end !contains(BEQT_CONFIG, beqt_no_install)

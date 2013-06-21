@@ -102,7 +102,7 @@ public:
     static void setLogger(BLogger *l);
     static BLogger *logger();
     static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
-signals:
+Q_SIGNALS:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();

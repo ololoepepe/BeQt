@@ -24,7 +24,7 @@ public:
 public:
     void init();
     void trigger( const QVariant &data = QVariant() );
-public slots:
+public Q_SLOTS:
     void timeout();
 public:
     QTimer *tmrIntermediate;

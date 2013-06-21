@@ -68,20 +68,20 @@ QString BAbstractTerminalDriver::workingDirectory() const
 
 void BAbstractTerminalDriver::emitReadyRead()
 {
-    emit readyRead();
+    Q_EMIT readyRead();
 }
 
 void BAbstractTerminalDriver::emitFinished(int exitCode)
 {
-    emit finished(exitCode);
+    Q_EMIT finished(exitCode);
 }
 
 void BAbstractTerminalDriver::emitBlockTerminal()
 {
-    emit blockTerminal();
+    Q_EMIT blockTerminal();
 }
 
 void BAbstractTerminalDriver::emitUnblockTerminal()
 {
-    emit unblockTerminal();
+    Q_EMIT unblockTerminal();
 }

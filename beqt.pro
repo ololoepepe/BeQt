@@ -3,7 +3,7 @@ TEMPLATE = subdirs
 
 SUBDIRS = src
 
-contains(CONFIG, beqt_examples):SUBDIRS += examples
+contains(BEQT_CONFIG, beqt_examples):SUBDIRS += examples
 
 ##############################################################################
 ################################ Generating translations #####################
@@ -27,7 +27,7 @@ for(fileName, beqtTranslationsTs) {
 ################################ Installing ##################################
 ##############################################################################
 
-!contains(CONFIG, beqt_no_install) {
+!contains(BEQT_CONFIG, beqt_no_install) {
 
 include(prefix.pri)
 
@@ -108,7 +108,7 @@ defineReplace(getActualPrivateHeaders) {
     return($${actualHeaderPaths})
 }
 
-!contains(CONFIG, beqt_no_headers) {
+!contains(BEQT_CONFIG, beqt_no_headers) {
     #Global
     beqtInstallsHeadersGlobal.files=$$getActualHeaders(BeQt)
     beqtInstallsHeadersGlobal.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQt
@@ -117,39 +117,39 @@ defineReplace(getActualPrivateHeaders) {
     beqtInstallsHeadersCore.files=$$getActualHeaders(BeQtCore)
     beqtInstallsHeadersCore.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCore
     INSTALLS += beqtInstallsHeadersCore
-    contains(CONFIG, beqt_private_headers) {
+    contains(BEQT_CONFIG, beqt_private_headers) {
         beqtInstallsPrivateHeadersCore.files=$$getActualPrivateHeaders(BeQtCore)
         beqtInstallsPrivateHeadersCore.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCore/private
         INSTALLS += beqtInstallsPrivateHeadersCore
     }
     #Network
-    !contains(CONFIG, beqt_no_network) {
+    !contains(BEQT_CONFIG, beqt_no_network) {
         beqtInstallsHeadersNetwork.files=$$getActualHeaders(BeQtNetwork)
         beqtInstallsHeadersNetwork.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetwork
         INSTALLS += beqtInstallsHeadersNetwork
-        contains(CONFIG, beqt_private_headers) {
+        contains(BEQT_CONFIG, beqt_private_headers) {
             beqtInstallsPrivateHeadersNetwork.files=$$getActualPrivateHeaders(BeQtNetwork)
             beqtInstallsPrivateHeadersNetwork.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetwork/private
             INSTALLS += beqtInstallsPrivateHeadersNetwork
         }
     }
     #Widgets
-    !contains(CONFIG, beqt_no_widgets) {
+    !contains(BEQT_CONFIG, beqt_no_widgets) {
         beqtInstallsHeadersWidgets.files=$$getActualHeaders(BeQtWidgets)
         beqtInstallsHeadersWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtWidgets
         INSTALLS += beqtInstallsHeadersWidgets
-        contains(CONFIG, beqt_private_headers) {
+        contains(BEQT_CONFIG, beqt_private_headers) {
             beqtInstallsPrivateHeadersWidgets.files=$$getActualPrivateHeaders(BeQtWidgets)
             beqtInstallsPrivateHeadersWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtWidgets/private
             INSTALLS += beqtInstallsPrivateHeadersWidgets
         }
     }
     #CodeEditor
-    !contains(CONFIG, beqt_no_codeeditor) {
+    !contains(BEQT_CONFIG, beqt_no_codeeditor) {
         beqtInstallsHeadersCodeeditor.files=$$getActualHeaders(BeQtCodeEditor)
         beqtInstallsHeadersCodeeditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor
         INSTALLS += beqtInstallsHeadersCodeeditor
-        contains(CONFIG, beqt_private_headers) {
+        contains(BEQT_CONFIG, beqt_private_headers) {
             beqtInstallsPrivateHeadersCodeEditor.files=$$getActualPrivateHeaders(BeQtCodeEditor)
             beqtInstallsPrivateHeadersCodeEditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor/private
             INSTALLS += beqtInstallsPrivateHeadersCodeEditor
@@ -165,10 +165,10 @@ defineReplace(getActualPrivateHeaders) {
 ################################ Translations ################################
 ##############################################################################
 
-!contains(CONFIG, beqt_builtin_resources) {
+!contains(BEQT_CONFIG, beqt_builtin_resources) {
     beqtInstallsTranslations.files=$$files($${PWD}/translations/*.qm)
     beqtInstallsTranslations.path=$${BEQT_RESOURCES_INSTALLS_PATH}/translations
     INSTALLS += beqtInstallsTranslations
 }
 
-} #end !contains(CONFIG, beqt_no_install)
+} #end !contains(BEQT_CONFIG, beqt_no_install)

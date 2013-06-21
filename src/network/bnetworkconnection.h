@@ -73,7 +73,7 @@ public:
     BNetworkOperation *sendRequest(const QString &op, const QVariant &variant);
     bool sendReply(BNetworkOperation *op, const QByteArray &data);
     bool sendReply(BNetworkOperation *op, const QVariant &variant);
-public slots:
+public Q_SLOTS:
     void disconnectFromHost();
     void close();
     void abort();
@@ -83,7 +83,7 @@ protected:
     virtual void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
-signals:
+Q_SIGNALS:
     void connected();
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);

@@ -50,19 +50,19 @@ SOURCES += \
     bsettingsdialog.cpp \
     bterminalwidget.cpp
 
-contains(CONFIG, beqt_builtin_resources) {
+contains(BEQT_CONFIG, beqt_builtin_resources) {
     RESOURCES += beqtwidgets.qrc
     DEFINES += BEQT_BUILTIN_RESOURCES
 }
 
-!contains(CONFIG, beqt_no_install) {
+!contains(BEQT_CONFIG, beqt_no_install) {
 
 include(../../prefix.pri)
 
 target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
-!contains(CONFIG, beqt_builtin_resources) {
+!contains(BEQT_CONFIG, beqt_builtin_resources) {
     beqtInstallsIcons.files= \
         $$files($${PWD}/icons/*.png) \
         $$files($${PWD}/icons/*.svgz)
@@ -73,4 +73,4 @@ INSTALLS = target
     INSTALLS += beqtInstallsPixmaps
 }
 
-} #end !contains(CONFIG, beqt_no_install)
+} #end !contains(BEQT_CONFIG, beqt_no_install)

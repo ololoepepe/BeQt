@@ -31,10 +31,10 @@ public:
     int timeElapsed() const;
     bool isEnabled() const;
     bool isActive() const;
-public slots:
+public Q_SLOTS:
     void setEnabled(bool enabled);
     void spam(int eventWeight = 1);
-signals:
+Q_SIGNALS:
     void spammed(int msecsElapsed);
 private:
     Q_DISABLE_COPY(BSpamNotifier)

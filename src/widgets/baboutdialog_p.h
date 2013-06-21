@@ -80,7 +80,7 @@ public:
     void resetDescription();
     void resetChangeLog();
     void resetLicense();
-public slots:
+public Q_SLOTS:
    void retranslateUi();
    void resetAuthors();
    void resetTranslations();

@@ -50,12 +50,12 @@ public:
     QObject *instance() const;
     BPluginInterface *interface() const;
     QSettings *settings() const;
-public slots:
+public Q_SLOTS:
     bool load();
     void unload();
     bool activate();
     void deactivate();
-signals:
+Q_SIGNALS:
     void activated();
     void aboutToBeDeactivated();
 private:

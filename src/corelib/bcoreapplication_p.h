@@ -73,7 +73,7 @@ public:
     void removeTranslator(BTranslator *translator, bool blockLC);
     void loadSettings();
     void saveSettings();
-public slots:
+public Q_SLOTS:
     void initSettings();
 public:
     mutable QString appName;

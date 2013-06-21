@@ -57,10 +57,10 @@ public:
     bool showPasswordVisible() const;
     QByteArray saveState() const;
     QByteArray saveStateEncrypted(QCryptographicHash::Algorithm method = QCryptographicHash::Sha1) const;
-public slots:
+public Q_SLOTS:
     void setSavePassword(bool b);
     void setShowPassword(bool b);
-signals:
+Q_SIGNALS:
     void savePasswordChanged(bool b);
     void showPasswordChanged(bool b);
     void passwordChanged();

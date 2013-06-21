@@ -50,7 +50,7 @@ public:
       QDialogButtonBox *dlgbbox;
         //Ok
         //Cancel
-public slots:
+public Q_SLOTS:
     void accepted();
     void cboxAdvancedModeStateChanged(int state);
     void btnRestoreDefaultClicked();

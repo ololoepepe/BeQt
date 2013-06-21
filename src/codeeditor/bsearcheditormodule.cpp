@@ -463,7 +463,7 @@ void BSearchDialog::findNext()
     bool b = d->document->findNext( text, d->createFindFlags(), cyclicSearch() );
     if (b)
         d->appendHistory(d->cmboxSearch);
-    emit textFound(b, text);
+    Q_EMIT textFound(b, text);
 }
 
 void BSearchDialog::replaceNext()
@@ -476,7 +476,7 @@ void BSearchDialog::replaceNext()
     bool b = d->document->replaceNext(ntext);
     if (b)
         d->appendHistory(d->cmboxReplace);
-    emit textReplaced(b, text, ntext);
+    Q_EMIT textReplaced(b, text, ntext);
     d->document->findNext( d->cmboxSearch->lineEdit()->text(), d->createFindFlags(), cyclicSearch() );
 }
 

@@ -29,7 +29,7 @@ public:
     void init();
     void resetIn();
     void resetOut();
-public slots:
+public Q_SLOTS:
     void bytesWritten(qint64 bytes);
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);

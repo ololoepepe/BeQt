@@ -33,7 +33,7 @@ public:
     void setSocket(QLocalSocket *socket);
     void connectIODevice();
     void disconnectIODevice();
-public slots:
+public Q_SLOTS:
     void lsocketError(QLocalSocket::LocalSocketError socketError);
     void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
 public:

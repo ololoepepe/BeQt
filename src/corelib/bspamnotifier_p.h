@@ -29,7 +29,7 @@ public:
     void init();
     void testSpam(int dcount = 1);
     int timeElapsed() const;
-public slots:
+public Q_SLOTS:
     void timeout();
 public:
     QTimer *timer;

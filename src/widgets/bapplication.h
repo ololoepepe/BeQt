@@ -97,7 +97,7 @@ public:
     static void setRowVisible(QLayout *field, bool visible);
     static void setRowEnabled(QWidget *field, bool enabled);
     static void setRowEnabled(QLayout *field, bool enabled);
-public slots:
+public Q_SLOTS:
     void showAboutDialog();
     void showSettingsDialog();
     void showSettingsDialog(SettingsTabNavigation navigation);

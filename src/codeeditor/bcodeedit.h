@@ -92,7 +92,7 @@ public:
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-public slots:
+public Q_SLOTS:
     void setFocus();
     void activateWindow();
     void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
@@ -113,7 +113,7 @@ public slots:
     void rehighlight();
 protected:
     BPlainTextEdit *innerEdit() const;
-signals:
+Q_SIGNALS:
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);
     void selectionChanged();

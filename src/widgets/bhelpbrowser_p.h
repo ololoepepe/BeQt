@@ -35,7 +35,7 @@ public:
     ~BHelpBrowserPrivate();
 public:
     void init();
-public slots:
+public Q_SLOTS:
     void retranslateUi();
     void updateCaption();
     void search();

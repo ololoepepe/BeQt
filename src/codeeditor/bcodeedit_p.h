@@ -92,9 +92,9 @@ public:
     static BCodeEditClipboardNotifier *instance();
 public:
     bool clipboardDataAvailable() const;
-public slots:
+public Q_SLOTS:
     void dataChanged();
-signals:
+Q_SIGNALS:
     void clipboardDataAvailableChanged(bool available);
 protected:
     static BCodeEditClipboardNotifier *_m_self;
@@ -189,7 +189,7 @@ public:
     void lineNumberWidgetPaintEvent(QPaintEvent *e);
     int lineNumberWidgetWidth() const;
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
-public slots:
+public Q_SLOTS:
     void selectionChanged();
     void updateLineNumberWidgetWidth(int newBlockCount);
     void updateLineNumberWidget(const QRect &rect, int dy);
@@ -283,7 +283,7 @@ public:
     void handleCtrlLeft();
     void handleCtrlRight();
     void move(int key);
-public slots:
+public Q_SLOTS:
     void parceTaskFinished();
     void popupMenu(const QPoint &pos);
     void updateCursorPosition();
@@ -334,7 +334,7 @@ public:
 public:
     void run();
     BCodeEditPrivate::ProcessTextResult result() const;
-signals:
+Q_SIGNALS:
     void finished();
 private:
     static QThreadPool *tp;

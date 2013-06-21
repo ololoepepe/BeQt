@@ -293,7 +293,7 @@ bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMet
         return false;
     d->bytesOutTotal += bo;
     if ( d->metaOut.isValid() )
-        emit uploadProgress(d->metaOut, d->bytesOutReady, d->bytesOutReady);
+        Q_EMIT uploadProgress(d->metaOut, d->bytesOutReady, d->bytesOutReady);
     d->socket->flush();
     return true;
 }

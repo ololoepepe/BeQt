@@ -34,7 +34,7 @@ public:
     void init();
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *c);
-public slots:
+public Q_SLOTS:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
 public:

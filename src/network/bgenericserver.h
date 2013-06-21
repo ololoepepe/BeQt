@@ -54,7 +54,7 @@ public:
     bool waitForNewConnection(int msec = 0, bool *timedOut = 0);
 protected:
     virtual BGenericSocket *createSocket(int socketDescriptor);
-signals:
+Q_SIGNALS:
     void newPendingConnection();
     void newConnection(int socketDescriptor);
     void connectionOverflow();
