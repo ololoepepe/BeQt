@@ -14,6 +14,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QFile>
+#include <QCoreApplication>
 
 #include <QDebug>
 
@@ -31,8 +32,8 @@
 
 /*============================== Public constructors =======================*/
 
-BTerminalIOHandlerThread::BTerminalIOHandlerThread(BTerminalIOHandlerPrivate *p) :
-    QThread(p), _m_p(p), readStream(stdin, QIODevice::ReadOnly)
+BTerminalIOHandlerThread::BTerminalIOHandlerThread() :
+    QThread(0), readStream(stdin, QIODevice::ReadOnly)
 {
     //
 }
@@ -47,7 +48,19 @@ BTerminalIOHandlerThread::~BTerminalIOHandlerThread()
 void BTerminalIOHandlerThread::run()
 {
     forever
-        _m_p->lineRead( readStream.readLine() );
+    {
+        QString l = readStream.readLine();
+        bool b = readLoop.isRunning();
+        if (b)
+        {
+            lastLine = l;
+            readLoop.quit();
+        }
+        else
+        {
+            Q_EMIT lineRead(l);
+        }
+    }
 }
 
 /*============================================================================
@@ -57,15 +70,14 @@ void BTerminalIOHandlerThread::run()
 /*============================== Public constructors =======================*/
 
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
-    BBasePrivate(q), Thread( new BTerminalIOHandlerThread(this) )
+    BBasePrivate(q)
 {
     //
 }
 
 BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 {
-    Thread->terminate();
-    Thread->wait();
+    removeThread();
 }
 
 /*============================== Static public methods =====================*/
@@ -82,65 +94,65 @@ bool BTerminalIOHandlerPrivate::testUnique()
     return bTest(!qs_func(), "BTerminalIOHandler", "There must be only one instance of BTerminalIOHandler");
 }
 
+BTerminalIOHandlerThread *BTerminalIOHandlerPrivate::initThread(bool silent)
+{
+    if (readThread)
+        return readThread;
+    QMutexLocker locker(&threadMutex);
+    if (readThread)
+        return readThread;
+    if (silent && !QCoreApplication::instance())
+        return 0;
+    if (!silent && !bTest(QCoreApplication::instance(), "BTerminalIOHandlerPrivate",
+                          "There must be a QCoreApplication instance"))
+        return 0;
+    readThread = new BTerminalIOHandlerThread;
+    readThread->start();
+    return readThread;
+}
+
+void BTerminalIOHandlerPrivate::removeThread()
+{
+    if (!readThread)
+        return;
+    threadMutex.lock();
+    if (readThread)
+    {
+        readThread->terminate();
+        readThread->wait();
+        delete readThread;
+        readThread = 0;
+    }
+    threadMutex.unlock();
+}
+
 /*============================== Public methods ============================*/
 
 void BTerminalIOHandlerPrivate::init()
 {
-    Thread->start();
-}
-
-void BTerminalIOHandlerPrivate::lineRead(const QString &text)
-{
-    QMutexLocker locker(&loopMutex);
-    if (readEventLoop.isRunning())
-    {
-        lastLine = text;
-        readEventLoop.quit();
-    }
-    else
-    {
-        QStringList args = BTerminalIOHandler::splitCommand(text);
-        QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
-        if (cmd.isEmpty())
-            return;
-        B_Q(BTerminalIOHandler);
-        QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args));
-        if (internalHandlers.contains(cmd))
-        {
-            QMetaObject::invokeMethod(this, "executeInternalHandler", Qt::QueuedConnection, Q_ARG(QString, cmd),
-                                      Q_ARG(QStringList, args));
-            return;
-        }
-        if (externalHandlers.contains(cmd))
-        {
-            QMetaObject::invokeMethod(this, "executeExternalHandler", Qt::QueuedConnection, Q_ARG(QString, cmd),
-                                      Q_ARG(QStringList, args));
-            return;
-        }
-        QMetaObject::invokeMethod(this, "executeHandleCommand", Qt::QueuedConnection, Q_ARG(QString, cmd),
-                                  Q_ARG(QStringList, args));
-    }
+    BTerminalIOHandlerThread *t = initThread();
+    if (!t)
+        return;
+    t->disconnect(SIGNAL(lineRead(QString)));
+    connect(t, SIGNAL(lineRead(QString)), this, SLOT(lineRead(QString)), Qt::QueuedConnection);
 }
 
 /*============================== Public slots ==============================*/
 
-void BTerminalIOHandlerPrivate::executeInternalHandler(const QString &cmd, const QStringList &args)
+void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 {
-    if (!internalHandlers.contains(cmd))
+    QStringList args = BTerminalIOHandler::splitCommand(text);
+    QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
+    if (cmd.isEmpty())
         return;
-    (q_func()->*internalHandlers.value(cmd))(cmd, args);
-}
-
-void BTerminalIOHandlerPrivate::executeExternalHandler(const QString &cmd, const QStringList &args)
-{
-    if (!externalHandlers.contains(cmd))
-        return;
-    externalHandlers.value(cmd)(cmd, args);
-}
-
-void BTerminalIOHandlerPrivate::executeHandleCommand(const QString &cmd, const QStringList &args)
-{
-    q_func()->handleCommand(cmd, args);
+    B_Q(BTerminalIOHandler);
+    QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args));
+    if (internalHandlers.contains(cmd))
+        return (q->*internalHandlers.value(cmd))(cmd, args);
+    else if (externalHandlers.contains(cmd))
+        return externalHandlers.value(cmd)(cmd, args);
+    else
+        q->handleCommand(cmd, args);
 }
 
 /*============================== Static public variables ===================*/
@@ -151,6 +163,8 @@ QMutex BTerminalIOHandlerPrivate::writeMutex;
 QMutex BTerminalIOHandlerPrivate::writeErrMutex;
 QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly);
 QTextStream BTerminalIOHandlerPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
+BTerminalIOHandlerThread *BTerminalIOHandlerPrivate::readThread = 0;
+QMutex BTerminalIOHandlerPrivate::threadMutex;
 
 /*============================================================================
 ================================ BTerminalIOHandler ==========================
@@ -159,7 +173,7 @@ QTextStream BTerminalIOHandlerPrivate::writeErrStream(stderr, QIODevice::WriteOn
 /*============================== Public constructors =======================*/
 
 BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
-    QObject(parent), BBase( *new BTerminalIOHandlerPrivate(this) )
+    QObject(parent), BBase(*new BTerminalIOHandlerPrivate(this))
 {
     d_func()->init();
     BTerminalIOHandlerPrivate::testUnique();
@@ -238,9 +252,20 @@ QString BTerminalIOHandler::readLine(const QString &text)
 {
     if (!text.isEmpty())
         write(text);
+    BTerminalIOHandlerThread *t = BTerminalIOHandlerPrivate::initThread(true);
     QMutexLocker locker(&BTerminalIOHandlerPrivate::readMutex);
-    ds_func()->readEventLoop.exec();
-    return ds_func()->lastLine;
+    QString line;
+    if (t)
+    {
+        t->readLoop.exec();
+        line = t->lastLine;
+    }
+    else
+    {
+        static QTextStream in(stdin, QIODevice::ReadOnly);
+        line = in.readLine();
+    }
+    return line;
 }
 
 void BTerminalIOHandler::write(const QString &text)
@@ -299,7 +324,7 @@ void BTerminalIOHandler::installHandler(const QString &command, InternalHandler 
     if (command.isEmpty() || !handler)
         return;
     B_DS(BTerminalIOHandler);
-    if ( ds->internalHandlers.contains(command) )
+    if (ds->internalHandlers.contains(command))
         return;
     ds->internalHandlers.insert(command, handler);
 }
@@ -311,7 +336,7 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
     if (command.isEmpty() || !handler)
         return;
     B_DS(BTerminalIOHandler);
-    if ( ds->externalHandlers.contains(command) )
+    if (ds->externalHandlers.contains(command))
         return;
     ds->externalHandlers.insert(command, handler);
 }

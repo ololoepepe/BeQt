@@ -71,7 +71,7 @@ public:
     QString peerAddress() const;
     BNetworkOperation *sendRequest(const QString &op, const QByteArray &data = QByteArray());
     BNetworkOperation *sendRequest(const QString &op, const QVariant &variant);
-    bool sendReply(BNetworkOperation *op, const QByteArray &data);
+    bool sendReply(BNetworkOperation *op, const QByteArray &data = QByteArray());
     bool sendReply(BNetworkOperation *op, const QVariant &variant);
 public Q_SLOTS:
     void disconnectFromHost();

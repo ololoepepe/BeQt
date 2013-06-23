@@ -90,30 +90,30 @@ BeQt рассчитан на использование совместно с Qt
 
 При сборке BeQt можно передать некоторые параметры qmake:
 
- * "CONFIG+=beqt_no_network"
+ * "CONFIG+=no_network"
    Не собирать модуль BeQtNetwork
 
- * "CONFIG+=beqt_no_widgets"
+ * "CONFIG+=no_widgets"
    Не собирать модуль BeQtWidgets (модуль BeQtCodeEditor также не будет
    собран, поскольку зависит от модуля BeQtWidgets)
 
- * "CONFIG+=beqt_no_codeeditor"
+ * "CONFIG+=no_codeeditor"
    Не собирать модуль BeQtCodeEditor
 
- * "CONFIG+=beqt_builtin_resources"
+ * "CONFIG+=builtin_resources"
    Встроить ресурсы (включая переводы) в файлы библиотек
    Подробнее см.: http://qt-project.org/doc/qt-5.0/resources.html
 
- * "CONFIG+=beqt_examples"
+ * "CONFIG+=examples"
    Собрать демонстрационные примеры (по умолчанию примеры не собираются)
 
- * "CONFIG+=beqt_no_install"
+ * "CONFIG+=no_install"
    Не устанавливать никаких файлов (только сборка)
 
- * "CONFIG+=beqt_no_headers"
+ * "CONFIG+=no_headers"
    Не устанавливать заголовочные файлы
 
- * "CONFIG+=beqt_private_headers"
+ * "CONFIG+=private_headers"
    Устанавливать "закрытые" заголовочные файлы вместе с "открытыми"
 
  * "BEQT_PREFIX=<path>"
@@ -259,7 +259,7 @@ http://qt-project.org/doc/qt-5.0/qtcore/qtglobal.html#QT_VERSION_CHECK
 
 Рекомеднуется использовать статическую сборку, т.к. это помогает избежать
 проблем с зависимостями. В случае статической сборки используйте параметр
-"beqt_builtin_resources".
+"builtin_resources".
 
 Подробнее см.:
 http://qt-project.org/doc/qt-5.0/deployment.html#static-vs-shared-libraries

@@ -14,7 +14,7 @@ bool bTest(bool condition, const char *where, const char *what)
 
 const char *bVersion()
 {
-    return "2.0.3";
+    return "2.0.4";
 }
 
 QList<int> bRange(int lb, int ub, int step)

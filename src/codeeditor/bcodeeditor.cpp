@@ -744,8 +744,9 @@ BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocumen
     return defaultFileType;
 }
 
-BCodeEditorDocument *BCodeEditorPrivate::openDocument(const QString &fileName, QTextCodec *codec)
+BCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, QTextCodec *codec)
 {
+    fileName = QDir::fromNativeSeparators(fileName);
     if ( fileName.isEmpty() || findDocument(fileName) )
         return 0;
     BCodeEditorDocument *doc = createDocument(fileName);

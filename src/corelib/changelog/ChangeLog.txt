@@ -1,3 +1,9 @@
+=== BeQt 2.0.4 (23 June 2013) ===
+    * Improve BTerminalIOHandler: start thread on first readLine() call
+    * Fix opening the same document twice on Windows (BCodeEditor)
+    * Fix configuration variables names
+    * Add default value to BNetworkConnection::sendReply() method
+
 === BeQt 2.0.3 (22 June 2013) ===
     * Use BEQT_CONFIG variable instead of CONFIG for project configuration
     * Replace Qt keywords (signals, etc.)

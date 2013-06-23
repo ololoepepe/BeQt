@@ -227,7 +227,7 @@ public:
     void addDocument(BCodeEditorDocument *doc);
     void removeDocument(BCodeEditorDocument *doc);
     BAbstractFileType *selectDocumentFileType(BCodeEditorDocument *doc);
-    BCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
+    BCodeEditorDocument *openDocument(QString fileName, QTextCodec *codec = 0);
     bool reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec = 0);
     bool saveDocument(BCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
     bool saveDocuments(const QList<BCodeEditorDocument *> &list);

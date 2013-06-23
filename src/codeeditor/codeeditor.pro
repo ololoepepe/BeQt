@@ -54,11 +54,11 @@ SOURCES += \
     bsearcheditormodule.cpp \
     btextblockuserdata.cpp
 
-!contains(BEQT_CONFIG, beqt_no_install) {
+!contains(BEQT_CONFIG, no_install) {
 
 include(../../prefix.pri)
 
 target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
-} #end !contains(BEQT_CONFIG, beqt_no_install)
+} #end !contains(BEQT_CONFIG, no_install)

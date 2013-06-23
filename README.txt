@@ -92,30 +92,30 @@ See: http://qt-project.org/doc/qtcreator-2.6 for details.
 
 When building BeQt, you may pass some parameters to qmake:
 
- * "CONFIG+=beqt_no_network"
+ * "CONFIG+=no_network"
    Don't build the BeQtNetwork module
 
- * "CONFIG+=beqt_no_widgets"
+ * "CONFIG+=no_widgets"
    Don't build the BeQtWidgets module (BeQtCodeEditor module also will not be
    built, because it depends on BeQtWidgets module)
 
- * "CONFIG+=beqt_no_codeeditor"
+ * "CONFIG+=no_codeeditor"
    Don't build the BeQtCodeEditor module
 
- * "CONFIG+=beqt_builtin_resources"
+ * "CONFIG+=builtin_resources"
    Embed resources (including translations) into library files
    See: http://qt-project.org/doc/qt-5.0/resources.html for details
 
- * "CONFIG+=beqt_examples"
+ * "CONFIG+=examples"
    Build demo examples (by default examples are not built)
 
- * "CONFIG+=beqt_no_install"
+ * "CONFIG+=no_install"
    Don't install any files (building only)
 
- * "CONFIG+=beqt_no_headers"
+ * "CONFIG+=no_headers"
    Don't install headers
 
- * "CONFIG+=beqt_private_headers"
+ * "CONFIG+=private_headers"
    Install private headers along with the public ones
 
  * "BEQT_PREFIX=<path>"
@@ -260,7 +260,7 @@ When deploying an application that uses BeQt, don't forget to include
 the resource files (libraries, images, translations, etc. - see above).
 
 It's recommended to build applications statically, because that helps avoid
-dependency issues. You may use the "beqt_builtin_resources" parameter
+dependency issues. You may use the "builtin_resources" parameter
 in case of building your project statically.
 
 For details, see:
