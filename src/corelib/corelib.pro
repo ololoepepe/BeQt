@@ -49,21 +49,21 @@ SOURCES += \
     bterminaliohandler.cpp \
     btranslator.cpp
 
-contains(BEQT_CONFIG, beqt_builtin_resources) {
+contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES
     RESOURCES += \
         beqtcore.qrc \
         ../../translations/beqt_translations.qrc
 }
 
-!contains(BEQT_CONFIG, beqt_no_install) {
+!contains(BEQT_CONFIG, no_install) {
 
 include(../../prefix.pri)
 
 target.path = $${BEQT_LIBS_INSTALLS_PATH}
 INSTALLS = target
 
-!contains(BEQT_CONFIG, beqt_builtin_resources) {
+!contains(BEQT_CONFIG, builtin_resources) {
     beqtInstallsChangelog.files=$$files($${PWD}/changelog/*.txt)
     beqtInstallsChangelog.path=$${BEQT_RESOURCES_INSTALLS_PATH}/changelog
     INSTALLS += beqtInstallsChangelog
@@ -78,4 +78,4 @@ INSTALLS = target
     INSTALLS += beqtInstallsInfos
 }
 
-} #end !contains(BEQT_CONFIG, beqt_no_install)
+} #end !contains(BEQT_CONFIG, no_install)

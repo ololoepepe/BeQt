@@ -20,6 +20,7 @@ class BSplittedLinesDialog;
 #include <QByteArray>
 #include <QMap>
 #include <QTextDocument>
+#include <QDir>
 
 #include <QDebug>
 
@@ -49,12 +50,13 @@ void BCodeEditorDocumentPrivate::init()
     sld = 0;
 }
 
-void BCodeEditorDocumentPrivate::setFileName(const QString &fn)
+void BCodeEditorDocumentPrivate::setFileName(QString fn)
 {
+    fn = QDir::fromNativeSeparators(fn);
     bool b = (fn != fileName);
     fileName = fn;
     if (b)
-        QMetaObject::invokeMethod( q_func(), "fileNameChanged", Q_ARG(QString, fn) );
+        QMetaObject::invokeMethod(q_func(), "fileNameChanged", Q_ARG(QString, fn));
 }
 
 void BCodeEditorDocumentPrivate::setCodec(QTextCodec *c)

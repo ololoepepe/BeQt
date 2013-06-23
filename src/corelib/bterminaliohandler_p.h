@@ -26,14 +26,16 @@ class BTerminalIOHandlerThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit BTerminalIOHandlerThread(BTerminalIOHandlerPrivate *p);
+    explicit BTerminalIOHandlerThread();
     ~BTerminalIOHandlerThread();
 protected:
     void run();
-public:
-    BTerminalIOHandlerPrivate *const _m_p;
+signals:
+    void lineRead(const QString &text);
 public:
     QTextStream readStream;
+    QEventLoop readLoop;
+    QString lastLine;
 private:
     Q_DISABLE_COPY(BTerminalIOHandlerThread)
 };
@@ -53,13 +55,12 @@ public:
 public:
     static bool testInit(const char *where = 0);
     static bool testUnique();
+    static BTerminalIOHandlerThread *initThread(bool silent = false);
+    static void removeThread();
 public:
     void init();
-    void lineRead(const QString &text);
 public Q_SLOTS:
-    void executeInternalHandler(const QString &cmd, const QStringList &args);
-    void executeExternalHandler(const QString &cmd, const QStringList &args);
-    void executeHandleCommand(const QString &cmd, const QStringList &args);
+    void lineRead(const QString &text);
 public:
     static QMutex echoMutex;
     static QMutex readMutex;
@@ -67,12 +68,9 @@ public:
     static QMutex writeErrMutex;
     static QTextStream writeStream;
     static QTextStream writeErrStream;
+    static BTerminalIOHandlerThread *readThread;
+    static QMutex threadMutex;
 public:
-    BTerminalIOHandlerThread *const Thread;
-public:
-    QMutex loopMutex;
-    QEventLoop readEventLoop;
-    QString lastLine;
     QMap<QString, BTerminalIOHandler::InternalHandler> internalHandlers;
     QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
 private:

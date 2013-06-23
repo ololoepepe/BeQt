@@ -1,28 +1,33 @@
-=== Next patch ===
-
+* Fix dragging from BPlainTextEdit. Note: not sure if needed
+* Add comments to the code and make docs; write detailed user manual
+* Improve MacOS support
 * Fix cursor positioning after insertion of text
-* Improve BTerminalIOHandler: start thread on first readLine() call
 
-=== Next release ===
+=== PATCH ===
+
+
+
+=== MAJOR ===
 
 * Add image support to person info system
 * Add spell checking support to code editor
-* Add ability to set maximum file size for BCodeEditor
 * Add alternative BBasePrivate class not inherited from QObject
 * Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BNetworkLogger target
-* Add virtual sockets for internal use
 * Move BLoggerPrivate::tryLog method to BLogger
-* Add entryList() function to BDirTools
-* Implement locking for BNetworkServer
 * Return bool in BTerminalIOHandler handler methods
-* Add ability to disable loggint to BNetworkConnection and BNetworkServer
+
+=== MINOR ===
+
+* Add "noop" handler for BNetwork system
+* Add BPassword class
 * Add isPortable() method to BCoreApplication
 * Add isRegistered() template function (for testing user type being registered)
 * Add translators() method to BTranslator
 * Add translate() method to BTranslator
-
-=== Global ===
-
-* Fix dragging from BPlainTextEdit. Note: not sure if needed
-* Add comments to the code and make docs; write detailed user manual
-* Improve MacOS support
+* Add ability to generate passwords to BPasswordWidget
+* Add ability to disable logging to BNetworkConnection and BNetworkServer
+* Implement locking for BNetworkServer
+* Add entryList() function to BDirTools
+* Add virtual sockets for internal use
+* Add ability to set maximum file size for BCodeEditor
+* Add BNetworkOperation::reply() method

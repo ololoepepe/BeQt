@@ -32,7 +32,7 @@ public:
     ~BCodeEditorDocumentPrivate();
 public:
     void init();
-    void setFileName(const QString &fn);
+    void setFileName(QString fn);
     void setCodec(QTextCodec *c);
 public Q_SLOTS:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
