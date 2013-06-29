@@ -1295,6 +1295,21 @@
     </message>
 </context>
 <context>
+    <name>BSmtpSender</name>
+    <message>
+        <location filename="../src/network/bsmtpsender.cpp" line="259"/>
+        <source>Invalid parameters</source>
+        <comment>errorString</comment>
+        <translation>Некорректные параметры</translation>
+    </message>
+    <message>
+        <location filename="../src/network/bsmtpsender.cpp" line="262"/>
+        <source>Operation timed out</source>
+        <comment>errorString</comment>
+        <translation>Превышено время ожидания</translation>
+    </message>
+</context>
+<context>
     <name>BSplittedLinesDialogPrivate</name>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="268"/>

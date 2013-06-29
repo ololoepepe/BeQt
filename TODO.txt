@@ -33,7 +33,7 @@
 [done] Add "log" handler to BNetworkConnection
 [done] Add BNetworkOperation::reply() method
 [done] Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BRemoteLogger target
-* Add a class for sending e-mail through SMTP
+[done] Implement sending e-mail through SMTP
 [done] Add ability to generate passwords to BPasswordWidget
 [done] Add ability to set maximum file size for BCodeEditor
 * Add BeQtSql module
