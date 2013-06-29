@@ -112,6 +112,16 @@ BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, 
 
 /*============================== Public methods ============================*/
 
+void BNetworkOperation::reply(const QByteArray &data)
+{
+    connection()->sendReply(this, data);
+}
+
+void BNetworkOperation::reply(const QVariant &variant)
+{
+    connection()->sendReply(this, variant);
+}
+
 BNetworkConnection *BNetworkOperation::connection() const
 {
     return d_func()->Connection;

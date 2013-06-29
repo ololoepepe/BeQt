@@ -185,6 +185,15 @@ int execProcess(const QString &workingDir, const QString &command, const QString
     return (proc.exitStatus() == QProcess::NormalExit) ? bRet(output, in.readAll(), proc.exitCode()) : -1;
 }
 
+QString translate(const char *context, const char *sourceText, const char *disambiguation, int n)
+{
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    return QCoreApplication::translate(context, sourceText, disambiguation, QCoreApplication::CodecForTr, n);
+#else
+    return QCoreApplication::translate(context, sourceText, disambiguation, n);
+#endif
+}
+
 #if defined(Q_OS_MAC)
 QString macVersionToString(QSysInfo::MacVersion version)
 {

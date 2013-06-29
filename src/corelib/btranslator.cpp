@@ -2,6 +2,7 @@
 #include "btranslator_p.h"
 #include "bcoreapplication.h"
 #include "bcoreapplication_p.h"
+#include "bnamespace.h"
 
 #include <QObject>
 #include <QString>
@@ -179,4 +180,14 @@ QList<QLocale> BTranslator::availableLocales() const
             list << l;
     }
     return list;
+}
+
+QList<QTranslator *> BTranslator::translators() const
+{
+    return d_func()->translators;
+}
+
+QString BTranslator::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
+{
+    return BeQt::translate(context, sourceText, disambiguation, n);
 }

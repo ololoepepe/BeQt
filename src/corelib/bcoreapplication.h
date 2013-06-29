@@ -86,9 +86,11 @@ public:
     static QStringList locations(Location loc);
     static QStringList locations(const QString &subdir);
     static QSettings *settingsInstance();
+    static bool isPortable();
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(), InterfaceTestFunction function = 0);
+    static QList<BTranslator *> translators();
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
     static void installTranslator(BTranslator *translator, bool blockLanguageChange = true);
     static void removeTranslator(BTranslator *translator, bool blockLanguageChange = true);

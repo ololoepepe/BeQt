@@ -530,6 +530,13 @@ QSettings *BCoreApplication::settingsInstance()
     return ds_func()->settings.data();
 }
 
+bool BCoreApplication::isPortable()
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return false;
+    return ds_func()->getIsPortable();
+}
+
 void BCoreApplication::registerPluginWrapper(BPluginWrapper *plugin)
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
@@ -607,6 +614,13 @@ void BCoreApplication::removeTranslator(BTranslator *translator, bool blockLangu
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return;
     ds_func()->removeTranslator(translator, blockLanguageChange);
+}
+
+QList<BTranslator *> BCoreApplication::translators()
+{
+    if ( !BCoreApplicationPrivate::testCoreInit() )
+        return QList<BTranslator *>();
+    return ds_func()->translators.values();
 }
 
 void BCoreApplication::setLocale(const QLocale &l, bool noRetranslate)

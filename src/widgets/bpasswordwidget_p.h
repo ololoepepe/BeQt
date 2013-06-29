@@ -16,6 +16,8 @@ class QEvent;
 
 #include <QObject>
 #include <QApplication>
+#include <QList>
+#include <QChar>
 
 /*============================================================================
 ================================ BPasswordWidgetPrivate ======================
@@ -42,10 +44,13 @@ public:
     bool save;
     bool show;
     int charCount;
+    BPasswordWidget::GeneratePasswordFunction generateFunction;
+    int generatedLength;
     QHBoxLayout *hlt;
       QLineEdit *ledt;
       QToolButton *tbtnSave;
       QToolButton *tbtnShow;
+      QToolButton *tbtnGenerate;
 private:
     Q_DISABLE_COPY(BPasswordWidgetPrivate)
 };

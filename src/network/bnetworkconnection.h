@@ -34,6 +34,9 @@ public:
     typedef void (BNetworkConnection::*InternalHandler)(BNetworkOperation *);
     typedef void (*ExternalHandler)(BNetworkOperation *);
 public:
+    static const QString NoopRequest;
+    static const QString LogRequest;
+public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
     explicit BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
     explicit BNetworkConnection(BGenericSocket::SocketType type, QObject *parent = 0);
@@ -83,6 +86,8 @@ protected:
     virtual void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
+    void handleNoop(BNetworkOperation *op);
+    void handleLog(BNetworkOperation *op);
 Q_SIGNALS:
     void connected();
     void disconnected();

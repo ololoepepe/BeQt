@@ -5,29 +5,35 @@
 
 === PATCH ===
 
-
+[done] Add B_DECLARE_TRANSLATE_FUNCTION macro
 
 === MAJOR ===
 
-* Add image support to person info system
-* Add spell checking support to code editor
 * Add alternative BBasePrivate class not inherited from QObject
-* Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BNetworkLogger target
-* Move BLoggerPrivate::tryLog method to BLogger
 * Return bool in BTerminalIOHandler handler methods
+* Add image support to person info system
+* Add ability to disable logging to BNetworkConnection and BNetworkServer
+* Move BLoggerPrivate::tryLog method to BLogger
+* Improve BRemoteLogger
+* Add spell checking support to code editor
 
 === MINOR ===
 
-* Add "noop" handler for BNetwork system
-* Add BPassword class
-* Add isPortable() method to BCoreApplication
-* Add isRegistered() template function (for testing user type being registered)
-* Add translators() method to BTranslator
-* Add translate() method to BTranslator
-* Add ability to generate passwords to BPasswordWidget
-* Add ability to disable logging to BNetworkConnection and BNetworkServer
-* Implement locking for BNetworkServer
-* Add entryList() function to BDirTools
-* Add virtual sockets for internal use
-* Add ability to set maximum file size for BCodeEditor
-* Add BNetworkOperation::reply() method
+[done] Add BeQt::translate() function
+[done] Add BDirTools::moveDir() method (combination of rename and copy)
+[done] Add BDirTools::removeSubdirs() and BDirTools::removeEntries() methods
+[done] Add entryList() function to BDirTools
+[done] Add isPortable() method to BCoreApplication
+[done] Add translators() method to BCoreApplication
+[done] Add translate() method to BTranslator
+[done] Add translators() method to BTranslator
+[done] Add BPassword class
+[done] Implement locking for BNetworkServer
+[done] Add "noop" handler to BNetworkConnection
+[done] Add "log" handler to BNetworkConnection
+[done] Add BNetworkOperation::reply() method
+[done] Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BRemoteLogger target
+* Add a class for sending e-mail through SMTP
+[done] Add ability to generate passwords to BPasswordWidget
+[done] Add ability to set maximum file size for BCodeEditor
+* Add BeQtSql module

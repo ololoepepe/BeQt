@@ -599,6 +599,7 @@ void BCodeEditorPrivate::init()
     preferredFileType = defaultFileType;
     defaultCodec = QTextCodec::codecForName("UTF-8");
     defaultFN = defaultFileName();
+    maximumFileSize = BeQt::Megabyte;
     maxHistoryCount = 20;
     //
     vlt = new QVBoxLayout(q);
@@ -749,6 +750,11 @@ BCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, QTextCod
     fileName = QDir::fromNativeSeparators(fileName);
     if ( fileName.isEmpty() || findDocument(fileName) )
         return 0;
+    if (QFileInfo(fileName).size() > maximumFileSize)
+    {
+        failedToOpenMessage(fileName, tr("The file is too large", "msgbox informativeText"));
+        return 0;
+    }
     BCodeEditorDocument *doc = createDocument(fileName);
     openingDocuments.insert(doc, fileName);
     if ( !doc->load(driver, codec, fileName) )
@@ -966,7 +972,7 @@ void BCodeEditorPrivate::appendFileHistory(const QString &fileName, const QStrin
     emitFileHistoryChanged(fileHistory);
 }
 
-void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
+void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName, const QString &info)
 {
     if ( fileName.isEmpty() )
         return;
@@ -974,6 +980,8 @@ void BCodeEditorPrivate::failedToOpenMessage(const QString &fileName)
     msg.setWindowTitle( tr("Failed to open file", "msgbox windowTitle") );
     msg.setIcon(QMessageBox::Warning);
     msg.setText(tr("Failed to open file:", "msgbox text") + "\n" + fileName);
+    if (!info.isEmpty())
+        msg.setInformativeText(info);
     msg.setStandardButtons(QMessageBox::Ok);
     msg.setDefaultButton(QMessageBox::Ok);
     msg.exec();
@@ -1799,6 +1807,13 @@ void BCodeEditor::setDefaultFileName(const QString &fileName)
     d_func()->defaultFN = !fileName.isEmpty() ? fileName : BCodeEditorPrivate::defaultFileName();
 }
 
+void BCodeEditor::setMaximumFileSize(int sz)
+{
+    if (sz < 1)
+        return;
+    d_func()->maximumFileSize = sz;
+}
+
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
     if ( !mdl || mdl->isBuisy() )
@@ -2018,6 +2033,11 @@ QString BCodeEditor::defaultCodecName() const
 QString BCodeEditor::defaultFileName() const
 {
     return d_func()->defaultFN;
+}
+
+int BCodeEditor::maximumFileSize() const
+{
+    return d_func()->maximumFileSize;
 }
 
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const

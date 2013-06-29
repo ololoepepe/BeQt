@@ -32,6 +32,9 @@ protected:
 public:
     void setMaxConnectionCount(int count);
     void setMaxThreadCount(int count);
+    void lock();
+    void unlock();
+    bool tryLock();
     bool isValid() const;
     bool isListening() const;
     bool listen(const QString &address, quint16 port = 0);

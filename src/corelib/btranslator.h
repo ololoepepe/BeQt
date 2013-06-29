@@ -5,6 +5,7 @@ class BTranslatorPrivate;
 class BCoreApplicationPrivate;
 
 class QLocale;
+class QTranslator;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -33,6 +34,8 @@ public:
     bool isInstalled() const;
     QString fileName() const;
     QList<QLocale> availableLocales() const;
+    QList<QTranslator *> translators() const;
+    QString translate(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) const;
 private:
     Q_DISABLE_COPY(BTranslator)
     friend class BCoreApplicationPrivate;
