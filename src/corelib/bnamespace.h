@@ -58,6 +58,8 @@ B_CORE_EXPORT int execProcess(const QString &command, const QStringList &argumen
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
+B_CORE_EXPORT QString translate(const char *context, const char *sourceText, const char *disambiguation = 0,
+                                int n = -1);
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
 B_CORE_EXPORT QString macVersion();

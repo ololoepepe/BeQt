@@ -21,8 +21,14 @@
 #include <QTimer>
 #include <QEvent>
 #include <QMetaObject>
+#include <QUuid>
 
 #include <QDebug>
+
+static QString defaultGeneratePasswordFunction(int len)
+{
+    return QUuid::createUuid().toString().remove('{').remove('-').remove('}').left(len);
+}
 
 /*============================================================================
 ================================ BPasswordWidgetPrivate ======================
@@ -60,6 +66,8 @@ void BPasswordWidgetPrivate::init()
     save = true; //Is reset to false, so it's false by default
     show = true; //Is reset to false, so it's false by default
     charCount = -1;
+    generateFunction = &defaultGeneratePasswordFunction;
+    generatedLength = 16;
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
     ledt = new QLineEdit(q);
@@ -77,6 +85,11 @@ void BPasswordWidgetPrivate::init()
       connect( tbtnShow, SIGNAL( clicked() ), this, SLOT( resetShow() ) );
       resetShow();
     hlt->addWidget(tbtnShow);
+    tbtnGenerate = new QToolButton(q);
+      tbtnGenerate->setIcon(BApplication::icon("charset"));
+      tbtnGenerate->setVisible(false);
+      connect(tbtnGenerate, SIGNAL(clicked()), q, SLOT(generatePassword()));
+    hlt->addWidget(tbtnGenerate);
     //
     retranslateUi();
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
@@ -105,6 +118,7 @@ void BPasswordWidgetPrivate::retranslateUi()
 {
     tbtnSave->setToolTip( tr("Save password", "tbtn toolTip") );
     tbtnShow->setToolTip( tr("Show password", "tbtn toolTip") );
+    tbtnGenerate->setToolTip(tr("Generate password", "tbtn toolTip"));
 }
 
 void BPasswordWidgetPrivate::resetSave()
@@ -239,6 +253,23 @@ void BPasswordWidget::setShowPasswordVisible(bool visible)
     d_func()->tbtnShow->setVisible(visible);
 }
 
+void BPasswordWidget::setGeneratePasswordVisible(bool visible)
+{
+    d_func()->tbtnGenerate->setVisible(visible);
+}
+
+void BPasswordWidget::setGeneratePasswordFunction(GeneratePasswordFunction f)
+{
+    d_func()->generateFunction = f;
+}
+
+void BPasswordWidget::setGeneratedPasswordLength(int len)
+{
+    if (len < 1)
+        return;
+    d_func()->generatedLength = len;
+}
+
 void BPasswordWidget::clear()
 {
     B_D(BPasswordWidget);
@@ -311,6 +342,21 @@ bool BPasswordWidget::showPasswordVisible() const
     return d_func()->tbtnShow->isVisible();
 }
 
+bool BPasswordWidget::generatePasswordVisible() const
+{
+    return d_func()->tbtnGenerate->isVisible();
+}
+
+BPasswordWidget::GeneratePasswordFunction BPasswordWidget::generatePasswordFunction() const
+{
+    return d_func()->generateFunction;
+}
+
+int BPasswordWidget::generatedPasswordLength() const
+{
+    return d_func()->generatedLength;
+}
+
 QByteArray BPasswordWidget::saveState() const
 {
     return dataToState( data() );
@@ -337,4 +383,12 @@ void BPasswordWidget::setShowPassword(bool b)
     if (b == d->show)
         return;
     d->resetShow();
+}
+
+void BPasswordWidget::generatePassword()
+{
+    B_D(BPasswordWidget);
+    if (!d->generateFunction)
+        return;
+    setPassword(d->generateFunction(d->generatedLength));
 }

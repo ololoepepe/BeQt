@@ -150,14 +150,14 @@ void BEditEditorModulePrivate::retranslateUi()
     {
         actUndo->setText( tr("Undo", "act text") );
         actUndo->setToolTip( tr("Undo last action", "act toolTip") );
-        actUndo->setWhatsThis( tr("Use this action to undo last action (text insertion, selection deletion, etc.)",
+        actUndo->setWhatsThis( tr("Use this action to undo last operation (text insertion, selection deletion, etc.)",
                                   "act whatsThis") );
     }
     if ( !actRedo.isNull() )
     {
         actRedo->setText( tr("Redo", "act text") );
         actRedo->setToolTip( tr("Redo canceled action", "act toolTip") );
-        actRedo->setWhatsThis( tr("Use this action to repeat last action, cancelled using the Undo action",
+        actRedo->setWhatsThis( tr("Use this action to repeat last operation, cancelled using the Undo action",
                                   "act whatsThis") );
     }
     checkSwitchModeAction();

@@ -64,5 +64,7 @@
         <file>icons/binary.svgz</file>
         <file>icons/help_contents.png</file>
         <file>icons/help_hint.png</file>
+        <file>icons/charset.png</file>
+        <file>icons/charset.svgz</file>
     </qresource>
 </RCC>

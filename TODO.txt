@@ -7,27 +7,16 @@
 
 
 
-=== MAJOR ===
-
-* Add image support to person info system
-* Add spell checking support to code editor
-* Add alternative BBasePrivate class not inherited from QObject
-* Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BNetworkLogger target
-* Move BLoggerPrivate::tryLog method to BLogger
-* Return bool in BTerminalIOHandler handler methods
-
 === MINOR ===
 
-* Add "noop" handler for BNetwork system
-* Add BPassword class
-* Add isPortable() method to BCoreApplication
-* Add isRegistered() template function (for testing user type being registered)
-* Add translators() method to BTranslator
-* Add translate() method to BTranslator
-* Add ability to generate passwords to BPasswordWidget
+
+
+=== MAJOR ===
+
+* Add alternative BBasePrivate class not inherited from QObject
+* Return bool in BTerminalIOHandler handler methods
+* Add image support to person info system
 * Add ability to disable logging to BNetworkConnection and BNetworkServer
-* Implement locking for BNetworkServer
-* Add entryList() function to BDirTools
-* Add virtual sockets for internal use
-* Add ability to set maximum file size for BCodeEditor
-* Add BNetworkOperation::reply() method
+* Move BLoggerPrivate::tryLog method to BLogger
+* Improve BRemoteLogger
+* Add spell checking support to code editor

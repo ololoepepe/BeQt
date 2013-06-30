@@ -14,6 +14,7 @@ DEFINES += BEQT_BUILD_NETWORK_LIB
 HEADERS += \
     bapplicationserver.h \
     bapplicationserver_p.h \
+    bemail.h \
     bgenericserver.h \
     bgenericserver_p.h \
     bgenericsocket.h \
@@ -26,11 +27,14 @@ HEADERS += \
     bnetworkserver.h \
     bnetworkserver_p.h \
     bremotelogger.h \
+    bsmtpsender.h \
+    bsmtpsender_p.h \
     bsocketwrapper.h \
     bsocketwrapper_p.h
 
 SOURCES += \
     bapplicationserver.cpp \
+    bemail.cpp \
     bgenericserver.cpp \
     bgenericsocket.cpp \
     bnetworkconnection.cpp \
@@ -38,6 +42,7 @@ SOURCES += \
     bnetworkoperationmetadata.cpp \
     bnetworkserver.cpp \
     bremotelogger.cpp \
+    bsmtpsender.cpp \
     bsocketwrapper.cpp
 
 !contains(BEQT_CONFIG, no_install) {

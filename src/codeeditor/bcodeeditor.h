@@ -91,6 +91,7 @@ public:
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
     void setDefaultFileName(const QString &fileName);
+    void setMaximumFileSize(int sz);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -117,6 +118,7 @@ public:
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;
     QString defaultFileName() const;
+    int maximumFileSize() const;
     BAbstractEditorModule *module(const QString &name) const;
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;

@@ -54,6 +54,7 @@ void BNetworkServerWorker::disconnected()
     BNetworkConnection *c = static_cast<BNetworkConnection *>(sender());
     if (!c)
         return;
+
     disconnect(c, SIGNAL(disconnected()), this, SLOT(disconnected()));
     disconnect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
     c->close();
@@ -99,6 +100,7 @@ void BNetworkServerThread::connectionAdded(QObject *obj)
     BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
     if (!c)
         return;
+    QMutexLocker locker(&Worker->ServerPrivate->connectionMutex);
     connections << c;
     Worker->ServerPrivate->emitConnectionAdded(c);
 }
@@ -108,6 +110,7 @@ void BNetworkServerThread::disconnected(QObject *obj)
     BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
     if (!c)
         return;
+    QMutexLocker locker(&Worker->ServerPrivate->connectionMutex);
     Worker->ServerPrivate->emitConnectionAboutToBeRemoved(c);
     connections.removeAll(c);
     c->deleteLater();
@@ -194,8 +197,11 @@ BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
 int BNetworkServerPrivate::connectionCount() const
 {
     int count = 0;
+    bool b = connectionMutex.tryLock();
     foreach (BNetworkServerThread *t, threads)
         count += t->connectionCount();
+    if (b)
+        connectionMutex.unlock();
     return count;
 }
 
@@ -290,6 +296,21 @@ void BNetworkServer::setMaxThreadCount(int count)
     d_func()->maxThreadCount = count > 0 ? count : 0;
 }
 
+void BNetworkServer::lock()
+{
+    d_func()->connectionMutex.lock();
+}
+
+void BNetworkServer::unlock()
+{
+    d_func()->connectionMutex.unlock();
+}
+
+bool BNetworkServer::tryLock()
+{
+    return d_func()->connectionMutex.tryLock();
+}
+
 bool BNetworkServer::isValid() const
 {
     const B_D(BNetworkServer);
@@ -329,9 +350,7 @@ int BNetworkServer::maxConnectionCount() const
 
 int BNetworkServer::currentConnectionCount() const
 {
-    QMutexLocker locker(&d_func()->connectionMutex);
-    int count = d_func()->connectionCount();
-    return count;
+    return d_func()->connectionCount();
 }
 
 int BNetworkServer::maxThreadCount() const
@@ -351,7 +370,6 @@ BSpamNotifier *BNetworkServer::spamNotifier() const
 
 QList<BNetworkConnection *> BNetworkServer::connections() const
 {
-    QMutexLocker locker(&d_func()->connectionMutex);
     QList<BNetworkConnection *> list;
     foreach (BNetworkServerThread *t, d_func()->threads)
         list << t->connections;

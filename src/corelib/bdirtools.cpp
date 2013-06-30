@@ -68,6 +68,37 @@ bool removeFilesInDir(const QString &dirName, const QStringList &nameFilters, co
     return true;
 }
 
+bool removeSubdirs(const QString &dirName, const QStringList &nameFilters, const QStringList &excluding)
+{
+    QDir d(dirName);
+    if (!QFileInfo(dirName).isDir())
+        return false;
+    foreach (const QString &dn, d.entryList(nameFilters, QDir::Dirs | QDir::NoDotAndDotDot))
+    {
+        if (excluding.contains(dn))
+            continue;
+        if (!rmdir(d.absoluteFilePath(dn)))
+            return false;
+    }
+    return true;
+}
+
+bool removeEntries(const QString &dirName, const QStringList &nameFilters, const QStringList &excluding)
+{
+    QDir d(dirName);
+    if (!QFileInfo(dirName).isDir())
+        return false;
+    foreach (const QString &fn, d.entryList(nameFilters, QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot))
+    {
+        if (excluding.contains(fn))
+            continue;
+        QFileInfo fi(d.absoluteFilePath(fn));
+        if ((fi.isFile() && !d.remove(fn)) || (fi.isDir() && !rmdir(d.absoluteFilePath(fn))))
+            return false;
+    }
+    return true;
+}
+
 bool copyDir(const QString &dirName, const QString &newDirName, bool recursively)
 {
     QDir d(dirName);
@@ -100,6 +131,25 @@ bool renameDir(const QString &oldName, const QString &newName)
     if ( oldName.isEmpty() || newName.isEmpty() )
         return false;
     return QDir(oldName).rename(oldName, newName);
+}
+
+bool moveDir(const QString &oldName, const QString &newName)
+{
+    return renameDir(oldName, newName) || (copyDir(oldName, newName, true) && rmdir(oldName));
+}
+
+QStringList entryList(const QString &dirName, const QStringList &nameFilters, QDir::Filters filters, QDir::SortFlags sort)
+{
+    QStringList sl;
+    QDir d(dirName);
+    foreach (const QString &fn, d.entryList(nameFilters, filters, sort))
+        sl << d.absoluteFilePath(fn);
+    return sl;
+}
+
+QStringList entryList(const QString &dirName, QDir::Filters filters, QDir::SortFlags sort)
+{
+    return entryList(dirName, QStringList(), filters, sort);
 }
 
 QString localeBasedFileName(const QString &fileName, const QLocale &loc)

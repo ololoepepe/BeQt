@@ -255,6 +255,11 @@ void BNetworkConnectionPrivate::operationDestroyed(QObject *obj)
 ================================ BNetworkConnection ==========================
 ============================================================================*/
 
+/*============================== Public static constants ===================*/
+
+const QString BNetworkConnection::NoopRequest = "noop";
+const QString BNetworkConnection::LogRequest = "log";
+
 /*============================== Public constructors =======================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
@@ -566,4 +571,27 @@ BGenericSocket *BNetworkConnection::socket() const
 BSocketWrapper *BNetworkConnection::socketWrapper() const
 {
     return d_func()->socketWrapper.data();
+}
+
+void BNetworkConnection::handleNoop(BNetworkOperation *op)
+{
+    if (!op || op->metaData().operation() != NoopRequest)
+        return op->deleteLater();
+    op->reply();
+    op->waitForFinished();
+    op->deleteLater();
+}
+
+void BNetworkConnection::handleLog(BNetworkOperation *op)
+{
+    if (!op || op->metaData().operation() != LogRequest)
+        return op->deleteLater();
+    QVariantMap m = op->variantData().toMap();
+    if (m.value("stderr_level").toBool())
+        BTerminalIOHandler::writeLineErr(m.value("text").toString());
+    else
+        BTerminalIOHandler::writeLine(m.value("text").toString());
+    op->reply();
+    op->waitForFinished();
+    op->deleteLater();
 }

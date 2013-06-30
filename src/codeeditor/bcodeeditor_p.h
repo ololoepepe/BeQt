@@ -237,7 +237,7 @@ public:
     bool isDefaultFileName(const QString &fileName) const;
     void updateDocumentTab(BCodeEditorDocument *doc);
     void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
-    void failedToOpenMessage(const QString &fileName);
+    void failedToOpenMessage(const QString &fileName, const QString &info = QString());
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     void alreadyOpenedMessage(const QString &fileName);
     int reopenModifiedMessage(const QString &fileName);
@@ -294,6 +294,7 @@ public:
     bool bracketsHighlighting;
     QTextCodec *defaultCodec;
     QString defaultFN;
+    int maximumFileSize;
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *defaultFileType;

@@ -21,6 +21,7 @@ HEADERS += \
     blogger.h \
     blogger_p.h \
     bnamespace.h \
+    bpassword.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \
     bplugininterface.h \
@@ -42,6 +43,7 @@ SOURCES += \
     bglobal.cpp \
     blogger.cpp \
     bnamespace.cpp \
+    bpassword.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
     bsignaldelayproxy.cpp \

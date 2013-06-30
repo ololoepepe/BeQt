@@ -1,0 +1,1 @@
+#include "../BeQtSql/bsqlresult.h"

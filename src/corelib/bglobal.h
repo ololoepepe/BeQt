@@ -7,6 +7,10 @@
 #include <QObject>
 #include <QSignalMapper>
 #include <QVariant>
+#include <QCoreApplication>
+#include <QMetaType>
+
+#include <typeinfo>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -20,6 +24,12 @@
 #   define B_NETWORK_EXPORT Q_DECL_IMPORT
 #endif
 
+#if defined(BEQT_BUILD_SQL_LIB)
+#   define B_SQL_EXPORT Q_DECL_EXPORT
+#else
+#   define B_SQL_EXPORT Q_DECL_IMPORT
+#endif
+
 #if defined(BEQT_BUILD_WIDGETS_LIB)
 #   define B_WIDGETS_EXPORT Q_DECL_EXPORT
 #else
@@ -30,6 +40,20 @@
 #   define B_CODEEDITOR_EXPORT Q_DECL_EXPORT
 #else
 #   define B_CODEEDITOR_EXPORT Q_DECL_IMPORT
+#endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+#define B_DECLARE_TRANSLATE_FUNCTION \
+static QString translate(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) \
+{ \
+    return QCoreApplication::translate(context, sourceText, disambiguation, QCoreApplication::CodecForTr, n); \
+}
+#else
+#define B_DECLARE_TRANSLATE_FUNCTION \
+static QString translate(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) \
+{ \
+    return QCoreApplication::translate(context, sourceText, disambiguation, n); \
+}
 #endif
 
 #define B_DECLARE_PRIVATE(Class) \

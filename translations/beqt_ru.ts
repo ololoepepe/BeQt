@@ -163,7 +163,7 @@
         <location filename="../src/widgets/bapplication.cpp" line="98"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы показать содержание (указатель) справки</translation>
+        <translation>Используйте это действие чтобы показать содержание справки (алфавитный указатель)</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="101"/>
@@ -181,7 +181,7 @@
         <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие, чтобы открыть страницу справки, соответствующую контексту</translation>
+        <translation>Используйте это действие, чтобы открыть страницу справки для активного элемента</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="107"/>
@@ -220,19 +220,19 @@
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="117"/>
         <source>Make a bookmark at cursor position</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished">Сделать закладку в местоположении курсора</translation>
+        <translation>Сделать закладку в том месте, где находится курсор</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="118"/>
         <source>Use this action to make a bookmark at the current cursor position</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы сделать закладку в текущем местоположении курсора</translation>
+        <translation>Используйте это действие чтобы сделать закладку в том месте, где находится курсор</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="123"/>
         <source>Next bookmark</source>
         <comment>act text</comment>
-        <translation type="unfinished">Следующая закладка</translation>
+        <translation>Следующая закладка</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="124"/>
@@ -301,37 +301,37 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1529"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1537"/>
         <source>Unicode</source>
         <comment>encodingGroup name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1531"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1539"/>
         <source>Eastern Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1533"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1541"/>
         <source>Western Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1535"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1543"/>
         <source>East Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1537"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1545"/>
         <source>South-East and South-West Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1539"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1547"/>
         <source>Middle East</source>
         <comment>encodingGroup name</comment>
         <translation>Центральный Восток</translation>
@@ -472,69 +472,75 @@
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="974"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="755"/>
+        <source>The file is too large</source>
+        <comment>msgbox informativeText</comment>
+        <translation>Файл слишком большой</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="980"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="976"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="989"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="982"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="997"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="987"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="995"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="991"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="999"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1003"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1011"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1005"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1013"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1014"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1022"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1016"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1028"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1024"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1036"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1017"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1025"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1026"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1034"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1029"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1037"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
@@ -552,7 +558,7 @@
         <location filename="../src/corelib/bcoreapplication.cpp" line="141"/>
         <source>Role:</source>
         <comment>info</comment>
-        <translation type="unfinished">Роль:</translation>
+        <translation>Роль:</translation>
     </message>
     <message>
         <location filename="../src/corelib/bcoreapplication.cpp" line="143"/>
@@ -682,9 +688,15 @@
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="153"/>
-        <source>Use this action to undo last action (text insertion, selection deletion, etc.)</source>
+        <source>Use this action to undo last operation (text insertion, selection deletion, etc.)</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы отменить последнее действие (вставка текста, удаление выделения и т.д.)</translation>
+        <translation>Используйте это действие чтобы отменить последнюю операцию (вставку текста, удаление выделения и т.д.)</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="160"/>
+        <source>Use this action to repeat last operation, cancelled using the Undo action</source>
+        <comment>act whatsThis</comment>
+        <translation>Используйте это действие чтобы повторить последнюю операцию, отменённую при помощи действия Отменить</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="158"/>
@@ -697,12 +709,6 @@
         <source>Redo canceled action</source>
         <comment>act toolTip</comment>
         <translation>Повторить отменённое действие</translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="160"/>
-        <source>Use this action to repeat last action, cancelled using the Undo action</source>
-        <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы повторить последнее действие, отменённое при помощи действия Отменить</translation>
     </message>
 </context>
 <context>
@@ -750,7 +756,7 @@
         <location filename="../src/widgets/bhelpbrowser.cpp" line="133"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
-        <translation type="unfinished">Результаты поиска</translation>
+        <translation>Результаты поиска</translation>
     </message>
     <message>
         <location filename="../src/widgets/bhelpbrowser.cpp" line="136"/>
@@ -804,8 +810,8 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="267"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="277"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="272"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="282"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
@@ -835,7 +841,7 @@
         <location filename="../src/network/bnetworkconnection.cpp" line="138"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
-        <translation type="unfinished">Входящий запрос:</translation>
+        <translation>Входящий запрос:</translation>
     </message>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="174"/>
@@ -898,7 +904,7 @@
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="149"/>
         <source>Use this action to open one or more files existing on your drive</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы открыть один или несколько файлов, существующих на диске</translation>
+        <translation>Используйте это действие чтобы открыть один или несколько файлов, имеющихся на диске</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="155"/>
@@ -1024,16 +1030,22 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="106"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="119"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="107"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="120"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="121"/>
+        <source>Generate password</source>
+        <comment>tbtn toolTip</comment>
+        <translation>Сгенерировать пароль</translation>
     </message>
 </context>
 <context>
@@ -1283,6 +1295,21 @@
     </message>
 </context>
 <context>
+    <name>BSmtpSender</name>
+    <message>
+        <location filename="../src/network/bsmtpsender.cpp" line="259"/>
+        <source>Invalid parameters</source>
+        <comment>errorString</comment>
+        <translation>Некорректные параметры</translation>
+    </message>
+    <message>
+        <location filename="../src/network/bsmtpsender.cpp" line="262"/>
+        <source>Operation timed out</source>
+        <comment>errorString</comment>
+        <translation>Превышено время ожидания</translation>
+    </message>
+</context>
+<context>
     <name>BSplittedLinesDialogPrivate</name>
     <message>
         <location filename="../src/codeeditor/bcodeeditor.cpp" line="268"/>
@@ -1325,6 +1352,31 @@
         <source>Go to line</source>
         <comment>btn text</comment>
         <translation>Перейти к строке</translation>
+    </message>
+</context>
+<context>
+    <name>BSqlDatabase</name>
+    <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="367"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="421"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="438"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="469"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="500"/>
+        <source>Invalid parameters</source>
+        <comment>errorString</comment>
+        <translation>Некорректные параметры</translation>
+    </message>
+    <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="369"/>
+        <source>Database is not opened</source>
+        <comment>errorString</comment>
+        <translation>База данных не открыта</translation>
+    </message>
+    <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="372"/>
+        <source>Failed to create query</source>
+        <comment>errorString</comment>
+        <translation>Не удалось создать запрос</translation>
     </message>
 </context>
 <context>
