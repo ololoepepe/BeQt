@@ -1,3 +1,24 @@
+=== BeQt 2.1.0 (30 июня 2013) ===
+    * Добавлен макрос B_DECLARE_TRANSLATE_FUNCTION
+    * Добавлена функция BeQt::translate()
+    * Добавлен метод BDirTools::moveDir() (комбинация методов переименования и копирования)
+    * Добавлены методы BDirTools::removeSubdirs() и BDirTools::removeEntries()
+    * Добавлена функция entryList() в пространство имен BDirTools
+    * Добавлен метод isPortable() в класс BCoreApplication
+    * Добавлен метод translators() в класс BCoreApplication
+    * Добавлен метод translate() в класс BTranslator
+    * Добавлен метод translators() в класс BTranslator
+    * Добавлен класс BPassword
+    * Реализована болкировка в BNetworkServer
+    * Добавлен обработчик запроса "noop" в класс BNetworkConnection
+    * Добавлен обработчик запроса "log" в класс BNetworkConnection
+    * Добавлен метод BNetworkOperation::reply()
+    * Добавлена возможность установить экземпляр(ы) BNetworkConnection или BNetworkServer в качестве адресата BRemoteLogger
+    * Реализована отправка электронных писем через SMTP
+    * Добавлена возможность генерировать пароли в класс BPasswordWidget
+    * Добавлена возможность устанавливать максимальный размер файла в классе BCodeEditor
+    * Добавлен модуль BeQtSql
+
 === BeQt 2.0.4 (23 июня 2013) ===
     * Исправлен класс BTerminalIOHandler: рабочий поток запускается при первом вызове readLine()
     * Исправлено открытие одного документа дважды в Windows (класс BCodeEditor)

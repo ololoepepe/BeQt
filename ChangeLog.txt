@@ -1,3 +1,24 @@
+=== BeQt 2.1.0 (30 June 2013) ===
+    * Add B_DECLARE_TRANSLATE_FUNCTION macro
+    * Add BeQt::translate() function
+    * Add BDirTools::moveDir() method (combination of rename and copy)
+    * Add BDirTools::removeSubdirs() and BDirTools::removeEntries() methods
+    * Add entryList() function to BDirTools
+    * Add isPortable() method to BCoreApplication
+    * Add translators() method to BCoreApplication
+    * Add translate() method to BTranslator
+    * Add translators() method to BTranslator
+    * Add BPassword class
+    * Implement locking for BNetworkServer
+    * Add "noop" handler to BNetworkConnection
+    * Add "log" handler to BNetworkConnection
+    * Add BNetworkOperation::reply() method
+    * Add ability to set BNetworkConnection(s) or BNetworkServer(s) as BRemoteLogger target
+    * Implement sending e-mail through SMTP
+    * Add ability to generate passwords to BPasswordWidget
+    * Add ability to set maximum file size for BCodeEditor
+    * Add BeQtSql module
+
 === BeQt 2.0.4 (23 June 2013) ===
     * Improve BTerminalIOHandler: start thread on first readLine() call
     * Fix opening the same document twice on Windows (BCodeEditor)
