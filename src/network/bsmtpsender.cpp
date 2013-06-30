@@ -63,14 +63,14 @@ void BSmtpSenderPrivate::handleAuth(QTextStream &stream)
 
 void BSmtpSenderPrivate::handleAuthLogin(QTextStream &stream)
 {
-    send(stream, QString(login.toAscii().toBase64()) + "\n");
+    send(stream, QString(login.toLatin1().toBase64()) + "\n");
     if (password.isEmpty())
         ++stage;
 }
 
 void BSmtpSenderPrivate::handleAuthPassword(QTextStream &stream)
 {
-    send(stream, QString(password.toAscii().toBase64()) + "\n");
+    send(stream, QString(password.toLatin1().toBase64()) + "\n");
 }
 
 void BSmtpSenderPrivate::handleSender(QTextStream &stream)
