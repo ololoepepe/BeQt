@@ -24,6 +24,12 @@
 #   define B_NETWORK_EXPORT Q_DECL_IMPORT
 #endif
 
+#if defined(BEQT_BUILD_SQL_LIB)
+#   define B_SQL_EXPORT Q_DECL_EXPORT
+#else
+#   define B_SQL_EXPORT Q_DECL_IMPORT
+#endif
+
 #if defined(BEQT_BUILD_WIDGETS_LIB)
 #   define B_WIDGETS_EXPORT Q_DECL_EXPORT
 #else

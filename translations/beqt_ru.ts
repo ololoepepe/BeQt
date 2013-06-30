@@ -163,7 +163,7 @@
         <location filename="../src/widgets/bapplication.cpp" line="98"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы показать содержание (указатель) справки</translation>
+        <translation>Используйте это действие чтобы показать содержание справки (алфавитный указатель)</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="101"/>
@@ -181,7 +181,7 @@
         <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие, чтобы открыть страницу справки, соответствующую контексту</translation>
+        <translation>Используйте это действие, чтобы открыть страницу справки для активного элемента</translation>
     </message>
     <message>
         <location filename="../src/widgets/bapplication.cpp" line="107"/>
@@ -220,19 +220,19 @@
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="117"/>
         <source>Make a bookmark at cursor position</source>
         <comment>act toolTip</comment>
-        <translation type="unfinished">Сделать закладку в местоположении курсора</translation>
+        <translation>Сделать закладку в том месте, где находится курсор</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="118"/>
         <source>Use this action to make a bookmark at the current cursor position</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы сделать закладку в текущем местоположении курсора</translation>
+        <translation>Используйте это действие чтобы сделать закладку в том месте, где находится курсор</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="123"/>
         <source>Next bookmark</source>
         <comment>act text</comment>
-        <translation type="unfinished">Следующая закладка</translation>
+        <translation>Следующая закладка</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bbookmarkseditormodule.cpp" line="124"/>
@@ -558,7 +558,7 @@
         <location filename="../src/corelib/bcoreapplication.cpp" line="141"/>
         <source>Role:</source>
         <comment>info</comment>
-        <translation type="unfinished">Роль:</translation>
+        <translation>Роль:</translation>
     </message>
     <message>
         <location filename="../src/corelib/bcoreapplication.cpp" line="143"/>
@@ -688,9 +688,15 @@
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="153"/>
-        <source>Use this action to undo last action (text insertion, selection deletion, etc.)</source>
+        <source>Use this action to undo last operation (text insertion, selection deletion, etc.)</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы отменить последнее действие (вставка текста, удаление выделения и т.д.)</translation>
+        <translation>Используйте это действие чтобы отменить последнюю операцию (вставку текста, удаление выделения и т.д.)</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="160"/>
+        <source>Use this action to repeat last operation, cancelled using the Undo action</source>
+        <comment>act whatsThis</comment>
+        <translation>Используйте это действие чтобы повторить последнюю операцию, отменённую при помощи действия Отменить</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bediteditormodule.cpp" line="158"/>
@@ -703,12 +709,6 @@
         <source>Redo canceled action</source>
         <comment>act toolTip</comment>
         <translation>Повторить отменённое действие</translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="160"/>
-        <source>Use this action to repeat last action, cancelled using the Undo action</source>
-        <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы повторить последнее действие, отменённое при помощи действия Отменить</translation>
     </message>
 </context>
 <context>
@@ -756,7 +756,7 @@
         <location filename="../src/widgets/bhelpbrowser.cpp" line="133"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
-        <translation type="unfinished">Результаты поиска</translation>
+        <translation>Результаты поиска</translation>
     </message>
     <message>
         <location filename="../src/widgets/bhelpbrowser.cpp" line="136"/>
@@ -841,7 +841,7 @@
         <location filename="../src/network/bnetworkconnection.cpp" line="138"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
-        <translation type="unfinished">Входящий запрос:</translation>
+        <translation>Входящий запрос:</translation>
     </message>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="174"/>
@@ -904,7 +904,7 @@
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="149"/>
         <source>Use this action to open one or more files existing on your drive</source>
         <comment>act whatsThis</comment>
-        <translation type="unfinished">Используйте это действие чтобы открыть один или несколько файлов, существующих на диске</translation>
+        <translation>Используйте это действие чтобы открыть один или несколько файлов, имеющихся на диске</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="155"/>
@@ -1352,6 +1352,31 @@
         <source>Go to line</source>
         <comment>btn text</comment>
         <translation>Перейти к строке</translation>
+    </message>
+</context>
+<context>
+    <name>BSqlDatabase</name>
+    <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="367"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="421"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="438"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="469"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="500"/>
+        <source>Invalid parameters</source>
+        <comment>errorString</comment>
+        <translation>Некорректные параметры</translation>
+    </message>
+    <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="369"/>
+        <source>Database is not opened</source>
+        <comment>errorString</comment>
+        <translation>База данных не открыта</translation>
+    </message>
+    <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="372"/>
+        <source>Failed to create query</source>
+        <comment>errorString</comment>
+        <translation>Не удалось создать запрос</translation>
     </message>
 </context>
 <context>

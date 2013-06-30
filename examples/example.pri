@@ -6,6 +6,7 @@ defineReplace(fullBeqtModuleName) {
     equals(shortName, codeeditor):fullName=BeQtCodeEditor
     equals(shortName, core):fullName=BeQtCore
     equals(shortName, network):fullName=BeQtNetwork
+    equals(shortName, sql):fullName=BeQtSql
     equals(shortName, widgets):fullName=BeQtWidgets
     return($${fullName})
 }
@@ -18,6 +19,7 @@ defineReplace(beqtModuleSubdir) {
     equals(fullName, codeeditor):moduleSubdir=codeeditor
     else:equals(fullName, core):moduleSubdir=corelib
     else:equals(fullName, network):moduleSubdir=network
+    else:equals(fullName, sql):moduleSubdir=sql
     else:equals(fullName, widgets):moduleSubdir=widgets
     return($${moduleSubdir})
 }
@@ -59,6 +61,7 @@ contains(BEQT, all) {
         codeeditor \
         core \
         network \
+        sql \
         widgets
 }
 
@@ -72,16 +75,21 @@ contains(BEQT,core) {
 }
 contains(BEQT, network) {
     QT *= core network
-    BEQT *= core network
+    BEQT *= core
+}
+contains(BEQT, sql) {
+    QT *= core sql
+    BEQT *= core
 }
 contains(BEQT, widgets) {
     QT *= core gui widgets
-    BEQT *= core widgets
+    BEQT *= core
 }
 
 #Workaround for proper linking when building statically
 contains(BEQT, codeeditor):BEQT_ORDERED += codeeditor
 contains(BEQT, widgets):BEQT_ORDERED += widgets
+contains(BEQT, sql):BEQT_ORDERED += sql
 contains(BEQT, network):BEQT_ORDERED += network
 contains(BEQT, core):BEQT_ORDERED += core
 

@@ -133,6 +133,17 @@ defineReplace(getActualPrivateHeaders) {
             INSTALLS += beqtInstallsPrivateHeadersNetwork
         }
     }
+    #Sql
+    !contains(BEQT_CONFIG, no_sql) {
+        beqtInstallsHeadersSql.files=$$getActualHeaders(BeQtSql)
+        beqtInstallsHeadersSql.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtSql
+        INSTALLS += beqtInstallsHeadersSql
+        contains(BEQT_CONFIG, private_headers) {
+            beqtInstallsPrivateHeadersSql.files=$$getActualPrivateHeaders(BeQtSql)
+            beqtInstallsPrivateHeadersSql.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtSql/private
+            INSTALLS += beqtInstallsPrivateHeadersSql
+        }
+    }
     #Widgets
     !contains(BEQT_CONFIG, no_widgets) {
         beqtInstallsHeadersWidgets.files=$$getActualHeaders(BeQtWidgets)

@@ -1,0 +1,9 @@
+#ifndef BEQT_BEQTSQL_MODULE_H
+#define BEQT_BEQTSQL_MODULE_H
+
+#include "bsqldatabase.h"
+#include "bsqlquery.h"
+#include "bsqlresult.h"
+#include "bsqlwhere.h"
+
+#endif //BEQT_BEQTSQL_MODULE_H
