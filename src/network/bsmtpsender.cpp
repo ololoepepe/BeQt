@@ -256,10 +256,10 @@ bool BSmtpSender::send(const QString &address, const BEmail &email, int timeout,
     s.setUser(userName, userPassword);
     s.setEmail(email);
     if (!s.isValid())
-        return bRet(error, tr("Invalid parameters", "errorString"), false);
+        return bRet(error, QString("Invalid parameters"), false);
     s.send();
     if (!s.waitForFinished(timeout))
-        return bRet(error, tr("Operation timed out", "errorString"), false);
+        return bRet(error, QString("Operation timed out"), false);
     if (error)
         *error = s.lastTransferError();
     return s.lastTransferSuccess();

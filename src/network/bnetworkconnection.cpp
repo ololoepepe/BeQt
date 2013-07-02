@@ -97,21 +97,21 @@ BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOper
 void BNetworkConnectionPrivate::connected()
 {
     B_Q(BNetworkConnection);
-    q->log( tr("Connected", "log text") );
+    q->log("Connected");
     QMetaObject::invokeMethod(q, "connected");
 }
 
 void BNetworkConnectionPrivate::disconnected()
 {
     B_Q(BNetworkConnection);
-    q->log( tr("Disconnected", "log text") );
+    q->log("Disconnected");
     QMetaObject::invokeMethod(q, "disconnected");
 }
 
 void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
 {
     B_Q(BNetworkConnection);
-    q->log( tr("Error:", "log text") + " " + q->errorString() );
+    q->log("Error: " + q->errorString() );
     QMetaObject::invokeMethod( q, "error", Q_ARG(QAbstractSocket::SocketError, socketError) );
 }
 
@@ -135,7 +135,7 @@ void BNetworkConnectionPrivate::downloadProgress(const BNetworkOperationMetaData
             replies.insert(mdat, op);
             op->d_func()->setStarted();
             if (detailedLog)
-                q->log( tr("Incoming request:", "log text") + " " + metaData.operation() );
+                q->log("Incoming request: " + metaData.operation());
             QMetaObject::invokeMethod( q, "incomingRequest", Q_ARG(BNetworkOperation *, op) );
         }
     }
@@ -171,7 +171,7 @@ void BNetworkConnectionPrivate::dataReceived(const QByteArray &data, const BNetw
         opd->bytesInReady = opd->bytesInTotal;
         opd->data = data;
         if (detailedLog)
-            q->log( tr("Request received:", "log text") + " " + metaData.operation() );
+            q->log("Request received: " + metaData.operation());
         QMetaObject::invokeMethod( q, "requestReceived", Q_ARG(BNetworkOperation *, op) );
         QString opp = op->metaData().operation();
         if ( internalRequestHandlers.contains(opp) )
@@ -192,7 +192,7 @@ void BNetworkConnectionPrivate::dataReceived(const QByteArray &data, const BNetw
         opd->bytesInReady = opd->bytesInTotal;
         opd->setFinished(data);
         if (detailedLog)
-            q->log( tr("Reply received:", "log text") + " " + metaData.operation() );
+            q->log("Reply received: " + metaData.operation());
         QMetaObject::invokeMethod( q, "replyReceived", Q_ARG(BNetworkOperation *, op) );
         QString opp = op->metaData().operation();
         if ( internalReplyHandlers.contains(opp) )
@@ -212,7 +212,7 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
         if (!op)
             return;
         if (detailedLog)
-            q->log( tr("Request sent:", "log text") + " " + metaData.operation() );
+            q->log("Request sent: " + metaData.operation());
         QMetaObject::invokeMethod( q, "requestSent", Q_ARG(BNetworkOperation *, op) );
     }
     else
@@ -223,7 +223,7 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
         replies.remove(metaData);
         op->d_func()->setFinished();
         if (detailedLog)
-            q->log( tr("Reply sent:", "log text") + " " + metaData.operation() );
+            q->log("Reply sent: " + metaData.operation());
         if (autoDelete)
             op->deleteLater();
         else
@@ -269,7 +269,7 @@ BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) 
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
     d_func()->setSocket(socket);
-    log( tr("Incoming connection", "log text") );
+    log("Incoming connection");
 }
 
 BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *socket) :
@@ -279,7 +279,7 @@ BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *s
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
     d_func()->setSocket(socket);
-    log( tr("Incoming connection", "log text") );
+    log("Incoming connection");
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :

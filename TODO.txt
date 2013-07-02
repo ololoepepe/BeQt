@@ -9,14 +9,16 @@
 
 === MINOR ===
 
-
+* Add BVersion class
+* Add BPasswordWidget::returnPressed() slot
+* Add ability to enable/disable BeQtNetwork classes log translation
 
 === MAJOR ===
 
 * Add alternative BBasePrivate class not inherited from QObject
 * Return bool in BTerminalIOHandler handler methods
 * Add image support to person info system
-* Add ability to disable logging to BNetworkConnection and BNetworkServer
+* Add ability to disable logging to BeQtNetwork classes
 * Move BLoggerPrivate::tryLog method to BLogger
 * Improve BRemoteLogger
 * Add spell checking support to code editor

@@ -810,62 +810,52 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="272"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="282"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
-        <translation>Входящее соединение</translation>
+        <translation type="obsolete">Входящее соединение</translation>
     </message>
 </context>
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="100"/>
         <source>Connected</source>
         <comment>log text</comment>
-        <translation>Подключен</translation>
+        <translation type="obsolete">Подключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="107"/>
         <source>Disconnected</source>
         <comment>log text</comment>
-        <translation>Отключен</translation>
+        <translation type="obsolete">Отключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="114"/>
         <source>Error:</source>
         <comment>log text</comment>
-        <translation>Ошибка:</translation>
+        <translation type="obsolete">Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="138"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
-        <translation>Входящий запрос:</translation>
+        <translation type="obsolete">Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="174"/>
         <source>Request received:</source>
         <comment>log text</comment>
-        <translation>Получен запрос:</translation>
+        <translation type="obsolete">Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="195"/>
         <source>Reply received:</source>
         <comment>log text</comment>
-        <translation>Получен ответ:</translation>
+        <translation type="obsolete">Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="215"/>
         <source>Request sent:</source>
         <comment>log text</comment>
-        <translation>Отправлен запрос:</translation>
+        <translation type="obsolete">Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="226"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
-        <translation>Отправлен ответ:</translation>
+        <translation type="obsolete">Отправлен ответ:</translation>
     </message>
 </context>
 <context>
@@ -1297,16 +1287,14 @@
 <context>
     <name>BSmtpSender</name>
     <message>
-        <location filename="../src/network/bsmtpsender.cpp" line="259"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
-        <translation>Некорректные параметры</translation>
+        <translation type="obsolete">Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/network/bsmtpsender.cpp" line="262"/>
         <source>Operation timed out</source>
         <comment>errorString</comment>
-        <translation>Превышено время ожидания</translation>
+        <translation type="obsolete">Превышено время ожидания</translation>
     </message>
 </context>
 <context>
