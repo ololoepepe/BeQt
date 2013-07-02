@@ -1,3 +1,7 @@
+=== BeQt 2.1.1 (02 July 2013) ===
+    * Fix BSqlResult assignment operator
+    * Disable BeQtNetwork classes log translation
+
 === BeQt 2.1.0 (30 June 2013) ===
     * Add B_DECLARE_TRANSLATE_FUNCTION macro
     * Add BeQt::translate() function

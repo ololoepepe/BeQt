@@ -54,7 +54,6 @@ void BNetworkServerWorker::disconnected()
     BNetworkConnection *c = static_cast<BNetworkConnection *>(sender());
     if (!c)
         return;
-
     disconnect(c, SIGNAL(disconnected()), this, SLOT(disconnected()));
     disconnect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
     c->close();

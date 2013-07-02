@@ -49,7 +49,7 @@ void BTranslatorPrivate::install(bool blockLanguageChange)
     for (int i = dirs.size() - 1; i >= 0; --i) //User translators come last, having higher priority
     {
         QTranslator *t = new QTranslator;
-        if ( t->load(l,fileName, "_", dirs.at(i), ".qm") )
+        if ( t->load(l, fileName, "_", dirs.at(i), ".qm") )
         {
             translators << t;
             QCoreApplication::installTranslator(t);

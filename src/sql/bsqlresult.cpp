@@ -154,6 +154,9 @@ BSqlResult &BSqlResult::operator =(const BSqlResult &other)
     B_D(BSqlResult);
     const BSqlResultPrivate *dd = other.d_func();
     d->success = dd->success;
+    d->values = dd->values;
+    d->insertId = dd->insertId;
+    d->error = dd->error;
     return *this;
 }
 
