@@ -10,8 +10,12 @@
 === MINOR ===
 
 * Add BVersion class
+* Add BSettingsNode class
 * Add BPasswordWidget::returnPressed() slot
+* Add BPasswordWidget::passwordGenerated() slot
 * Add ability to enable/disable BeQtNetwork classes log translation
+* Add BTranslator::setLocale() method
+* Add BCoreApplication::translator(QString fileName) method
 
 === MAJOR ===
 

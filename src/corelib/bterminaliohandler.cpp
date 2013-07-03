@@ -345,7 +345,7 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
 
 void BTerminalIOHandler::handleCommand(const QString &, const QStringList &)
 {
-    //
+    BTerminalIOHandler::writeLine(tr("Unknown command"));
 }
 
 /*============================== Static protected variables ================*/

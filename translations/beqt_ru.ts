@@ -549,25 +549,25 @@
 <context>
     <name>BCoreApplicationPrivate</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="139"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="140"/>
         <source>Name:</source>
         <comment>info</comment>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="141"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="142"/>
         <source>Role:</source>
         <comment>info</comment>
         <translation>Роль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="143"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="144"/>
         <source>Website:</source>
         <comment>info</comment>
         <translation>Веб-сайт:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="145"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="146"/>
         <source>E-mail:</source>
         <comment>info</comment>
         <translation>Электронная почта:</translation>
@@ -1365,6 +1365,14 @@
         <source>Failed to create query</source>
         <comment>errorString</comment>
         <translation>Не удалось создать запрос</translation>
+    </message>
+</context>
+<context>
+    <name>BTerminalIOHandler</name>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="348"/>
+        <source>Unknown command</source>
+        <translation>Неизвестная команда</translation>
     </message>
 </context>
 <context>

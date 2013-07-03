@@ -8,6 +8,7 @@ class BTranslatorPrivate;
 class BPersonInfoProvider;
 class BCoreApplicationPrivate;
 class BLogger;
+class BSignalDelayProxy;
 
 class QString;
 class QLocale;
@@ -92,6 +93,7 @@ public:
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
     BLogger *logger;
+    BSignalDelayProxy *languageChangeProxy;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;
