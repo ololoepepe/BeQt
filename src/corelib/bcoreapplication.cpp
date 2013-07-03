@@ -10,6 +10,7 @@ class QWidget;
 #include "bpluginwrapper_p.h"
 #include "bpersoninfoprovider.h"
 #include "blogger.h"
+#include "bsignaldelayproxy.h"
 
 #include <QObject>
 #include <QString>
@@ -173,6 +174,8 @@ void BCoreApplicationPrivate::init()
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
     logger = new BLogger(this);
+    languageChangeProxy = new BSignalDelayProxy(this);
+    connect(languageChangeProxy, SIGNAL(triggered()), q_func(), SIGNAL(languageChanged()));
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
@@ -391,7 +394,7 @@ void BCoreApplicationPrivate::pluginAboutToBeDeactivated(BPluginWrapper *pluginW
 
 void BCoreApplicationPrivate::emitLanguageChange()
 {
-    QMetaObject::invokeMethod(q_func(), "languageChanged");
+    QMetaObject::invokeMethod(languageChangeProxy, "trigger");
 }
 
 void BCoreApplicationPrivate::installTranslator(BTranslator *translator, bool blockLC)
@@ -699,7 +702,7 @@ void BCoreApplication::retranslateUi(bool blockLanguageChange)
         ds->installTranslator(t, false);
     }
     ds->blockLanguageChange = false;
-    QMetaObject::invokeMethod(_m_self, "languageChanged");
+    QMetaObject::invokeMethod(ds_func()->languageChangeProxy, "trigger");
 }
 
 void BCoreApplication::loadSettings()

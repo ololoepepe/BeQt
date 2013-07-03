@@ -1,3 +1,7 @@
+=== BeQt 2.1.2 (03 July 2013) ===
+    * Implement default BTerminalIOHandler::handleCommand() behaviour
+    * Fix emitting multiple languageChanged() signals when locale is set
+
 === BeQt 2.1.1 (02 July 2013) ===
     * Fix BSqlResult assignment operator
     * Disable BeQtNetwork classes log translation
