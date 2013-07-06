@@ -5,8 +5,7 @@
 
 === PATCH ===
 
-[done] Fix BSocketWrapper downloadProgress notification (total bytes to receive)
-[done] Fix BNetworkConnection error/disconnected notification
+
 
 === MINOR ===
 
