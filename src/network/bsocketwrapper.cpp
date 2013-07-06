@@ -104,12 +104,9 @@ void BSocketWrapperPrivate::readyRead()
             in >> bytesInTotal;
         }
         qint64 bytes = socket->bytesAvailable();
-        if ( metaIn.isValid() )
-        {
-            qint64 total = (bytes < bytesInTotal) ? bytes : bytesInTotal;
-            QMetaObject::invokeMethod( q, "downloadProgress", Q_ARG(BNetworkOperationMetaData, metaIn),
-                                       Q_ARG(qint64, bytes), Q_ARG(qint64, total) );
-        }
+        if (metaIn.isValid())
+            QMetaObject::invokeMethod(q, "downloadProgress", Q_ARG(BNetworkOperationMetaData, metaIn),
+                                      Q_ARG(qint64, bytes), Q_ARG(qint64, bytesInTotal));
         if (bytes < bytesInTotal)
             break;
         bool meta = false;

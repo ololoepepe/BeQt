@@ -7,6 +7,7 @@
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BSpamNotifier>
+#include <BeQtCore/BSignalDelayProxy>
 
 #include <QObject>
 #include <QList>
@@ -44,18 +45,20 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     BNetworkConnection *c = ServerPrivate->createConnection(s);
     if ( !c || !c->isValid() )
         return;
-    connect( c, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
-    connect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
+    BSignalDelayProxy *proxy = new BSignalDelayProxy(c);
+    connect(c, SIGNAL(disconnected()), proxy, SLOT(trigger()));
+    connect(c, SIGNAL(error(QAbstractSocket::SocketError)), proxy, SLOT(trigger()));
+    connect(proxy, SIGNAL(triggered()), this, SLOT(disconnected()));
     Q_EMIT connectionAdded(c);
 }
 
 void BNetworkServerWorker::disconnected()
 {
-    BNetworkConnection *c = static_cast<BNetworkConnection *>(sender());
+    BSignalDelayProxy *proxy = static_cast<BSignalDelayProxy *>(sender());
+    BNetworkConnection *c = proxy ? static_cast<BNetworkConnection *>(proxy->parent()) : 0;
     if (!c)
         return;
-    disconnect(c, SIGNAL(disconnected()), this, SLOT(disconnected()));
-    disconnect(c, SIGNAL(error(QAbstractSocket::SocketError)), this, SLOT(disconnected()));
+    disconnect(proxy, SIGNAL(triggered()), this, SLOT(disconnected()));
     c->close();
     Q_EMIT disconnected(c);
 }
@@ -112,8 +115,8 @@ void BNetworkServerThread::disconnected(QObject *obj)
     QMutexLocker locker(&Worker->ServerPrivate->connectionMutex);
     Worker->ServerPrivate->emitConnectionAboutToBeRemoved(c);
     connections.removeAll(c);
-    c->deleteLater();
-    if ( connections.isEmpty() )
+    QMetaObject::invokeMethod(c, "deleteLater", Qt::QueuedConnection);
+    if (connections.isEmpty())
         quit();
 }
 
