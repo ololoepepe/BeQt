@@ -810,52 +810,74 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="284"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="295"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
-        <translation type="obsolete">Входящее соединение</translation>
+        <translation>Входящее соединение</translation>
+    </message>
+    <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="570"/>
+        <source>Unknown reply</source>
+        <comment>log text</comment>
+        <translation>Неизвестный ответ</translation>
+    </message>
+    <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="577"/>
+        <source>Unknown request</source>
+        <comment>log text</comment>
+        <translation>Неизвестный запрос</translation>
     </message>
 </context>
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="102"/>
         <source>Connected</source>
         <comment>log text</comment>
-        <translation type="obsolete">Подключен</translation>
+        <translation>Подключен</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="110"/>
         <source>Disconnected</source>
         <comment>log text</comment>
-        <translation type="obsolete">Отключен</translation>
+        <translation>Отключен</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="118"/>
         <source>Error:</source>
         <comment>log text</comment>
-        <translation type="obsolete">Ошибка:</translation>
+        <translation>Ошибка:</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="142"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
-        <translation type="obsolete">Входящий запрос:</translation>
+        <translation>Входящий запрос:</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="179"/>
         <source>Request received:</source>
         <comment>log text</comment>
-        <translation type="obsolete">Получен запрос:</translation>
+        <translation>Получен запрос:</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="202"/>
         <source>Reply received:</source>
         <comment>log text</comment>
-        <translation type="obsolete">Получен ответ:</translation>
+        <translation>Получен ответ:</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="224"/>
         <source>Request sent:</source>
         <comment>log text</comment>
-        <translation type="obsolete">Отправлен запрос:</translation>
+        <translation>Отправлен запрос:</translation>
     </message>
     <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="236"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
-        <translation type="obsolete">Отправлен ответ:</translation>
+        <translation>Отправлен ответ:</translation>
     </message>
 </context>
 <context>
@@ -1020,19 +1042,19 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="119"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="120"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="120"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="121"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="121"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="122"/>
         <source>Generate password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сгенерировать пароль</translation>
@@ -1287,14 +1309,16 @@
 <context>
     <name>BSmtpSender</name>
     <message>
+        <location filename="../src/network/bsmtpsender.cpp" line="259"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
-        <translation type="obsolete">Некорректные параметры</translation>
+        <translation>Некорректные параметры</translation>
     </message>
     <message>
+        <location filename="../src/network/bsmtpsender.cpp" line="263"/>
         <source>Operation timed out</source>
         <comment>errorString</comment>
-        <translation type="obsolete">Превышено время ожидания</translation>
+        <translation>Превышено время ожидания</translation>
     </message>
 </context>
 <context>

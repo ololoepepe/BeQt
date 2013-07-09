@@ -73,6 +73,11 @@ Q_SIGNALS:
     void savePasswordChanged(bool b);
     void showPasswordChanged(bool b);
     void passwordChanged();
+    void passwordChanged(const QString &password);
+    void passwordChanged(const QByteArray &encryptedPassword);
+    void passwordEdited(const QString &password);
+    void returnPressed();
+    void passwordGenerated(const QString &password);
 private:
     Q_DISABLE_COPY(BPasswordWidget)
 };

@@ -5,24 +5,24 @@
 
 === PATCH ===
 
-
+* Update READMEs
 
 === MINOR ===
 
 * Add BVersion class
 * Add BSettingsNode class
-* Add BPasswordWidget::returnPressed() slot
-* Add BPasswordWidget::passwordGenerated() slot
-* Add ability to enable/disable BeQtNetwork classes log translation
-* Add BTranslator::setLocale() method
-* Add BCoreApplication::translator(QString fileName) method
+* Add BTranslateFunctor class
+* Add BDialog class
+* Add default "help" handler to BTerminalIOHandler
+* Add setRootSettingsNode() and rootSettingsNode() methods to BTerminalIOHandler
+* Add BeQtNetworkWidgets module
 
 === MAJOR ===
 
-* Add alternative BBasePrivate class not inherited from QObject
-* Return bool in BTerminalIOHandler handler methods
+[done] Return bool in BTerminalIOHandler and BNetworkConnection handler methods
+[done] Improve translation system
+* Improve BPasswordWidget
 * Add image support to person info system
-* Add ability to disable logging to BeQtNetwork classes
 * Move BLoggerPrivate::tryLog method to BLogger
 * Improve BRemoteLogger
 * Add spell checking support to code editor

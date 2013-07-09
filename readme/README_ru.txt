@@ -53,7 +53,7 @@ BeQt рассчитан на использование совместно с Qt
 Поддержка версий Qt ниже 4.8.0 не гарантируется.
 
 Примечание: для использования всех возможностей BeQt потребуются
-следующие модули Qt: QtCore, QtNetwork, QtGui, QtWidgets (для Qt5).
+следующие модули Qt: QtCore, QtNetwork, QtGui, QtSql, QtWidgets (для Qt5).
 
 Для использования встроенных иконок формата .svgz также потребуется
 соответствующий плагин.
@@ -92,6 +92,9 @@ BeQt рассчитан на использование совместно с Qt
 
  * "CONFIG+=no_network"
    Не собирать модуль BeQtNetwork
+
+ * "CONFIG+=no_qsl"
+   Не собирать модуль BeQtSql
 
  * "CONFIG+=no_widgets"
    Не собирать модуль BeQtWidgets (модуль BeQtCodeEditor также не будет

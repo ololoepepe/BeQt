@@ -148,9 +148,9 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
     B_Q(BTerminalIOHandler);
     QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args));
     if (internalHandlers.contains(cmd))
-        return (q->*internalHandlers.value(cmd))(cmd, args);
+        (q->*internalHandlers.value(cmd))(cmd, args);
     else if (externalHandlers.contains(cmd))
-        return externalHandlers.value(cmd)(cmd, args);
+        externalHandlers.value(cmd)(cmd, args);
     else
         q->handleCommand(cmd, args);
 }
@@ -343,9 +343,10 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
 
 /*============================== Protected methods =========================*/
 
-void BTerminalIOHandler::handleCommand(const QString &, const QStringList &)
+bool BTerminalIOHandler::handleCommand(const QString &, const QStringList &)
 {
-    BTerminalIOHandler::writeLine(tr("Unknown command"));
+    writeLine(tr("Unknown command"));
+    return false;
 }
 
 /*============================== Static protected variables ================*/

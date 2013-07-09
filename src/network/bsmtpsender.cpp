@@ -247,7 +247,7 @@ void BSmtpSenderPrivate::readyRead()
 
 bool BSmtpSender::send(const QString &address, const BEmail &email, int timeout, const QString &userName,
                        const QString &userPassword, quint16 port, BGenericSocket::SocketType type,
-                       const QString &localHostName, QString *error)
+                       const QString &localHostName, QString *error, bool translationsEnabled)
 {
     BSmtpSender s;
     s.setServer(address, port);
@@ -256,10 +256,12 @@ bool BSmtpSender::send(const QString &address, const BEmail &email, int timeout,
     s.setUser(userName, userPassword);
     s.setEmail(email);
     if (!s.isValid())
-        return bRet(error, QString("Invalid parameters"), false);
+        return bRet(error, translationsEnabled ? tr("Invalid parameters", "errorString") :
+                                                 QString("Invalid parameters"), false);
     s.send();
     if (!s.waitForFinished(timeout))
-        return bRet(error, QString("Operation timed out"), false);
+        return bRet(error, translationsEnabled ? tr("Operation timed out", "errorString") :
+                                                 QString("Operation timed out"), false);
     if (error)
         *error = s.lastTransferError();
     return s.lastTransferSuccess();

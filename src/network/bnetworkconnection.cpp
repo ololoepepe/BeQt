@@ -40,9 +40,10 @@ BNetworkConnectionPrivate::~BNetworkConnectionPrivate()
 
 void BNetworkConnectionPrivate::init()
 {
-    detailedLog = false;
+    loggingMode = BNetworkConnection::NormalLogging;
     autoDelete = true;
     logger = 0;
+    translations = false;
     socketWrapper = new BSocketWrapper( q_func() );
     connect( socketWrapper, SIGNAL( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ),
              this, SLOT( downloadProgress(BNetworkOperationMetaData, qint64, qint64) ) );
@@ -97,21 +98,24 @@ BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOper
 void BNetworkConnectionPrivate::connected()
 {
     B_Q(BNetworkConnection);
-    q->log("Connected");
+    if (loggingMode >= BNetworkConnection::NormalLogging)
+        q->log(translations ? tr("Connected", "log text") : QString("Connected"));
     QMetaObject::invokeMethod(q, "connected");
 }
 
 void BNetworkConnectionPrivate::disconnected()
 {
     B_Q(BNetworkConnection);
-    q->log("Disconnected");
+    if (loggingMode >= BNetworkConnection::NormalLogging)
+        q->log(translations ? tr("Disconnected", "log text") : QString("Disconnected"));
     QMetaObject::invokeMethod(q, "disconnected");
 }
 
 void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
 {
     B_Q(BNetworkConnection);
-    q->log("Error: " + q->errorString() );
+    if (loggingMode >= BNetworkConnection::NormalLogging)
+        q->log((translations ? tr("Error:", "log text") : QString("Error:")) + " " + q->errorString());
     QMetaObject::invokeMethod( q, "error", Q_ARG(QAbstractSocket::SocketError, socketError) );
 }
 
@@ -134,8 +138,9 @@ void BNetworkConnectionPrivate::downloadProgress(const BNetworkOperationMetaData
             op->d_func()->setDownloadProgress(bytesReady, bytesTotal);
             replies.insert(mdat, op);
             op->d_func()->setStarted();
-            if (detailedLog)
-                q->log("Incoming request: " + metaData.operation());
+            if (loggingMode >= BNetworkConnection::DetailedLogging)
+                q->log((translations ? tr("Incoming request:", "log text") : QString("Incoming request:")) + " "
+                       + metaData.operation());
             QMetaObject::invokeMethod( q, "incomingRequest", Q_ARG(BNetworkOperation *, op) );
         }
     }
@@ -170,15 +175,17 @@ void BNetworkConnectionPrivate::dataReceived(const QByteArray &data, const BNetw
         BNetworkOperationPrivate *opd = op->d_func();
         opd->bytesInReady = opd->bytesInTotal;
         opd->data = data;
-        if (detailedLog)
-            q->log("Request received: " + metaData.operation());
+        if (loggingMode >= BNetworkConnection::DetailedLogging)
+            q->log((translations ? tr("Request received:", "log text") : QString("Request received:")) + " "
+                   + metaData.operation());
         QMetaObject::invokeMethod( q, "requestReceived", Q_ARG(BNetworkOperation *, op) );
         QString opp = op->metaData().operation();
-        if ( internalRequestHandlers.contains(opp) )
-            return ( q->*internalRequestHandlers.value(opp) )(op);
-        if ( externalRequestHandlers.contains(opp) )
-            return externalRequestHandlers.value(opp)(op);
-        q->handleRequest(op);
+        if (internalRequestHandlers.contains(opp))
+            (q->*internalRequestHandlers.value(opp))(op);
+        else if (externalRequestHandlers.contains(opp))
+            externalRequestHandlers.value(opp)(op);
+        else
+            q->handleRequest(op);
     }
     else
     {
@@ -191,15 +198,17 @@ void BNetworkConnectionPrivate::dataReceived(const QByteArray &data, const BNetw
         requests.remove(mdat);
         opd->bytesInReady = opd->bytesInTotal;
         opd->setFinished(data);
-        if (detailedLog)
-            q->log("Reply received: " + metaData.operation());
+        if (loggingMode >= BNetworkConnection::DetailedLogging)
+            q->log((translations ? tr("Reply received:", "log text") : QString("Reply received:")) + " "
+                   + metaData.operation());
         QMetaObject::invokeMethod( q, "replyReceived", Q_ARG(BNetworkOperation *, op) );
         QString opp = op->metaData().operation();
-        if ( internalReplyHandlers.contains(opp) )
-            return ( q->*internalReplyHandlers.value(opp) )(op);
-        if ( externalReplyHandlers.contains(opp) )
-            return externalReplyHandlers.value(opp)(op);
-        q->handleReply(op);
+        if (internalReplyHandlers.contains(opp))
+            (q->*internalReplyHandlers.value(opp))(op);
+        else if (externalReplyHandlers.contains(opp))
+            externalReplyHandlers.value(opp)(op);
+        else
+            q->handleReply(op);
     }
 }
 
@@ -211,8 +220,9 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
         BNetworkOperation *op = requests.value(metaData);
         if (!op)
             return;
-        if (detailedLog)
-            q->log("Request sent: " + metaData.operation());
+        if (loggingMode >= BNetworkConnection::DetailedLogging)
+            q->log((translations ? tr("Request sent:", "log text") : QString("Request sent:")) + " "
+                   + metaData.operation());
         QMetaObject::invokeMethod( q, "requestSent", Q_ARG(BNetworkOperation *, op) );
     }
     else
@@ -222,8 +232,9 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
             return;
         replies.remove(metaData);
         op->d_func()->setFinished();
-        if (detailedLog)
-            q->log("Reply sent: " + metaData.operation());
+        if (loggingMode >= BNetworkConnection::DetailedLogging)
+            q->log((translations ? tr("Reply sent:", "log text") : QString("Reply sent:")) + " "
+                   + metaData.operation());
         if (autoDelete)
             op->deleteLater();
         else
@@ -269,7 +280,8 @@ BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) 
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
     d_func()->setSocket(socket);
-    log("Incoming connection");
+    if (d_func()->loggingMode >= NormalLogging)
+        log(d_func()->translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
 }
 
 BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *socket) :
@@ -279,7 +291,8 @@ BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *s
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
         return;
     d_func()->setSocket(socket);
-    log("Incoming connection");
+    if (d_func()->loggingMode >= NormalLogging)
+        log(d_func()->translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
@@ -323,9 +336,9 @@ void BNetworkConnection::setCloseOnCriticalBufferSize(bool close)
     d_func()->socketWrapper->setCloseOnCriticalBufferSize(close);
 }
 
-void BNetworkConnection::setDetailedLogMode(bool enabled)
+void BNetworkConnection::setLoggingMode(LoggingMode m)
 {
-    d_func()->detailedLog = enabled;
+    d_func()->loggingMode = m;
 }
 
 void BNetworkConnection::setAutoDeleteSentReplies(bool enabled)
@@ -341,6 +354,11 @@ void BNetworkConnection::setLogger(BLogger *l)
     d->logger = l;
     if (l && !l->parent())
         l->setParent(this);
+}
+
+void BNetworkConnection::setTranslationsEnabled(bool enabled)
+{
+    d_func()->translations = enabled;
 }
 
 void BNetworkConnection::connectToHost(const QString &hostName, quint16 port)
@@ -462,9 +480,9 @@ bool BNetworkConnection::closeOnCriticalBufferSize() const
     return d_func()->socketWrapper->closeOnCriticalBufferSize();
 }
 
-bool BNetworkConnection::detailedLogMode() const
+BNetworkConnection::LoggingMode BNetworkConnection::loggingMode() const
 {
-    return d_func()->detailedLog;
+    return d_func()->loggingMode;
 }
 
 bool BNetworkConnection::autoDeleteSentReplies() const
@@ -475,6 +493,11 @@ bool BNetworkConnection::autoDeleteSentReplies() const
 BLogger *BNetworkConnection::logger() const
 {
     return d_func()->logger;
+}
+
+bool BNetworkConnection::translationsEnabled() const
+{
+    return d_func()->translations;
 }
 
 QString BNetworkConnection::peerAddress() const
@@ -541,14 +564,18 @@ void BNetworkConnection::abort()
 
 /*============================== Protected methods =========================*/
 
-void BNetworkConnection::handleReply(BNetworkOperation *)
+bool BNetworkConnection::handleReply(BNetworkOperation *)
 {
-    //
+    if (d_func()->loggingMode >= DetailedLogging)
+        log(d_func()->translations ? tr("Unknown reply", "log text") : QString("Unknown reply"));
+    return false;
 }
 
-void BNetworkConnection::handleRequest(BNetworkOperation *)
+bool BNetworkConnection::handleRequest(BNetworkOperation *)
 {
-    //
+    if (d_func()->loggingMode >= DetailedLogging)
+        log(d_func()->translations ? tr("Unknown request", "log text") : QString("Unknown request"));
+    return false;
 }
 
 void BNetworkConnection::log(const QString &text, BLogger::Level lvl)
@@ -573,19 +600,26 @@ BSocketWrapper *BNetworkConnection::socketWrapper() const
     return d_func()->socketWrapper.data();
 }
 
-void BNetworkConnection::handleNoop(BNetworkOperation *op)
+bool BNetworkConnection::handleNoop(BNetworkOperation *op)
 {
     if (!op || op->metaData().operation() != NoopRequest)
-        return op->deleteLater();
+    {
+        op->deleteLater();
+        return false;
+    }
     op->reply();
     op->waitForFinished();
     op->deleteLater();
+    return true;
 }
 
-void BNetworkConnection::handleLog(BNetworkOperation *op)
+bool BNetworkConnection::handleLog(BNetworkOperation *op)
 {
     if (!op || op->metaData().operation() != LogRequest)
-        return op->deleteLater();
+    {
+        op->deleteLater();
+        return false;
+    }
     QVariantMap m = op->variantData().toMap();
     if (m.value("stderr_level").toBool())
         BTerminalIOHandler::writeLineErr(m.value("text").toString());
@@ -594,4 +628,5 @@ void BNetworkConnection::handleLog(BNetworkOperation *op)
     op->reply();
     op->waitForFinished();
     op->deleteLater();
+    return true;
 }

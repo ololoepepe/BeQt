@@ -71,7 +71,8 @@ void BPasswordWidgetPrivate::init()
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
     ledt = new QLineEdit(q);
-      connect(ledt, SIGNAL(textChanged(QString)), q, SIGNAL(passwordChanged()));
+      connect(ledt, SIGNAL(textChanged(QString)), this, SLOT(passwordChanged()));
+      connect(ledt, SIGNAL(textEdited(QString)), q, SIGNAL(passwordEdited(QString)));
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
       tbtnSave->setIcon( BApplication::icon("filesave") );
@@ -134,6 +135,12 @@ void BPasswordWidgetPrivate::resetShow()
     tbtnShow->setDown(show);
     ledt->setEchoMode(show ? QLineEdit::Normal : QLineEdit::Password);
     QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, show));
+}
+
+void BPasswordWidgetPrivate::passwordChanged()
+{
+    B_Q(BPasswordWidget);
+    QMetaObject::invokeMethod(q, "passwordChanged");
 }
 
 /*============================================================================
@@ -390,5 +397,7 @@ void BPasswordWidget::generatePassword()
     B_D(BPasswordWidget);
     if (!d->generateFunction)
         return;
-    setPassword(d->generateFunction(d->generatedLength));
+    QString pwd = d->generateFunction(d->generatedLength);
+    setPassword(pwd);
+    emit passwordGenerated(pwd);
 }

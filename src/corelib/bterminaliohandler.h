@@ -21,8 +21,8 @@ class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
     B_DECLARE_PRIVATE(BTerminalIOHandler)
     B_DECLARE_PRIVATE_S(BTerminalIOHandler)
 public:
-    typedef void (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
-    typedef void (*ExternalHandler)(const QString &, const QStringList &);
+    typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
+    typedef bool (*ExternalHandler)(const QString &, const QStringList &);
 public:
     explicit BTerminalIOHandler(QObject *parent = 0);
     ~BTerminalIOHandler();
@@ -41,7 +41,7 @@ public:
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(const QString &command, ExternalHandler handler);
 protected:
-    virtual void handleCommand(const QString &command, const QStringList &arguments);
+    virtual bool handleCommand(const QString &command, const QStringList &arguments);
 Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:

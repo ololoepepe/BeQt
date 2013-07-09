@@ -39,6 +39,7 @@ public Q_SLOTS:
     void retranslateUi();
     void resetSave();
     void resetShow();
+    void passwordChanged();
 public:
     QByteArray encPassword;
     bool save;
