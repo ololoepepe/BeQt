@@ -11,6 +11,7 @@
 #include "bpersoninfoprovider.h"
 #include "bplugin.h"
 #include "bplugininterface.h"
+#include "bsettingsnode.h"
 #include "bsignaldelayproxy.h"
 #include "bspamnotifier.h"
 #include "bterminaliohandler.h"

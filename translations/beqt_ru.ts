@@ -1307,6 +1307,19 @@
     </message>
 </context>
 <context>
+    <name>BSettingsNode</name>
+    <message>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="214"/>
+        <source>Enter value for</source>
+        <translation>Введите значение для</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="260"/>
+        <source>The value for</source>
+        <translation>Значение для</translation>
+    </message>
+</context>
+<context>
     <name>BSmtpSender</name>
     <message>
         <location filename="../src/network/bsmtpsender.cpp" line="259"/>
