@@ -3,12 +3,16 @@
 
 class BPasswordPrivate;
 
+class QDataStream;
+class QDebug;
+
 #include "bglobal.h"
 #include "bbase.h"
 
 #include <QString>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QMetaType>
 
 /*============================================================================
 ================================ BPassword ===================================
@@ -50,6 +54,12 @@ public:
 public:
     BPassword &operator =(const BPassword &other);
     bool operator ==(const BPassword &other) const;
+public:
+    friend QDataStream &operator <<(QDataStream &stream, const BPassword &pwd);
+    friend QDataStream &operator >>(QDataStream &stream, BPassword &pwd);
+    friend QDebug operator <<(QDebug dbg, const BPassword &pwd);
 };
+
+Q_DECLARE_METATYPE(BPassword)
 
 #endif // BPASSWORD_H

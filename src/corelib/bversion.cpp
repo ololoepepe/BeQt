@@ -4,8 +4,9 @@
 
 #include <QString>
 #include <QStringList>
-
+#include <QDataStream>
 #include <QDebug>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BVersionPrivate =============================
@@ -401,4 +402,38 @@ bool BVersion::operator >=(const BVersion &other) const
 BVersion::operator QString() const
 {
     return toString();
+}
+
+/*============================== Public friend operators ===================*/
+
+QDataStream &operator <<(QDataStream &stream, const BVersion &v)
+{
+    const BVersionPrivate *d = v.d_func();
+    QVariantMap m;
+    m.insert("major", d->major);
+    m.insert("minor", d->minor);
+    m.insert("patch", d->patch);
+    m.insert("status", d->status);
+    m.insert("extra", d->extra);
+    stream << m;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, BVersion &v)
+{
+    BVersionPrivate *d = v.d_func();
+    QVariantMap m;
+    stream >> m;
+    d->major = m.value("major", -1).toInt();
+    d->minor = m.value("minor", -1).toInt();
+    d->patch = m.value("patch", -1).toInt();
+    d->status = static_cast<BVersion::Status>(m.value("status", BVersion::NoStatus).toInt());
+    d->extra = m.value("extra", -1).toInt();
+    return stream;
+}
+
+QDebug operator <<(QDebug dbg, const BVersion &v)
+{
+    dbg.nospace() << "BVersion(" << v.toString() << ")";
+    return dbg.space();
 }

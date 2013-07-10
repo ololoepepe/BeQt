@@ -1,7 +1,10 @@
 #include "bglobal.h"
+#include "bpassword.h"
+#include "bversion.h"
 
 #include <QString>
 #include <QList>
+#include <QMetaType>
 
 #include <QDebug>
 
@@ -19,7 +22,14 @@ const char *bVersion()
 
 void bRegister()
 {
-    //
+    static bool registered = false;
+    if (registered)
+        return;
+    qRegisterMetaType<BPassword>();
+    qRegisterMetaTypeStreamOperators<BPassword>();
+    qRegisterMetaType<BVersion>();
+    qRegisterMetaTypeStreamOperators<BVersion>();
+    registered = true;
 }
 
 QList<int> bRange(int lb, int ub, int step)

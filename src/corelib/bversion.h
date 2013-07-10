@@ -3,11 +3,23 @@
 
 class BVersionPrivate;
 
+class QDataStream;
+class QDebug;
+
 #include "bglobal.h"
 #include "bbase.h"
 
 #include <QString>
 #include <QChar>
+#include <QMetaType>
+
+#if defined(major)
+#undef major
+#endif
+
+#if defined(minor)
+#undef minor
+#endif
 
 /*============================================================================
 ================================ BVersion ====================================
@@ -62,6 +74,12 @@ public:
     bool operator <=(const BVersion &other) const;
     bool operator >=(const BVersion &other) const;
     operator QString() const;
+public:
+    friend QDataStream &operator <<(QDataStream &stream, const BVersion &v);
+    friend QDataStream &operator >>(QDataStream &stream, BVersion &v);
+    friend QDebug operator <<(QDebug dbg, const BVersion &v);
 };
+
+Q_DECLARE_METATYPE(BVersion)
 
 #endif // BVERSION_H

@@ -8,7 +8,7 @@
 #include <QCryptographicHash>
 #include <QVariant>
 #include <QVariantMap>
-
+#include <QDataStream>
 #include <QDebug>
 
 /*============================================================================
@@ -267,4 +267,40 @@ bool BPassword::operator ==(const BPassword &other) const
         return d->encrypted == dd->encrypted && d->charCount == dd->charCount && d->algorithm == dd->algorithm;
     else
         return d->open == dd->open;
+}
+
+/*============================== Public friend operators ===================*/
+
+QDataStream &operator <<(QDataStream &stream, const BPassword &pwd)
+{
+    const BPasswordPrivate *d = pwd.d_func();
+    QVariantMap m;
+    m.insert("mode", d->mode);
+    m.insert("open", d->open);
+    m.insert("encrypted", d->encrypted);
+    m.insert("char_count", d->charCount);
+    m.insert("algorythm", d->algorithm);
+    m.insert("is_encrypted", d->isEncrypted);
+    stream << m;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, BPassword &pwd)
+{
+    BPasswordPrivate *d = pwd.d_func();
+    QVariantMap m;
+    stream >> m;
+    d->mode = static_cast<BPassword::Mode>(m.value("mode", BPassword::FlexibleMode).toInt());
+    d->open = m.value("open").toString();
+    d->encrypted = m.value("encrypted").toByteArray();
+    d->charCount = m.value("char_count").toInt();
+    d->algorithm = static_cast<QCryptographicHash::Algorithm>(m.value("algorythm", QCryptographicHash::Sha1).toInt());
+    d->isEncrypted = m.value("is_encrypted").toBool();
+    return stream;
+}
+
+QDebug operator <<(QDebug dbg, const BPassword &pwd)
+{
+    dbg.nospace() << "BPassword(" << pwd.mode() << "," << pwd.openPassword() << ")";
+    return dbg.space();
 }

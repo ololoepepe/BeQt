@@ -17,8 +17,7 @@
 [done] Add "set" handler to BTerminalIOHandler
 [done] Add BeQt::serialize() and BeQt::deserialize() methods
 [done] Improve BPassword class
-* Implement data stream and debug operators for container classes
-* Implement bRegister() function
+[done] Register container classes for QVariant and QDataStream
 * Add BeQtNetworkWidgets module
 
 === MAJOR ===
