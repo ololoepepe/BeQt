@@ -29,6 +29,9 @@ public:
     explicit BSettingsNode(QVariant::Type type, const QString &key, BSettingsNode *parent = 0);
     ~BSettingsNode();
 public:
+    static QVariant stringToVariant(const QString &s, QVariant::Type t, bool *ok = 0);
+    static QString variantToString(QVariant v, bool *ok = 0);
+public:
     void setParent(BSettingsNode *parent);
     void setKey(const QString &key);
     void setType(QVariant::Type type);

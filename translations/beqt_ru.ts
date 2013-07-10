@@ -1309,12 +1309,12 @@
 <context>
     <name>BSettingsNode</name>
     <message>
-        <location filename="../src/corelib/bsettingsnode.cpp" line="214"/>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="255"/>
         <source>Enter value for</source>
         <translation>Введите значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bsettingsnode.cpp" line="260"/>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="295"/>
         <source>The value for</source>
         <translation>Значение для</translation>
     </message>
@@ -1407,9 +1407,43 @@
 <context>
     <name>BTerminalIOHandler</name>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="348"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="417"/>
         <source>Unknown command</source>
         <translation>Неизвестная команда</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="431"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="448"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="486"/>
+        <source>Invalid parameters count</source>
+        <translation>Неправильное количество команд</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="436"/>
+        <source>Settings structure not set</source>
+        <translation>Не задана структура настроек</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="453"/>
+        <source>Failed to show value</source>
+        <translation>Не удалось показать значение</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="465"/>
+        <source>Invalid value</source>
+        <translation>Недейтсивтельное значение</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="470"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="479"/>
+        <source>Failed to set value</source>
+        <translation>Не удалось задать установить значение</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="472"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="481"/>
+        <source>OK</source>
+        <translation>ОК</translation>
     </message>
 </context>
 <context>

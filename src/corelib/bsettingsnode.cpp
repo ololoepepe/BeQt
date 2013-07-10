@@ -102,6 +102,47 @@ BSettingsNode::~BSettingsNode()
     //
 }
 
+/*============================== Static public methods =====================*/
+
+QVariant BSettingsNode::stringToVariant(const QString &s, QVariant::Type t, bool *ok)
+{
+    if (ok)
+        *ok = true;
+    QVariant v;
+    switch (t)
+    {
+    case QVariant::Locale:
+        v = QLocale(s);
+        break;
+    default:
+        v = s;
+        if (!v.convert(t) && ok)
+            *ok = false;
+        break;
+    }
+    return v;
+}
+
+QString BSettingsNode::variantToString(QVariant v, bool *ok)
+{
+    if (ok)
+        *ok = true;
+    QString s;
+    switch (v.type())
+    {
+    case QVariant::Locale:
+        s = v.toLocale().name();
+        break;
+    default:
+        if (!v.convert(QVariant::String) && ok)
+            *ok = false;
+        else
+            s = v.toString();
+        break;
+    }
+    return s;
+}
+
 /*============================== Public methods ============================*/
 
 void BSettingsNode::setParent(BSettingsNode *parent)
@@ -225,17 +266,11 @@ bool BSettingsNode::set(QString path, QString text, QChar separator) const
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
-    v = BTerminalIOHandler::readLine(text.replace("%k", path.split("/").last()));
-    switch (n->type())
-    {
-    case QVariant::Locale:
-        v = QLocale(v.toString());
-        break;
-    default:
-        if (!v.convert(n->type()))
-            return false;
-        break;
-    }
+    QString s = BTerminalIOHandler::readLine(text.replace("%k", path.split("/").last()));
+    bool ok = false;
+    v = stringToVariant(s, n->type(), &ok);
+    if (!ok)
+        return false;
     bSettings->setValue(path, v);
     return true;
 }
@@ -271,17 +306,10 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     QVariant v = bSettings->value(path);
     if (n->userShowFunction() && !n->userShowFunction()(v))
         return false;
-    QString vs = v.toString();
-    switch (n->type())
-    {
-    case QVariant::Locale:
-        vs = v.toLocale().name();
-        break;
-    default:
-        break;
-    }
-    if (vs.isEmpty())
-        vs = "[]";
+    bool ok = false;
+    QString vs = variantToString(v, &ok);
+    if (!ok)
+        return false;
     BTerminalIOHandler::writeLine(text.replace("%k", path.split("/").last()).replace("%v", vs));
     return true;
 }

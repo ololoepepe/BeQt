@@ -2,6 +2,7 @@
 #define BTERMINALIOHANDLER_H
 
 class BTerminalIOHandlerPrivate;
+class BSettingsNode;
 
 class QString;
 class QStringLit;
@@ -21,6 +22,13 @@ class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
     B_DECLARE_PRIVATE(BTerminalIOHandler)
     B_DECLARE_PRIVATE_S(BTerminalIOHandler)
 public:
+    enum StandardCommand
+    {
+        QuitCommand,
+        SetCommand,
+        HelpCommand
+    };
+public:
     typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
     typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &, const QStringList &);
 public:
@@ -29,6 +37,9 @@ public:
 protected:
     explicit BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent = 0);
 public:
+    static QString command(StandardCommand cmd);
+    static QStringList commands(StandardCommand cmd);
+    static InternalHandler handler(StandardCommand cmd);
     static BTerminalIOHandler *instance();
     static QStringList splitCommand(const QString &command);
     static QString mergeArguments(const QStringList &arguments);
@@ -39,9 +50,17 @@ public:
     static void writeLineErr( const QString &text = QString() );
     static void setStdinEchoEnabled(bool enabled = true);
     static void installHandler(const QString &command, InternalHandler handler);
+    static void installHandler(StandardCommand cmd);
     static void installHandler(const QString &command, ExternalHandler handler);
+    static void setRootSettingsNode(BSettingsNode *root);
+    static void setTranslationsEnabled(bool enabled);
+    static BSettingsNode *rootSettingsNode();
+    static bool translationsEnabled();
 protected:
     virtual bool handleCommand(const QString &command, const QStringList &arguments);
+    bool handleQuit(const QString &command, const QStringList &arguments);
+    bool handleSet(const QString &command, const QStringList &arguments);
+    bool handleHelp(const QString &command, const QStringList &arguments);
 Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:

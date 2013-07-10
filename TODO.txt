@@ -14,7 +14,7 @@
 [done] Add BTranslateFunctor class
 [done] Add BDialog class
 * Add default "help" handler to BTerminalIOHandler
-* Add "set" handler to BTerminalIOHandler
+[done] Add "set" handler to BTerminalIOHandler
 [done] Add BeQt::serialize() and BeQt::deserialize() methods
 [done] Improve BPassword class
 * Add BeQtNetworkWidgets module

@@ -3,6 +3,7 @@
 #include "bglobal.h"
 #include "bbase_p.h"
 #include "bnamespace.h"
+#include "bsettingsnode.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -77,6 +78,7 @@ BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
 
 BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 {
+    delete root;
     removeThread();
 }
 
@@ -130,6 +132,8 @@ void BTerminalIOHandlerPrivate::removeThread()
 
 void BTerminalIOHandlerPrivate::init()
 {
+    root = 0;
+    translations = true;
     BTerminalIOHandlerThread *t = initThread();
     if (!t)
         return;
@@ -197,6 +201,47 @@ BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *pa
 }
 
 /*============================== Static public methods =====================*/
+
+QString BTerminalIOHandler::command(StandardCommand cmd)
+{
+    QStringList sl = commands(cmd);
+    return !sl.isEmpty() ? sl.first() : QString();
+}
+
+QStringList BTerminalIOHandler::commands(StandardCommand cmd)
+{
+    QStringList sl;
+    switch (cmd)
+    {
+    case QuitCommand:
+        sl << "quit" << "exit";
+        break;
+    case SetCommand:
+        sl << "set";
+        break;
+    case HelpCommand:
+        sl << "help";
+        break;
+    default:
+        break;
+    }
+    return sl;
+}
+
+BTerminalIOHandler::InternalHandler BTerminalIOHandler::handler(StandardCommand cmd)
+{
+    switch (cmd)
+    {
+    case QuitCommand:
+        return &BTerminalIOHandler::handleQuit;
+    case SetCommand:
+        return &BTerminalIOHandler::handleSet;
+    case HelpCommand:
+        return &BTerminalIOHandler::handleHelp;
+    default:
+        return 0;
+    }
+}
 
 BTerminalIOHandler *BTerminalIOHandler::instance()
 {
@@ -329,6 +374,13 @@ void BTerminalIOHandler::installHandler(const QString &command, InternalHandler 
     ds->internalHandlers.insert(command, handler);
 }
 
+void BTerminalIOHandler::installHandler(StandardCommand cmd)
+{
+    InternalHandler h = handler(cmd);
+    foreach (const QString &s, commands(cmd))
+        installHandler(s, h);
+}
+
 void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler handler)
 {
     if ( !BTerminalIOHandlerPrivate::testInit() )
@@ -341,11 +393,106 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
     ds->externalHandlers.insert(command, handler);
 }
 
+void BTerminalIOHandler::setRootSettingsNode(BSettingsNode *root)
+{
+    if (!BTerminalIOHandlerPrivate::testInit())
+        return;
+    B_DS(BTerminalIOHandler);
+    if (ds->root)
+        delete ds->root;
+    ds->root = root;
+}
+
+BSettingsNode *BTerminalIOHandler::rootSettingsNode()
+{
+    if (!BTerminalIOHandlerPrivate::testInit())
+        return 0;
+    return ds_func()->root;
+}
+
 /*============================== Protected methods =========================*/
 
 bool BTerminalIOHandler::handleCommand(const QString &, const QStringList &)
 {
-    writeLine(tr("Unknown command"));
+    writeLine(d_func()->translations ? tr("Unknown command") : QString("Unknown command"));
+    return false;
+}
+
+bool BTerminalIOHandler::handleQuit(const QString &, const QStringList &)
+{
+    QCoreApplication::quit();
+    return true;
+}
+
+bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
+{
+    if (args.size() < 1)
+    {
+        writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+        return false;
+    }
+    if (!d_func()->root)
+    {
+        writeLine(d_func()->translations ? tr("Settings structure not set") : QString("Settings structure not set"));
+        return false;
+    }
+    if (args.first() == "--show-tree")
+    {
+        d_func()->root->showTree();
+        return true;
+    }
+    else if (args.first() == "--show")
+    {
+        if (args.size() != 2)
+        {
+            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            return false;
+        }
+        bool b = d_func()->root->show(args.last());
+        if (!b)
+            writeLine(d_func()->translations ? tr("Failed to show value") : QString("Failed to show value"));
+        return b;
+    }
+    else
+    {
+        BSettingsNode *n = d_func()->root->find(args.first());
+        if (args.size() == 2)
+        {
+            bool b = false;
+            QVariant v = BSettingsNode::stringToVariant(args.last(), n->type(), &b);
+            if (!b)
+            {
+                writeLine(d_func()->translations ? tr("Invalid value") : QString("Invalid value"));
+                return false;
+            }
+            b = d_func()->root->set(args.first(), v);
+            if (!b)
+                writeLine(d_func()->translations ? tr("Failed to set value") : QString("Failed to set value"));
+            else
+                writeLine(d_func()->translations ? tr("OK") : QString("OK"));
+            return b;
+        }
+        else if (args.size() == 1)
+        {
+            bool b = d_func()->root->set(args.first());
+            if (!b)
+                writeLine(d_func()->translations ? tr("Failed to set value") : QString("Failed to set value"));
+            else
+                writeLine(d_func()->translations ? tr("OK") : QString("OK"));
+            return b;
+        }
+        else
+        {
+            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            return false;
+        }
+    }
+    return true;
+}
+
+bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
+{
+    //
     return false;
 }
 
