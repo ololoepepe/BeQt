@@ -52,6 +52,7 @@ public:
 public:
     static const QString HtmlSpace;
     static const QString HtmlSpaceDouble;
+    static const QString HtmlSpaceQuadruple;
     static const QString HtmlLT;
     static const QString HtmlGT;
 public:

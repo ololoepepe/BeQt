@@ -58,6 +58,7 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     QString defName = what.value("en").name;
     QString defSite = what.value("en").site;
     QString defMail = what.value("en").mail;
+    QString defImage = what.value("en").image;
     if ( defSite.isEmpty() )
     {
         foreach (const QString &key, keys)
@@ -80,6 +81,17 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
             }
         }
     }
+    if (defImage.isEmpty())
+    {
+        foreach (const QString &key, keys)
+        {
+            if (!what.value(key).image.isEmpty())
+            {
+                defImage = what.value(key).image;
+                break;
+            }
+        }
+    }
     for (int i = 0; i < keys.size(); ++i)
     {
         if ( what.value( keys.at(i) ).name.isEmpty() )
@@ -88,6 +100,8 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
             what[keys.at(i)].site = defSite;
         if ( what.value( keys.at(i) ).mail.isEmpty() )
             what[keys.at(i)].mail = defMail;
+        if (what.value(keys.at(i)).image.isEmpty())
+            what[keys.at(i)].image = defImage;
     }
     foreach ( const QString &key, what.keys() )
         if ( what.value(key).name.isEmpty() )
@@ -134,6 +148,11 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
             }
             if ( ln.isEmpty() || (QLocale(ln).name() != ln && QLocale(ln).name().left(2) != ln) )
                 ln = "en";
+            if (!id.left(5).compare("image", Qt::CaseInsensitive))
+            {
+                info[ln].image = val;
+                continue;
+            }
             id = id.left(4);
             if ( !id.compare("name", Qt::CaseInsensitive) )
                 info[ln].name = val;

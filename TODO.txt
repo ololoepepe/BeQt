@@ -24,7 +24,7 @@
 [done] Return bool in BTerminalIOHandler and BNetworkConnection handler methods
 [done] Improve translation system
 [done] Improve BPasswordWidget
-* Add image support to person info system
+[done] Add image support to person info system
 [done] Improve logging system
 * Add spell checking support to code editor
 [done] Remove extra constructors from some classes
