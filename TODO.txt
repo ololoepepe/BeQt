@@ -25,7 +25,6 @@
 [done] Improve translation system
 [done] Improve BPasswordWidget
 * Add image support to person info system
-* Move BLoggerPrivate::tryLog method to BLogger
-* Improve BRemoteLogger
+[done] Improve logging system
 * Add spell checking support to code editor
 [done] Remove extra constructors from some classes

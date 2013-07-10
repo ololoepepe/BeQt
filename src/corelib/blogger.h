@@ -35,7 +35,8 @@ public:
 protected:
     explicit BLogger(BLoggerPrivate &d, QObject *parent = 0);
 public:
-    static bool isStderrLevel(BLogger::Level lvl);
+    static bool isStderrLevel(Level lvl);
+    static QString levelToString(Level lvl);
 public:
     void setUseStderr(bool b);
     void setIncludeLevel(bool b);
@@ -63,6 +64,8 @@ public Q_SLOTS:
     void logCritical(const QString &text);
     void logFatal(const QString &text);
     void flushFile();
+protected:
+    virtual void userLog(const QString &text, Level level);
 private:
     Q_DISABLE_COPY(BLogger)
 };

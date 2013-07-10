@@ -46,6 +46,8 @@ public:
     QList<BNetworkConnection *> connections() const;
     BNetworkServer *server() const;
     int remoteTimeout() const;
+protected:
+    void userLog(const QString &text, Level level);
 private:
     Q_DISABLE_COPY(BRemoteLogger)
 };

@@ -24,10 +24,7 @@ public:
     explicit BLoggerPrivate(BLogger *q);
     ~BLoggerPrivate();
 public:
-    static QString levelToString(BLogger::Level lvl);
-public:
     void init();
-    virtual void tryLog(const QString &msg, bool stderrLevel);
     void tryLogToConsole(const QString &text, bool stderrLevel);
     void tryLogToFile(const QString &text);
     QString constructMessage(const QString &text, BLogger::Level lvl) const;

@@ -621,10 +621,9 @@ bool BNetworkConnection::handleLog(BNetworkOperation *op)
         return false;
     }
     QVariantMap m = op->variantData().toMap();
-    if (m.value("stderr_level").toBool())
-        BTerminalIOHandler::writeLineErr(m.value("text").toString());
-    else
-        BTerminalIOHandler::writeLine(m.value("text").toString());
+    QString text = m.value("text").toString();
+    BLogger::Level lvl = static_cast<BLogger::Level>(m.value("level").toInt());
+    log(text, lvl);
     op->reply();
     op->waitForFinished();
     op->deleteLater();
