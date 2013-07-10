@@ -27,7 +27,8 @@ class QByterray;
 namespace BeQt
 {
 
-typedef QPair<QObject *, const char *> Until;
+typedef QPair<const QObject *, const char *> Until;
+typedef QPair<const QObject *, const char *> Target;
 
 const int Second = 1000;
 const int Minute = 60 * Second;
@@ -46,7 +47,8 @@ B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msec
 B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,
                                    int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
-B_CORE_EXPORT Until until(QObject *object, const char *signal);
+B_CORE_EXPORT Until until(const QObject *object, const char *signal);
+B_CORE_EXPORT Target target(const QObject *object, const char *method);
 B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);

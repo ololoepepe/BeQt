@@ -86,11 +86,19 @@ void waitNonBlocking(const QList<Until> &list, int msecs)
     el.exec();
 }
 
-Until until(QObject *object, const char *signal)
+Until until(const QObject *object, const char *signal)
 {
     Until p;
     p.first = object;
     p.second = signal;
+    return p;
+}
+
+Target target(const QObject *object, const char *method)
+{
+    Target p;
+    p.first = object;
+    p.second = method;
     return p;
 }
 

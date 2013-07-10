@@ -5,6 +5,7 @@
 #include "babstractsettingstab.h"
 #include "babstractterminaldriver.h"
 #include "bapplication.h"
+#include "bdialog.h"
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"

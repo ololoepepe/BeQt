@@ -12,7 +12,7 @@
 * Add BVersion class
 * Add BSettingsNode class
 [done] Add BTranslateFunctor class
-* Add BDialog class
+[done] Add BDialog class
 * Add default "help" handler to BTerminalIOHandler
 * Add setRootSettingsNode() and rootSettingsNode() methods to BTerminalIOHandler
 [done] Add BeQt::serialize() and BeQt::deserialize() methods

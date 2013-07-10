@@ -18,6 +18,8 @@ HEADERS += \
     babstractterminaldriver.h \
     bapplication.h \
     bapplication_p.h \
+    bdialog.h \
+    bdialog_p.h \
     bflowlayout.h \
     bguiplugininterface.h \
     bhelpbrowser.h \
@@ -40,6 +42,7 @@ SOURCES += \
     babstractsettingstab.cpp \
     babstractterminaldriver.cpp \
     bapplication.cpp \
+    bdialog.cpp \
     bflowlayout.cpp \
     bhelpbrowser.cpp \
     blocalecombobox.cpp \
