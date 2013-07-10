@@ -11,7 +11,7 @@
 
 * Add BVersion class
 * Add BSettingsNode class
-* Add BTranslateFunctor class
+[done] Add BTranslateFunctor class
 * Add BDialog class
 * Add default "help" handler to BTerminalIOHandler
 * Add setRootSettingsNode() and rootSettingsNode() methods to BTerminalIOHandler

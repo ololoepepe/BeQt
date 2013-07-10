@@ -33,6 +33,7 @@ HEADERS += \
     bspamnotifier_p.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
+    btranslatefunctor.h \
     btranslator.h \
     btranslator_p.h
 
@@ -49,6 +50,7 @@ SOURCES += \
     bsignaldelayproxy.cpp \
     bspamnotifier.cpp \
     bterminaliohandler.cpp \
+    btranslatefunctor.cpp \
     btranslator.cpp
 
 contains(BEQT_CONFIG, builtin_resources) {
