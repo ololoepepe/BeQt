@@ -21,7 +21,7 @@
 
 === MAJOR ===
 
-[done] Return bool in BTerminalIOHandler and BNetworkConnection handler methods
+[done] Improve BTerminalIOHandler and BNetworkConnection handler methods
 [done] Improve translation system
 [done] Improve BPasswordWidget
 [done] Add image support to person info system

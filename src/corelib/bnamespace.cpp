@@ -318,9 +318,10 @@ QString osVersion()
 #endif
 }
 
-void handleQuit(const QString &, const QStringList &)
+bool handleQuit(BTerminalIOHandler *, const QString &, const QStringList &)
 {
     QCoreApplication::quit();
+    return true;
 }
 
 }

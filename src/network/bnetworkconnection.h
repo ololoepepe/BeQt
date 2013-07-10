@@ -37,12 +37,19 @@ public:
         NormalLogging = 10,
         DetailedLogging = 100
     };
+    enum StandardOperation
+    {
+        NoopOperation,
+        WriteOperation,
+        LogOperation
+    };
 public:
     typedef bool (BNetworkConnection::*InternalHandler)(BNetworkOperation *);
     typedef bool (*ExternalHandler)(BNetworkOperation *);
 public:
-    static const QString NoopRequest;
-    static const QString LogRequest;
+    static QString operation(StandardOperation op);
+    static InternalHandler replyHandler(StandardOperation op);
+    static InternalHandler requestHandler(StandardOperation op);
 public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
     explicit BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
@@ -65,8 +72,10 @@ public:
     bool waitForDisconnected(int msecs = 30 * BeQt::Second);
     void installReplyHandler(const QString &operation, InternalHandler handler);
     void installReplyHandler(const QString &operation, ExternalHandler handler);
+    void installReplyHandler(StandardOperation op);
     void installRequestHandler(const QString &operation, InternalHandler handler);
     void installRequestHandler(const QString &operation, ExternalHandler handler);
+    void installRequestHandler(StandardOperation op);
     bool isValid() const;
     bool isConnected() const;
     const QUuid uniqueId() const;
@@ -95,8 +104,9 @@ protected:
     virtual void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
-    bool handleNoop(BNetworkOperation *op);
-    bool handleLog(BNetworkOperation *op);
+    bool handleNoopRequest(BNetworkOperation *op);
+    bool handleWriteRequest(BNetworkOperation *op);
+    bool handleLogRequest(BNetworkOperation *op);
 Q_SIGNALS:
     void connected();
     void disconnected();

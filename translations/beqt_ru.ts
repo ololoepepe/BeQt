@@ -810,20 +810,20 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="284"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="295"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="320"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="331"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="570"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="616"/>
         <source>Unknown reply</source>
         <comment>log text</comment>
         <translation>Неизвестный ответ</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="577"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="623"/>
         <source>Unknown request</source>
         <comment>log text</comment>
         <translation>Неизвестный запрос</translation>

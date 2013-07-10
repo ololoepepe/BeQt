@@ -266,10 +266,46 @@ void BNetworkConnectionPrivate::operationDestroyed(QObject *obj)
 ================================ BNetworkConnection ==========================
 ============================================================================*/
 
-/*============================== Public static constants ===================*/
+/*============================== Public static methods =====================*/
 
-const QString BNetworkConnection::NoopRequest = "noop";
-const QString BNetworkConnection::LogRequest = "log";
+QString BNetworkConnection::operation(StandardOperation op)
+{
+    switch (op)
+    {
+    case NoopOperation:
+        return "noop";
+    case WriteOperation:
+        return "write";
+    case LogOperation:
+        return "log";
+    default:
+        return "";
+    }
+}
+
+BNetworkConnection::InternalHandler BNetworkConnection::replyHandler(StandardOperation op)
+{
+    switch (op)
+    {
+    default:
+        return 0;
+    }
+}
+
+BNetworkConnection::InternalHandler BNetworkConnection::requestHandler(StandardOperation op)
+{
+    switch (op)
+    {
+    case NoopOperation:
+        return &BNetworkConnection::handleNoopRequest;
+    case WriteOperation:
+        return &BNetworkConnection::handleWriteRequest;
+    case LogOperation:
+        return &BNetworkConnection::handleLogRequest;
+    default:
+        return 0;
+    }
+}
 
 /*============================== Public constructors =======================*/
 
@@ -414,6 +450,11 @@ void BNetworkConnection::installReplyHandler(const QString &operation, ExternalH
     d->externalReplyHandlers.insert(operation, handler);
 }
 
+void BNetworkConnection::installReplyHandler(StandardOperation op)
+{
+    installReplyHandler(operation(op), replyHandler(op));
+}
+
 void BNetworkConnection::installRequestHandler(const QString &operation, InternalHandler handler)
 {
     if (operation.isEmpty() || !handler)
@@ -432,6 +473,11 @@ void BNetworkConnection::installRequestHandler(const QString &operation, Externa
     if ( d->externalRequestHandlers.contains(operation) )
         return;
     d->externalRequestHandlers.insert(operation, handler);
+}
+
+void BNetworkConnection::installRequestHandler(StandardOperation op)
+{
+    installRequestHandler(operation(op), requestHandler(op));
 }
 
 bool BNetworkConnection::isValid() const
@@ -600,26 +646,27 @@ BSocketWrapper *BNetworkConnection::socketWrapper() const
     return d_func()->socketWrapper.data();
 }
 
-bool BNetworkConnection::handleNoop(BNetworkOperation *op)
+bool BNetworkConnection::handleNoopRequest(BNetworkOperation *op)
 {
-    if (!op || op->metaData().operation() != NoopRequest)
-    {
-        op->deleteLater();
-        return false;
-    }
     op->reply();
     op->waitForFinished();
     op->deleteLater();
     return true;
 }
 
-bool BNetworkConnection::handleLog(BNetworkOperation *op)
+bool BNetworkConnection::handleWriteRequest(BNetworkOperation *op)
 {
-    if (!op || op->metaData().operation() != LogRequest)
-    {
-        op->deleteLater();
-        return false;
-    }
+    QVariantMap m = op->variantData().toMap();
+    QString text = m.value("text").toString();
+    BTerminalIOHandler::write(text);
+    op->reply();
+    op->waitForFinished();
+    op->deleteLater();
+    return true;
+}
+
+bool BNetworkConnection::handleLogRequest(BNetworkOperation *op)
+{
     QVariantMap m = op->variantData().toMap();
     QString text = m.value("text").toString();
     BLogger::Level lvl = static_cast<BLogger::Level>(m.value("level").toInt());

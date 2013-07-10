@@ -1,6 +1,8 @@
 #ifndef BNAMESPACE_H
 #define BNAMESPACE_H
 
+class BTerminalIOHandler;
+
 class QUuid;
 class QString;
 class QProcess;
@@ -76,7 +78,7 @@ B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
 B_CORE_EXPORT QString windowsVersion();
 #endif
 B_CORE_EXPORT QString osVersion();
-B_CORE_EXPORT void handleQuit(const QString &command, const QStringList &arguments);
+B_CORE_EXPORT bool handleQuit(BTerminalIOHandler *instance, const QString &command, const QStringList &arguments);
 
 }
 

@@ -150,7 +150,7 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
     if (internalHandlers.contains(cmd))
         (q->*internalHandlers.value(cmd))(cmd, args);
     else if (externalHandlers.contains(cmd))
-        externalHandlers.value(cmd)(cmd, args);
+        externalHandlers.value(cmd)(q, cmd, args);
     else
         q->handleCommand(cmd, args);
 }

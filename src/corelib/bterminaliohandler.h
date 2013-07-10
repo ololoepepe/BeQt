@@ -22,7 +22,7 @@ class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
     B_DECLARE_PRIVATE_S(BTerminalIOHandler)
 public:
     typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
-    typedef bool (*ExternalHandler)(const QString &, const QStringList &);
+    typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &, const QStringList &);
 public:
     explicit BTerminalIOHandler(QObject *parent = 0);
     ~BTerminalIOHandler();
