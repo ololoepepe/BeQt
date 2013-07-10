@@ -36,7 +36,8 @@ HEADERS += \
     bterminaliohandler_p.h \
     btranslatefunctor.h \
     btranslator.h \
-    btranslator_p.h
+    btranslator_p.h \
+    bversion.h
 
 SOURCES += \
     bbase.cpp \
@@ -53,7 +54,8 @@ SOURCES += \
     bspamnotifier.cpp \
     bterminaliohandler.cpp \
     btranslatefunctor.cpp \
-    btranslator.cpp
+    btranslator.cpp \
+    bversion.cpp
 
 contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES

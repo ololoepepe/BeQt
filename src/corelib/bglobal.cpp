@@ -17,6 +17,11 @@ const char *bVersion()
     return "2.1.3";
 }
 
+void bRegister()
+{
+    //
+}
+
 QList<int> bRange(int lb, int ub, int step)
 {
     if (lb == ub)

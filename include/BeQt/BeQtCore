@@ -17,5 +17,6 @@
 #include "bterminaliohandler.h"
 #include "btranslatefunctor.h"
 #include "btranslator.h"
+#include "bversion.h"
 
 #endif //BEQT_BEQTCORE_MODULE_H

@@ -9,7 +9,7 @@
 
 === MINOR ===
 
-* Add BVersion class
+[done] Add BVersion class
 [done] Add BSettingsNode class
 [done] Add BTranslateFunctor class
 [done] Add BDialog class
@@ -17,6 +17,8 @@
 [done] Add "set" handler to BTerminalIOHandler
 [done] Add BeQt::serialize() and BeQt::deserialize() methods
 [done] Improve BPassword class
+* Implement data stream and debug operators for container classes
+* Implement bRegister() function
 * Add BeQtNetworkWidgets module
 
 === MAJOR ===
