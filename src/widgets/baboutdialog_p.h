@@ -1,7 +1,6 @@
 #ifndef BABOUTDIALOG_P_H
 #define BABOUTDIALOG_P_H
 
-class BAboutDialogPrivate;
 class BPersonInfoProvider;
 
 class QString;

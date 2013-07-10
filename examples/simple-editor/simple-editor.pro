@@ -5,7 +5,7 @@ CONFIG += release
 
 QT = core gui widgets
 
-BEQT = core widgets codeeditor
+BEQT = core widgets codeeditor networkwidgets
 
 include(../example.pri)
 

@@ -11,7 +11,9 @@ defineReplace(fullBeqtModuleName) {
     equals(shortName, codeeditor):fullName=BeQtCodeEditor
     equals(shortName, core):fullName=BeQtCore
     equals(shortName, network):fullName=BeQtNetwork
+    equals(shortName, sql):fullName=BeQtSql
     equals(shortName, widgets):fullName=BeQtWidgets
+    equals(shortName, networkwidgets):fullName=BeQtNetworkWidgets
     return($${fullName})
 }
 
@@ -23,7 +25,9 @@ defineReplace(beqtModuleSubdir) {
     equals(fullName, codeeditor):moduleSubdir=codeeditor
     else:equals(fullName, core):moduleSubdir=corelib
     else:equals(fullName, network):moduleSubdir=network
+    else:equals(fullName, sql):moduleSubdir=sql
     else:equals(fullName, widgets):moduleSubdir=widgets
+    else:equals(fullName, networkwidgets):moduleSubdir=networkwidgets
     return($${moduleSubdir})
 }
 
@@ -67,7 +71,9 @@ contains(BEQT, all) {
         codeeditor \
         core \
         network \
-        widgets
+        sql \
+        widgets \
+        networkwidgets
 }
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
@@ -82,14 +88,24 @@ contains(BEQT, network) {
     QT *= core network
     BEQT *= core network
 }
+contains(BEQT, sql) {
+    QT *= core sql
+    BEQT *= core
+}
 contains(BEQT, widgets) {
     QT *= core gui widgets
     BEQT *= core widgets
 }
+contains(BEQT, networkwidgets) {
+    QT *= core network gui widgets
+    BEQT *= core network widgets
+}
 
 #Workaround for proper linking when building statically
 contains(BEQT, codeeditor):BEQT_ORDERED += codeeditor
+contains(BEQT, networkwidgets):BEQT_ORDERED += networkwidgets
 contains(BEQT, widgets):BEQT_ORDERED += widgets
+contains(BEQT, sql):BEQT_ORDERED += sql
 contains(BEQT, network):BEQT_ORDERED += network
 contains(BEQT, core):BEQT_ORDERED += core
 

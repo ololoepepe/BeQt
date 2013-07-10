@@ -1040,6 +1040,54 @@
     </message>
 </context>
 <context>
+    <name>BOperationProgressDialog</name>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="88"/>
+        <source>Waiting for the operation start...</source>
+        <translation>Ожидание начала операции...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="93"/>
+        <source>Sending request...</source>
+        <translation>Отправка запроса...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="98"/>
+        <source>Receiving request...</source>
+        <translation>Получение запроса...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="103"/>
+        <source>Waiting for reply...</source>
+        <translation>Ожидане ответа...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="108"/>
+        <source>Processing request...</source>
+        <translation>Обработка запроса...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="113"/>
+        <source>Receiving reply...</source>
+        <translation>Получение ответа...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="118"/>
+        <source>Sending reply...</source>
+        <translation>Отправка ответа...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="123"/>
+        <source>Operation successfully completed</source>
+        <translation>Операция успешно завершена</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="128"/>
+        <source>Operation failed</source>
+        <translation>Сбой операции</translation>
+    </message>
+</context>
+<context>
     <name>BPasswordWidgetPrivate</name>
     <message>
         <location filename="../src/widgets/bpasswordwidget.cpp" line="128"/>

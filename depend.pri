@@ -11,6 +11,7 @@ defineReplace(fullBeqtModuleName) {
     equals(shortName, network):fullName=BeQtNetwork
     equals(shortName, sql):fullName=BeQtSql
     equals(shortName, widgets):fullName=BeQtWidgets
+    equals(shortName, networkwidgets):fullName=BeQtNetworkWidgets
     return($${fullName})
 }
 
@@ -24,6 +25,7 @@ defineReplace(beqtModuleSubdir) {
     else:equals(fullName, network):moduleSubdir=network
     else:equals(fullName, sql):moduleSubdir=sql
     else:equals(fullName, widgets):moduleSubdir=widgets
+    else:equals(fullName, networkwidgets):moduleSubdir=networkwidgets
     return($${moduleSubdir})
 }
 
@@ -99,7 +101,8 @@ contains(BEQT, all) {
         core \
         network \
         sql \
-        widgets
+        widgets \
+        networkwidgets
 }
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
@@ -122,9 +125,14 @@ contains(BEQT, widgets) {
     QT *= core gui widgets
     BEQT *= core
 }
+contains(BEQT, networkwidgets) {
+    QT *= core network gui widgets
+    BEQT *= core network widgets
+}
 
 #Workaround for proper linking when building statically
 contains(BEQT, codeeditor):BEQT_ORDERED += codeeditor
+contains(BEQT, networkwidgets):BEQT_ORDERED += networkwidgets
 contains(BEQT, widgets):BEQT_ORDERED += widgets
 contains(BEQT, sql):BEQT_ORDERED += sql
 contains(BEQT, network):BEQT_ORDERED += network
