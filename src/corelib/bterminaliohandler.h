@@ -29,6 +29,12 @@ public:
         HelpCommand
     };
 public:
+    struct CommandHelp
+    {
+        QString usage;
+        QString description;
+    };
+public:
     typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
     typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &, const QStringList &);
 public:
@@ -48,12 +54,15 @@ public:
     static void writeLine( const QString &text = QString() );
     static void writeErr(const QString &text);
     static void writeLineErr( const QString &text = QString() );
+    static void writeHelpLine(const QString &usage, const QString &description);
     static void setStdinEchoEnabled(bool enabled = true);
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(StandardCommand cmd);
     static void installHandler(const QString &command, ExternalHandler handler);
     static void setRootSettingsNode(BSettingsNode *root);
     static void setTranslationsEnabled(bool enabled);
+    static void setHelpDescription(const QString &s);
+    static void setCommandHelp(const QString &command, const CommandHelp &help);
     static BSettingsNode *rootSettingsNode();
     static bool translationsEnabled();
 protected:

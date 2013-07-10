@@ -339,6 +339,22 @@ void BTerminalIOHandler::writeLineErr(const QString &text)
     writeErr(text + "\n");
 }
 
+void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &description)
+{
+    if (usage.isEmpty())
+        return;
+    QString s = "  " + usage;
+    if (!description.isEmpty())
+    {
+        if (s.length() > 28)
+            s += "\n" + QString().fill(' ', 30);
+        else
+            s += QString().fill(' ', 30 - s.length());
+        s += description;
+    }
+    writeLine(s);
+}
+
 void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 {
     QMutexLocker locker(&BTerminalIOHandlerPrivate::echoMutex);
@@ -403,6 +419,22 @@ void BTerminalIOHandler::setRootSettingsNode(BSettingsNode *root)
     ds->root = root;
 }
 
+void BTerminalIOHandler::setHelpDescription(const QString &s)
+{
+    if (!BTerminalIOHandlerPrivate::testInit())
+        return;
+    ds_func()->help = s;
+}
+
+void BTerminalIOHandler::setCommandHelp(const QString &command, const CommandHelp &help)
+{
+    if (!BTerminalIOHandlerPrivate::testInit())
+        return;
+    if (command.isEmpty())
+        return;
+    ds_func()->commandHelp.insert(command, help);
+}
+
 BSettingsNode *BTerminalIOHandler::rootSettingsNode()
 {
     if (!BTerminalIOHandlerPrivate::testInit())
@@ -436,10 +468,9 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
         writeLine(d_func()->translations ? tr("Settings structure not set") : QString("Settings structure not set"));
         return false;
     }
-    if (args.first() == "--show-tree")
+    if (args.first() == "--tree")
     {
         d_func()->root->showTree();
-        return true;
     }
     else if (args.first() == "--show")
     {
@@ -448,14 +479,41 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
             writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
             return false;
         }
-        bool b = d_func()->root->show(args.last());
-        if (!b)
+        if (!d_func()->root->show(args.last()))
+        {
             writeLine(d_func()->translations ? tr("Failed to show value") : QString("Failed to show value"));
-        return b;
+            return false;
+        }
+    }
+    else if (args.first() == "--description")
+    {
+        if (args.size() != 2)
+        {
+            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            return false;
+        }
+        BSettingsNode *n = d_func()->root->find(args.first());
+        if (!n)
+        {
+            writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));
+            return false;
+        }
+        QString s = n->description();
+        if (s.isEmpty())
+        {
+            writeLine(d_func()->translations ? tr("No description") : QString("No description"));
+            return false;
+        }
+        writeLine(d_func()->translations ? QCoreApplication::translate("BSettingsNode", s.toUtf8().constData()) : s);
     }
     else
     {
         BSettingsNode *n = d_func()->root->find(args.first());
+        if (!n)
+        {
+            writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));
+            return false;
+        }
         if (args.size() == 2)
         {
             bool b = false;
@@ -465,21 +523,27 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
                 writeLine(d_func()->translations ? tr("Invalid value") : QString("Invalid value"));
                 return false;
             }
-            b = d_func()->root->set(args.first(), v);
-            if (!b)
+            if (!d_func()->root->set(args.first(), v))
+            {
                 writeLine(d_func()->translations ? tr("Failed to set value") : QString("Failed to set value"));
+                return false;
+            }
             else
+            {
                 writeLine(d_func()->translations ? tr("OK") : QString("OK"));
-            return b;
+            }
         }
         else if (args.size() == 1)
         {
-            bool b = d_func()->root->set(args.first());
-            if (!b)
+            if (!d_func()->root->set(args.first()))
+            {
                 writeLine(d_func()->translations ? tr("Failed to set value") : QString("Failed to set value"));
+                return false;
+            }
             else
+            {
                 writeLine(d_func()->translations ? tr("OK") : QString("OK"));
-            return b;
+            }
         }
         else
         {
@@ -492,7 +556,53 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
 
 bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
 {
-    //
+    QString h = d_func()->translations ?
+                QCoreApplication::translate("BTerminalIOHanlder", d_func()->help.toUtf8().constData()) :
+                d_func()->help;
+    if (args.isEmpty())
+    {
+        if (!h.isEmpty())
+        {
+            writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+            return false;
+        }
+        writeLine(h);
+    }
+    else if (args.size() == 1)
+    {
+        if (args.first() == "--all")
+        {
+            if (!h.isEmpty())
+                writeLine(h);
+            foreach (const CommandHelp &ch, d_func()->commandHelp)
+                writeHelpLine(ch.usage, ch.description);
+        }
+        else if (args.first() == "--settings")
+        {
+            if (!d_func()->root)
+            {
+                writeLine(d_func()->translations ? tr("Settings structure not set") :
+                                                   QString("Settings structure not set"));
+                return false;
+            }
+            d_func()->root->showTree();
+        }
+        else if (d_func()->commandHelp.contains(args.first()))
+        {
+            const CommandHelp &ch = d_func()->commandHelp.value(args.first());
+            writeHelpLine(ch.usage, ch.description);
+        }
+        else
+        {
+            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            return false;
+        }
+    }
+    else
+    {
+        writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+        return false;
+    }
     return false;
 }
 
