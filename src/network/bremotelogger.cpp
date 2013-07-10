@@ -142,26 +142,10 @@ BRemoteLogger::BRemoteLogger(BGenericSocket *socket, QObject *parent) :
     setRemote(socket);
 }
 
-BRemoteLogger::BRemoteLogger(BGenericSocket *socket, const QString &fileName, QObject *parent) :
-    BLogger(*new BRemoteLoggerPrivate(this), parent)
-{
-    d_func()->init();
-    setFileName(fileName);
-    setRemote(socket);
-}
-
 BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, QObject *parent) :
     BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
-    setRemote(hostName, port);
-}
-
-BRemoteLogger::BRemoteLogger(const QString &hostName, quint16 port, const QString &fileName, QObject *parent) :
-    BLogger(*new BRemoteLoggerPrivate(this), parent)
-{
-    d_func()->init();
-    setFileName(fileName);
     setRemote(hostName, port);
 }
 
@@ -172,18 +156,18 @@ BRemoteLogger::BRemoteLogger(BNetworkConnection *c, QObject *parent) :
     setRemote(c);
 }
 
-BRemoteLogger::BRemoteLogger(BNetworkServer *server, QObject *parent) :
-    BLogger(*new BRemoteLoggerPrivate(this), parent)
-{
-    d_func()->init();
-    setRemote(server);
-}
-
 BRemoteLogger::BRemoteLogger(const QList<BNetworkConnection *> &list, QObject *parent) :
     BLogger(*new BRemoteLoggerPrivate(this), parent)
 {
     d_func()->init();
     setRemote(list);
+}
+
+BRemoteLogger::BRemoteLogger(BNetworkServer *server, QObject *parent) :
+    BLogger(*new BRemoteLoggerPrivate(this), parent)
+{
+    d_func()->init();
+    setRemote(server);
 }
 
 BRemoteLogger::~BRemoteLogger()

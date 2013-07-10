@@ -1411,35 +1411,6 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     addModule(SearchModule);
 }
 
-BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    foreach (BAbstractFileType *ft, fileTypes)
-        d_func()->tryAddFileType(ft);
-    addModule(EditModule);
-    addModule(IndicatorsModule);
-    addModule(OpenSaveModule);
-    addModule(SearchModule);
-}
-
-BCodeEditor::BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    setModules(moduleList);
-}
-
-BCodeEditor::BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
-                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
-{
-    d_func()->init();
-    foreach (BAbstractFileType *ft, fileTypes)
-        d_func()->tryAddFileType(ft);
-    setModules(moduleList);
-}
-
 BCodeEditor::~BCodeEditor()
 {
     //

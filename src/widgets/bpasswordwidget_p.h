@@ -12,6 +12,7 @@ class QEvent;
 #include "bpasswordwidget.h"
 
 #include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BPassword>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
@@ -31,20 +32,18 @@ public:
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);
     ~BPasswordWidgetPrivate();
 public:
-    static BPasswordWidget::PasswordWidgetData createPasswordWidgetData();
-public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);
+    void updateEdit();
 public Q_SLOTS:
     void retranslateUi();
     void resetSave();
     void resetShow();
-    void passwordChanged();
+    void passwordChanged(const QString &password);
 public:
-    QByteArray encPassword;
+    BPassword pwd;
     bool save;
     bool show;
-    int charCount;
     BPasswordWidget::GeneratePasswordFunction generateFunction;
     int generatedLength;
     QHBoxLayout *hlt;

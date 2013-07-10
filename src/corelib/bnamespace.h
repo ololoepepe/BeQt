@@ -53,6 +53,8 @@ B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
+B_CORE_EXPORT QVariant deserialize(const QByteArray &data, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments);
 B_CORE_EXPORT int execProcess(const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);

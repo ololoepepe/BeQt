@@ -50,10 +50,6 @@ public:
     };
 public:
     explicit BCodeEditor(QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
-                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
     ~BCodeEditor();
 protected:
     explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);

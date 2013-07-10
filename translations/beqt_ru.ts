@@ -301,37 +301,37 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1537"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1508"/>
         <source>Unicode</source>
         <comment>encodingGroup name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1539"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1510"/>
         <source>Eastern Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1541"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1512"/>
         <source>Western Europe</source>
         <comment>encodingGroup name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1543"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1514"/>
         <source>East Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1545"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1516"/>
         <source>South-East and South-West Asia</source>
         <comment>encodingGroup name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1547"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="1518"/>
         <source>Middle East</source>
         <comment>encodingGroup name</comment>
         <translation>Центральный Восток</translation>
@@ -1042,19 +1042,19 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="120"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="128"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="121"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="129"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="122"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="130"/>
         <source>Generate password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сгенерировать пароль</translation>

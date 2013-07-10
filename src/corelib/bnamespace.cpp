@@ -144,6 +144,24 @@ QString unwrapped(const QString &text, const QString &wrappingText)
     return ntext;
 }
 
+QByteArray serialize(const QVariant &variant, QDataStream::Version version)
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out.setVersion(version);
+    out << variant;
+    return data;
+}
+
+QVariant deserialize(const QByteArray &data, QDataStream::Version version)
+{
+    QDataStream in(data);
+    in.setVersion(version);
+    QVariant v;
+    in >> v;
+    return v;
+}
+
 void startProcess(QProcess *proc, const QString &command, const QStringList &arguments)
 {
     if (!proc)

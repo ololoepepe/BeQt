@@ -15,14 +15,17 @@
 * Add BDialog class
 * Add default "help" handler to BTerminalIOHandler
 * Add setRootSettingsNode() and rootSettingsNode() methods to BTerminalIOHandler
+[done] Add BeQt::serialize() and BeQt::deserialize() methods
+[done] Improve BPassword class
 * Add BeQtNetworkWidgets module
 
 === MAJOR ===
 
 [done] Return bool in BTerminalIOHandler and BNetworkConnection handler methods
 [done] Improve translation system
-* Improve BPasswordWidget
+[done] Improve BPasswordWidget
 * Add image support to person info system
 * Move BLoggerPrivate::tryLog method to BLogger
 * Improve BRemoteLogger
 * Add spell checking support to code editor
+[done] Remove extra constructors from some classes
