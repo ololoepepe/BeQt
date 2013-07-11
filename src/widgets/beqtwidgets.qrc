@@ -66,5 +66,8 @@
         <file>icons/help_hint.png</file>
         <file>icons/charset.png</file>
         <file>icons/charset.svgz</file>
+        <file>pixmaps/oxygen_logo.png</file>
+        <file>pixmaps/no_image.png</file>
+        <file>pixmaps/author_photo.png</file>
     </qresource>
 </RCC>

@@ -10,6 +10,7 @@ BEQT =
 include(../module.pri)
 
 DEFINES += BEQT_BUILD_CORE_LIB
+DEFINES += BUILDING_LIBHUNSPELLS
 
 HEADERS += \
     bbase.h \
@@ -39,6 +40,12 @@ HEADERS += \
     btranslator_p.h \
     bversion.h
 
+#Hunspell
+HEADERS += $$files($${PWD}/hunspell/*.hxx)
+HEADERS += \
+    hunspell/config.h \
+    hunspell/hunvisapi.h
+
 SOURCES += \
     bbase.cpp \
     bcoreapplication.cpp \
@@ -56,6 +63,9 @@ SOURCES += \
     btranslatefunctor.cpp \
     btranslator.cpp \
     bversion.cpp
+
+#Hunspell
+SOURCES += $$files($${PWD}/hunspell/*.cxx)
 
 contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES

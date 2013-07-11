@@ -304,14 +304,15 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoProvider::Person
         QString sp = "";
         QString dsp = HtmlSpaceDouble;
         s += "<div>";
-        QString img = BDirTools::findResource(inf.image);
+        QString img = BDirTools::findResource(!inf.image.isEmpty() ? inf.image : "beqt/pixmaps/no_image.png");
         QPixmap pm(img);
         if (!pm.isNull())
         {
             double k = 80.0 / (double) qMax(pm.height(), pm.width());
             QString h = QString::number((int) (k * (double) pm.height()));
             QString w = QString::number((int) (k * (double) pm.width()));
-            s += "<img height=" + h + " width=" + w + " style=\"float: left\" src=\"" + img + "\">";
+            s += "<img height=" + h + " width=" + w + " style=\"float: left\" src=\"" + img + "\""
+                    + (inf.image.isEmpty() ? (" title=\"" + tr("No image available") + "\"") : QString("")) + ">";
             sp = HtmlSpaceDouble;
             dsp = HtmlSpaceQuadruple;
         }

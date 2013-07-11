@@ -57,9 +57,8 @@ BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
 
 QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupportInfo &info)
 {
-    QString language = QLocale::languageToString( info.locale.language() );
-    QString country = (info.locale.country() != QLocale::AnyCountry) ?
-                QLocale::countryToString( info.locale.country() ) : "";
+    QString language = info.locale.nativeLanguageName();
+    QString country = (info.locale.country() != QLocale::AnyCountry) ? info.locale.nativeCountryName(): QString("");
     QString name = info.locale.name();
     return language + (!country.isEmpty() ? " (" + country + ")" : "") + " [" + name + "]";
 }

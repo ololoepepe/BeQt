@@ -2,3 +2,9 @@ Name=Oxygen
 Role=BeQt uses Oxygen as a default icon set
 Role[ru]=BeQt использует Oxygen как набор иконок по умолчанию
 Site=http://www.oxygen-icons.org
+Image=beqt/pixmaps/oxygen_logo.png
+
+Name=Hunspell
+Role=BeQt uses Hunspell library for spell checkig
+Role[ru]=BeQt использует библиотеку Hunspell для проверки орфографии
+Site=http://hunspell.sourceforge.net
