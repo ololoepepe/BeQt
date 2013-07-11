@@ -28,8 +28,8 @@
 #include <QWidget>
 
 #include <QDebug>
-#include <BOperationProgressDialog>
-#include <BNetworkOperation>
+#include <BSpellCheckerDictionary>
+#include <QTextCodec>
 
 int main(int argc, char **argv)
 {
@@ -122,8 +122,6 @@ int main(int argc, char **argv)
     mw->restoreState( s ? s->value("main_window/state").toByteArray() : mw->saveState() ) ;
     mw->show();
     //Running main event loop
-    BOperationProgressDialog *dlg = new BOperationProgressDialog(0);
-    dlg->show();
     int ret = app->exec();
     //Saving settings
     if (s)
