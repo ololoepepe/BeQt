@@ -15,8 +15,6 @@
 
 #include <QDebug>
 
-#include "hunspell/hunspell.hxx"
-
 /*============================================================================
 ================================ BTranslatorPrivate ==========================
 ============================================================================*/
@@ -41,8 +39,6 @@ void BTranslatorPrivate::init()
     installed = false;
     loaded = false;
     locale = BCoreApplication::locale();
-    Hunspell *h = new Hunspell("test1", "test2");
-    Q_UNUSED(h);
 }
 
 bool BTranslatorPrivate::install()

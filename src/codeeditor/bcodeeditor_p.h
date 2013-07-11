@@ -281,6 +281,7 @@ public Q_SLOTS:
     void documentLoadingFinished(bool success);
     void documentSavingFinished(bool success);
 public:
+    BCodeEditor::StandardDocumentType docType;
     QMap<QString, BAbstractEditorModule *> modules;
     BCodeEditorDocument *document;
     QMap<BCodeEditorDocument *, QString> openingDocuments;

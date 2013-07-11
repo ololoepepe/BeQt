@@ -30,3 +30,5 @@
 [done] Improve logging system
 * Add spell checking support to code editor
 [done] Remove extra constructors from some classes
+* Improve BCodeEditor asynchronous operations
+* Add ability to use classic documents in BCodeEditor

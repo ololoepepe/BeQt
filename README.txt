@@ -92,6 +92,9 @@ See: http://qt-project.org/doc/qtcreator-2.6 for details.
 
 When building BeQt, you may pass some parameters to qmake:
 
+ * "HUNSPELL_PREFIX=<path>"
+   Set external Hunspell library location. By default the internal one is used
+
  * "CONFIG+=no_network"
    Don't build the BeQtNetwork module
 
@@ -193,6 +196,11 @@ in which both BeQt and your project will be included as subprojects.
 
 For details, see:
 http://qt-project.org/doc/qt-5.0/qmake-project-files.html#project-templates
+
+If you compiled BeQt with external Hunspell library, you must specify the
+path to Hunspell again when linking BeQt:
+
+ "HUNSPELL_PREFIX=<path>"
 
 Common .pro file example:
 

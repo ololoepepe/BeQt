@@ -587,6 +587,7 @@ QString BCodeEditorPrivate::codecDescriptiveName(const QString &codecName)
 void BCodeEditorPrivate::init()
 {
     B_Q(BCodeEditor);
+    docType = BCodeEditor::StandardDocument;
     document = 0;
     editFont = BApplication::createMonospaceFont();
     editMode = BCodeEdit::NormalMode;
@@ -2239,5 +2240,11 @@ void BCodeEditor::setCurrentDocumentText(const QString &text)
 
 BCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) const
 {
-    return new BCodeEditorDocument(editor);
+    switch (d_func()->docType)
+    {
+    case StandardDocument:
+        return new BCodeEditorDocument(editor);
+    default:
+        return 0;
+    }
 }

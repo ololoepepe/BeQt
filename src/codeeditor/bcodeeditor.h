@@ -48,8 +48,13 @@ public:
         SouthEastSouthWestAsianGroup,
         MiddleEastGroup
     };
+    enum StandardDocumentType
+    {
+        StandardDocument
+    };
 public:
     explicit BCodeEditor(QWidget *parent = 0);
+    explicit BCodeEditor(StandardDocumentType t, QWidget *parent = 0);
     ~BCodeEditor();
 protected:
     explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
@@ -77,6 +82,7 @@ public:
     static QTextCodec *selectedCodec(QComboBox *cmbox);
     static QString selectedCodecName(QComboBox *cmbox);
 public:
+    void setDocumentType(StandardDocumentType t);
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
     void setEditFontPointSize(int pointSize);
@@ -104,6 +110,7 @@ public:
     void setMaxHistoryCount(int count);
     bool mergeWith(BCodeEditor *other);
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
+    StandardDocumentType documentType() const;
     QFont editFont() const;
     QString editFontFamily() const;
     int editFontPointSize() const;

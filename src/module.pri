@@ -113,3 +113,13 @@ contains(BEQT, core):BEQT_ORDERED += core
 for(shortName, BEQT_ORDERED) {
     addBeqtModule($${shortName})
 }
+
+##############################################################################
+################################ Hunspell ####################################
+##############################################################################
+
+!isEmpty(HUNSPELL_PREFIX) {
+    INCLUDEPATH *= $${HUNSPELL_PREFIX}/include
+    DEPENDPATH *= $${HUNSPELL_PREFIX}/include
+    LIBS *= -L$${HUNSPELL_PREFIX}/lib/ -lhunspell
+}
