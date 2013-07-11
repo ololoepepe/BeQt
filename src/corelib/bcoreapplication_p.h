@@ -76,6 +76,7 @@ public:
     void saveSettings();
 public Q_SLOTS:
     void initSettings();
+    void sendLanguageChangeEvent();
 public:
     mutable QString appName;
     mutable QString orgName;
@@ -93,6 +94,8 @@ public:
     BPersonInfoProvider *beqtThanksTo;
     BLogger *logger;
     BSignalDelayProxy *languageChangeProxy;
+    BSignalDelayProxy *languageChangeEventProxy;
+    bool blockLanguageChangeEvent;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;

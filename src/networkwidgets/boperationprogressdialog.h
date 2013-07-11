@@ -9,6 +9,8 @@ class QString;
 
 #include <BeQtWidgets/BDialog>
 
+#include <QObject>
+
 /*============================================================================
 ================================ BOperationProgressDialog ====================
 ============================================================================*/
@@ -32,10 +34,14 @@ public:
     void setSendingReplyText(const QString &text);
     void setSuccessText(const QString &text);
     void setFailureText(const QString &text);
+    void setCanCancel(bool b);
+    void setUpdateInterval(int msecs);
+    void setAutoCloseInterval(int msecs);
     BNetworkOperation *operation() const;
+    bool canCancel() const;
+    int updateInterval() const;
+    int autoCloseInterval() const;
     bool isValid() const;
-public Q_SLOTS:
-    //
 private:
     Q_DISABLE_COPY(BOperationProgressDialog)
 };

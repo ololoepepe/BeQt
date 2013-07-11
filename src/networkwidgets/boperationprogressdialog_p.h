@@ -2,9 +2,11 @@
 #define BOPERATIONPROGRESSTDIALOG_P_H
 
 class BNetworkOperation;
+class BSignalDelayProxy;
 
 class QLabel;
 class QProgressBar;
+class QPushButton;
 
 #include "boperationprogressdialog.h"
 
@@ -28,9 +30,9 @@ public:
     ~BOperationProgressDialogPrivate();
 public:
     void init();
-    //
 public Q_SLOTS:
-    //
+    void update();
+    void btnClicked();
 public:
     BNetworkOperation *const Operation;
 public:
@@ -43,8 +45,12 @@ public:
     QString sendingReplyText;
     QString successText;
     QString failureText;
+    BSignalDelayProxy *proxy;
+    bool canCancel;
+    int autoCloseInterval;
     QLabel *lbl;
     QProgressBar *pbar;
+    QPushButton *btn;
 private:
     Q_DISABLE_COPY(BOperationProgressDialogPrivate)
 };

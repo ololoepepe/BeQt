@@ -176,12 +176,16 @@ void BCoreApplicationPrivate::init()
     logger = new BLogger(this);
     languageChangeProxy = new BSignalDelayProxy(100, 200, this);
     connect(languageChangeProxy, SIGNAL(triggered()), q_func(), SIGNAL(languageChanged()));
+    languageChangeEventProxy = new BSignalDelayProxy(100, 200, this);
+    connect(languageChangeEventProxy, SIGNAL(triggered()), this, SLOT(sendLanguageChangeEvent()));
+    blockLanguageChangeEvent = true;
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
 {
-    if (e->type() != QEvent::LanguageChange || o != (QObject *) QCoreApplication::instance())
+    if (!blockLanguageChangeEvent || e->type() != QEvent::LanguageChange || o != QCoreApplication::instance())
         return BBasePrivate::eventFilter(o, e);
+    languageChangeEventProxy->trigger();
     return true;
 }
 
@@ -441,6 +445,14 @@ void BCoreApplicationPrivate::initSettings()
     settings = createSettingsInstance( getAppName() );
     if ( !settings.isNull() )
         connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+}
+
+void BCoreApplicationPrivate::sendLanguageChangeEvent()
+{
+    blockLanguageChangeEvent = false;
+    QEvent e(QEvent::LanguageChange);
+    QCoreApplication::sendEvent(qApp, &e);
+    blockLanguageChangeEvent = true;
 }
 
 /*============================================================================

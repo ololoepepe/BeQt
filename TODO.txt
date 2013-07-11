@@ -18,7 +18,7 @@
 [done] Add BeQt::serialize() and BeQt::deserialize() methods
 [done] Improve BPassword class
 [done] Register container classes for QVariant and QDataStream
-* Add BeQtNetworkWidgets module
+[done] Add BeQtNetworkWidgets module
 
 === MAJOR ===
 
