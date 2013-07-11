@@ -14,6 +14,7 @@
 #include "bsettingsnode.h"
 #include "bsignaldelayproxy.h"
 #include "bspamnotifier.h"
+#include "bspellcheckerdictionary.h"
 #include "bterminaliohandler.h"
 #include "btranslatefunctor.h"
 #include "btranslator.h"

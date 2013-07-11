@@ -1,0 +1,1 @@
+#include "../BeQtCore/bspellcheckerdictionary.h"

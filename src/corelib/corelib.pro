@@ -32,6 +32,7 @@ HEADERS += \
     bsignaldelayproxy_p.h \
     bspamnotifier.h \
     bspamnotifier_p.h \
+    bspellcheckerdictionary.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
     btranslatefunctor.h \
@@ -52,6 +53,7 @@ SOURCES += \
     bsettingsnode.cpp \
     bsignaldelayproxy.cpp \
     bspamnotifier.cpp \
+    bspellcheckerdictionary.cpp \
     bterminaliohandler.cpp \
     btranslatefunctor.cpp \
     btranslator.cpp \
