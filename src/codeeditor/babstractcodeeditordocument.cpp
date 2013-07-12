@@ -442,13 +442,13 @@ BCodeEditor *BAbstractCodeEditorDocument::editor() const
 void BAbstractCodeEditorDocument::setFocus()
 {
     if (d_func()->edit)
-        d_func()->edit->setFocus();
+        setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::activateWindow()
 {
     if (d_func()->edit)
-        d_func()->edit->activateWindow();
+        activateWindowImplementation();
 }
 
 void BAbstractCodeEditorDocument::setText(const QString &txt, int asyncIfLongerThan)

@@ -684,7 +684,10 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
     BAbstractCodeEditorDocument *doc = q_func()->createDocument(q_func());
-    doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
+    if (!doc)
+        return 0;
+    doc->init();
+    doc->setFileName(createFileName(fileName, defaultFN, q_func()->fileNames()));
     doc->installDropHandler(dropHandler);
     doc->installInnerEventFilter(this);
     doc->setEditFont(editFont);
@@ -698,7 +701,6 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
-    //
     if (ddoc)
     {
         connect(ddoc, SIGNAL(lineSplitted(BCodeEdit::SplittedLinesRange)),
@@ -711,7 +713,7 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
     connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
     connect( doc, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
-    if ( !text.isEmpty() )
+    if (!text.isEmpty())
         doc->setText(text);
     return doc;
 }
@@ -1694,6 +1696,21 @@ QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
 }
 
 /*============================== Public methods ============================*/
+
+void BCodeEditor::setDocumentType(StandardDocumentType t)
+{
+    if (t == d_func()->docType)
+        return;
+    if (!saveAllDocuments() || !waitForAllDocumentsProcessed())
+        return;
+    d_func()->docType = t;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+    {
+        BAbstractCodeEditorDocument *ndoc = d_func()->createDocument(doc->fileName(), doc->text());
+        d_func()->removeDocument(doc);
+        d_func()->addDocument(ndoc);
+    }
+}
 
 void BCodeEditor::setEditFont(const QFont &fnt)
 {

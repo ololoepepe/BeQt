@@ -67,6 +67,8 @@ public Q_SLOTS:
     void switchMode();
 protected:
     QWidget *createEdit(QTextDocument **doc = 0);
+    void setFocusImplementation();
+    void activateWindowImplementation();
     void setTextImplementation(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
     void insertTextImplementation(const QString &txt);
     void moveCursorImplementation(const QPoint &pos);
@@ -85,6 +87,10 @@ protected:
     void highlightBrackets();
     void installDropHandler(QObject *handler);
     void installInnerEventFilter(QObject *filter);
+Q_SIGNALS:
+    void editModeChanged(BCodeEdit::EditMode mode);
+    void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
+    void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
 };

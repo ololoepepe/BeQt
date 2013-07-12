@@ -19,6 +19,7 @@ HEADERS += \
     bapplication.h \
     bapplication_p.h \
     bclipboardnotifier.h \
+    bclipboardnotifier_p.h \
     bdialog.h \
     bdialog_p.h \
     bflowlayout.h \

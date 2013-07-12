@@ -103,6 +103,8 @@ public Q_SLOTS:
     void rehighlightBlock(const QTextBlock &block);
 protected:
     virtual QWidget *createEdit(QTextDocument **doc = 0) = 0;
+    virtual void setFocusImplementation() = 0;
+    virtual void activateWindowImplementation() = 0;
     virtual void setTextImplementation(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte) = 0;
     virtual void insertTextImplementation(const QString &txt) = 0;
     virtual void moveCursorImplementation(const QPoint &pos) = 0;

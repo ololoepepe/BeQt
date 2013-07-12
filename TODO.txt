@@ -31,6 +31,5 @@
 * Add spell checking support to code editor
 [done] Remove extra constructors from some classes
 * Improve BCodeEditor asynchronous operations
-* Add ability to use classic documents in BCodeEditor
-* Improve BCodeEditor::setDocumentType
+* Add ability to use documents of different type in BCodeEditor
 [done] Add BClipboardNotifier class

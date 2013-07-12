@@ -734,8 +734,6 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
         //
       hlt->addWidget(ptedt);
-    //highlighter = new BSyntaxHighlighter(q, ptedt->document());
-    //q->setFileType(BAbstractFileType::defaultFileType());
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)

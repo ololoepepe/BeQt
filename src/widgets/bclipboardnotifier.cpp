@@ -1,4 +1,5 @@
 #include "bclipboardnotifier.h"
+#include "bclipboardnotifier_p.h"
 
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQtGlobal>
@@ -12,27 +13,6 @@ static void clipboardNotifierCleanup()
 {
     delete BClipboardNotifier::instance();
 }
-
-/*============================================================================
-================================ BClipboardNotifierPrivate ===================
-============================================================================*/
-
-class BClipboardNotifierPrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BClipboardNotifier)
-public:
-    explicit BClipboardNotifierPrivate(BClipboardNotifier *q);
-    ~BClipboardNotifierPrivate();
-public:
-    void init();
-    void detach();
-public Q_SLOTS:
-    void dataChanged();
-public:
-    bool textDataAvailable;
-private:
-    Q_DISABLE_COPY(BClipboardNotifierPrivate)
-};
 
 /*============================================================================
 ================================ BClipboardNotifierPrivate ===================

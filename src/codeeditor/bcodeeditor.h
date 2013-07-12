@@ -50,7 +50,8 @@ public:
     };
     enum StandardDocumentType
     {
-        StandardDocument
+        StandardDocument,
+        SimpleDocument
     };
 public:
     typedef QList<BAbstractCodeEditorDocument *> DocumentList;

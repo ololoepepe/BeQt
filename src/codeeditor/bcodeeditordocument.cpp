@@ -72,6 +72,11 @@ QWidget *BCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     connect(cedt, SIGNAL(redoAvailableChanged(bool)), q, SLOT(setRedoAvailable(bool)));
     connect(cedt, SIGNAL(cursorPositionChanged(QPoint)), q, SLOT(setCursorPosition(QPoint)));
     connect(cedt, SIGNAL(buisyChanged(bool)), q, SLOT(setBuisy(bool)));
+    connect(cedt, SIGNAL(editModeChanged(BCodeEdit::EditMode)), q, SIGNAL(editModeChanged(BCodeEdit::EditMode)));
+    connect(cedt, SIGNAL(lineSplitted(BCodeEdit::SplittedLinesRange)),
+            q, SIGNAL(lineSplitted(BCodeEdit::SplittedLinesRange)));
+    connect(cedt, SIGNAL(linesSplitted(QList<BCodeEdit::SplittedLinesRange>)),
+            q, SIGNAL(linesSplitted(QList<BCodeEdit::SplittedLinesRange>)));
     if (doc)
         *doc = cedt->innerDocument();
     return cedt;
@@ -261,6 +266,16 @@ void BCodeEditorDocument::switchMode()
 QWidget *BCodeEditorDocument::createEdit(QTextDocument **doc)
 {
     return d_func()->createEdit(doc);
+}
+
+void BCodeEditorDocument::setFocusImplementation()
+{
+    d_func()->cedt->setFocus();
+}
+
+void BCodeEditorDocument::activateWindowImplementation()
+{
+    d_func()->cedt->activateWindow();
 }
 
 void BCodeEditorDocument::setTextImplementation(const QString &txt, int asyncIfLongerThan)
