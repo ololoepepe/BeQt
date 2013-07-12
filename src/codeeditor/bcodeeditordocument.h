@@ -2,28 +2,29 @@
 #define BCODEEDITORDOCUMENT_H
 
 class BCodeEditorDocumentPrivate;
-class BAbstractDocumentDriver;
-class BCodeEditorPrivate;
 class BSplittedLinesDialog;
 class BCodeEditor;
 
-class QTextCodec;
 class QWidget;
+class QPoint;
+class QFont;
+class QString;
 
+#include "babstractcodeeditordocument.h"
 #include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QList>
-#include <QString>
+#include <QTextDocument>
 
 /*============================================================================
 ================================ BCodeEditorDocument =========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEditorDocument : public BCodeEdit
+class B_CODEEDITOR_EXPORT BCodeEditorDocument : public BAbstractCodeEditorDocument
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BCodeEditorDocument)
@@ -33,29 +34,57 @@ public:
 protected:
     explicit BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 public:
-    void setFileName(const QString &fn);
-    void setCodec(QTextCodec *codec);
-    void setCodec(const char *codecName);
-    void setAsyncProcessingMinimumLength(int length);
+    void setReadOnly(bool ro);
+    void setModification(bool modified);
+    void setEditFont(const QFont &fnt);
+    void setEditTabWidth(TabWidth tw);
+    bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool replaceNext(const QString &newText);
+    int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
+    int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
+    bool isReadOnly() const;
+    bool isModified() const;
+    bool hasSelection() const;
+    bool isCutAvailable() const;
+    bool isCopyAvailable() const;
+    bool isPasteAvailable() const;
+    bool isUndoAvailable() const;
+    bool isRedoAvailable() const;
+    QFont editFont() const;
+    TabWidth editTabWidth() const;
+    QPoint cursorPosition() const;
+    QString text(bool full = false) const;
+    QString selectedText(bool full = false) const;
+    QPoint selectionStart() const;
+    QPoint selectionEnd() const;
+    void setEditMode(BCodeEdit::EditMode mode);
+    void setEditLineLength(int ll);
     void setSplittedLinesDialog(BSplittedLinesDialog *dlg);
-    bool load( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
-    bool load( BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString() );
-    bool save( BAbstractDocumentDriver *driver, const QString &fileName = QString() );
-    bool save( BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString() );
-    QString fileName() const;
-    QTextCodec *codec() const;
-    QString codecName() const;
-    int asyncProcessingMinimumLength() const;
+    BCodeEdit::EditMode editMode() const;
+    int editLineLength() const;
     BSplittedLinesDialog *splittedLinesDialog() const;
-    BCodeEditor *editor() const;
-Q_SIGNALS:
-    void fileNameChanged(const QString &fn);
-    void codecChanged(const QString &codecName);
-    void loadingFinished(bool success);
-    void savingFinished(bool success);
+public Q_SLOTS:
+    void switchMode();
+protected:
+    QWidget *createEdit(QTextDocument **doc = 0);
+    void setTextImplementation(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
+    void insertTextImplementation(const QString &txt);
+    void moveCursorImplementation(const QPoint &pos);
+    void selectTextImplementation(const QPoint &start, const QPoint &end);
+    void selectTextImplementation(int start, int end);
+    void selectLinesImplementation(int firstLine, int lastLine);
+    void selectAllImplementation();
+    void deselectTextImplementation();
+    void cutImplementation();
+    void copyImplementation();
+    void pasteImplementation();
+    void deleteSelectionImplementation();
+    void undoImplementation();
+    void redoImplementation();
+    void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
+    void highlightBrackets();
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
-    friend class BCodeEditorPrivate;
 };
 
 #endif // BCODEEDITORDOCUMENT_H

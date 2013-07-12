@@ -1,48 +1,36 @@
 #ifndef BCODEEDITORDOCUMENT_P_H
 #define BCODEEDITORDOCUMENT_P_H
 
-class BCodeEditorDocumentPrivate;
-class BAbstractDocumentDriver;
 class BSplittedLinesDialog;
 class BCodeEditor;
+class BCodeEdit;
 
-class QString;
-class QTextCodec;
+class QTextDocument;
+class QWidget;
 
 #include "bcodeeditordocument.h"
-#include "bcodeedit_p.h"
-#include "babstractdocumentdriver.h"
+#include "babstractcodeeditordocument_p.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
-#include <QCoreApplication>
 
 /*============================================================================
 ================================ BCodeEditorDocumentPrivate ==================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEditorDocumentPrivate : public BCodeEditPrivate
+class B_CODEEDITOR_EXPORT BCodeEditorDocumentPrivate : public BAbstractCodeEditorDocumentPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BCodeEditorDocument)
 public:
-    explicit BCodeEditorDocumentPrivate(BCodeEditorDocument *q, BCodeEditor *edr);
+    explicit BCodeEditorDocumentPrivate(BCodeEditorDocument *q, BCodeEditor *editor);
     ~BCodeEditorDocumentPrivate();
 public:
     void init();
-    void setFileName(QString fn);
-    void setCodec(QTextCodec *c);
-public Q_SLOTS:
-    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
-    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
+    QWidget *createEdit(QTextDocument **doc);
 public:
-    BCodeEditor *const Editor;
-public:
-    QString fileName;
-    QTextCodec *codec;
-    int asyncMin;
+    BCodeEdit *cedt;
     BSplittedLinesDialog *sld;
 private:
     Q_DISABLE_COPY(BCodeEditorDocumentPrivate)

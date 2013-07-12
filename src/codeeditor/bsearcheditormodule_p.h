@@ -2,7 +2,7 @@
 #define BSEARCHEDITORMODULE_P_H
 
 class BSearchDialogPrivate;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QWidget;
 class QString;
@@ -56,7 +56,7 @@ public:
     void setReplaceHistory(const QStringList &list);
     void setMaximumHistorySize(int sz);
     void setReplaceEnabled(bool enabled);
-    void setDocument(BCodeEditorDocument *doc);
+    void setDocument(BAbstractCodeEditorDocument *doc);
     void restoreState(const QByteArray &ba);
     Qt::CaseSensitivity caseSensitivity() const;
     bool matchWholeWords() const;
@@ -66,7 +66,7 @@ public:
     QStringList replaceHistory() const;
     int maximumHistorySize() const;
     bool replaceEnabled() const;
-    BCodeEditorDocument *document() const;
+    BAbstractCodeEditorDocument *document() const;
     bool findNextAvailable() const;
     bool replaceNextAvailable() const;
     QByteArray saveState() const;
@@ -108,7 +108,7 @@ public Q_SLOTS:
     void actSelectionTriggered();
     void actDocumentTriggered();
 public:
-    BCodeEditorDocument *document;
+    BAbstractCodeEditorDocument *document;
     QVBoxLayout *vlt;
       QHBoxLayout *hltSearch;
         QLabel *lblSearch;

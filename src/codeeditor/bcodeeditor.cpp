@@ -1,6 +1,6 @@
 #include "bcodeeditor.h"
 #include "bcodeeditor_p.h"
-#include "bcodeeditordocument.h"
+#include "babstractcodeeditordocument.h"
 #include "babstracteditormodule.h"
 #include "blocaldocumentdriver.h"
 #include "babstracteditormodule_p.h"

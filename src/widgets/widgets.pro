@@ -18,6 +18,7 @@ HEADERS += \
     babstractterminaldriver.h \
     bapplication.h \
     bapplication_p.h \
+    bclipboardnotifier.h \
     bdialog.h \
     bdialog_p.h \
     bflowlayout.h \
@@ -42,6 +43,7 @@ SOURCES += \
     babstractsettingstab.cpp \
     babstractterminaldriver.cpp \
     bapplication.cpp \
+    bclipboardnotifier.cpp \
     bdialog.cpp \
     bflowlayout.cpp \
     bhelpbrowser.cpp \

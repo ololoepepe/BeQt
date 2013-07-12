@@ -68,131 +68,6 @@ class QFont;
 #include <QDebug>
 
 /*============================================================================
-================================ BSyntaxHighlighter ==========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BSyntaxHighlighter::BSyntaxHighlighter(BCodeEdit *edt, QTextDocument *parent) :
-    QSyntaxHighlighter(parent), Edit(edt)
-{
-    //
-}
-
-/*============================== Public methods ============================*/
-
-QTextBlock BSyntaxHighlighter::currentBlock() const
-{
-    return QSyntaxHighlighter::currentBlock();
-}
-
-int BSyntaxHighlighter::currentBlockState() const
-{
-    return QSyntaxHighlighter::currentBlockState();
-}
-
-BTextBlockUserData *BSyntaxHighlighter::currentBlockUserData() const
-{
-    return dynamic_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
-}
-
-QTextCharFormat BSyntaxHighlighter::format(int position) const
-{
-    return QSyntaxHighlighter::format(position);
-}
-
-int BSyntaxHighlighter::previousBlockState() const
-{
-    return QSyntaxHighlighter::previousBlockState();
-}
-
-void BSyntaxHighlighter::setCurrentBlockState(int newState)
-{
-    QSyntaxHighlighter::setCurrentBlockState(newState);
-}
-
-void BSyntaxHighlighter::setCurrentBlockUserData(BTextBlockUserData *data)
-{
-    QSyntaxHighlighter::setCurrentBlockUserData(data);
-}
-
-void BSyntaxHighlighter::setFormat(int start, int count, const QTextCharFormat &format)
-{
-    QSyntaxHighlighter::setFormat(start, count, format);
-}
-
-void BSyntaxHighlighter::setFormat(int start, int count, const QColor &color)
-{
-    QSyntaxHighlighter::setFormat(start, count, color);
-}
-
-void BSyntaxHighlighter::setFormat(int start, int count, const QFont &font)
-{
-    QSyntaxHighlighter::setFormat(start, count, font);
-}
-
-/*============================== Protected methods =========================*/
-
-void BSyntaxHighlighter::highlightBlock(const QString &text)
-{
-    BAbstractFileType *ft = Edit ? Edit->fileType() : 0;
-    if (!ft)
-        return;
-    ft->setCurrentHighlighter(this);
-    ft->highlightBlock(text);
-    ft->setCurrentHighlighter(0);
-}
-
-/*============================================================================
-================================ BCodeEditClipboardNotifier ==================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BCodeEditClipboardNotifier::BCodeEditClipboardNotifier() :
-    QObject(0)
-{
-    dataChanged();
-    connect( QApplication::clipboard(), SIGNAL( dataChanged() ), this, SLOT( dataChanged() ) );
-    bTest(!_m_self, "BCodeEditClipboardNotifier", "There should be only one instance of BCodeEditClipboardNotifier");
-    _m_self = this;
-}
-
-BCodeEditClipboardNotifier::~BCodeEditClipboardNotifier()
-{
-    _m_self = 0;
-}
-
-/*============================== Static public methods =====================*/
-
-BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::instance()
-{
-    return _m_self;
-}
-
-/*============================== Public methods ============================*/
-
-bool BCodeEditClipboardNotifier::clipboardDataAvailable() const
-{
-    return dataAvailable;
-}
-
-/*============================== Public slots ==============================*/
-
-void BCodeEditClipboardNotifier::dataChanged()
-{
-    bool b = !QApplication::clipboard()->text().isEmpty();
-    bool bb = (b != dataAvailable);
-    dataAvailable = b;
-    if (bb)
-        Q_EMIT clipboardDataAvailableChanged(b);
-}
-
-/*============================== Static protected variables ================*/
-
-BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
-
-/*============================================================================
 ================================ BLineNumberWidget ===========================
 ============================================================================*/
 
@@ -777,22 +652,6 @@ QTextEdit::ExtraSelection BCodeEditPrivate::createExtraSelection(const QPlainTex
         r.cursor = edt->textCursor();
     r.format = format;
     return r;
-}
-
-bool BCodeEditPrivate::testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2)
-{
-    return bp1.opening == bp2.opening && bp1.closing == bp2.closing && bp1.escape == bp2.escape;
-}
-
-bool BCodeEditPrivate::testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
-                                                    const QList<BCodeEdit::BracketPair> &l2)
-{
-    if ( l1.size() != l2.size() )
-        return false;
-    for (int i = 0; i < l1.size(); ++i)
-        if ( !testBracketPairsEquality( l1.at(i), l2.at(i) ) )
-            return false;
-    return true;
 }
 
 QString BCodeEditPrivate::makeBlock(const QString &text, int *length)
@@ -2271,6 +2130,118 @@ void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
     d->highlightBrackets();
 }
 
+void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
+{
+    d_func()->ptedt->document()->clearUndoRedoStacks(historyToClear);
+}
+
+bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    if ( txt.isEmpty() )
+        return false;
+    B_D(BCodeEdit);
+    bool b = d->ptedt->find(txt, flags);
+    if (!b && cyclic)
+    {
+        if (flags & QTextDocument::FindBackward)
+            d->ptedt->moveCursor(QTextCursor::End);
+        else
+            d->ptedt->moveCursor(QTextCursor::Start);
+        b = d->ptedt->find(txt, flags);
+    }
+    return b;
+}
+
+bool BCodeEdit::replaceNext(const QString &newText)
+{
+    if ( isReadOnly() || !hasSelection() )
+        return false;
+    insertText(newText);
+    return true;
+}
+
+int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
+{
+    B_D(BCodeEdit);
+    if (isReadOnly() || !hasSelection() || text.isEmpty() || text == newText || text.length() > d->lineLength)
+        return -1;
+    QString ntext = selectedText(true);
+    int count = ntext.count(text, cs);
+    if (!count)
+        return 0;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.beginEditBlock();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    if (d->blockMode)
+    {
+        //TODO (release 3.0.0): Improve replacing
+        BPlainTextEditExtended::SelectionRange r = d->ptedt->selectionRanges().first();
+        int plen = r.end - r.start;
+        int min = r.start;
+        int bpos = d->ptedt->document()->findBlock(min).position();
+        int offset = min - bpos;
+        ntext.replace(text, newText, cs).split('\n');
+        int dlen = 0;
+        BCodeEditPrivate::makeBlock(&ntext, &dlen);
+        dlen -= plen;
+        insertText(ntext);
+        if (start < end)
+        {
+            if (start > bpos + offset)
+                start += dlen;
+            else
+                end += dlen;
+        }
+        else
+        {
+            if (end > bpos + offset)
+                end += dlen;
+            else
+                start += dlen;
+        }
+    }
+    else
+    {
+        int len = ntext.length();
+        ntext.replace(text, newText, cs);
+        insertText(ntext);
+        if (start < end)
+            end += (ntext.length() - len);
+        else
+            start += (ntext.length() - len);
+    }
+    selectText(start, end);
+    tc.endEditBlock();
+    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
+    {
+        d->highlighter->rehighlightBlock(tb);
+        tb = tb.next();
+    }
+    return count;
+}
+
+int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+{
+    B_D(BCodeEdit);
+    if ( isReadOnly() || txt.isEmpty() || txt == newText || txt.length() > d->lineLength)
+        return -1;
+    QString ptext = text(true);
+    int count = ptext.count(txt, cs);
+    if (!count)
+        return 0;
+    int find = ptext.indexOf(txt, 0, cs);
+    int lind = ptext.lastIndexOf(txt, -1, cs) + txt.length();
+    EditMode m = editMode();
+    setEditMode(NormalMode);
+    selectText(find, lind);
+    insertText(ptext.mid(find, lind - find).replace(txt, newText, cs));
+    setEditMode(m);
+    return count;
+}
+
 bool BCodeEdit::isReadOnly() const
 {
     return d_func()->ptedt->isReadOnly();
@@ -2414,113 +2385,6 @@ QString BCodeEdit::selectedText(bool full) const
 bool BCodeEdit::isBuisy() const
 {
     return d_func()->buisy;
-}
-
-bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
-{
-    if ( txt.isEmpty() )
-        return false;
-    B_D(BCodeEdit);
-    bool b = d->ptedt->find(txt, flags);
-    if (!b && cyclic)
-    {
-        if (flags & QTextDocument::FindBackward)
-            d->ptedt->moveCursor(QTextCursor::End);
-        else
-            d->ptedt->moveCursor(QTextCursor::Start);
-        b = d->ptedt->find(txt, flags);
-    }
-    return b;
-}
-
-bool BCodeEdit::replaceNext(const QString &newText)
-{
-    if ( isReadOnly() || !hasSelection() )
-        return false;
-    insertText(newText);
-    return true;
-}
-
-int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
-{
-    B_D(BCodeEdit);
-    if (isReadOnly() || !hasSelection() || text.isEmpty() || text == newText || text.length() > d->lineLength)
-        return -1;
-    QString ntext = selectedText(true);
-    int count = ntext.count(text, cs);
-    if (!count)
-        return 0;
-    QTextCursor tc = d->ptedt->textCursor();
-    tc.beginEditBlock();
-    int start = tc.selectionStart();
-    int end = tc.selectionEnd();
-    if (d->blockMode)
-    {
-        //TODO (release 3.0.0): Improve replacing
-        BPlainTextEditExtended::SelectionRange r = d->ptedt->selectionRanges().first();
-        int plen = r.end - r.start;
-        int min = r.start;
-        int bpos = d->ptedt->document()->findBlock(min).position();
-        int offset = min - bpos;
-        ntext.replace(text, newText, cs).split('\n');
-        int dlen = 0;
-        BCodeEditPrivate::makeBlock(&ntext, &dlen);
-        dlen -= plen;
-        insertText(ntext);
-        if (start < end)
-        {
-            if (start > bpos + offset)
-                start += dlen;
-            else
-                end += dlen;
-        }
-        else
-        {
-            if (end > bpos + offset)
-                end += dlen;
-            else
-                start += dlen;
-        }
-    }
-    else
-    {
-        int len = ntext.length();
-        ntext.replace(text, newText, cs);
-        insertText(ntext);
-        if (start < end)
-            end += (ntext.length() - len);
-        else
-            start += (ntext.length() - len);
-    }
-    selectText(start, end);
-    tc.endEditBlock();
-    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
-    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
-    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
-    {
-        d->highlighter->rehighlightBlock(tb);
-        tb = tb.next();
-    }
-    return count;
-}
-
-int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
-{
-    B_D(BCodeEdit);
-    if ( isReadOnly() || txt.isEmpty() || txt == newText || txt.length() > d->lineLength)
-        return -1;
-    QString ptext = text(true);
-    int count = ptext.count(txt, cs);
-    if (!count)
-        return 0;
-    int find = ptext.indexOf(txt, 0, cs);
-    int lind = ptext.lastIndexOf(txt, -1, cs) + txt.length();
-    EditMode m = editMode();
-    setEditMode(NormalMode);
-    selectText(find, lind);
-    insertText(ptext.mid(find, lind - find).replace(txt, newText, cs));
-    setEditMode(m);
-    return count;
 }
 
 /*============================== Public slots ==============================*/
@@ -2698,6 +2562,11 @@ void BCodeEdit::redo()
 void BCodeEdit::rehighlight()
 {
     d_func()->highlighter->rehighlight();
+    d_func()->highlightBrackets();
+}
+
+void BCodeEdit::highlightBrackets()
+{
     d_func()->highlightBrackets();
 }
 

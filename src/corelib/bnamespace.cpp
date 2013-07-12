@@ -220,6 +220,26 @@ QString translate(const char *context, const char *sourceText, const char *disam
 #endif
 }
 
+QString codecName(QTextCodec *codec)
+{
+    return codec ? codecName(codec->name()) : QString("");
+}
+
+QString codecName(const QByteArray &cn)
+{
+    return QString::fromLatin1(cn);
+}
+
+QTextCodec *codec(const QString &cn)
+{
+    return codec(cn.toLatin1());
+}
+
+QTextCodec *codec(const QByteArray &cn)
+{
+    return !cn.isEmpty() ? QTextCodec::codecForName(cn) : 0;
+}
+
 #if defined(Q_OS_MAC)
 QString macVersionToString(QSysInfo::MacVersion version)
 {

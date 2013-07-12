@@ -51,58 +51,6 @@ class QFont;
 #include <QPair>
 #include <QTextCharFormat>
 #include <QRunnable>
-#include <QSyntaxHighlighter>
-
-/*============================================================================
-================================ BSyntaxHighlighter ==========================
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BSyntaxHighlighter : public QSyntaxHighlighter
-{
-public:
-    explicit BSyntaxHighlighter(BCodeEdit *edt, QTextDocument *parent);
-public:
-    QTextBlock currentBlock() const;
-    int currentBlockState() const;
-    BTextBlockUserData *currentBlockUserData() const;
-    QTextCharFormat format(int position) const;
-    int previousBlockState() const;
-    void setCurrentBlockState(int newState);
-    void setCurrentBlockUserData(BTextBlockUserData *data);
-    void setFormat(int start, int count, const QTextCharFormat &format);
-    void setFormat(int start, int count, const QColor &color);
-    void setFormat(int start, int count, const QFont &font);
-protected:
-    void highlightBlock(const QString &text);
-public:
-    BCodeEdit *const Edit;
-};
-
-/*============================================================================
-================================ BCodeEditClipboardNotifier ==================
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BCodeEditClipboardNotifier : public QObject
-{
-    Q_OBJECT
-public:
-    explicit BCodeEditClipboardNotifier();
-    ~BCodeEditClipboardNotifier();
-public:
-    static BCodeEditClipboardNotifier *instance();
-public:
-    bool clipboardDataAvailable() const;
-public Q_SLOTS:
-    void dataChanged();
-Q_SIGNALS:
-    void clipboardDataAvailableChanged(bool available);
-protected:
-    static BCodeEditClipboardNotifier *_m_self;
-private:
-    bool dataAvailable;
-private:
-    Q_DISABLE_COPY(BCodeEditClipboardNotifier)
-};
 
 /*============================================================================
 ================================ BPlainTextEditExtended ======================
@@ -123,7 +71,7 @@ public:
     {
         int start;
         int end;
-        //
+    public:
         SelectionRange()
         {
             start = -1;
@@ -246,9 +194,6 @@ public:
     static FindBracketPairResult createFindBracketPairResult();
     static QTextEdit::ExtraSelection createExtraSelection( const QPlainTextEdit *edt,
                                                            const QTextCharFormat &format = QTextCharFormat() );
-    static bool testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2);
-    static bool testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
-                                             const QList<BCodeEdit::BracketPair> &l2);
     static QString makeBlock(const QString &text, int *length = 0);
     static void makeBlock(QString *text, int *length = 0);
     static bool testBlock(const QString &text, int *length = 0);

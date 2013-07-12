@@ -1,6 +1,7 @@
 #ifndef BEQT_BEQTCODEEDITOR_MODULE_H
 #define BEQT_BEQTCODEEDITOR_MODULE_H
 
+#include "babstractcodeeditordocument.h"
 #include "babstractdocumentdriver.h"
 #include "babstracteditormodule.h"
 #include "babstractfiletype.h"

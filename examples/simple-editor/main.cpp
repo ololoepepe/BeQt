@@ -28,8 +28,6 @@
 #include <QWidget>
 
 #include <QDebug>
-#include <BSpellCheckerDictionary>
-#include <QTextCodec>
 
 int main(int argc, char **argv)
 {

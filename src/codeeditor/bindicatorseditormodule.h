@@ -3,7 +3,7 @@
 
 class BIndicatorsEditorModulePrivate;
 class BCodeEditor;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 class BAbstractFileType;
 
 class QString;
@@ -48,7 +48,7 @@ protected:
     void documentCodecChanged(const QString &codecName);
     void documentFileTypeChanged(BAbstractFileType *ft);
     void defaultCodecChanged(const QString &codecName);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void fileTypesChanged();
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModule)

@@ -4,7 +4,7 @@
 class BCodeEditorPrivate;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 class BAbstractFileType;
 
 class QStringList;
@@ -52,6 +52,8 @@ public:
     {
         StandardDocument
     };
+public:
+    typedef QList<BAbstractCodeEditorDocument *> DocumentList;
 public:
     explicit BCodeEditor(QWidget *parent = 0);
     explicit BCodeEditor(StandardDocumentType t, QWidget *parent = 0);
@@ -125,9 +127,9 @@ public:
     BAbstractEditorModule *module(const QString &name) const;
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;
-    BCodeEditorDocument *currentDocument() const;
-    BCodeEditorDocument *document(const QString &fileName) const;
-    QList<BCodeEditorDocument *> documents() const;
+    BAbstractCodeEditorDocument *currentDocument() const;
+    BAbstractCodeEditorDocument *document(const QString &fileName) const;
+    DocumentList documents() const;
     BAbstractDocumentDriver *driver() const;
     BAbstractFileType *fileType(const QString &id) const;
     QList<BAbstractFileType *> fileTypes() const;
@@ -141,11 +143,11 @@ public:
     QStringList fileNames() const;
     QObject *dropHandler() const;
 public Q_SLOTS:
-    BCodeEditorDocument *addDocument( const QString &fileName = QString() );
-    BCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
-    QList<BCodeEditorDocument *> openDocuments();
-    QList<BCodeEditorDocument *> openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
-    BCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
+    BAbstractCodeEditorDocument *addDocument(const QString &fileName = QString());
+    BAbstractCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
+    DocumentList openDocuments();
+    DocumentList openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
+    BAbstractCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool reopenCurrentDocument(QTextCodec *codec = 0);
     bool reopenCurrentDocument(const QString &codecName);
     bool saveCurrentDocument();
@@ -157,15 +159,15 @@ public Q_SLOTS:
     void insertTextIntoCurrentDocument(const QString &text);
     void setCurrentDocumentText(const QString &text);
 protected:
-    virtual BCodeEditorDocument *createDocument(BCodeEditor *editor) const;
+    virtual BAbstractCodeEditorDocument *createDocument(BCodeEditor *editor) const;
 Q_SIGNALS:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);
-    void documentAboutToBeAdded(BCodeEditorDocument *doc);
-    void documentAdded(BCodeEditorDocument *doc);
-    void documentAboutToBeRemoved(BCodeEditorDocument *doc);
+    void documentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
+    void documentAdded(BAbstractCodeEditorDocument *doc);
+    void documentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
     void documentRemoved(const QString &fileName);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void currentDocumentFileNameChanged(const QString &fileName);
     void currentDocumentModificationChanged(bool modified);
     void documentAvailableChanged(bool available);

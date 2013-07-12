@@ -70,7 +70,7 @@ contains(BEQT, all) {
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui widgets
+    QT *= core gui widgets concurrent
     BEQT *= core widgets
 }
 contains(BEQT,core) {

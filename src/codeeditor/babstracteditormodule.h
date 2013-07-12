@@ -4,7 +4,7 @@
 class BAbstractEditorModulePrivate;
 class BCodeEditor;
 class BCodeEditorPrivate;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 class BAbstractFileType;
 
 class QString;
@@ -67,15 +67,15 @@ protected:
     virtual void documentFileTypeChanged(BAbstractFileType *ft);
     virtual void defaultCodecChanged(const QString &codecName);
     virtual void editModeChanged(BCodeEdit::EditMode mode);
-    virtual void documentAboutToBeAdded(BCodeEditorDocument *doc);
-    virtual void documentAdded(BCodeEditorDocument *doc);
-    virtual void documentAboutToBeRemoved(BCodeEditorDocument *doc);
+    virtual void documentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
+    virtual void documentAdded(BAbstractCodeEditorDocument *doc);
+    virtual void documentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
     virtual void documentRemoved(const QString &fileName);
-    virtual void currentDocumentChanged(BCodeEditorDocument *doc);
+    virtual void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     virtual void fileTypesChanged();
     virtual void fileHistoryChanged(const QStringList &list);
-    BCodeEditorDocument *currentDocument() const;
-    QList<BCodeEditorDocument *> documents() const;
+    BAbstractCodeEditorDocument *currentDocument() const;
+    QList<BAbstractCodeEditorDocument *> documents() const;
 private:
     Q_DISABLE_COPY(BAbstractEditorModule)
     friend class BCodeEditorPrivate;

@@ -2,7 +2,7 @@
 #include "bbookmarkseditormodule_p.h"
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
-#include "bcodeeditordocument.h"
+#include "babstractcodeeditordocument.h"
 #include "bcodeeditor.h"
 
 #include <BeQtCore/BeQtGlobal>
@@ -175,7 +175,7 @@ void BBookmarksEditorModule::setMaximumBookmarkCount(int count)
     d->maxBookmarks = count;
     if (count > 0)
     {
-        foreach ( BCodeEditorDocument *doc, editor()->documents() )
+        foreach (BAbstractCodeEditorDocument *doc, editor()->documents())
         {
             QVariantList vl = doc->property("beqt/bookmarks").toList();
             while (vl.size() > count)
@@ -186,7 +186,7 @@ void BBookmarksEditorModule::setMaximumBookmarkCount(int count)
     }
     else
     {
-        foreach ( BCodeEditorDocument *doc, editor()->documents() )
+        foreach (BAbstractCodeEditorDocument *doc, editor()->documents())
             doc->setProperty( "beqt/bookmarks", QVariant() );
     }
     d->checkBookmarks();

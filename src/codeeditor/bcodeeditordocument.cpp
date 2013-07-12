@@ -4,12 +4,9 @@ class BSplittedLinesDialog;
 #include "bcodeeditordocument_p.h"
 #include "babstractdocumentdriver.h"
 #include "bcodeedit.h"
-#include "bcodeedit_p.h"
 #include "bcodeeditor.h"
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
 #include <QCoreApplication>
@@ -30,8 +27,8 @@ class BSplittedLinesDialog;
 
 /*============================== Public constructors =======================*/
 
-BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q, BCodeEditor *edr) :
-    BCodeEditPrivate(q), Editor(edr)
+BCodeEditorDocumentPrivate::BCodeEditorDocumentPrivate(BCodeEditorDocument *q, BCodeEditor *editor) :
+    BAbstractCodeEditorDocumentPrivate(q, editor)
 {
     //
 }
@@ -45,71 +42,38 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 
 void BCodeEditorDocumentPrivate::init()
 {
-    codec = QTextCodec::codecForName("UTF-8");
-    asyncMin = 100 * BeQt::Kilobyte;
+    cedt = 0;
     sld = 0;
 }
 
-void BCodeEditorDocumentPrivate::setFileName(QString fn)
+QWidget *BCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
 {
-    fn = QDir::fromNativeSeparators(fn);
-    bool b = (fn != fileName);
-    fileName = fn;
-    if (b)
-        QMetaObject::invokeMethod(q_func(), "fileNameChanged", Q_ARG(QString, fn));
-}
-
-void BCodeEditorDocumentPrivate::setCodec(QTextCodec *c)
-{
-    if (!c)
-        return;
-    bool b = (c != codec);
-    codec = c;
-    if (b)
-        QMetaObject::invokeMethod( q_func(), "codecChanged", Q_ARG( QString, BCodeEditor::codecName(c) ) );
-}
-
-/*============================== Public slots ==============================*/
-
-void BCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::Operation &operation,
-                                                 bool success, const QString &text)
-{
-    if ( operation.document != q_func() )
-        return;
-    BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
-    disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
-                this, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
-    if (success)
-    {
-        if ( !operation.fileName.isEmpty() )
-            setFileName(operation.fileName);
-        if (operation.codec)
-            setCodec(operation.codec);
-        setText(text, asyncMin);
-        ptedt->document()->setModified(false);
-        ptedt->document()->clearUndoRedoStacks();
-    }
-    QMetaObject::invokeMethod( q_func(), "loadingFinished", Q_ARG(bool, success) );
-    setBuisy(false);
-}
-
-void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success)
-{
-    if ( operation.document != q_func() )
-        return;
-    BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>( sender() );
-    disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
-                this, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
-    if (success)
-    {
-        if ( !operation.fileName.isEmpty() )
-            setFileName(operation.fileName);
-        if (operation.codec)
-            setCodec(operation.codec);
-        ptedt->document()->setModified(false);
-    }
-    QMetaObject::invokeMethod( q_func(), "savingFinished", Q_ARG(bool, success) );
-    setBuisy(false);
+    B_Q(BCodeEditorDocument);
+    cedt = new BCodeEdit;
+    q->setReadOnlyInternal(cedt->isReadOnly());
+    q->setModificationInternal(cedt->isModified());
+    q->setHasSelection(cedt->hasSelection());
+    q->setCutAvailable(cedt->isCutAvailable());
+    q->setCopyAvailable(cedt->isCopyAvailable());
+    q->setPasteAvailable(cedt->isPasteAvailable());
+    q->setUndoAvailable(cedt->isUndoAvailable());
+    q->setRedoAvailable(cedt->isRedoAvailable());
+    q->setCursorPosition(cedt->cursorPosition());
+    q->setBuisy(cedt->isBuisy());
+    connect(cedt, SIGNAL(selectionChanged()), q, SLOT(emitSelectionChanged()));
+    connect(cedt, SIGNAL(readOnlyChanged(bool)), q, SLOT(setReadOnlyInternal(bool)));
+    connect(cedt, SIGNAL(modificationChanged(bool)), q, SLOT(setModificationInternal(bool)));
+    connect(cedt, SIGNAL(hasSelectionChanged(bool)), q, SLOT(setHasSelection(bool)));
+    connect(cedt, SIGNAL(cutAvailableChanged(bool)), q, SLOT(setCutAvailable(bool)));
+    connect(cedt, SIGNAL(copyAvailableChanged(bool)), q, SLOT(setCopyAvailable(bool)));
+    connect(cedt, SIGNAL(pasteAvailableChanged(bool)), q, SLOT(setPasteAvailable(bool)));
+    connect(cedt, SIGNAL(undoAvailableChanged(bool)), q, SLOT(setUndoAvailable(bool)));
+    connect(cedt, SIGNAL(redoAvailableChanged(bool)), q, SLOT(setRedoAvailable(bool)));
+    connect(cedt, SIGNAL(cursorPositionChanged(QPoint)), q, SLOT(setCursorPosition(QPoint)));
+    connect(cedt, SIGNAL(buisyChanged(bool)), q, SLOT(setBuisy(bool)));
+    if (doc)
+        *doc = cedt->innerDocument();
+    return cedt;
 }
 
 /*============================================================================
@@ -119,7 +83,7 @@ void BCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::O
 /*============================== Public constructors =======================*/
 
 BCodeEditorDocument::BCodeEditorDocument(BCodeEditor *editor, QWidget *parent) :
-    BCodeEdit(*new BCodeEditorDocumentPrivate(this, editor), parent)
+    BAbstractCodeEditorDocument(*new BCodeEditorDocumentPrivate(this, editor), parent)
 {
     d_func()->init();
 }
@@ -132,37 +96,136 @@ BCodeEditorDocument::~BCodeEditorDocument()
 /*============================== Protected constructors ====================*/
 
 BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget *parent) :
-    BCodeEdit(d, parent)
+    BAbstractCodeEditorDocument(d, parent)
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
 
-void BCodeEditorDocument::setFileName(const QString &fn)
+void BCodeEditorDocument::setReadOnly(bool ro)
 {
-    if ( isBuisy() )
-        return;
-    d_func()->setFileName(fn);
+    d_func()->cedt->setReadOnly(ro);
 }
 
-void BCodeEditorDocument::setCodec(QTextCodec *codec)
+void BCodeEditorDocument::setModification(bool modified)
 {
-    if ( isBuisy() )
-        return;
-    d_func()->setCodec(codec);
+    d_func()->cedt->setModification(modified);
 }
 
-void BCodeEditorDocument::setCodec(const char *codecName)
+void BCodeEditorDocument::setEditFont(const QFont &fnt)
 {
-    setCodec( QTextCodec::codecForName(codecName) );
+    d_func()->cedt->setEditFont(fnt);
 }
 
-void BCodeEditorDocument::setAsyncProcessingMinimumLength(int length)
+void BCodeEditorDocument::setEditTabWidth(TabWidth tw)
 {
-    if (length < 0)
-        length = 0;
-    d_func()->asyncMin = length;
+    d_func()->cedt->setEditTabWidth(tw);
+}
+
+bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    return d_func()->cedt->findNext(txt, flags, cyclic);
+}
+
+bool BCodeEditorDocument::replaceNext(const QString &newText)
+{
+    return d_func()->cedt->replaceNext(newText);
+}
+
+int BCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+{
+    return d_func()->cedt->replaceInSelection(txt, newText, cs);
+}
+
+int BCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+{
+    return d_func()->cedt->replaceInDocument(txt, newText, cs);
+}
+
+bool BCodeEditorDocument::isReadOnly() const
+{
+    return d_func()->cedt->isReadOnly();
+}
+
+bool BCodeEditorDocument::isModified() const
+{
+    return d_func()->cedt->isModified();
+}
+
+bool BCodeEditorDocument::hasSelection() const
+{
+    return d_func()->cedt->hasSelection();
+}
+
+bool BCodeEditorDocument::isCutAvailable() const
+{
+    return d_func()->cedt->isCutAvailable();
+}
+
+bool BCodeEditorDocument::isCopyAvailable() const
+{
+    return d_func()->cedt->isCopyAvailable();
+}
+
+bool BCodeEditorDocument::isPasteAvailable() const
+{
+    return d_func()->cedt->isPasteAvailable();
+}
+
+bool BCodeEditorDocument::isUndoAvailable() const
+{
+    return d_func()->cedt->isUndoAvailable();
+}
+
+bool BCodeEditorDocument::isRedoAvailable() const
+{
+    return d_func()->cedt->isRedoAvailable();
+}
+
+QFont BCodeEditorDocument::editFont() const
+{
+    return d_func()->cedt->editFont();
+}
+
+BAbstractCodeEditorDocument::TabWidth BCodeEditorDocument::editTabWidth() const
+{
+    return d_func()->cedt->editTabWidth();
+}
+
+QPoint BCodeEditorDocument::cursorPosition() const
+{
+    return d_func()->cedt->cursorPosition();
+}
+
+QString BCodeEditorDocument::text(bool full) const
+{
+    return d_func()->cedt->text(full);
+}
+
+QString BCodeEditorDocument::selectedText(bool full) const
+{
+    return d_func()->cedt->selectedText(full);
+}
+
+QPoint BCodeEditorDocument::selectionStart() const
+{
+    return d_func()->cedt->selectionStart();
+}
+
+QPoint BCodeEditorDocument::selectionEnd() const
+{
+    return d_func()->cedt->selectionEnd();
+}
+
+void BCodeEditorDocument::setEditMode(BCodeEdit::EditMode mode)
+{
+    d_func()->cedt->setEditMode(mode);
+}
+
+void BCodeEditorDocument::setEditLineLength(int ll)
+{
+    d_func()->cedt->setEditLineLength(ll);
 }
 
 void BCodeEditorDocument::setSplittedLinesDialog(BSplittedLinesDialog *dlg)
@@ -170,70 +233,14 @@ void BCodeEditorDocument::setSplittedLinesDialog(BSplittedLinesDialog *dlg)
     d_func()->sld = dlg;
 }
 
-bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
+BCodeEdit::EditMode BCodeEditorDocument::editMode() const
 {
-    return load(driver, 0, fileName);
+    return d_func()->cedt->editMode();
 }
 
-bool BCodeEditorDocument::load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName)
+int BCodeEditorDocument::editLineLength() const
 {
-    if ( !driver || isBuisy() )
-        return false;
-    B_D(BCodeEditorDocument);
-    d->setBuisy(true);
-    connect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
-             d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
-    if ( !driver->load(this, codec, fileName) )
-    {
-        disconnect( driver, SIGNAL( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ),
-                    d, SLOT( loadingFinished(BAbstractDocumentDriver::Operation, bool, QString) ) );
-        d->setBuisy(false);
-        return false;
-    }
-    return true;
-}
-
-bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QString &fileName)
-{
-    return save(driver, 0, fileName);
-}
-
-bool BCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName)
-{
-    if ( !driver || isBuisy() )
-        return false;
-    B_D(BCodeEditorDocument);
-    d->setBuisy(true);
-    connect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
-             d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
-    if ( !driver->save(this, codec, fileName) )
-    {
-        disconnect( driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool) ),
-                    d, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool) ) );
-        d->setBuisy(false);
-        return false;
-    }
-    return true;
-}
-
-QString BCodeEditorDocument::fileName() const
-{
-    return d_func()->fileName;
-}
-
-QTextCodec *BCodeEditorDocument::codec() const
-{
-    return d_func()->codec;
-}
-
-QString BCodeEditorDocument::codecName() const
-{
-    return d_func()->codec ? QString::fromLatin1( d_func()->codec->name().data() ) : QString();
-}
-
-int BCodeEditorDocument::asyncProcessingMinimumLength() const
-{
-    return d_func()->asyncMin;
+    return d_func()->cedt->editLineLength();
 }
 
 BSplittedLinesDialog *BCodeEditorDocument::splittedLinesDialog() const
@@ -241,7 +248,96 @@ BSplittedLinesDialog *BCodeEditorDocument::splittedLinesDialog() const
     return d_func()->sld;
 }
 
-BCodeEditor *BCodeEditorDocument::editor() const
+/*============================== Protected slots ===========================*/
+
+void BCodeEditorDocument::switchMode()
 {
-    return d_func()->Editor;
+    d_func()->cedt->switchMode();
+}
+
+/*============================== Protected methods =========================*/
+
+QWidget *BCodeEditorDocument::createEdit(QTextDocument **doc)
+{
+    return d_func()->createEdit(doc);
+}
+
+void BCodeEditorDocument::setTextImplementation(const QString &txt, int asyncIfLongerThan)
+{
+    d_func()->cedt->setText(txt, asyncIfLongerThan);
+}
+
+void BCodeEditorDocument::insertTextImplementation(const QString &txt)
+{
+    d_func()->cedt->insertText(txt);
+}
+
+void BCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
+{
+    d_func()->cedt->moveCursor(pos);
+}
+
+void BCodeEditorDocument::selectTextImplementation(const QPoint &start, const QPoint &end)
+{
+    d_func()->cedt->selectText(start, end);
+}
+
+void BCodeEditorDocument::selectTextImplementation(int start, int end)
+{
+    d_func()->cedt->selectText(start, end);
+}
+
+void BCodeEditorDocument::selectLinesImplementation(int firstLine, int lastLine)
+{
+    d_func()->cedt->selectLines(firstLine, lastLine);
+}
+
+void BCodeEditorDocument::selectAllImplementation()
+{
+    d_func()->cedt->selectAll();
+}
+
+void BCodeEditorDocument::deselectTextImplementation()
+{
+    d_func()->cedt->deselectText();
+}
+
+void BCodeEditorDocument::cutImplementation()
+{
+    d_func()->cedt->cut();
+}
+
+void BCodeEditorDocument::copyImplementation()
+{
+    d_func()->cedt->copy();
+}
+
+void BCodeEditorDocument::pasteImplementation()
+{
+    d_func()->cedt->paste();
+}
+
+void BCodeEditorDocument::deleteSelectionImplementation()
+{
+    d_func()->cedt->deleteSelection();
+}
+
+void BCodeEditorDocument::undoImplementation()
+{
+    d_func()->cedt->undo();
+}
+
+void BCodeEditorDocument::redoImplementation()
+{
+    d_func()->cedt->redo();
+}
+
+void BCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
+{
+    d_func()->cedt->clearUndoRedoStacks(historyToClear);
+}
+
+void BCodeEditorDocument::highlightBrackets()
+{
+    d_func()->cedt->highlightBrackets();
 }

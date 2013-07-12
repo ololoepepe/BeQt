@@ -70,10 +70,11 @@ void BSpellCheckerDictionaryPrivate::init()
         return;
     hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
     codec = QTextCodec::codecForName(hunspell->get_dic_encoding());
-    if (!codec)
+    if (!codec || (!hunspell->get_wordchars() && !hunspell->get_wordchars_utf16(new int)))
     {
         delete hunspell;
         hunspell = 0;
+        codec = 0;
     }
 }
 

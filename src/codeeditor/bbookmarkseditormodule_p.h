@@ -1,7 +1,7 @@
 #ifndef BBOOKMARKSEDITORMODULE_P_H
 #define BBOOKMARKSEDITORMODULE_P_H
 
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QAction;
 
@@ -28,10 +28,10 @@ public:
     explicit BBookmarksEditorModulePrivate(BBookmarksEditorModule *q);
     ~BBookmarksEditorModulePrivate();
 public:
-    static void setBookmarks(BCodeEditorDocument *doc, const QList<QPoint> &list);
-    static void setCurrentBookmark(BCodeEditorDocument *doc, const QPoint &pos);
-    static QList<QPoint> bookmarks(BCodeEditorDocument *doc);
-    static QPoint currentBookmark(BCodeEditorDocument *doc);
+    static void setBookmarks(BAbstractCodeEditorDocument *doc, const QList<QPoint> &list);
+    static void setCurrentBookmark(BAbstractCodeEditorDocument *doc, const QPoint &pos);
+    static QList<QPoint> bookmarks(BAbstractCodeEditorDocument *doc);
+    static QPoint currentBookmark(BAbstractCodeEditorDocument *doc);
 public:
     void init();
     void checkBookmarks();

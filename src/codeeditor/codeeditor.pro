@@ -3,7 +3,7 @@ TARGET = BeQtCodeEditor
 
 CONFIG += release
 
-QT = core gui widgets
+QT = core gui widgets concurrent
 
 BEQT = core widgets
 
@@ -12,6 +12,8 @@ include(../module.pri)
 DEFINES += BEQT_BUILD_CODEEDITOR_LIB
 
 HEADERS += \
+    babstractcodeeditordocument.h \
+    babstractcodeeditordocument_p.h \
     babstractdocumentdriver.h \
     babstractdocumentdriver_p.h \
     babstracteditormodule.h \
@@ -39,6 +41,7 @@ HEADERS += \
     btextblockuserdata.h
 
 SOURCES += \
+    babstractcodeeditordocument.cpp \
     babstractdocumentdriver.cpp \
     babstracteditormodule.cpp \
     babstractfiletype.cpp \

@@ -3,7 +3,7 @@
 
 class BEditEditorModulePrivate;
 class BCodeEditor;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QString;
 class QAction;
@@ -58,7 +58,7 @@ protected:
     void documentUndoAvailableChanged(bool available);
     void documentRedoAvailableChanged(bool available);
     void editModeChanged(BCodeEdit::EditMode mode);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
 private:
     Q_DISABLE_COPY(BEditEditorModule)
 };

@@ -3,7 +3,7 @@
 
 class BSearchEditorModulePrivate;
 class BCodeEditor;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QString;
 class QAction;
@@ -59,7 +59,7 @@ public Q_SLOTS:
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
 Q_SIGNALS:
     void textFound(const QString &text);
     void textNotFound(const QString &text);
