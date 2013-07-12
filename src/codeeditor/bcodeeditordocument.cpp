@@ -5,6 +5,7 @@ class BSplittedLinesDialog;
 #include "babstractdocumentdriver.h"
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
+#include "bplaintextedit.h"
 
 #include <BeQtCore/BeQt>
 
@@ -118,7 +119,7 @@ void BCodeEditorDocument::setEditFont(const QFont &fnt)
     d_func()->cedt->setEditFont(fnt);
 }
 
-void BCodeEditorDocument::setEditTabWidth(TabWidth tw)
+void BCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
 {
     d_func()->cedt->setEditTabWidth(tw);
 }
@@ -188,7 +189,7 @@ QFont BCodeEditorDocument::editFont() const
     return d_func()->cedt->editFont();
 }
 
-BAbstractCodeEditorDocument::TabWidth BCodeEditorDocument::editTabWidth() const
+BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
 {
     return d_func()->cedt->editTabWidth();
 }
@@ -264,7 +265,12 @@ QWidget *BCodeEditorDocument::createEdit(QTextDocument **doc)
 
 void BCodeEditorDocument::setTextImplementation(const QString &txt, int asyncIfLongerThan)
 {
+    B_D(BCodeEditorDocument);
+    if (d->highlighter)
+        d->highlighter->setDocument(0);
     d_func()->cedt->setText(txt, asyncIfLongerThan);
+    if (d->highlighter)
+        d->highlighter->setDocument(d->cedt->innerDocument());
 }
 
 void BCodeEditorDocument::insertTextImplementation(const QString &txt)
@@ -339,5 +345,15 @@ void BCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToCle
 
 void BCodeEditorDocument::highlightBrackets()
 {
-    d_func()->cedt->highlightBrackets();
+    d_func()->cedt->highlightBrackets(recognizedBrackets(), isBracketHighlightingEnabled());
+}
+
+void BCodeEditorDocument::installDropHandler(QObject *handler)
+{
+    d_func()->cedt->innerEdit()->viewport()->installEventFilter(handler);
+}
+
+void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
+{
+    d_func()->cedt->innerEdit()->installEventFilter(filter);
 }

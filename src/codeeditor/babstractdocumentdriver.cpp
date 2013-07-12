@@ -80,7 +80,7 @@ void BAbstractDocumentDriver::restoreState(const QByteArray &)
     //
 }
 
-bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
+bool BAbstractDocumentDriver::load(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
 {
     if (!doc)
         return false;
@@ -91,7 +91,7 @@ bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, QTextCodec *codec, 
     return handleLoadOperation(op);
 }
 
-bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
+bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
 {
     if (!doc)
         return false;
@@ -102,12 +102,12 @@ bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, QTextCodec *codec, 
     return handleSaveOperation(op);
 }
 
-bool BAbstractDocumentDriver::load(BCodeEditorDocument *doc, const QString &fileName)
+bool BAbstractDocumentDriver::load(BAbstractCodeEditorDocument *doc, const QString &fileName)
 {
     return load(doc, 0, fileName);
 }
 
-bool BAbstractDocumentDriver::save(BCodeEditorDocument *doc, const QString &fileName)
+bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, const QString &fileName)
 {
     return save(doc, 0, fileName);
 }

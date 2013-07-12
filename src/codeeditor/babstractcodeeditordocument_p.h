@@ -76,7 +76,7 @@ public:
     QWidget *edit;
     BSyntaxHighlighter *highlighter;
     BAbstractFileType *fileType;
-    QList<BAbstractCodeEditorDocument::BracketPair> recognizedBrackets;
+    BAbstractFileType::BracketPairList recognizedBrackets;
     bool bracketsHighlighting;
     QString fileName;
     QTextCodec *codec;

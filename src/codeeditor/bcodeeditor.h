@@ -4,7 +4,6 @@
 class BCodeEditorPrivate;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
-class BAbstractCodeEditorDocument;
 class BAbstractFileType;
 
 class QStringList;
@@ -13,6 +12,7 @@ class QMenu;
 class QComboBox;
 
 #include "bcodeedit.h"
+#include "babstractcodeeditordocument.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -90,7 +90,7 @@ public:
     void setEditFontPointSize(int pointSize);
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
-    void setEditTabWidth(BCodeEdit::TabWidth tw);
+    void setEditTabWidth(BeQt::TabWidth tw);
     void setBracketHighlightingEnabled(bool enabled);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
@@ -110,7 +110,7 @@ public:
     void setPreferredFileType(const QString &id);
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
-    bool mergeWith(BCodeEditor *other);
+    bool mergeWith(BCodeEditor *other, int msecs = 30 * BeQt::Second);
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
     StandardDocumentType documentType() const;
     QFont editFont() const;
@@ -118,7 +118,7 @@ public:
     int editFontPointSize() const;
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
-    BCodeEdit::TabWidth editTabWidth() const;
+    BeQt::TabWidth editTabWidth() const;
     bool isBracketHighlightingEnabled() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;

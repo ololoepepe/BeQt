@@ -37,7 +37,7 @@ public:
     void setReadOnly(bool ro);
     void setModification(bool modified);
     void setEditFont(const QFont &fnt);
-    void setEditTabWidth(TabWidth tw);
+    void setEditTabWidth(BeQt::TabWidth tw);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
@@ -51,7 +51,7 @@ public:
     bool isUndoAvailable() const;
     bool isRedoAvailable() const;
     QFont editFont() const;
-    TabWidth editTabWidth() const;
+    BeQt::TabWidth editTabWidth() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
@@ -83,6 +83,8 @@ protected:
     void redoImplementation();
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void highlightBrackets();
+    void installDropHandler(QObject *handler);
+    void installInnerEventFilter(QObject *filter);
 private:
     Q_DISABLE_COPY(BCodeEditorDocument)
 };

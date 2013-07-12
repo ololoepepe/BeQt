@@ -4,7 +4,7 @@ class QFont;
 #include "babstractfiletype.h"
 #include "bcodeedit.h"
 #include "btextblockuserdata.h"
-#include "bcodeedit_p.h"
+#include "babstractcodeeditordocument_p.h"
 
 #include <QApplication>
 #include <QString>
@@ -35,7 +35,7 @@ public:
     QString description() const;
     QStringList suffixes() const;
     bool matchesFileName(const QString &fileName) const;
-    QList<BCodeEdit::BracketPair> brackets() const;
+    BracketPairList brackets() const;
 protected:
     void highlightBlock(const QString &text);
 };
@@ -101,9 +101,9 @@ bool BDefaultFileType::matchesFileName(const QString &) const
     return true;
 }
 
-QList<BCodeEdit::BracketPair> BDefaultFileType::brackets() const
+BAbstractFileType::BracketPairList BDefaultFileType::brackets() const
 {
-    return QList<BCodeEdit::BracketPair>();
+    return BAbstractFileType::BracketPairList();
 }
 
 /*============================== Protected methods =========================*/
@@ -161,6 +161,21 @@ BAbstractFileType *BAbstractFileType::defaultFileType()
     return new BDefaultFileType;
 }
 
+bool BAbstractFileType::areEqual(const BracketPair &bp1, const BracketPair &bp2)
+{
+    return bp1.opening == bp2.opening && bp1.closing == bp2.closing && bp1.escape == bp2.escape;
+}
+
+bool BAbstractFileType::areEqual(const BracketPairList &l1, const BracketPairList &l2)
+{
+    if (l1.size() != l2.size())
+        return false;
+    for (int i = 0; i < l1.size(); ++i)
+        if (!areEqual(l1.at(i), l2.at(i)))
+            return false;
+    return true;
+}
+
 /*============================== Public methods ============================*/
 
 QString BAbstractFileType::createFileDialogFilter() const
@@ -185,9 +200,10 @@ QString BAbstractFileType::createFileDialogFilter() const
 
 /*============================== Static protected methods ==================*/
 
-BCodeEdit::BracketPair BAbstractFileType::createBracketPair(const QString &op, const QString &cl, const QString &esc)
+BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QString &op, const QString &cl,
+                                                                    const QString &esc)
 {
-    BCodeEdit::BracketPair bp;
+    BracketPair bp;
     bp.opening = op;
     bp.closing = cl;
     bp.escape = esc;

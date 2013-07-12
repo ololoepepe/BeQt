@@ -168,23 +168,23 @@ public:
     {
         int start;
         int end;
-        const BCodeEdit::BracketPair *startBr;
-        const BCodeEdit::BracketPair *endBr;
+        const BAbstractFileType::BracketPair *startBr;
+        const BAbstractFileType::BracketPair *endBr;
     };
 public:
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
 public:
-    static QStringList processLine(const QString &line, int ll, BCodeEdit::TabWidth tw);
-    static ProcessTextResult processText(const QString &text, int ll, BCodeEdit::TabWidth tw);
+    static QStringList processLine(const QString &line, int ll, BeQt::TabWidth tw);
+    static ProcessTextResult processText(const QString &text, int ll, BeQt::TabWidth tw);
     static QString removeUnsupportedSymbols(const QString &text);
     static void removeUnsupportedSymbols(QString *text);
     static QString removeTrailingSpaces(const QString &s);
     static void removeTrailingSpaces(QString *s);
     static QString appendTrailingSpaces(const QString &s, int ll);
     static void appendTrailingSpaces(QString *s, int ll);
-    static QString replaceTabs(const QString &s, BCodeEdit::TabWidth tw);
-    static void replaceTabs(QString *s, BCodeEdit::TabWidth tw);
+    static QString replaceTabs(const QString &s, BeQt::TabWidth tw);
+    static void replaceTabs(QString *s, BeQt::TabWidth tw);
     static void removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
                                       const QList<QTextEdit::ExtraSelection> &what);
     static QList<QChar> createUnsupportedSymbols();
@@ -205,14 +205,19 @@ public:
     inline bool mouseDoubleClickEvent(QMouseEvent *e);
     inline bool mousePressEvent(QMouseEvent *e);
     BCodeEdit::SplittedLinesRange deleteSelection();
+    void blockHighlighter(bool block);
+    void requestRehighlightBlock(const QTextBlock &block);
+    void requestHighlightBrackets();
     void seletAll();
     void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);
     void insertText(const QString &txt, bool asKeyPress = false);
-    void highlightBrackets();
-    FindBracketPairResult findLeftBracketPair() const;
-    FindBracketPairResult findRightBracketPair() const;
-    bool testBracket(const QString &text, int posInBlock, bool opening, const BCodeEdit::BracketPair *&bracket) const;
+    void highlightBrackets(const BAbstractFileType::BracketPairList &recognizedBrackets, bool enabled);
+    FindBracketPairResult findLeftBracketPair(const BAbstractFileType::BracketPairList &recognizedBrackets) const;
+    FindBracketPairResult findRightBracketPair(const BAbstractFileType::BracketPairList &recognizedBrackets) const;
+    bool testBracket(const QString &text, int posInBlock, bool opening,
+                     const BAbstractFileType::BracketPair *&bracket,
+                     const BAbstractFileType::BracketPairList &recognizedBrackets) const;
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
     void emitLineSplitted(const BCodeEdit::SplittedLinesRange &range);
     void handleReturn();
@@ -243,10 +248,8 @@ public Q_SLOTS:
 public:
     bool blockMode;
     int lineLength;
-    BCodeEdit::TabWidth tabWidth;
+    BeQt::TabWidth tabWidth;
     BSyntaxHighlighter *highlighter;
-    QList<BCodeEdit::BracketPair> recognizedBrackets;
-    bool bracketsHighlighting;
     QPoint cursorPosition;
     bool hasSelection;
     bool hasBookmarks;
@@ -272,7 +275,7 @@ class B_CODEEDITOR_EXPORT BCodeEditParseTask : public QObject, public QRunnable
 {
     Q_OBJECT
 public:
-    explicit BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth);
+    explicit BCodeEditParseTask(const QString &text, int lineLength, BeQt::TabWidth tabWidth);
     ~BCodeEditParseTask();
 public:
     static QThreadPool *pool();
@@ -286,7 +289,7 @@ private:
 private:
     const QString Text;
     const int LineLength;
-    const BCodeEdit::TabWidth TabWidth;
+    const BeQt::TabWidth TabWidth;
 private:
     BCodeEditPrivate::ProcessTextResult res;
 private:

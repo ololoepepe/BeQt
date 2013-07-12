@@ -1,12 +1,13 @@
 #ifndef BCODEEDITOR_P_H
 #define BCODEEDITOR_P_H
 
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BSelectDocumentsDialogPrivate;
 class BSplittedLinesDialogPrivate;
 class BAbstractFileType;
+class BCodeEditorDocument;
 
 class QVBoxLayout;
 class QTabWidget;
@@ -69,13 +70,13 @@ class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BSelectDocumentsDialog)
 public:
-    explicit BSelectDocumentsDialog(const QList<BCodeEditorDocument *> &documents, QWidget *parent = 0);
+    explicit BSelectDocumentsDialog(const QList<BAbstractCodeEditorDocument *> &documents, QWidget *parent = 0);
     ~BSelectDocumentsDialog();
 protected:
     explicit BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent = 0);
 public:
     int decision() const;
-    QList<BCodeEditorDocument *> selectedDocuments() const;
+    QList<BAbstractCodeEditorDocument *> selectedDocuments() const;
 private:
     Q_DISABLE_COPY(BSelectDocumentsDialog)
 };
@@ -89,14 +90,15 @@ class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BSelectDocumentsDialog)
 public:
-    explicit BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q, const QList<BCodeEditorDocument *> &list);
+    explicit BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q,
+                                           const QList<BAbstractCodeEditorDocument *> &list);
     ~BSelectDocumentsDialogPrivate();
 public:
     void init();
 public Q_SLOTS:
     void dlgbboxClicked(QAbstractButton *button);
 public:
-    const QList<BCodeEditorDocument *> Documents;
+    const QList<BAbstractCodeEditorDocument *> Documents;
 public:
     int decision;
     QVBoxLayout *vlt;
@@ -223,19 +225,19 @@ public:
     bool tryAddFileType(BAbstractFileType *ft);
     bool tryRemoveFileType(const QString &id);
     bool findDocument(const QString &fileName);
-    BCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
-    void addDocument(BCodeEditorDocument *doc);
-    void removeDocument(BCodeEditorDocument *doc);
-    BAbstractFileType *selectDocumentFileType(BCodeEditorDocument *doc);
-    BCodeEditorDocument *openDocument(QString fileName, QTextCodec *codec = 0);
-    bool reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec = 0);
-    bool saveDocument(BCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
-    bool saveDocuments(const QList<BCodeEditorDocument *> &list);
-    bool closeDocument(BCodeEditorDocument *doc);
+    BAbstractCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
+    void addDocument(BAbstractCodeEditorDocument *doc);
+    void removeDocument(BAbstractCodeEditorDocument *doc);
+    BAbstractFileType *selectDocumentFileType(BAbstractCodeEditorDocument *doc);
+    BAbstractCodeEditorDocument *openDocument(QString fileName, QTextCodec *codec = 0);
+    bool reopenDocument(BAbstractCodeEditorDocument *doc, QTextCodec *codec = 0);
+    bool saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
+    bool saveDocuments(const QList<BAbstractCodeEditorDocument *> &list);
+    bool closeDocument(BAbstractCodeEditorDocument *doc);
     bool closeAllDocuments(bool save = true);
-    bool tryCloseDocument(BCodeEditorDocument *doc);
+    bool tryCloseDocument(BAbstractCodeEditorDocument *doc);
     bool isDefaultFileName(const QString &fileName) const;
-    void updateDocumentTab(BCodeEditorDocument *doc);
+    void updateDocumentTab(BAbstractCodeEditorDocument *doc);
     void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
     void failedToOpenMessage(const QString &fileName, const QString &info = QString());
     void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
@@ -246,11 +248,11 @@ public:
                                                     const QList<BCodeEdit::SplittedLinesRange> ranges);
     void emitDefaultCodecChanged(const QString &codecName);
     void emitEditModeChanged(BCodeEdit::EditMode mode);
-    void emitDocumentAboutToBeAdded(BCodeEditorDocument *doc);
-    void emitDocumentAdded(BCodeEditorDocument *doc);
-    void emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc);
+    void emitDocumentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
+    void emitDocumentAdded(BAbstractCodeEditorDocument *doc);
+    void emitDocumentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
     void emitDocumentRemoved(const QString &fileName);
-    void emitCurrentDocumentChanged(BCodeEditorDocument *doc);
+    void emitCurrentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void emitCurrentDocumentFileNameChanged(const QString &fileName);
     void emitCurrentDocumentModificationChanged(bool modified);
     void emitFileTypesChanged();
@@ -283,15 +285,15 @@ public Q_SLOTS:
 public:
     BCodeEditor::StandardDocumentType docType;
     QMap<QString, BAbstractEditorModule *> modules;
-    BCodeEditorDocument *document;
-    QMap<BCodeEditorDocument *, QString> openingDocuments;
-    QMap<BCodeEditorDocument *, QString> savingDocuments;
-    QList<BCodeEditorDocument *> closingDocuments;
-    QList<BCodeEditorDocument *> processedDocuments;
+    BAbstractCodeEditorDocument *document;
+    QMap<BAbstractCodeEditorDocument *, QString> openingDocuments;
+    QMap<BAbstractCodeEditorDocument *, QString> savingDocuments;
+    QList<BAbstractCodeEditorDocument *> closingDocuments;
+    QList<BAbstractCodeEditorDocument *> processedDocuments;
     QFont editFont;
     BCodeEdit::EditMode editMode;
     int editLineLength;
-    BCodeEdit::TabWidth editTabWidth;
+    BeQt::TabWidth editTabWidth;
     bool bracketsHighlighting;
     QTextCodec *defaultCodec;
     QString defaultFN;

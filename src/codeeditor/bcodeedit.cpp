@@ -12,6 +12,7 @@ class QFont;
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BPlainTextEdit>
+#include <BeQtWidgets/BClipboardNotifier>
 
 #include <QObject>
 #include <QWidget>
@@ -463,7 +464,7 @@ BCodeEditPrivate::~BCodeEditPrivate()
 
 /*============================== Static public methods =====================*/
 
-QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit::TabWidth tw)
+QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BeQt::TabWidth tw)
 {
     QStringList sl;
     QString xline = replaceTabs(line, tw);
@@ -489,7 +490,7 @@ QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit
     return sl;
 }
 
-BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString &text, int ll, BCodeEdit::TabWidth tw)
+BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString &text, int ll, BeQt::TabWidth tw)
 {
     ProcessTextResult res;
     QStringList sl = removeUnsupportedSymbols(text).split('\n');
@@ -562,14 +563,14 @@ void BCodeEditPrivate::appendTrailingSpaces(QString *s, int ll)
         s->append( QString().fill(' ', ll - len) );
 }
 
-QString BCodeEditPrivate::replaceTabs(const QString &s, BCodeEdit::TabWidth tw)
+QString BCodeEditPrivate::replaceTabs(const QString &s, BeQt::TabWidth tw)
 {
     QString ns = s;
     replaceTabs(&ns, tw);
     return ns;
 }
 
-void BCodeEditPrivate::replaceTabs(QString *s, BCodeEdit::TabWidth tw)
+void BCodeEditPrivate::replaceTabs(QString *s, BeQt::TabWidth tw)
 {
     if (!s)
         return;
@@ -695,22 +696,21 @@ bool BCodeEditPrivate::testBlock(const QStringList &lines, int *length)
 
 void BCodeEditPrivate::init()
 {
-    if ( !BCodeEditClipboardNotifier::instance() )
-        new BCodeEditClipboardNotifier;
-    connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
-             this, SLOT( updatePasteAvailable(bool) ) );
+    if (!BClipboardNotifier::instance())
+        new BClipboardNotifier;
+    connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
+            this, SLOT(updatePasteAvailable(bool)));
     blockMode = false;
     lineLength = 120;
-    tabWidth = BCodeEdit::TabWidth4;
+    tabWidth = BeQt::TabWidth4;
     hasSelection = false;
     hasBookmarks = false;
     copyAvailable = false;
-    pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
+    pasteAvailable = BClipboardNotifier::instance()->textDataAvailable();
     undoAvailable = false;
     redoAvailable = false;
     buisy = false;
     parceTask = 0;
-    bracketsHighlighting = true;
     fileType = 0;
     B_Q(BCodeEdit);
     hlt = new QHBoxLayout(q);
@@ -734,8 +734,8 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
         //
       hlt->addWidget(ptedt);
-    highlighter = new BSyntaxHighlighter(q, ptedt->document());
-    q->setFileType(BAbstractFileType::defaultFileType());
+    //highlighter = new BSyntaxHighlighter(q, ptedt->document());
+    //q->setFileType(BAbstractFileType::defaultFileType());
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -932,6 +932,30 @@ bool BCodeEditPrivate::mousePressEvent(QMouseEvent *e)
     return true;
 }
 
+void BCodeEditPrivate::blockHighlighter(bool block)
+{
+    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
+    if (!doc)
+        return;
+    doc->blockHighlighter(block);
+}
+
+void BCodeEditPrivate::requestRehighlightBlock(const QTextBlock &block)
+{
+    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
+    if (!doc)
+        return;
+    doc->rehighlightBlock(block);
+}
+
+void BCodeEditPrivate::requestHighlightBrackets()
+{
+    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
+    if (!doc)
+        return;
+    doc->highlightBrackets();
+}
+
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::deleteSelection()
 {
     QTextCursor tc = ptedt->textCursor();
@@ -1006,12 +1030,12 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
     else
     {
         ProcessTextResult res = processText(txt, lineLength, tabWidth);
-        highlighter->setDocument(0);
+        blockHighlighter(true);
         ptedt->setPlainText(res.newText);
         QTextCursor tc = ptedt->textCursor();
         tc.movePosition(QTextCursor::Start);
         ptedt->setTextCursor(tc);
-        highlighter->setDocument(ptedt->document());
+        blockHighlighter(false);
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
         setBuisy(false);
@@ -1167,11 +1191,11 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     ptedt->setTextCursor(tc);
     QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
     QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
-    highlighter->rehighlightBlock(initialBlock);
+    requestRehighlightBlock(initialBlock);
     while (initialBlock != finalBlock)
     {
         initialBlock = initialBlock.next();
-        highlighter->rehighlightBlock(initialBlock);
+        requestRehighlightBlock(initialBlock);
     }
     tc.endEditBlock();
     setBuisy(false);
@@ -1180,21 +1204,21 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     ptedt->ensureCursorVisible();
 }
 
-void BCodeEditPrivate::highlightBrackets()
+void BCodeEditPrivate::highlightBrackets(const BAbstractFileType::BracketPairList &recognizedBrackets, bool enabled)
 {
     QList<QTextEdit::ExtraSelection> selections = ptedt->extraSelections();
     removeExtraSelections(selections, highlightedBrackets);
     highlightedBrackets.clear();
-    if (!bracketsHighlighting)
+    if (!enabled)
         return ptedt->setExtraSelections(selections);
     QList<FindBracketPairResult> list;
-    list << findLeftBracketPair();
-    list << findRightBracketPair();
+    list << findLeftBracketPair(recognizedBrackets);
+    list << findRightBracketPair(recognizedBrackets);
     foreach (const FindBracketPairResult &res, list)
     {
         if (res.start >= 0 && res.end >= 0)
         {
-            if ( testBracketPairsEquality(*res.startBr, *res.endBr) )
+            if (BAbstractFileType::areEqual(*res.startBr, *res.endBr))
             {
                 QTextEdit::ExtraSelection ess = createExtraSelection( ptedt, createBracketsFormat() );
                 ess.cursor.setPosition(res.start);
@@ -1220,25 +1244,26 @@ void BCodeEditPrivate::highlightBrackets()
     ptedt->setExtraSelections(selections);
 }
 
-BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() const
+BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair(
+        const BAbstractFileType::BracketPairList &recognizedBrackets) const
 {
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
-    const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket) )
+    const BAbstractFileType::BracketPair *bracket = 0;
+    if (!testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket, recognizedBrackets))
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
     int depth = 1;
-    const BCodeEdit::BracketPair *br = 0;
+    const BAbstractFileType::BracketPair *br = 0;
     while ( tb.isValid() )
     {
         QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
         while (posInBlock >= 0)
         {
-            if ( testBracket(text, posInBlock, true, br) )
+            if (testBracket(text, posInBlock, true, br, recognizedBrackets))
             {
                 --depth;
                 if (!depth)
@@ -1248,7 +1273,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
                     res.endBr = bracket;
                     return res;
                 }
-                if (testBracket(text, posInBlock, false, br))
+                if (testBracket(text, posInBlock, false, br, recognizedBrackets))
                 {
                     ++depth;
                     posInBlock -= br->closing.length();
@@ -1258,7 +1283,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
                     --posInBlock;
                 }
             }
-            else if ( testBracket(text, posInBlock, false, br) )
+            else if (testBracket(text, posInBlock, false, br, recognizedBrackets))
             {
                 ++depth;
                 posInBlock -= br->closing.length();
@@ -1275,25 +1300,26 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() 
     return res;
 }
 
-BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair() const
+BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair(
+        const BAbstractFileType::BracketPairList &recognizedBrackets) const
 {
     FindBracketPairResult res = createFindBracketPairResult();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
-    const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket) )
+    const BAbstractFileType::BracketPair *bracket = 0;
+    if (!testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket, recognizedBrackets))
         return res;
     res.start = tb.position() + posInBlock;
     posInBlock += bracket->opening.length();
     int depth = 1;
-    const BCodeEdit::BracketPair *br = 0;
+    const BAbstractFileType::BracketPair *br = 0;
     while ( tb.isValid() )
     {
         QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
         while ( posInBlock <= text.length() )
         {
-            if ( testBracket(text, posInBlock, false, br) )
+            if (testBracket(text, posInBlock, false, br, recognizedBrackets))
             {
                 --depth;
                 if (!depth)
@@ -1303,7 +1329,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
                     res.endBr = br;
                     return res;
                 }
-                if (testBracket(text, posInBlock, true, br))
+                if (testBracket(text, posInBlock, true, br, recognizedBrackets))
                 {
                     ++depth;
                     posInBlock += br->opening.length();
@@ -1313,7 +1339,7 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
                     ++posInBlock;
                 }
             }
-            else if ( testBracket(text, posInBlock, true, br) )
+            else if (testBracket(text, posInBlock, true, br, recognizedBrackets))
             {
                 ++depth;
                 posInBlock += br->opening.length();
@@ -1330,12 +1356,13 @@ BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair()
 }
 
 bool BCodeEditPrivate::testBracket(const QString &text, int posInBlock, bool opening,
-                                   const BCodeEdit::BracketPair *&bracket) const
+                                   const BAbstractFileType::BracketPair *&bracket,
+                                   const BAbstractFileType::BracketPairList &recognizedBrackets) const
 {
     bracket = 0;
     if ( recognizedBrackets.isEmpty() )
         return false;
-    foreach (const BCodeEdit::BracketPair &br, recognizedBrackets)
+    foreach (const BAbstractFileType::BracketPair &br, recognizedBrackets)
     {
         const QString &brText = opening ? br.opening : br.closing;
         if ( brText.isEmpty() )
@@ -1400,7 +1427,7 @@ void BCodeEditPrivate::handleReturn()
     tc.setPosition(tc.position() + i);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
-    highlighter->rehighlightBlock(tbp); //Not sure if this is necessary
+    requestRehighlightBlock(tbp); //Not sure if this is necessary
 }
 
 void BCodeEditPrivate::handleSpace()
@@ -1852,12 +1879,12 @@ void BCodeEditPrivate::parceTaskFinished()
     parceTask->deleteLater();
     parceTask = 0;
     ptedt->setEnabled(true);
-    highlighter->setDocument(0);
+    blockHighlighter(true);
     ptedt->setPlainText(res.newText);
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
-    highlighter->setDocument( ptedt->document() );
+    blockHighlighter(false);
     ptedt->setFocus();
     setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
@@ -1916,7 +1943,7 @@ void BCodeEditPrivate::popupMenu(const QPoint &pos)
 
 void BCodeEditPrivate::updateCursorPosition()
 {
-    highlightBrackets();
+    requestHighlightBrackets();
     QTextCursor tc = ptedt->textCursor();
     cursorPosition = QPoint( tc.positionInBlock(), tc.blockNumber() );
     QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
@@ -2089,45 +2116,12 @@ void BCodeEdit::setEditLineLength(int ll)
     setFocus();
 }
 
-void BCodeEdit::setEditTabWidth(TabWidth tw)
+void BCodeEdit::setEditTabWidth(BeQt::TabWidth tw)
 {
     B_D(BCodeEdit);
     if (tw == d->tabWidth)
         return;
     d->tabWidth = tw;
-}
-
-void BCodeEdit::setFileType(BAbstractFileType *ft)
-{
-    B_D(BCodeEdit);
-    if (ft == d->fileType)
-        return;
-    if (ft && d->fileType && ft->id() == d->fileType->id())
-        return;
-    if (!ft && d->fileType && d->fileType->id() == "Text")
-        return;
-    d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
-    setRecognizedBrackets(ft->brackets());
-    Q_EMIT fileTypeChanged(ft);
-    d->highlighter->rehighlight();
-}
-
-void BCodeEdit::setRecognizedBrackets(const QList<BracketPair> &list)
-{
-    B_D(BCodeEdit);
-    if ( BCodeEditPrivate::testBracketPairListsEquality(d->recognizedBrackets, list) )
-        return;
-    d->recognizedBrackets = list;
-    d->highlightBrackets();
-}
-
-void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
-{
-    B_D(BCodeEdit);
-    if (enabled == d->bracketsHighlighting)
-        return;
-    d->bracketsHighlighting = enabled;
-    d->highlightBrackets();
 }
 
 void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
@@ -2217,7 +2211,7 @@ int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Q
     QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
     while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
     {
-        d->highlighter->rehighlightBlock(tb);
+        d->requestRehighlightBlock(tb);
         tb = tb.next();
     }
     return count;
@@ -2301,24 +2295,9 @@ int BCodeEdit::editLineLength() const
     return d_func()->lineLength;
 }
 
-BCodeEdit::TabWidth BCodeEdit::editTabWidth() const
+BeQt::TabWidth BCodeEdit::editTabWidth() const
 {
     return d_func()->tabWidth;
-}
-
-BAbstractFileType *BCodeEdit::fileType() const
-{
-    return d_func()->fileType;
-}
-
-QList<BCodeEdit::BracketPair> BCodeEdit::recognizedBrackets() const
-{
-    return d_func()->recognizedBrackets;
-}
-
-bool BCodeEdit::isBracketHighlightingEnabled() const
-{
-    return d_func()->bracketsHighlighting;
 }
 
 QPoint BCodeEdit::cursorPosition() const
@@ -2559,15 +2538,9 @@ void BCodeEdit::redo()
     setFocus();
 }
 
-void BCodeEdit::rehighlight()
+void BCodeEdit::highlightBrackets(const BAbstractFileType::BracketPairList &recognizedBrackets, bool enabled)
 {
-    d_func()->highlighter->rehighlight();
-    d_func()->highlightBrackets();
-}
-
-void BCodeEdit::highlightBrackets()
-{
-    d_func()->highlightBrackets();
+    d_func()->highlightBrackets(recognizedBrackets, enabled);
 }
 
 /*============================== Protected methods =========================*/
@@ -2577,13 +2550,18 @@ BPlainTextEdit *BCodeEdit::innerEdit() const
     return d_func()->ptedt;
 }
 
+QTextDocument *BCodeEdit::innerDocument() const
+{
+    return d_func()->ptedt->document();
+}
+
 /*============================================================================
 ================================ BCodeEditParseTask ==========================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
 
-BCodeEditParseTask::BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth) :
+BCodeEditParseTask::BCodeEditParseTask(const QString &text, int lineLength, BeQt::TabWidth tabWidth) :
     QObject(0), Text(text), LineLength(lineLength), TabWidth(tabWidth)
 {
     //

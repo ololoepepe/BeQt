@@ -103,7 +103,7 @@ BAbstractCodeEditorDocument *BSyntaxHighlighter::editorDocument() const
 
 void BSyntaxHighlighter::highlightBlock(const QString &text)
 {
-    BAbstractFileType *ft = Edit ? Edit->fileType() : 0;
+    BAbstractFileType *ft = EditorDocument ? EditorDocument->fileType() : 0;
     if (!ft)
         return;
     ft->setCurrentHighlighter(this);
@@ -149,14 +149,13 @@ void BAbstractCodeEditorDocumentPrivate::init()
     pasteAvailable = false;
     undoAvailable = false;
     redoAvailable = false;
-    cursorPosition;
     buisy = false;
 }
 
 bool BAbstractCodeEditorDocumentPrivate::createEdit()
 {
-    QTextDocument **doc = 0;
-    edit = q_func()->createEdit(doc);
+    QTextDocument *doc = 0;
+    edit = q_func()->createEdit(&doc);
     if (!edit)
         return false;
     static_cast<QVBoxLayout *>(q_func()->layout())->addWidget(edit);
@@ -205,8 +204,8 @@ void BAbstractCodeEditorDocumentPrivate::rehighlight()
 void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::Operation &operation,
                                                          bool success, const QString &text)
 {
-    //if (operation.document != q_func()) //Change BAbstractDocumentDriver::OPeration::document type
-        //return;
+    if (operation.document != q_func())
+        return;
     BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>(sender());
     disconnect(driver, SIGNAL(loadingFinished(BAbstractDocumentDriver::Operation, bool, QString)),
                this, SLOT(loadingFinished(BAbstractDocumentDriver::Operation, bool, QString)));
@@ -227,8 +226,8 @@ void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocument
 void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::Operation &operation,
                                                         bool success)
 {
-    //if (operation.document != q_func()) //Change BAbstractDocumentDriver::OPeration::document type
-        //return;
+    if (operation.document != q_func())
+        return;
     BAbstractDocumentDriver *driver = static_cast<BAbstractDocumentDriver *>(sender());
     disconnect(driver, SIGNAL(savingFinished(BAbstractDocumentDriver::Operation, bool)),
                this, SLOT( savingFinished(BAbstractDocumentDriver::Operation, bool)));
@@ -269,23 +268,6 @@ BAbstractCodeEditorDocument::BAbstractCodeEditorDocument(BAbstractCodeEditorDocu
     d_func()->init();
 }
 
-/*============================== Static public methods =====================*/
-
-bool BAbstractCodeEditorDocument::areEqual(const BracketPair &bp1, const BracketPair &bp2)
-{
-    return bp1.opening == bp2.opening && bp1.closing == bp2.closing && bp1.escape == bp2.escape;
-}
-
-bool BAbstractCodeEditorDocument::areEqual(const BracketPairList &l1, const BracketPairList &l2)
-{
-    if (l1.size() != l2.size())
-        return false;
-    for (int i = 0; i < l1.size(); ++i)
-        if (!areEqual(l1.at(i), l2.at(i)))
-            return false;
-    return true;
-}
-
 /*============================== Public methods ============================*/
 
 void BAbstractCodeEditorDocument::init()
@@ -310,9 +292,9 @@ void BAbstractCodeEditorDocument::setFileType(BAbstractFileType *ft)
     rehighlight();
 }
 
-void BAbstractCodeEditorDocument::setRecognizedBrackets(const QList<BracketPair> &list)
+void BAbstractCodeEditorDocument::setRecognizedBrackets(const BAbstractFileType::BracketPairList &list)
 {
-    if (areEqual(d_func()->recognizedBrackets, list))
+    if (BAbstractFileType::areEqual(d_func()->recognizedBrackets, list))
         return;
     d_func()->recognizedBrackets = list;
     highlightBrackets();
@@ -363,7 +345,7 @@ bool BAbstractCodeEditorDocument::load(BAbstractDocumentDriver *driver, QTextCod
     d->setBuisy(true);
     connect(driver, SIGNAL(loadingFinished(BAbstractDocumentDriver::Operation, bool, QString)),
             d,SLOT(loadingFinished(BAbstractDocumentDriver::Operation, bool, QString)));
-    //if (!driver->load(this, codec, fileName)) //Change type
+    if (!driver->load(this, codec, fileName))
     {
         disconnect(driver, SIGNAL(loadingFinished(BAbstractDocumentDriver::Operation, bool, QString)),
                    d, SLOT(loadingFinished(BAbstractDocumentDriver::Operation, bool, QString)));
@@ -386,7 +368,7 @@ bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCod
     d->setBuisy(true);
     connect(driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool)),
             d, SLOT(savingFinished(BAbstractDocumentDriver::Operation, bool)));
-    //if (!driver->save(this, codec, fileName)) //Change type
+    if (!driver->save(this, codec, fileName))
     {
         disconnect(driver, SIGNAL(savingFinished(BAbstractDocumentDriver::Operation, bool)),
                    d, SLOT(savingFinished(BAbstractDocumentDriver::Operation, bool)));
@@ -394,6 +376,15 @@ bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCod
         return false;
     }
     return true;
+}
+
+bool BAbstractCodeEditorDocument::waitForProcessed(int msecs)
+{
+    B_D(BAbstractCodeEditorDocument);
+    if (!d->buisy)
+        return true;
+    BeQt::waitNonBlocking(this, SIGNAL(buisyChanged(bool)), msecs);
+    return !d->buisy;
 }
 
 BAbstractFileType *BAbstractCodeEditorDocument::fileType() const
@@ -406,7 +397,7 @@ QString BAbstractCodeEditorDocument::fileTypeId() const
     return d_func()->fileType ? d_func()->fileType->id() : QString();
 }
 
-QList<BAbstractCodeEditorDocument::BracketPair> BAbstractCodeEditorDocument::recognizedBrackets() const
+BAbstractFileType::BracketPairList BAbstractCodeEditorDocument::recognizedBrackets() const
 {
     return d_func()->recognizedBrackets;
 }
@@ -535,18 +526,35 @@ void BAbstractCodeEditorDocument::rehighlight()
     d_func()->rehighlight();
 }
 
+void BAbstractCodeEditorDocument::rehighlightBlock(const QTextBlock &block)
+{
+    if (!d_func()->highlighter)
+        return;
+    d_func()->highlighter->rehighlightBlock(block);
+}
+
 /*============================== Protected methods =========================*/
 
-QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc = 0) const
+QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
 {
     if (doc)
-        *doc = d_func()->highlighter ? d_func()->highlighter->textDocument() : 0;
+        *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
     return d_func()->edit;
 }
 
 QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
 {
-    return d_func()->highlighter ? d_func()->highlighter->textDocument() : 0;
+    return d_func()->highlighter ? d_func()->highlighter->document() : 0;
+}
+
+void BAbstractCodeEditorDocument::blockHighlighter(bool block)
+{
+    if (!d_func()->highlighter)
+        return;
+    if (block)
+        d_func()->highlighter->setDocument(0);
+    else
+        d_func()->highlighter->setDocument(innerDocument());
 }
 
 /*============================== Protected slots ===========================*/
@@ -564,7 +572,7 @@ void BAbstractCodeEditorDocument::setReadOnlyInternal(bool ro)
     Q_EMIT readOnlyChanged(ro);
 }
 
-void BAbstractCodeEditorDocument::setModification(bool modified)
+void BAbstractCodeEditorDocument::setModificationInternal(bool modified)
 {
     if (modified == d_func()->isModified)
         return;
@@ -622,9 +630,9 @@ void BAbstractCodeEditorDocument::setRedoAvailable(bool available)
 
 void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)
 {
-    if (available == d_func()->cursorPosition)
+    if (pos == d_func()->cursorPosition)
         return;
-    d_func()->cursorPosition = available;
+    d_func()->cursorPosition = pos;
     Q_EMIT cursorPositionChanged(pos);
 }
 

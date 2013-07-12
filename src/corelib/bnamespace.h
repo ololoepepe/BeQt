@@ -27,6 +27,13 @@ class QByterray;
 namespace BeQt
 {
 
+enum TabWidth
+{
+    TabWidth2 = 2,
+    TabWidth4 = 4,
+    TabWidth8 = 8
+};
+
 typedef QPair<const QObject *, const char *> Until;
 typedef QPair<const QObject *, const char *> Target;
 

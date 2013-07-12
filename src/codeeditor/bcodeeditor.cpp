@@ -12,6 +12,7 @@
 #include "bopensaveeditormodule.h"
 #include "bediteditormodule.h"
 #include "bcodeedit_p.h"
+#include "bcodeeditordocument.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -121,7 +122,7 @@ void StructuredCodecsComboBox::hidePopup()
 /*============================== Public constructors =======================*/
 
 BSelectDocumentsDialogPrivate::BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q,
-                                                             const QList<BCodeEditorDocument *> &list) :
+                                                             const QList<BAbstractCodeEditorDocument *> &list) :
     BBasePrivate(q), Documents(list)
 {
     //
@@ -152,7 +153,7 @@ void BSelectDocumentsDialogPrivate::init()
         lblInformativeTextUpper->setText( tr("Choose documents that you want to save:", "lbl text") );
       vlt->addWidget(lblInformativeTextUpper);
       lstwgt = new QListWidget(q);
-        foreach (BCodeEditorDocument *doc, Documents)
+        foreach (BAbstractCodeEditorDocument *doc, Documents)
         {
             QString fn = doc->fileName();
             QListWidgetItem *lwi = new QListWidgetItem( QFileInfo(fn).fileName() );
@@ -201,7 +202,8 @@ void BSelectDocumentsDialogPrivate::dlgbboxClicked(QAbstractButton *button)
 
 /*============================== Public constructors =======================*/
 
-BSelectDocumentsDialog::BSelectDocumentsDialog(const QList<BCodeEditorDocument *> &documents, QWidget *parent) :
+BSelectDocumentsDialog::BSelectDocumentsDialog(const QList<BAbstractCodeEditorDocument *> &documents,
+                                               QWidget *parent) :
     QDialog(parent), BBase( *new BSelectDocumentsDialogPrivate(this, documents) )
 {
     d_func()->init();
@@ -227,10 +229,10 @@ int BSelectDocumentsDialog::decision() const
     return d_func()->decision;
 }
 
-QList<BCodeEditorDocument *> BSelectDocumentsDialog::selectedDocuments() const
+QList<BAbstractCodeEditorDocument *> BSelectDocumentsDialog::selectedDocuments() const
 {
     const B_D(BSelectDocumentsDialog);
-    QList<BCodeEditorDocument *> list;
+    QList<BAbstractCodeEditorDocument *> list;
     for (int i = 0; i < d->lstwgt->count(); ++i)
         if (d->lstwgt->item(i)->checkState() == Qt::Checked)
             list << d->Documents.at(i);
@@ -592,7 +594,7 @@ void BCodeEditorPrivate::init()
     editFont = BApplication::createMonospaceFont();
     editMode = BCodeEdit::NormalMode;
     editLineLength = 120;
-    editTabWidth = BCodeEdit::TabWidth4;
+    editTabWidth = BeQt::TabWidth4;
     bracketsHighlighting = true;
     driver = 0;
     q->setDriver(new BLocalDocumentDriver);
@@ -649,9 +651,9 @@ bool BCodeEditorPrivate::tryRemoveFileType(const QString &id)
     BAbstractFileType *ft = fileTypes.take(id);
     if (!ft)
         return false;
-    foreach ( BCodeEditorDocument *doc, q_func()->documents() )
+    foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
         if (doc->fileType() == ft)
-            doc->setFileType( selectDocumentFileType(doc) );
+            doc->setFileType(selectDocumentFileType(doc));
     if (ft == preferredFileType)
         preferredFileType = defaultFileType;
     delete ft;
@@ -662,7 +664,7 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 {
     if ( fileName.isEmpty() )
         return false;
-    foreach ( BCodeEditorDocument *doc, q_func()->documents() )
+    foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
     {
         if (doc->fileName() == fileName)
         {
@@ -679,24 +681,31 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
     return false;
 }
 
-BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
+BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
-    BCodeEditorDocument *doc = q_func()->createDocument(q_func());
+    BAbstractCodeEditorDocument *doc = q_func()->createDocument(q_func());
     doc->setFileName( createFileName( fileName, defaultFN, q_func()->fileNames() ) );
-    doc->innerEdit()->viewport()->installEventFilter(dropHandler);
-    doc->innerEdit()->installEventFilter(this);
+    doc->installDropHandler(dropHandler);
+    doc->installInnerEventFilter(this);
     doc->setEditFont(editFont);
-    doc->setEditMode(editMode);
-    doc->setEditLineLength(editLineLength);
+    BCodeEditorDocument *ddoc  = qobject_cast<BCodeEditorDocument *>(doc);
+    if (ddoc)
+    {
+        ddoc->setEditMode(editMode);
+        ddoc->setEditLineLength(editLineLength);
+    }
     doc->setEditTabWidth(editTabWidth);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
     //
-    connect( doc, SIGNAL( lineSplitted(BCodeEdit::SplittedLinesRange) ),
-             this, SLOT( documentLineSplitted(BCodeEdit::SplittedLinesRange) ) );
-    connect( doc, SIGNAL( linesSplitted(QList<BCodeEdit::SplittedLinesRange>) ),
-             this, SLOT( documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>) ) );
+    if (ddoc)
+    {
+        connect(ddoc, SIGNAL(lineSplitted(BCodeEdit::SplittedLinesRange)),
+                this, SLOT(documentLineSplitted(BCodeEdit::SplittedLinesRange)));
+        connect(ddoc, SIGNAL(linesSplitted(QList<BCodeEdit::SplittedLinesRange>)),
+                this, SLOT(documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>)));
+    }
     connect( doc, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
     connect( doc, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
     connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
@@ -707,7 +716,7 @@ BCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName,
     return doc;
 }
 
-void BCodeEditorPrivate::addDocument(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::addDocument(BAbstractCodeEditorDocument *doc)
 {
     if (!doc)
         return;
@@ -718,14 +727,15 @@ void BCodeEditorPrivate::addDocument(BCodeEditorDocument *doc)
     emitDocumentAdded(doc);
 }
 
-void BCodeEditorPrivate::removeDocument(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::removeDocument(BAbstractCodeEditorDocument *doc)
 {
     if (!doc)
         return;
     QString fn = doc->fileName();
     emitDocumentAboutToBeRemoved(doc);
     twgt->removeTab(twgt->indexOf(doc));
-    BSplittedLinesDialog *sld = doc->splittedLinesDialog();
+    BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(doc);
+    BSplittedLinesDialog *sld = ddoc ? ddoc->splittedLinesDialog() : 0;
     if (sld)
     {
         sld->close();
@@ -735,7 +745,7 @@ void BCodeEditorPrivate::removeDocument(BCodeEditorDocument *doc)
     emitDocumentRemoved(fn);
 }
 
-BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocument *doc)
+BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BAbstractCodeEditorDocument *doc)
 {
     if (!doc)
         return 0;
@@ -746,7 +756,7 @@ BAbstractFileType *BCodeEditorPrivate::selectDocumentFileType(BCodeEditorDocumen
     return defaultFileType;
 }
 
-BCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, QTextCodec *codec)
+BAbstractCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, QTextCodec *codec)
 {
     fileName = QDir::fromNativeSeparators(fileName);
     if ( fileName.isEmpty() || findDocument(fileName) )
@@ -756,7 +766,7 @@ BCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, QTextCod
         failedToOpenMessage(fileName, tr("The file is too large", "msgbox informativeText"));
         return 0;
     }
-    BCodeEditorDocument *doc = createDocument(fileName);
+    BAbstractCodeEditorDocument *doc = createDocument(fileName);
     openingDocuments.insert(doc, fileName);
     if ( !doc->load(driver, codec, fileName) )
     {
@@ -767,7 +777,7 @@ BCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, QTextCod
     return doc;
 }
 
-bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *codec)
+bool BCodeEditorPrivate::reopenDocument(BAbstractCodeEditorDocument *doc, QTextCodec *codec)
 {
     if ( !doc || doc->isBuisy() )
         return false;
@@ -776,7 +786,7 @@ bool BCodeEditorPrivate::reopenDocument(BCodeEditorDocument *doc, QTextCodec *co
     return doc->load(driver, codec);
 }
 
-bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
+bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
 {
     if ( !doc || savingDocuments.contains(doc) )
         return false;
@@ -813,9 +823,9 @@ bool BCodeEditorPrivate::saveDocument(BCodeEditorDocument *doc, const QString &n
     return b;
 }
 
-bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
+bool BCodeEditorPrivate::saveDocuments(const QList<BAbstractCodeEditorDocument *> &list)
 {
-    foreach (BCodeEditorDocument *doc, list)
+    foreach (BAbstractCodeEditorDocument *doc, list)
     {
         if (!doc->isModified())
             continue;
@@ -825,7 +835,7 @@ bool BCodeEditorPrivate::saveDocuments(const QList<BCodeEditorDocument *> &list)
     return true;
 }
 
-bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
+bool BCodeEditorPrivate::closeDocument(BAbstractCodeEditorDocument *doc)
 {
     if (!doc || openingDocuments.contains(doc) || savingDocuments.contains(doc))
         return false;
@@ -852,15 +862,15 @@ bool BCodeEditorPrivate::closeDocument(BCodeEditorDocument *doc)
 
 bool BCodeEditorPrivate::closeAllDocuments(bool save)
 {
-    QList<BCodeEditorDocument *> list = q_func()->documents();
+    QList<BAbstractCodeEditorDocument *> list = q_func()->documents();
     if ( list.isEmpty() )
         return true;
     if (save)
     {
-        QList<BCodeEditorDocument *> nslist;
+        QList<BAbstractCodeEditorDocument *> nslist;
         for (int i = list.size() - 1; i >= 0; --i)
         {
-            BCodeEditorDocument *doc = list.at(i);
+            BAbstractCodeEditorDocument *doc = list.at(i);
             if ( openingDocuments.contains(doc) || savingDocuments.contains(doc) )
             {
                 list.removeAt(i);
@@ -882,23 +892,23 @@ bool BCodeEditorPrivate::closeAllDocuments(bool save)
             {
             case QMessageBox::Save:
             {
-                QList<BCodeEditorDocument *> selected = sdlg.selectedDocuments();
+                QList<BAbstractCodeEditorDocument *> selected = sdlg.selectedDocuments();
                 for (int i = nslist.size() - 1; i >= 0; --i)
                 {
-                    BCodeEditorDocument *doc = nslist.at(i);
+                    BAbstractCodeEditorDocument *doc = nslist.at(i);
                     if ( !selected.contains(doc) )
                     {
                         nslist.removeAt(i);
                         list << doc;
                     }
                 }
-                foreach (BCodeEditorDocument *doc, nslist)
+                foreach (BAbstractCodeEditorDocument *doc, nslist)
                     if ( !tryCloseDocument(doc) )
                         return false;
                 break;
             }
             case QMessageBox::Discard:
-                foreach (BCodeEditorDocument *doc, nslist)
+                foreach (BAbstractCodeEditorDocument *doc, nslist)
                     list << doc;
                 break;
             case QMessageBox::Cancel:
@@ -907,12 +917,12 @@ bool BCodeEditorPrivate::closeAllDocuments(bool save)
             }
         }
     }
-    foreach (BCodeEditorDocument *doc, list)
+    foreach (BAbstractCodeEditorDocument *doc, list)
         removeDocument(doc);
     return true;
 }
 
-bool BCodeEditorPrivate::tryCloseDocument(BCodeEditorDocument *doc)
+bool BCodeEditorPrivate::tryCloseDocument(BAbstractCodeEditorDocument *doc)
 {
     if ( !doc || openingDocuments.contains(doc) || savingDocuments.contains(doc) || closingDocuments.contains(doc) )
         return false;
@@ -945,7 +955,7 @@ bool BCodeEditorPrivate::isDefaultFileName(const QString &fileName) const
     return sl.join(" ") == fid.baseName();
 }
 
-void BCodeEditorPrivate::updateDocumentTab(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::updateDocumentTab(BAbstractCodeEditorDocument *doc)
 {
     if (!doc)
         return;
@@ -1076,25 +1086,25 @@ void BCodeEditorPrivate::emitEditModeChanged(BCodeEdit::EditMode mode)
     QMetaObject::invokeMethod( q_func(), "editModeChanged", Q_ARG(BCodeEdit::EditMode, mode) );
 }
 
-void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::emitDocumentAboutToBeAdded(BAbstractCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
         module->documentAboutToBeAdded(doc);
-    QMetaObject::invokeMethod( q_func(), "documentAboutToBeAdded", Q_ARG(BCodeEditorDocument *, doc) );
+    QMetaObject::invokeMethod( q_func(), "documentAboutToBeAdded", Q_ARG(BAbstractCodeEditorDocument *, doc) );
 }
 
-void BCodeEditorPrivate::emitDocumentAdded(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::emitDocumentAdded(BAbstractCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
         module->documentAdded(doc);
-    QMetaObject::invokeMethod( q_func(), "documentAdded", Q_ARG(BCodeEditorDocument *, doc) );
+    QMetaObject::invokeMethod( q_func(), "documentAdded", Q_ARG(BAbstractCodeEditorDocument *, doc) );
 }
 
-void BCodeEditorPrivate::emitDocumentAboutToBeRemoved(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::emitDocumentAboutToBeRemoved(BAbstractCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
         module->documentAboutToBeRemoved(doc);
-    QMetaObject::invokeMethod( q_func(), "documentAboutToBeRemoved", Q_ARG(BCodeEditorDocument *, doc) );
+    QMetaObject::invokeMethod( q_func(), "documentAboutToBeRemoved", Q_ARG(BAbstractCodeEditorDocument *, doc) );
 }
 
 void BCodeEditorPrivate::emitDocumentRemoved(const QString &fileName)
@@ -1104,11 +1114,11 @@ void BCodeEditorPrivate::emitDocumentRemoved(const QString &fileName)
     QMetaObject::invokeMethod(q_func(), "documentRemoved", Q_ARG(QString, fileName));
 }
 
-void BCodeEditorPrivate::emitCurrentDocumentChanged(BCodeEditorDocument *doc)
+void BCodeEditorPrivate::emitCurrentDocumentChanged(BAbstractCodeEditorDocument *doc)
 {
     foreach (BAbstractEditorModule *module, modules)
         module->currentDocumentChanged(doc);
-    QMetaObject::invokeMethod( q_func(), "currentDocumentChanged", Q_ARG(BCodeEditorDocument *, doc) );
+    QMetaObject::invokeMethod( q_func(), "currentDocumentChanged", Q_ARG(BAbstractCodeEditorDocument *, doc) );
     QMetaObject::invokeMethod( q_func(), "documentAvailableChanged", Q_ARG(bool, doc) );
 }
 
@@ -1155,14 +1165,15 @@ void BCodeEditorPrivate::setDriverEditor(BAbstractDocumentDriver *drv, BCodeEdit
 void BCodeEditorPrivate::createDropHandler()
 {
     dropHandler = new BDropHandler(this);
-    foreach ( BCodeEditorDocument *doc, q_func()->documents() )
-        doc->innerEdit()->viewport()->installEventFilter(dropHandler);
+    foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
+        doc->installDropHandler(dropHandler);
     connect( dropHandler, SIGNAL( destroyed() ), this, SLOT( createDropHandler() ) );
 }
 
 void BCodeEditorPrivate::twgtCurrentChanged(int index)
 {
-    BCodeEditorDocument *doc = (index >= 0) ? static_cast<BCodeEditorDocument *>( twgt->widget(index) ) : 0;
+    BAbstractCodeEditorDocument *doc = (index >= 0) ? static_cast<BAbstractCodeEditorDocument *>(twgt->widget(index)) :
+                                                      0;
     if (doc == document)
         return;
     if (document)
@@ -1210,7 +1221,8 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
 
 void BCodeEditorPrivate::twgtTabCloseRequested(int index)
 {
-    BCodeEditorDocument *doc = (index >= 0) ? static_cast<BCodeEditorDocument *>( twgt->widget(index) ) : 0;
+    BAbstractCodeEditorDocument *doc = (index >= 0) ? static_cast<BAbstractCodeEditorDocument *>(twgt->widget(index)) :
+                                                      0;
     if (doc)
         closeDocument(doc);
 }
@@ -1223,7 +1235,7 @@ void BCodeEditorPrivate::documentReadOnlyChanged(bool ro)
 
 void BCodeEditorPrivate::documentModificationChanged(bool modified)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    BAbstractCodeEditorDocument *doc = static_cast<BAbstractCodeEditorDocument *>(sender());
     if (!doc)
         return;
     updateDocumentTab(doc);
@@ -1291,7 +1303,7 @@ void BCodeEditorPrivate::documentCursorPositionChanged(const QPoint &pos)
 
 void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    BAbstractCodeEditorDocument *doc = static_cast<BAbstractCodeEditorDocument *>(sender());
     if (!doc)
         return;
     if (buisy)
@@ -1325,7 +1337,7 @@ void BCodeEditorPrivate::documentLinesSplitted(const QList<BCodeEdit::SplittedLi
 
 void BCodeEditorPrivate::documentFileNameChanged(const QString &fn)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    BAbstractCodeEditorDocument *doc = static_cast<BAbstractCodeEditorDocument *>(sender());
     if (!doc)
         return;
     updateDocumentTab(doc);
@@ -1351,7 +1363,7 @@ void BCodeEditorPrivate::documentFileTypeChanged(BAbstractFileType *ft)
 
 void BCodeEditorPrivate::documentLoadingFinished(bool success)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    BAbstractCodeEditorDocument *doc = static_cast<BAbstractCodeEditorDocument *>(sender());
     if (!doc)
         return;
     QString fn = doc->fileName();
@@ -1376,7 +1388,7 @@ void BCodeEditorPrivate::documentLoadingFinished(bool success)
 
 void BCodeEditorPrivate::documentSavingFinished(bool success)
 {
-    BCodeEditorDocument *doc = static_cast<BCodeEditorDocument *>( sender() );
+    BAbstractCodeEditorDocument *doc = static_cast<BAbstractCodeEditorDocument *>(sender());
     if ( !doc || !savingDocuments.contains(doc) )
         return;
     QString fn = savingDocuments.take(doc);
@@ -1693,7 +1705,7 @@ void BCodeEditor::setEditFont(const QFont &fnt)
     if (fnt == d->editFont)
         return;
     d->editFont = fnt;
-    foreach ( BCodeEditorDocument *doc, documents() )
+    foreach (BAbstractCodeEditorDocument *doc, documents())
         doc->setEditFont(fnt);
 }
 
@@ -1723,8 +1735,12 @@ void BCodeEditor::setEditMode(BCodeEdit::EditMode mode)
     if (d->editMode == mode)
         return;
     d->editMode = mode;
-    foreach ( BCodeEditorDocument *doc, documents() )
-        doc->setEditMode(mode);
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+    {
+        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(doc);
+        if (ddoc)
+            ddoc->setEditMode(mode);
+    }
     d->emitEditModeChanged(mode);
 }
 
@@ -1736,16 +1752,20 @@ void BCodeEditor::setEditLineLength(int ll)
     if (ll == d->editLineLength)
         return;
     d->editLineLength = ll;
-    foreach ( BCodeEditorDocument *doc, documents() )
-        doc->setEditLineLength(ll);
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+    {
+        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(doc);
+        if (ddoc)
+            ddoc->setEditLineLength(ll);
+    }
 }
 
-void BCodeEditor::setEditTabWidth(BCodeEdit::TabWidth tw)
+void BCodeEditor::setEditTabWidth(BeQt::TabWidth tw)
 {
     B_D(BCodeEditor);
     if (d->editTabWidth == tw)
         return;
-    foreach ( BCodeEditorDocument *doc, documents() )
+    foreach (BAbstractCodeEditorDocument *doc, documents())
         doc->setEditTabWidth(tw);
 }
 
@@ -1755,7 +1775,7 @@ void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
     if (enabled == d->bracketsHighlighting)
         return;
     d->bracketsHighlighting = enabled;
-    foreach ( BCodeEditorDocument *doc, documents() )
+    foreach (BAbstractCodeEditorDocument *doc, documents())
         doc->setBracketHighlightingEnabled(enabled);
 }
 
@@ -1933,16 +1953,17 @@ void BCodeEditor::setMaxHistoryCount(int count)
     }
 }
 
-bool BCodeEditor::mergeWith(BCodeEditor *other)
+bool BCodeEditor::mergeWith(BCodeEditor *other, int msecs)
 {
     if (!other)
         return true;
-    foreach ( BCodeEditorDocument *doc, other->documents() )
+    foreach (BAbstractCodeEditorDocument *doc, other->documents())
     {
-        BCodeEditorDocument *ndoc = !doc->isBuisy() ? addDocument( doc->fileName(), doc->text() ) : 0;
+        BAbstractCodeEditorDocument *ndoc = !doc->waitForProcessed(msecs) ?
+                    addDocument(doc->fileName(), doc->text()) : 0;
         if (!ndoc)
             return false;
-        ndoc->setModification( doc->isModified() );
+        ndoc->setModification(doc->isModified());
     }
     other->closeAllDocuments(false);
     return true;
@@ -1982,7 +2003,7 @@ int BCodeEditor::editLineLength() const
     return d_func()->editLineLength;
 }
 
-BCodeEdit::TabWidth BCodeEditor::editTabWidth() const
+BeQt::TabWidth BCodeEditor::editTabWidth() const
 {
     return d_func()->editTabWidth;
 }
@@ -2035,27 +2056,27 @@ QList<BAbstractEditorModule *> BCodeEditor::modules() const
     return d_func()->modules.values();
 }
 
-BCodeEditorDocument *BCodeEditor::currentDocument() const
+BAbstractCodeEditorDocument *BCodeEditor::currentDocument() const
 {
     return d_func()->document;
 }
 
-BCodeEditorDocument *BCodeEditor::document(const QString &fileName) const
+BAbstractCodeEditorDocument *BCodeEditor::document(const QString &fileName) const
 {
     if (fileName.isEmpty())
         return 0;
-    foreach (BCodeEditorDocument *doc, documents())
+    foreach (BAbstractCodeEditorDocument *doc, documents())
         if (doc->fileName() == fileName)
             return doc;
     return 0;
 }
 
-QList<BCodeEditorDocument *> BCodeEditor::documents() const
+QList<BAbstractCodeEditorDocument *> BCodeEditor::documents() const
 {
     const B_D(BCodeEditor);
-    QList<BCodeEditorDocument *> list;
+    QList<BAbstractCodeEditorDocument *> list;
     for (int i = 0; i < d->twgt->count(); ++i)
-        list << static_cast<BCodeEditorDocument *>( d->twgt->widget(i) );
+        list << static_cast<BAbstractCodeEditorDocument *>(d->twgt->widget(i));
     return list;
 }
 
@@ -2106,22 +2127,24 @@ bool BCodeEditor::documentAvailable() const
 
 QString BCodeEditor::currentDocumentFileName() const
 {
-    BCodeEditorDocument *doc = currentDocument();
+    BAbstractCodeEditorDocument *doc = currentDocument();
     return doc ? doc->fileName() : QString();
 }
 
 bool BCodeEditor::isCurrentDocumentModified() const
 {
-    BCodeEditorDocument *doc = currentDocument();
+    BAbstractCodeEditorDocument *doc = currentDocument();
     return doc && doc->isModified();
 }
 
 QStringList BCodeEditor::fileNames() const
 {
     QStringList list;
-    foreach ( BCodeEditorDocument *doc, documents() )
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+    {
         if (doc)
             list << doc->fileName();
+    }
     list.removeDuplicates();
     return list;
 }
@@ -2133,35 +2156,35 @@ QObject *BCodeEditor::dropHandler() const
 
 /*============================== Public slots ==============================*/
 
-BCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName)
+BAbstractCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName)
 {
     return addDocument(fileName, "");
 }
 
-BCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName, const QString &text)
+BAbstractCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName, const QString &text)
 {
     B_D(BCodeEditor);
     if ( d->findDocument( BCodeEditorPrivate::createFileName( fileName, d->defaultFN, fileNames() ) ) )
         return 0;
-    BCodeEditorDocument *doc = d->createDocument(fileName, text);
+    BAbstractCodeEditorDocument *doc = d->createDocument(fileName, text);
     d->addDocument(doc);
     return doc;
 }
 
-QList<BCodeEditorDocument *> BCodeEditor::openDocuments()
+QList<BAbstractCodeEditorDocument *> BCodeEditor::openDocuments()
 {
     QStringList list;
     QTextCodec *codec = d_func()->defaultCodec;
     return d_func()->driver->getOpenFileNames(this, list, codec) ? openDocuments(list, codec) :
-                                                                   QList<BCodeEditorDocument *>();
+                                                                   QList<BAbstractCodeEditorDocument *>();
 }
 
-QList<BCodeEditorDocument *> BCodeEditor::openDocuments(const QStringList &fileNames, QTextCodec *codec)
+QList<BAbstractCodeEditorDocument *> BCodeEditor::openDocuments(const QStringList &fileNames, QTextCodec *codec)
 {
-    QList<BCodeEditorDocument *> list;
+    QList<BAbstractCodeEditorDocument *> list;
     foreach (const QString &fn, fileNames)
     {
-        BCodeEditorDocument *doc = openDocument(fn, codec);
+        BAbstractCodeEditorDocument *doc = openDocument(fn, codec);
         if (!doc)
             break;
         list << doc;
@@ -2169,14 +2192,14 @@ QList<BCodeEditorDocument *> BCodeEditor::openDocuments(const QStringList &fileN
     return list;
 }
 
-BCodeEditorDocument *BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
+BAbstractCodeEditorDocument *BCodeEditor::openDocument(const QString &fileName, QTextCodec *codec)
 {
     return d_func()->openDocument(fileName, codec);
 }
 
 bool BCodeEditor::saveCurrentDocument()
 {
-    BCodeEditorDocument *doc = currentDocument();
+    BAbstractCodeEditorDocument *doc = currentDocument();
     return doc && (!doc->isModified() || d_func()->saveDocument(doc));
 }
 
@@ -2238,7 +2261,7 @@ void BCodeEditor::setCurrentDocumentText(const QString &text)
 
 /*============================== Protected methods =========================*/
 
-BCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) const
+BAbstractCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) const
 {
     switch (d_func()->docType)
     {

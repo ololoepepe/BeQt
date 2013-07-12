@@ -82,7 +82,7 @@ void BOpenSaveEditorModulePrivate::init()
 
 void BOpenSaveEditorModulePrivate::checkActions()
 {
-    BCodeEditorDocument *doc = q_func()->currentDocument();
+    BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
     if ( !actNewFile.isNull() )
         actNewFile->setEnabled(editor);
     if ( !actOpenFiles.isNull() )
@@ -410,7 +410,7 @@ void BOpenSaveEditorModule::documentBuisyChanged(bool)
     d_func()->checkActions();
 }
 
-void BOpenSaveEditorModule::currentDocumentChanged(BCodeEditorDocument *)
+void BOpenSaveEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *)
 {
     d_func()->checkActions();
 }

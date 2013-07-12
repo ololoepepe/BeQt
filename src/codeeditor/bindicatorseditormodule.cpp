@@ -263,7 +263,7 @@ void BIndicatorsEditorModule::defaultCodecChanged(const QString &)
     d_func()->updateEncodingIndicator();
 }
 
-void BIndicatorsEditorModule::currentDocumentChanged(BCodeEditorDocument *)
+void BIndicatorsEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *)
 {
     d_func()->updateCursorPosIndicator();
     d_func()->updateEncodingIndicator();

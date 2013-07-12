@@ -228,17 +228,17 @@ void BAbstractEditorModule::editModeChanged(BCodeEdit::EditMode)
     //
 }
 
-void BAbstractEditorModule::documentAboutToBeAdded(BCodeEditorDocument *)
+void BAbstractEditorModule::documentAboutToBeAdded(BAbstractCodeEditorDocument *)
 {
     //
 }
 
-void BAbstractEditorModule::documentAdded(BCodeEditorDocument *)
+void BAbstractEditorModule::documentAdded(BAbstractCodeEditorDocument *)
 {
     //
 }
 
-void BAbstractEditorModule::documentAboutToBeRemoved(BCodeEditorDocument *)
+void BAbstractEditorModule::documentAboutToBeRemoved(BAbstractCodeEditorDocument *)
 {
     //
 }
@@ -248,7 +248,7 @@ void BAbstractEditorModule::documentRemoved(const QString &)
     //
 }
 
-void BAbstractEditorModule::currentDocumentChanged(BCodeEditorDocument *)
+void BAbstractEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *)
 {
     //
 }
@@ -263,12 +263,12 @@ void BAbstractEditorModule::fileHistoryChanged(const QStringList &)
     //
 }
 
-BCodeEditorDocument *BAbstractEditorModule::currentDocument() const
+BAbstractCodeEditorDocument *BAbstractEditorModule::currentDocument() const
 {
     return editor() ? editor()->currentDocument() : 0;
 }
 
-QList<BCodeEditorDocument *> BAbstractEditorModule::documents() const
+QList<BAbstractCodeEditorDocument *> BAbstractEditorModule::documents() const
 {
-    return editor() ? editor()->documents() : QList<BCodeEditorDocument *>();
+    return editor() ? editor()->documents() : QList<BAbstractCodeEditorDocument *>();
 }

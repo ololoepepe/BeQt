@@ -53,7 +53,7 @@ public:
     void setEditFont(const QFont &fnt);
     void setEditMode(EditMode mode);
     void setEditLineLength(int ll);
-    void setEditTabWidth(BAbstractCodeEditorDocument::TabWidth tw);
+    void setEditTabWidth(BeQt::TabWidth tw);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
@@ -70,7 +70,7 @@ public:
     QFont editFont() const;
     EditMode editMode() const;
     int editLineLength() const;
-    BAbstractCodeEditorDocument::TabWidth editTabWidth() const;
+    BeQt::TabWidth editTabWidth() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
@@ -97,8 +97,7 @@ public Q_SLOTS:
     void deleteSelection();
     void undo();
     void redo();
-    void rehighlight();
-    void highlightBrackets();
+    void highlightBrackets(const BAbstractFileType::BracketPairList &recognizedBrackets, bool enabled);
 Q_SIGNALS:
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);

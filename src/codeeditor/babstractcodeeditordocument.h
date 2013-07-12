@@ -3,11 +3,14 @@
 
 class BAbstractCodeEditorDocumentPrivate;
 class BCodeEditor;
-class BAbstractFileType;
 class BAbstractDocumentDriver;
+class BCodeEditPrivate;
+class BCodeEditorPrivate;
 
 class QFont;
 class QPoint;
+
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -28,34 +31,15 @@ class BAbstractCodeEditorDocument : public QWidget, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractCodeEditorDocument)
 public:
-    enum TabWidth
-    {
-        TabWidth2 = 2,
-        TabWidth4 = 4,
-        TabWidth8 = 8
-    };
-public:
-    struct BracketPair
-    {
-        QString opening;
-        QString closing;
-        QString escape;
-    };
-public:
-    typedef QList<BracketPair> BracketPairList;
-public:
     explicit BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
     ~BAbstractCodeEditorDocument();
 protected:
     explicit BAbstractCodeEditorDocument(BAbstractCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 public:
-    static bool areEqual(const BracketPair &bp1, const BracketPair &bp2);
-    static bool areEqual(const BracketPairList &l1, const BracketPairList &l2);
-public:
     virtual void setReadOnly(bool ro) = 0;
     virtual void setModification(bool modified) = 0;
     virtual void setEditFont(const QFont &fnt) = 0;
-    virtual void setEditTabWidth(TabWidth tw) = 0;
+    virtual void setEditTabWidth(BeQt::TabWidth tw) = 0;
     virtual bool isReadOnly() const = 0;
     virtual bool isModified() const = 0;
     virtual bool hasSelection() const = 0;
@@ -65,7 +49,7 @@ public:
     virtual bool isUndoAvailable() const = 0;
     virtual bool isRedoAvailable() const = 0;
     virtual QFont editFont() const = 0;
-    virtual TabWidth editTabWidth() const = 0;
+    virtual BeQt::TabWidth editTabWidth() const = 0;
     virtual QPoint cursorPosition() const = 0;
     virtual QString text(bool full = false) const = 0;
     virtual QString selectedText(bool full = false) const = 0;
@@ -77,7 +61,7 @@ public:
     virtual int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs) = 0;
     void init();
     void setFileType(BAbstractFileType *ft);
-    void setRecognizedBrackets(const BracketPairList &list);
+    void setRecognizedBrackets(const BAbstractFileType::BracketPairList &list);
     void setBracketHighlightingEnabled(bool enabled);
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *codec);
@@ -87,9 +71,10 @@ public:
     bool load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
+    bool waitForProcessed(int msecs = 30 * BeQt::Second);
     BAbstractFileType *fileType() const;
     QString fileTypeId() const;
-    BracketPairList recognizedBrackets() const;
+    BAbstractFileType::BracketPairList recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
     QString fileName() const;
     QTextCodec *codec() const;
@@ -115,6 +100,7 @@ public Q_SLOTS:
     void undo();
     void redo();
     void rehighlight();
+    void rehighlightBlock(const QTextBlock &block);
 protected:
     virtual QWidget *createEdit(QTextDocument **doc = 0) = 0;
     virtual void setTextImplementation(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte) = 0;
@@ -133,6 +119,9 @@ protected:
     virtual void redoImplementation() = 0;
     virtual void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks) = 0;
     virtual void highlightBrackets() = 0;
+    virtual void installDropHandler(QObject *handler) = 0;
+    virtual void installInnerEventFilter(QObject *filter) = 0;
+    void blockHighlighter(bool block);
     QWidget *innerEdit(QTextDocument **doc = 0) const;
     QTextDocument *innerDocument() const;
 protected Q_SLOTS:
@@ -164,6 +153,9 @@ Q_SIGNALS:
     void codecChanged(const QString &codecName);
     void loadingFinished(bool success);
     void savingFinished(bool success);
+private:
+    friend class BCodeEditPrivate;
+    friend class BCodeEditorPrivate;
 private:
     Q_DISABLE_COPY(BAbstractCodeEditorDocument)
 };

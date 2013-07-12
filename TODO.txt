@@ -32,6 +32,5 @@
 [done] Remove extra constructors from some classes
 * Improve BCodeEditor asynchronous operations
 * Add ability to use classic documents in BCodeEditor
-* Remove old commented code
 * Improve BCodeEditor::setDocumentType
 [done] Add BClipboardNotifier class

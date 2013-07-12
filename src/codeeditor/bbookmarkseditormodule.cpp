@@ -40,7 +40,7 @@ BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
 
 /*============================== Static public methods =====================*/
 
-void BBookmarksEditorModulePrivate::setBookmarks(BCodeEditorDocument *doc, const QList<QPoint> &list)
+void BBookmarksEditorModulePrivate::setBookmarks(BAbstractCodeEditorDocument *doc, const QList<QPoint> &list)
 {
     if (!doc)
         return;
@@ -50,14 +50,14 @@ void BBookmarksEditorModulePrivate::setBookmarks(BCodeEditorDocument *doc, const
     doc->setProperty("beqt/bookmarks", vl);
 }
 
-void BBookmarksEditorModulePrivate::setCurrentBookmark(BCodeEditorDocument *doc, const QPoint &pos)
+void BBookmarksEditorModulePrivate::setCurrentBookmark(BAbstractCodeEditorDocument *doc, const QPoint &pos)
 {
     if (!doc)
         return;
     doc->setProperty("beqt/currentBookmark", pos);
 }
 
-QList<QPoint> BBookmarksEditorModulePrivate::bookmarks(BCodeEditorDocument *doc)
+QList<QPoint> BBookmarksEditorModulePrivate::bookmarks(BAbstractCodeEditorDocument *doc)
 {
     if (!doc)
         return QList<QPoint>();
@@ -68,7 +68,7 @@ QList<QPoint> BBookmarksEditorModulePrivate::bookmarks(BCodeEditorDocument *doc)
     return list;
 }
 
-QPoint BBookmarksEditorModulePrivate::currentBookmark(BCodeEditorDocument *doc)
+QPoint BBookmarksEditorModulePrivate::currentBookmark(BAbstractCodeEditorDocument *doc)
 {
     if (!doc)
         return BBookmarksEditorModule::InvalidPos;
@@ -99,7 +99,7 @@ void BBookmarksEditorModulePrivate::init()
 
 void BBookmarksEditorModulePrivate::checkBookmarks()
 {
-    BCodeEditorDocument *doc = q_func()->currentDocument();
+    BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
     bool bm = !bookmarks(doc).isEmpty();
     if ( !actMakeBookmark.isNull() )
         actMakeBookmark->setEnabled(doc);
@@ -310,7 +310,7 @@ void BBookmarksEditorModule::editorUnset(BCodeEditor *)
     d_func()->checkBookmarks();
 }
 
-void BBookmarksEditorModule::currentDocumentChanged(BCodeEditorDocument *)
+void BBookmarksEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *)
 {
     d_func()->checkBookmarks();
 }
