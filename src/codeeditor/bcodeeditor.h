@@ -10,6 +10,7 @@ class QStringList;
 class QTextCodec;
 class QMenu;
 class QComboBox;
+class QColor;
 
 #include "bcodeedit.h"
 #include "babstractcodeeditordocument.h"
@@ -93,7 +94,9 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
-    void setBracketHighlightingEnabled(bool enabled);
+    void setCurrentLineHighlightingEnabled(bool b);
+    void setHighlightedLineColor(const QColor &c);
+    void setBracketHighlightingEnabled(bool b);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
     void setDefaultFileName(const QString &fileName);
@@ -122,6 +125,8 @@ public:
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
+    bool currentLineHighlightingEnabled() const;
+    QColor highlightedLineColor() const;
     bool isBracketHighlightingEnabled() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;

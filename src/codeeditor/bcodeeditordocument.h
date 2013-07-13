@@ -9,6 +9,7 @@ class QWidget;
 class QPoint;
 class QFont;
 class QString;
+class QColor;
 
 #include "babstractcodeeditordocument.h"
 #include "bcodeedit.h"
@@ -39,6 +40,8 @@ public:
     void setEditFont(const QFont &fnt);
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
+    void setCurrentLineHighlightingEnabled(bool b);
+    void setHighlightedLineColor(const QColor &c);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
@@ -54,6 +57,8 @@ public:
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
+    bool currentLineHighlightingEnabled() const;
+    QColor highlightedLineColor() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;

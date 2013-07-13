@@ -27,7 +27,6 @@ class QSize;
 class QTextDocument;
 class QTextBlock;
 class QTextCharFormat;
-class QColor;
 class QFont;
 
 #include "bcodeedit.h"
@@ -49,6 +48,7 @@ class QFont;
 #include <QPair>
 #include <QTextCharFormat>
 #include <QRunnable>
+#include <QColor>
 
 /*============================================================================
 ================================ BPlainTextEditExtended ======================
@@ -161,6 +161,7 @@ public:
     static QList<QChar> createUnsupportedSymbols();
     static QTextCharFormat createBracketsFormat();
     static QTextCharFormat createBracketsErrorFormat();
+    static QTextCharFormat createLineFormat(const QColor &c);
     static BCodeEdit::SplittedLinesRange createSplittedLinesRange();
     static FindBracketPairResult createFindBracketPairResult();
     static QTextEdit::ExtraSelection createExtraSelection( const QPlainTextEdit *edt,
@@ -184,6 +185,7 @@ public:
     void setBuisy(bool b);
     void insertText(const QString &txt, bool asKeyPress = false);
     void highlightBrackets(const BAbstractFileType::BracketPairList &recognizedBrackets, bool enabled);
+    void highlightCurrentLine();
     FindBracketPairResult findLeftBracketPair(const BAbstractFileType::BracketPairList &recognizedBrackets) const;
     FindBracketPairResult findRightBracketPair(const BAbstractFileType::BracketPairList &recognizedBrackets) const;
     bool testBracket(const QString &text, int posInBlock, bool opening,
@@ -228,8 +230,11 @@ public:
     bool undoAvailable;
     bool redoAvailable;
     bool buisy;
+    bool lineHighlighting;
+    QColor lineColor;
     BCodeEditParseTask *parceTask;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
+    QList<QTextEdit::ExtraSelection> highlightedLines;
     QHBoxLayout *hlt;
       BPlainTextEditExtended *ptedt;
       BLineNumberWidget *lnwgt;

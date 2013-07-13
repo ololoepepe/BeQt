@@ -8,6 +8,7 @@ class QString;
 class QPoint;
 class QFont;
 class BAbstractFileType;
+class QColor;
 
 #include "babstractcodeeditordocument.h"
 
@@ -55,6 +56,8 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
+    void setCurrentLineHighlightingEnabled(bool b);
+    void setHighlightedLineColor(const QColor &c);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
@@ -73,6 +76,8 @@ public:
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
+    bool currentLineHighlightingEnabled() const;
+    QColor highlightedLineColor() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;

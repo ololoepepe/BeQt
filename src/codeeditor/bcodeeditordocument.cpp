@@ -19,6 +19,7 @@ class BSplittedLinesDialog;
 #include <QMap>
 #include <QTextDocument>
 #include <QDir>
+#include <QColor>
 
 #include <QDebug>
 
@@ -134,6 +135,16 @@ void BCodeEditorDocument::setLineNumberWidgetVisible(bool b)
     d_func()->cedt->setLineNumberWidgetVisible(b);
 }
 
+void BCodeEditorDocument::setCurrentLineHighlightingEnabled(bool b)
+{
+    d_func()->cedt->setCurrentLineHighlightingEnabled(b);
+}
+
+void BCodeEditorDocument::setHighlightedLineColor(const QColor &c)
+{
+    d_func()->cedt->setHighlightedLineColor(c);
+}
+
 bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     return d_func()->cedt->findNext(txt, flags, cyclic);
@@ -207,6 +218,16 @@ BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
 bool BCodeEditorDocument::lineNumberWidgetVisible() const
 {
     return d_func()->cedt->lineNumberWidgetVisible();
+}
+
+bool BCodeEditorDocument::currentLineHighlightingEnabled() const
+{
+    return d_func()->cedt->currentLineHighlightingEnabled();
+}
+
+QColor BCodeEditorDocument::highlightedLineColor() const
+{
+    return d_func()->cedt->highlightedLineColor();
 }
 
 QPoint BCodeEditorDocument::cursorPosition() const

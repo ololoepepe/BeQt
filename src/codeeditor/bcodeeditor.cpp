@@ -596,6 +596,8 @@ void BCodeEditorPrivate::init()
     editLineLength = 120;
     editTabWidth = BeQt::TabWidth4;
     lineNumberVisible = true;
+    lineHighlighting = false;
+    lineColor = QColor("gray").lighter(160);
     bracketsHighlighting = true;
     driver = 0;
     q->setDriver(new BLocalDocumentDriver);
@@ -700,6 +702,8 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
     }
     doc->setEditTabWidth(editTabWidth);
     doc->setLineNumberWidgetVisible(lineNumberVisible);
+    doc->setCurrentLineHighlightingEnabled(lineHighlighting);
+    doc->setHighlightedLineColor(lineColor);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
@@ -1800,14 +1804,34 @@ void BCodeEditor::setLineNumberWidgetVisible(bool b)
         doc->setLineNumberWidgetVisible(b);
 }
 
-void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
+void BCodeEditor::setCurrentLineHighlightingEnabled(bool b)
 {
     B_D(BCodeEditor);
-    if (enabled == d->bracketsHighlighting)
+    if (d->lineHighlighting == b)
         return;
-    d->bracketsHighlighting = enabled;
+    d->lineHighlighting = b;
     foreach (BAbstractCodeEditorDocument *doc, documents())
-        doc->setBracketHighlightingEnabled(enabled);
+        doc->setCurrentLineHighlightingEnabled(b);
+}
+
+void BCodeEditor::setHighlightedLineColor(const QColor &c)
+{
+    B_D(BCodeEditor);
+    if (d->lineColor == c)
+        return;
+    d->lineColor = c;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+        doc->setHighlightedLineColor(c);
+}
+
+void BCodeEditor::setBracketHighlightingEnabled(bool b)
+{
+    B_D(BCodeEditor);
+    if (b == d->bracketsHighlighting)
+        return;
+    d->bracketsHighlighting = b;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+        doc->setBracketHighlightingEnabled(b);
 }
 
 void BCodeEditor::setDefaultCodec(QTextCodec *codec)
@@ -2042,6 +2066,16 @@ BeQt::TabWidth BCodeEditor::editTabWidth() const
 bool BCodeEditor::lineNumberWidgetVisible() const
 {
     return d_func()->lineNumberVisible;
+}
+
+bool BCodeEditor::currentLineHighlightingEnabled() const
+{
+    return d_func()->lineHighlighting;
+}
+
+QColor BCodeEditor::highlightedLineColor() const
+{
+    return d_func()->lineColor;
 }
 
 bool BCodeEditor::isBracketHighlightingEnabled() const

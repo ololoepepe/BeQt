@@ -9,6 +9,7 @@ class BCodeEditorPrivate;
 
 class QFont;
 class QPoint;
+class QColor;
 
 #include "babstractfiletype.h"
 
@@ -41,6 +42,8 @@ public:
     virtual void setEditFont(const QFont &fnt) = 0;
     virtual void setEditTabWidth(BeQt::TabWidth tw) = 0;
     virtual void setLineNumberWidgetVisible(bool b) = 0;
+    virtual void setCurrentLineHighlightingEnabled(bool b) = 0;
+    virtual void setHighlightedLineColor(const QColor &c) = 0;
     virtual bool isReadOnly() const = 0;
     virtual bool isModified() const = 0;
     virtual bool hasSelection() const = 0;
@@ -52,6 +55,8 @@ public:
     virtual QFont editFont() const = 0;
     virtual BeQt::TabWidth editTabWidth() const = 0;
     virtual bool lineNumberWidgetVisible() const = 0;
+    virtual bool currentLineHighlightingEnabled() const = 0;
+    virtual QColor highlightedLineColor() const = 0;
     virtual QPoint cursorPosition() const = 0;
     virtual QString text(bool full = false) const = 0;
     virtual QString selectedText(bool full = false) const = 0;

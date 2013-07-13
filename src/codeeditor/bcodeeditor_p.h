@@ -39,6 +39,7 @@ class QMenu;
 #include <QList>
 #include <QDialog>
 #include <QComboBox>
+#include <QColor>
 
 /*============================================================================
 ================================ StructuredCodecsComboBox ====================
@@ -295,6 +296,8 @@ public:
     int editLineLength;
     BeQt::TabWidth editTabWidth;
     bool lineNumberVisible;
+    bool lineHighlighting;
+    QColor lineColor;
     bool bracketsHighlighting;
     QTextCodec *defaultCodec;
     QString defaultFN;

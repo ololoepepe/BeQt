@@ -526,6 +526,14 @@ QTextCharFormat BCodeEditPrivate::createBracketsErrorFormat()
     return fmt;
 }
 
+QTextCharFormat BCodeEditPrivate::createLineFormat(const QColor &c)
+{
+    QTextCharFormat fmt;
+    fmt.setBackground(QBrush(c));
+    fmt.setProperty(QTextFormat::FullWidthSelection, true);
+    return fmt;
+}
+
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::createSplittedLinesRange()
 {
     BCodeEdit::SplittedLinesRange slr;
@@ -609,6 +617,8 @@ void BCodeEditPrivate::init()
     undoAvailable = false;
     redoAvailable = false;
     buisy = false;
+    lineHighlighting = false;
+    lineColor = QColor("gray").lighter(160);
     parceTask = 0;
     B_Q(BCodeEdit);
     hlt = new QHBoxLayout(q);
@@ -1138,6 +1148,19 @@ void BCodeEditPrivate::highlightBrackets(const BAbstractFileType::BracketPairLis
             }
         }
     }
+    ptedt->setExtraSelections(selections);
+}
+
+void BCodeEditPrivate::highlightCurrentLine()
+{
+    QList<QTextEdit::ExtraSelection> selections = ptedt->extraSelections();
+    removeExtraSelections(selections, highlightedLines);
+    highlightedLines.clear();
+    if (!lineHighlighting)
+        return ptedt->setExtraSelections(selections);
+    QTextEdit::ExtraSelection es = createExtraSelection(ptedt, createLineFormat(lineColor));
+    highlightedBrackets << es;
+    selections << es;
     ptedt->setExtraSelections(selections);
 }
 
@@ -1841,6 +1864,7 @@ void BCodeEditPrivate::popupMenu(const QPoint &pos)
 void BCodeEditPrivate::updateCursorPosition()
 {
     requestHighlightBrackets();
+    highlightCurrentLine();
     QTextCursor tc = ptedt->textCursor();
     cursorPosition = QPoint( tc.positionInBlock(), tc.blockNumber() );
     QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
@@ -2026,6 +2050,22 @@ void BCodeEdit::setLineNumberWidgetVisible(bool b)
     d_func()->lnwgt->setVisible(b);
 }
 
+void BCodeEdit::setHighlightedLineColor(const QColor &c)
+{
+    if (d_func()->lineColor == c)
+        return;
+    d_func()->lineColor = c;
+    d_func()->highlightCurrentLine();
+}
+
+void BCodeEdit::setCurrentLineHighlightingEnabled(bool b)
+{
+    if (d_func()->lineHighlighting == b)
+        return;
+    d_func()->lineHighlighting = b;
+    d_func()->highlightCurrentLine();
+}
+
 void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
 {
     d_func()->ptedt->document()->clearUndoRedoStacks(historyToClear);
@@ -2205,6 +2245,16 @@ BeQt::TabWidth BCodeEdit::editTabWidth() const
 bool BCodeEdit::lineNumberWidgetVisible() const
 {
     return d_func()->lnwgt->isVisible();
+}
+
+bool BCodeEdit::currentLineHighlightingEnabled() const
+{
+    return d_func()->lineHighlighting;
+}
+
+QColor BCodeEdit::highlightedLineColor() const
+{
+    return d_func()->lineColor;
 }
 
 QPoint BCodeEdit::cursorPosition() const
