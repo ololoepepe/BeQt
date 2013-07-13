@@ -52,7 +52,8 @@ int main(int argc, char **argv)
                                                         + QApplication::organizationDomain()
                                                         + ">homepage</a></center>");
     //Creating code editor and loading related settings
-    BCodeEditor *cedtr = new BCodeEditor;
+    BCodeEditor *cedtr = new BCodeEditor(BCodeEditor::SimpleDocument);
+    cedtr->setCurrentLineHighlightingEnabled(true);
     QSettings *s = BApplication::settingsInstance();
     cedtr->driver()->restoreState( s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray() );
     BAbstractEditorModule *osmdl = cedtr->module(BCodeEditor::OpenSaveModule);

@@ -13,6 +13,7 @@
 #include "bediteditormodule.h"
 #include "bcodeedit_p.h"
 #include "bcodeeditordocument.h"
+#include "bsimplecodeeditordocument.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -1195,8 +1196,10 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
                     this, SLOT( documentPasteAvailableChanged(bool) ) );
         disconnect( document, SIGNAL( undoAvailableChanged(bool) ), this, SLOT( documentUndoAvailableChanged(bool) ) );
         disconnect( document, SIGNAL( redoAvailableChanged(bool) ), this, SLOT( documentRedoAvailableChanged(bool) ) );
-        disconnect( document, SIGNAL( editModeChanged(BCodeEdit::EditMode) ),
-                    this, SLOT( documentEditModeChanged(BCodeEdit::EditMode) ) );
+        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(document);
+        if (ddoc)
+            disconnect(document, SIGNAL(editModeChanged(BCodeEdit::EditMode)),
+                       this, SLOT(documentEditModeChanged(BCodeEdit::EditMode)));
         disconnect( document, SIGNAL( cursorPositionChanged(QPoint) ),
                     this, SLOT( documentCursorPositionChanged(QPoint) ) );
         disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
@@ -1214,8 +1217,10 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
         connect( document, SIGNAL( pasteAvailableChanged(bool) ), this, SLOT( documentPasteAvailableChanged(bool) ) );
         connect( document, SIGNAL( undoAvailableChanged(bool) ), this, SLOT( documentUndoAvailableChanged(bool) ) );
         connect( document, SIGNAL( redoAvailableChanged(bool) ), this, SLOT( documentRedoAvailableChanged(bool) ) );
-        connect( document, SIGNAL( editModeChanged(BCodeEdit::EditMode) ),
-                 this, SLOT( documentEditModeChanged(BCodeEdit::EditMode) ) );
+        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(document);
+        if (ddoc)
+            connect(document, SIGNAL( editModeChanged(BCodeEdit::EditMode)),
+                    this, SLOT(documentEditModeChanged(BCodeEdit::EditMode)));
         connect( document, SIGNAL( cursorPositionChanged(QPoint) ),
                  this, SLOT( documentCursorPositionChanged(QPoint) ) );
         connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
@@ -1423,9 +1428,20 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
 /*============================== Public constructors =======================*/
 
 BCodeEditor::BCodeEditor(QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditorPrivate(this) )
+    QWidget(parent), BBase(*new BCodeEditorPrivate(this))
 {
     d_func()->init();
+    addModule(EditModule);
+    addModule(IndicatorsModule);
+    addModule(OpenSaveModule);
+    addModule(SearchModule);
+}
+
+BCodeEditor::BCodeEditor(StandardDocumentType t, QWidget *parent) :
+    QWidget(parent), BBase(*new BCodeEditorPrivate(this))
+{
+    d_func()->init();
+    d_func()->docType = t;
     addModule(EditModule);
     addModule(IndicatorsModule);
     addModule(OpenSaveModule);
@@ -1721,8 +1737,6 @@ bool BCodeEditor::setDocumentType(StandardDocumentType t)
 
 void BCodeEditor::setEditFont(const QFont &fnt)
 {
-    if ( !QFontInfo(fnt).fixedPitch() )
-        return;
     if (fnt.pointSize() < 1 && fnt.pixelSize() < 1)
         return;
     B_D(BCodeEditor);
@@ -2333,6 +2347,8 @@ BAbstractCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) co
     {
     case StandardDocument:
         return new BCodeEditorDocument(editor);
+    case SimpleDocument:
+        return new BSimpleCodeEditorDocument(editor);
     default:
         return 0;
     }

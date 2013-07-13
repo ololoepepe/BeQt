@@ -464,6 +464,7 @@ void BAbstractCodeEditorDocument::insertText(const QString &txt)
 void BAbstractCodeEditorDocument::moveCursor(const QPoint &pos)
 {
     moveCursorImplementation(pos);
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::selectText(const QPoint &start, const QPoint &end)
@@ -484,21 +485,25 @@ void BAbstractCodeEditorDocument::selectLines(int firstLine, int lastLine)
 void BAbstractCodeEditorDocument::selectAll()
 {
     selectAllImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::deselectText()
 {
     deselectTextImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::cut()
 {
     cutImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::copy()
 {
     copyImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::paste()
@@ -509,16 +514,19 @@ void BAbstractCodeEditorDocument::paste()
 void BAbstractCodeEditorDocument::deleteSelection()
 {
     deleteSelectionImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::undo()
 {
     undoImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::redo()
 {
     redoImplementation();
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::rehighlight()
@@ -535,16 +543,12 @@ void BAbstractCodeEditorDocument::rehighlightBlock(const QTextBlock &block)
 
 /*============================== Protected methods =========================*/
 
-QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
+void BAbstractCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
 {
-    if (doc)
-        *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
-    return d_func()->edit;
-}
-
-QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
-{
-    return d_func()->highlighter ? d_func()->highlighter->document() : 0;
+    QTextDocument *doc = innerDocument();
+    if (!doc)
+        return;
+    doc->clearUndoRedoStacks(historyToClear);
 }
 
 void BAbstractCodeEditorDocument::blockHighlighter(bool block)
@@ -555,6 +559,18 @@ void BAbstractCodeEditorDocument::blockHighlighter(bool block)
         d_func()->highlighter->setDocument(0);
     else
         d_func()->highlighter->setDocument(innerDocument());
+}
+
+QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
+{
+    if (doc)
+        *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
+    return d_func()->edit;
+}
+
+QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
+{
+    return d_func()->highlighter ? d_func()->highlighter->document() : 0;
 }
 
 /*============================== Protected slots ===========================*/

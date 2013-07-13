@@ -15,5 +15,7 @@
 #include "blocaldocumentdriver.h"
 #include "bopensaveeditormodule.h"
 #include "bsearcheditormodule.h"
+#include "bsimplecodeeditordocument.h"
+#include "btextblockuserdata.h"
 
 #endif //BEQT_BEQTCODEEDITOR_MODULE_H

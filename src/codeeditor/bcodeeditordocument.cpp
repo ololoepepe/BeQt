@@ -2,7 +2,6 @@ class BSplittedLinesDialog;
 
 #include "bcodeeditordocument.h"
 #include "bcodeeditordocument_p.h"
-#include "babstractdocumentdriver.h"
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
 #include "bplaintextedit.h"
@@ -10,16 +9,11 @@ class BSplittedLinesDialog;
 #include <BeQtCore/BeQt>
 
 #include <QObject>
-#include <QCoreApplication>
-#include <QList>
 #include <QString>
 #include <QTextCodec>
-#include <QPointer>
-#include <QByteArray>
-#include <QMap>
 #include <QTextDocument>
-#include <QDir>
 #include <QColor>
+#include <QList>
 
 #include <QDebug>
 
@@ -311,12 +305,9 @@ void BCodeEditorDocument::activateWindowImplementation()
 
 void BCodeEditorDocument::setTextImplementation(const QString &txt, int asyncIfLongerThan)
 {
-    B_D(BCodeEditorDocument);
-    if (d->highlighter)
-        d->highlighter->setDocument(0);
+    blockHighlighter(true);
     d_func()->cedt->setText(txt, asyncIfLongerThan);
-    if (d->highlighter)
-        d->highlighter->setDocument(d->cedt->innerDocument());
+    blockHighlighter(false);
 }
 
 void BCodeEditorDocument::insertTextImplementation(const QString &txt)
@@ -382,11 +373,6 @@ void BCodeEditorDocument::undoImplementation()
 void BCodeEditorDocument::redoImplementation()
 {
     d_func()->cedt->redo();
-}
-
-void BCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
-{
-    d_func()->cedt->clearUndoRedoStacks(historyToClear);
 }
 
 void BCodeEditorDocument::highlightBrackets()

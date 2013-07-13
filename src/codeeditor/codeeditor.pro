@@ -38,6 +38,8 @@ HEADERS += \
     bopensaveeditormodule_p.h \
     bsearcheditormodule.h \
     bsearcheditormodule_p.h \
+    bsimplecodeeditordocument.h \
+    bsimplecodeeditordocument_p.h \
     btextblockuserdata.h
 
 SOURCES += \
@@ -55,6 +57,7 @@ SOURCES += \
     blocaldocumentdriver.cpp \
     bopensaveeditormodule.cpp \
     bsearcheditormodule.cpp \
+    bsimplecodeeditordocument.cpp \
     btextblockuserdata.cpp
 
 !contains(BEQT_CONFIG, no_install) {

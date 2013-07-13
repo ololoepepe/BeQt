@@ -126,10 +126,10 @@ protected:
     virtual void deleteSelectionImplementation() = 0;
     virtual void undoImplementation() = 0;
     virtual void redoImplementation() = 0;
-    virtual void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks) = 0;
     virtual void highlightBrackets() = 0;
     virtual void installDropHandler(QObject *handler) = 0;
     virtual void installInnerEventFilter(QObject *filter) = 0;
+    void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void blockHighlighter(bool block);
     QWidget *innerEdit(QTextDocument **doc = 0) const;
     QTextDocument *innerDocument() const;
