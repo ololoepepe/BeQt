@@ -10,6 +10,7 @@ class BCodeEditorPrivate;
 class QFont;
 class QPoint;
 class QColor;
+class QPlainTextEdit;
 
 #include "babstractfiletype.h"
 
@@ -22,6 +23,8 @@ class QColor;
 #include <QList>
 #include <QString>
 #include <QTextDocument>
+#include <QTextEdit>
+#include <QTextCharFormat>
 
 /*============================================================================
 ================================ BAbstractCodeEditorDocument =================
@@ -31,6 +34,31 @@ class BAbstractCodeEditorDocument : public QWidget, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractCodeEditorDocument)
+public:
+    typedef BAbstractFileType::BracketPair BracketPair;
+    typedef QList<BracketPair> BracketPairList;
+public:
+    struct FindBracketPairResult
+    {
+        int start;
+        int end;
+        const BracketPair *startBr;
+        const BracketPair *endBr;
+    };
+public:
+    typedef QList<FindBracketPairResult> FindBracketPairResultList;
+    typedef QTextEdit::ExtraSelection ExtraSelection;
+    typedef QList<ExtraSelection> ExtraSelectionList;
+public:
+    static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
+    static QTextCharFormat createBracketsFormat();
+    static QTextCharFormat createBracketsErrorFormat();
+    static QTextCharFormat createLineFormat(const QColor &c);
+    static ExtraSelection createExtraSelection(const QTextEdit *edt,
+                                               const QTextCharFormat &format = QTextCharFormat());
+    static ExtraSelection createExtraSelection(const QPlainTextEdit *edt,
+                                               const QTextCharFormat &format = QTextCharFormat());
+    static FindBracketPairResult createFindBracketPairResult();
 public:
     explicit BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
     ~BAbstractCodeEditorDocument();
@@ -68,12 +96,17 @@ public:
     virtual int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs) = 0;
     void init();
     void setFileType(BAbstractFileType *ft);
-    void setRecognizedBrackets(const BAbstractFileType::BracketPairList &list);
+    void setRecognizedBrackets(const BracketPairList &list);
     void setBracketHighlightingEnabled(bool enabled);
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *codec);
     void setCodec(const QString &codecName);
     void setAsyncProcessingMinimumLength(int length);
+    FindBracketPairResult findLeftBracketPair(QTextEdit *edt) const;
+    FindBracketPairResult findLeftBracketPair(QPlainTextEdit *edt) const;
+    FindBracketPairResult findRightBracketPair(QTextEdit *edt) const;
+    FindBracketPairResult findRightBracketPair(QPlainTextEdit *edt) const;
+    bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
     bool load(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString());
@@ -81,7 +114,7 @@ public:
     bool waitForProcessed(int msecs = 30 * BeQt::Second);
     BAbstractFileType *fileType() const;
     QString fileTypeId() const;
-    BAbstractFileType::BracketPairList recognizedBrackets() const;
+    BracketPairList recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
     QString fileName() const;
     QTextCodec *codec() const;

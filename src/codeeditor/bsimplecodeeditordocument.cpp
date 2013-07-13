@@ -46,52 +46,39 @@ void BSimpleCodeEditorDocumentPrivate::init()
 
 QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
 {
-    //
     if (!BClipboardNotifier::instance())
         new BClipboardNotifier;
-    //connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
-            //this, SLOT(updatePasteAvailable(bool)));
-    //
+    connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
+            this, SLOT(updatePasteAvailable(bool)));
     B_Q(BSimpleCodeEditorDocument);
     ptedt = new QPlainTextEdit;
       ptedt->setTabStopWidth(BeQt::TabWidth4);
     lnwgt = new BLineNumberWidget(ptedt);
+    bool hasSel = ptedt->textCursor().hasSelection();
     q->setReadOnlyInternal(ptedt->isReadOnly());
     q->setModificationInternal(ptedt->document()->isModified());
-    q->setHasSelection(ptedt->textCursor().hasSelection());
-    q->setCutAvailable(ptedt->textCursor().hasSelection() && !ptedt->isReadOnly());
-    q->setCopyAvailable(ptedt->textCursor().hasSelection());
+    q->setHasSelection(hasSel);
+    q->setCutAvailable(hasSel && !ptedt->isReadOnly());
+    q->setCopyAvailable(hasSel);
     q->setPasteAvailable(!ptedt->isReadOnly() && BClipboardNotifier::instance()->textDataAvailable());
     q->setUndoAvailable(ptedt->document()->isUndoAvailable());
     q->setRedoAvailable(ptedt->document()->isRedoAvailable());
     q->setCursorPosition(QPoint());
     q->setBuisy(false);
     connect(ptedt, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
+    connect(ptedt, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
     connect(ptedt, SIGNAL(selectionChanged()), q, SLOT(emitSelectionChanged()));
-    //ro
     connect(ptedt, SIGNAL(modificationChanged(bool)), q, SLOT(setModificationInternal(bool)));
-    //hass
-    //cut
-    //copy
-    //paste
     connect(ptedt, SIGNAL(undoAvailable(bool)), q, SLOT(setUndoAvailable(bool)));
     connect(ptedt, SIGNAL(redoAvailable(bool)), q, SLOT(setRedoAvailable(bool)));
-    //cur
-    //buis
-    /*
-    connect(cedt, SIGNAL(readOnlyChanged(bool)), q, SLOT(setReadOnlyInternal(bool)));
-
-    connect(cedt, SIGNAL(hasSelectionChanged(bool)), q, SLOT(setHasSelection(bool)));
-    connect(cedt, SIGNAL(cutAvailableChanged(bool)), q, SLOT(setCutAvailable(bool)));
-    connect(cedt, SIGNAL(copyAvailableChanged(bool)), q, SLOT(setCopyAvailable(bool)));
-    connect(cedt, SIGNAL(pasteAvailableChanged(bool)), q, SLOT(setPasteAvailable(bool)));
-
-
-    connect(cedt, SIGNAL(cursorPositionChanged(QPoint)), q, SLOT(setCursorPosition(QPoint)));
-    connect(cedt, SIGNAL(buisyChanged(bool)), q, SLOT(setBuisy(bool)));*/
     if (doc)
         *doc = ptedt->document();
     return ptedt;
+}
+
+void BSimpleCodeEditorDocumentPrivate::highlightBrackets()
+{
+    //
 }
 
 void BSimpleCodeEditorDocumentPrivate::highlightCurrentLine()
@@ -111,7 +98,22 @@ void BSimpleCodeEditorDocumentPrivate::highlightCurrentLine()
 
 void BSimpleCodeEditorDocumentPrivate::cursorPositionChanged()
 {
+    QTextCursor tc = ptedt->textCursor();
+    q_func()->setCursorPosition(QPoint(tc.positionInBlock(), tc.blockNumber()));
     highlightCurrentLine();
+}
+
+void BSimpleCodeEditorDocumentPrivate::selectionChanged()
+{
+    bool hasSel = ptedt->textCursor().hasSelection();
+    q_func()->setHasSelection(hasSel);
+    q_func()->setCutAvailable(hasSel && !ptedt->isReadOnly());
+    q_func()->setCopyAvailable(hasSel);
+}
+
+void BSimpleCodeEditorDocumentPrivate::updatePasteAvailable(bool available)
+{
+    q_func()->setPasteAvailable(available && !ptedt->isReadOnly());
 }
 
 /*============================================================================
@@ -143,7 +145,10 @@ BSimpleCodeEditorDocument::BSimpleCodeEditorDocument(BSimpleCodeEditorDocumentPr
 
 void BSimpleCodeEditorDocument::setReadOnly(bool ro)
 {
+    bool b = d_func()->ptedt->isReadOnly() != ro;
     d_func()->ptedt->setReadOnly(ro);
+    if (b)
+        setReadOnlyInternal(ro);
 }
 
 void BSimpleCodeEditorDocument::setModification(bool modified)
@@ -372,7 +377,7 @@ void BSimpleCodeEditorDocument::activateWindowImplementation()
 void BSimpleCodeEditorDocument::setTextImplementation(const QString &txt, int)
 {
     blockHighlighter(true);
-    d_func()->ptedt->setPlainText(txt); //TODO
+    d_func()->ptedt->setPlainText(txt);
     blockHighlighter(false);
 }
 
@@ -483,7 +488,7 @@ void BSimpleCodeEditorDocument::redoImplementation()
 
 void BSimpleCodeEditorDocument::highlightBrackets()
 {
-    //d_func()->cedt->highlightBrackets(recognizedBrackets(), isBracketHighlightingEnabled());
+    d_func()->highlightBrackets();
 }
 
 void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)

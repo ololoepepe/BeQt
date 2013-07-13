@@ -377,7 +377,7 @@ void BCodeEditorDocument::redoImplementation()
 
 void BCodeEditorDocument::highlightBrackets()
 {
-    d_func()->cedt->highlightBrackets(recognizedBrackets(), isBracketHighlightingEnabled());
+    d_func()->cedt->highlightBrackets();
 }
 
 void BCodeEditorDocument::installDropHandler(QObject *handler)

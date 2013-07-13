@@ -104,7 +104,7 @@ public Q_SLOTS:
     void deleteSelection();
     void undo();
     void redo();
-    void highlightBrackets(const BAbstractFileType::BracketPairList &recognizedBrackets, bool enabled);
+    void highlightBrackets();
 Q_SIGNALS:
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);

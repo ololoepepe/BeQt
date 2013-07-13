@@ -15,6 +15,7 @@ class QPlainTextEdit;
 
 #include <QObject>
 #include <QColor>
+#include <QPoint>
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocumentPrivate ============
@@ -30,9 +31,12 @@ public:
 public:
     void init();
     QWidget *createEdit(QTextDocument **doc);
+    void highlightBrackets();
     void highlightCurrentLine();
 public Q_SLOTS:
     void cursorPositionChanged();
+    void selectionChanged();
+    void updatePasteAvailable(bool available);
 public:
     QPlainTextEdit *ptedt;
     BLineNumberWidget *lnwgt;

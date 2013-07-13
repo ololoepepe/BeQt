@@ -21,6 +21,7 @@
 #include <QSizeF>
 #include <QVariant>
 #include <QCoreApplication>
+#include <QRegExp>
 
 namespace BeQt
 {
@@ -238,6 +239,23 @@ QTextCodec *codec(const QString &cn)
 QTextCodec *codec(const QByteArray &cn)
 {
     return !cn.isEmpty() ? QTextCodec::codecForName(cn) : 0;
+}
+
+QString removeTrailingSpaces(const QString &s)
+{
+    QString ns = s;
+    removeTrailingSpaces(&ns);
+    return ns;
+}
+
+void removeTrailingSpaces(QString *s)
+{
+    if (!s || s->isEmpty())
+        return;
+    QStringList sl = s->split('\n');
+    foreach (int i, bRangeD(0, sl.size() - 1))
+        sl[i].remove(QRegExp("\\s+$"));
+    *s = sl.join("\n");
 }
 
 #if defined(Q_OS_MAC)
