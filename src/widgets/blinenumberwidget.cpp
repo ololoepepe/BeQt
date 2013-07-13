@@ -44,16 +44,16 @@ void BLineNumberWidgetPrivate::init()
     if (!Edit)
         return;
     Edit->installEventFilter(this);
-    connect(Edit, SIGNAL(blockCountChanged(int)), this, SLOT(resize()));
+    connect(Edit, SIGNAL(blockCountChanged(int)), this, SLOT(updateArea()));
     connect(Edit, SIGNAL(updateRequest(QRect, int)), this, SLOT(update(QRect, int)));
-    resize();
+    updateArea();
 }
 
 bool BLineNumberWidgetPrivate::eventFilter(QObject *o, QEvent *e)
 {
     if (o != Edit || e->type() != QEvent::Resize)
         return false;
-    QTimer::singleShot(10, this, SLOT(resize()));
+    QTimer::singleShot(0, this, SLOT(resize()));
     return false;
 }
 
@@ -138,7 +138,22 @@ void BLineNumberWidgetPrivate::update(const QRect &rect, int dy)
     else
         q->update(0, rect.y(), q->width(), rect.height());
     if (Edit && rect.contains(Edit->viewport()->rect()))
-        resize();
+        updateArea();
+}
+
+void BLineNumberWidgetPrivate::updateArea()
+{
+    struct EditHack : QPlainTextEdit
+    {
+        static void setViewportMarginsHack(QPlainTextEdit *edit, int left, int top, int right, int bottom)
+        {
+            reinterpret_cast<EditHack *>(edit)->setViewportMargins(left, top, right, bottom);
+        }
+    };
+    if (!Edit)
+        return;
+    EditHack::setViewportMarginsHack(Edit, getWidth(), 0, 0, 0);
+    resize();
 }
 
 void BLineNumberWidgetPrivate::resize()

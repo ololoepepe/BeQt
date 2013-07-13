@@ -41,6 +41,7 @@ public:
     virtual ~BAbstractFileType();
 public:
     static BAbstractFileType *defaultFileType();
+    static QString defaultFileTypeId();
     static bool areEqual(const BracketPair &bp1, const BracketPair &bp2);
     static bool areEqual(const BracketPairList &l1, const BracketPairList &l2);
 public:

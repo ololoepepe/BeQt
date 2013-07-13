@@ -581,13 +581,13 @@
 <context>
     <name>BDefaultFileType</name>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="86"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="99"/>
         <source>Text</source>
         <comment>name</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="91"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="104"/>
         <source>All files</source>
         <comment>description</comment>
         <translation>Все файлы</translation>

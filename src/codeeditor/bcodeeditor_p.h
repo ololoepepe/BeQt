@@ -301,7 +301,6 @@ public:
     int maximumFileSize;
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
-    BAbstractFileType *defaultFileType;
     BAbstractFileType *preferredFileType;
     BDropHandler *dropHandler;
     QStringList fileHistory;

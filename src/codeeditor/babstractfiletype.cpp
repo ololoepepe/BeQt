@@ -27,6 +27,8 @@ class BDefaultFileType : public BAbstractFileType
 {
     Q_DECLARE_TR_FUNCTIONS(BDefaultFileType)
 public:
+    static BDefaultFileType *instance();
+public:
     BDefaultFileType();
     ~BDefaultFileType();
 public:
@@ -36,6 +38,8 @@ public:
     QStringList suffixes() const;
     bool matchesFileName(const QString &fileName) const;
     BracketPairList brackets() const;
+protected:
+    static BDefaultFileType *_m_self;
 protected:
     void highlightBlock(const QString &text);
 };
@@ -61,6 +65,15 @@ private:
 /*============================================================================
 ================================ BDefaultFileType ============================
 ============================================================================*/
+
+/*============================== Static public methods =====================*/
+
+BDefaultFileType *BDefaultFileType::instance()
+{
+    if (!_m_self)
+        _m_self = new BDefaultFileType;
+    return _m_self;
+}
 
 /*============================== Public constructors =======================*/
 
@@ -113,6 +126,10 @@ void BDefaultFileType::highlightBlock(const QString &)
     //
 }
 
+/*============================== Static protected variables ================*/
+
+BDefaultFileType *BDefaultFileType::_m_self = 0;
+
 /*============================================================================
 ================================ BAbstractFileTypePrivate ====================
 ============================================================================*/
@@ -158,7 +175,12 @@ BAbstractFileType::~BAbstractFileType()
 
 BAbstractFileType *BAbstractFileType::defaultFileType()
 {
-    return new BDefaultFileType;
+    return BDefaultFileType::instance();
+}
+
+QString BAbstractFileType::defaultFileTypeId()
+{
+    return defaultFileType()->id();
 }
 
 bool BAbstractFileType::areEqual(const BracketPair &bp1, const BracketPair &bp2)

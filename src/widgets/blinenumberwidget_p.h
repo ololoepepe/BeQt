@@ -31,6 +31,7 @@ public:
     bool paintEvent(QPaintEvent *e);
 public Q_SLOTS:
     void update(const QRect &rect, int dy);
+    void updateArea();
     void resize();
 public:
     QPlainTextEdit *const Edit;
