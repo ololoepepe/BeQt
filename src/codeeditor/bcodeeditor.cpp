@@ -595,6 +595,7 @@ void BCodeEditorPrivate::init()
     editMode = BCodeEdit::NormalMode;
     editLineLength = 120;
     editTabWidth = BeQt::TabWidth4;
+    lineNumberVisible = true;
     bracketsHighlighting = true;
     driver = 0;
     q->setDriver(new BLocalDocumentDriver);
@@ -698,6 +699,7 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
         ddoc->setEditLineLength(editLineLength);
     }
     doc->setEditTabWidth(editTabWidth);
+    doc->setLineNumberWidgetVisible(lineNumberVisible);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
@@ -1783,8 +1785,19 @@ void BCodeEditor::setEditTabWidth(BeQt::TabWidth tw)
     B_D(BCodeEditor);
     if (d->editTabWidth == tw)
         return;
+    d->editTabWidth = tw;
     foreach (BAbstractCodeEditorDocument *doc, documents())
         doc->setEditTabWidth(tw);
+}
+
+void BCodeEditor::setLineNumberWidgetVisible(bool b)
+{
+    B_D(BCodeEditor);
+    if (d->lineNumberVisible == b)
+        return;
+    d->lineNumberVisible = b;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+        doc->setLineNumberWidgetVisible(b);
 }
 
 void BCodeEditor::setBracketHighlightingEnabled(bool enabled)
@@ -2024,6 +2037,11 @@ int BCodeEditor::editLineLength() const
 BeQt::TabWidth BCodeEditor::editTabWidth() const
 {
     return d_func()->editTabWidth;
+}
+
+bool BCodeEditor::lineNumberWidgetVisible() const
+{
+    return d_func()->lineNumberVisible;
 }
 
 bool BCodeEditor::isBracketHighlightingEnabled() const

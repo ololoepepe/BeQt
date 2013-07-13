@@ -92,6 +92,7 @@ public:
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
+    void setLineNumberWidgetVisible(bool b);
     void setBracketHighlightingEnabled(bool enabled);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
@@ -120,6 +121,7 @@ public:
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
+    bool lineNumberWidgetVisible() const;
     bool isBracketHighlightingEnabled() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;

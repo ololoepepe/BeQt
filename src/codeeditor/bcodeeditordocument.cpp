@@ -129,6 +129,11 @@ void BCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
     d_func()->cedt->setEditTabWidth(tw);
 }
 
+void BCodeEditorDocument::setLineNumberWidgetVisible(bool b)
+{
+    d_func()->cedt->setLineNumberWidgetVisible(b);
+}
+
 bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     return d_func()->cedt->findNext(txt, flags, cyclic);
@@ -197,6 +202,11 @@ QFont BCodeEditorDocument::editFont() const
 BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
 {
     return d_func()->cedt->editTabWidth();
+}
+
+bool BCodeEditorDocument::lineNumberWidgetVisible() const
+{
+    return d_func()->cedt->lineNumberWidgetVisible();
 }
 
 QPoint BCodeEditorDocument::cursorPosition() const

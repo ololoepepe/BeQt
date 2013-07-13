@@ -88,31 +88,9 @@ public:
     QVector<SelectionRange> selectionRanges() const;
 protected:
     void paintEvent(QPaintEvent *e);
-    void resizeEvent(QResizeEvent *e);
 private:
     Q_DISABLE_COPY(BPlainTextEditExtended)
-    friend class BLineNumberWidget1;
     friend class BCodeEdit;
-};
-
-/*============================================================================
-================================ BLineNumberWidget ===========================
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BLineNumberWidget1 : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit BLineNumberWidget1(BPlainTextEditExtended *ptedt);
-    ~BLineNumberWidget1();
-public:
-    QSize sizeHint() const;
-protected:
-    void paintEvent(QPaintEvent *e);
-public:
-    BPlainTextEditExtended *const Ptedt;
-private:
-    Q_DISABLE_COPY(BLineNumberWidget1)
 };
 
 /*============================================================================
@@ -132,18 +110,13 @@ public:
 public:
     void init();
     void emulateShiftPress();
-    void lineNumberWidgetPaintEvent(QPaintEvent *e);
-    int lineNumberWidgetWidth() const;
     inline QAbstractTextDocumentLayout::PaintContext getPaintContext() const;
 public Q_SLOTS:
     void selectionChanged();
-    void updateLineNumberWidgetWidth(int newBlockCount);
-    void updateLineNumberWidget(const QRect &rect, int dy);
 public:
     bool blockMode;
     bool hasSelection;
     QVector<BPlainTextEditExtended::SelectionRange> selectionRanges;
-    BLineNumberWidget1 *lnwgt;
 private:
     Q_DISABLE_COPY(BPlainTextEditExtendedPrivate)
 };
@@ -259,6 +232,7 @@ public:
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QHBoxLayout *hlt;
       BPlainTextEditExtended *ptedt;
+      BLineNumberWidget *lnwgt;
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)
 };

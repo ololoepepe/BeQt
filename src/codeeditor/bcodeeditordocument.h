@@ -38,6 +38,7 @@ public:
     void setModification(bool modified);
     void setEditFont(const QFont &fnt);
     void setEditTabWidth(BeQt::TabWidth tw);
+    void setLineNumberWidgetVisible(bool b);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
@@ -52,6 +53,7 @@ public:
     bool isRedoAvailable() const;
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
+    bool lineNumberWidgetVisible() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;

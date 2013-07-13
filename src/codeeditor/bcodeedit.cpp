@@ -13,6 +13,7 @@ class QFont;
 #include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BPlainTextEdit>
 #include <BeQtWidgets/BClipboardNotifier>
+#include <BeQtWidgets/BLineNumberWidget>
 
 #include <QObject>
 #include <QWidget>
@@ -69,37 +70,6 @@ class QFont;
 #include <QDebug>
 
 /*============================================================================
-================================ BLineNumberWidget ===========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BLineNumberWidget1::BLineNumberWidget1(BPlainTextEditExtended *ptedt) :
-    QWidget(ptedt), Ptedt(ptedt)
-{
-    //
-}
-
-BLineNumberWidget1::~BLineNumberWidget1()
-{
-    //
-}
-
-/*============================== Public methods ============================*/
-
-QSize BLineNumberWidget1::sizeHint() const
-{
-    return QSize(Ptedt->d_func()->lineNumberWidgetWidth(), 0);
-}
-
-/*============================== Protected methods =========================*/
-
-void BLineNumberWidget1::paintEvent(QPaintEvent *e)
-{
-    Ptedt->d_func()->lineNumberWidgetPaintEvent(e);
-}
-
-/*============================================================================
 ================================ BPlainTextEditExtendedPrivate ===============
 ============================================================================*/
 
@@ -148,62 +118,13 @@ void BPlainTextEditExtendedPrivate::init()
     B_Q(BPlainTextEditExtended);
     blockMode = false;
     hasSelection = false;
-    lnwgt = new BLineNumberWidget1(q);
     connect( q, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
-    connect( q, SIGNAL( blockCountChanged(int) ), this, SLOT( updateLineNumberWidgetWidth(int) ) );
-    connect( q, SIGNAL( updateRequest(QRect, int) ), this, SLOT( updateLineNumberWidget(QRect, int) ) );
-    updateLineNumberWidgetWidth(0);
 }
 
 void BPlainTextEditExtendedPrivate::emulateShiftPress()
 {
     QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
     QApplication::sendEvent(q_func(), &e);
-}
-
-void BPlainTextEditExtendedPrivate::lineNumberWidgetPaintEvent(QPaintEvent *e)
-{
-    B_Q(BPlainTextEditExtended);
-    QPainter painter(lnwgt);
-    painter.fillRect(e->rect(), Qt::lightGray);
-    QTextBlock block = q->textCursor().block();
-    if ( block.isVisible() )
-    {
-        QRect r = e->rect();
-        r.setTop( (int) q->blockBoundingGeometry(block).translated( q->contentOffset() ).top() );
-        r.setBottom( r.top() + (int) q->blockBoundingRect(block).height() );
-        painter.fillRect(r, Qt::yellow);
-    }
-    block = q->firstVisibleBlock();
-    int blockNumber = block.blockNumber();
-    int top = (int) q->blockBoundingGeometry(block).translated( q->contentOffset() ).top();
-    int bottom = top + (int) q->blockBoundingRect(block).height();
-    while ( block.isValid() && top <= e->rect().bottom() )
-    {
-        if ( block.isVisible() && bottom >= e->rect().top() )
-        {
-            QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
-            painter.drawText(0, top, lnwgt->width(), q->fontMetrics().height(), Qt::AlignRight, number);
-        }
-        block = block.next();
-        top = bottom;
-        bottom = top + (int) q->blockBoundingRect(block).height();
-        ++blockNumber;
-    }
-}
-
-int BPlainTextEditExtendedPrivate::lineNumberWidgetWidth() const
-{
-    int digits = 1;
-    int max = qMax( 1, q_func()->blockCount() );
-    while (max >= 10)
-    {
-        max /= 10;
-        ++digits;
-    }
-    int space = 3 + q_func()->fontMetrics().width( QLatin1Char('9') ) * digits;
-    return space;
 }
 
 QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPaintContext() const
@@ -260,21 +181,6 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     }
     //Workaround to update the selection
     emulateShiftPress();
-}
-
-void BPlainTextEditExtendedPrivate::updateLineNumberWidgetWidth(int)
-{
-    q_func()->setViewportMargins(lineNumberWidgetWidth(), 0, 0, 0);
-}
-
-void BPlainTextEditExtendedPrivate::updateLineNumberWidget(const QRect &rect, int dy)
-{
-    if (dy)
-        lnwgt->scroll(0, dy);
-    else
-        lnwgt->update( 0, rect.y(), lnwgt->width(), rect.height() );
-    if ( rect.contains( q_func()->viewport()->rect() ) )
-        updateLineNumberWidgetWidth(0);
 }
 
 /*============================================================================
@@ -436,13 +342,6 @@ void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
          ( centerOnScroll() || verticalScrollBar()->maximum() == verticalScrollBar()->minimum() ) )
         painter.fillRect( QRect( QPoint( (int) er.left(), (int) offset.y() ),
                                  er.bottomRight() ), palette().background() );
-}
-
-void BPlainTextEditExtended::resizeEvent(QResizeEvent *e)
-{
-    BPlainTextEdit::resizeEvent(e);
-    QRect cr = contentsRect();
-    d_func()->lnwgt->setGeometry( QRect( cr.left(), cr.top(), d_func()->lineNumberWidgetWidth(), cr.height() ) );
 }
 
 /*============================================================================
@@ -733,6 +632,7 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
         //
       hlt->addWidget(ptedt);
+    lnwgt = new BLineNumberWidget(ptedt);
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -2121,6 +2021,11 @@ void BCodeEdit::setEditTabWidth(BeQt::TabWidth tw)
     d->tabWidth = tw;
 }
 
+void BCodeEdit::setLineNumberWidgetVisible(bool b)
+{
+    d_func()->lnwgt->setVisible(b);
+}
+
 void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
 {
     d_func()->ptedt->document()->clearUndoRedoStacks(historyToClear);
@@ -2295,6 +2200,11 @@ int BCodeEdit::editLineLength() const
 BeQt::TabWidth BCodeEdit::editTabWidth() const
 {
     return d_func()->tabWidth;
+}
+
+bool BCodeEdit::lineNumberWidgetVisible() const
+{
+    return d_func()->lnwgt->isVisible();
 }
 
 QPoint BCodeEdit::cursorPosition() const

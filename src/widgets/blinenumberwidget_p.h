@@ -30,7 +30,6 @@ public:
     int getWidth() const;
     bool paintEvent(QPaintEvent *e);
 public Q_SLOTS:
-    void updateWidth();
     void update(const QRect &rect, int dy);
     void resize();
 public:

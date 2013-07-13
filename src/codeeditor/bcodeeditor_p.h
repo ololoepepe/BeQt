@@ -294,6 +294,7 @@ public:
     BCodeEdit::EditMode editMode;
     int editLineLength;
     BeQt::TabWidth editTabWidth;
+    bool lineNumberVisible;
     bool bracketsHighlighting;
     QTextCodec *defaultCodec;
     QString defaultFN;
