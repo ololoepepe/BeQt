@@ -85,7 +85,7 @@ public:
     static QTextCodec *selectedCodec(QComboBox *cmbox);
     static QString selectedCodecName(QComboBox *cmbox);
 public:
-    void setDocumentType(StandardDocumentType t);
+    bool setDocumentType(StandardDocumentType t);
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
     void setEditFontPointSize(int pointSize);

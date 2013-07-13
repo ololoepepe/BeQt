@@ -28,6 +28,8 @@
 #include <QWidget>
 
 #include <QDebug>
+#include <QPlainTextEdit>
+#include <BLineNumberWidget>
 
 int main(int argc, char **argv)
 {
@@ -119,6 +121,9 @@ int main(int argc, char **argv)
     mw->restoreGeometry( s ? s->value("main_window/geometry").toByteArray() : mw->saveGeometry() );
     mw->restoreState( s ? s->value("main_window/state").toByteArray() : mw->saveState() ) ;
     mw->show();
+    QPlainTextEdit *pt = new QPlainTextEdit;
+    new BLineNumberWidget(pt);
+    pt->show();
     //Running main event loop
     int ret = app->exec();
     //Saving settings

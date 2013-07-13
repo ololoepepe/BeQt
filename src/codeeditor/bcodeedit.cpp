@@ -74,27 +74,27 @@ class QFont;
 
 /*============================== Public constructors =======================*/
 
-BLineNumberWidget::BLineNumberWidget(BPlainTextEditExtended *ptedt) :
+BLineNumberWidget1::BLineNumberWidget1(BPlainTextEditExtended *ptedt) :
     QWidget(ptedt), Ptedt(ptedt)
 {
     //
 }
 
-BLineNumberWidget::~BLineNumberWidget()
+BLineNumberWidget1::~BLineNumberWidget1()
 {
     //
 }
 
 /*============================== Public methods ============================*/
 
-QSize BLineNumberWidget::sizeHint() const
+QSize BLineNumberWidget1::sizeHint() const
 {
     return QSize(Ptedt->d_func()->lineNumberWidgetWidth(), 0);
 }
 
 /*============================== Protected methods =========================*/
 
-void BLineNumberWidget::paintEvent(QPaintEvent *e)
+void BLineNumberWidget1::paintEvent(QPaintEvent *e)
 {
     Ptedt->d_func()->lineNumberWidgetPaintEvent(e);
 }
@@ -148,7 +148,7 @@ void BPlainTextEditExtendedPrivate::init()
     B_Q(BPlainTextEditExtended);
     blockMode = false;
     hasSelection = false;
-    lnwgt = new BLineNumberWidget(q);
+    lnwgt = new BLineNumberWidget1(q);
     connect( q, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
     connect( q, SIGNAL( blockCountChanged(int) ), this, SLOT( updateLineNumberWidgetWidth(int) ) );
     connect( q, SIGNAL( updateRequest(QRect, int) ), this, SLOT( updateLineNumberWidget(QRect, int) ) );
@@ -711,7 +711,6 @@ void BCodeEditPrivate::init()
     redoAvailable = false;
     buisy = false;
     parceTask = 0;
-    fileType = 0;
     B_Q(BCodeEdit);
     hlt = new QHBoxLayout(q);
       hlt->setContentsMargins(0, 0, 0, 0);

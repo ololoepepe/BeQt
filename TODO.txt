@@ -33,3 +33,5 @@
 * Improve BCodeEditor asynchronous operations
 * Add ability to use documents of different type in BCodeEditor
 [done] Add BClipboardNotifier class
+[done] Make BLineNumberWidget reusable
+[done] Make Courier New the default monospaced font on Windows

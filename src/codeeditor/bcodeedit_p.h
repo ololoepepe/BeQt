@@ -6,9 +6,7 @@ class BPlainTextEditExtendedPrivate;
 class BCodeEditParseTask;
 class BLineNumberWidget;
 class BCodeEdit;
-class BAbstractFileType;
 class BTextBlockUserData;
-class BSyntaxHighlighter;
 
 class QHBoxLayout;
 class QEvent;
@@ -93,7 +91,7 @@ protected:
     void resizeEvent(QResizeEvent *e);
 private:
     Q_DISABLE_COPY(BPlainTextEditExtended)
-    friend class BLineNumberWidget;
+    friend class BLineNumberWidget1;
     friend class BCodeEdit;
 };
 
@@ -101,12 +99,12 @@ private:
 ================================ BLineNumberWidget ===========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BLineNumberWidget : public QWidget
+class B_CODEEDITOR_EXPORT BLineNumberWidget1 : public QWidget
 {
     Q_OBJECT
 public:
-    explicit BLineNumberWidget(BPlainTextEditExtended *ptedt);
-    ~BLineNumberWidget();
+    explicit BLineNumberWidget1(BPlainTextEditExtended *ptedt);
+    ~BLineNumberWidget1();
 public:
     QSize sizeHint() const;
 protected:
@@ -114,7 +112,7 @@ protected:
 public:
     BPlainTextEditExtended *const Ptedt;
 private:
-    Q_DISABLE_COPY(BLineNumberWidget)
+    Q_DISABLE_COPY(BLineNumberWidget1)
 };
 
 /*============================================================================
@@ -145,7 +143,7 @@ public:
     bool blockMode;
     bool hasSelection;
     QVector<BPlainTextEditExtended::SelectionRange> selectionRanges;
-    BLineNumberWidget *lnwgt;
+    BLineNumberWidget1 *lnwgt;
 private:
     Q_DISABLE_COPY(BPlainTextEditExtendedPrivate)
 };
@@ -249,7 +247,6 @@ public:
     bool blockMode;
     int lineLength;
     BeQt::TabWidth tabWidth;
-    BSyntaxHighlighter *highlighter;
     QPoint cursorPosition;
     bool hasSelection;
     bool hasBookmarks;
@@ -258,7 +255,6 @@ public:
     bool undoAvailable;
     bool redoAvailable;
     bool buisy;
-    BAbstractFileType *fileType;
     BCodeEditParseTask *parceTask;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QHBoxLayout *hlt;

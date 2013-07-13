@@ -96,19 +96,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="631"/>
+        <location filename="../src/widgets/bapplication.cpp" line="637"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="633"/>
+        <location filename="../src/widgets/bapplication.cpp" line="639"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="634"/>
+        <location filename="../src/widgets/bapplication.cpp" line="640"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -255,49 +255,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1022"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1021"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1896"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1895"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1902"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1901"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1909"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1908"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1915"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1914"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1921"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1920"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1927"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1926"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1934"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1933"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>

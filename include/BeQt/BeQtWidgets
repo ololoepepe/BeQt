@@ -10,6 +10,7 @@
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"
+#include "blinenumberwidget.h"
 #include "blocalecombobox.h"
 #include "blocalterminaldriver.h"
 #include "bpasswordwidget.h"

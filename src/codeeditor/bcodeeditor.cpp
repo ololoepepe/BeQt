@@ -1697,12 +1697,12 @@ QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
 
 /*============================== Public methods ============================*/
 
-void BCodeEditor::setDocumentType(StandardDocumentType t)
+bool BCodeEditor::setDocumentType(StandardDocumentType t)
 {
     if (t == d_func()->docType)
-        return;
+        return true;
     if (!saveAllDocuments() || !waitForAllDocumentsProcessed())
-        return;
+        return false;
     d_func()->docType = t;
     foreach (BAbstractCodeEditorDocument *doc, documents())
     {
@@ -1710,6 +1710,7 @@ void BCodeEditor::setDocumentType(StandardDocumentType t)
         d_func()->removeDocument(doc);
         d_func()->addDocument(ndoc);
     }
+    return true;
 }
 
 void BCodeEditor::setEditFont(const QFont &fnt)
