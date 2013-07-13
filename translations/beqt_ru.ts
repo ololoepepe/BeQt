@@ -255,49 +255,49 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="931"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="929"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1818"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1816"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1824"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1822"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1831"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1829"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1837"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1835"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1843"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1841"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1849"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1847"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1856"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1854"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>

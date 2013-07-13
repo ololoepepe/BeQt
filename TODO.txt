@@ -30,7 +30,7 @@
 [done] Improve logging system
 * Add spell checking support to code editor
 [done] Remove extra constructors from some classes
-* Improve BCodeEditor asynchronous operations
+[done] Use QtConcurrent for BCodeEditor asynchronous operations
 * Add ability to use documents of different type in BCodeEditor
 [done] Add BClipboardNotifier class
 [done] Make Courier New the default monospaced font on Windows

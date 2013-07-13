@@ -61,11 +61,10 @@ class QFont;
 #include <QTextLine>
 #include <QScrollBar>
 #include <QVector>
-#include <QThreadPool>
-#include <QRunnable>
 #include <QResizeEvent>
 #include <QSize>
 #include <QTextBlockUserData>
+#include <QtConcurrentRun>
 
 #include <QDebug>
 
@@ -619,7 +618,6 @@ void BCodeEditPrivate::init()
     buisy = false;
     lineHighlighting = false;
     lineColor = QColor("gray").lighter(160);
-    parceTask = 0;
     B_Q(BCodeEdit);
     hlt = new QHBoxLayout(q);
       hlt->setContentsMargins(0, 0, 0, 0);
@@ -929,10 +927,10 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
     {
         ptedt->setEnabled(false);
         ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
-        parceTask = new BCodeEditParseTask(txt, lineLength, tabWidth);
-        parceTask->setAutoDelete(false);
-        connect(parceTask, SIGNAL( finished() ), this, SLOT( parceTaskFinished() ), Qt::QueuedConnection);
-        BCodeEditParseTask::pool()->start(parceTask);
+        ProcessTextResultFuture future = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
+        ProcessTextResultFutureWatcher *watcher = new ProcessTextResultFutureWatcher(this);
+        watcher->setFuture(future);
+        connect(watcher, SIGNAL(finished()), this, SLOT(parceTaskFinished()));
     }
     else
     {
@@ -1793,11 +1791,11 @@ void BCodeEditPrivate::move(int key)
 
 void BCodeEditPrivate::parceTaskFinished()
 {
-    if (!parceTask)
+    ProcessTextResultFutureWatcher *watcher = dynamic_cast<ProcessTextResultFutureWatcher *>(sender());
+    if (!watcher)
         return;
-    ProcessTextResult res = parceTask->result();
-    parceTask->deleteLater();
-    parceTask = 0;
+    ProcessTextResult res = watcher->result();
+    watcher->deleteLater();
     ptedt->setEnabled(true);
     blockHighlighter(true);
     ptedt->setPlainText(res.newText);
@@ -2511,46 +2509,3 @@ QTextDocument *BCodeEdit::innerDocument() const
 {
     return d_func()->ptedt->document();
 }
-
-/*============================================================================
-================================ BCodeEditParseTask ==========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BCodeEditParseTask::BCodeEditParseTask(const QString &text, int lineLength, BeQt::TabWidth tabWidth) :
-    QObject(0), Text(text), LineLength(lineLength), TabWidth(tabWidth)
-{
-    //
-}
-
-BCodeEditParseTask::~BCodeEditParseTask()
-{
-    //
-}
-
-/*============================== Static public methods =====================*/
-
-QThreadPool *BCodeEditParseTask::pool()
-{
-    if (!tp)
-        tp = new QThreadPool;
-    return tp;
-}
-
-/*============================== Public methods ============================*/
-
-void BCodeEditParseTask::run()
-{
-    res = BCodeEditPrivate::processText(Text, LineLength, TabWidth);
-    Q_EMIT finished();
-}
-
-BCodeEditPrivate::ProcessTextResult BCodeEditParseTask::result() const
-{
-    return res;
-}
-
-/*============================== Static private variables ==================*/
-
-QThreadPool *BCodeEditParseTask::tp = 0;

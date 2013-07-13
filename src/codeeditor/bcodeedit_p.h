@@ -20,7 +20,6 @@ class QPainter;
 class QBrush;
 class QTextCursor;
 class QPaintEvent;
-class QThreadPool;
 class QResizeEvent;
 class QRect;
 class QSize;
@@ -47,8 +46,9 @@ class QFont;
 #include <QAbstractTextDocumentLayout>
 #include <QPair>
 #include <QTextCharFormat>
-#include <QRunnable>
 #include <QColor>
+#include <QFuture>
+#include <QFutureWatcher>
 
 /*============================================================================
 ================================ BPlainTextEditExtended ======================
@@ -143,6 +143,9 @@ public:
         const BAbstractFileType::BracketPair *endBr;
     };
 public:
+    typedef QFuture<ProcessTextResult> ProcessTextResultFuture;
+    typedef QFutureWatcher<ProcessTextResult> ProcessTextResultFutureWatcher;
+public:
     explicit BCodeEditPrivate(BCodeEdit *q);
     ~BCodeEditPrivate();
 public:
@@ -232,7 +235,6 @@ public:
     bool buisy;
     bool lineHighlighting;
     QColor lineColor;
-    BCodeEditParseTask *parceTask;
     QList<QTextEdit::ExtraSelection> highlightedBrackets;
     QList<QTextEdit::ExtraSelection> highlightedLines;
     QHBoxLayout *hlt;
@@ -240,35 +242,6 @@ public:
       BLineNumberWidget *lnwgt;
 private:
     Q_DISABLE_COPY(BCodeEditPrivate)
-};
-
-/*============================================================================
-================================ BCodeEditParseTask ==========================
-============================================================================*/
-
-class B_CODEEDITOR_EXPORT BCodeEditParseTask : public QObject, public QRunnable
-{
-    Q_OBJECT
-public:
-    explicit BCodeEditParseTask(const QString &text, int lineLength, BeQt::TabWidth tabWidth);
-    ~BCodeEditParseTask();
-public:
-    static QThreadPool *pool();
-public:
-    void run();
-    BCodeEditPrivate::ProcessTextResult result() const;
-Q_SIGNALS:
-    void finished();
-private:
-    static QThreadPool *tp;
-private:
-    const QString Text;
-    const int LineLength;
-    const BeQt::TabWidth TabWidth;
-private:
-    BCodeEditPrivate::ProcessTextResult res;
-private:
-    Q_DISABLE_COPY(BCodeEditParseTask)
 };
 
 #endif // BCODEEDIT_P_H
