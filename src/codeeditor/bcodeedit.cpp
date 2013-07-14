@@ -537,6 +537,7 @@ void BCodeEditPrivate::init()
             this, SLOT(updatePasteAvailable(bool)));
     blockMode = false;
     lineLength = 120;
+    tmpLineLength = -1;
     tabWidth = BeQt::TabWidth4;
     hasSelection = false;
     hasBookmarks = false;
@@ -553,11 +554,9 @@ void BCodeEditPrivate::init()
         ptedt->setWordWrapMode(QTextOption::NoWrap);
         ptedt->setDragEnabled(false);
         ptedt->installEventFilter(this);
-        ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
         ptedt->setFont( BApplication::createMonospaceFont() );
         setTextToEmptyLine();
         ptedt->document()->setModified(false);
-        connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
         connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
         connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
         connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( emitSelectionChanged() ) );
@@ -565,9 +564,9 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( copyAvailable(bool) ), this, SLOT( updateCopyAvailable(bool) ) );
         connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
-        //
       hlt->addWidget(ptedt);
     lnwgt = new BLineNumberWidget(ptedt);
+    connect(q, SIGNAL(buisyChanged(bool)), this, SLOT(delayedSetLineLength()));
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -778,12 +777,6 @@ void BCodeEditPrivate::requestRehighlightBlock(const QTextBlock &block)
     if (!doc)
         return;
     doc->rehighlightBlock(block);
-}
-
-QMenu *BCodeEditPrivate::requestCreateSpellCheckerMenu(const QPoint &pos)
-{
-    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
-    return doc ? doc->createSpellCheckerMenu(pos) : 0;
 }
 
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::deleteSelection()
@@ -1538,63 +1531,6 @@ void BCodeEditPrivate::parceTaskFinished()
     emitLinesSplitted(res.splittedLinesRanges);
 }
 
-void BCodeEditPrivate::popupMenu(const QPoint &pos)
-{
-    B_Q(BCodeEdit);
-    QMenu *menu = new QMenu;
-    QAction *act = new QAction(menu);
-      act->setText( tr("Undo", "act text") );
-      act->setShortcut(QKeySequence::Undo);
-      act->setEnabled( q->isUndoAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( undo() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Redo", "act text") );
-      act->setShortcut(QKeySequence::Redo);
-      act->setEnabled( q->isRedoAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( redo() ) );
-    menu->addAction(act);
-    menu->addSeparator();
-    act = new QAction(menu);
-      act->setText( tr("Cut", "act text") );
-      act->setShortcut(QKeySequence::Cut);
-      act->setEnabled( q->isCutAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( cut() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Copy", "act text") );
-      act->setShortcut(QKeySequence::Copy);
-      act->setEnabled( q->isCopyAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( copy() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Paste", "act text") );
-      act->setShortcut(QKeySequence::Paste);
-      act->setEnabled( q->isPasteAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( paste() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Delete", "act text") );
-      act->setShortcut(QKeySequence::Delete);
-      act->setEnabled( q->hasSelection() && !q->isReadOnly() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( deleteSelection() ) );
-    menu->addAction(act);
-    menu->addSeparator();
-    act = new QAction(menu);
-      act->setText( tr("Select all", "act text") );
-      act->setShortcut(QKeySequence::SelectAll);
-      connect( act, SIGNAL( triggered() ), q, SLOT( selectAll() ) );
-    menu->addAction(act);
-    QMenu *scmnu = requestCreateSpellCheckerMenu(pos);
-    if (scmnu)
-    {
-        menu->addSeparator();
-        menu->addMenu(scmnu);
-    }
-    menu->exec(ptedt->mapToGlobal(pos));
-    delete menu;
-}
-
 void BCodeEditPrivate::updateCursorPosition()
 {
     QTextCursor tc = ptedt->textCursor();
@@ -1665,6 +1601,14 @@ void BCodeEditPrivate::setTextToEmptyLine()
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
+}
+
+void BCodeEditPrivate::delayedSetLineLength()
+{
+    if (buisy || tmpLineLength < 1)
+        return;
+    q_func()->setEditLineLength(tmpLineLength);
+    tmpLineLength = -1;
 }
 
 /*============================================================================
@@ -1761,6 +1705,11 @@ void BCodeEdit::setEditLineLength(int ll)
     B_D(BCodeEdit);
     if (ll < 1 || ll == d->lineLength)
         return;
+    if (d->buisy)
+    {
+        d->tmpLineLength = ll;
+        return;
+    }
     d->lineLength = ll;
     QString text = d->ptedt->toPlainText();
     bool pm = d->ptedt->document()->isModified();
@@ -2037,6 +1986,55 @@ QString BCodeEdit::selectedText(bool full) const
 bool BCodeEdit::isBuisy() const
 {
     return d_func()->buisy;
+}
+
+QMenu *BCodeEdit::createContextMenu()
+{
+    QMenu *menu = new QMenu;
+    QAction *act = new QAction(menu);
+      act->setText(tr("Undo", "act text"));
+      act->setShortcut(QKeySequence::Undo);
+      act->setEnabled(isUndoAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(undo()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Redo", "act text"));
+      act->setShortcut(QKeySequence::Redo);
+      act->setEnabled(isRedoAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(redo()));
+    menu->addAction(act);
+    menu->addSeparator();
+    act = new QAction(menu);
+      act->setText(tr("Cut", "act text"));
+      act->setShortcut(QKeySequence::Cut);
+      act->setEnabled(isCutAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(cut()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Copy", "act text"));
+      act->setShortcut(QKeySequence::Copy);
+      act->setEnabled(isCopyAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(copy()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Paste", "act text"));
+      act->setShortcut(QKeySequence::Paste);
+      act->setEnabled(isPasteAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(paste()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Delete", "act text"));
+      act->setShortcut(QKeySequence::Delete);
+      act->setEnabled(hasSelection() && !isReadOnly());
+      connect(act, SIGNAL(triggered()), this, SLOT(deleteSelection()));
+    menu->addAction(act);
+    menu->addSeparator();
+    act = new QAction(menu);
+      act->setText(tr("Select all", "act text"));
+      act->setShortcut(QKeySequence::SelectAll);
+      connect(act, SIGNAL(triggered()), this, SLOT(selectAll()));
+    menu->addAction(act);
+    return menu;
 }
 
 /*============================== Public slots ==============================*/

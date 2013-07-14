@@ -11,6 +11,7 @@ class BSpellChecker;
 class QFont;
 class QPoint;
 class QMenu;
+class QVariant;
 
 #include "babstractfiletype.h"
 
@@ -111,6 +112,14 @@ public Q_SLOTS:
     void rehighlight();
     void rehighlightBlock(const QTextBlock &block);
 protected:
+    struct TextProcessingResult
+    {
+        QString text;
+        QVariantMap userData;
+    };
+protected:
+    typedef TextProcessingResult (*TextProcessingFunction)(const QString &, const QVariantMap &);
+protected:
     virtual QWidget *createEdit(QTextDocument **doc = 0) = 0;
     virtual void setFocusImplementation() = 0;
     virtual void activateWindowImplementation() = 0;
@@ -132,7 +141,13 @@ protected:
     virtual void installInnerEventFilter(QObject *filter) = 0;
     virtual void highlightBrackets();
     virtual QTextCursor textCursor(bool *ok = 0) const;
-    virtual QMenu *createSpellCheckerMenu(const QPoint &pos) const;
+    virtual QMenu *createContextMenu();
+    virtual TextProcessingFunction textPreprocessingFunction() const;
+    virtual TextProcessingFunction textPostprocessingFunction() const;
+    virtual QVariantMap preprocessingUserData();
+    virtual QVariantMap postprocessingUserData();
+    virtual void afterPreprocessing(const QVariantMap &result);
+    virtual void afterPostprocessing(const QVariantMap &result);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void blockHighlighter(bool block);
     QWidget *innerEdit(QTextDocument **doc = 0) const;

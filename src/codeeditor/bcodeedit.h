@@ -84,6 +84,7 @@ public:
     QString selectedText(bool full = false) const;
     QPoint selectionStart() const;
     QPoint selectionEnd() const;
+    QMenu *createContextMenu();
     bool isBuisy() const;
 public Q_SLOTS:
     void setFocus();

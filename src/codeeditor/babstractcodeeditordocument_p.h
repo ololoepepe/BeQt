@@ -13,6 +13,8 @@ class QColor;
 class QFont;
 class QTextBlock;
 class QPlainTextEdit;
+class QPoint;
+class QMenu;
 
 #include "babstractcodeeditordocument.h"
 #include "babstractdocumentdriver.h"
@@ -104,12 +106,14 @@ public:
     FindBracketPairResult findLeftBracketPair() const;
     FindBracketPairResult findRightBracketPair() const;
     bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
+    QMenu *createSpellCheckerMenu(const QPoint &pos);
 public Q_SLOTS:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
     void replaceWord();
     void ignoreWord();
     void dontIgnoreWord();
+    void customContextMenuRequested(const QPoint &pos);
 public:
     BCodeEditor *const Editor;
 public:

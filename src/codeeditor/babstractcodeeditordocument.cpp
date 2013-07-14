@@ -42,6 +42,7 @@
 #include <QAction>
 #include <QPair>
 #include <QVariant>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -243,8 +244,19 @@ bool BAbstractCodeEditorDocumentPrivate::createEdit()
     if (!edit)
         return false;
     static_cast<QVBoxLayout *>(q_func()->layout())->addWidget(edit);
-    if (doc)
-        highlighter = new BSyntaxHighlighter(q_func(), doc);
+    highlighter = new BSyntaxHighlighter(q_func(), doc);
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(edit);
+    if (cedt)
+    {
+        cedt->innerEdit()->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(cedt->innerEdit(), SIGNAL(customContextMenuRequested(QPoint)),
+                this, SLOT(customContextMenuRequested(QPoint)));
+    }
+    else
+    {
+        edit->setContextMenuPolicy(Qt::CustomContextMenu);
+        connect(edit, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customContextMenuRequested(QPoint)));
+    }
     return true;
 }
 
@@ -521,6 +533,52 @@ bool BAbstractCodeEditorDocumentPrivate::testBracket(const QString &text, int po
     return false;
 }
 
+QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &pos)
+{
+    if (!spellChecker || !edit)
+        return 0;
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(edit);
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(edit);
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(edit);
+    QTextCursor tc;
+    if (tedt)
+        tc = tedt->cursorForPosition(pos);
+    else if (ptedt)
+        tc = ptedt->cursorForPosition(pos);
+    else if (cedt)
+        tc = cedt->innerEdit()->cursorForPosition(pos);
+    if (tc.isNull())
+        return 0;
+    QString text = tc.block().text();
+    int p = tc.positionInBlock();
+    QString w;
+    int i = p;
+    while (i >= 0 && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
+        w.prepend(text.at(i--));
+    wordToReplace.first = tc.block().position() + i + 1;
+    i = p + 1;
+    while (i < text.length() && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
+        w.append(text.at(i++));
+    wordToReplace.second = wordToReplace.first + w.length();
+    if (w.isEmpty())
+        return 0;
+    QMenu *mnu = new QMenu(tr("Spell check", "mnu title"));
+    mnu->setEnabled(!readOnly);
+    QStringList suggestions = spellChecker->suggest(w);
+    while (suggestions.size() > 10)
+        suggestions.removeLast();
+    foreach (const QString &s, suggestions)
+        mnu->addAction(s, this, SLOT(replaceWord()));
+    if (!suggestions.isEmpty())
+        mnu->addSeparator();
+    if (spellChecker->isIgnored(w))
+        mnu->addAction(tr("Remove from ignore list", "act text"), this,
+                       SLOT(dontIgnoreWord()))->setProperty("beqt/word", w);
+    else if (!spellChecker->spell(w))
+        mnu->addAction(tr("Ignore this word", "act text"), this, SLOT(ignoreWord()))->setProperty("beqt/word", w);
+    return mnu;
+}
+
 /*============================== Public slots ==============================*/
 
 void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocumentDriver::Operation &operation,
@@ -601,6 +659,23 @@ void BAbstractCodeEditorDocumentPrivate::dontIgnoreWord()
         return;
     spellChecker->ignoreWord(text, false);
     highlighter->rehighlight();
+}
+
+void BAbstractCodeEditorDocumentPrivate::customContextMenuRequested(const QPoint &pos)
+{
+    if (!edit)
+        return;
+    QMenu *mnu = q_func()->createContextMenu();
+    if (!mnu)
+        return;
+    QMenu *scmnu = createSpellCheckerMenu(pos);
+    if (scmnu)
+    {
+        mnu->addSeparator();
+        mnu->addMenu(scmnu);
+    }
+    mnu->exec(edit->mapToGlobal(pos));
+    delete mnu;
 }
 
 /*============================================================================
@@ -869,7 +944,35 @@ void BAbstractCodeEditorDocument::activateWindow()
 
 void BAbstractCodeEditorDocument::setText(const QString &txt, int asyncIfLongerThan)
 {
-    setTextImplementation(txt, asyncIfLongerThan);
+    //
+    if (txt.isEmpty())
+       return setTextImplementation(txt);
+    setBuisy(true); //TODO
+    TextProcessingFunction f = textPreprocessingFunction();
+    if (f && asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
+    {
+        innerEdit()->setEnabled(false);
+        setTextImplementation(tr("Processing content, please wait..."));
+        //ProcessTextResultFuture future = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
+        //ProcessTextResultFutureWatcher *watcher = new ProcessTextResultFutureWatcher(this);
+        //watcher->setFuture(future);
+        //connect(watcher, SIGNAL(finished()), this, SLOT(parceTaskFinished()));
+    }
+    else if (f)
+    {
+        TextProcessingResult res = f(txt, preprocessingUserData());
+        blockHighlighter(true);
+        setTextImplementation(res.text);
+        moveCursorImplementation(QPoint(0, 0));
+        blockHighlighter(false);
+        setFocusImplementation();
+        afterPreprocessing(res.userData);
+        setBuisy(false); //TODO
+    }
+    else
+    {
+        setTextImplementation(txt);
+    }
 }
 
 void BAbstractCodeEditorDocument::insertText(const QString &txt)
@@ -981,50 +1084,49 @@ QTextCursor BAbstractCodeEditorDocument::textCursor(bool *ok) const
         return bRet(ok, false, QTextCursor());
 }
 
-QMenu *BAbstractCodeEditorDocument::createSpellCheckerMenu(const QPoint &pos) const
+QMenu *BAbstractCodeEditorDocument::createContextMenu()
 {
-    if (!d_func()->spellChecker)
-        return 0;
     QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
     QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
     BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
-    QTextCursor tc;
     if (tedt)
-        tc = tedt->cursorForPosition(pos);
+        return tedt->createStandardContextMenu();
     else if (ptedt)
-        tc = ptedt->cursorForPosition(pos);
+        return ptedt->createStandardContextMenu();
     else if (cedt)
-        tc = cedt->innerEdit()->cursorForPosition(pos);
-    if (tc.isNull())
+        return cedt->createContextMenu();
+    else
         return 0;
-    QString text = tc.block().text();
-    int p = tc.positionInBlock();
-    QString w;
-    int i = p;
-    while (i >= 0 && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
-        w.prepend(text.at(i--));
-    d_func()->wordToReplace.first = tc.block().position() + i + 1;
-    i = p + 1;
-    while (i < text.length() && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
-        w.append(text.at(i++));
-    d_func()->wordToReplace.second = d_func()->wordToReplace.first + w.length();
-    if (w.isEmpty())
-        return 0;
-    QMenu *mnu = new QMenu(tr("Spell check", "mnu title"));
-    mnu->setEnabled(!d_func()->readOnly);
-    QStringList suggestions = d_func()->spellChecker->suggest(w);
-    while (suggestions.size() > 10)
-        suggestions.removeLast();
-    foreach (const QString &s, suggestions)
-        mnu->addAction(s, d_func(), SLOT(replaceWord()));
-    if (!suggestions.isEmpty())
-        mnu->addSeparator();
-    if (spellChecker()->isIgnored(w))
-        mnu->addAction(tr("Remove from ignore list", "act text"), d_func(),
-                       SLOT(dontIgnoreWord()))->setProperty("beqt/word", w);
-    else if (!d_func()->spellChecker->spell(w))
-        mnu->addAction(tr("Ignore this word", "act text"), d_func(), SLOT(ignoreWord()))->setProperty("beqt/word", w);
-    return mnu;
+}
+
+BAbstractCodeEditorDocument::TextProcessingFunction BAbstractCodeEditorDocument::textPreprocessingFunction() const
+{
+    return 0;
+}
+
+BAbstractCodeEditorDocument::TextProcessingFunction BAbstractCodeEditorDocument::textPostprocessingFunction() const
+{
+    return 0;
+}
+
+QVariantMap BAbstractCodeEditorDocument::preprocessingUserData()
+{
+    return QVariantMap();
+}
+
+QVariantMap BAbstractCodeEditorDocument::postprocessingUserData()
+{
+    return QVariantMap();
+}
+
+void BAbstractCodeEditorDocument::afterPreprocessing(const QVariantMap &)
+{
+    //
+}
+
+void BAbstractCodeEditorDocument::afterPostprocessing(const QVariantMap &)
+{
+    //
 }
 
 void BAbstractCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)

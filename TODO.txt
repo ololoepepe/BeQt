@@ -5,7 +5,7 @@
 
 === PATCH ===
 
-* Update READMEs
+* Update READMEs (modules, QtConcurrent, Hunspell)
 [done] Update infos
 
 === MINOR ===
@@ -35,3 +35,4 @@
 [done] Add BClipboardNotifier class
 [done] Make Courier New the default monospaced font on Windows
 [done] Make BLineNumberWidget reusable
+* Improve text pre/postprocessing

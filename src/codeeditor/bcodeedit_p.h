@@ -10,7 +10,6 @@ class QEvent;
 class QKeyEvent;
 class QMouseEvent;
 class QStringList;
-class QPoint;
 class QPainter;
 class QBrush;
 class QPaintEvent;
@@ -34,6 +33,7 @@ class QMenu;
 #include <QFutureWatcher>
 #include <QString>
 #include <QChar>
+#include <QPoint>
 
 /*============================================================================
 ================================ BPlainTextEditExtended ======================
@@ -150,7 +150,6 @@ public:
     BCodeEdit::SplittedLinesRange deleteSelection();
     void blockHighlighter(bool block);
     void requestRehighlightBlock(const QTextBlock &block);
-    QMenu *requestCreateSpellCheckerMenu(const QPoint &pos);
     void seletAll();
     void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);
@@ -172,7 +171,6 @@ public:
     void move(int key);
 public Q_SLOTS:
     void parceTaskFinished();
-    void popupMenu(const QPoint &pos);
     void updateCursorPosition();
     void updateHasSelection();
     void updateCopyAvailable(bool available);
@@ -182,9 +180,11 @@ public Q_SLOTS:
     void emitModificationChanged(bool modified);
     void emitSelectionChanged();
     void setTextToEmptyLine();
+    void delayedSetLineLength();
 public:
     bool blockMode;
     int lineLength;
+    int tmpLineLength;
     BeQt::TabWidth tabWidth;
     QPoint cursorPosition;
     bool hasSelection;

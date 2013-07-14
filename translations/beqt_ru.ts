@@ -96,19 +96,27 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1013"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="955"/>
+        <source>Processing content, please wait...</source>
+        <translation>Обработка содержимого, пожалуйста, ждите...</translation>
+    </message>
+</context>
+<context>
+    <name>BAbstractCodeEditorDocumentPrivate</name>
+    <message>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="565"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1023"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="575"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1026"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="578"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -274,54 +282,57 @@
     </message>
 </context>
 <context>
-    <name>BCodeEditPrivate</name>
+    <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="854"/>
-        <source>Processing content, please wait...</source>
-        <comment>ptedt text</comment>
-        <translation>Обработка содержимого, пожалуйста, ждите...</translation>
-    </message>
-    <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1546"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1995"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1552"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2001"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1559"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2008"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1565"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2014"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1571"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2020"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1577"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2026"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="1584"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2033"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
+    </message>
+</context>
+<context>
+    <name>BCodeEditPrivate</name>
+    <message>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="847"/>
+        <source>Processing content, please wait...</source>
+        <comment>ptedt text</comment>
+        <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
 </context>
 <context>
