@@ -5,15 +5,15 @@ class BCodeEditorPrivate;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
 class BAbstractFileType;
+class BAbstractEditorModulePrivate;
+class BAbstractCodeEditorDocument;
 
 class QStringList;
 class QTextCodec;
 class QMenu;
 class QComboBox;
-class QColor;
 
 #include "bcodeedit.h"
-#include "babstractcodeeditordocument.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -94,8 +94,6 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
-    void setCurrentLineHighlightingEnabled(bool b);
-    void setHighlightedLineColor(const QColor &c);
     void setBracketHighlightingEnabled(bool b);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
@@ -125,8 +123,6 @@ public:
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
-    bool currentLineHighlightingEnabled() const;
-    QColor highlightedLineColor() const;
     bool isBracketHighlightingEnabled() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;

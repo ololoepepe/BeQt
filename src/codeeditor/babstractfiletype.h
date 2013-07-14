@@ -6,8 +6,6 @@ class BTextBlockUserData;
 class BAbstractFileTypePrivate;
 
 class QStringList;
-class QSyntaxHighlighter;
-class QObject;
 class QTextBlock;
 class QTextCharFormat;
 class QColor;
@@ -18,7 +16,6 @@ class QFont;
 
 #include <QString>
 #include <QList>
-#include <QApplication>
 
 /*============================================================================
 ================================ BAbstractFileType ===========================

@@ -6,12 +6,9 @@ class BCodeEditor;
 class BAbstractDocumentDriver;
 class BCodeEditPrivate;
 class BCodeEditorPrivate;
-class BCodeEdit;
 
 class QFont;
 class QPoint;
-class QColor;
-class QPlainTextEdit;
 
 #include "babstractfiletype.h"
 
@@ -24,8 +21,6 @@ class QPlainTextEdit;
 #include <QList>
 #include <QString>
 #include <QTextDocument>
-#include <QTextEdit>
-#include <QTextCharFormat>
 
 /*============================================================================
 ================================ BAbstractCodeEditorDocument =================
@@ -39,24 +34,6 @@ public:
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
 public:
-    struct FindBracketPairResult
-    {
-        int start;
-        int end;
-        const BracketPair *startBr;
-        const BracketPair *endBr;
-    };
-public:
-    typedef QList<FindBracketPairResult> FindBracketPairResultList;
-    typedef QTextEdit::ExtraSelection ExtraSelection;
-    typedef QList<ExtraSelection> ExtraSelectionList;
-public:
-    static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
-    static QTextCharFormat createBracketsFormat();
-    static QTextCharFormat createBracketsErrorFormat();
-    static QTextCharFormat createLineFormat(const QColor &c);
-    static FindBracketPairResult createFindBracketPairResult();
-public:
     explicit BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
     ~BAbstractCodeEditorDocument();
 protected:
@@ -67,22 +44,9 @@ public:
     virtual void setEditFont(const QFont &fnt) = 0;
     virtual void setEditTabWidth(BeQt::TabWidth tw) = 0;
     virtual void setLineNumberWidgetVisible(bool b) = 0;
-    virtual void setCurrentLineHighlightingEnabled(bool b) = 0;
-    virtual void setHighlightedLineColor(const QColor &c) = 0;
-    virtual bool isReadOnly() const = 0;
-    virtual bool isModified() const = 0;
-    virtual bool hasSelection() const = 0;
-    virtual bool isCutAvailable() const = 0;
-    virtual bool isCopyAvailable() const = 0;
-    virtual bool isPasteAvailable() const = 0;
-    virtual bool isUndoAvailable() const = 0;
-    virtual bool isRedoAvailable() const = 0;
     virtual QFont editFont() const = 0;
     virtual BeQt::TabWidth editTabWidth() const = 0;
     virtual bool lineNumberWidgetVisible() const = 0;
-    virtual bool currentLineHighlightingEnabled() const = 0;
-    virtual QColor highlightedLineColor() const = 0;
-    virtual QPoint cursorPosition() const = 0;
     virtual QString text(bool full = false) const = 0;
     virtual QString selectedText(bool full = false) const = 0;
     virtual QPoint selectionStart() const = 0;
@@ -99,18 +63,20 @@ public:
     void setCodec(QTextCodec *codec);
     void setCodec(const QString &codecName);
     void setAsyncProcessingMinimumLength(int length);
-    void setExtraSelections(const ExtraSelectionList &list, bool *ok = 0);
-    ExtraSelectionList getExtraSelections(bool *ok = 0) const;
-    ExtraSelection createExtraSelection(const QTextCharFormat &format, bool *ok = 0) const;
-    ExtraSelection createExtraSelection(bool *ok = 0) const;
-    FindBracketPairResult findLeftBracketPair() const;
-    FindBracketPairResult findRightBracketPair() const;
-    bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
     bool load(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
     bool waitForProcessed(int msecs = 30 * BeQt::Second);
+    bool isReadOnly() const;
+    bool isModified() const;
+    bool hasSelection() const;
+    bool isCutAvailable() const;
+    bool isCopyAvailable() const;
+    bool isPasteAvailable() const;
+    bool isUndoAvailable() const;
+    bool isRedoAvailable() const;
+    QPoint cursorPosition() const;
     BAbstractFileType *fileType() const;
     QString fileTypeId() const;
     BracketPairList recognizedBrackets() const;

@@ -7,14 +7,13 @@ class BAbstractCodeEditorDocument;
 
 class QString;
 class QAction;
-class QPoint;
-
 #include "babstracteditormodule.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QList>
+#include <QPoint>
 
 /*============================================================================
 ================================ BBookmarksEditorModule ======================

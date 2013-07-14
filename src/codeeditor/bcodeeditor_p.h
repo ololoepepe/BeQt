@@ -12,13 +12,11 @@ class BCodeEditorDocument;
 class QVBoxLayout;
 class QTabWidget;
 class QPoint;
-class QFont;
 class QLabel;
 class QListWidget;
 class QDialogButtonBox;
 class QAbstractButton;
 class QTextCodec;
-class QStringList;
 class QEvent;
 class QCheckBox;
 class QPushButton;
@@ -33,13 +31,13 @@ class QMenu;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
-#include <QCoreApplication>
 #include <QMap>
 #include <QString>
 #include <QList>
 #include <QDialog>
 #include <QComboBox>
-#include <QColor>
+#include <QFont>
+#include <QStringList>
 
 /*============================================================================
 ================================ StructuredCodecsComboBox ====================
@@ -296,8 +294,6 @@ public:
     int editLineLength;
     BeQt::TabWidth editTabWidth;
     bool lineNumberVisible;
-    bool lineHighlighting;
-    QColor lineColor;
     bool bracketsHighlighting;
     QTextCodec *defaultCodec;
     QString defaultFN;

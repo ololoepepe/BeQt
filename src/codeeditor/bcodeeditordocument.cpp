@@ -129,16 +129,6 @@ void BCodeEditorDocument::setLineNumberWidgetVisible(bool b)
     d_func()->cedt->setLineNumberWidgetVisible(b);
 }
 
-void BCodeEditorDocument::setCurrentLineHighlightingEnabled(bool b)
-{
-    d_func()->cedt->setCurrentLineHighlightingEnabled(b);
-}
-
-void BCodeEditorDocument::setHighlightedLineColor(const QColor &c)
-{
-    d_func()->cedt->setHighlightedLineColor(c);
-}
-
 bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     return d_func()->cedt->findNext(txt, flags, cyclic);
@@ -159,46 +149,6 @@ int BCodeEditorDocument::replaceInDocument(const QString &txt, const QString &ne
     return d_func()->cedt->replaceInDocument(txt, newText, cs);
 }
 
-bool BCodeEditorDocument::isReadOnly() const
-{
-    return d_func()->cedt->isReadOnly();
-}
-
-bool BCodeEditorDocument::isModified() const
-{
-    return d_func()->cedt->isModified();
-}
-
-bool BCodeEditorDocument::hasSelection() const
-{
-    return d_func()->cedt->hasSelection();
-}
-
-bool BCodeEditorDocument::isCutAvailable() const
-{
-    return d_func()->cedt->isCutAvailable();
-}
-
-bool BCodeEditorDocument::isCopyAvailable() const
-{
-    return d_func()->cedt->isCopyAvailable();
-}
-
-bool BCodeEditorDocument::isPasteAvailable() const
-{
-    return d_func()->cedt->isPasteAvailable();
-}
-
-bool BCodeEditorDocument::isUndoAvailable() const
-{
-    return d_func()->cedt->isUndoAvailable();
-}
-
-bool BCodeEditorDocument::isRedoAvailable() const
-{
-    return d_func()->cedt->isRedoAvailable();
-}
-
 QFont BCodeEditorDocument::editFont() const
 {
     return d_func()->cedt->editFont();
@@ -212,21 +162,6 @@ BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
 bool BCodeEditorDocument::lineNumberWidgetVisible() const
 {
     return d_func()->cedt->lineNumberWidgetVisible();
-}
-
-bool BCodeEditorDocument::currentLineHighlightingEnabled() const
-{
-    return d_func()->cedt->currentLineHighlightingEnabled();
-}
-
-QColor BCodeEditorDocument::highlightedLineColor() const
-{
-    return d_func()->cedt->highlightedLineColor();
-}
-
-QPoint BCodeEditorDocument::cursorPosition() const
-{
-    return d_func()->cedt->cursorPosition();
 }
 
 QString BCodeEditorDocument::text(bool full) const
@@ -373,11 +308,6 @@ void BCodeEditorDocument::undoImplementation()
 void BCodeEditorDocument::redoImplementation()
 {
     d_func()->cedt->redo();
-}
-
-void BCodeEditorDocument::highlightBrackets()
-{
-    d_func()->cedt->highlightBrackets();
 }
 
 void BCodeEditorDocument::installDropHandler(QObject *handler)

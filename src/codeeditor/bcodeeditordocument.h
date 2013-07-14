@@ -9,7 +9,6 @@ class QWidget;
 class QPoint;
 class QFont;
 class QString;
-class QColor;
 
 #include "babstractcodeeditordocument.h"
 #include "bcodeedit.h"
@@ -46,20 +45,9 @@ public:
     bool replaceNext(const QString &newText);
     int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-    bool isReadOnly() const;
-    bool isModified() const;
-    bool hasSelection() const;
-    bool isCutAvailable() const;
-    bool isCopyAvailable() const;
-    bool isPasteAvailable() const;
-    bool isUndoAvailable() const;
-    bool isRedoAvailable() const;
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
-    bool currentLineHighlightingEnabled() const;
-    QColor highlightedLineColor() const;
-    QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
     QPoint selectionStart() const;
@@ -91,7 +79,6 @@ protected:
     void undoImplementation();
     void redoImplementation();
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
-    void highlightBrackets();
     void installDropHandler(QObject *handler);
     void installInnerEventFilter(QObject *filter);
 Q_SIGNALS:

@@ -40,8 +40,6 @@ BSimpleCodeEditorDocumentPrivate::~BSimpleCodeEditorDocumentPrivate()
 void BSimpleCodeEditorDocumentPrivate::init()
 {
     ptedt = 0;
-    highlightLine = false;
-    lineColor = QColor("gray").lighter(160);
 }
 
 QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
@@ -76,31 +74,12 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     return ptedt;
 }
 
-void BSimpleCodeEditorDocumentPrivate::highlightBrackets()
-{
-    //
-}
-
-void BSimpleCodeEditorDocumentPrivate::highlightCurrentLine()
-{
-    /*QList<QTextEdit::ExtraSelection> selections = ptedt->extraSelections();
-    removeExtraSelections(selections, highlightedLines);
-    highlightedLines.clear();
-    if (!lineHighlighting)
-        return ptedt->setExtraSelections(selections);
-    QTextEdit::ExtraSelection es = createExtraSelection(ptedt, createLineFormat(lineColor));
-    highlightedBrackets << es;
-    selections << es;
-    ptedt->setExtraSelections(selections);*/
-}
-
 /*============================== Public slots ==============================*/
 
 void BSimpleCodeEditorDocumentPrivate::cursorPositionChanged()
 {
     QTextCursor tc = ptedt->textCursor();
     q_func()->setCursorPosition(QPoint(tc.positionInBlock(), tc.blockNumber()));
-    highlightCurrentLine();
 }
 
 void BSimpleCodeEditorDocumentPrivate::selectionChanged()
@@ -169,22 +148,6 @@ void BSimpleCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
 void BSimpleCodeEditorDocument::setLineNumberWidgetVisible(bool b)
 {
     d_func()->lnwgt->setVisible(b);
-}
-
-void BSimpleCodeEditorDocument::setCurrentLineHighlightingEnabled(bool b)
-{
-    if (d_func()->highlightLine == b)
-        return;
-    d_func()->highlightLine = b;
-    d_func()->highlightCurrentLine();
-}
-
-void BSimpleCodeEditorDocument::setHighlightedLineColor(const QColor &c)
-{
-    if (d_func()->lineColor == c)
-        return;
-    d_func()->lineColor = c;
-    d_func()->highlightCurrentLine();
 }
 
 bool BSimpleCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
@@ -256,46 +219,6 @@ int BSimpleCodeEditorDocument::replaceInDocument(const QString &txt, const QStri
     return count;
 }
 
-bool BSimpleCodeEditorDocument::isReadOnly() const
-{
-    return d_func()->ptedt->isReadOnly();
-}
-
-bool BSimpleCodeEditorDocument::isModified() const
-{
-    return d_func()->ptedt->document()->isModified();
-}
-
-bool BSimpleCodeEditorDocument::hasSelection() const
-{
-    return d_func()->ptedt->textCursor().hasSelection();
-}
-
-bool BSimpleCodeEditorDocument::isCutAvailable() const
-{
-    return !d_func()->ptedt->isReadOnly() && d_func()->ptedt->textCursor().hasSelection();
-}
-
-bool BSimpleCodeEditorDocument::isCopyAvailable() const
-{
-    return d_func()->ptedt->textCursor().hasSelection();
-}
-
-bool BSimpleCodeEditorDocument::isPasteAvailable() const
-{
-    return !d_func()->ptedt->isReadOnly() && BClipboardNotifier::instance()->textDataAvailable();
-}
-
-bool BSimpleCodeEditorDocument::isUndoAvailable() const
-{
-    return d_func()->ptedt->document()->isUndoAvailable();
-}
-
-bool BSimpleCodeEditorDocument::isRedoAvailable() const
-{
-    return d_func()->ptedt->document()->isRedoAvailable();
-}
-
 QFont BSimpleCodeEditorDocument::editFont() const
 {
     return d_func()->ptedt->font();
@@ -309,22 +232,6 @@ BeQt::TabWidth BSimpleCodeEditorDocument::editTabWidth() const
 bool BSimpleCodeEditorDocument::lineNumberWidgetVisible() const
 {
     return d_func()->lnwgt->isVisible();
-}
-
-bool BSimpleCodeEditorDocument::currentLineHighlightingEnabled() const
-{
-    return d_func()->highlightLine;
-}
-
-QColor BSimpleCodeEditorDocument::highlightedLineColor() const
-{
-    return d_func()->lineColor;
-}
-
-QPoint BSimpleCodeEditorDocument::cursorPosition() const
-{
-    QTextCursor tc = d_func()->ptedt->textCursor();
-    return QPoint(tc.positionInBlock(), tc.blockNumber());
 }
 
 QString BSimpleCodeEditorDocument::text(bool) const
@@ -484,11 +391,6 @@ void BSimpleCodeEditorDocument::undoImplementation()
 void BSimpleCodeEditorDocument::redoImplementation()
 {
     d_func()->ptedt->redo();
-}
-
-void BSimpleCodeEditorDocument::highlightBrackets()
-{
-    d_func()->highlightBrackets();
 }
 
 void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)

@@ -3,7 +3,6 @@
 
 class BCodeEditor;
 class BTextBlockUserData;
-class BCodeEdit;
 
 class QWidget;
 class QTextCodec;
@@ -13,7 +12,6 @@ class QColor;
 class QFont;
 class QTextBlock;
 class QPlainTextEdit;
-class QTextCursor;
 
 #include "babstractcodeeditordocument.h"
 #include "babstractdocumentdriver.h"
@@ -65,15 +63,22 @@ class BAbstractCodeEditorDocumentPrivate : public BBasePrivate
 public:
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
-    typedef BAbstractCodeEditorDocument::FindBracketPairResult FindBracketPairResult;
-    typedef BAbstractCodeEditorDocument::FindBracketPairResultList FindBracketPairResultList;
+public:
+    struct FindBracketPairResult
+    {
+        int start;
+        int end;
+        const BracketPair *startBr;
+        const BracketPair *endBr;
+    };
+public:
+    typedef QList<FindBracketPairResult> FindBracketPairResultList;
     typedef QTextEdit::ExtraSelection ExtraSelection;
     typedef QList<ExtraSelection> ExtraSelectionList;
 public:
     static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
     static QTextCharFormat createBracketsFormat();
     static QTextCharFormat createBracketsErrorFormat();
-    static QTextCharFormat createLineFormat(const QColor &c);
     static ExtraSelection createExtraSelection(const QTextEdit *edt,
                                                const QTextCharFormat &format = QTextCharFormat());
     static ExtraSelection createExtraSelection(const QPlainTextEdit *edt,

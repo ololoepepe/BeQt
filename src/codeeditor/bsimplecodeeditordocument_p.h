@@ -31,8 +31,6 @@ public:
 public:
     void init();
     QWidget *createEdit(QTextDocument **doc);
-    void highlightBrackets();
-    void highlightCurrentLine();
 public Q_SLOTS:
     void cursorPositionChanged();
     void selectionChanged();
@@ -40,8 +38,6 @@ public Q_SLOTS:
 public:
     QPlainTextEdit *ptedt;
     BLineNumberWidget *lnwgt;
-    bool highlightLine;
-    QColor lineColor;
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocumentPrivate)
 };

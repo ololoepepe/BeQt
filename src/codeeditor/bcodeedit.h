@@ -10,10 +10,7 @@ class BCodeEditorDocumentPrivate;
 class QString;
 class QPoint;
 class QFont;
-class BAbstractFileType;
-class QColor;
-
-#include "babstractcodeeditordocument.h"
+class QTextBlock;
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
@@ -21,7 +18,7 @@ class QColor;
 #include <QWidget>
 #include <QList>
 #include <QTextDocument>
-#include <QTextBlock>
+#include <QTextEdit>
 
 /*============================================================================
 ================================ BCodeEdit ===================================
@@ -45,7 +42,7 @@ public:
         int lastLineNumber;
     };
 public:
-    typedef BAbstractCodeEditorDocument::ExtraSelection ExtraSelection;
+    typedef QTextEdit::ExtraSelection ExtraSelection;
     typedef QList<ExtraSelection> ExtraSelectionList;
 public:
     explicit BCodeEdit(QWidget *parent = 0);
@@ -62,8 +59,6 @@ public:
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
-    void setCurrentLineHighlightingEnabled(bool b);
-    void setHighlightedLineColor(const QColor &c);
     void setExtraSelections(const ExtraSelectionList &list);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
@@ -83,8 +78,6 @@ public:
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
-    bool currentLineHighlightingEnabled() const;
-    QColor highlightedLineColor() const;
     ExtraSelectionList extraSelections() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
@@ -110,7 +103,6 @@ public Q_SLOTS:
     void deleteSelection();
     void undo();
     void redo();
-    void highlightBrackets();
 protected:
     BPlainTextEdit *innerEdit() const;
     QTextDocument *innerDocument() const;

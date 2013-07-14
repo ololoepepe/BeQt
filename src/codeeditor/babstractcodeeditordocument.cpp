@@ -37,6 +37,7 @@ class BCodeEditor;
 #include <QBrush>
 #include <QPlainTextEdit>
 #include <QTextBlockUserData>
+#include <QDebug>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -128,28 +129,39 @@ void BSyntaxHighlighter::highlightBlock(const QString &text)
 void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from,
                                                                const ExtraSelectionList &what)
 {
-    BAbstractCodeEditorDocument::removeExtraSelections(from, what);
+    foreach (const QTextEdit::ExtraSelection &es, what)
+    {
+        for (int i = from.size() - 1; i >= 0; --i)
+        {
+            if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
+                from.removeAt(i);
+        }
+    }
 }
 
 QTextCharFormat BAbstractCodeEditorDocumentPrivate::createBracketsFormat()
 {
-    return BAbstractCodeEditorDocument::createBracketsFormat();
+    QTextCharFormat fmt;
+    fmt.setForeground(QBrush(QColor("red")));
+    return fmt;
 }
 
 QTextCharFormat BAbstractCodeEditorDocumentPrivate::createBracketsErrorFormat()
 {
-    return BAbstractCodeEditorDocument::createBracketsErrorFormat();
-}
-
-QTextCharFormat BAbstractCodeEditorDocumentPrivate::createLineFormat(const QColor &c)
-{
-    return BAbstractCodeEditorDocument::createLineFormat(c);
+    QTextCharFormat fmt;
+    fmt.setBackground(QBrush(QColor("hotpink")));
+    return fmt;
 }
 
 BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     BAbstractCodeEditorDocumentPrivate::createFindBracketPairResult()
 {
-    return BAbstractCodeEditorDocument::createFindBracketPairResult();
+    FindBracketPairResult r;
+    r.start = -1;
+    r.end = -1;
+    r.startBr = 0;
+    r.endBr = 0;
+    return r;
 }
 
 /*============================== Public constructors =======================*/
@@ -175,6 +187,7 @@ void BAbstractCodeEditorDocumentPrivate::init()
     edit = 0;
     highlighter = 0;
     fileType = BAbstractFileType::defaultFileType();
+    recognizedBrackets = fileType->brackets();
     bracketsHighlighting = true;
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
@@ -246,7 +259,7 @@ void BAbstractCodeEditorDocumentPrivate::highlightBrackets()
     highlightedBrackets.clear();
     if (!bracketsHighlighting)
         return setExtraSelections(selections);
-    QList<FindBracketPairResult> list;
+    FindBracketPairResultList list;
     list << findLeftBracketPair();
     list << findRightBracketPair();
     foreach (const FindBracketPairResult &res, list)
@@ -317,13 +330,16 @@ BAbstractCodeEditorDocumentPrivate::ExtraSelectionList
 BAbstractCodeEditorDocumentPrivate::ExtraSelection
     BAbstractCodeEditorDocumentPrivate::createExtraSelection(const QTextCharFormat &format, bool *ok) const
 {
-    return q_func()->createExtraSelection(format, ok);
+    ExtraSelection r;
+    r.cursor = q_func()->textCursor(ok);
+    r.format = format;
+    return bRet(ok, !r.cursor.isNull(), r);
 }
 
 BAbstractCodeEditorDocumentPrivate::ExtraSelection
     BAbstractCodeEditorDocumentPrivate::createExtraSelection(bool *ok) const
 {
-    return q_func()->createExtraSelection(ok);
+    return createExtraSelection(ok);
 }
 
 BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
@@ -335,13 +351,13 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
         return res;
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
-    const BAbstractFileType::BracketPair *bracket = 0;
+    const BracketPair *bracket = 0;
     if (!testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket))
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
     int depth = 1;
-    const BAbstractFileType::BracketPair *br = 0;
+    const BracketPair *br = 0;
     while (tb.isValid())
     {
         QString text = BeQt::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
@@ -393,13 +409,13 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
         return res;
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
-    const BAbstractFileType::BracketPair *bracket = 0;
+    const BracketPair *bracket = 0;
     if (!testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket))
         return res;
     res.start = tb.position() + posInBlock;
     posInBlock += bracket->opening.length();
     int depth = 1;
-    const BAbstractFileType::BracketPair *br = 0;
+    const BracketPair *br = 0;
     while ( tb.isValid() )
     {
         QString text = BeQt::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
@@ -447,7 +463,7 @@ bool BAbstractCodeEditorDocumentPrivate::testBracket(const QString &text, int po
     bracket = 0;
     if (recognizedBrackets.isEmpty())
         return false;
-    foreach (const BAbstractFileType::BracketPair &br, recognizedBrackets)
+    foreach (const BracketPair &br, recognizedBrackets)
     {
         const QString &brText = opening ? br.opening : br.closing;
         if (brText.isEmpty())
@@ -518,52 +534,6 @@ void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentD
 /*============================================================================
 ================================ BAbstractCodeEditorDocument =================
 ============================================================================*/
-
-/*============================== Static public methods =====================*/
-
-void BAbstractCodeEditorDocument::removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what)
-{
-    foreach (const ExtraSelection &es, what)
-    {
-        for (int i = from.size() - 1; i >= 0; --i)
-        {
-            if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
-                from.removeAt(i);
-        }
-    }
-}
-
-QTextCharFormat BAbstractCodeEditorDocument::createBracketsFormat()
-{
-    QTextCharFormat fmt;
-    fmt.setForeground(QBrush(QColor("red")));
-    return fmt;
-}
-
-QTextCharFormat BAbstractCodeEditorDocument::createBracketsErrorFormat()
-{
-    QTextCharFormat fmt;
-    fmt.setBackground(QBrush(QColor("hotpink")));
-    return fmt;
-}
-
-QTextCharFormat BAbstractCodeEditorDocument::createLineFormat(const QColor &c)
-{
-    QTextCharFormat fmt;
-    fmt.setBackground(QBrush(c));
-    fmt.setProperty(QTextFormat::FullWidthSelection, true);
-    return fmt;
-}
-
-BAbstractCodeEditorDocument::FindBracketPairResult BAbstractCodeEditorDocument::createFindBracketPairResult()
-{
-    FindBracketPairResult r;
-    r.start = -1;
-    r.end = -1;
-    r.startBr = 0;
-    r.endBr = 0;
-    return r;
-}
 
 /*============================== Public constructors =======================*/
 
@@ -650,46 +620,6 @@ void BAbstractCodeEditorDocument::setAsyncProcessingMinimumLength(int length)
     d_func()->asyncMin = (length > 0) ? length : 0;
 }
 
-void BAbstractCodeEditorDocument::setExtraSelections(const ExtraSelectionList &list, bool *ok)
-{
-    d_func()->setExtraSelections(list, ok);
-}
-
-BAbstractCodeEditorDocument::ExtraSelectionList BAbstractCodeEditorDocument::getExtraSelections(bool *ok) const
-{
-    return d_func()->getExtraSelections(ok);
-}
-
-BAbstractCodeEditorDocument::ExtraSelection
-    BAbstractCodeEditorDocument::createExtraSelection(const QTextCharFormat &format, bool *ok) const
-{
-    ExtraSelection r;
-    r.cursor = textCursor(ok);
-    r.format = format;
-    return r;
-}
-
-BAbstractCodeEditorDocument::ExtraSelection BAbstractCodeEditorDocument::createExtraSelection(bool *ok) const
-{
-    return createExtraSelection(QTextCharFormat(), ok);
-}
-
-BAbstractCodeEditorDocument::FindBracketPairResult BAbstractCodeEditorDocument::findLeftBracketPair() const
-{
-    return d_func()->findLeftBracketPair();
-}
-
-BAbstractCodeEditorDocument::FindBracketPairResult BAbstractCodeEditorDocument::findRightBracketPair() const
-{
-    return d_func()->findRightBracketPair();
-}
-
-bool BAbstractCodeEditorDocument::testBracket(const QString &text, int posInBlock, bool opening,
-                                              const BracketPair *&bracket) const
-{
-    return d_func()->testBracket(text, posInBlock, opening, bracket);
-}
-
 bool BAbstractCodeEditorDocument::load(BAbstractDocumentDriver *driver, const QString &fileName)
 {
     return load(driver, 0, fileName);
@@ -743,6 +673,51 @@ bool BAbstractCodeEditorDocument::waitForProcessed(int msecs)
         return true;
     BeQt::waitNonBlocking(this, SIGNAL(buisyChanged(bool)), msecs);
     return !d->buisy;
+}
+
+bool BAbstractCodeEditorDocument::isReadOnly() const
+{
+    return d_func()->readOnly;
+}
+
+bool BAbstractCodeEditorDocument::isModified() const
+{
+    return d_func()->isModified;
+}
+
+bool BAbstractCodeEditorDocument::hasSelection() const
+{
+    return d_func()->hasSelection;
+}
+
+bool BAbstractCodeEditorDocument::isCutAvailable() const
+{
+    return d_func()->cutAvailable;
+}
+
+bool BAbstractCodeEditorDocument::isCopyAvailable() const
+{
+    return d_func()->copyAvailable;
+}
+
+bool BAbstractCodeEditorDocument::isPasteAvailable() const
+{
+    return d_func()->pasteAvailable;
+}
+
+bool BAbstractCodeEditorDocument::isUndoAvailable() const
+{
+    return d_func()->undoAvailable;
+}
+
+bool BAbstractCodeEditorDocument::isRedoAvailable() const
+{
+    return d_func()->redoAvailable;
+}
+
+QPoint BAbstractCodeEditorDocument::cursorPosition() const
+{
+    return d_func()->cursorPosition;
 }
 
 BAbstractFileType *BAbstractCodeEditorDocument::fileType() const
@@ -1029,6 +1004,7 @@ void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)
     if (pos == d_func()->cursorPosition)
         return;
     d_func()->cursorPosition = pos;
+    highlightBrackets();
     Q_EMIT cursorPositionChanged(pos);
 }
 

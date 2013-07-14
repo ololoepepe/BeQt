@@ -116,7 +116,7 @@ bool BDefaultFileType::matchesFileName(const QString &) const
 
 BAbstractFileType::BracketPairList BDefaultFileType::brackets() const
 {
-    return BAbstractFileType::BracketPairList();
+    return BracketPairList();
 }
 
 /*============================== Protected methods =========================*/

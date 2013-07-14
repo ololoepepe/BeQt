@@ -3,30 +3,18 @@
 
 class BCodeEditPrivate;
 class BPlainTextEditExtendedPrivate;
-class BCodeEditParseTask;
 class BLineNumberWidget;
-class BCodeEdit;
-class BTextBlockUserData;
 
 class QHBoxLayout;
 class QEvent;
 class QKeyEvent;
 class QMouseEvent;
-class QString;
-class QChar;
 class QStringList;
 class QPoint;
 class QPainter;
 class QBrush;
-class QTextCursor;
 class QPaintEvent;
-class QResizeEvent;
-class QRect;
-class QSize;
-class QTextDocument;
 class QTextBlock;
-class QTextCharFormat;
-class QFont;
 
 #include "bcodeedit.h"
 
@@ -36,19 +24,15 @@ class QFont;
 #include <BeQtWidgets/private/bplaintextedit_p.h>
 
 #include <QObject>
-#include <QCoreApplication>
 #include <QList>
-#include <QTextBlock>
-#include <QTextEdit>
-#include <QPlainTextEdit>
 #include <QVector>
 #include <QRectF>
 #include <QAbstractTextDocumentLayout>
-#include <QPair>
 #include <QTextCharFormat>
-#include <QColor>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QString>
+#include <QChar>
 
 /*============================================================================
 ================================ BPlainTextEditExtended ======================
@@ -105,8 +89,8 @@ public:
     explicit BPlainTextEditExtendedPrivate(BPlainTextEditExtended *q);
     ~BPlainTextEditExtendedPrivate();
 public:
-    static inline void fillBackground( QPainter *painter, const QRectF &rect,
-                                       QBrush brush, QRectF gradientRect = QRectF() );
+    static inline void fillBackground(QPainter *painter, const QRectF &rect, QBrush brush,
+                                      QRectF gradientRect = QRectF());
 public:
     void init();
     void emulateShiftPress();
@@ -136,12 +120,6 @@ public:
         QList<BCodeEdit::SplittedLinesRange> splittedLinesRanges;
     };
 public:
-    typedef BAbstractFileType::BracketPair BracketPair;
-    typedef QList<BracketPair> BracketPairList;
-    typedef BAbstractCodeEditorDocument::FindBracketPairResult FindBracketPairResult;
-    typedef BAbstractCodeEditorDocument::FindBracketPairResultList FindBracketPairResultList;
-    typedef QTextEdit::ExtraSelection ExtraSelection;
-    typedef QList<ExtraSelection> ExtraSelectionList;
     typedef QFuture<ProcessTextResult> ProcessTextResultFuture;
     typedef QFutureWatcher<ProcessTextResult> ProcessTextResultFutureWatcher;
 public:
@@ -162,15 +140,6 @@ public:
     static void makeBlock(QString *text, int *length = 0);
     static bool testBlock(const QString &text, int *length = 0);
     static bool testBlock(const QStringList &lines, int *length = 0);
-    static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
-    static QTextCharFormat createBracketsFormat();
-    static QTextCharFormat createBracketsErrorFormat();
-    static QTextCharFormat createLineFormat(const QColor &c);
-    static ExtraSelection createExtraSelection(const QTextEdit *edt,
-                                               const QTextCharFormat &format = QTextCharFormat());
-    static ExtraSelection createExtraSelection(const QPlainTextEdit *edt,
-                                               const QTextCharFormat &format = QTextCharFormat());
-    static FindBracketPairResult createFindBracketPairResult();
 public:
     void init();
     bool eventFilter(QObject *obj, QEvent *e);
@@ -180,16 +149,10 @@ public:
     BCodeEdit::SplittedLinesRange deleteSelection();
     void blockHighlighter(bool block);
     void requestRehighlightBlock(const QTextBlock &block);
-    void requestHighlightBrackets();
     void seletAll();
     void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);
     void insertText(const QString &txt, bool asKeyPress = false);
-    void highlightBrackets();
-    void highlightCurrentLine();
-    FindBracketPairResult findLeftBracketPair() const;
-    FindBracketPairResult findRightBracketPair() const;
-    bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
     void emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges);
     void emitLineSplitted(const BCodeEdit::SplittedLinesRange &range);
     void handleReturn();
@@ -229,10 +192,6 @@ public:
     bool undoAvailable;
     bool redoAvailable;
     bool buisy;
-    bool lineHighlighting;
-    QColor lineColor;
-    QList<QTextEdit::ExtraSelection> highlightedBrackets;
-    QList<QTextEdit::ExtraSelection> highlightedLines;
     QHBoxLayout *hlt;
       BPlainTextEditExtended *ptedt;
       BLineNumberWidget *lnwgt;
