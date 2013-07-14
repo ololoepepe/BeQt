@@ -3,7 +3,7 @@ TARGET = BeQtCore
 
 CONFIG += release
 
-QT = core
+QT = core concurrent
 
 BEQT =
 
@@ -32,6 +32,7 @@ HEADERS += \
     bsignaldelayproxy_p.h \
     bspamnotifier.h \
     bspamnotifier_p.h \
+    bspellchecker.h \
     bspellcheckerdictionary.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
@@ -53,6 +54,7 @@ SOURCES += \
     bsettingsnode.cpp \
     bsignaldelayproxy.cpp \
     bspamnotifier.cpp \
+    bspellchecker.cpp \
     bspellcheckerdictionary.cpp \
     bterminaliohandler.cpp \
     btranslatefunctor.cpp \

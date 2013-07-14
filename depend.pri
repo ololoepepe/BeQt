@@ -111,18 +111,18 @@ contains(BEQT, codeeditor) {
     BEQT *= core widgets
 }
 contains(BEQT, core) {
-    QT *= core
+    QT *= core concurrent
 }
 contains(BEQT, network) {
-    QT *= core network
+    QT *= core network concurrent
     BEQT *= core
 }
 contains(BEQT, sql) {
-    QT *= core sql
+    QT *= core sql concurrent
     BEQT *= core
 }
 contains(BEQT, widgets) {
-    QT *= core gui widgets
+    QT *= core gui widgets concurrent
     BEQT *= core
 }
 contains(BEQT, networkwidgets) {
