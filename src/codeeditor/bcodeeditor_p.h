@@ -8,6 +8,7 @@ class BSelectDocumentsDialogPrivate;
 class BSplittedLinesDialogPrivate;
 class BAbstractFileType;
 class BCodeEditorDocument;
+class BSpellChecker;
 
 class QVBoxLayout;
 class QTabWidget;
@@ -295,6 +296,7 @@ public:
     BeQt::TabWidth editTabWidth;
     bool lineNumberVisible;
     bool bracketsHighlighting;
+    BSpellChecker *spellChecker;
     QTextCodec *defaultCodec;
     QString defaultFN;
     int maximumFileSize;

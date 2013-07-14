@@ -7,6 +7,7 @@ class BAbstractDocumentDriver;
 class BAbstractFileType;
 class BAbstractEditorModulePrivate;
 class BAbstractCodeEditorDocument;
+class BSpellChecker;
 
 class QStringList;
 class QTextCodec;
@@ -95,6 +96,7 @@ public:
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
     void setBracketHighlightingEnabled(bool b);
+    void setSpellChecker(BSpellChecker *sc);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
     void setDefaultFileName(const QString &fileName);
@@ -124,6 +126,7 @@ public:
     BeQt::TabWidth editTabWidth() const;
     bool lineNumberWidgetVisible() const;
     bool isBracketHighlightingEnabled() const;
+    BSpellChecker *spellChecker() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;
     QString defaultFileName() const;

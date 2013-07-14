@@ -3,6 +3,7 @@
 
 class BCodeEditor;
 class BTextBlockUserData;
+class BSpellChecker;
 
 class QWidget;
 class QTextCodec;
@@ -25,6 +26,7 @@ class QPlainTextEdit;
 #include <QSyntaxHighlighter>
 #include <QTextEdit>
 #include <QTextCharFormat>
+#include <QPair>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -105,6 +107,9 @@ public:
 public Q_SLOTS:
     void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
+    void replaceWord();
+    void ignoreWord();
+    void dontIgnoreWord();
 public:
     BCodeEditor *const Editor;
 public:
@@ -114,6 +119,7 @@ public:
     BracketPairList recognizedBrackets;
     bool bracketsHighlighting;
     ExtraSelectionList highlightedBrackets;
+    BSpellChecker *spellChecker;
     QString fileName;
     QTextCodec *codec;
     int asyncMin;
@@ -127,6 +133,7 @@ public:
     bool redoAvailable;
     QPoint cursorPosition;
     bool buisy;
+    mutable QPair<int, int> wordToReplace;
 private:
     Q_DISABLE_COPY(BAbstractCodeEditorDocumentPrivate)
 };

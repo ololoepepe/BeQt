@@ -188,7 +188,7 @@ QString BSpellChecker::userDictionaryPath() const
 
 bool BSpellChecker::spell(const QString &word) const
 {
-    if (word.isEmpty() || !isValid())
+    if (word.isEmpty())
         return false;
     if (d_func()->ignored.contains(word))
         return true;
@@ -200,7 +200,7 @@ bool BSpellChecker::spell(const QString &word) const
 
 QStringList BSpellChecker::suggest(const QString &word) const
 {
-    if (word.isEmpty() || !isValid())
+    if (word.isEmpty())
         return QStringList();
     QStringList sl;
     foreach (BSpellCheckerDictionary *dict, d_func()->dicts)
@@ -215,8 +215,6 @@ void BSpellChecker::ignoreWord(const QString &word, bool ignore)
 
 void BSpellChecker::ignoreWords(const QStringList &words, bool ignore)
 {
-    if (!isValid())
-        return;
     foreach (const QString &w, words)
     {
         if (ignore)
@@ -236,6 +234,13 @@ void BSpellChecker::ignoreWords(const QStringList &words, bool ignore)
     }
 }
 
+bool BSpellChecker::isIgnored(const QString &word) const
+{
+    if (word.isEmpty())
+        return false;
+    return d_func()->ignored.contains(word);
+}
+
 QList<BSpellCheckerDictionary *> BSpellChecker::dictionaries() const
 {
     return d_func()->dicts.values();
@@ -249,9 +254,4 @@ BSpellCheckerDictionary *BSpellChecker::dictionary(const QLocale &locale) const
 BSpellCheckerDictionary *BSpellChecker::dictionary(const QString &localeName) const
 {
     return d_func()->dicts.value(localeName);
-}
-
-bool BSpellChecker::isValid() const
-{
-    return !d_func()->dicts.isEmpty();
 }

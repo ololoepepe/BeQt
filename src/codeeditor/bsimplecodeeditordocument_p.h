@@ -7,6 +7,7 @@ class BLineNumberWidget;
 class QTextDocument;
 class QWidget;
 class QPlainTextEdit;
+class QPoint;
 
 #include "bsimplecodeeditordocument.h"
 #include "babstractcodeeditordocument_p.h"
@@ -35,6 +36,7 @@ public Q_SLOTS:
     void cursorPositionChanged();
     void selectionChanged();
     void updatePasteAvailable(bool available);
+    void popupMenu(const QPoint &pos);
 public:
     QPlainTextEdit *ptedt;
     BLineNumberWidget *lnwgt;

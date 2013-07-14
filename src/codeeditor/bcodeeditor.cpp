@@ -1,3 +1,5 @@
+class BSpellChecker;
+
 #include "bcodeeditor.h"
 #include "bcodeeditor_p.h"
 #include "babstractcodeeditordocument.h"
@@ -598,6 +600,7 @@ void BCodeEditorPrivate::init()
     editTabWidth = BeQt::TabWidth4;
     lineNumberVisible = true;
     bracketsHighlighting = true;
+    spellChecker = 0;
     driver = 0;
     q->setDriver(new BLocalDocumentDriver);
     fileTypes.insert(BAbstractFileType::defaultFileTypeId(), BAbstractFileType::defaultFileType());
@@ -702,6 +705,7 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
     doc->setEditTabWidth(editTabWidth);
     doc->setLineNumberWidgetVisible(lineNumberVisible);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
+    doc->setSpellChecker(spellChecker);
     doc->setCodec(defaultCodec);
     doc->setFileType( selectDocumentFileType(doc) );
     if (ddoc)
@@ -1824,6 +1828,16 @@ void BCodeEditor::setBracketHighlightingEnabled(bool b)
         doc->setBracketHighlightingEnabled(b);
 }
 
+void BCodeEditor::setSpellChecker(BSpellChecker *sc)
+{
+    B_D(BCodeEditor);
+    if (sc == d->spellChecker)
+        return;
+    d->spellChecker = sc;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+        doc->setSpellChecker(sc);
+}
+
 void BCodeEditor::setDefaultCodec(QTextCodec *codec)
 {
     if ( !codec || !supportsCodec(codec) )
@@ -2061,6 +2075,11 @@ bool BCodeEditor::lineNumberWidgetVisible() const
 bool BCodeEditor::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
+}
+
+BSpellChecker *BCodeEditor::spellChecker() const
+{
+    return d_func()->spellChecker;
 }
 
 QTextCodec *BCodeEditor::defaultCodec() const

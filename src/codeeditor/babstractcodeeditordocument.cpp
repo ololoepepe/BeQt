@@ -1,5 +1,3 @@
-class BCodeEditor;
-
 #include "babstractcodeeditordocument.h"
 #include "babstractcodeeditordocument_p.h"
 #include "babstractdocumentdriver.h"
@@ -7,6 +5,7 @@ class BCodeEditor;
 #include "bcodeeditor.h"
 #include "btextblockuserdata.h"
 #include "bcodeedit.h"
+#include "bspellchecker.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -38,6 +37,11 @@ class BCodeEditor;
 #include <QPlainTextEdit>
 #include <QTextBlockUserData>
 #include <QDebug>
+#include <QRegExp>
+#include <QMenu>
+#include <QAction>
+#include <QPair>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -113,11 +117,40 @@ BAbstractCodeEditorDocument *BSyntaxHighlighter::editorDocument() const
 void BSyntaxHighlighter::highlightBlock(const QString &text)
 {
     BAbstractFileType *ft = EditorDocument ? EditorDocument->fileType() : 0;
-    if (!ft)
-        return;
-    ft->setCurrentHighlighter(this);
-    ft->highlightBlock(text);
-    ft->setCurrentHighlighter(0);
+    if (ft)
+    {
+        ft->setCurrentHighlighter(this);
+        ft->highlightBlock(text);
+        ft->setCurrentHighlighter(0);
+    }
+    BSpellChecker *sc = EditorDocument ? EditorDocument->spellChecker() : 0;
+    if (sc)
+    {
+        int i = 0;
+        QString w;
+        while (i <= text.length())
+        {
+            if (i < text.length() && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
+            {
+                w += text.at(i);
+            }
+            else if (!w.isEmpty())
+            {
+                if (!sc->spell(w))
+                {
+                    foreach (int j, bRangeD(i - w.length(), i - 1))
+                    {
+                        QTextCharFormat fmt = format(j);
+                        fmt.setUnderlineColor(QColor("red"));
+                        fmt.setUnderlineStyle(QTextCharFormat::WaveUnderline);
+                        setFormat(j, 1, fmt);
+                    }
+                }
+                w.clear();
+            }
+            ++i;
+        }
+    }
 }
 
 /*============================================================================
@@ -189,6 +222,7 @@ void BAbstractCodeEditorDocumentPrivate::init()
     fileType = BAbstractFileType::defaultFileType();
     recognizedBrackets = fileType->brackets();
     bracketsHighlighting = true;
+    spellChecker = 0;
     codec = QTextCodec::codecForName("UTF-8");
     asyncMin = 100 * BeQt::Kilobyte;
     readOnly = false;
@@ -531,6 +565,44 @@ void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentD
     setBuisy(false);
 }
 
+void BAbstractCodeEditorDocumentPrivate::replaceWord()
+{
+    if (readOnly)
+        return;
+    QAction *act = qobject_cast<QAction *>(sender());
+    QString text = act ? act->text() : QString();
+    if (text.isEmpty())
+        return;
+    q_func()->selectTextImplementation(wordToReplace.first, wordToReplace.second);
+    if (!hasSelection)
+        return;
+    q_func()->insertTextImplementation(act->text());
+}
+
+void BAbstractCodeEditorDocumentPrivate::ignoreWord()
+{
+    if (!spellChecker)
+        return;
+    QAction *act = qobject_cast<QAction *>(sender());
+    QString text = act ? act->property("beqt/word").toString() : QString();
+    if (text.isEmpty())
+        return;
+    spellChecker->ignoreWord(text);
+    highlighter->rehighlight();
+}
+
+void BAbstractCodeEditorDocumentPrivate::dontIgnoreWord()
+{
+    if (!spellChecker)
+        return;
+    QAction *act = qobject_cast<QAction *>(sender());
+    QString text = act ? act->property("beqt/word").toString() : QString();
+    if (text.isEmpty())
+        return;
+    spellChecker->ignoreWord(text, false);
+    highlighter->rehighlight();
+}
+
 /*============================================================================
 ================================ BAbstractCodeEditorDocument =================
 ============================================================================*/
@@ -594,6 +666,12 @@ void BAbstractCodeEditorDocument::setBracketHighlightingEnabled(bool enabled)
         return;
     d_func()->bracketsHighlighting = enabled;
     highlightBrackets();
+}
+
+void BAbstractCodeEditorDocument::setSpellChecker(BSpellChecker *sc)
+{
+    d_func()->spellChecker = sc;
+    d_func()->highlighter->rehighlight();
 }
 
 void BAbstractCodeEditorDocument::setFileName(const QString &fn)
@@ -738,6 +816,11 @@ BAbstractCodeEditorDocument::BracketPairList BAbstractCodeEditorDocument::recogn
 bool BAbstractCodeEditorDocument::isBracketHighlightingEnabled() const
 {
     return d_func()->bracketsHighlighting;
+}
+
+BSpellChecker *BAbstractCodeEditorDocument::spellChecker() const
+{
+    return d_func()->spellChecker;
 }
 
 QString BAbstractCodeEditorDocument::fileName() const
@@ -896,6 +979,52 @@ QTextCursor BAbstractCodeEditorDocument::textCursor(bool *ok) const
         return cedt->innerEdit()->textCursor();
     else
         return bRet(ok, false, QTextCursor());
+}
+
+QMenu *BAbstractCodeEditorDocument::createSpellCheckerMenu(const QPoint &pos) const
+{
+    if (!d_func()->spellChecker)
+        return 0;
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
+    QTextCursor tc;
+    if (tedt)
+        tc = tedt->cursorForPosition(pos);
+    else if (ptedt)
+        tc = ptedt->cursorForPosition(pos);
+    else if (cedt)
+        tc = cedt->innerEdit()->cursorForPosition(pos);
+    if (tc.isNull())
+        return 0;
+    QString text = tc.block().text();
+    int p = tc.positionInBlock();
+    QString w;
+    int i = p;
+    while (i >= 0 && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
+        w.prepend(text.at(i--));
+    d_func()->wordToReplace.first = tc.block().position() + i + 1;
+    i = p + 1;
+    while (i < text.length() && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
+        w.append(text.at(i++));
+    d_func()->wordToReplace.second = d_func()->wordToReplace.first + w.length();
+    if (w.isEmpty())
+        return 0;
+    QMenu *mnu = new QMenu(tr("Spell check", "mnu title"));
+    mnu->setEnabled(!d_func()->readOnly);
+    QStringList suggestions = d_func()->spellChecker->suggest(w);
+    while (suggestions.size() > 10)
+        suggestions.removeLast();
+    foreach (const QString &s, suggestions)
+        mnu->addAction(s, d_func(), SLOT(replaceWord()));
+    if (!suggestions.isEmpty())
+        mnu->addSeparator();
+    if (spellChecker()->isIgnored(w))
+        mnu->addAction(tr("Remove from ignore list", "act text"), d_func(),
+                       SLOT(dontIgnoreWord()))->setProperty("beqt/word", w);
+    else if (!d_func()->spellChecker->spell(w))
+        mnu->addAction(tr("Ignore this word", "act text"), d_func(), SLOT(ignoreWord()))->setProperty("beqt/word", w);
+    return mnu;
 }
 
 void BAbstractCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)

@@ -29,6 +29,7 @@ public:
     ~BSpellCheckerDictionaryPrivate();
 public:
     void init();
+    bool testValidity();
 public:
     const QString Path;
     const QLocale Locale;
@@ -70,12 +71,23 @@ void BSpellCheckerDictionaryPrivate::init()
         return;
     hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
     codec = QTextCodec::codecForName(hunspell->get_dic_encoding());
-    if (!codec || (!hunspell->get_wordchars() && !hunspell->get_wordchars_utf16(new int)))
+    if (!codec || !testValidity())
     {
         delete hunspell;
         hunspell = 0;
         codec = 0;
     }
+}
+
+bool BSpellCheckerDictionaryPrivate::testValidity()
+{
+    //Testing Hunspell instance using the word "test" in corresponding language
+    if (Locale.name().startsWith("en"))
+        return q_func()->spell("test");
+    else if (Locale.name().startsWith("ru"))
+        return q_func()->spell(QString::fromWCharArray(L"\u0442\u0435\u0441\u0442"));
+    else
+        return true; //Actually, returning true hers is not cool
 }
 
 /*============================================================================

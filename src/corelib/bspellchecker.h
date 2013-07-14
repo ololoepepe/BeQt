@@ -36,10 +36,10 @@ public:
     QStringList suggest(const QString &word) const;
     void ignoreWord(const QString &word, bool ignore = true);
     void ignoreWords(const QStringList &words, bool ignore = true);
+    bool isIgnored(const QString &word) const;
     QList<BSpellCheckerDictionary *> dictionaries() const;
     BSpellCheckerDictionary *dictionary(const QLocale &locale) const;
     BSpellCheckerDictionary *dictionary(const QString &localeName) const;
-    bool isValid() const;
 private:
     Q_DISABLE_COPY(BSpellChecker)
 };

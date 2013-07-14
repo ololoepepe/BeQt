@@ -6,9 +6,11 @@ class BCodeEditor;
 class BAbstractDocumentDriver;
 class BCodeEditPrivate;
 class BCodeEditorPrivate;
+class BSpellChecker;
 
 class QFont;
 class QPoint;
+class QMenu;
 
 #include "babstractfiletype.h"
 
@@ -59,6 +61,7 @@ public:
     void setFileType(BAbstractFileType *ft);
     void setRecognizedBrackets(const BracketPairList &list);
     void setBracketHighlightingEnabled(bool enabled);
+    void setSpellChecker(BSpellChecker *sc);
     void setFileName(const QString &fn);
     void setCodec(QTextCodec *codec);
     void setCodec(const QString &codecName);
@@ -81,6 +84,7 @@ public:
     QString fileTypeId() const;
     BracketPairList recognizedBrackets() const;
     bool isBracketHighlightingEnabled() const;
+    BSpellChecker *spellChecker() const;
     QString fileName() const;
     QTextCodec *codec() const;
     QString codecName() const;
@@ -128,6 +132,7 @@ protected:
     virtual void installInnerEventFilter(QObject *filter) = 0;
     virtual void highlightBrackets();
     virtual QTextCursor textCursor(bool *ok = 0) const;
+    virtual QMenu *createSpellCheckerMenu(const QPoint &pos) const;
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void blockHighlighter(bool block);
     QWidget *innerEdit(QTextDocument **doc = 0) const;

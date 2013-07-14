@@ -780,6 +780,12 @@ void BCodeEditPrivate::requestRehighlightBlock(const QTextBlock &block)
     doc->rehighlightBlock(block);
 }
 
+QMenu *BCodeEditPrivate::requestCreateSpellCheckerMenu(const QPoint &pos)
+{
+    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
+    return doc ? doc->createSpellCheckerMenu(pos) : 0;
+}
+
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::deleteSelection()
 {
     QTextCursor tc = ptedt->textCursor();
@@ -1579,8 +1585,14 @@ void BCodeEditPrivate::popupMenu(const QPoint &pos)
       act->setShortcut(QKeySequence::SelectAll);
       connect( act, SIGNAL( triggered() ), q, SLOT( selectAll() ) );
     menu->addAction(act);
-    menu->exec( ptedt->mapToGlobal(pos) );
-    menu->deleteLater();
+    QMenu *scmnu = requestCreateSpellCheckerMenu(pos);
+    if (scmnu)
+    {
+        menu->addSeparator();
+        menu->addMenu(scmnu);
+    }
+    menu->exec(ptedt->mapToGlobal(pos));
+    delete menu;
 }
 
 void BCodeEditPrivate::updateCursorPosition()

@@ -15,6 +15,8 @@
 #include <QTextCursor>
 #include <QList>
 #include <QChar>
+#include <QMenu>
+#include <QPoint>
 
 #include <QDebug>
 
@@ -51,6 +53,7 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     B_Q(BSimpleCodeEditorDocument);
     ptedt = new QPlainTextEdit;
       ptedt->setTabStopWidth(BeQt::TabWidth4);
+      ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
     lnwgt = new BLineNumberWidget(ptedt);
     bool hasSel = ptedt->textCursor().hasSelection();
     q->setReadOnlyInternal(ptedt->isReadOnly());
@@ -65,6 +68,7 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     q->setBuisy(false);
     connect(ptedt, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
     connect(ptedt, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
+    connect(ptedt, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(popupMenu(QPoint)));
     connect(ptedt, SIGNAL(selectionChanged()), q, SLOT(emitSelectionChanged()));
     connect(ptedt, SIGNAL(modificationChanged(bool)), q, SLOT(setModificationInternal(bool)));
     connect(ptedt, SIGNAL(undoAvailable(bool)), q, SLOT(setUndoAvailable(bool)));
@@ -93,6 +97,19 @@ void BSimpleCodeEditorDocumentPrivate::selectionChanged()
 void BSimpleCodeEditorDocumentPrivate::updatePasteAvailable(bool available)
 {
     q_func()->setPasteAvailable(available && !ptedt->isReadOnly());
+}
+
+void BSimpleCodeEditorDocumentPrivate::popupMenu(const QPoint &pos)
+{
+    QMenu *mnu = ptedt->createStandardContextMenu();
+    QMenu *scmnu = q_func()->createSpellCheckerMenu(pos);
+    if (scmnu)
+    {
+        mnu->addSeparator();
+        mnu->addMenu(scmnu);
+    }
+    mnu->exec(ptedt->mapToGlobal(pos));
+    delete mnu;
 }
 
 /*============================================================================

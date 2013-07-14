@@ -15,6 +15,7 @@ class QPainter;
 class QBrush;
 class QPaintEvent;
 class QTextBlock;
+class QMenu;
 
 #include "bcodeedit.h"
 
@@ -149,6 +150,7 @@ public:
     BCodeEdit::SplittedLinesRange deleteSelection();
     void blockHighlighter(bool block);
     void requestRehighlightBlock(const QTextBlock &block);
+    QMenu *requestCreateSpellCheckerMenu(const QPoint &pos);
     void seletAll();
     void setText(const QString &txt, int asyncIfLongerThan);
     void setBuisy(bool b);

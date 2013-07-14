@@ -28,7 +28,7 @@
 [done] Improve BPasswordWidget
 [done] Add image support to person info system
 [done] Improve logging system
-* Add spell checking support to code editor
+[done] Add spell checking support to code editor
 [done] Remove extra constructors from some classes
 [done] Use QtConcurrent for BCodeEditor asynchronous operations
 [done] Add ability to use documents of different type in BCodeEditor
