@@ -22,12 +22,61 @@
 #include <QList>
 #include <QVariant>
 #include <QByteArray>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 #include <QDebug>
 
 /*============================================================================
 ================================ BLocalDocumentDriverPrivate =================
 ============================================================================*/
+
+/*============================== Static public methods =====================*/
+
+BLocalDocumentDriverPrivate::LoadResult BLocalDocumentDriverPrivate::loadFile(const Operation &op, const QString &fn,
+                                                                              QTextCodec *codec)
+{
+    QFile f(fn);
+    LoadResult res;
+    res.operation = op;
+    if (!f.open(QFile::ReadOnly))
+    {
+        res.success = false;
+        return res;
+    }
+    QTextStream in(&f);
+    in.setCodec(codec);
+    res.text = in.readAll();
+    f.close();
+    res.success = true;
+    return res;
+}
+
+BLocalDocumentDriverPrivate::SaveResult BLocalDocumentDriverPrivate::saveFile(const Operation &op, const QString &fn,
+                                                                              QString txt, QTextCodec *codec,
+                                                                              bool native)
+{
+    Q_UNUSED(native);
+    QFile f(fn);
+    SaveResult res;
+    res.operation = op;
+    if (!f.open(QFile::WriteOnly))
+    {
+        res.success = false;
+        return res;
+    }
+    QTextStream out(&f);
+    out.setCodec(codec);
+#if defined(Q_OS_WIN)
+    if (native)
+        txt.replace('\n', "\r\n");
+#endif
+    out << txt;
+    f.close();
+    res.success = true;
+    return res;
+}
 
 /*============================== Public constructors =======================*/
 
@@ -50,6 +99,28 @@ void BLocalDocumentDriverPrivate::init()
     nativeLineEnd = true;
     lastFileType = 0;
     codecsCmboxStyle = BFileDialog::StructuredStyle;
+}
+
+/*============================== Public slots ==============================*/
+
+void BLocalDocumentDriverPrivate::loadOperationFinished()
+{
+    LoadResultFutureWatcher *watcher = dynamic_cast<LoadResultFutureWatcher *>(sender());
+    if (!watcher)
+        return;
+    LoadResult res = watcher->result();
+    delete watcher;
+    q_func()->emitLoadingFinished(res.operation, res.success, res.text);
+}
+
+void BLocalDocumentDriverPrivate::saveOperationFinished()
+{
+    SaveResultFutureWatcher *watcher = dynamic_cast<SaveResultFutureWatcher *>(sender());
+    if (!watcher)
+        return;
+    SaveResult res = watcher->result();
+    delete watcher;
+    q_func()->emitSavingFinished(res.operation, res.success);
 }
 
 /*============================================================================
@@ -184,37 +255,27 @@ void BLocalDocumentDriver::setCodecsComboBoxStyle(BFileDialog::CodecsComboBoxSty
 
 bool BLocalDocumentDriver::handleLoadOperation(const Operation &op)
 {
-    QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
-    if ( !f.open(QFile::ReadOnly) )
-    {
-        emitLoadingFinished(op, false);
-        return false;
-    }
-    QTextStream in(&f);
-    in.setCodec( op.codec ? op.codec : op.document->codec() );
-    QString text = in.readAll();
-    f.close();
-    emitLoadingFinished(op, true, text);
+    QString fn = !op.fileName.isEmpty() ? op.fileName : op.document->fileName();
+    QTextCodec *c = op.codec ? op.codec : op.document->codec();
+    BLocalDocumentDriverPrivate::LoadResultFuture future =
+            QtConcurrent::run(&BLocalDocumentDriverPrivate::loadFile, op, fn, c);
+    BLocalDocumentDriverPrivate::LoadResultFutureWatcher *watcher =
+            new BLocalDocumentDriverPrivate::LoadResultFutureWatcher(this);
+    watcher->setFuture(future);
+    connect(watcher, SIGNAL(finished()), d_func(), SLOT(loadOperationFinished()));
     return true;
 }
 
 bool BLocalDocumentDriver::handleSaveOperation(const Operation &op)
 {
-    QFile f( !op.fileName.isEmpty() ? op.fileName : op.document->fileName() );
-    if ( !f.open(QFile::WriteOnly) )
-    {
-        emitSavingFinished(op, false);
-        return false;
-    }
-    QTextStream out(&f);
-    out.setCodec( op.codec ? op.codec : op.document->codec() );
-    QString text = op.document->text();
-#if defined(Q_OS_WIN)
-    if (d_func()->nativeLineEnd)
-        text.replace('\n', "\r\n");
-#endif
-    out << text;
-    f.close();
-    emitSavingFinished(op, true);
+    QString fn = !op.fileName.isEmpty() ? op.fileName : op.document->fileName();
+    QTextCodec *c = op.codec ? op.codec : op.document->codec();
+    QString txt = op.document->text();
+    BLocalDocumentDriverPrivate::SaveResultFuture future =
+            QtConcurrent::run(&BLocalDocumentDriverPrivate::saveFile, op, fn, txt, c, d_func()->nativeLineEnd);
+    BLocalDocumentDriverPrivate::SaveResultFutureWatcher *watcher =
+            new BLocalDocumentDriverPrivate::SaveResultFutureWatcher(this);
+    watcher->setFuture(future);
+    connect(watcher, SIGNAL(finished()), d_func(), SLOT(saveOperationFinished()));
     return true;
 }

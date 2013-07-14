@@ -1519,7 +1519,7 @@ void BCodeEditPrivate::parceTaskFinished()
     if (!watcher)
         return;
     ProcessTextResult res = watcher->result();
-    watcher->deleteLater();
+    delete watcher;
     ptedt->setEnabled(true);
     blockHighlighter(true);
     ptedt->setPlainText(res.newText);
