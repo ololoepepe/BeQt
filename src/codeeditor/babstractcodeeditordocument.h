@@ -6,6 +6,7 @@ class BCodeEditor;
 class BAbstractDocumentDriver;
 class BCodeEditPrivate;
 class BCodeEditorPrivate;
+class BCodeEdit;
 
 class QFont;
 class QPoint;
@@ -54,10 +55,6 @@ public:
     static QTextCharFormat createBracketsFormat();
     static QTextCharFormat createBracketsErrorFormat();
     static QTextCharFormat createLineFormat(const QColor &c);
-    static ExtraSelection createExtraSelection(const QTextEdit *edt,
-                                               const QTextCharFormat &format = QTextCharFormat());
-    static ExtraSelection createExtraSelection(const QPlainTextEdit *edt,
-                                               const QTextCharFormat &format = QTextCharFormat());
     static FindBracketPairResult createFindBracketPairResult();
 public:
     explicit BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
@@ -102,10 +99,12 @@ public:
     void setCodec(QTextCodec *codec);
     void setCodec(const QString &codecName);
     void setAsyncProcessingMinimumLength(int length);
-    FindBracketPairResult findLeftBracketPair(QTextEdit *edt) const;
-    FindBracketPairResult findLeftBracketPair(QPlainTextEdit *edt) const;
-    FindBracketPairResult findRightBracketPair(QTextEdit *edt) const;
-    FindBracketPairResult findRightBracketPair(QPlainTextEdit *edt) const;
+    void setExtraSelections(const ExtraSelectionList &list, bool *ok = 0);
+    ExtraSelectionList getExtraSelections(bool *ok = 0) const;
+    ExtraSelection createExtraSelection(const QTextCharFormat &format, bool *ok = 0) const;
+    ExtraSelection createExtraSelection(bool *ok = 0) const;
+    FindBracketPairResult findLeftBracketPair() const;
+    FindBracketPairResult findRightBracketPair() const;
     bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
     bool load(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
@@ -159,9 +158,10 @@ protected:
     virtual void deleteSelectionImplementation() = 0;
     virtual void undoImplementation() = 0;
     virtual void redoImplementation() = 0;
-    virtual void highlightBrackets() = 0;
     virtual void installDropHandler(QObject *handler) = 0;
     virtual void installInnerEventFilter(QObject *filter) = 0;
+    virtual void highlightBrackets();
+    virtual QTextCursor textCursor(bool *ok = 0) const;
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void blockHighlighter(bool block);
     QWidget *innerEdit(QTextDocument **doc = 0) const;

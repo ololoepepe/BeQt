@@ -3,6 +3,9 @@
 
 class BCodeEditPrivate;
 class BPlainTextEdit;
+class BAbstractCodeEditorDocumentPrivate;
+class BCodeEditorDocument;
+class BCodeEditorDocumentPrivate;
 
 class QString;
 class QPoint;
@@ -42,6 +45,9 @@ public:
         int lastLineNumber;
     };
 public:
+    typedef BAbstractCodeEditorDocument::ExtraSelection ExtraSelection;
+    typedef QList<ExtraSelection> ExtraSelectionList;
+public:
     explicit BCodeEdit(QWidget *parent = 0);
     ~BCodeEdit();
 protected:
@@ -58,6 +64,7 @@ public:
     void setLineNumberWidgetVisible(bool b);
     void setCurrentLineHighlightingEnabled(bool b);
     void setHighlightedLineColor(const QColor &c);
+    void setExtraSelections(const ExtraSelectionList &list);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
@@ -78,14 +85,13 @@ public:
     bool lineNumberWidgetVisible() const;
     bool currentLineHighlightingEnabled() const;
     QColor highlightedLineColor() const;
+    ExtraSelectionList extraSelections() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
     QPoint selectionStart() const;
     QPoint selectionEnd() const;
     bool isBuisy() const;
-    BPlainTextEdit *innerEdit() const;
-    QTextDocument *innerDocument() const;
 public Q_SLOTS:
     void setFocus();
     void activateWindow();
@@ -105,6 +111,9 @@ public Q_SLOTS:
     void undo();
     void redo();
     void highlightBrackets();
+protected:
+    BPlainTextEdit *innerEdit() const;
+    QTextDocument *innerDocument() const;
 Q_SIGNALS:
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);
@@ -120,6 +129,11 @@ Q_SIGNALS:
     void buisyChanged(bool buisy);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
+private:
+    friend class BAbstractCodeEditorDocument;
+    friend class BAbstractCodeEditorDocumentPrivate;
+    friend class BCodeEditorDocument;
+    friend class BCodeEditorDocumentPrivate;
 private:
     Q_DISABLE_COPY(BCodeEdit)
 };

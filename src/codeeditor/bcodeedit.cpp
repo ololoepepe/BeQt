@@ -549,7 +549,11 @@ QTextCharFormat BCodeEditPrivate::createLineFormat(const QColor &c)
 BCodeEditPrivate::ExtraSelection BCodeEditPrivate::createExtraSelection(const QPlainTextEdit *edt,
                                                                         const QTextCharFormat &format)
 {
-    return BAbstractCodeEditorDocument::createExtraSelection(edt, format);
+    ExtraSelection r;
+    if (edt)
+        r.cursor = edt->textCursor();
+    r.format = format;
+    return r;
 }
 
 BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::createFindBracketPairResult()
@@ -2000,6 +2004,11 @@ void BCodeEdit::setCurrentLineHighlightingEnabled(bool b)
     d_func()->highlightCurrentLine();
 }
 
+void BCodeEdit::setExtraSelections(const ExtraSelectionList &list)
+{
+    d_func()->ptedt->setExtraSelections(list);
+}
+
 void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
 {
     d_func()->ptedt->document()->clearUndoRedoStacks(historyToClear);
@@ -2189,6 +2198,11 @@ bool BCodeEdit::currentLineHighlightingEnabled() const
 QColor BCodeEdit::highlightedLineColor() const
 {
     return d_func()->lineColor;
+}
+
+BCodeEdit::ExtraSelectionList BCodeEdit::extraSelections() const
+{
+    return d_func()->ptedt->extraSelections();
 }
 
 QPoint BCodeEdit::cursorPosition() const
