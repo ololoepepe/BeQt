@@ -269,6 +269,11 @@ bool BPassword::operator ==(const BPassword &other) const
         return d->open == dd->open;
 }
 
+BPassword::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
+}
+
 /*============================== Public friend operators ===================*/
 
 QDataStream &operator <<(QDataStream &stream, const BPassword &pwd)

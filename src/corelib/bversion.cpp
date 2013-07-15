@@ -7,6 +7,7 @@
 #include <QDataStream>
 #include <QDebug>
 #include <QVariantMap>
+#include <QVariant>
 
 /*============================================================================
 ================================ BVersionPrivate =============================
@@ -402,6 +403,11 @@ bool BVersion::operator >=(const BVersion &other) const
 BVersion::operator QString() const
 {
     return toString();
+}
+
+BVersion::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 /*============================== Public friend operators ===================*/

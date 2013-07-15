@@ -586,8 +586,12 @@ bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
 {
-    static const int ContorlShiftModifier = ( (int) Qt::ControlModifier | (int) Qt::ShiftModifier );
-    static const int KeypadControlModifier = ( (int) Qt::KeypadModifier | (int) Qt::ControlModifier);
+    static const int ContorlShiftModifier = ((int) Qt::ControlModifier | (int) Qt::ShiftModifier);
+    static const int KeypadControlModifier = ((int) Qt::KeypadModifier | (int) Qt::ControlModifier);
+    static const int KeypadShiftModifier = ((int) Qt::KeypadModifier | (int) Qt::ShiftModifier);
+    static const int KeypadAltModifier = ((int) Qt::KeypadModifier | (int) Qt::AltModifier);
+    static const int KeypadControlShiftModifier = ((int) Qt::KeypadModifier | ContorlShiftModifier);
+    static const int KeypadControlAltModifier = (KeypadAltModifier | (int) Qt::ControlModifier);
     int modifiers = e->modifiers();
     int key = e->key();
     switch (modifiers)
@@ -656,6 +660,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_S:
             return !q_func()->isModified(); //Workaround to prevent entering 'S' when 'Save' action is disabled
             //Very "dirty" workaround. Maybe a Qt bug?
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
         default:
             break;
         }
@@ -675,6 +682,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_End:
             handleShiftEnd();
             return true;
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
         default:
             break;
         }
@@ -688,6 +698,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Down:
             move(key);
             return true;
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
         default:
             break;
         }
@@ -697,6 +710,22 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         {
         case Qt::Key_Z:
             q_func()->redo();
+            return true;
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
+        default:
+            break;
+        }
+        break;
+    case KeypadShiftModifier:
+    case KeypadAltModifier:
+    case KeypadControlShiftModifier:
+    case KeypadControlAltModifier:
+        switch (key)
+        {
+        case Qt::Key_Enter:
+            handleReturn();
             return true;
         default:
             break;
@@ -720,6 +749,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         {
         case Qt::Key_End:
             handleEnd(true);
+            return true;
+        case Qt::Key_Enter:
+            handleReturn();
             return true;
         default:
             break;
