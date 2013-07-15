@@ -3,18 +3,17 @@
 
 class BBookmarksEditorModulePrivate;
 class BCodeEditor;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QString;
 class QAction;
-class QPoint;
-
 #include "babstracteditormodule.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QList>
+#include <QPoint>
 
 /*============================================================================
 ================================ BBookmarksEditorModule ======================
@@ -52,7 +51,7 @@ public Q_SLOTS:
 protected:
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
 private:
     Q_DISABLE_COPY(BBookmarksEditorModule)
 };

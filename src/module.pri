@@ -1,7 +1,7 @@
-VERSION = 2.1.3
-VER_MAJ = 2
-VER_MIN = 1
-VER_PAT = 3
+VERSION = 3.0.0
+VER_MAJ = 3
+VER_MIN = 0
+VER_PAT = 0
 
 #Gets module short name, for example "core", "widgets", etc.
 #Returns corresponding full module name, for example "BeQtCore", "BeQtWidgets", etc.
@@ -11,7 +11,9 @@ defineReplace(fullBeqtModuleName) {
     equals(shortName, codeeditor):fullName=BeQtCodeEditor
     equals(shortName, core):fullName=BeQtCore
     equals(shortName, network):fullName=BeQtNetwork
+    equals(shortName, sql):fullName=BeQtSql
     equals(shortName, widgets):fullName=BeQtWidgets
+    equals(shortName, networkwidgets):fullName=BeQtNetworkWidgets
     return($${fullName})
 }
 
@@ -23,7 +25,9 @@ defineReplace(beqtModuleSubdir) {
     equals(fullName, codeeditor):moduleSubdir=codeeditor
     else:equals(fullName, core):moduleSubdir=corelib
     else:equals(fullName, network):moduleSubdir=network
+    else:equals(fullName, sql):moduleSubdir=sql
     else:equals(fullName, widgets):moduleSubdir=widgets
+    else:equals(fullName, networkwidgets):moduleSubdir=networkwidgets
     return($${moduleSubdir})
 }
 
@@ -67,33 +71,55 @@ contains(BEQT, all) {
         codeeditor \
         core \
         network \
-        widgets
+        sql \
+        widgets \
+        networkwidgets
 }
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui widgets
+    QT *= core gui widgets concurrent
     BEQT *= core widgets
 }
 contains(BEQT,core) {
-    QT *= core
+    QT *= core concurrent
 }
 contains(BEQT, network) {
-    QT *= core network
+    QT *= core network concurrent
     BEQT *= core network
 }
+contains(BEQT, sql) {
+    QT *= core sql concurrent
+    BEQT *= core
+}
 contains(BEQT, widgets) {
-    QT *= core gui widgets
+    QT *= core gui widgets concurrent
     BEQT *= core widgets
+}
+contains(BEQT, networkwidgets) {
+    QT *= core network gui widgets concurrent
+    BEQT *= core network widgets
 }
 
 #Workaround for proper linking when building statically
 contains(BEQT, codeeditor):BEQT_ORDERED += codeeditor
+contains(BEQT, networkwidgets):BEQT_ORDERED += networkwidgets
 contains(BEQT, widgets):BEQT_ORDERED += widgets
+contains(BEQT, sql):BEQT_ORDERED += sql
 contains(BEQT, network):BEQT_ORDERED += network
 contains(BEQT, core):BEQT_ORDERED += core
 
 #Adds corresponding headers' and libs' paths for each valid BeQt module contained in BEQT variable
 for(shortName, BEQT_ORDERED) {
     addBeqtModule($${shortName})
+}
+
+##############################################################################
+################################ Hunspell ####################################
+##############################################################################
+
+!isEmpty(HUNSPELL_PREFIX) {
+    INCLUDEPATH *= $${HUNSPELL_PREFIX}/include
+    DEPENDPATH *= $${HUNSPELL_PREFIX}/include
+    LIBS *= -L$${HUNSPELL_PREFIX}/lib/ -lhunspell
 }

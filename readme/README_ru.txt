@@ -52,8 +52,8 @@ BeQt рассчитан на использование совместно с Qt
 В случае использования Qt 4.8 некоторые возможности могут отсутствовать.
 Поддержка версий Qt ниже 4.8.0 не гарантируется.
 
-Примечание: для использования всех возможностей BeQt потребуются
-следующие модули Qt: QtCore, QtNetwork, QtGui, QtWidgets (для Qt5).
+Примечание: для использования всех возможностей BeQt потребуются следующие
+модули Qt: QtCore, QtConcurrent, QtNetwork, QtGui, QtSql, QtWidgets (для Qt5).
 
 Для использования встроенных иконок формата .svgz также потребуется
 соответствующий плагин.
@@ -90,8 +90,15 @@ BeQt рассчитан на использование совместно с Qt
 
 При сборке BeQt можно передать некоторые параметры qmake:
 
+ * "HUNSPELL_PREFIX=<path>"
+   Задать распооложение внешней библиотеки Hunspell. По умолчанию используется
+   внутренняя библиотека
+
  * "CONFIG+=no_network"
    Не собирать модуль BeQtNetwork
+
+ * "CONFIG+=no_qsl"
+   Не собирать модуль BeQtSql
 
  * "CONFIG+=no_widgets"
    Не собирать модуль BeQtWidgets (модуль BeQtCodeEditor также не будет
@@ -99,6 +106,9 @@ BeQt рассчитан на использование совместно с Qt
 
  * "CONFIG+=no_codeeditor"
    Не собирать модуль BeQtCodeEditor
+
+ * "CONFIG+=no_networkwidgets"
+   Не собирать модуль BeQtNetworkWidgets
 
  * "CONFIG+=builtin_resources"
    Встроить ресурсы (включая переводы) в файлы библиотек
@@ -167,7 +177,7 @@ BeQt может использоваться и как системная биб
 
 Для начала добавьте в файл .pro следующее:
 
- "BEQT = [core] [network] [widgets] [codeeditor] [all]"
+ "BEQT = [core] [network] [sql] [widgets] [codeeditor] [networkwidgets] [all]"
 
 В квадратных скобках указаны необязательные параметры, соответствующие
 модулям BeQt. Также можно добавить сразу все модули (параметр "[all]").
@@ -188,6 +198,11 @@ BeQt может использоваться и как системная биб
 
 Подробнее см.:
 http://qt-project.org/doc/qt-5.0/qmake-project-files.html#project-templates
+
+Если вы собрали BeQt с использованием внешней библиотеки Hunspell, то вы
+должны указать путь к Hunspell снова во время линковки BeQt:
+
+ "HUNSPELL_PREFIX=<path>"
 
 Пример общего файла .pro:
 

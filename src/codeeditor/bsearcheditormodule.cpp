@@ -334,15 +334,19 @@ void BSearchDialog::setReplaceEnabled(bool enabled)
     setWindowTitle( d->windowTitle() );
 }
 
-void BSearchDialog::setDocument(BCodeEditorDocument *doc)
+void BSearchDialog::setDocument(BAbstractCodeEditorDocument *doc)
 {
     B_D(BSearchDialog);
     if (d->document)
         disconnect( d->document, SIGNAL( hasSelectionChanged(bool) ), d, SLOT( checkSearchReplace() ) );
     if (doc)
     {
-        d->cmboxSearch->lineEdit()->setMaxLength( doc->editLineLength() );
-        d->cmboxReplace->lineEdit()->setMaxLength( doc->editLineLength() );
+        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(doc);
+        if (ddoc)
+        {
+            d->cmboxSearch->lineEdit()->setMaxLength(ddoc->editLineLength());
+            d->cmboxReplace->lineEdit()->setMaxLength(ddoc->editLineLength());
+        }
         connect( doc, SIGNAL( hasSelectionChanged(bool) ), d, SLOT( checkSearchReplace() ) );
     }
     d->document = doc;
@@ -423,7 +427,7 @@ bool BSearchDialog::replaceEnabled() const
     return d_func()->cmboxReplace->isVisible();
 }
 
-BCodeEditorDocument *BSearchDialog::document() const
+BAbstractCodeEditorDocument *BSearchDialog::document() const
 {
     return d_func()->document;
 }
@@ -737,7 +741,7 @@ void BSearchEditorModule::findNext(bool showDialog)
 void BSearchEditorModule::editorSet(BCodeEditor *edr)
 {
     B_D(BSearchEditorModule);
-    BCodeEditorDocument *doc = edr ? edr->currentDocument() : 0;
+    BAbstractCodeEditorDocument *doc = edr ? edr->currentDocument() : 0;
     d->setDialogParent(edr);
     d->sdlg->setDocument(doc);
     d->actFind->setEnabled(doc);
@@ -751,7 +755,7 @@ void BSearchEditorModule::editorUnset(BCodeEditor *)
     d->actFind->setEnabled(0);
 }
 
-void BSearchEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+void BSearchEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *doc)
 {
     B_D(BSearchEditorModule);
     d->sdlg->setDocument(doc);

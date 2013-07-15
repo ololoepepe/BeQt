@@ -24,7 +24,7 @@ public:
     static bool send(const QString &address, const BEmail &email, int timeout = 30 * BeQt::Second,
                      const QString &userName = QString(), const QString &userPassword = QString(), quint16 port = 25,
                      BGenericSocket::SocketType type = BGenericSocket::SslSocket,
-                     const QString &localHostName = QString(), QString *error = 0);
+                     const QString &localHostName = QString(), QString *error = 0, bool translationsEnabled = false);
 public:
     explicit BSmtpSender(QObject *parent = 0);
     ~BSmtpSender();

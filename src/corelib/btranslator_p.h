@@ -12,6 +12,7 @@ class QTranslator;
 
 #include <QList>
 #include <QtGlobal>
+#include <QLocale>
 
 /*============================================================================
 ================================ BTranslatorPrivate ==========================
@@ -26,13 +27,13 @@ public:
     ~BTranslatorPrivate();
 public:
     void init();
-    void clear();
-    void install(bool blockLanguageChange = true);
-    void remove(bool blockLanguageChange = true);
-    void emitLanguageChange();
+    bool install();
+    void remove();
 public:
     QString fileName;
+    QLocale locale;
     QList<QTranslator *> translators;
+    bool loaded;
     bool installed;
 private:
     Q_DISABLE_COPY(BTranslatorPrivate)

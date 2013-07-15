@@ -27,17 +27,15 @@ public:
 #else
     explicit BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout);
 #endif
+    explicit BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, quint16 port, int timeout);
     ~BApplicationServerPrivate();
 public:
     void init();
 public Q_SLOTS:
     void newPendingConnection();
 public:
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    const quint16 Port;
-#else
     const QString ServerName;
-#endif
+    const quint16 Port;
     const int OperationTimeout;
 public:
     BGenericServer *server;

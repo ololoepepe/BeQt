@@ -5,7 +5,7 @@
 
 class BOpenSaveEditorModulePrivate;
 class BCodeEditor;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QString;
 class QAction;
@@ -61,7 +61,7 @@ protected:
     void documentReadOnlyChanged(bool ro);
     void documentModificationChanged(bool modified);
     void documentBuisyChanged(bool buisy);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void fileHistoryChanged(const QStringList &list);
 private:
     Q_DISABLE_COPY(BOpenSaveEditorModule)

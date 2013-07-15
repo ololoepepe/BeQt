@@ -36,6 +36,12 @@
 #   define B_WIDGETS_EXPORT Q_DECL_IMPORT
 #endif
 
+#if defined(BEQT_BUILD_NETWORKWIDGETS_LIB)
+#   define B_NETWORKWIDGETS_EXPORT Q_DECL_EXPORT
+#else
+#   define B_NETWORKWIDGETS_EXPORT Q_DECL_IMPORT
+#endif
+
 #if defined(BEQT_BUILD_CODEEDITOR_LIB)
 #   define B_CODEEDITOR_EXPORT Q_DECL_EXPORT
 #else
@@ -105,6 +111,7 @@ if (!_b_##name##Init && (_b_##name##Init = true))
 
 B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
 B_CORE_EXPORT const char *bVersion();
+B_CORE_EXPORT void bRegister();
 B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
 B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
 B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);

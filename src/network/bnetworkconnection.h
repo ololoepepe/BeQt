@@ -31,11 +31,25 @@ class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkConnection)
 public:
-    typedef void (BNetworkConnection::*InternalHandler)(BNetworkOperation *);
-    typedef void (*ExternalHandler)(BNetworkOperation *);
+    enum LoggingMode
+    {
+        NoLogging = 0,
+        NormalLogging = 10,
+        DetailedLogging = 100
+    };
+    enum StandardOperation
+    {
+        NoopOperation,
+        WriteOperation,
+        LogOperation
+    };
 public:
-    static const QString NoopRequest;
-    static const QString LogRequest;
+    typedef bool (BNetworkConnection::*InternalHandler)(BNetworkOperation *);
+    typedef bool (*ExternalHandler)(BNetworkOperation *);
+public:
+    static QString operation(StandardOperation op);
+    static InternalHandler replyHandler(StandardOperation op);
+    static InternalHandler requestHandler(StandardOperation op);
 public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
     explicit BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);
@@ -47,9 +61,10 @@ public:
     void setCompressionLevel(int level);
     void setCriticalBufferSize(qint64 size);
     void setCloseOnCriticalBufferSize(bool close);
-    void setDetailedLogMode(bool enabled);
+    void setLoggingMode(LoggingMode m);
     void setAutoDeleteSentReplies(bool enabled);
     void setLogger(BLogger *l);
+    void setTranslationsEnabled(bool enabled);
     void connectToHost(const QString &hostName, quint16 port = 0);
     bool connectToHostBlocking(const QString &hostName, quint16 port = 0, int msecs = 30 * BeQt::Second);
     bool disconnectFromHostBlocking(int msecs = 30 * BeQt::Second);
@@ -57,8 +72,10 @@ public:
     bool waitForDisconnected(int msecs = 30 * BeQt::Second);
     void installReplyHandler(const QString &operation, InternalHandler handler);
     void installReplyHandler(const QString &operation, ExternalHandler handler);
+    void installReplyHandler(StandardOperation op);
     void installRequestHandler(const QString &operation, InternalHandler handler);
     void installRequestHandler(const QString &operation, ExternalHandler handler);
+    void installRequestHandler(StandardOperation op);
     bool isValid() const;
     bool isConnected() const;
     const QUuid uniqueId() const;
@@ -68,9 +85,10 @@ public:
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;
-    bool detailedLogMode() const;
+    LoggingMode loggingMode() const;
     bool autoDeleteSentReplies() const;
     BLogger *logger() const;
+    bool translationsEnabled() const;
     QString peerAddress() const;
     BNetworkOperation *sendRequest(const QString &op, const QByteArray &data = QByteArray());
     BNetworkOperation *sendRequest(const QString &op, const QVariant &variant);
@@ -81,13 +99,14 @@ public Q_SLOTS:
     void close();
     void abort();
 protected:
-    virtual void handleReply(BNetworkOperation *op);
-    virtual void handleRequest(BNetworkOperation *op);
+    virtual bool handleReply(BNetworkOperation *op);
+    virtual bool handleRequest(BNetworkOperation *op);
     virtual void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     BGenericSocket *socket() const;
     BSocketWrapper *socketWrapper() const;
-    void handleNoop(BNetworkOperation *op);
-    void handleLog(BNetworkOperation *op);
+    bool handleNoopRequest(BNetworkOperation *op);
+    bool handleWriteRequest(BNetworkOperation *op);
+    bool handleLogRequest(BNetworkOperation *op);
 Q_SIGNALS:
     void connected();
     void disconnected();

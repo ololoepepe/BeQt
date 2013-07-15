@@ -28,6 +28,7 @@ public:
         QString role;
         QString site;
         QString mail;
+        QString image;
     };
 public:
     typedef QList<PersonInfo> PersonInfoList;

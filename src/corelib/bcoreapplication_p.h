@@ -61,6 +61,7 @@ public:
 #endif
     bool getIsPortable() const;
     QLocale getLocale() const;
+    void setLocale(const QLocale &l);
     QStringList getDeactivatedPlugins() const;
     void setDeactivatedPlugins(const QStringList &list);
     void addDeactivatedPlugin(const QString &pluginName);
@@ -69,13 +70,13 @@ public:
     QString prefix(BCoreApplication::ResourcesType type) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
-    void emitLanguageChange();
-    void installTranslator(BTranslator *translator, bool blockLC);
-    void removeTranslator(BTranslator *translator, bool blockLC);
+    void installTranslator(BTranslator *translator);
+    void removeTranslator(BTranslator *translator);
     void loadSettings();
     void saveSettings();
 public Q_SLOTS:
     void initSettings();
+    void sendLanguageChangeEvent();
 public:
     mutable QString appName;
     mutable QString orgName;
@@ -87,13 +88,14 @@ public:
 #endif
     QPointer<QSettings> settings;
     QMap<QString, BTranslator *> translators;
-    bool blockLanguageChange;
     QList<BPluginWrapper *> plugins;
     BPersonInfoProvider *beqtAuthors;
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
     BLogger *logger;
     BSignalDelayProxy *languageChangeProxy;
+    BSignalDelayProxy *languageChangeEventProxy;
+    bool blockLanguageChangeEvent;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;

@@ -45,6 +45,8 @@ class QWidget;
 
 const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
 const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
+const QString BAboutDialogPrivate::HtmlSpaceQuadruple =
+        BAboutDialogPrivate::HtmlSpaceDouble + BAboutDialogPrivate::HtmlSpaceDouble;
 const QString BAboutDialogPrivate::HtmlLT = "&lt;";
 const QString BAboutDialogPrivate::HtmlGT = "&gt;";
 
@@ -299,13 +301,29 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoProvider::Person
         const BPersonInfoProvider::PersonInfo &inf = infos.at(i);
         if ( inf.name.isEmpty() || inf.role.isEmpty() )
             continue;
-        s += "<b>" + inf.name + "</b><br>" + HtmlSpaceDouble + inf.role + "<br>";
+        QString sp = "";
+        QString dsp = HtmlSpaceDouble;
+        s += "<div>";
+        QString img = BDirTools::findResource(!inf.image.isEmpty() ? inf.image : "beqt/pixmaps/no_image.png");
+        QPixmap pm(img);
+        if (!pm.isNull())
+        {
+            double k = 80.0 / (double) qMax(pm.height(), pm.width());
+            QString h = QString::number((int) (k * (double) pm.height()));
+            QString w = QString::number((int) (k * (double) pm.width()));
+            s += "<img height=" + h + " width=" + w + " style=\"float: left\" src=\"" + img + "\""
+                    + (inf.image.isEmpty() ? (" title=\"" + tr("No image available") + "\"") : QString("")) + ">";
+            sp = HtmlSpaceDouble;
+            dsp = HtmlSpaceQuadruple;
+        }
+        s += sp + "<b>" + inf.name + "</b><br>" + dsp + inf.role;
         if ( !inf.site.isEmpty() )
-            s += HtmlSpaceDouble + "<i>" + tr("Website", "personInfo text") +
-                    "</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a><br>";
+            s += "<br>" + dsp + "<i>" + tr("Website", "personInfo text") +
+                 "</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a>";
         if ( !inf.mail.isEmpty() )
-            s += HtmlSpaceDouble + "<i>" + tr("E-mail", "personInfo text") +
-                    "</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a><br>";
+            s += "<br>" + dsp + "<i>" + tr("E-mail", "personInfo text") +
+                 "</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a>";
+        s += "</div>";
         if (i < infos.size() - 1)
             s += "<br>";
     }

@@ -1,7 +1,6 @@
 #ifndef BLOCALDOCUMENTDRIVER_H
 #define BLOCALDOCUMENTDRIVER_H
 
-class BCodeEditorDocument;
 class BLocalDocumentDriverPrivate;
 
 class QObject;

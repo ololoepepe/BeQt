@@ -6,6 +6,7 @@
 #include <BeQtCore/BBase>
 #include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BPassword>
 
 #include <QWidget>
 #include <QObject>
@@ -22,6 +23,8 @@
 #include <QEvent>
 #include <QMetaObject>
 #include <QUuid>
+#include <QVariant>
+#include <QVariantMap>
 
 #include <QDebug>
 
@@ -47,17 +50,6 @@ BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
     //
 }
 
-/*============================== Static public methods =====================*/
-
-BPasswordWidget::PasswordWidgetData BPasswordWidgetPrivate::createPasswordWidgetData()
-{
-    BPasswordWidget::PasswordWidgetData pwd;
-    pwd.charCount = -1;
-    pwd.save = false;
-    pwd.show = false;
-    return pwd;
-}
-
 /*============================== Public methods ============================*/
 
 void BPasswordWidgetPrivate::init()
@@ -65,13 +57,14 @@ void BPasswordWidgetPrivate::init()
     B_Q(BPasswordWidget);
     save = true; //Is reset to false, so it's false by default
     show = true; //Is reset to false, so it's false by default
-    charCount = -1;
     generateFunction = &defaultGeneratePasswordFunction;
     generatedLength = 16;
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
     ledt = new QLineEdit(q);
-      connect(ledt, SIGNAL(textChanged(QString)), q, SIGNAL(passwordChanged()));
+      connect(ledt, SIGNAL(textChanged(QString)), this, SLOT(passwordChanged(QString)));
+      connect(ledt, SIGNAL(textEdited(QString)), q, SIGNAL(passwordEdited(QString)));
+      connect(ledt, SIGNAL(returnPressed()), q, SIGNAL(returnPressed()));
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
       tbtnSave->setIcon( BApplication::icon("filesave") );
@@ -112,6 +105,22 @@ bool BPasswordWidgetPrivate::eventFilter(QObject *o, QEvent *e)
     return false;
 }
 
+void BPasswordWidgetPrivate::updateEdit()
+{
+    if (pwd.isEncrypted())
+    {
+        ledt->clear();
+        qDebug() << pwd.charCountHint();
+        ledt->setPlaceholderText(QString(pwd.charCountHint() > 0 ? pwd.charCountHint() : 8, '*'));
+        qDebug() << ledt->placeholderText();
+    }
+    else
+    {
+        ledt->setText(pwd.openPassword());
+        ledt->setPlaceholderText("");
+    }
+}
+
 /*============================== Public slots ==============================*/
 
 void BPasswordWidgetPrivate::retranslateUi()
@@ -136,6 +145,17 @@ void BPasswordWidgetPrivate::resetShow()
     QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, show));
 }
 
+void BPasswordWidgetPrivate::passwordChanged(const QString &password)
+{
+    B_Q(BPasswordWidget);
+    pwd.setPassword(password);
+    QMetaObject::invokeMethod(q, "passwordChanged");
+    if (pwd.isEncrypted())
+        QMetaObject::invokeMethod(q, "passwordChanged", Q_ARG(QByteArray, pwd.encryptedPassword()));
+    else
+        QMetaObject::invokeMethod(q, "passwordChanged", Q_ARG(QString, pwd.openPassword()));
+}
+
 /*============================================================================
 ================================ BPasswordWidget =============================
 ============================================================================*/
@@ -143,9 +163,16 @@ void BPasswordWidgetPrivate::resetShow()
 /*============================== Public constructors =======================*/
 
 BPasswordWidget::BPasswordWidget(QWidget *parent) :
-    QWidget(parent), BBase( *new BPasswordWidgetPrivate(this) )
+    QWidget(parent), BBase(*new BPasswordWidgetPrivate(this))
 {
     d_func()->init();
+}
+
+BPasswordWidget::BPasswordWidget(const BPassword &password, QWidget *parent) :
+    QWidget(parent), BBase(*new BPasswordWidgetPrivate(this))
+{
+    d_func()->init();
+    setPassword(password);
 }
 
 BPasswordWidget::~BPasswordWidget()
@@ -161,86 +188,36 @@ BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
     d_func()->init();
 }
 
-/*============================== Static public methods =====================*/
-
-QByteArray BPasswordWidget::encrypt(const QString &string, QCryptographicHash::Algorithm method)
-{
-    return QCryptographicHash::hash(string.toUtf8(), method);
-}
-
-BPasswordWidget::PasswordWidgetData BPasswordWidget::stateToData(const QByteArray &ba)
-{
-    QDataStream in(ba);
-    in.setVersion(BeQt::DataStreamVersion);
-    bool enc = false;
-    in >> enc;
-    PasswordWidgetData pd;
-    if (enc)
-    {
-        in >> pd.encryptedPassword;
-        in >> pd.charCount;
-    }
-    else
-    {
-        in >> pd.password;
-    }
-    in >> pd.save;
-    in >> pd.show;
-    return pd;
-}
-
-QByteArray BPasswordWidget::dataToState(const PasswordWidgetData &dt)
-{
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    bool enc = !dt.encryptedPassword.isEmpty();
-    out << enc;
-    if (enc)
-    {
-        out << dt.encryptedPassword;
-        out << dt.charCount;
-    }
-    else
-    {
-        out << dt.password;
-    }
-    out << dt.save;
-    out << dt.show;
-    return ba;
-}
-
 /*============================== Public methods ============================*/
+
+void BPasswordWidget::setMode(BPassword::Mode mode)
+{
+    d_func()->pwd.setMode(mode);
+    d_func()->updateEdit();
+}
+
+void BPasswordWidget::setPassword(const BPassword &password)
+{
+    d_func()->pwd = password;
+    d_func()->updateEdit();
+}
 
 void BPasswordWidget::setPassword(const QString &password)
 {
-    B_D(BPasswordWidget);
-    d->ledt->setText(password);
-    d->encPassword.clear();
+    d_func()->pwd = BPassword(password);
+    d_func()->updateEdit();
 }
 
-void BPasswordWidget::setEncryptedPassword(const QByteArray &password, int charCount)
+void BPasswordWidget::setPassword(QCryptographicHash::Algorithm a, const QByteArray &password, int charCount)
 {
-    B_D(BPasswordWidget);
-    d->encPassword = password;
-    d->ledt->clear();
-    if ( password.isEmpty() )
-        charCount = 0;
-    QString ph;
-    if ( !password.isEmpty() )
-        ph.fill('*', charCount > 0 ? charCount : 8);
-    d->ledt->setPlaceholderText(ph);
-    d->charCount = charCount;
+    d_func()->pwd = BPassword(a, password, charCount);
+    d_func()->updateEdit();
 }
 
-void BPasswordWidget::setData(const PasswordWidgetData &pd)
+void BPasswordWidget::encrypt(QCryptographicHash::Algorithm a)
 {
-    if ( !pd.password.isEmpty() )
-        setPassword(pd.password);
-    else
-        setEncryptedPassword(pd.encryptedPassword, pd.charCount);
-    setSavePassword(pd.save);
-    setShowPassword(pd.show);
+    d_func()->pwd.encrypt(a);
+    d_func()->updateEdit();
 }
 
 void BPasswordWidget::setSavePasswordVisible(bool visible)
@@ -272,35 +249,63 @@ void BPasswordWidget::setGeneratedPasswordLength(int len)
 
 void BPasswordWidget::clear()
 {
-    B_D(BPasswordWidget);
-    d->encPassword.clear();
-    d->charCount = 0;
-    d->ledt->setPlaceholderText("");
-    d->ledt->clear();
+    d_func()->pwd.clear();
+    d_func()->updateEdit();
+}
+
+void BPasswordWidget::restorePasswordState(const QByteArray &ba)
+{
+    d_func()->pwd.restore(ba);
+    d_func()->updateEdit();
+}
+
+void BPasswordWidget::restoreWidgetState(const QByteArray &ba)
+{
+    QVariantMap m = BeQt::deserialize(ba).toMap();
+    setSavePassword(m.value("save_password").toBool());
+    setShowPassword(m.value("show_password").toBool());
 }
 
 void BPasswordWidget::restoreState(const QByteArray &ba)
 {
-    setData( stateToData(ba) );
+    QVariantMap m = BeQt::deserialize(ba).toMap();
+    restorePasswordState(m.value("password_state").toByteArray());
+    restoreWidgetState(m.value("widget_state").toByteArray());
 }
 
-QString BPasswordWidget::password() const
+BPassword::Mode BPasswordWidget::mode() const
 {
-    return d_func()->ledt->text();
+    return d_func()->pwd.mode();
 }
 
-QByteArray BPasswordWidget::encryptedPassword(QCryptographicHash::Algorithm method) const
+BPassword BPasswordWidget::password() const
 {
-    const B_D(BPasswordWidget);
-    QString pwd = d->ledt->text();
-    return !pwd.isEmpty() ? encrypt(pwd, method) : d->encPassword;
+    return d_func()->pwd;
 }
 
-int BPasswordWidget::passwordCharCount() const
+QString BPasswordWidget::openPassword() const
 {
-    const B_D(BPasswordWidget);
-    QString pwd = d->ledt->text();
-    return !pwd.isEmpty() ? pwd.length() : d->charCount;
+    return d_func()->pwd.openPassword();
+}
+
+QByteArray BPasswordWidget::encryptedPassword(int *charCountHint) const
+{
+    return d_func()->pwd.encryptedPassword(charCountHint);
+}
+
+QByteArray BPasswordWidget::encryptedPassword(QCryptographicHash::Algorithm a, int *charCountHint) const
+{
+    return d_func()->pwd.encryptedPassword(a, charCountHint);
+}
+
+int BPasswordWidget::charCountHint(BPassword::Mode mode) const
+{
+    return d_func()->pwd.charCountHint(mode);
+}
+
+QCryptographicHash::Algorithm BPasswordWidget::algorithm() const
+{
+    return d_func()->pwd.algorithm();
 }
 
 bool BPasswordWidget::savePassword() const
@@ -311,25 +316,6 @@ bool BPasswordWidget::savePassword() const
 bool BPasswordWidget::showPassword() const
 {
     return d_func()->show;
-}
-
-BPasswordWidget::PasswordWidgetData BPasswordWidget::data() const
-{
-    PasswordWidgetData pd;
-    pd.password = password();
-    pd.save = savePassword();
-    pd.show = showPassword();
-    return pd;
-}
-
-BPasswordWidget::PasswordWidgetData BPasswordWidget::encryptedData(QCryptographicHash::Algorithm method) const
-{
-    PasswordWidgetData pd;
-    pd.encryptedPassword = encryptedPassword(method);
-    pd.charCount = passwordCharCount();
-    pd.save = savePassword();
-    pd.show = showPassword();
-    return pd;
 }
 
 bool BPasswordWidget::savePasswordVisible() const
@@ -357,14 +343,25 @@ int BPasswordWidget::generatedPasswordLength() const
     return d_func()->generatedLength;
 }
 
-QByteArray BPasswordWidget::saveState() const
+QByteArray BPasswordWidget::savePasswordState(BPassword::Mode mode) const
 {
-    return dataToState( data() );
+    return d_func()->pwd.save(mode);
 }
 
-QByteArray BPasswordWidget::saveStateEncrypted(QCryptographicHash::Algorithm method) const
+QByteArray BPasswordWidget::saveWidgetState() const
 {
-    return dataToState( encryptedData(method) );
+    QVariantMap m;
+    m.insert("save_password", savePassword());
+    m.insert("show_password", showPassword());
+    return BeQt::serialize(m);
+}
+
+QByteArray BPasswordWidget::saveState(BPassword::Mode mode) const
+{
+    QVariantMap m;
+    m.insert("password_state", savePasswordState(mode));
+    m.insert("widget_state", saveWidgetState());
+    return BeQt::serialize(m);
 }
 
 /*============================== Public slots ==============================*/
@@ -390,5 +387,7 @@ void BPasswordWidget::generatePassword()
     B_D(BPasswordWidget);
     if (!d->generateFunction)
         return;
-    setPassword(d->generateFunction(d->generatedLength));
+    QString pwd = d->generateFunction(d->generatedLength);
+    setPassword(pwd);
+    emit passwordGenerated(pwd);
 }

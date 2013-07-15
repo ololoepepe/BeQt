@@ -27,7 +27,15 @@ class QByterray;
 namespace BeQt
 {
 
-typedef QPair<QObject *, const char *> Until;
+enum TabWidth
+{
+    TabWidth2 = 2,
+    TabWidth4 = 4,
+    TabWidth8 = 8
+};
+
+typedef QPair<const QObject *, const char *> Until;
+typedef QPair<const QObject *, const char *> Target;
 
 const int Second = 1000;
 const int Minute = 60 * Second;
@@ -46,13 +54,16 @@ B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msec
 B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,
                                    int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
-B_CORE_EXPORT Until until(QObject *object, const char *signal);
+B_CORE_EXPORT Until until(const QObject *object, const char *signal);
+B_CORE_EXPORT Target target(const QObject *object, const char *method);
 B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
+B_CORE_EXPORT QVariant deserialize(const QByteArray &data, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments);
 B_CORE_EXPORT int execProcess(const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
@@ -60,6 +71,12 @@ B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT QString translate(const char *context, const char *sourceText, const char *disambiguation = 0,
                                 int n = -1);
+B_CORE_EXPORT QString codecName(QTextCodec *codec);
+B_CORE_EXPORT QString codecName(const QByteArray &cn);
+B_CORE_EXPORT QTextCodec *codec(const QString &cn);
+B_CORE_EXPORT QTextCodec *codec(const QByteArray &cn);
+B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
+B_CORE_EXPORT void removeTrailingSpaces(QString *s);
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
 B_CORE_EXPORT QString macVersion();
@@ -72,7 +89,6 @@ B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
 B_CORE_EXPORT QString windowsVersion();
 #endif
 B_CORE_EXPORT QString osVersion();
-B_CORE_EXPORT void handleQuit(const QString &command, const QStringList &arguments);
 
 }
 

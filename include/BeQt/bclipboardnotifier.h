@@ -1,0 +1,1 @@
+#include "../BeQtWidgets/bclipboardnotifier.h"

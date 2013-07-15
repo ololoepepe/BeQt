@@ -9,11 +9,16 @@
 #include "bnamespace.h"
 #include "bpassword.h"
 #include "bpersoninfoprovider.h"
-#include "bplugin.h"
 #include "bplugininterface.h"
+#include "bpluginwrapper.h"
+#include "bsettingsnode.h"
 #include "bsignaldelayproxy.h"
 #include "bspamnotifier.h"
+#include "bspellchecker.h"
+#include "bspellcheckerdictionary.h"
 #include "bterminaliohandler.h"
+#include "btranslatefunctor.h"
 #include "btranslator.h"
+#include "bversion.h"
 
 #endif //BEQT_BEQTCORE_MODULE_H

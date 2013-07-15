@@ -114,11 +114,15 @@ BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, 
 
 void BNetworkOperation::reply(const QByteArray &data)
 {
+    if (isRequest())
+        return;
     connection()->sendReply(this, data);
 }
 
 void BNetworkOperation::reply(const QVariant &variant)
 {
+    if (isRequest())
+        return;
     connection()->sendReply(this, variant);
 }
 

@@ -4,8 +4,10 @@
 class BCodeEditorPrivate;
 class BAbstractEditorModule;
 class BAbstractDocumentDriver;
-class BCodeEditorDocument;
 class BAbstractFileType;
+class BAbstractEditorModulePrivate;
+class BAbstractCodeEditorDocument;
+class BSpellChecker;
 
 class QStringList;
 class QTextCodec;
@@ -48,12 +50,16 @@ public:
         SouthEastSouthWestAsianGroup,
         MiddleEastGroup
     };
+    enum StandardDocumentType
+    {
+        StandardDocument,
+        SimpleDocument
+    };
+public:
+    typedef QList<BAbstractCodeEditorDocument *> DocumentList;
 public:
     explicit BCodeEditor(QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes, QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
-    explicit BCodeEditor(const QList<BAbstractFileType *> &fileTypes,
-                         const QList<BAbstractEditorModule *> &moduleList, QWidget *parent = 0);
+    explicit BCodeEditor(StandardDocumentType t, QWidget *parent = 0);
     ~BCodeEditor();
 protected:
     explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
@@ -81,17 +87,21 @@ public:
     static QTextCodec *selectedCodec(QComboBox *cmbox);
     static QString selectedCodecName(QComboBox *cmbox);
 public:
+    bool setDocumentType(StandardDocumentType t);
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
     void setEditFontPointSize(int pointSize);
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
-    void setEditTabWidth(BCodeEdit::TabWidth tw);
-    void setBracketHighlightingEnabled(bool enabled);
+    void setEditTabWidth(BeQt::TabWidth tw);
+    void setLineNumberWidgetVisible(bool b);
+    void setBracketHighlightingEnabled(bool b);
+    void setSpellChecker(BSpellChecker *sc);
     void setDefaultCodec(QTextCodec *codec);
     void setDefaultCodec(const QString &codecName);
     void setDefaultFileName(const QString &fileName);
     void setMaximumFileSize(int sz);
+    void setAsyncProcessingMinimumLength(int length);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -106,25 +116,29 @@ public:
     void setPreferredFileType(const QString &id);
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
-    bool mergeWith(BCodeEditor *other);
+    bool mergeWith(BCodeEditor *other, int msecs = 30 * BeQt::Second);
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
+    StandardDocumentType documentType() const;
     QFont editFont() const;
     QString editFontFamily() const;
     int editFontPointSize() const;
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
-    BCodeEdit::TabWidth editTabWidth() const;
+    BeQt::TabWidth editTabWidth() const;
+    bool lineNumberWidgetVisible() const;
     bool isBracketHighlightingEnabled() const;
+    BSpellChecker *spellChecker() const;
     QTextCodec *defaultCodec() const;
     QString defaultCodecName() const;
     QString defaultFileName() const;
     int maximumFileSize() const;
+    int asyncProcessingMinimumLength() const;
     BAbstractEditorModule *module(const QString &name) const;
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;
-    BCodeEditorDocument *currentDocument() const;
-    BCodeEditorDocument *document(const QString &fileName) const;
-    QList<BCodeEditorDocument *> documents() const;
+    BAbstractCodeEditorDocument *currentDocument() const;
+    BAbstractCodeEditorDocument *document(const QString &fileName) const;
+    DocumentList documents() const;
     BAbstractDocumentDriver *driver() const;
     BAbstractFileType *fileType(const QString &id) const;
     QList<BAbstractFileType *> fileTypes() const;
@@ -138,11 +152,11 @@ public:
     QStringList fileNames() const;
     QObject *dropHandler() const;
 public Q_SLOTS:
-    BCodeEditorDocument *addDocument( const QString &fileName = QString() );
-    BCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
-    QList<BCodeEditorDocument *> openDocuments();
-    QList<BCodeEditorDocument *> openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
-    BCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
+    BAbstractCodeEditorDocument *addDocument(const QString &fileName = QString());
+    BAbstractCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
+    DocumentList openDocuments();
+    DocumentList openDocuments(const QStringList &fileNames, QTextCodec *codec = 0);
+    BAbstractCodeEditorDocument *openDocument(const QString &fileName, QTextCodec *codec = 0);
     bool reopenCurrentDocument(QTextCodec *codec = 0);
     bool reopenCurrentDocument(const QString &codecName);
     bool saveCurrentDocument();
@@ -154,15 +168,15 @@ public Q_SLOTS:
     void insertTextIntoCurrentDocument(const QString &text);
     void setCurrentDocumentText(const QString &text);
 protected:
-    virtual BCodeEditorDocument *createDocument(BCodeEditor *editor) const;
+    virtual BAbstractCodeEditorDocument *createDocument(BCodeEditor *editor) const;
 Q_SIGNALS:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);
-    void documentAboutToBeAdded(BCodeEditorDocument *doc);
-    void documentAdded(BCodeEditorDocument *doc);
-    void documentAboutToBeRemoved(BCodeEditorDocument *doc);
+    void documentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
+    void documentAdded(BAbstractCodeEditorDocument *doc);
+    void documentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
     void documentRemoved(const QString &fileName);
-    void currentDocumentChanged(BCodeEditorDocument *doc);
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void currentDocumentFileNameChanged(const QString &fileName);
     void currentDocumentModificationChanged(bool modified);
     void documentAvailableChanged(bool available);

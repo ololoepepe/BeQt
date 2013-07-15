@@ -2,9 +2,10 @@
 #include "bediteditormodule_p.h"
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
-#include "bcodeeditordocument.h"
+#include "babstractcodeeditordocument.h"
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
+#include "bcodeeditordocument.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -65,7 +66,7 @@ void BEditEditorModulePrivate::init()
     connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
-void BEditEditorModulePrivate::setDocument(BCodeEditorDocument *doc)
+void BEditEditorModulePrivate::setDocument(BAbstractCodeEditorDocument *doc)
 {
     if (document)
     {
@@ -88,7 +89,7 @@ void BEditEditorModulePrivate::setDocument(BCodeEditorDocument *doc)
 
 void BEditEditorModulePrivate::checkActions()
 {
-    BCodeEditorDocument *doc = q_func()->currentDocument();
+    BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
     if ( !actCut.isNull() )
         actCut->setEnabled( doc && doc->isCutAvailable() );
     if ( !actCopy.isNull() )
@@ -106,7 +107,7 @@ void BEditEditorModulePrivate::checkSwitchModeAction()
 {
     if ( actSwitchMode.isNull() )
         return;
-    BCodeEditorDocument *doc = q_func()->currentDocument();
+    BCodeEditorDocument *doc = qobject_cast<BCodeEditorDocument *>(q_func()->currentDocument());
     actSwitchMode->setEnabled(doc);
     if (doc)
         resetSwitchModeAction(doc->editMode() == BCodeEdit::BlockMode);
@@ -303,7 +304,7 @@ void BEditEditorModule::editModeChanged(BCodeEdit::EditMode)
     d_func()->checkSwitchModeAction();
 }
 
-void BEditEditorModule::currentDocumentChanged(BCodeEditorDocument *doc)
+void BEditEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *doc)
 {
     d_func()->setDocument(doc);
     d_func()->checkActions();

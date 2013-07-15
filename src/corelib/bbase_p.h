@@ -2,7 +2,6 @@
 #define BBASE_P_H
 
 class BBase;
-class BBasePrivate;
 
 #include "bglobal.h"
 

@@ -25,17 +25,24 @@
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, quint16 port, int timeout) :
-        BBasePrivate(q), Port(port), OperationTimeout(timeout)
+    BBasePrivate(q), ServerName(QString()), Port(port), OperationTimeout(timeout)
 {
     //
 }
 #else
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout) :
-    BBasePrivate(q), ServerName(serverName), OperationTimeout(timeout)
+    BBasePrivate(q), ServerName(serverName), Port(0), OperationTimeout(timeout)
 {
         //
 }
 #endif
+
+BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, quint16 port,
+                                                     int timeout) :
+    BBasePrivate(q), ServerName(serverName), Port(port), OperationTimeout(timeout)
+{
+        //
+}
 
 BApplicationServerPrivate::~BApplicationServerPrivate()
 {
@@ -109,6 +116,12 @@ BApplicationServer::BApplicationServer(const QString &serverName, int operationT
     d_func()->init();
 }
 #endif
+
+BApplicationServer::BApplicationServer(const QString &serverName, quint16 port, int operationTimeout) :
+    BBase( *new BApplicationServerPrivate(this, serverName, port, operationTimeout) )
+{
+    d_func()->init();
+}
 
 BApplicationServer::~BApplicationServer()
 {

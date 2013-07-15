@@ -91,13 +91,13 @@ public:
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(), InterfaceTestFunction function = 0);
     static QList<BTranslator *> translators();
+    static BTranslator *translator(const QString &fileName);
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
-    static void installTranslator(BTranslator *translator, bool blockLanguageChange = true);
-    static void removeTranslator(BTranslator *translator, bool blockLanguageChange = true);
-    static void setLocale(const QLocale &l, bool noRetranslate = false);
+    static void installTranslator(BTranslator *translator);
+    static void removeTranslator(BTranslator *translator);
+    static void setLocale(const QLocale &l);
     static QLocale locale();
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
-    static void retranslateUi(bool blockLanguageChange = true);
     static void loadSettings();
     static void saveSettings();
     static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );

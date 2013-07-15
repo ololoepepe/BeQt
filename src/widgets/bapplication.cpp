@@ -489,9 +489,15 @@ QFrame *BApplication::createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QW
 
 QFont BApplication::createMonospaceFont()
 {
-    //Using such a construct to get default monospace font family name
-    QFont fnt( QFontInfo( QFont("monospace") ).family() );
-    fnt.setPointSize( QApplication::font().pointSize() );
+#if defined Q_OS_WIN
+    //On Windows some weird fonts are selected, so we set the font explicitly
+    QString f = "Courier New";
+#else
+    QString f = "monospace";
+#endif
+    //Using such a construct to guarantee that the font will be monospaced
+    QFont fnt(QFontInfo(QFont(f)).family());
+    fnt.setPointSize(QApplication::font().pointSize());
     return fnt;
 }
 

@@ -6,12 +6,15 @@ class QFont;
 #include "bcodeedit_p.h"
 #include "babstractfiletype.h"
 #include "btextblockuserdata.h"
+#include "babstractcodeeditordocument.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BPlainTextEdit>
+#include <BeQtWidgets/BClipboardNotifier>
+#include <BeQtWidgets/BLineNumberWidget>
 
 #include <QObject>
 #include <QWidget>
@@ -59,169 +62,12 @@ class QFont;
 #include <QTextLine>
 #include <QScrollBar>
 #include <QVector>
-#include <QThreadPool>
-#include <QRunnable>
 #include <QResizeEvent>
 #include <QSize>
 #include <QTextBlockUserData>
+#include <QtConcurrentRun>
 
 #include <QDebug>
-
-/*============================================================================
-================================ BSyntaxHighlighter ==========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BSyntaxHighlighter::BSyntaxHighlighter(BCodeEdit *edt, QTextDocument *parent) :
-    QSyntaxHighlighter(parent), Edit(edt)
-{
-    //
-}
-
-/*============================== Public methods ============================*/
-
-QTextBlock BSyntaxHighlighter::currentBlock() const
-{
-    return QSyntaxHighlighter::currentBlock();
-}
-
-int BSyntaxHighlighter::currentBlockState() const
-{
-    return QSyntaxHighlighter::currentBlockState();
-}
-
-BTextBlockUserData *BSyntaxHighlighter::currentBlockUserData() const
-{
-    return dynamic_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
-}
-
-QTextCharFormat BSyntaxHighlighter::format(int position) const
-{
-    return QSyntaxHighlighter::format(position);
-}
-
-int BSyntaxHighlighter::previousBlockState() const
-{
-    return QSyntaxHighlighter::previousBlockState();
-}
-
-void BSyntaxHighlighter::setCurrentBlockState(int newState)
-{
-    QSyntaxHighlighter::setCurrentBlockState(newState);
-}
-
-void BSyntaxHighlighter::setCurrentBlockUserData(BTextBlockUserData *data)
-{
-    QSyntaxHighlighter::setCurrentBlockUserData(data);
-}
-
-void BSyntaxHighlighter::setFormat(int start, int count, const QTextCharFormat &format)
-{
-    QSyntaxHighlighter::setFormat(start, count, format);
-}
-
-void BSyntaxHighlighter::setFormat(int start, int count, const QColor &color)
-{
-    QSyntaxHighlighter::setFormat(start, count, color);
-}
-
-void BSyntaxHighlighter::setFormat(int start, int count, const QFont &font)
-{
-    QSyntaxHighlighter::setFormat(start, count, font);
-}
-
-/*============================== Protected methods =========================*/
-
-void BSyntaxHighlighter::highlightBlock(const QString &text)
-{
-    BAbstractFileType *ft = Edit ? Edit->fileType() : 0;
-    if (!ft)
-        return;
-    ft->setCurrentHighlighter(this);
-    ft->highlightBlock(text);
-    ft->setCurrentHighlighter(0);
-}
-
-/*============================================================================
-================================ BCodeEditClipboardNotifier ==================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BCodeEditClipboardNotifier::BCodeEditClipboardNotifier() :
-    QObject(0)
-{
-    dataChanged();
-    connect( QApplication::clipboard(), SIGNAL( dataChanged() ), this, SLOT( dataChanged() ) );
-    bTest(!_m_self, "BCodeEditClipboardNotifier", "There should be only one instance of BCodeEditClipboardNotifier");
-    _m_self = this;
-}
-
-BCodeEditClipboardNotifier::~BCodeEditClipboardNotifier()
-{
-    _m_self = 0;
-}
-
-/*============================== Static public methods =====================*/
-
-BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::instance()
-{
-    return _m_self;
-}
-
-/*============================== Public methods ============================*/
-
-bool BCodeEditClipboardNotifier::clipboardDataAvailable() const
-{
-    return dataAvailable;
-}
-
-/*============================== Public slots ==============================*/
-
-void BCodeEditClipboardNotifier::dataChanged()
-{
-    bool b = !QApplication::clipboard()->text().isEmpty();
-    bool bb = (b != dataAvailable);
-    dataAvailable = b;
-    if (bb)
-        Q_EMIT clipboardDataAvailableChanged(b);
-}
-
-/*============================== Static protected variables ================*/
-
-BCodeEditClipboardNotifier *BCodeEditClipboardNotifier::_m_self = 0;
-
-/*============================================================================
-================================ BLineNumberWidget ===========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BLineNumberWidget::BLineNumberWidget(BPlainTextEditExtended *ptedt) :
-    QWidget(ptedt), Ptedt(ptedt)
-{
-    //
-}
-
-BLineNumberWidget::~BLineNumberWidget()
-{
-    //
-}
-
-/*============================== Public methods ============================*/
-
-QSize BLineNumberWidget::sizeHint() const
-{
-    return QSize(Ptedt->d_func()->lineNumberWidgetWidth(), 0);
-}
-
-/*============================== Protected methods =========================*/
-
-void BLineNumberWidget::paintEvent(QPaintEvent *e)
-{
-    Ptedt->d_func()->lineNumberWidgetPaintEvent(e);
-}
 
 /*============================================================================
 ================================ BPlainTextEditExtendedPrivate ===============
@@ -272,62 +118,13 @@ void BPlainTextEditExtendedPrivate::init()
     B_Q(BPlainTextEditExtended);
     blockMode = false;
     hasSelection = false;
-    lnwgt = new BLineNumberWidget(q);
     connect( q, SIGNAL( selectionChanged() ), this, SLOT( selectionChanged() ) );
-    connect( q, SIGNAL( blockCountChanged(int) ), this, SLOT( updateLineNumberWidgetWidth(int) ) );
-    connect( q, SIGNAL( updateRequest(QRect, int) ), this, SLOT( updateLineNumberWidget(QRect, int) ) );
-    updateLineNumberWidgetWidth(0);
 }
 
 void BPlainTextEditExtendedPrivate::emulateShiftPress()
 {
     QKeyEvent e(QKeyEvent::KeyPress, Qt::Key_Shift, Qt::NoModifier);
     QApplication::sendEvent(q_func(), &e);
-}
-
-void BPlainTextEditExtendedPrivate::lineNumberWidgetPaintEvent(QPaintEvent *e)
-{
-    B_Q(BPlainTextEditExtended);
-    QPainter painter(lnwgt);
-    painter.fillRect(e->rect(), Qt::lightGray);
-    QTextBlock block = q->textCursor().block();
-    if ( block.isVisible() )
-    {
-        QRect r = e->rect();
-        r.setTop( (int) q->blockBoundingGeometry(block).translated( q->contentOffset() ).top() );
-        r.setBottom( r.top() + (int) q->blockBoundingRect(block).height() );
-        painter.fillRect(r, Qt::yellow);
-    }
-    block = q->firstVisibleBlock();
-    int blockNumber = block.blockNumber();
-    int top = (int) q->blockBoundingGeometry(block).translated( q->contentOffset() ).top();
-    int bottom = top + (int) q->blockBoundingRect(block).height();
-    while ( block.isValid() && top <= e->rect().bottom() )
-    {
-        if ( block.isVisible() && bottom >= e->rect().top() )
-        {
-            QString number = QString::number(blockNumber + 1);
-            painter.setPen(Qt::black);
-            painter.drawText(0, top, lnwgt->width(), q->fontMetrics().height(), Qt::AlignRight, number);
-        }
-        block = block.next();
-        top = bottom;
-        bottom = top + (int) q->blockBoundingRect(block).height();
-        ++blockNumber;
-    }
-}
-
-int BPlainTextEditExtendedPrivate::lineNumberWidgetWidth() const
-{
-    int digits = 1;
-    int max = qMax( 1, q_func()->blockCount() );
-    while (max >= 10)
-    {
-        max /= 10;
-        ++digits;
-    }
-    int space = 3 + q_func()->fontMetrics().width( QLatin1Char('9') ) * digits;
-    return space;
 }
 
 QAbstractTextDocumentLayout::PaintContext BPlainTextEditExtendedPrivate::getPaintContext() const
@@ -384,21 +181,6 @@ void BPlainTextEditExtendedPrivate::selectionChanged()
     }
     //Workaround to update the selection
     emulateShiftPress();
-}
-
-void BPlainTextEditExtendedPrivate::updateLineNumberWidgetWidth(int)
-{
-    q_func()->setViewportMargins(lineNumberWidgetWidth(), 0, 0, 0);
-}
-
-void BPlainTextEditExtendedPrivate::updateLineNumberWidget(const QRect &rect, int dy)
-{
-    if (dy)
-        lnwgt->scroll(0, dy);
-    else
-        lnwgt->update( 0, rect.y(), lnwgt->width(), rect.height() );
-    if ( rect.contains( q_func()->viewport()->rect() ) )
-        updateLineNumberWidgetWidth(0);
 }
 
 /*============================================================================
@@ -562,13 +344,6 @@ void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
                                  er.bottomRight() ), palette().background() );
 }
 
-void BPlainTextEditExtended::resizeEvent(QResizeEvent *e)
-{
-    BPlainTextEdit::resizeEvent(e);
-    QRect cr = contentsRect();
-    d_func()->lnwgt->setGeometry( QRect( cr.left(), cr.top(), d_func()->lineNumberWidgetWidth(), cr.height() ) );
-}
-
 /*============================================================================
 ================================ BCodeEditPrivate ============================
 ============================================================================*/
@@ -588,7 +363,7 @@ BCodeEditPrivate::~BCodeEditPrivate()
 
 /*============================== Static public methods =====================*/
 
-QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit::TabWidth tw)
+QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BeQt::TabWidth tw)
 {
     QStringList sl;
     QString xline = replaceTabs(line, tw);
@@ -614,7 +389,7 @@ QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BCodeEdit
     return sl;
 }
 
-BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString &text, int ll, BCodeEdit::TabWidth tw)
+BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString &text, int ll, BeQt::TabWidth tw)
 {
     ProcessTextResult res;
     QStringList sl = removeUnsupportedSymbols(text).split('\n');
@@ -654,23 +429,6 @@ void BCodeEditPrivate::removeUnsupportedSymbols(QString *text)
         text->remove(c);
 }
 
-QString BCodeEditPrivate::removeTrailingSpaces(const QString &s)
-{
-    QString ns = s;
-    removeTrailingSpaces(&ns);
-    return ns;
-}
-
-void BCodeEditPrivate::removeTrailingSpaces(QString *s)
-{
-    if (!s || s->isEmpty())
-        return;
-    QStringList sl = s->split('\n');
-    foreach (int i, bRangeD(0, sl.size() - 1))
-        sl[i].remove(QRegExp("\\s+$"));
-    *s = sl.join("\n");
-}
-
 QString BCodeEditPrivate::appendTrailingSpaces(const QString &s, int ll)
 {
     QString ns = s;
@@ -687,14 +445,14 @@ void BCodeEditPrivate::appendTrailingSpaces(QString *s, int ll)
         s->append( QString().fill(' ', ll - len) );
 }
 
-QString BCodeEditPrivate::replaceTabs(const QString &s, BCodeEdit::TabWidth tw)
+QString BCodeEditPrivate::replaceTabs(const QString &s, BeQt::TabWidth tw)
 {
     QString ns = s;
     replaceTabs(&ns, tw);
     return ns;
 }
 
-void BCodeEditPrivate::replaceTabs(QString *s, BCodeEdit::TabWidth tw)
+void BCodeEditPrivate::replaceTabs(QString *s, BeQt::TabWidth tw)
 {
     if (!s)
         return;
@@ -714,19 +472,6 @@ void BCodeEditPrivate::replaceTabs(QString *s, BCodeEdit::TabWidth tw)
     }
 }
 
-void BCodeEditPrivate::removeExtraSelections(QList<QTextEdit::ExtraSelection> &from,
-                                             const QList<QTextEdit::ExtraSelection> &what)
-{
-    foreach (const QTextEdit::ExtraSelection &es, what)
-    {
-        for (int i = from.size() - 1; i >= 0; --i)
-        {
-            if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
-                from.removeAt(i);
-        }
-    }
-}
-
 QList<QChar> BCodeEditPrivate::createUnsupportedSymbols()
 {
     QList<QChar> list;
@@ -737,62 +482,12 @@ QList<QChar> BCodeEditPrivate::createUnsupportedSymbols()
     return list;
 }
 
-QTextCharFormat BCodeEditPrivate::createBracketsFormat()
-{
-    QTextCharFormat fmt;
-    fmt.setForeground( QBrush( QColor("red") ) );
-    return fmt;
-}
-
-QTextCharFormat BCodeEditPrivate::createBracketsErrorFormat()
-{
-    QTextCharFormat fmt;
-    fmt.setBackground( QBrush( QColor("hotpink") ) );
-    return fmt;
-}
-
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::createSplittedLinesRange()
 {
     BCodeEdit::SplittedLinesRange slr;
     slr.firstLineNumber = -1;
     slr.lastLineNumber = -1;
     return slr;
-}
-
-BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::createFindBracketPairResult()
-{
-    FindBracketPairResult r;
-    r.start = -1;
-    r.end = -1;
-    r.startBr = 0;
-    r.endBr = 0;
-    return r;
-}
-
-QTextEdit::ExtraSelection BCodeEditPrivate::createExtraSelection(const QPlainTextEdit *edt,
-                                                                 const QTextCharFormat &format)
-{
-    QTextEdit::ExtraSelection r;
-    if (edt)
-        r.cursor = edt->textCursor();
-    r.format = format;
-    return r;
-}
-
-bool BCodeEditPrivate::testBracketPairsEquality(const BCodeEdit::BracketPair &bp1, const BCodeEdit::BracketPair &bp2)
-{
-    return bp1.opening == bp2.opening && bp1.closing == bp2.closing && bp1.escape == bp2.escape;
-}
-
-bool BCodeEditPrivate::testBracketPairListsEquality(const QList<BCodeEdit::BracketPair> &l1,
-                                                    const QList<BCodeEdit::BracketPair> &l2)
-{
-    if ( l1.size() != l2.size() )
-        return false;
-    for (int i = 0; i < l1.size(); ++i)
-        if ( !testBracketPairsEquality( l1.at(i), l2.at(i) ) )
-            return false;
-    return true;
 }
 
 QString BCodeEditPrivate::makeBlock(const QString &text, int *length)
@@ -836,23 +531,21 @@ bool BCodeEditPrivate::testBlock(const QStringList &lines, int *length)
 
 void BCodeEditPrivate::init()
 {
-    if ( !BCodeEditClipboardNotifier::instance() )
-        new BCodeEditClipboardNotifier;
-    connect( BCodeEditClipboardNotifier::instance(), SIGNAL( clipboardDataAvailableChanged(bool) ),
-             this, SLOT( updatePasteAvailable(bool) ) );
+    if (!BClipboardNotifier::instance())
+        new BClipboardNotifier;
+    connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
+            this, SLOT(updatePasteAvailable(bool)));
     blockMode = false;
     lineLength = 120;
-    tabWidth = BCodeEdit::TabWidth4;
+    tmpLineLength = -1;
+    tabWidth = BeQt::TabWidth4;
     hasSelection = false;
     hasBookmarks = false;
     copyAvailable = false;
-    pasteAvailable = BCodeEditClipboardNotifier::instance()->clipboardDataAvailable();
+    pasteAvailable = BClipboardNotifier::instance()->textDataAvailable();
     undoAvailable = false;
     redoAvailable = false;
     buisy = false;
-    parceTask = 0;
-    bracketsHighlighting = true;
-    fileType = 0;
     B_Q(BCodeEdit);
     hlt = new QHBoxLayout(q);
       hlt->setContentsMargins(0, 0, 0, 0);
@@ -861,11 +554,9 @@ void BCodeEditPrivate::init()
         ptedt->setWordWrapMode(QTextOption::NoWrap);
         ptedt->setDragEnabled(false);
         ptedt->installEventFilter(this);
-        ptedt->setContextMenuPolicy(Qt::CustomContextMenu);
         ptedt->setFont( BApplication::createMonospaceFont() );
         setTextToEmptyLine();
         ptedt->document()->setModified(false);
-        connect( ptedt, SIGNAL( customContextMenuRequested(QPoint) ), this, SLOT( popupMenu(QPoint) ) );
         connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
         connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
         connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( emitSelectionChanged() ) );
@@ -873,10 +564,9 @@ void BCodeEditPrivate::init()
         connect( ptedt, SIGNAL( copyAvailable(bool) ), this, SLOT( updateCopyAvailable(bool) ) );
         connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
         connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
-        //
       hlt->addWidget(ptedt);
-    highlighter = new BSyntaxHighlighter(q, ptedt->document());
-    q->setFileType(BAbstractFileType::defaultFileType());
+    lnwgt = new BLineNumberWidget(ptedt);
+    connect(q, SIGNAL(buisyChanged(bool)), this, SLOT(delayedSetLineLength()));
 }
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
@@ -1068,9 +758,25 @@ bool BCodeEditPrivate::mousePressEvent(QMouseEvent *e)
     QTextBlock tb = tc.block();
     if ( tb.next().isValid() )
         return false;
-    tc.setPosition( tb.position() + removeTrailingSpaces( tb.text() ).length() );
+    tc.setPosition(tb.position() + BeQt::removeTrailingSpaces(tb.text()).length());
     ptedt->setTextCursor(tc);
     return true;
+}
+
+void BCodeEditPrivate::blockHighlighter(bool block)
+{
+    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
+    if (!doc)
+        return;
+    doc->blockHighlighter(block);
+}
+
+void BCodeEditPrivate::requestRehighlightBlock(const QTextBlock &block)
+{
+    BAbstractCodeEditorDocument *doc = qobject_cast<BAbstractCodeEditorDocument *>(q_func()->parentWidget());
+    if (!doc)
+        return;
+    doc->rehighlightBlock(block);
 }
 
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::deleteSelection()
@@ -1124,7 +830,7 @@ void BCodeEditPrivate::seletAll()
         return ptedt->selectAll();
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tbl = ptedt->document()->lastBlock();
-    int len = removeTrailingSpaces( tbl.text() ).length();
+    int len = BeQt::removeTrailingSpaces(tbl.text()).length();
     tc.movePosition(QTextCursor::Start);
     tc.setPosition(tbl.position() + len, QTextCursor::KeepAnchor);
     ptedt->setTextCursor(tc);
@@ -1139,20 +845,20 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
     {
         ptedt->setEnabled(false);
         ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
-        parceTask = new BCodeEditParseTask(txt, lineLength, tabWidth);
-        parceTask->setAutoDelete(false);
-        connect(parceTask, SIGNAL( finished() ), this, SLOT( parceTaskFinished() ), Qt::QueuedConnection);
-        BCodeEditParseTask::pool()->start(parceTask);
+        ProcessTextResultFuture future = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
+        ProcessTextResultFutureWatcher *watcher = new ProcessTextResultFutureWatcher(this);
+        watcher->setFuture(future);
+        connect(watcher, SIGNAL(finished()), this, SLOT(parceTaskFinished()));
     }
     else
     {
         ProcessTextResult res = processText(txt, lineLength, tabWidth);
-        highlighter->setDocument(0);
+        blockHighlighter(true);
         ptedt->setPlainText(res.newText);
         QTextCursor tc = ptedt->textCursor();
         tc.movePosition(QTextCursor::Start);
         ptedt->setTextCursor(tc);
-        highlighter->setDocument(ptedt->document());
+        blockHighlighter(false);
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
         setBuisy(false);
@@ -1188,10 +894,10 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     int finalPos = -1;
     int posb = tc.positionInBlock();
     QString btext = tc.block().text();
-    int lind = removeTrailingSpaces(btext).lastIndexOf(' ');
+    int lind = BeQt::removeTrailingSpaces(btext).lastIndexOf(' ');
     int tcpos = (lind >= posb && (lineLength - lind) >= txt.length()) ? (tc.position() + txt.length()) : -1;
     QString ltext = btext.left(posb);
-    QString rtext = removeTrailingSpaces( btext.right(btext.length() - posb) );
+    QString rtext = BeQt::removeTrailingSpaces(btext.right(btext.length() - posb));
     QStringList sl = replaceTabs(removeUnsupportedSymbols(txt), tabWidth).split('\n');
     int blen = 0;
     bool b = blockMode && !asKeyPress && testBlock(sl, &blen);
@@ -1246,7 +952,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         //Workaround for lines containing spaces only
         foreach (int i, bRangeD(0, sl.size() - 1))
         {
-            QString l = removeTrailingSpaces(sl.at(i));
+            QString l = BeQt::removeTrailingSpaces(sl.at(i));
             if (!l.isEmpty())
                 sl[i] = l;
         }
@@ -1262,16 +968,16 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         //Workaround for correct text splitting
         QString nbt;
         if (asKeyPress && tc.block().next().isValid() && res.newText.length() <= lineLength * 2 + 1)
-            nbt = removeTrailingSpaces(tc.block().next().text());
+            nbt = BeQt::removeTrailingSpaces(tc.block().next().text());
         QStringList ntl;
         if (!nbt.isEmpty())
             ntl = res.newText.split('\n');
         if (ntl.size() > 1 && !sl.last().isEmpty())
         {
             QStringList ntl = res.newText.split('\n');
-            if (nbt.length() + removeTrailingSpaces(ntl.last()).length() < lineLength)
+            if (nbt.length() + BeQt::removeTrailingSpaces(ntl.last()).length() < lineLength)
             {
-                removeTrailingSpaces(&ntl.last());
+                BeQt::removeTrailingSpaces(&ntl.last());
                 ntl.last() += nbt;
                 posmod -= nbt.length();
                 appendTrailingSpaces(&ntl.last(), lineLength);
@@ -1308,196 +1014,17 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     ptedt->setTextCursor(tc);
     QTextBlock initialBlock = ptedt->document()->findBlock(initialPos);
     QTextBlock finalBlock = ptedt->document()->findBlock(finalPos);
-    highlighter->rehighlightBlock(initialBlock);
+    requestRehighlightBlock(initialBlock);
     while (initialBlock != finalBlock)
     {
         initialBlock = initialBlock.next();
-        highlighter->rehighlightBlock(initialBlock);
+        requestRehighlightBlock(initialBlock);
     }
     tc.endEditBlock();
     setBuisy(false);
     emitLinesSplitted(ranges);
     q_func()->setFocus();
     ptedt->ensureCursorVisible();
-}
-
-void BCodeEditPrivate::highlightBrackets()
-{
-    QList<QTextEdit::ExtraSelection> selections = ptedt->extraSelections();
-    removeExtraSelections(selections, highlightedBrackets);
-    highlightedBrackets.clear();
-    if (!bracketsHighlighting)
-        return ptedt->setExtraSelections(selections);
-    QList<FindBracketPairResult> list;
-    list << findLeftBracketPair();
-    list << findRightBracketPair();
-    foreach (const FindBracketPairResult &res, list)
-    {
-        if (res.start >= 0 && res.end >= 0)
-        {
-            if ( testBracketPairsEquality(*res.startBr, *res.endBr) )
-            {
-                QTextEdit::ExtraSelection ess = createExtraSelection( ptedt, createBracketsFormat() );
-                ess.cursor.setPosition(res.start);
-                ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
-                highlightedBrackets << ess;
-                selections << ess;
-                QTextEdit::ExtraSelection ese = createExtraSelection( ptedt, createBracketsFormat() );
-                ese.cursor.setPosition( res.end - res.endBr->closing.length() );
-                ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                highlightedBrackets << ese;
-                selections << ese;
-            }
-            else
-            {
-                QTextEdit::ExtraSelection es = createExtraSelection( ptedt, createBracketsErrorFormat() );
-                es.cursor.setPosition(res.start);
-                es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                highlightedBrackets << es;
-                selections << es;
-            }
-        }
-    }
-    ptedt->setExtraSelections(selections);
-}
-
-BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findLeftBracketPair() const
-{
-    FindBracketPairResult res = createFindBracketPairResult();
-    QTextCursor tc = ptedt->textCursor();
-    QTextBlock tb = tc.block();
-    int posInBlock = tc.positionInBlock();
-    const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket) )
-        return res;
-    res.end = tb.position() + posInBlock;
-    posInBlock -= bracket->closing.length();
-    int depth = 1;
-    const BCodeEdit::BracketPair *br = 0;
-    while ( tb.isValid() )
-    {
-        QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
-        while (posInBlock >= 0)
-        {
-            if ( testBracket(text, posInBlock, true, br) )
-            {
-                --depth;
-                if (!depth)
-                {
-                    res.start = tb.position() + posInBlock;
-                    res.startBr = br;
-                    res.endBr = bracket;
-                    return res;
-                }
-                if (testBracket(text, posInBlock, false, br))
-                {
-                    ++depth;
-                    posInBlock -= br->closing.length();
-                }
-                else
-                {
-                    --posInBlock;
-                }
-            }
-            else if ( testBracket(text, posInBlock, false, br) )
-            {
-                ++depth;
-                posInBlock -= br->closing.length();
-            }
-            else
-            {
-                --posInBlock;
-            }
-        }
-        tb = tb.previous();
-        int skipFrom = BTextBlockUserData::blockSkipFrom(tb);
-        posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
-    }
-    return res;
-}
-
-BCodeEditPrivate::FindBracketPairResult BCodeEditPrivate::findRightBracketPair() const
-{
-    FindBracketPairResult res = createFindBracketPairResult();
-    QTextCursor tc = ptedt->textCursor();
-    QTextBlock tb = tc.block();
-    int posInBlock = tc.positionInBlock();
-    const BCodeEdit::BracketPair *bracket = 0;
-    if ( !testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket) )
-        return res;
-    res.start = tb.position() + posInBlock;
-    posInBlock += bracket->opening.length();
-    int depth = 1;
-    const BCodeEdit::BracketPair *br = 0;
-    while ( tb.isValid() )
-    {
-        QString text = removeTrailingSpaces( BTextBlockUserData::textWithoutComments(tb) );
-        while ( posInBlock <= text.length() )
-        {
-            if ( testBracket(text, posInBlock, false, br) )
-            {
-                --depth;
-                if (!depth)
-                {
-                    res.end = tb.position() + posInBlock;
-                    res.startBr = bracket;
-                    res.endBr = br;
-                    return res;
-                }
-                if (testBracket(text, posInBlock, true, br))
-                {
-                    ++depth;
-                    posInBlock += br->opening.length();
-                }
-                else
-                {
-                    ++posInBlock;
-                }
-            }
-            else if ( testBracket(text, posInBlock, true, br) )
-            {
-                ++depth;
-                posInBlock += br->opening.length();
-            }
-            else
-            {
-                ++posInBlock;
-            }
-        }
-        tb = tb.next();
-        posInBlock = 0;
-    }
-    return res;
-}
-
-bool BCodeEditPrivate::testBracket(const QString &text, int posInBlock, bool opening,
-                                   const BCodeEdit::BracketPair *&bracket) const
-{
-    bracket = 0;
-    if ( recognizedBrackets.isEmpty() )
-        return false;
-    foreach (const BCodeEdit::BracketPair &br, recognizedBrackets)
-    {
-        const QString &brText = opening ? br.opening : br.closing;
-        if ( brText.isEmpty() )
-            continue;
-        int len = brText.length();
-        int pos = opening ? posInBlock : posInBlock - len;
-        if (text.mid(pos, len) != brText)
-            continue;
-        if ( br.escape.isEmpty() )
-        {
-            bracket = &br;
-            return true;
-        }
-        len = br.escape.length();
-        if ( text.mid(pos - len, len) != br.escape)
-        {
-            bracket = &br;
-            return true;
-        }
-    }
-    return false;
 }
 
 void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges)
@@ -1541,7 +1068,7 @@ void BCodeEditPrivate::handleReturn()
     tc.setPosition(tc.position() + i);
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
-    highlighter->rehighlightBlock(tbp); //Not sure if this is necessary
+    requestRehighlightBlock(tbp); //Not sure if this is necessary
 }
 
 void BCodeEditPrivate::handleSpace()
@@ -1631,9 +1158,9 @@ void BCodeEditPrivate::handleBackspace()
     {
         QTextBlock tb = tc.block();
         QTextBlock tbp = tb.previous();
-        QString text = removeTrailingSpaces(tb.text());
+        QString text = BeQt::removeTrailingSpaces(tb.text());
         int len = text.length();
-        int plen = removeTrailingSpaces(tbp.text()).length();
+        int plen = BeQt::removeTrailingSpaces(tbp.text()).length();
         if (plen + len > lineLength)
             return tc.endEditBlock();
         tc.movePosition(QTextCursor::EndOfBlock);
@@ -1693,7 +1220,7 @@ void BCodeEditPrivate::handleDelete()
     int posb = tc.positionInBlock();
     QTextBlock tb = tc.block();
     QString text = tb.text();
-    if (posb < removeTrailingSpaces(text).length())
+    if (posb < BeQt::removeTrailingSpaces(text).length())
     {
         tc.beginEditBlock();
         int pos = tc.position();
@@ -1708,7 +1235,7 @@ void BCodeEditPrivate::handleDelete()
         QTextBlock tbn = tb.next();
         if (!tbn.isValid())
             return;
-        QString ntext = removeTrailingSpaces(tbn.text());
+        QString ntext = BeQt::removeTrailingSpaces(tbn.text());
         if (ntext.isEmpty())
         {
             tc.beginEditBlock();
@@ -1756,7 +1283,7 @@ void BCodeEditPrivate::handleCtrlDelete()
     if (i >= text.length())
     {
         handleDelete();
-        if (!removeTrailingSpaces(ptedt->textCursor().block().text().mid(posb)).isEmpty())
+        if (!BeQt::removeTrailingSpaces(ptedt->textCursor().block().text().mid(posb)).isEmpty())
             handleCtrlDelete();
     }
     else
@@ -1788,7 +1315,7 @@ void BCodeEditPrivate::handleShiftEnd()
 {
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
-    int d = removeTrailingSpaces( tb.text() ).length() - tc.positionInBlock();
+    int d = BeQt::removeTrailingSpaces(tb.text()).length() - tc.positionInBlock();
     if (d < 1)
         return;
     tc.setPosition(tc.position() + d, QTextCursor::KeepAnchor);
@@ -1835,14 +1362,14 @@ void BCodeEditPrivate::handleCtrlLeft()
     QTextCursor tc = ptedt->textCursor();
     int posb = tc.positionInBlock();
     QTextBlock tb = tc.block();
-    QString text = removeTrailingSpaces( tb.text() );
+    QString text = BeQt::removeTrailingSpaces(tb.text());
     int bpos = tb.position();
     if (!posb)
     {
         QTextBlock tbp = tb.previous();
         if ( tbp.isValid() )
         {
-            tc.setPosition( tbp.position() + removeTrailingSpaces( tbp.text() ).length() );
+            tc.setPosition(tbp.position() + BeQt::removeTrailingSpaces(tbp.text()).length());
             ptedt->setTextCursor(tc);
         }
         return;
@@ -1873,7 +1400,7 @@ void BCodeEditPrivate::handleCtrlRight()
     QTextCursor tc = ptedt->textCursor();
     int posb = tc.positionInBlock();
     QTextBlock tb = tc.block();
-    QString text = removeTrailingSpaces( tb.text() );
+    QString text = BeQt::removeTrailingSpaces(tb.text());
     int bpos = tb.position();
     if (text.length() <= posb)
     {
@@ -1987,80 +1514,28 @@ void BCodeEditPrivate::move(int key)
 
 void BCodeEditPrivate::parceTaskFinished()
 {
-    if (!parceTask)
+    ProcessTextResultFutureWatcher *watcher = dynamic_cast<ProcessTextResultFutureWatcher *>(sender());
+    if (!watcher)
         return;
-    ProcessTextResult res = parceTask->result();
-    parceTask->deleteLater();
-    parceTask = 0;
+    ProcessTextResult res = watcher->result();
+    delete watcher;
     ptedt->setEnabled(true);
-    highlighter->setDocument(0);
+    blockHighlighter(true);
     ptedt->setPlainText(res.newText);
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
-    highlighter->setDocument( ptedt->document() );
+    blockHighlighter(false);
     ptedt->setFocus();
     setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
 }
 
-void BCodeEditPrivate::popupMenu(const QPoint &pos)
-{
-    B_Q(BCodeEdit);
-    QMenu *menu = new QMenu;
-    QAction *act = new QAction(menu);
-      act->setText( tr("Undo", "act text") );
-      act->setShortcut(QKeySequence::Undo);
-      act->setEnabled( q->isUndoAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( undo() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Redo", "act text") );
-      act->setShortcut(QKeySequence::Redo);
-      act->setEnabled( q->isRedoAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( redo() ) );
-    menu->addAction(act);
-    menu->addSeparator();
-    act = new QAction(menu);
-      act->setText( tr("Cut", "act text") );
-      act->setShortcut(QKeySequence::Cut);
-      act->setEnabled( q->isCutAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( cut() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Copy", "act text") );
-      act->setShortcut(QKeySequence::Copy);
-      act->setEnabled( q->isCopyAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( copy() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Paste", "act text") );
-      act->setShortcut(QKeySequence::Paste);
-      act->setEnabled( q->isPasteAvailable() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( paste() ) );
-    menu->addAction(act);
-    act = new QAction(menu);
-      act->setText( tr("Delete", "act text") );
-      act->setShortcut(QKeySequence::Delete);
-      act->setEnabled( q->hasSelection() && !q->isReadOnly() );
-      connect( act, SIGNAL( triggered() ), q, SLOT( deleteSelection() ) );
-    menu->addAction(act);
-    menu->addSeparator();
-    act = new QAction(menu);
-      act->setText( tr("Select all", "act text") );
-      act->setShortcut(QKeySequence::SelectAll);
-      connect( act, SIGNAL( triggered() ), q, SLOT( selectAll() ) );
-    menu->addAction(act);
-    menu->exec( ptedt->mapToGlobal(pos) );
-    menu->deleteLater();
-}
-
 void BCodeEditPrivate::updateCursorPosition()
 {
-    highlightBrackets();
     QTextCursor tc = ptedt->textCursor();
-    cursorPosition = QPoint( tc.positionInBlock(), tc.blockNumber() );
-    QMetaObject::invokeMethod( q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition) );
+    cursorPosition = QPoint(tc.positionInBlock(), tc.blockNumber());
+    QMetaObject::invokeMethod(q_func(), "cursorPositionChanged", Q_ARG(QPoint, cursorPosition));
 }
 
 void BCodeEditPrivate::updateHasSelection()
@@ -2126,6 +1601,14 @@ void BCodeEditPrivate::setTextToEmptyLine()
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::Start);
     ptedt->setTextCursor(tc);
+}
+
+void BCodeEditPrivate::delayedSetLineLength()
+{
+    if (buisy || tmpLineLength < 1)
+        return;
+    q_func()->setEditLineLength(tmpLineLength);
+    tmpLineLength = -1;
 }
 
 /*============================================================================
@@ -2222,6 +1705,11 @@ void BCodeEdit::setEditLineLength(int ll)
     B_D(BCodeEdit);
     if (ll < 1 || ll == d->lineLength)
         return;
+    if (d->buisy)
+    {
+        d->tmpLineLength = ll;
+        return;
+    }
     d->lineLength = ll;
     QString text = d->ptedt->toPlainText();
     bool pm = d->ptedt->document()->isModified();
@@ -2230,7 +1718,7 @@ void BCodeEdit::setEditLineLength(int ll)
     setFocus();
 }
 
-void BCodeEdit::setEditTabWidth(TabWidth tw)
+void BCodeEdit::setEditTabWidth(BeQt::TabWidth tw)
 {
     B_D(BCodeEdit);
     if (tw == d->tabWidth)
@@ -2238,182 +1726,19 @@ void BCodeEdit::setEditTabWidth(TabWidth tw)
     d->tabWidth = tw;
 }
 
-void BCodeEdit::setFileType(BAbstractFileType *ft)
+void BCodeEdit::setLineNumberWidgetVisible(bool b)
 {
-    B_D(BCodeEdit);
-    if (ft == d->fileType)
-        return;
-    if (ft && d->fileType && ft->id() == d->fileType->id())
-        return;
-    if (!ft && d->fileType && d->fileType->id() == "Text")
-        return;
-    d->fileType = ft ? ft : BAbstractFileType::defaultFileType();
-    setRecognizedBrackets(ft->brackets());
-    Q_EMIT fileTypeChanged(ft);
-    d->highlighter->rehighlight();
+    d_func()->lnwgt->setVisible(b);
 }
 
-void BCodeEdit::setRecognizedBrackets(const QList<BracketPair> &list)
+void BCodeEdit::setExtraSelections(const ExtraSelectionList &list)
 {
-    B_D(BCodeEdit);
-    if ( BCodeEditPrivate::testBracketPairListsEquality(d->recognizedBrackets, list) )
-        return;
-    d->recognizedBrackets = list;
-    d->highlightBrackets();
+    d_func()->ptedt->setExtraSelections(list);
 }
 
-void BCodeEdit::setBracketHighlightingEnabled(bool enabled)
+void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
 {
-    B_D(BCodeEdit);
-    if (enabled == d->bracketsHighlighting)
-        return;
-    d->bracketsHighlighting = enabled;
-    d->highlightBrackets();
-}
-
-bool BCodeEdit::isReadOnly() const
-{
-    return d_func()->ptedt->isReadOnly();
-}
-
-bool BCodeEdit::isModified() const
-{
-    return d_func()->ptedt->document()->isModified();
-}
-
-bool BCodeEdit::hasSelection() const
-{
-    return d_func()->hasSelection;
-}
-
-bool BCodeEdit::isCutAvailable() const
-{
-    const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->copyAvailable;
-}
-
-bool BCodeEdit::isCopyAvailable() const
-{
-    return d_func()->copyAvailable;
-}
-
-bool BCodeEdit::isPasteAvailable() const
-{
-    const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->pasteAvailable;
-}
-
-bool BCodeEdit::isUndoAvailable() const
-{
-    const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->undoAvailable;
-}
-
-bool BCodeEdit::isRedoAvailable() const
-{
-    const B_D(BCodeEdit);
-    return !d->ptedt->isReadOnly() && d->redoAvailable;
-}
-
-QFont BCodeEdit::editFont() const
-{
-    return d_func()->ptedt->font();
-}
-
-BCodeEdit::EditMode BCodeEdit::editMode() const
-{
-    return d_func()->blockMode ? BlockMode : NormalMode;
-}
-
-int BCodeEdit::editLineLength() const
-{
-    return d_func()->lineLength;
-}
-
-BCodeEdit::TabWidth BCodeEdit::editTabWidth() const
-{
-    return d_func()->tabWidth;
-}
-
-BAbstractFileType *BCodeEdit::fileType() const
-{
-    return d_func()->fileType;
-}
-
-QList<BCodeEdit::BracketPair> BCodeEdit::recognizedBrackets() const
-{
-    return d_func()->recognizedBrackets;
-}
-
-bool BCodeEdit::isBracketHighlightingEnabled() const
-{
-    return d_func()->bracketsHighlighting;
-}
-
-QPoint BCodeEdit::cursorPosition() const
-{
-    return d_func()->cursorPosition;
-}
-
-QString BCodeEdit::text(bool full) const
-{
-    const B_D(BCodeEdit);
-    QString text = d->ptedt->toPlainText().replace(QChar::ParagraphSeparator, '\n');
-    if (!full)
-        BCodeEditPrivate::removeTrailingSpaces(&text);
-    return text;
-}
-
-QPoint BCodeEdit::selectionStart() const
-{
-    const B_D(BCodeEdit);
-    if ( !hasSelection() )
-        return cursorPosition();
-    QTextCursor tc = d->ptedt->textCursor();
-    QTextBlock tb = d->ptedt->document()->findBlock( tc.selectionStart() );
-    return QPoint( tc.selectionStart() - tb.position(), tb.blockNumber() );
-}
-
-QPoint BCodeEdit::selectionEnd() const
-{
-    const B_D(BCodeEdit);
-    if ( !hasSelection() )
-        return cursorPosition();
-    QTextCursor tc = d->ptedt->textCursor();
-    QTextBlock tb = d->ptedt->document()->findBlock( tc.selectionEnd() );
-    return QPoint( tc.selectionEnd() - tb.position(), tb.blockNumber() );
-}
-
-QString BCodeEdit::selectedText(bool full) const
-{
-    const B_D(BCodeEdit);
-    QTextCursor tc = d->ptedt->textCursor();
-    if ( !tc.hasSelection() )
-        return "";
-    if (d->blockMode)
-    {
-        QStringList lines;
-        foreach ( const BPlainTextEditExtended::SelectionRange &range, d->ptedt->selectionRanges() )
-        {
-            QTextBlock tb = d->ptedt->document()->findBlock(range.start);
-            int offset = tb.position();
-            lines << tb.text().mid(range.start - offset, range.end - range.start);
-        }
-        return lines.join("\n");
-    }
-    else
-    {
-        QString txt = tc.selectedText().replace(QChar::ParagraphSeparator, '\n');
-        if (full)
-            return txt;
-        QString txtx = BCodeEditPrivate::removeTrailingSpaces(txt);
-        return !txtx.isEmpty() ? txtx : txt;
-    }
-}
-
-bool BCodeEdit::isBuisy() const
-{
-    return d_func()->buisy;
+    d_func()->ptedt->document()->clearUndoRedoStacks(historyToClear);
 }
 
 bool BCodeEdit::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
@@ -2498,7 +1823,7 @@ int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Q
     QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
     while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
     {
-        d->highlighter->rehighlightBlock(tb);
+        d->requestRehighlightBlock(tb);
         tb = tb.next();
     }
     return count;
@@ -2521,6 +1846,195 @@ int BCodeEdit::replaceInDocument(const QString &txt, const QString &newText, Qt:
     insertText(ptext.mid(find, lind - find).replace(txt, newText, cs));
     setEditMode(m);
     return count;
+}
+
+bool BCodeEdit::isReadOnly() const
+{
+    return d_func()->ptedt->isReadOnly();
+}
+
+bool BCodeEdit::isModified() const
+{
+    return d_func()->ptedt->document()->isModified();
+}
+
+bool BCodeEdit::hasSelection() const
+{
+    return d_func()->hasSelection;
+}
+
+bool BCodeEdit::isCutAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->copyAvailable;
+}
+
+bool BCodeEdit::isCopyAvailable() const
+{
+    return d_func()->copyAvailable;
+}
+
+bool BCodeEdit::isPasteAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->pasteAvailable;
+}
+
+bool BCodeEdit::isUndoAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->undoAvailable;
+}
+
+bool BCodeEdit::isRedoAvailable() const
+{
+    const B_D(BCodeEdit);
+    return !d->ptedt->isReadOnly() && d->redoAvailable;
+}
+
+QFont BCodeEdit::editFont() const
+{
+    return d_func()->ptedt->font();
+}
+
+BCodeEdit::EditMode BCodeEdit::editMode() const
+{
+    return d_func()->blockMode ? BlockMode : NormalMode;
+}
+
+int BCodeEdit::editLineLength() const
+{
+    return d_func()->lineLength;
+}
+
+BeQt::TabWidth BCodeEdit::editTabWidth() const
+{
+    return d_func()->tabWidth;
+}
+
+bool BCodeEdit::lineNumberWidgetVisible() const
+{
+    return d_func()->lnwgt->isVisible();
+}
+
+BCodeEdit::ExtraSelectionList BCodeEdit::extraSelections() const
+{
+    return d_func()->ptedt->extraSelections();
+}
+
+QPoint BCodeEdit::cursorPosition() const
+{
+    return d_func()->cursorPosition;
+}
+
+QString BCodeEdit::text(bool full) const
+{
+    const B_D(BCodeEdit);
+    QString text = d->ptedt->toPlainText().replace(QChar::ParagraphSeparator, '\n');
+    if (!full)
+        BeQt::removeTrailingSpaces(&text);
+    return text;
+}
+
+QPoint BCodeEdit::selectionStart() const
+{
+    const B_D(BCodeEdit);
+    if ( !hasSelection() )
+        return cursorPosition();
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = d->ptedt->document()->findBlock( tc.selectionStart() );
+    return QPoint( tc.selectionStart() - tb.position(), tb.blockNumber() );
+}
+
+QPoint BCodeEdit::selectionEnd() const
+{
+    const B_D(BCodeEdit);
+    if ( !hasSelection() )
+        return cursorPosition();
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = d->ptedt->document()->findBlock( tc.selectionEnd() );
+    return QPoint( tc.selectionEnd() - tb.position(), tb.blockNumber() );
+}
+
+QString BCodeEdit::selectedText(bool full) const
+{
+    const B_D(BCodeEdit);
+    QTextCursor tc = d->ptedt->textCursor();
+    if ( !tc.hasSelection() )
+        return "";
+    if (d->blockMode)
+    {
+        QStringList lines;
+        foreach ( const BPlainTextEditExtended::SelectionRange &range, d->ptedt->selectionRanges() )
+        {
+            QTextBlock tb = d->ptedt->document()->findBlock(range.start);
+            int offset = tb.position();
+            lines << tb.text().mid(range.start - offset, range.end - range.start);
+        }
+        return lines.join("\n");
+    }
+    else
+    {
+        QString txt = tc.selectedText().replace(QChar::ParagraphSeparator, '\n');
+        if (full)
+            return txt;
+        QString txtx = BeQt::removeTrailingSpaces(txt);
+        return !txtx.isEmpty() ? txtx : txt;
+    }
+}
+
+bool BCodeEdit::isBuisy() const
+{
+    return d_func()->buisy;
+}
+
+QMenu *BCodeEdit::createContextMenu()
+{
+    QMenu *menu = new QMenu;
+    QAction *act = new QAction(menu);
+      act->setText(tr("Undo", "act text"));
+      act->setShortcut(QKeySequence::Undo);
+      act->setEnabled(isUndoAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(undo()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Redo", "act text"));
+      act->setShortcut(QKeySequence::Redo);
+      act->setEnabled(isRedoAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(redo()));
+    menu->addAction(act);
+    menu->addSeparator();
+    act = new QAction(menu);
+      act->setText(tr("Cut", "act text"));
+      act->setShortcut(QKeySequence::Cut);
+      act->setEnabled(isCutAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(cut()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Copy", "act text"));
+      act->setShortcut(QKeySequence::Copy);
+      act->setEnabled(isCopyAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(copy()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Paste", "act text"));
+      act->setShortcut(QKeySequence::Paste);
+      act->setEnabled(isPasteAvailable());
+      connect(act, SIGNAL(triggered()), this, SLOT(paste()));
+    menu->addAction(act);
+    act = new QAction(menu);
+      act->setText(tr("Delete", "act text"));
+      act->setShortcut(QKeySequence::Delete);
+      act->setEnabled(hasSelection() && !isReadOnly());
+      connect(act, SIGNAL(triggered()), this, SLOT(deleteSelection()));
+    menu->addAction(act);
+    menu->addSeparator();
+    act = new QAction(menu);
+      act->setText(tr("Select all", "act text"));
+      act->setShortcut(QKeySequence::SelectAll);
+      connect(act, SIGNAL(triggered()), this, SLOT(selectAll()));
+    menu->addAction(act);
+    return menu;
 }
 
 /*============================== Public slots ==============================*/
@@ -2695,12 +2209,6 @@ void BCodeEdit::redo()
     setFocus();
 }
 
-void BCodeEdit::rehighlight()
-{
-    d_func()->highlighter->rehighlight();
-    d_func()->highlightBrackets();
-}
-
 /*============================== Protected methods =========================*/
 
 BPlainTextEdit *BCodeEdit::innerEdit() const
@@ -2708,45 +2216,7 @@ BPlainTextEdit *BCodeEdit::innerEdit() const
     return d_func()->ptedt;
 }
 
-/*============================================================================
-================================ BCodeEditParseTask ==========================
-============================================================================*/
-
-/*============================== Public constructors =======================*/
-
-BCodeEditParseTask::BCodeEditParseTask(const QString &text, int lineLength, BCodeEdit::TabWidth tabWidth) :
-    QObject(0), Text(text), LineLength(lineLength), TabWidth(tabWidth)
+QTextDocument *BCodeEdit::innerDocument() const
 {
-    //
+    return d_func()->ptedt->document();
 }
-
-BCodeEditParseTask::~BCodeEditParseTask()
-{
-    //
-}
-
-/*============================== Static public methods =====================*/
-
-QThreadPool *BCodeEditParseTask::pool()
-{
-    if (!tp)
-        tp = new QThreadPool;
-    return tp;
-}
-
-/*============================== Public methods ============================*/
-
-void BCodeEditParseTask::run()
-{
-    res = BCodeEditPrivate::processText(Text, LineLength, TabWidth);
-    Q_EMIT finished();
-}
-
-BCodeEditPrivate::ProcessTextResult BCodeEditParseTask::result() const
-{
-    return res;
-}
-
-/*============================== Static private variables ==================*/
-
-QThreadPool *BCodeEditParseTask::tp = 0;

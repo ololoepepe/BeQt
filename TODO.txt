@@ -5,24 +5,34 @@
 
 === PATCH ===
 
-
+[done] Update READMEs
+[done] Update infos
 
 === MINOR ===
 
-* Add BVersion class
-* Add BSettingsNode class
-* Add BPasswordWidget::returnPressed() slot
-* Add BPasswordWidget::passwordGenerated() slot
-* Add ability to enable/disable BeQtNetwork classes log translation
-* Add BTranslator::setLocale() method
-* Add BCoreApplication::translator(QString fileName) method
+[done] Add BVersion class
+[done] Add BSettingsNode class
+[done] Add BTranslateFunctor class
+[done] Add BDialog class
+[done] Add "help" handler to BTerminalIOHandler
+[done] Add "set" handler to BTerminalIOHandler
+[done] Add BeQt::serialize() and BeQt::deserialize() methods
+[done] Improve BPassword class
+[done] Register container classes for QVariant and QDataStream
+[done] Add BeQtNetworkWidgets module
 
 === MAJOR ===
 
-* Add alternative BBasePrivate class not inherited from QObject
-* Return bool in BTerminalIOHandler handler methods
-* Add image support to person info system
-* Add ability to disable logging to BeQtNetwork classes
-* Move BLoggerPrivate::tryLog method to BLogger
-* Improve BRemoteLogger
-* Add spell checking support to code editor
+[done] Improve BTerminalIOHandler and BNetworkConnection handler methods
+[done] Improve translation system
+[done] Improve BPasswordWidget
+[done] Add image support to person info system
+[done] Improve logging system
+[done] Add spell checking support to code editor
+[done] Remove extra constructors from some classes
+[done] Use QtConcurrent for BCodeEditor asynchronous operations
+[done] Add ability to use documents of different type in BCodeEditor
+[done] Add BClipboardNotifier class
+[done] Make Courier New the default monospaced font on Windows
+[done] Make BLineNumberWidget reusable
+[done] Improve BeQtCodeEditor text preprocessing

@@ -24,9 +24,7 @@ class BRemoteLogger : public BLogger
 public:
     explicit BRemoteLogger(QObject *parent = 0);
     explicit BRemoteLogger(BGenericSocket *socket, QObject *parent = 0);
-    explicit BRemoteLogger(BGenericSocket *socket, const QString &fileName, QObject *parent = 0);
     explicit BRemoteLogger(const QString &hostName, quint16 port, QObject *parent = 0);
-    explicit BRemoteLogger(const QString &hostName, quint16 port, const QString &fileName, QObject *parent = 0);
     explicit BRemoteLogger(BNetworkConnection *c, QObject *parent = 0);
     explicit BRemoteLogger(const QList<BNetworkConnection *> &list, QObject *parent = 0);
     explicit BRemoteLogger(BNetworkServer *server, QObject *parent = 0);
@@ -48,6 +46,8 @@ public:
     QList<BNetworkConnection *> connections() const;
     BNetworkServer *server() const;
     int remoteTimeout() const;
+protected:
+    void userLog(const QString &text, Level level);
 private:
     Q_DISABLE_COPY(BRemoteLogger)
 };

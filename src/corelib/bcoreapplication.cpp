@@ -174,15 +174,18 @@ void BCoreApplicationPrivate::init()
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
     logger = new BLogger(this);
-    languageChangeProxy = new BSignalDelayProxy(this);
+    languageChangeProxy = new BSignalDelayProxy(100, 200, this);
     connect(languageChangeProxy, SIGNAL(triggered()), q_func(), SIGNAL(languageChanged()));
+    languageChangeEventProxy = new BSignalDelayProxy(100, 200, this);
+    connect(languageChangeEventProxy, SIGNAL(triggered()), this, SLOT(sendLanguageChangeEvent()));
+    blockLanguageChangeEvent = true;
 }
 
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
 {
-    if ( !blockLanguageChange || e->type() != QEvent::LanguageChange ||
-         o != (QObject *) QCoreApplication::instance() )
+    if (!blockLanguageChangeEvent || e->type() != QEvent::LanguageChange || o != QCoreApplication::instance())
         return BBasePrivate::eventFilter(o, e);
+    languageChangeEventProxy->trigger();
     return true;
 }
 
@@ -316,7 +319,14 @@ bool BCoreApplicationPrivate::getIsPortable() const
 
 QLocale BCoreApplicationPrivate::getLocale() const
 {
-    return settings->value( "BeQt/Core/locale", QLocale::system() ).toLocale();
+    return settings->value("BeQt/Core/locale", QLocale::system()).toLocale();
+}
+
+void BCoreApplicationPrivate::setLocale(const QLocale &l)
+{
+    foreach (BTranslator *t, translators)
+        t->setLocale(l);
+    settings->setValue("BeQt/Core/locale", l);
 }
 
 QStringList BCoreApplicationPrivate::getDeactivatedPlugins() const
@@ -392,27 +402,24 @@ void BCoreApplicationPrivate::pluginAboutToBeDeactivated(BPluginWrapper *pluginW
     QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
-void BCoreApplicationPrivate::emitLanguageChange()
+void BCoreApplicationPrivate::installTranslator(BTranslator *translator)
 {
-    QMetaObject::invokeMethod(languageChangeProxy, "trigger");
-}
-
-void BCoreApplicationPrivate::installTranslator(BTranslator *translator, bool blockLC)
-{
-    if ( !translator || !translator->isValid() || translators.contains( translator->fileName() ) )
+    if (!translator || !translator->isValid() || translators.contains(translator->fileName()))
+        return;
+    translator->setLocale(getLocale());
+    if (!translator->d_func()->install())
         return;
     translators.insert(translator->fileName(), translator);
-    translator->d_func()->install(blockLC);
-    emitLanguageChange();
+    languageChangeProxy->trigger();
 }
 
-void BCoreApplicationPrivate::removeTranslator(BTranslator *translator, bool blockLC)
+void BCoreApplicationPrivate::removeTranslator(BTranslator *translator)
 {
-    if ( !translator || !translators.contains( translator->fileName() ) )
+    if (!translator || !translators.contains(translator->fileName()))
         return;
-    translators.remove( translator->fileName() );
-    translator->d_func()->remove(blockLC);
-    emitLanguageChange();
+    translators.remove(translator->fileName());
+    translator->d_func()->remove();
+    languageChangeProxy->trigger();
 }
 
 void BCoreApplicationPrivate::loadSettings()
@@ -438,6 +445,14 @@ void BCoreApplicationPrivate::initSettings()
     settings = createSettingsInstance( getAppName() );
     if ( !settings.isNull() )
         connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+}
+
+void BCoreApplicationPrivate::sendLanguageChangeEvent()
+{
+    blockLanguageChangeEvent = false;
+    QEvent e(QEvent::LanguageChange);
+    QCoreApplication::sendEvent(qApp, &e);
+    blockLanguageChangeEvent = true;
 }
 
 /*============================================================================
@@ -605,18 +620,18 @@ QList<BPluginWrapper *> BCoreApplication::pluginWrappers(const QString &type)
     return list;
 }
 
-void BCoreApplication::installTranslator(BTranslator *translator, bool blockLanguageChange)
+void BCoreApplication::installTranslator(BTranslator *translator)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return;
-    ds_func()->installTranslator(translator, blockLanguageChange);
+    ds_func()->installTranslator(translator);
 }
 
-void BCoreApplication::removeTranslator(BTranslator *translator, bool blockLanguageChange)
+void BCoreApplication::removeTranslator(BTranslator *translator)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return;
-    ds_func()->removeTranslator(translator, blockLanguageChange);
+    ds_func()->removeTranslator(translator);
 }
 
 QList<BTranslator *> BCoreApplication::translators()
@@ -626,23 +641,28 @@ QList<BTranslator *> BCoreApplication::translators()
     return ds_func()->translators.values();
 }
 
-void BCoreApplication::setLocale(const QLocale &l, bool noRetranslate)
+BTranslator *BCoreApplication::translator(const QString &fileName)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return 0;
+    return ds_func()->translators.value(fileName);
+}
+
+void BCoreApplication::setLocale(const QLocale &l)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
         return;
     B_DS(BCoreApplication);
-    if ( l == locale() )
+    if (l == locale())
         return;
-    ds->settings->setValue("BeQt/Core/locale", l);
-    if (!noRetranslate)
-        retranslateUi();
+    ds->setLocale(l);
 }
 
 QLocale BCoreApplication::locale()
 {
     if ( !BCoreApplicationPrivate::testCoreInit() )
         return QLocale::system();
-    return ds_func()->settings->value( "BeQt/Core/locale", QLocale::system() ).toLocale();
+    return ds_func()->getLocale();
 }
 
 QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bool alwaysIncludeEnglish)
@@ -688,21 +708,6 @@ QList<BCoreApplication::LocaleSupportInfo> BCoreApplication::availableLocales(bo
                 ++lsi.supports;
     }
     return list;
-}
-
-void BCoreApplication::retranslateUi(bool blockLanguageChange)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit() )
-        return;
-    B_DS(BCoreApplication);
-    ds->blockLanguageChange = blockLanguageChange;
-    foreach (BTranslator *t, ds->translators)
-    {
-        ds->removeTranslator(t, false);
-        ds->installTranslator(t, false);
-    }
-    ds->blockLanguageChange = false;
-    QMetaObject::invokeMethod(ds_func()->languageChangeProxy, "trigger");
 }
 
 void BCoreApplication::loadSettings()

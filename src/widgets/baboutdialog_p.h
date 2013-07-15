@@ -1,7 +1,6 @@
 #ifndef BABOUTDIALOG_P_H
 #define BABOUTDIALOG_P_H
 
-class BAboutDialogPrivate;
 class BPersonInfoProvider;
 
 class QString;
@@ -52,6 +51,7 @@ public:
 public:
     static const QString HtmlSpace;
     static const QString HtmlSpaceDouble;
+    static const QString HtmlSpaceQuadruple;
     static const QString HtmlLT;
     static const QString HtmlGT;
 public:

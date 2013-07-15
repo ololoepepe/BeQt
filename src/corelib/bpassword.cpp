@@ -1,10 +1,15 @@
 #include "bpassword.h"
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "bnamespace.h"
 
 #include <QString>
 #include <QByteArray>
 #include <QCryptographicHash>
+#include <QVariant>
+#include <QVariantMap>
+#include <QDataStream>
+#include <QDebug>
 
 /*============================================================================
 ================================ BPasswordPrivate ============================
@@ -19,6 +24,7 @@ public:
 public:
     void init();
 public:
+    BPassword::Mode mode;
     QString open;
     QByteArray encrypted;
     int charCount;
@@ -49,6 +55,7 @@ BPasswordPrivate::~BPasswordPrivate()
 
 void BPasswordPrivate::init()
 {
+    mode = BPassword::FlexibleMode;
     charCount = 0;
     algorithm = QCryptographicHash::Sha1;
     isEncrypted = false;
@@ -59,6 +66,13 @@ void BPasswordPrivate::init()
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
+
+BPassword::BPassword(Mode m) :
+    BBase(*new BPasswordPrivate(this))
+{
+    d_func()->init();
+    setMode(m);
+}
 
 BPassword::BPassword(const QString &s) :
     BBase(*new BPasswordPrivate(this))
@@ -71,7 +85,7 @@ BPassword::BPassword(QCryptographicHash::Algorithm a, const QByteArray &ba, int 
     BBase(*new BPasswordPrivate(this))
 {
     d_func()->init();
-    setEncryptedPassword(a, ba, charCountHint);
+    setPassword(a, ba, charCountHint);
 }
 
 BPassword::BPassword(const BPassword &other) :
@@ -96,17 +110,40 @@ BPassword::BPassword(BPasswordPrivate &d) :
 
 /*============================== Public methods ============================*/
 
-void BPassword::setPassword(const QString &s)
+void BPassword::setMode(Mode m)
 {
-    clear();
-    d_func()->open = s;
-    d_func()->isEncrypted = false;
+    if (m == d_func()->mode)
+        return;
+    d_func()->mode = m;
+    switch (m)
+    {
+    case AlwaysOpenMode:
+        clear();
+        break;
+    case AlwaysEncryptedMode:
+        encrypt(d_func()->algorithm);
+        break;
+    case FlexibleMode:
+    default:
+        break;
+    }
 }
 
-void BPassword::setEncryptedPassword(QCryptographicHash::Algorithm a, const QByteArray &ba, int charCountHint)
+void BPassword::setPassword(const QString &s, QCryptographicHash::Algorithm a)
 {
     clear();
     B_D(BPassword);
+    d->open = s;
+    if (AlwaysEncryptedMode == d->mode)
+        encrypt(a);
+}
+
+void BPassword::setPassword(QCryptographicHash::Algorithm a, const QByteArray &ba, int charCountHint)
+{
+    clear();
+    B_D(BPassword);
+    if (AlwaysOpenMode == d->mode)
+        return;
     d->encrypted = ba;
     d->charCount = (charCountHint > 0 && !ba.isEmpty()) ? charCountHint : 0;
     d->algorithm = a;
@@ -117,7 +154,7 @@ void BPassword::encrypt(QCryptographicHash::Algorithm a)
 {
     int count = 0;
     QByteArray ba = encryptedPassword(a, &count);
-    setEncryptedPassword(a, ba, count);
+    setPassword(a, ba, count);
 }
 
 void BPassword::clear()
@@ -130,31 +167,74 @@ void BPassword::clear()
     d->isEncrypted = false;
 }
 
-QString BPassword::password() const
+void BPassword::restore(const QByteArray &data)
+{
+    QVariantMap m = BeQt::deserialize(data).toMap();
+    if (m.value("encrypted").toBool())
+        setPassword(static_cast<QCryptographicHash::Algorithm>(m.value("algorithm").toInt()),
+                    m.value("encrypted_password").toByteArray(), m.value("char_count_hint").toInt());
+    else
+        setPassword(m.value("open_password").toString());
+}
+
+BPassword::Mode BPassword::mode() const
+{
+    return d_func()->mode;
+}
+
+QString BPassword::openPassword() const
 {
     return d_func()->open;
 }
 
-QByteArray BPassword::encryptedPassword() const
+QByteArray BPassword::encryptedPassword(int *hint) const
 {
-    return d_func()->encrypted;
+    return encryptedPassword(d_func()->algorithm, hint);
 }
 
-QByteArray BPassword::encryptedPassword(QCryptographicHash::Algorithm a, int *charCountHint) const
+QByteArray BPassword::encryptedPassword(QCryptographicHash::Algorithm a, int *hint) const
 {
-    if (charCountHint)
-        *charCountHint = d_func()->open.length();
-    return QCryptographicHash::hash(d_func()->open.toUtf8(), a);
+    if (hint)
+        *hint = charCountHint();
+    return !d_func()->encrypted.isEmpty() ? d_func()->encrypted : QCryptographicHash::hash(d_func()->open.toUtf8(), a);
 }
 
-int BPassword::charCountHint() const
+int BPassword::charCountHint(Mode m) const
 {
-    return d_func()->charCount;
+    switch (m)
+    {
+    case AlwaysOpenMode:
+        return d_func()->open.length();
+    case AlwaysEncryptedMode:
+        return d_func()->charCount;
+    case FlexibleMode:
+    default:
+        return d_func()->isEncrypted ? d_func()->charCount : d_func()->open.length();
+    }
 }
 
 QCryptographicHash::Algorithm BPassword::algorithm() const
 {
     return d_func()->algorithm;
+}
+
+QByteArray BPassword::save(Mode mode) const
+{
+    const B_D(BPassword);
+    QVariantMap m;
+    bool enc = AlwaysEncryptedMode == mode || d->isEncrypted;
+    m.insert("encrypted", enc);
+    if (enc)
+    {
+        m.insert("encrypted_password", encryptedPassword());
+        m.insert("char_count_hint", charCountHint());
+        m.insert("algorithm", d->algorithm);
+    }
+    else
+    {
+        m.insert("open_password", d->open);
+    }
+    return BeQt::serialize(m);
 }
 
 bool BPassword::isEncrypted() const
@@ -168,6 +248,7 @@ BPassword &BPassword::operator =(const BPassword &other)
 {
     B_D(BPassword);
     const BPasswordPrivate *dd = other.d_func();
+    d->mode = dd->mode;
     d->open = dd->open;
     d->encrypted = dd->encrypted;
     d->charCount = dd->charCount;
@@ -180,10 +261,46 @@ bool BPassword::operator ==(const BPassword &other) const
 {
     const B_D(BPassword);
     const BPasswordPrivate *dd = other.d_func();
-    if (d->isEncrypted != dd->isEncrypted)
+    if (d->mode != dd->mode || d->isEncrypted != dd->isEncrypted)
         return false;
     if (d->isEncrypted)
         return d->encrypted == dd->encrypted && d->charCount == dd->charCount && d->algorithm == dd->algorithm;
     else
         return d->open == dd->open;
+}
+
+/*============================== Public friend operators ===================*/
+
+QDataStream &operator <<(QDataStream &stream, const BPassword &pwd)
+{
+    const BPasswordPrivate *d = pwd.d_func();
+    QVariantMap m;
+    m.insert("mode", d->mode);
+    m.insert("open", d->open);
+    m.insert("encrypted", d->encrypted);
+    m.insert("char_count", d->charCount);
+    m.insert("algorythm", d->algorithm);
+    m.insert("is_encrypted", d->isEncrypted);
+    stream << m;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, BPassword &pwd)
+{
+    BPasswordPrivate *d = pwd.d_func();
+    QVariantMap m;
+    stream >> m;
+    d->mode = static_cast<BPassword::Mode>(m.value("mode", BPassword::FlexibleMode).toInt());
+    d->open = m.value("open").toString();
+    d->encrypted = m.value("encrypted").toByteArray();
+    d->charCount = m.value("char_count").toInt();
+    d->algorithm = static_cast<QCryptographicHash::Algorithm>(m.value("algorythm", QCryptographicHash::Sha1).toInt());
+    d->isEncrypted = m.value("is_encrypted").toBool();
+    return stream;
+}
+
+QDebug operator <<(QDebug dbg, const BPassword &pwd)
+{
+    dbg.nospace() << "BPassword(" << pwd.mode() << "," << pwd.openPassword() << ")";
+    return dbg.space();
 }

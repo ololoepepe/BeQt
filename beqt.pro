@@ -155,6 +155,17 @@ defineReplace(getActualPrivateHeaders) {
             INSTALLS += beqtInstallsPrivateHeadersWidgets
         }
     }
+    #NetworkWidgets
+    !contains(BEQT_CONFIG, no_networkwidgets) {
+        beqtInstallsHeadersNetworkWidgets.files=$$getActualHeaders(BeQtNetworkWidgets)
+        beqtInstallsHeadersNetworkWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetworkWidgets
+        INSTALLS += beqtInstallsHeadersNetworkWidgets
+        contains(BEQT_CONFIG, private_headers) {
+            beqtInstallsPrivateHeadersNetworkWidgets.files=$$getActualPrivateHeaders(BeQtNetworkWidgets)
+            beqtInstallsPrivateHeadersNetworkWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetworkWidgets/private
+            INSTALLS += beqtInstallsPrivateHeadersNetworkWidgets
+        }
+    }
     #CodeEditor
     !contains(BEQT_CONFIG, no_codeeditor) {
         beqtInstallsHeadersCodeeditor.files=$$getActualHeaders(BeQtCodeEditor)

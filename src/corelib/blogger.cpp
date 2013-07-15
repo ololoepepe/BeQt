@@ -35,29 +35,6 @@ BLoggerPrivate::~BLoggerPrivate()
     delete fileFlushTimer;
 }
 
-/*============================== Static public methods =====================*/
-
-QString BLoggerPrivate::levelToString(BLogger::Level lvl)
-{
-    switch (lvl)
-    {
-    case BLogger::InfoLevel:
-        return "INFO";
-    case BLogger::TraceLevel:
-        return "TRACE";
-    case BLogger::DebugLevel:
-        return "DEBUG";
-    case BLogger::WarningLevel:
-        return "WARN";
-    case BLogger::CriticalLevel:
-        return "ERROR";
-    case BLogger::FatalLevel:
-        return "FATAL";
-    default:
-        return "";
-    }
-}
-
 /*============================== Public methods ============================*/
 
 void BLoggerPrivate::init()
@@ -72,12 +49,6 @@ void BLoggerPrivate::init()
     fileFlushTimer = new QTimer(this);
     connect( fileFlushTimer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
     resetFileFlushTimer();
-}
-
-void BLoggerPrivate::tryLog(const QString &msg, bool stderrLevel)
-{
-    tryLogToConsole(msg, stderrLevel);
-    tryLogToFile(msg);
 }
 
 void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
@@ -109,7 +80,7 @@ QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl
         msg += QDateTime::currentDateTime().toString(format) + " ";
     if (includeLevel)
     {
-        QString level = levelToString(lvl);
+        QString level = BLogger::levelToString(lvl);
         if ( !level.isEmpty() )
             msg += level + ": ";
     }
@@ -169,6 +140,27 @@ BLogger::BLogger(BLoggerPrivate &d, QObject *parent) :
 bool BLogger::isStderrLevel(Level lvl)
 {
     return lvl >= DebugLevel;
+}
+
+QString BLogger::levelToString(Level lvl)
+{
+    switch (lvl)
+    {
+    case InfoLevel:
+        return "INFO";
+    case TraceLevel:
+        return "TRACE";
+    case DebugLevel:
+        return "DEBUG";
+    case WarningLevel:
+        return "WARN";
+    case CriticalLevel:
+        return "ERROR";
+    case FatalLevel:
+        return "FATAL";
+    default:
+        return "";
+    }
 }
 
 /*============================== Public methods ============================*/
@@ -299,7 +291,9 @@ void BLogger::log(const QString &text, Level lvl)
 {
     B_D(BLogger);
     QString msg = d->constructMessage(text, lvl);
-    d->tryLog(msg, isStderrLevel(lvl));
+    d->tryLogToConsole(msg, isStderrLevel(lvl));
+    d->tryLogToFile(msg);
+    userLog(msg, lvl);
 }
 
 /*============================== Public slots ==============================*/
@@ -346,4 +340,11 @@ void BLogger::flushFile()
         return;
     d->fileStream.flush();
     d->resetFileFlushTimer();
+}
+
+/*============================== Protected methods =========================*/
+
+void BLogger::userLog(const QString &, Level)
+{
+    //
 }

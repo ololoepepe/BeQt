@@ -2,6 +2,7 @@
 #define BTERMINALIOHANDLER_P_H
 
 class BTerminalIOHandlerPrivate;
+class BSettingsNode;
 
 class QString;
 
@@ -73,6 +74,10 @@ public:
 public:
     QMap<QString, BTerminalIOHandler::InternalHandler> internalHandlers;
     QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
+    BSettingsNode *root;
+    bool translations;
+    QString help;
+    QMap<QString, BTerminalIOHandler::CommandHelp> commandHelp;
 private:
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
     friend class BTerminalIOHandlerThread;

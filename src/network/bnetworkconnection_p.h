@@ -68,9 +68,10 @@ public:
     QMap<QString, BNetworkConnection::ExternalHandler> externalReplyHandlers;
     QMap<QString, BNetworkConnection::InternalHandler> internalRequestHandlers;
     QMap<QString, BNetworkConnection::ExternalHandler> externalRequestHandlers;
-    bool detailedLog;
+    BNetworkConnection::LoggingMode loggingMode;
     bool autoDelete;
     BLogger *logger;
+    bool translations;
 private:
     Q_DISABLE_COPY(BNetworkConnectionPrivate)
 };

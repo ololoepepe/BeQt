@@ -3,7 +3,7 @@
 
 class BCodeEditorPrivate;
 class BCodeEditor;
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 class BAbstractDocumentDriverPrivate;
 
 class QWidget;
@@ -28,7 +28,7 @@ class B_CODEEDITOR_EXPORT BAbstractDocumentDriver : public QObject, public BBase
 public:
     struct Operation
     {
-        const BCodeEditorDocument *document;
+        const BAbstractCodeEditorDocument *document;
         QString fileName;
         QTextCodec *codec;
     };
@@ -46,10 +46,10 @@ public:
     virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec) = 0;
     virtual QByteArray saveState() const;
     virtual void restoreState(const QByteArray &state);
-    bool load( BCodeEditorDocument *doc, const QString &fileName = QString() );
-    bool load( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
-    bool save( BCodeEditorDocument *doc, const QString &fileName = QString() );
-    bool save( BCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString() );
+    bool load(BAbstractCodeEditorDocument *doc, const QString &fileName = QString());
+    bool load(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString());
+    bool save(BAbstractCodeEditorDocument *doc, const QString &fileName = QString());
+    bool save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString());
     BCodeEditor *editor() const;
 protected:
     virtual bool handleSaveOperation(const Operation &op) = 0;

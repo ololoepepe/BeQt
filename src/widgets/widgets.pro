@@ -18,10 +18,16 @@ HEADERS += \
     babstractterminaldriver.h \
     bapplication.h \
     bapplication_p.h \
+    bclipboardnotifier.h \
+    bclipboardnotifier_p.h \
+    bdialog.h \
+    bdialog_p.h \
     bflowlayout.h \
     bguiplugininterface.h \
     bhelpbrowser.h \
     bhelpbrowser_p.h \
+    blinenumberwidget.h \
+    blinenumberwidget_p.h \
     blocalecombobox.h \
     blocalterminaldriver.h \
     bpasswordwidget_p.h \
@@ -40,8 +46,11 @@ SOURCES += \
     babstractsettingstab.cpp \
     babstractterminaldriver.cpp \
     bapplication.cpp \
+    bclipboardnotifier.cpp \
+    bdialog.cpp \
     bflowlayout.cpp \
     bhelpbrowser.cpp \
+    blinenumberwidget.cpp \
     blocalecombobox.cpp \
     blocalterminaldriver.cpp \
     bpasswordwidget.cpp \

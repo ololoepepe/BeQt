@@ -21,6 +21,7 @@
 #include <QSizeF>
 #include <QVariant>
 #include <QCoreApplication>
+#include <QRegExp>
 
 namespace BeQt
 {
@@ -86,11 +87,19 @@ void waitNonBlocking(const QList<Until> &list, int msecs)
     el.exec();
 }
 
-Until until(QObject *object, const char *signal)
+Until until(const QObject *object, const char *signal)
 {
     Until p;
     p.first = object;
     p.second = signal;
+    return p;
+}
+
+Target target(const QObject *object, const char *method)
+{
+    Target p;
+    p.first = object;
+    p.second = method;
     return p;
 }
 
@@ -144,6 +153,24 @@ QString unwrapped(const QString &text, const QString &wrappingText)
     return ntext;
 }
 
+QByteArray serialize(const QVariant &variant, QDataStream::Version version)
+{
+    QByteArray data;
+    QDataStream out(&data, QIODevice::WriteOnly);
+    out.setVersion(version);
+    out << variant;
+    return data;
+}
+
+QVariant deserialize(const QByteArray &data, QDataStream::Version version)
+{
+    QDataStream in(data);
+    in.setVersion(version);
+    QVariant v;
+    in >> v;
+    return v;
+}
+
 void startProcess(QProcess *proc, const QString &command, const QStringList &arguments)
 {
     if (!proc)
@@ -192,6 +219,43 @@ QString translate(const char *context, const char *sourceText, const char *disam
 #else
     return QCoreApplication::translate(context, sourceText, disambiguation, n);
 #endif
+}
+
+QString codecName(QTextCodec *codec)
+{
+    return codec ? codecName(codec->name()) : QString("");
+}
+
+QString codecName(const QByteArray &cn)
+{
+    return QString::fromLatin1(cn);
+}
+
+QTextCodec *codec(const QString &cn)
+{
+    return codec(cn.toLatin1());
+}
+
+QTextCodec *codec(const QByteArray &cn)
+{
+    return !cn.isEmpty() ? QTextCodec::codecForName(cn) : 0;
+}
+
+QString removeTrailingSpaces(const QString &s)
+{
+    QString ns = s;
+    removeTrailingSpaces(&ns);
+    return ns;
+}
+
+void removeTrailingSpaces(QString *s)
+{
+    if (!s || s->isEmpty())
+        return;
+    QStringList sl = s->split('\n');
+    foreach (int i, bRangeD(0, sl.size() - 1))
+        sl[i].remove(QRegExp("\\s+$"));
+    *s = sl.join("\n");
 }
 
 #if defined(Q_OS_MAC)
@@ -290,11 +354,6 @@ QString osVersion()
 #elif defined(Q_OS_WIN)
     return windowsVersion();
 #endif
-}
-
-void handleQuit(const QString &, const QStringList &)
-{
-    QCoreApplication::quit();
 }
 
 }

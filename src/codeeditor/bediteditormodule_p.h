@@ -1,7 +1,7 @@
 #ifndef BEDITEDITORMODULE_P_H
 #define BEDITEDITORMODULE_P_H
 
-class BCodeEditorDocument;
+class BAbstractCodeEditorDocument;
 
 class QAction;
 
@@ -28,7 +28,7 @@ public:
     ~BEditEditorModulePrivate();
 public:
     void init();
-    void setDocument(BCodeEditorDocument *doc);
+    void setDocument(BAbstractCodeEditorDocument *doc);
     void checkActions();
     void checkSwitchModeAction();
     void resetSwitchModeAction(bool bm);
@@ -36,7 +36,7 @@ public Q_SLOTS:
     void retranslateUi();
     void actSwitchModeTriggered();
 public:
-    BCodeEditorDocument *document;
+    BAbstractCodeEditorDocument *document;
     QPointer<QAction> actCut;
     QPointer<QAction> actCopy;
     QPointer<QAction> actPaste;
