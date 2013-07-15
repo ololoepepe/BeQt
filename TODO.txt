@@ -5,7 +5,7 @@
 
 === PATCH ===
 
-* Update READMEs (modules, QtConcurrent, Hunspell)
+[done] Update READMEs
 [done] Update infos
 
 === MINOR ===

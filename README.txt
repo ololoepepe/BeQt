@@ -54,8 +54,8 @@ slightly vary depending on the version of Qt used. In case of using Qt 4.8,
 some features may be missing.
 Support of Qt libraries' versions lower than 4.8.0 is not guaranteed.
 
-Note: in order to use all BeQt features you will need the following
-Qt modules: QtCore, QtNetwork, QtGui, QtSql, QtWidgets (for Qt 5).
+Note: in order to use all BeQt features you will need the following Qt
+modules: QtCore, QtConcurrent, QtNetwork, QtGui, QtSql, QtWidgets (for Qt 5).
 
 In order to use builtin .svgz icons you will also need
 the corresponding plugin.
@@ -107,6 +107,9 @@ When building BeQt, you may pass some parameters to qmake:
 
  * "CONFIG+=no_codeeditor"
    Don't build the BeQtCodeEditor module
+
+ * "CONFIG+=no_networkwidgets"
+   Don't build the BeQtNetworkWidgets module
 
  * "CONFIG+=builtin_resources"
    Embed resources (including translations) into library files
@@ -175,7 +178,7 @@ Important: BeQt may be linked to a project with just two lines of code in the
 
 First of all, add the following to your .pro file:
 
- "BEQT = [core] [network] [widgets] [codeeditor] [all]"
+ "BEQT = [core] [network] [sql] [widgets] [codeeditor] [networkwidgets] [all]"
 
 There are BeQt module names in the square brackets.
 You may also add all modules (the "[all]" parameter).
