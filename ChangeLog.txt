@@ -1,3 +1,29 @@
+=== BeQt 3.0.0 (xx July 2013) ===
+    * Add BVersion class
+    * Add BSettingsNode class
+    * Add BTranslateFunctor class
+    * Add BClipboardNotifier class
+    * Add BDialog class
+    * Add BLineNumberWidget class
+    * Add BeQtNetworkWidgets module
+    * Add BeQt::serialize() and BeQt::deserialize() methods
+    * Add "help" and "set" handlers to BTerminalIOHandler
+    * Remove extra constructors from some classes
+    * Improve BPassword
+    * Improve BTerminalIOHandler
+    * Improve BNetworkConnection
+    * Improve BPasswordWidget
+    * Improve logging system
+    * Improve translation system
+    * Register data classes for QVariant and QDataStream
+    * Use QtConcurrent for asynchronous operations
+    * Make Courier New the default monospaced font on Windows
+    * Add image support to BPersonInfoProvider
+    * Improve ChangeLog formatting
+    * Add spell checking support to code editor
+    * Add ability to use documents of different type in BCodeEditor
+    * Improve BeQtCodeEditor text preprocessing
+
 === BeQt 2.1.3 (07 July 2013) ===
     * Fix BSocketWrapper downloadProgress notification (total bytes to receive)
     * Fix BNetworkConnection error/disconnected notification

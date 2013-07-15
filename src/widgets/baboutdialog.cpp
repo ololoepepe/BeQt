@@ -92,7 +92,8 @@ QString BAboutDialogPrivate::processChangeLog(const QString &text)
                         bool b = false;
                         for (int k = j + 1; k < l.length(); ++k)
                         {
-                            if (l.at(k) == ':')
+                            if (l.at(k) == ':' && k < l.length() - 1 && l.at(k + 1) != ':'
+                                    && k > 0 && l.at(k -1) != ':')
                             {
                                 l.insert(k + 1, "</font>");
                                 b = true;

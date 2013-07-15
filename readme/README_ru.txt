@@ -245,6 +245,9 @@ http://qt-project.org/doc/qt-5.0/qtcore/qtglobal.html#QT_VERSION_CHECK
 не забывайте о том, что данное положение не распространяется на библиотеки Qt.
 Подробнее см.: COPYING.txt, http://qt-project.org/products/licensing
 
+Q: Где можно взять словари для Hunspell?
+A: http://wiki.openoffice.org/wiki/Dictionaries или https://google.com
+
 В: У меня возникли сложности с использованием BeQt, куда я могу обратиться?
 О: Электронная почта/Jabber: ololoepepe@gmail.com
 
