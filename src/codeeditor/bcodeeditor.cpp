@@ -1721,20 +1721,22 @@ QString BCodeEditor::selectedCodecName(QComboBox *cmbox)
 
 /*============================== Public methods ============================*/
 
-bool BCodeEditor::setDocumentType(StandardDocumentType t)
+void BCodeEditor::setDocumentType(StandardDocumentType t)
 {
     if (t == d_func()->docType)
-        return true;
-    if (!saveAllDocuments() || !waitForAllDocumentsProcessed())
-        return false;
+        return;
     d_func()->docType = t;
     foreach (BAbstractCodeEditorDocument *doc, documents())
     {
         BAbstractCodeEditorDocument *ndoc = d_func()->createDocument(doc->fileName(), doc->text());
+        if (!ndoc)
+            continue;
+        ndoc->setModification(doc->isModified());
+        ndoc->moveCursor(doc->cursorPosition());
+        ndoc->selectText(doc->selectionStart(), doc->selectionEnd());
         d_func()->removeDocument(doc);
         d_func()->addDocument(ndoc);
     }
-    return true;
 }
 
 void BCodeEditor::setEditFont(const QFont &fnt)
@@ -2026,20 +2028,21 @@ void BCodeEditor::setMaxHistoryCount(int count)
     }
 }
 
-bool BCodeEditor::mergeWith(BCodeEditor *other, int msecs)
+void BCodeEditor::mergeWith(BCodeEditor *other)
 {
     if (!other)
-        return true;
+        return;
     foreach (BAbstractCodeEditorDocument *doc, other->documents())
     {
-        BAbstractCodeEditorDocument *ndoc = !doc->waitForProcessed(msecs) ?
-                    addDocument(doc->fileName(), doc->text()) : 0;
+        BAbstractCodeEditorDocument *ndoc = d_func()->createDocument(doc->fileName(), doc->text());
         if (!ndoc)
-            return false;
+            continue;
         ndoc->setModification(doc->isModified());
+        ndoc->moveCursor(doc->cursorPosition());
+        ndoc->selectText(doc->selectionStart(), doc->selectionEnd());
+        other->d_func()->removeDocument(doc);
+        d_func()->addDocument(ndoc);
     }
-    other->closeAllDocuments(false);
-    return true;
 }
 
 bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)

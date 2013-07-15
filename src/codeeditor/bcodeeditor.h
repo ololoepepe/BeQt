@@ -87,7 +87,7 @@ public:
     static QTextCodec *selectedCodec(QComboBox *cmbox);
     static QString selectedCodecName(QComboBox *cmbox);
 public:
-    bool setDocumentType(StandardDocumentType t);
+    void setDocumentType(StandardDocumentType t);
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
     void setEditFontPointSize(int pointSize);
@@ -116,7 +116,7 @@ public:
     void setPreferredFileType(const QString &id);
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
-    bool mergeWith(BCodeEditor *other, int msecs = 30 * BeQt::Second);
+    void mergeWith(BCodeEditor *other);
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
     StandardDocumentType documentType() const;
     QFont editFont() const;
