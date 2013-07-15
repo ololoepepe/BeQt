@@ -64,6 +64,7 @@ public Q_SLOTS:
     void lineRead(const QString &text);
 public:
     static QMutex echoMutex;
+    static QMutex titleMutex;
     static QMutex readMutex;
     static QMutex writeMutex;
     static QMutex writeErrMutex;

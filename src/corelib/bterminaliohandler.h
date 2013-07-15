@@ -56,6 +56,7 @@ public:
     static void writeLineErr( const QString &text = QString() );
     static void writeHelpLine(const QString &usage, const QString &description);
     static void setStdinEchoEnabled(bool enabled = true);
+    static void setTerminalTitle(const QString &title);
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(StandardCommand cmd);
     static void installHandler(const QString &command, ExternalHandler handler);

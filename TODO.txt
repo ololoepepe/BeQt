@@ -9,8 +9,8 @@
 
 === MINOR ===
 
-
+* Add ability to change colsole output text color
 
 === MAJOR ===
 
-* Update ChangeLogs
+
