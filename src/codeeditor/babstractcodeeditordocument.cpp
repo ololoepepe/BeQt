@@ -43,6 +43,9 @@
 #include <QPair>
 #include <QVariant>
 #include <QVariantMap>
+#include <QFuture>
+#include <QFutureWatcher>
+#include <QtConcurrentRun>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -225,7 +228,7 @@ void BAbstractCodeEditorDocumentPrivate::init()
     bracketsHighlighting = true;
     spellChecker = 0;
     codec = QTextCodec::codecForName("UTF-8");
-    asyncMin = 100 * BeQt::Kilobyte;
+    asyncMin = 100 * 1000;
     readOnly = false;
     isModified = false;
     hasSelection = false;
@@ -601,7 +604,7 @@ void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocument
             setFileName(operation.fileName);
         if (operation.codec)
             setCodec(operation.codec);
-        q_func()->setText(text, asyncMin);
+        q_func()->setText(text);
         q_func()->setModification(true);
         q_func()->clearUndoRedoStacks(QTextDocument::UndoAndRedoStacks);
     }
@@ -682,6 +685,23 @@ void BAbstractCodeEditorDocumentPrivate::customContextMenuRequested(const QPoint
     }
     mnu->exec(edit->mapToGlobal(pos));
     delete mnu;
+}
+
+void BAbstractCodeEditorDocumentPrivate::preprocessingFinished()
+{
+    TextProcessingResultFutureWatcher *watcher = dynamic_cast<TextProcessingResultFutureWatcher *>(sender());
+    if (!watcher)
+        return;
+    TextProcessingResult res = watcher->result();
+    delete watcher;
+    edit->setEnabled(true);
+    q_func()->blockHighlighter(true);
+    q_func()->setTextImplementation(res.text);
+    q_func()->blockHighlighter(false);
+    q_func()->setFocusImplementation();
+    q_func()->moveCursor(QPoint(0, 0));
+    setBuisy(false);
+    q_func()->afterPreprocessing(res.userData);
 }
 
 /*============================================================================
@@ -948,36 +968,39 @@ void BAbstractCodeEditorDocument::activateWindow()
         activateWindowImplementation();
 }
 
-void BAbstractCodeEditorDocument::setText(const QString &txt, int asyncIfLongerThan)
+void BAbstractCodeEditorDocument::setText(const QString &txt)
 {
-    //
     if (txt.isEmpty())
        return setTextImplementation(txt);
-    setBuisy(true); //TODO
+    setBuisy(true);
     TextProcessingFunction f = textPreprocessingFunction();
-    if (f && asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
+    if (f && shouldProcessAsynchronously(txt))
     {
         innerEdit()->setEnabled(false);
         setTextImplementation(tr("Processing content, please wait..."));
-        //ProcessTextResultFuture future = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
-        //ProcessTextResultFutureWatcher *watcher = new ProcessTextResultFutureWatcher(this);
-        //watcher->setFuture(future);
-        //connect(watcher, SIGNAL(finished()), this, SLOT(parceTaskFinished()));
+        BAbstractCodeEditorDocumentPrivate::TextProcessingResultFuture future =
+                QtConcurrent::run(f, txt, preprocessingUserData());
+        BAbstractCodeEditorDocumentPrivate::TextProcessingResultFutureWatcher *watcher =
+                new BAbstractCodeEditorDocumentPrivate::TextProcessingResultFutureWatcher(this);
+        watcher->setFuture(future);
+        connect(watcher, SIGNAL(finished()), d_func(), SLOT(preprocessingFinished()));
     }
     else if (f)
     {
         TextProcessingResult res = f(txt, preprocessingUserData());
         blockHighlighter(true);
         setTextImplementation(res.text);
-        moveCursorImplementation(QPoint(0, 0));
         blockHighlighter(false);
+        moveCursorImplementation(QPoint(0, 0));
         setFocusImplementation();
+        setBuisy(false);
         afterPreprocessing(res.userData);
-        setBuisy(false); //TODO
     }
     else
     {
+        blockHighlighter(true);
         setTextImplementation(txt);
+        blockHighlighter(false);
     }
 }
 
@@ -1110,27 +1133,12 @@ BAbstractCodeEditorDocument::TextProcessingFunction BAbstractCodeEditorDocument:
     return 0;
 }
 
-BAbstractCodeEditorDocument::TextProcessingFunction BAbstractCodeEditorDocument::textPostprocessingFunction() const
-{
-    return 0;
-}
-
 QVariantMap BAbstractCodeEditorDocument::preprocessingUserData()
 {
     return QVariantMap();
 }
 
-QVariantMap BAbstractCodeEditorDocument::postprocessingUserData()
-{
-    return QVariantMap();
-}
-
 void BAbstractCodeEditorDocument::afterPreprocessing(const QVariantMap &)
-{
-    //
-}
-
-void BAbstractCodeEditorDocument::afterPostprocessing(const QVariantMap &)
 {
     //
 }
@@ -1151,6 +1159,11 @@ void BAbstractCodeEditorDocument::blockHighlighter(bool block)
         d_func()->highlighter->setDocument(0);
     else
         d_func()->highlighter->setDocument(innerDocument());
+}
+
+bool BAbstractCodeEditorDocument::shouldProcessAsynchronously(const QString &txt) const
+{
+    return d_func()->asyncMin && txt.length() >= d_func()->asyncMin;
 }
 
 QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const

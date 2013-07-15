@@ -52,7 +52,7 @@ protected:
     QWidget *createEdit(QTextDocument **doc = 0);
     void setFocusImplementation();
     void activateWindowImplementation();
-    void setTextImplementation(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
+    void setTextImplementation(const QString &txt);
     void insertTextImplementation(const QString &txt);
     void moveCursorImplementation(const QPoint &pos);
     void selectTextImplementation(const QPoint &start, const QPoint &end);
@@ -66,7 +66,6 @@ protected:
     void deleteSelectionImplementation();
     void undoImplementation();
     void redoImplementation();
-    void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void installDropHandler(QObject *handler);
     void installInnerEventFilter(QObject *filter);
 private:

@@ -282,11 +282,9 @@ void BSimpleCodeEditorDocument::activateWindowImplementation()
     d_func()->ptedt->activateWindow();
 }
 
-void BSimpleCodeEditorDocument::setTextImplementation(const QString &txt, int)
+void BSimpleCodeEditorDocument::setTextImplementation(const QString &txt)
 {
-    blockHighlighter(true);
     d_func()->ptedt->setPlainText(txt);
-    blockHighlighter(false);
 }
 
 void BSimpleCodeEditorDocument::insertTextImplementation(const QString &txt)

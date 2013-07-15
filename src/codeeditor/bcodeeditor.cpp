@@ -608,6 +608,7 @@ void BCodeEditorPrivate::init()
     defaultCodec = QTextCodec::codecForName("UTF-8");
     defaultFN = defaultFileName();
     maximumFileSize = BeQt::Megabyte;
+    asyncMin = 100 * 1000;
     maxHistoryCount = 20;
     //
     vlt = new QVBoxLayout(q);
@@ -707,6 +708,7 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
     doc->setSpellChecker(spellChecker);
     doc->setCodec(defaultCodec);
+    doc->setAsyncProcessingMinimumLength(asyncMin);
     doc->setFileType( selectDocumentFileType(doc) );
     if (ddoc)
     {
@@ -1865,6 +1867,18 @@ void BCodeEditor::setMaximumFileSize(int sz)
     d_func()->maximumFileSize = sz;
 }
 
+void BCodeEditor::setAsyncProcessingMinimumLength(int length)
+{
+    if (length < 0)
+        length = 0;
+    B_D(BCodeEditor);
+    if (d->asyncMin == length)
+        return;
+    d->asyncMin = length;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+        doc->setAsyncProcessingMinimumLength(length);
+}
+
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
     if ( !mdl || mdl->isBuisy() )
@@ -2100,6 +2114,11 @@ QString BCodeEditor::defaultFileName() const
 int BCodeEditor::maximumFileSize() const
 {
     return d_func()->maximumFileSize;
+}
+
+int BCodeEditor::asyncProcessingMinimumLength() const
+{
+    return d_func()->asyncMin;
 }
 
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const

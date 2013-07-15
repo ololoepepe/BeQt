@@ -34,6 +34,13 @@ class BAbstractCodeEditorDocument : public QWidget, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractCodeEditorDocument)
 public:
+    struct TextProcessingResult
+    {
+        QString text;
+        QVariantMap userData;
+    };
+public:
+    typedef TextProcessingResult (*TextProcessingFunction)(const QString &, const QVariantMap &);
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
 public:
@@ -95,7 +102,7 @@ public:
 public Q_SLOTS:
     void setFocus();
     void activateWindow();
-    void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
+    void setText(const QString &txt);
     void insertText(const QString &txt);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
@@ -112,18 +119,10 @@ public Q_SLOTS:
     void rehighlight();
     void rehighlightBlock(const QTextBlock &block);
 protected:
-    struct TextProcessingResult
-    {
-        QString text;
-        QVariantMap userData;
-    };
-protected:
-    typedef TextProcessingResult (*TextProcessingFunction)(const QString &, const QVariantMap &);
-protected:
     virtual QWidget *createEdit(QTextDocument **doc = 0) = 0;
     virtual void setFocusImplementation() = 0;
     virtual void activateWindowImplementation() = 0;
-    virtual void setTextImplementation(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte) = 0;
+    virtual void setTextImplementation(const QString &txt) = 0;
     virtual void insertTextImplementation(const QString &txt) = 0;
     virtual void moveCursorImplementation(const QPoint &pos) = 0;
     virtual void selectTextImplementation(const QPoint &start, const QPoint &end) = 0;
@@ -143,13 +142,11 @@ protected:
     virtual QTextCursor textCursor(bool *ok = 0) const;
     virtual QMenu *createContextMenu();
     virtual TextProcessingFunction textPreprocessingFunction() const;
-    virtual TextProcessingFunction textPostprocessingFunction() const;
     virtual QVariantMap preprocessingUserData();
-    virtual QVariantMap postprocessingUserData();
     virtual void afterPreprocessing(const QVariantMap &result);
-    virtual void afterPostprocessing(const QVariantMap &result);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void blockHighlighter(bool block);
+    bool shouldProcessAsynchronously(const QString &txt) const;
     QWidget *innerEdit(QTextDocument **doc = 0) const;
     QTextDocument *innerDocument() const;
 protected Q_SLOTS:

@@ -35,4 +35,4 @@
 [done] Add BClipboardNotifier class
 [done] Make Courier New the default monospaced font on Windows
 [done] Make BLineNumberWidget reusable
-* Improve text pre/postprocessing
+[done] Improve BeQtCodeEditor text preprocessing

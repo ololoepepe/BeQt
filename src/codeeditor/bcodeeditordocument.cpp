@@ -238,11 +238,9 @@ void BCodeEditorDocument::activateWindowImplementation()
     d_func()->cedt->activateWindow();
 }
 
-void BCodeEditorDocument::setTextImplementation(const QString &txt, int asyncIfLongerThan)
+void BCodeEditorDocument::setTextImplementation(const QString &txt)
 {
-    blockHighlighter(true);
-    d_func()->cedt->setText(txt, asyncIfLongerThan);
-    blockHighlighter(false);
+    d_func()->cedt->setText(txt, asyncProcessingMinimumLength());
 }
 
 void BCodeEditorDocument::insertTextImplementation(const QString &txt)

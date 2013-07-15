@@ -29,6 +29,8 @@ class QMenu;
 #include <QTextEdit>
 #include <QTextCharFormat>
 #include <QPair>
+#include <QFuture>
+#include <QFutureWatcher>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -67,6 +69,9 @@ class BAbstractCodeEditorDocumentPrivate : public BBasePrivate
 public:
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
+    typedef BAbstractCodeEditorDocument::TextProcessingResult TextProcessingResult;
+    typedef QFuture<TextProcessingResult> TextProcessingResultFuture;
+    typedef QFutureWatcher<TextProcessingResult> TextProcessingResultFutureWatcher;
 public:
     struct FindBracketPairResult
     {
@@ -114,6 +119,7 @@ public Q_SLOTS:
     void ignoreWord();
     void dontIgnoreWord();
     void customContextMenuRequested(const QPoint &pos);
+    void preprocessingFinished();
 public:
     BCodeEditor *const Editor;
 public:
