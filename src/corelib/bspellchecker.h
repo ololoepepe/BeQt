@@ -22,6 +22,7 @@ class B_CORE_EXPORT BSpellChecker : public BBase
 {
     B_DECLARE_PRIVATE(BSpellChecker)
 public:
+    explicit BSpellChecker();
     explicit BSpellChecker(const QString &dictionaryPath, const QString &userDictionaryPath = QString());
     explicit BSpellChecker(const QStringList &dictionaryPaths, const QString &userDictionaryPath = QString());
     ~BSpellChecker();
@@ -36,7 +37,11 @@ public:
     QStringList suggest(const QString &word) const;
     void ignoreWord(const QString &word, bool ignore = true);
     void ignoreWords(const QStringList &words, bool ignore = true);
-    bool isIgnored(const QString &word) const;
+    void ignoreWordImplicitly(const QString &word, bool ignore = true);
+    void ignoreWordsImplicitly(const QStringList &words, bool ignore = true);
+    void clearIgnored();
+    void clearIgnoredImplicitly();
+    bool isIgnored(const QString &word, bool *implicitly = 0) const;
     QList<BSpellCheckerDictionary *> dictionaries() const;
     BSpellCheckerDictionary *dictionary(const QLocale &locale) const;
     BSpellCheckerDictionary *dictionary(const QString &localeName) const;

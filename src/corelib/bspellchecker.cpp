@@ -38,7 +38,7 @@ public:
     QMap<QString, BSpellCheckerDictionary *> dicts;
     QString userDictPath;
     QSet<QString> ignored;
-    QStringList ignoredList;
+    QSet<QString> ignoredImplicitly;
 private:
     Q_DISABLE_COPY(BSpellCheckerPrivate)
 };
@@ -71,7 +71,7 @@ BSpellCheckerPrivate::BSpellCheckerPrivate(BSpellChecker *q) :
 BSpellCheckerPrivate::~BSpellCheckerPrivate()
 {
     if (!userDictPath.isEmpty())
-        flush(userDictPath, ignoredList);
+        flush(userDictPath, ignored.toList());
 }
 
 /*============================== Public methods ============================*/
@@ -87,7 +87,7 @@ void BSpellCheckerPrivate::flush()
 {
     if (!userDictPath.isEmpty())
     {
-        QtConcurrent::run(&BSpellCheckerPrivate::flush, userDictPath, ignoredList);
+        QtConcurrent::run(&BSpellCheckerPrivate::flush, userDictPath, ignored.toList());
         QTimer::singleShot(BeQt::Minute, this, SLOT(flush()));
     }
 }
@@ -97,6 +97,12 @@ void BSpellCheckerPrivate::flush()
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
+
+BSpellChecker::BSpellChecker() :
+    BBase(*new BSpellCheckerPrivate(this))
+{
+    d_func()->init();
+}
 
 BSpellChecker::BSpellChecker(const QString &dictionaryPath, const QString &userDictionaryPath) :
     BBase(*new BSpellCheckerPrivate(this))
@@ -170,7 +176,7 @@ void BSpellChecker::setUserDictionary(const QString &path)
     }
     f.close();
     ignoreWords(sl);
-    QTimer::singleShot(d_func()->ignoredList.size() * 100, d_func(), SLOT(flush()));
+    QTimer::singleShot(d_func()->ignored.size() * 100, d_func(), SLOT(flush()));
 }
 
 QStringList BSpellChecker::dictionaryPaths() const
@@ -190,7 +196,7 @@ bool BSpellChecker::spell(const QString &word) const
 {
     if (word.isEmpty())
         return false;
-    if (d_func()->ignored.contains(word))
+    if (d_func()->ignored.contains(word) || d_func()->ignoredImplicitly.contains(word))
         return true;
     foreach (BSpellCheckerDictionary *dict, d_func()->dicts)
         if (dict->spell(word))
@@ -218,27 +224,48 @@ void BSpellChecker::ignoreWords(const QStringList &words, bool ignore)
     foreach (const QString &w, words)
     {
         if (ignore)
-        {
-            if (d_func()->ignored.contains(w))
-                return;
             d_func()->ignored.insert(w);
-            d_func()->ignoredList << w;
-        }
         else
-        {
-            if (!d_func()->ignored.contains(w))
-                return;
             d_func()->ignored.remove(w);
-            d_func()->ignoredList.removeAll(w);
-        }
     }
 }
 
-bool BSpellChecker::isIgnored(const QString &word) const
+void BSpellChecker::ignoreWordImplicitly(const QString &word, bool ignore)
+{
+    ignoreWordsImplicitly(QStringList() << word, ignore);
+}
+
+void BSpellChecker::ignoreWordsImplicitly(const QStringList &words, bool ignore)
+{
+    foreach (const QString &w, words)
+    {
+        if (ignore)
+            d_func()->ignoredImplicitly.insert(w);
+        else
+            d_func()->ignoredImplicitly.remove(w);
+    }
+}
+
+void BSpellChecker::clearIgnored()
+{
+    d_func()->ignored.clear();
+}
+
+void BSpellChecker::clearIgnoredImplicitly()
+{
+    d_func()->ignoredImplicitly.clear();
+}
+
+bool BSpellChecker::isIgnored(const QString &word, bool *implicitly) const
 {
     if (word.isEmpty())
         return false;
-    return d_func()->ignored.contains(word);
+    if (d_func()->ignored.contains(word))
+        return bRet(implicitly, false, true);
+    else if (d_func()->ignoredImplicitly.contains(word))
+        return bRet(implicitly, true, true);
+    else
+        return false;
 }
 
 QList<BSpellCheckerDictionary *> BSpellChecker::dictionaries() const

@@ -571,11 +571,17 @@ QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &
         mnu->addAction(s, this, SLOT(replaceWord()));
     if (!suggestions.isEmpty())
         mnu->addSeparator();
-    if (spellChecker->isIgnored(w))
+    bool implicitly = false;
+    if (spellChecker->isIgnored(w, &implicitly) && !implicitly)
         mnu->addAction(tr("Remove from ignore list", "act text"), this,
                        SLOT(dontIgnoreWord()))->setProperty("beqt/word", w);
     else if (!spellChecker->spell(w))
         mnu->addAction(tr("Ignore this word", "act text"), this, SLOT(ignoreWord()))->setProperty("beqt/word", w);
+    if (mnu->isEmpty())
+    {
+        delete mnu;
+        mnu = 0;
+    }
     return mnu;
 }
 
