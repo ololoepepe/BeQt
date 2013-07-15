@@ -23,6 +23,7 @@ public:
 #else
     explicit BApplicationServer(const QString &serverName, int operationTimeout = 5 * BeQt::Second);
 #endif
+    explicit BApplicationServer(const QString &serverName, quint16 port, int operationTimeout = 5 * BeQt::Second);
     ~BApplicationServer();
 protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);

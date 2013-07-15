@@ -55,14 +55,14 @@ protected:
     explicit BVersion(BVersionPrivate &d);
 public:
     void setVersion(qint8 major, qint8 minor = -1, qint8 patch = -1, Status s = NoStatus, qint8 extra = -1);
-    void setVersion(const QString &s, QChar versionSeparator = '.', QChar statusSeparator = '-');
+    void setVersion(const QString &s, QChar versionSeparator = QChar('.'), QChar statusSeparator = QChar('-'));
     qint8 major() const;
     qint8 minor() const;
     qint8 patch() const;
     Status status() const;
     qint8 extra() const;
-    QString toString(StatusRepresentation r = ShortLowercase, QChar versionSeparator = '.',
-                     QChar statusSeparator = '-') const;
+    QString toString(StatusRepresentation r = ShortLowercase, QChar versionSeparator = QChar('.'),
+                     QChar statusSeparator = QChar('-')) const;
     int compare(const BVersion &other) const;
     bool isValid() const;
 public:

@@ -42,13 +42,13 @@ public:
     void addChild(const QString &key, QVariant::Type type = QVariant::String);
     void removeChild(BSettingsNode *node);
     void showTree(int indentStep = 2, int initialIndent = 0) const;
-    BSettingsNode *find(const QString &path, QChar separator = '.');
-    const BSettingsNode *find(const QString &path, QChar separator = '.') const;
-    bool set(QString path, QChar separator = '.') const;
-    bool set(QString path, QString text, QChar separator = '.') const; //%k - key
-    bool set(QString path, QVariant value, QChar separator = '.') const;
-    bool show(QString path, QChar separator = '.') const;
-    bool show(QString path, QString text, QChar separator = '.') const; //%k - key, %v - value
+    BSettingsNode *find(const QString &path, QChar separator = QChar('.'));
+    const BSettingsNode *find(const QString &path, QChar separator = QChar('.')) const;
+    bool set(QString path, QChar separator = QChar('.')) const;
+    bool set(QString path, QString text, QChar separator = QChar('.')) const; //%k - key
+    bool set(QString path, QVariant value, QChar separator = QChar('.')) const;
+    bool show(QString path, QChar separator = QChar('.')) const;
+    bool show(QString path, QString text, QChar separator = QChar('.')) const; //%k - key, %v - value
     BSettingsNode *clone(BSettingsNode *parent = 0) const;
     BSettingsNode *parent() const;
     QList<BSettingsNode *> childNodes() const;
