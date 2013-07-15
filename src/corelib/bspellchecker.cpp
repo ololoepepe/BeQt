@@ -3,6 +3,7 @@
 #include "bglobal.h"
 #include "bbase_p.h"
 #include "bnamespace.h"
+#include "bdirtools.h"
 
 #include <QString>
 #include <QStringList>
@@ -51,13 +52,7 @@ private:
 
 void BSpellCheckerPrivate::flush(const QString &fileName, const QStringList &words)
 {
-    QFile f(fileName);
-    if (!f.open(QFile::WriteOnly | QFile::Truncate))
-        return;
-    QTextStream out(&f);
-    foreach (const QString &w, words)
-        out << w << "\n";
-    f.close();
+    BDirTools::writeTextFile(fileName, words.join("\n"), "UTF-8");
 }
 
 /*============================== Public constructors =======================*/
@@ -162,20 +157,11 @@ void BSpellChecker::setUserDictionary(const QString &path)
     d_func()->userDictPath.clear();
     if (path.isEmpty())
         return;
-    QFile f(path);
-    if (!f.open(QFile::ReadOnly))
+    bool ok = false;
+    ignoreWords(BDirTools::readTextFile(path, "UTF-8", &ok).split('\n'));
+    if (!ok)
         return;
     d_func()->userDictPath = path;
-    QTextStream in(&f);
-    QStringList sl;
-    while (!in.atEnd())
-    {
-        QString line = in.readLine();
-        if (!line.isEmpty())
-            sl << line;
-    }
-    f.close();
-    ignoreWords(sl);
     QTimer::singleShot(d_func()->ignored.size() * 100, d_func(), SLOT(flush()));
 }
 
