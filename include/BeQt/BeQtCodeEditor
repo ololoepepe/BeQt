@@ -10,7 +10,7 @@
 #include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
 #include "bediteditormodule.h"
-#include "bfiledialog.h"
+#include "bextendedfiledialog.h"
 #include "bindicatorseditormodule.h"
 #include "blocaldocumentdriver.h"
 #include "bopensaveeditormodule.h"

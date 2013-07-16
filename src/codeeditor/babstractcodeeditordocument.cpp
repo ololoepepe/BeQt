@@ -6,6 +6,7 @@
 #include "btextblockuserdata.h"
 #include "bcodeedit.h"
 #include "bspellchecker.h"
+#include "babstractfiletype_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -123,9 +124,9 @@ void BSyntaxHighlighter::highlightBlock(const QString &text)
     BAbstractFileType *ft = EditorDocument ? EditorDocument->fileType() : 0;
     if (ft)
     {
-        ft->setCurrentHighlighter(this);
+        ft->d_func()->highlighter = this;
         ft->highlightBlock(text);
-        ft->setCurrentHighlighter(0);
+        ft->d_func()->highlighter = 0;
     }
     BSpellChecker *sc = EditorDocument ? EditorDocument->spellChecker() : 0;
     if (sc)
@@ -287,7 +288,7 @@ void BAbstractCodeEditorDocumentPrivate::setCodec(QTextCodec *c)
     bool b = (c != codec);
     codec = c;
     if (b)
-        QMetaObject::invokeMethod(q_func(), "codecChanged", Q_ARG(QString, BCodeEditor::codecName(c)));
+        QMetaObject::invokeMethod(q_func(), "codecChanged", Q_ARG(QString, BeQt::codecName(c)));
 }
 
 void BAbstractCodeEditorDocumentPrivate::rehighlight()
@@ -605,7 +606,7 @@ void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocument
         if (operation.codec)
             setCodec(operation.codec);
         q_func()->setText(text);
-        q_func()->setModification(true);
+        q_func()->setModification(false);
         q_func()->clearUndoRedoStacks(QTextDocument::UndoAndRedoStacks);
     }
     QMetaObject::invokeMethod(q_func(), "loadingFinished", Q_ARG(bool, success));

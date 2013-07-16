@@ -4,7 +4,7 @@
 #include "bcodeeditordocument.h"
 #include "bcodeeditor.h"
 #include "babstractfiletype.h"
-#include "bfiledialog.h"
+#include "bextendedfiledialog.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -98,7 +98,7 @@ void BLocalDocumentDriverPrivate::init()
     defaultDir = QDir::homePath();
     nativeLineEnd = true;
     lastFileType = 0;
-    codecsCmboxStyle = BFileDialog::StructuredStyle;
+    codecsComboBoxStyle = BTextCodecMenu::StructuredStyle;
 }
 
 /*============================== Public slots ==============================*/
@@ -178,7 +178,7 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
     if ( !editor() )
         return false;
     B_D(BLocalDocumentDriver);
-    BFileDialog bfd(parent, d->codecsCmboxStyle);
+    BExtendedFileDialog bfd(parent, d->codecsComboBoxStyle);
     bfd.restoreState(d->fileDialogState);
     if ( d->fileDialogState.isEmpty() )
         bfd.setDirectory(d->defaultDir);
@@ -186,12 +186,12 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
     bfd.selectFileType( d->lastFileType ? d->lastFileType : editor()->preferredFileType() );
     if (codec)
         bfd.selectCodec(codec);
-    bfd.setAcceptMode(BFileDialog::AcceptOpen);
+    bfd.setAcceptMode(BExtendedFileDialog::AcceptOpen);
     bfd.setFileMode(QFileDialog::ExistingFiles);
     int ret = bfd.exec();
     d->fileDialogState = bfd.saveState();
     d->lastFileType = bfd.selectedFileType();
-    if (BFileDialog::Accepted != ret)
+    if (BExtendedFileDialog::Accepted != ret)
         return false;
     fileNames = bfd.selectedFiles();
     codec = bfd.selectedCodec();
@@ -203,11 +203,11 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
 {
     if ( !editor() )
         return false;
-    BFileDialog bfd(parent, d_func()->codecsCmboxStyle);
+    BExtendedFileDialog bfd(parent, d_func()->codecsComboBoxStyle);
     bfd.restoreState(d_func()->fileDialogState);
     bfd.setFileTypes( editor()->fileTypes() );
     bfd.selectCodec(codec);
-    bfd.setAcceptMode(BFileDialog::AcceptSave);
+    bfd.setAcceptMode(BExtendedFileDialog::AcceptSave);
     bfd.setFileMode(QFileDialog::AnyFile);
     QString dir = QFileInfo(fileName).path();
     if ( dir != "." && QDir(dir).exists() )
@@ -217,7 +217,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     bfd.selectFile(fileName);
     int ret = bfd.exec();
     d_func()->fileDialogState = bfd.saveState();
-    if (BFileDialog::Accepted != ret)
+    if (BExtendedFileDialog::Accepted != ret)
         return false;
     newName = bfd.selectedFiles().first();
     codec = bfd.selectedCodec();
@@ -246,9 +246,9 @@ void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
     d_func()->nativeLineEnd = enabled;
 }
 
-void BLocalDocumentDriver::setCodecsComboBoxStyle(BFileDialog::CodecsComboBoxStyle style)
+void BLocalDocumentDriver::setCodecsComboBoxStyle(BTextCodecMenu::Style style)
 {
-    d_func()->codecsCmboxStyle = style;
+    d_func()->codecsComboBoxStyle = style;
 }
 
 /*============================== Protected methods =========================*/

@@ -1,7 +1,7 @@
-#ifndef BFILEDIALOG_H
-#define BFILEDIALOG_H
+#ifndef BEXTENDEDFILEDIALOG_H
+#define BEXTENDEDFILEDIALOG_H
 
-class BFileDialogPrivate;
+class BExtendedFileDialogPrivate;
 class BAbstractFileType;
 
 class QString;
@@ -10,31 +10,26 @@ class QByteArray;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtWidgets/BTextCodecMenu>
 
 #include <QObject>
 #include <QFileDialog>
 #include <QList>
 
 /*============================================================================
-================================ BFileDialog =================================
+================================ BExtendedFileDialog =========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BFileDialog : public QFileDialog, public BBase
+class B_CODEEDITOR_EXPORT BExtendedFileDialog : public QFileDialog, public BBase
 {
     Q_OBJECT
-    B_DECLARE_PRIVATE(BFileDialog)
+    B_DECLARE_PRIVATE(BExtendedFileDialog)
 public:
-    enum CodecsComboBoxStyle
-    {
-        StructuredStyle = 0,
-        PlainStyle
-    };
-public:
-    explicit BFileDialog(QWidget *parent = 0);
-    explicit BFileDialog(QWidget *parent, CodecsComboBoxStyle cmboxStyle);
-    ~BFileDialog();
+    explicit BExtendedFileDialog(QWidget *parent = 0);
+    explicit BExtendedFileDialog(QWidget *parent, BTextCodecMenu::Style comboBoxStyle);
+    ~BExtendedFileDialog();
 protected:
-    explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
+    explicit BExtendedFileDialog(BExtendedFileDialogPrivate &d, QWidget *parent = 0);
 public:
     void setFileTypes(const QList<BAbstractFileType *> &list);
     void selectFileType(BAbstractFileType *ft);
@@ -50,7 +45,7 @@ public:
     QString selectedCodecName() const;
     QByteArray saveState(bool includeGeometry = true) const;
 private:
-    Q_DISABLE_COPY(BFileDialog)
+    Q_DISABLE_COPY(BExtendedFileDialog)
 };
 
-#endif // BFILEDIALOG_H
+#endif // BEXTENDEDFILEDIALOG_H

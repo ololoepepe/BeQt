@@ -22,6 +22,8 @@ HEADERS += \
     bclipboardnotifier_p.h \
     bdialog.h \
     bdialog_p.h \
+    bfiledialog.h \
+    bfiledialog_p.h \
     bflowlayout.h \
     bguiplugininterface.h \
     bhelpbrowser.h \
@@ -39,7 +41,11 @@ HEADERS += \
     bsettingsdialog.h \
     bsettingsdialog_p.h \
     bterminalwidget.h \
-    bterminalwidget_p.h
+    bterminalwidget_p.h \
+    btextcodecmenu_p.h \
+    btextcodeccombobox.h \
+    btextcodeccombobox_p.h \
+    btextcodecmenu.h
 
 SOURCES += \
     baboutdialog.cpp \
@@ -49,6 +55,7 @@ SOURCES += \
     bclipboardnotifier.cpp \
     bdialog.cpp \
     bflowlayout.cpp \
+    bfiledialog.cpp \
     bhelpbrowser.cpp \
     blinenumberwidget.cpp \
     blocalecombobox.cpp \
@@ -57,7 +64,9 @@ SOURCES += \
     bplaintextedit.cpp \
     bpluginssettingstab.cpp \
     bsettingsdialog.cpp \
-    bterminalwidget.cpp
+    bterminalwidget.cpp \
+    btextcodeccombobox.cpp \
+    btextcodecmenu.cpp
 
 contains(BEQT_CONFIG, builtin_resources) {
     RESOURCES += beqtwidgets.qrc

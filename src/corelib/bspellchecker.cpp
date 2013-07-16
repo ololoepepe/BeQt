@@ -122,7 +122,7 @@ void BSpellChecker::addDictionary(const QString &path)
     }
     BSpellCheckerDictionary *dict = new BSpellCheckerDictionary(npath.isEmpty() ? path : npath);
     if (!npath.isEmpty())
-        BDirTools::rmdir(npath);
+        BDirTools::rmdir(QFileInfo(npath).path());
     if (!dict->isValid())
     {
         delete dict;

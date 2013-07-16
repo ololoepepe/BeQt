@@ -19,6 +19,7 @@ HEADERS += \
     babstracteditormodule.h \
     babstracteditormodule_p.h \
     babstractfiletype.h \
+    babstractfiletype_p.h \
     bbookmarkseditormodule.h \
     bbookmarkseditormodule_p.h \
     bcodeedit_p.h \
@@ -29,7 +30,7 @@ HEADERS += \
     bcodeeditordocument_p.h \
     bediteditormodule.h \
     bediteditormodule_p.h \
-    bfiledialog.h \
+    bextendedfiledialog.h \
     bindicatorseditormodule.h \
     bindicatorseditormodule_p.h \
     blocaldocumentdriver.h \
@@ -52,7 +53,7 @@ SOURCES += \
     bcodeeditor.cpp \
     bcodeeditordocument.cpp \
     bediteditormodule.cpp \
-    bfiledialog.cpp \
+    bextendedfiledialog.cpp \
     bindicatorseditormodule.cpp \
     blocaldocumentdriver.cpp \
     bopensaveeditormodule.cpp \

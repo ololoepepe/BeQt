@@ -7,6 +7,7 @@
 #include "bapplication.h"
 #include "bclipboardnotifier.h"
 #include "bdialog.h"
+#include "bfiledialog.h"
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"

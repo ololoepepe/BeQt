@@ -94,7 +94,7 @@ void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
     if (!editor)
         return lblEncoding->setText("----------");
     QString cn = q_func()->currentDocument() ? q_func()->currentDocument()->codecName() : editor->defaultCodecName();
-    QString fcn = editor->fullCodecName(cn);
+    QString fcn = BeQt::fullCodecName(cn);
     if ( fcn.isEmpty() )
         fcn = tr("Unknown encoding", "lbl text");
     lblEncoding->setText(fcn);

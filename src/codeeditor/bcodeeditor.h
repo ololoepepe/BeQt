@@ -11,8 +11,6 @@ class BSpellChecker;
 
 class QStringList;
 class QTextCodec;
-class QMenu;
-class QComboBox;
 
 #include "bcodeedit.h"
 
@@ -40,16 +38,6 @@ public:
         OpenSaveModule,
         SearchModule
     };
-    enum CodecGroup
-    {
-        InvalidGroup = 0,
-        UnicodeGroup,
-        EastEuropeanGroup,
-        WestEuropeanGroup,
-        EastAsianGroup,
-        SouthEastSouthWestAsianGroup,
-        MiddleEastGroup
-    };
     enum StandardDocumentType
     {
         StandardDocument,
@@ -65,27 +53,6 @@ protected:
     explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
 public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
-    static bool supportsCodec(QTextCodec *codec);
-    static bool supportsCodec(const QString &codecName);
-    static QList<QTextCodec *> supportedCodecs();
-    static QStringList supportedCodecNames();
-    static QString codecName(QTextCodec *codec);
-    static QString fullCodecName(QTextCodec *codec);
-    static QString fullCodecName(const QString &codecName);
-    static QList<CodecGroup> codecGroups();
-    static QString codecGroupName(CodecGroup group);
-    static QList<QTextCodec *> codecsForGroup(CodecGroup group);
-    static QStringList codecNamesForGroup(CodecGroup group);
-    static QMenu *createPlainCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
-    static QMenu *createStructuredCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
-    static void retranslateCodecsMenu(QMenu *mnu);
-    static QComboBox *createPlainCodecsComboBox(QWidget *parent = 0);
-    static QComboBox *createStructuredCodecsComboBox(QWidget *parent = 0);
-    static void retranslateCodecsComboBox(QComboBox *cmbox);
-    static void selectCodec(QComboBox *cmbox, QTextCodec *codec);
-    static void selectCodec(QComboBox *cmbox, const QString &codecName);
-    static QTextCodec *selectedCodec(QComboBox *cmbox);
-    static QString selectedCodecName(QComboBox *cmbox);
 public:
     void setDocumentType(StandardDocumentType t);
     void setEditFont(const QFont &fnt);

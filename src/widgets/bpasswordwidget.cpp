@@ -110,9 +110,7 @@ void BPasswordWidgetPrivate::updateEdit()
     if (pwd.isEncrypted())
     {
         ledt->clear();
-        qDebug() << pwd.charCountHint();
         ledt->setPlaceholderText(QString(pwd.charCountHint() > 0 ? pwd.charCountHint() : 8, '*'));
-        qDebug() << ledt->placeholderText();
     }
     else
     {

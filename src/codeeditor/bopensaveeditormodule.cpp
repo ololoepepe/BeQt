@@ -11,6 +11,7 @@
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
+#include <BeQtWidgets/BTextCodecMenu>
 
 #include <QObject>
 #include <QString>
@@ -58,7 +59,9 @@ void BOpenSaveEditorModulePrivate::init()
       actOpenFiles->setShortcut(QKeySequence::Open);
     actReopenFile = new QAction(this);
       actReopenFile->setIcon( BApplication::icon("reload") );
-      actReopenFile->setMenu(BCodeEditor::createStructuredCodecsMenu(this, SLOT(codecTriggered(QString))));
+      BTextCodecMenu *mnu = new BTextCodecMenu(BTextCodecMenu::StructuredStyle);
+      mnu->setMapping(this, SLOT(codecTriggered(QString)));
+      actReopenFile->setMenu(mnu);
     actSaveFile = new QAction(this);
       actSaveFile->setIcon( BApplication::icon("filesave") );
       actSaveFile->setShortcut(QKeySequence::Save);
@@ -156,7 +159,6 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
         actReopenFile->setWhatsThis( tr("Use this file to reload current document. "
                                         "Use the down arrow to reopen the document using another encoding",
                                         "act whatsThis") );
-        BCodeEditor::retranslateCodecsMenu(actReopenFile->menu());
     }
     if ( !actSaveFile.isNull() )
     {
