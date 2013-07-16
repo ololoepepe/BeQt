@@ -77,6 +77,7 @@ B_CORE_EXPORT QTextCodec *codec(const QString &cn);
 B_CORE_EXPORT QTextCodec *codec(const QByteArray &cn);
 B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
 B_CORE_EXPORT void removeTrailingSpaces(QString *s);
+B_CORE_EXPORT TabWidth tabWidthFromInt(int tw);
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
 B_CORE_EXPORT QString macVersion();

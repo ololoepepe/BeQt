@@ -1,4 +1,5 @@
 #include "bspellchecker.h"
+#include "bspellchecker_p.h"
 #include "bspellcheckerdictionary.h"
 #include "bglobal.h"
 #include "bbase_p.h"
@@ -16,33 +17,10 @@
 #include <QTextStream>
 #include <QtConcurrentRun>
 #include <QTimer>
+#include <QDir>
+#include <QUuid>
 
 #include <QDebug>
-
-/*============================================================================
-================================ BSpellCheckerPrivate ========================
-============================================================================*/
-
-class BSpellCheckerPrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BSpellChecker)
-public:
-    static void flush(const QString &fileName, const QStringList &words);
-public:
-    explicit BSpellCheckerPrivate(BSpellChecker *q);
-    ~BSpellCheckerPrivate();
-public:
-    void init();
-public Q_SLOTS:
-    void flush();
-public:
-    QMap<QString, BSpellCheckerDictionary *> dicts;
-    QString userDictPath;
-    QSet<QString> ignored;
-    QSet<QString> ignoredImplicitly;
-private:
-    Q_DISABLE_COPY(BSpellCheckerPrivate)
-};
 
 /*============================================================================
 ================================ BSpellCheckerPrivate ========================
@@ -65,8 +43,11 @@ BSpellCheckerPrivate::BSpellCheckerPrivate(BSpellChecker *q) :
 
 BSpellCheckerPrivate::~BSpellCheckerPrivate()
 {
-    if (!userDictPath.isEmpty())
-        flush(userDictPath, ignored.toList());
+    if (userDictPath.isEmpty())
+        return;
+    QStringList words = ignored.toList();
+    words.removeAll("");
+    flush(userDictPath, words);
 }
 
 /*============================== Public methods ============================*/
@@ -80,11 +61,12 @@ void BSpellCheckerPrivate::init()
 
 void BSpellCheckerPrivate::flush()
 {
-    if (!userDictPath.isEmpty())
-    {
-        QtConcurrent::run(&BSpellCheckerPrivate::flush, userDictPath, ignored.toList());
-        QTimer::singleShot(BeQt::Minute, this, SLOT(flush()));
-    }
+    if (userDictPath.isEmpty())
+        return;
+    QStringList words = ignored.toList();
+    words.removeAll("");
+    QtConcurrent::run(&BSpellCheckerPrivate::flush, userDictPath, words);
+    QTimer::singleShot(BeQt::Minute, this, SLOT(flush()));
 }
 
 /*============================================================================
@@ -128,7 +110,19 @@ void BSpellChecker::addDictionary(const QString &path)
     QString fn = QFileInfo(path).fileName();
     if (path.isEmpty() || d_func()->dicts.contains(fn))
         return;
-    BSpellCheckerDictionary *dict = new BSpellCheckerDictionary(path);
+    QString npath;
+    if (path.startsWith(":/"))
+    {
+        npath = QDir::tempPath() + "/beqt/spellchecker/" + BeQt::pureUuidText(QUuid::createUuid()) + "/" + fn;
+        if (!BDirTools::copyDir(path, npath))
+        {
+            BDirTools::rmdir(npath);
+            return;
+        }
+    }
+    BSpellCheckerDictionary *dict = new BSpellCheckerDictionary(npath.isEmpty() ? path : npath);
+    if (!npath.isEmpty())
+        BDirTools::rmdir(npath);
     if (!dict->isValid())
     {
         delete dict;
@@ -159,10 +153,10 @@ void BSpellChecker::setUserDictionary(const QString &path)
         return;
     bool ok = false;
     ignoreWords(BDirTools::readTextFile(path, "UTF-8", &ok).split('\n'));
-    if (!ok)
+    if (!ok && !BDirTools::touch(path))
         return;
     d_func()->userDictPath = path;
-    QTimer::singleShot(d_func()->ignored.size() * 100, d_func(), SLOT(flush()));
+    QTimer::singleShot(d_func()->ignored.size() * 100 + BeQt::Minute, d_func(), SLOT(flush()));
 }
 
 QStringList BSpellChecker::dictionaryPaths() const

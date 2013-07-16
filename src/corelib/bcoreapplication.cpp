@@ -584,7 +584,7 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, Interface
     BPluginWrapper::setAcceptableTypes(acceptableTypes);
     BPluginWrapper::setInterfaceTestFunction(function);
     //loading plugins
-    //TODO (release 3.0.0): No means to determine from which dir the plugin is loaded.
+    //TODO: No means to determine from which dir the plugin is loaded.
     //Plugins from user dir should replace plugins from other dirs, even if they are already loaded
     //For now it's only possible to reload ALL plugins, so ones located in user dir are loaded first
     QStringList dirs = locations(PluginsPath);

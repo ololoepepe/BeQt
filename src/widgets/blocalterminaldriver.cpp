@@ -135,7 +135,7 @@ bool BLocalTerminalDriver::terminalCommand(const QString &command, const QString
         return false;
     }
     B_D(BLocalTerminalDriver);
-    //TODO (release 3.0.0): Improve standard command handling
+    //TODO: Improve standard command handling
     //May not work properly
     if ( !command.compare("cd", Qt::CaseInsensitive) && !arguments.isEmpty() && QDir( arguments.first() ).exists() )
     {

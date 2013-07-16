@@ -33,6 +33,7 @@ HEADERS += \
     bspamnotifier.h \
     bspamnotifier_p.h \
     bspellchecker.h \
+    bspellchecker_p.h \
     bspellcheckerdictionary.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \

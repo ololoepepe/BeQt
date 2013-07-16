@@ -258,6 +258,12 @@ void removeTrailingSpaces(QString *s)
     *s = sl.join("\n");
 }
 
+TabWidth tabWidthFromInt(int tw)
+{
+    static const QList<int> values = bRangeD(TabWidth2, TabWidth8);
+    return values.contains(tw) ? static_cast<TabWidth>(tw) : TabWidth4;
+}
+
 #if defined(Q_OS_MAC)
 QString macVersionToString(QSysInfo::MacVersion version)
 {
