@@ -19,6 +19,18 @@
 #include <QVariant>
 #include <QByteArray>
 #include <QVariantMap>
+#include <QToolButton>
+#include <QDir>
+#include <QLineEdit>
+#include <QDialogButtonBox>
+#include <QPushButton>
+#include <QEvent>
+#include <QKeyEvent>
+#include <QAbstractButton>
+#include <QCompleter>
+#include <QAbstractItemView>
+#include <QSortFilterProxyModel>
+#include <QModelIndex>
 
 #include <QDebug>
 
@@ -45,7 +57,16 @@ void BFileDialogPrivate::init()
 {
     maxHistorySize = 20;
     B_Q(BFileDialog);
-    connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(updateHistory()));
+    connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(checkHistory()));
+    connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(checkGoToParent()));
+    connect(q->findChild<QToolButton *>("backButton"), SIGNAL(clicked()), this, SLOT(checkGoToParent()));
+    connect(q->findChild<QToolButton *>("forwardButton"), SIGNAL(clicked()), this, SLOT(checkGoToParent()));
+    connect(q->findChild<QLineEdit *>("fileNameEdit"), SIGNAL(textChanged(QString)),
+            this, SLOT(checkLineEdit(QString)));
+    q->findChild<QLineEdit *>("fileNameEdit")->installEventFilter(this);
+    q->findChild<QWidget *>("listView")->installEventFilter(this);
+    q->findChild<QWidget *>("treeView")->installEventFilter(this);
+    q->findChild<QLineEdit *>("fileNameEdit")->completer()->popup()->installEventFilter(this);
     q->setOption(BFileDialog::DontUseNativeDialog, true);
     lt = q->layout();
       lblEncodings = new QLabel(q);
@@ -57,14 +78,55 @@ void BFileDialogPrivate::init()
       lt->addWidget(cmboxEncodings);
 }
 
+bool BFileDialogPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() != QEvent::KeyPress)
+        return false;
+    int key = static_cast<QKeyEvent *>(e)->key();
+    if (o->objectName() == "listView" || o->objectName() == "treeView")
+    {
+        return (Qt::Key_Backspace == key && !pathFits(q_func()->directory().absolutePath()));
+    }
+    else
+    {
+        if (Qt::Key_Return != key && Qt::Key_Enter != key)
+            return false;
+        QString text = q_func()->findChild<QLineEdit *>("fileNameEdit")->text();
+        QString path = QDir::cleanPath(q_func()->directory().absolutePath() + (text.startsWith("/") ? "" : "/") + text);
+        bool a = QDir(text).isAbsolute();
+        return !((!a && pathFits(path)) || (a && pathFits(text)));
+    }
+}
+
+bool BFileDialogPrivate::pathFits(const QString &path) const
+{
+    return topDir.isEmpty() || (path.startsWith(topDir) && path.length() > topDir.length());
+}
+
 /*============================== Public slots ==============================*/
 
-void BFileDialogPrivate::updateHistory()
+void BFileDialogPrivate::checkHistory()
 {
     QStringList list = q_func()->history();
     while (list.size() > maxHistorySize)
         list.removeFirst();
+    foreach (int i, bRangeR(list.size() - 1, 0))
+        if (!pathFits(list.at(i)))
+            list.removeAt(i);
     q_func()->setHistory(list);
+}
+
+void BFileDialogPrivate::checkGoToParent()
+{
+    B_Q(BFileDialog);
+    q->findChild<QToolButton *>("toParentButton")->setEnabled(pathFits(q->directory().absolutePath()));
+}
+
+void BFileDialogPrivate::checkLineEdit(const QString &text)
+{
+    QAbstractButton *btn = q_func()->findChild<QDialogButtonBox *>("buttonBox")->buttons().first();
+    QString path = QDir::cleanPath(q_func()->directory().absolutePath() + (text.startsWith("/") ? "" : "/") + text);
+    btn->setEnabled(btn->isEnabled() && pathFits(path));
 }
 
 /*============================================================================
@@ -105,26 +167,46 @@ void BFileDialog::setMaxHistorySize(int sz)
     if (sz < 1)
         return;
     d_func()->maxHistorySize = sz;
-    QStringList list = history();
-    while (list.size() > sz)
-        list.removeFirst();
-    setHistory(list);
+    d_func()->checkHistory();
+}
+
+void BFileDialog::setTopDir(const QString &path)
+{
+    if (path == d_func()->topDir)
+        return;
+    d_func()->topDir = path;
+    if (!d_func()->pathFits(path))
+    {
+        setDirectory(d_func()->topDir);
+        d_func()->checkHistory();
+        d_func()->checkLineEdit(findChild<QLineEdit *>("fileNameEdit")->text());
+    }
+    else
+    {
+        QLineEdit *ledt = findChild<QLineEdit *>("fileNameEdit");
+        ledt->setText(ledt->text());
+    }
+    findChild<QWidget *>("lookInCombo")->setEnabled(path.isEmpty());
+    findChild<QWidget *>("sidebar")->setEnabled(path.isEmpty());
+    d_func()->checkGoToParent();
 }
 
 void BFileDialog::restoreState(const QByteArray &ba)
 {
     QVariantMap m = BeQt::deserialize(ba).toMap();
     QFileDialog::restoreState(m.value("q_file_dialog_state").toByteArray());
-    QStringList list = history();
-    while (list.size() > d_func()->maxHistorySize)
-        list.removeFirst();
-    setHistory(list);
+    d_func()->checkHistory();
     selectCodec(m.value("codec_name").toString());
 }
 
 int BFileDialog::maxHistorySize() const
 {
     return d_func()->maxHistorySize;
+}
+
+QString BFileDialog::topDir() const
+{
+    return d_func()->topDir;
 }
 
 bool BFileDialog::codecSelectionEnabled() const

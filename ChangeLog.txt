@@ -4,6 +4,9 @@
     * Add BTranslateFunctor class
     * Add BClipboardNotifier class
     * Add BDialog class
+    * Add BExtendedFileDialog class
+    * Add BTextCodecMenu class
+    * Add BTextCodecComboBox class
     * Add BLineNumberWidget class
     * Add BeQtNetworkWidgets module
     * Add BeQt::serialize() and BeQt::deserialize() methods
@@ -12,6 +15,7 @@
     * Improve BPassword
     * Improve BTerminalIOHandler
     * Improve BNetworkConnection
+    * Improve BFileDialog
     * Improve BPasswordWidget
     * Improve logging system
     * Improve translation system
@@ -23,6 +27,7 @@
     * Add spell checking support to code editor
     * Add ability to use documents of different type in BCodeEditor
     * Improve BeQtCodeEditor text preprocessing
+    * Codec-related methods moved from BCodeEditor to BeQt namespace
 
 === BeQt 2.1.3 (07 July 2013) ===
     * Fix BSocketWrapper downloadProgress notification (total bytes to receive)

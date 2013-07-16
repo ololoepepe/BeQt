@@ -72,7 +72,7 @@ BExtendedFileDialog::BExtendedFileDialog(QWidget *parent) :
     d_func()->init();
 }
 
-BExtendedFileDialog::BExtendedFileDialog(QWidget *parent, BTextCodecMenu::Style cmboxStyle) :
+BExtendedFileDialog::BExtendedFileDialog(BTextCodecMenu::Style cmboxStyle, QWidget *parent) :
     BFileDialog(*new BExtendedFileDialogPrivate(this, cmboxStyle), parent)
 {
     d_func()->init();

@@ -33,9 +33,11 @@ protected:
     explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
     void setMaxHistorySize(int sz);
+    void setTopDir(const QString &path);
     void restoreState(const QByteArray &ba);
     bool codecSelectionEnabled() const;
     int maxHistorySize() const;
+    QString topDir() const;
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
     QByteArray saveState() const;

@@ -4,6 +4,7 @@
 class QLayout;
 class QLabel;
 class QComboBox;
+class QEvent;
 
 #include "bfiledialog.h"
 #include "btextcodecmenu.h"
@@ -13,6 +14,7 @@ class QComboBox;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BFileDialogPrivate ==========================
@@ -27,12 +29,17 @@ public:
     ~BFileDialogPrivate();
 public:
     void init();
+    bool eventFilter(QObject *o, QEvent *e);
+    bool pathFits(const QString &path) const;
 public Q_SLOTS:
-    void updateHistory();
+    void checkHistory();
+    void checkGoToParent();
+    void checkLineEdit(const QString &text);
 public:
     const BTextCodecMenu::Style CmboxStyle;
 public:
     int maxHistorySize;
+    QString topDir;
     QLayout *lt;
       QLabel *lblEncodings;
       BTextCodecComboBox *cmboxEncodings;

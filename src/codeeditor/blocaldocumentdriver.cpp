@@ -180,7 +180,7 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
     if (!editor())
         return false;
     B_D(BLocalDocumentDriver);
-    BExtendedFileDialog bfd(parent, d->codecsComboBoxStyle);
+    BExtendedFileDialog bfd(d->codecsComboBoxStyle, parent);
     bfd.restoreState(d->fileDialogState);
     if (!bfd.restoreGeometry(d->fileDialogGeometry))
         bfd.resize(700, 400);
@@ -209,7 +209,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     if (!editor())
         return false;
     B_D(BLocalDocumentDriver);
-    BExtendedFileDialog bfd(parent, d->codecsComboBoxStyle);
+    BExtendedFileDialog bfd(d->codecsComboBoxStyle, parent);
     bfd.restoreState(d->fileDialogState);
     if (!bfd.restoreGeometry(d->fileDialogGeometry))
         bfd.resize(700, 400);
