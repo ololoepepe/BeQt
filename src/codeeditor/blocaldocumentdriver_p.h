@@ -61,6 +61,7 @@ public:
     QString defaultDir;
     bool nativeLineEnd;
     QByteArray fileDialogState;
+    QByteArray fileDialogGeometry;
     BAbstractFileType *lastFileType;
     BTextCodecMenu::Style codecsComboBoxStyle;
 private:

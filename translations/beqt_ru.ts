@@ -584,18 +584,9 @@
     </message>
 </context>
 <context>
-    <name>BExtendedFileDialogPrivate</name>
-    <message>
-        <location filename="../src/codeeditor/bextendedfiledialog.cpp" line="77"/>
-        <source>Encoding</source>
-        <comment>lbl text</comment>
-        <translation>Кодировка</translation>
-    </message>
-</context>
-<context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="50"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="52"/>
         <source>Encoding</source>
         <comment>lbl text</comment>
         <translation>Кодировка</translation>

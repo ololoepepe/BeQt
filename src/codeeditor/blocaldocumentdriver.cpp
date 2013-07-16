@@ -9,6 +9,7 @@
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QString>
@@ -25,6 +26,7 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+#include <QVariantMap>
 
 #include <QDebug>
 
@@ -175,21 +177,24 @@ bool BLocalDocumentDriver::testFileReadOnly(const QString &fileName)
 
 bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
 {
-    if ( !editor() )
+    if (!editor())
         return false;
     B_D(BLocalDocumentDriver);
     BExtendedFileDialog bfd(parent, d->codecsComboBoxStyle);
     bfd.restoreState(d->fileDialogState);
-    if ( d->fileDialogState.isEmpty() )
+    if (!bfd.restoreGeometry(d->fileDialogGeometry))
+        bfd.resize(700, 400);
+    if (d->fileDialogState.isEmpty())
         bfd.setDirectory(d->defaultDir);
-    bfd.setFileTypes( editor()->fileTypes() );
-    bfd.selectFileType( d->lastFileType ? d->lastFileType : editor()->preferredFileType() );
+    bfd.setFileTypes(editor()->fileTypes());
+    bfd.selectFileType(d->lastFileType ? d->lastFileType : editor()->preferredFileType());
     if (codec)
         bfd.selectCodec(codec);
     bfd.setAcceptMode(BExtendedFileDialog::AcceptOpen);
     bfd.setFileMode(QFileDialog::ExistingFiles);
     int ret = bfd.exec();
     d->fileDialogState = bfd.saveState();
+    d->fileDialogGeometry = bfd.saveGeometry();
     d->lastFileType = bfd.selectedFileType();
     if (BExtendedFileDialog::Accepted != ret)
         return false;
@@ -201,22 +206,26 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
 bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fileName,
                                              QString &newName, QTextCodec *&codec)
 {
-    if ( !editor() )
+    if (!editor())
         return false;
-    BExtendedFileDialog bfd(parent, d_func()->codecsComboBoxStyle);
-    bfd.restoreState(d_func()->fileDialogState);
-    bfd.setFileTypes( editor()->fileTypes() );
+    B_D(BLocalDocumentDriver);
+    BExtendedFileDialog bfd(parent, d->codecsComboBoxStyle);
+    bfd.restoreState(d->fileDialogState);
+    if (!bfd.restoreGeometry(d->fileDialogGeometry))
+        bfd.resize(700, 400);
+    bfd.setFileTypes(editor()->fileTypes());
     bfd.selectCodec(codec);
     bfd.setAcceptMode(BExtendedFileDialog::AcceptSave);
     bfd.setFileMode(QFileDialog::AnyFile);
     QString dir = QFileInfo(fileName).path();
-    if ( dir != "." && QDir(dir).exists() )
+    if (dir != "." && QDir(dir).exists())
         bfd.setDirectory(dir); //TODO: Myabe should improve (needs testing)
-    else if ( d_func()->fileDialogState.isEmpty() )
-        bfd.setDirectory(d_func()->defaultDir);
+    else if (d->fileDialogState.isEmpty())
+        bfd.setDirectory(d->defaultDir);
     bfd.selectFile(fileName);
     int ret = bfd.exec();
-    d_func()->fileDialogState = bfd.saveState();
+    d->fileDialogState = bfd.saveState();
+    d->fileDialogGeometry = bfd.saveGeometry();
     if (BExtendedFileDialog::Accepted != ret)
         return false;
     newName = bfd.selectedFiles().first();
@@ -226,12 +235,17 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
 
 QByteArray BLocalDocumentDriver::saveState() const
 {
-    return d_func()->fileDialogState;
+    QVariantMap m;
+    m.insert("file_dialog_state", d_func()->fileDialogState);
+    m.insert("file_dialog_geometry", d_func()->fileDialogGeometry);
+    return BeQt::serialize(m);
 }
 
 void BLocalDocumentDriver::restoreState(const QByteArray &state)
 {
-    d_func()->fileDialogState = state;
+    QVariantMap m = BeQt::deserialize(state).toMap();
+    d_func()->fileDialogState = m.value("file_dialog_state").toByteArray();
+    d_func()->fileDialogGeometry = m.value("file_dialog_geometry").toByteArray();
 }
 
 void BLocalDocumentDriver::setDefaultDir(const QString &dir)

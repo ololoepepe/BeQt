@@ -19,5 +19,7 @@
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
 #include "bterminalwidget.h"
+#include "btextcodeccombobox.h"
+#include "btextcodecmenu.h"
 
 #endif //BEQT_BEQTWIDGETS_MODULE_H

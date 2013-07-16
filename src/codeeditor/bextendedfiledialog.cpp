@@ -1,27 +1,19 @@
 #include "bextendedfiledialog.h"
 #include "babstractfiletype.h"
-#include "bcodeeditor.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BTextCodecMenu>
-#include <BeQtWidgets/BTextCodecComboBox>
+#include <BeQtWidgets/BFileDialog>
+#include <BeQtWidgets/private/bfiledialog_p.h>
 
 #include <QObject>
 #include <QString>
-#include <QTextCodec>
 #include <QStringList>
-#include <QFileDialog>
 #include <QList>
-#include <QLayout>
-#include <QLabel>
-#include <QComboBox>
 #include <QVariant>
+#include <QVariantMap>
 #include <QByteArray>
-#include <QDataStream>
-#include <QIODevice>
 
 #include <QDebug>
 
@@ -29,7 +21,7 @@
 ================================ BExtendedFileDialogPrivate ==================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BExtendedFileDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BExtendedFileDialogPrivate : public BFileDialogPrivate
 {
     Q_DECLARE_TR_FUNCTIONS(BExtendedFileDialogPrivate)
     B_DECLARE_PUBLIC(BExtendedFileDialog)
@@ -39,12 +31,7 @@ public:
 public:
     void init();
 public:
-    const BTextCodecMenu::Style CmboxStyle;
-public:
     QList<BAbstractFileType *> fileTypes;
-    QLayout *lt;
-      QLabel *lblEncodings;
-      BTextCodecComboBox *cmboxEncodings;
 private:
     Q_DISABLE_COPY(BExtendedFileDialogPrivate)
 };
@@ -56,7 +43,7 @@ private:
 /*============================== Public constructors =======================*/
 
 BExtendedFileDialogPrivate::BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle) :
-    BBasePrivate(q), CmboxStyle(cmboxStyle)
+    BFileDialogPrivate(q, cmboxStyle)
 {
     //
 }
@@ -70,14 +57,7 @@ BExtendedFileDialogPrivate::~BExtendedFileDialogPrivate()
 
 void BExtendedFileDialogPrivate::init()
 {
-    B_Q(BExtendedFileDialog);
-    q->setOption(BExtendedFileDialog::DontUseNativeDialog, true);
-    lt = q->layout();
-      lblEncodings = new QLabel(q);
-        lblEncodings->setText(tr("Encoding", "lbl text") + ":");
-      lt->addWidget(lblEncodings);
-      cmboxEncodings = new BTextCodecComboBox(CmboxStyle);
-      lt->addWidget(cmboxEncodings);
+    //
 }
 
 /*============================================================================
@@ -87,13 +67,13 @@ void BExtendedFileDialogPrivate::init()
 /*============================== Public constructors =======================*/
 
 BExtendedFileDialog::BExtendedFileDialog(QWidget *parent) :
-    QFileDialog(parent), BBase(*new BExtendedFileDialogPrivate(this, BTextCodecMenu::StructuredStyle))
+    BFileDialog(*new BExtendedFileDialogPrivate(this, BTextCodecMenu::StructuredStyle), parent)
 {
     d_func()->init();
 }
 
 BExtendedFileDialog::BExtendedFileDialog(QWidget *parent, BTextCodecMenu::Style cmboxStyle) :
-    QFileDialog(parent), BBase(*new BExtendedFileDialogPrivate(this, cmboxStyle))
+    BFileDialog(*new BExtendedFileDialogPrivate(this, cmboxStyle), parent)
 {
     d_func()->init();
 }
@@ -106,7 +86,7 @@ BExtendedFileDialog::~BExtendedFileDialog()
 /*============================== Protected constructors ====================*/
 
 BExtendedFileDialog::BExtendedFileDialog(BExtendedFileDialogPrivate &d, QWidget *parent) :
-    QFileDialog(parent), BBase(d)
+    BFileDialog(d, parent)
 {
     d_func()->init();
 }
@@ -116,7 +96,7 @@ BExtendedFileDialog::BExtendedFileDialog(BExtendedFileDialogPrivate &d, QWidget 
 void BExtendedFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
 {
     d_func()->fileTypes = list;
-    if ( list.isEmpty() )
+    if (list.isEmpty())
     {
         setNameFilter("");
         return;
@@ -131,61 +111,29 @@ void BExtendedFileDialog::selectFileType(BAbstractFileType *ft)
 {
     if (!ft)
         return;
-    selectNameFilter( ft->createFileDialogFilter() );
+    selectNameFilter(ft->createFileDialogFilter());
 }
 
 void BExtendedFileDialog::selectFileType(const QString &id)
 {
-    if ( id.isEmpty() )
+    if (id.isEmpty())
         return;
     foreach (BAbstractFileType *ft, d_func()->fileTypes)
         if (ft->id() == id)
-            return selectNameFilter( ft->createFileDialogFilter() );
+            return selectNameFilter(ft->createFileDialogFilter());
 }
 
-void BExtendedFileDialog::setCodecSelectionEnabled(bool b)
+void BExtendedFileDialog::restoreState(const QByteArray &ba)
 {
-    d_func()->cmboxEncodings->setVisible(b);
-}
-
-void BExtendedFileDialog::selectCodec(QTextCodec *codec)
-{
-    d_func()->cmboxEncodings->selectCodec(codec);
-}
-
-void BExtendedFileDialog::selectCodec(const QString &codecName)
-{
-    d_func()->cmboxEncodings->selectCodec(codecName);
-}
-
-void BExtendedFileDialog::restoreState(const QByteArray &ba, bool includeGeometry)
-{
-    QDataStream in(ba);
-    in.setVersion(BeQt::DataStreamVersion);
-    QByteArray fdstate;
-    QString scn;
-    QString sft;
-    in >> fdstate;
-    in >> scn;
-    in >> sft;
-    QFileDialog::restoreState(fdstate);
-    QStringList h = history();
-    if (h.size() > 20)
-        setHistory( h.mid(h.size() - 20, 20) ); //Truncate long history
-    selectCodec(scn);
-    selectFileType(sft);
-    if (includeGeometry)
-    {
-        QByteArray geom;
-        in >> geom;
-        restoreGeometry(geom);
-    }
+    QVariantMap m = BeQt::deserialize(ba).toMap();
+    BFileDialog::restoreState(m.value("b_file_dialog_state").toByteArray());
+    selectFileType(m.value("file_type_id").toString());
 }
 
 BAbstractFileType *BExtendedFileDialog::selectedFileType() const
 {
     QString sf = selectedNameFilter();
-    if ( sf.isEmpty() )
+    if (sf.isEmpty())
         return 0;
     foreach (BAbstractFileType *ft, d_func()->fileTypes)
         if (ft->createFileDialogFilter() == sf)
@@ -199,31 +147,10 @@ QString BExtendedFileDialog::selectedFileTypeId() const
     return ft ? ft->id() : QString();
 }
 
-bool BExtendedFileDialog::codecSelectionEnabled() const
+QByteArray BExtendedFileDialog::saveState() const
 {
-    return d_func()->cmboxEncodings->isVisible();
-}
-
-QTextCodec *BExtendedFileDialog::selectedCodec() const
-{
-
-    return d_func()->cmboxEncodings->selectedCodec();
-}
-
-QString BExtendedFileDialog::selectedCodecName() const
-{
-    return d_func()->cmboxEncodings->selectedCodecName();
-}
-
-QByteArray BExtendedFileDialog::saveState(bool includeGeometry) const
-{
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    out << QFileDialog::saveState();
-    out << selectedCodecName();
-    out << selectedFileTypeId();
-    if (includeGeometry)
-        out << saveGeometry();
-    return ba;
+    QVariantMap m;
+    m.insert("b_file_dialog_state", BFileDialog::saveState());
+    m.insert("file_type_id", selectedFileTypeId());
+    return BeQt::serialize(m);
 }
