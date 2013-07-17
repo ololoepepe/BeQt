@@ -24,7 +24,9 @@ class B_CODEEDITOR_EXPORT BExtendedFileDialog : public BFileDialog
     B_DECLARE_PRIVATE(BExtendedFileDialog)
 public:
     explicit BExtendedFileDialog(QWidget *parent = 0);
+    explicit BExtendedFileDialog(const QString &topDir, QWidget *parent = 0);
     explicit BExtendedFileDialog(BTextCodecMenu::Style comboBoxStyle, QWidget *parent = 0);
+    explicit BExtendedFileDialog(BTextCodecMenu::Style comboBoxStyle, const QString &topDir, QWidget *parent = 0);
     ~BExtendedFileDialog();
 protected:
     explicit BExtendedFileDialog(BExtendedFileDialogPrivate &d, QWidget *parent = 0);

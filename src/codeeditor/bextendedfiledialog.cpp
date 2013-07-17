@@ -26,7 +26,8 @@ class B_CODEEDITOR_EXPORT BExtendedFileDialogPrivate : public BFileDialogPrivate
     Q_DECLARE_TR_FUNCTIONS(BExtendedFileDialogPrivate)
     B_DECLARE_PUBLIC(BExtendedFileDialog)
 public:
-    explicit BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle);
+        explicit BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle,
+                                            const QString &topDir = QString());
     ~BExtendedFileDialogPrivate();
 public:
     void init();
@@ -42,8 +43,9 @@ private:
 
 /*============================== Public constructors =======================*/
 
-BExtendedFileDialogPrivate::BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle) :
-    BFileDialogPrivate(q, cmboxStyle)
+BExtendedFileDialogPrivate::BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle,
+                                                       const QString &topDir) :
+    BFileDialogPrivate(q, cmboxStyle, topDir)
 {
     //
 }
@@ -72,8 +74,20 @@ BExtendedFileDialog::BExtendedFileDialog(QWidget *parent) :
     d_func()->init();
 }
 
-BExtendedFileDialog::BExtendedFileDialog(BTextCodecMenu::Style cmboxStyle, QWidget *parent) :
-    BFileDialog(*new BExtendedFileDialogPrivate(this, cmboxStyle), parent)
+BExtendedFileDialog::BExtendedFileDialog(const QString &topDir, QWidget *parent) :
+    BFileDialog(*new BExtendedFileDialogPrivate(this, BTextCodecMenu::StructuredStyle, topDir), parent)
+{
+    d_func()->init();
+}
+
+BExtendedFileDialog::BExtendedFileDialog(BTextCodecMenu::Style comboBoxStyle, QWidget *parent) :
+    BFileDialog(*new BExtendedFileDialogPrivate(this, comboBoxStyle), parent)
+{
+    d_func()->init();
+}
+
+BExtendedFileDialog::BExtendedFileDialog(BTextCodecMenu::Style comboBoxStyle, const QString &topDir, QWidget *parent) :
+    BFileDialog(*new BExtendedFileDialogPrivate(this, comboBoxStyle, topDir), parent)
 {
     d_func()->init();
 }

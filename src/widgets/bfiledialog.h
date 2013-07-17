@@ -25,15 +25,15 @@ class B_WIDGETS_EXPORT BFileDialog : public QFileDialog, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BFileDialog)
 public:
-public:
     explicit BFileDialog(QWidget *parent = 0);
+    explicit BFileDialog(const QString &topDir, QWidget *parent = 0);
     explicit BFileDialog(BTextCodecMenu::Style comboBoxStyle, QWidget *parent = 0);
+    explicit BFileDialog(BTextCodecMenu::Style comboBoxStyle, const QString &topDir, QWidget *parent = 0);
     ~BFileDialog();
 protected:
     explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
     void setMaxHistorySize(int sz);
-    void setTopDir(const QString &path);
     void restoreState(const QByteArray &ba);
     bool codecSelectionEnabled() const;
     int maxHistorySize() const;

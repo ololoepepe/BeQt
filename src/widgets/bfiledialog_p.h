@@ -1,6 +1,8 @@
 #ifndef BFILEDIALOG_P_H
 #define BFILEDIALOG_P_H
 
+class ProxyModel;
+
 class QLayout;
 class QLabel;
 class QComboBox;
@@ -25,7 +27,8 @@ class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BFileDialog)
 public:
-    explicit BFileDialogPrivate(BFileDialog *q, BTextCodecMenu::Style comboBoxStyle);
+    explicit BFileDialogPrivate(BFileDialog *q, BTextCodecMenu::Style comboBoxStyle,
+                                const QString &topDir = QString());
     ~BFileDialogPrivate();
 public:
     void init();
@@ -37,9 +40,10 @@ public Q_SLOTS:
     void checkLineEdit(const QString &text);
 public:
     const BTextCodecMenu::Style CmboxStyle;
+    const QString TopDir;
 public:
     int maxHistorySize;
-    QString topDir;
+    ProxyModel *proxy;
     QLayout *lt;
       QLabel *lblEncodings;
       BTextCodecComboBox *cmboxEncodings;
