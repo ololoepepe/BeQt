@@ -12,6 +12,12 @@ class QStringLit;
 
 #include <QObject>
 
+#define bReadLine BTerminalIOHandler::readLine
+#define bWrite BTerminalIOHandler::write
+#define bWriteLine BTerminalIOHandler::writeLine
+#define bWriteErr BTerminalIOHandler::writeErr
+#define bWriteLineErr BTerminalIOHandler::writeLineErr
+
 /*============================================================================
 ================================ BTerminalIOHandler ==========================
 ============================================================================*/

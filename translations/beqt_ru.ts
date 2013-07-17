@@ -1333,23 +1333,23 @@
 <context>
     <name>BSqlDatabase</name>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="367"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="421"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="438"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="469"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="500"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="394"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="448"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="465"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="496"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="527"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="369"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="396"/>
         <source>Database is not opened</source>
         <comment>errorString</comment>
         <translation>База данных не открыта</translation>
     </message>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="372"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="399"/>
         <source>Failed to create query</source>
         <comment>errorString</comment>
         <translation>Не удалось создать запрос</translation>
@@ -1358,63 +1358,71 @@
 <context>
     <name>BTerminalIOHandler</name>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="474"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="477"/>
         <source>Unknown command</source>
         <translation>Неизвестная команда</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="488"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="504"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="517"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="575"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="622"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="628"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="491"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="507"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="520"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="578"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="653"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="659"/>
         <source>Invalid parameters count</source>
         <translation>Неправильное количество команд</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="493"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="609"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="496"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="640"/>
         <source>Settings structure not set</source>
         <translation>Не задана структура настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="509"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="512"/>
         <source>Failed to show value</source>
         <translation>Не удалось показать значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="523"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="539"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="526"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="542"/>
         <source>No such option</source>
         <translation>Нет такой опции</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="529"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="532"/>
         <source>No description</source>
         <translation>Описание отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="548"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="551"/>
         <source>Invalid value</source>
         <translation>Недейтсивтельное значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="553"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="565"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="556"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="568"/>
         <source>Failed to set value</source>
         <translation>Не удалось задать установить значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="558"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="570"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="561"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="573"/>
         <source>OK</source>
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="591"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="594"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="605"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="627"/>
         <source>Nothing to display</source>
         <translation>Нечего отобразить</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="616"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="630"/>
+        <source>The following commands are available:</source>
+        <translation>Доступны следующие команды:</translation>
     </message>
 </context>
 <context>

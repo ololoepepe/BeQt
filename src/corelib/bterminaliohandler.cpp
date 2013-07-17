@@ -344,7 +344,10 @@ void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &desc
 {
     if (usage.isEmpty())
         return;
-    QString s = "  " + usage;
+    QString s;
+    foreach (const QString &u, usage.split('\n'))
+        s += "  " + u + "\n";
+    s.remove(s.length() - 1, 1);
     if (!description.isEmpty())
     {
         if (s.length() > 28)
@@ -586,7 +589,7 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
                 d_func()->help;
     if (args.isEmpty())
     {
-        if (!h.isEmpty())
+        if (h.isEmpty())
         {
             writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
             return false;
@@ -597,8 +600,36 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
     {
         if (args.first() == "--all")
         {
+            if (h.isEmpty() && d_func()->commandHelp.isEmpty())
+            {
+                writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+                return false;
+            }
             if (!h.isEmpty())
+            {
                 writeLine(h);
+                if (!d_func()->commandHelp.isEmpty())
+                    writeLine();
+            }
+            if (!d_func()->commandHelp.isEmpty())
+            {
+                writeLine(d_func()->translations ? tr("The following commands are available:") :
+                                                   QString("The following commands are available:"));
+                writeLine();
+                foreach (const CommandHelp &ch, d_func()->commandHelp)
+                    writeHelpLine(ch.usage, ch.description);
+            }
+        }
+        else if (args.first() == "--commands")
+        {
+            if (d_func()->commandHelp.isEmpty())
+            {
+                writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+                return false;
+            }
+            writeLine(d_func()->translations ? tr("The following commands are available:") :
+                                               QString("The following commands are available:"));
+            writeLine();
             foreach (const CommandHelp &ch, d_func()->commandHelp)
                 writeHelpLine(ch.usage, ch.description);
         }
@@ -628,7 +659,7 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
         writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
         return false;
     }
-    return false;
+    return true;
 }
 
 /*============================== Static protected variables ================*/

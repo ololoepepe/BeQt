@@ -5,6 +5,7 @@
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BDirTools>
 
 #include <QObject>
 #include <QString>
@@ -19,6 +20,7 @@
 #include <QVariant>
 #include <QSqlRecord>
 #include <QScopedPointer>
+#include <QRegExp>
 
 #include <QDebug>
 
@@ -91,6 +93,31 @@ bool BSqlDatabasePrivate::handleOpenOnDemand()
 /*============================================================================
 ================================ BSqlDatabase ================================
 ============================================================================*/
+
+/*============================== Static public methods =====================*/
+
+QStringList schemaFromText(const QString &text)
+{
+    QStringList list = text.split(";\n");
+    foreach (int i, bRangeD(0, list.size() - 1))
+    {
+        list[i].replace('\n', ' ');
+        list[i].replace(QRegExp("\\s+"), " ");
+    }
+    list.removeAll("");
+    list.removeDuplicates();
+    return list;
+}
+
+QStringList schemaFromFile(const QString &fileName, QTextCodec *codec)
+{
+    return schemaFromText(BDirTools::readTextFile(fileName, codec));
+}
+
+QStringList schemaFromFile(const QString &fileName, const QString &codecName)
+{
+    return schemaFromFile(fileName, BeQt::codec(codecName));
+}
 
 /*============================== Public constructors =======================*/
 
@@ -502,6 +529,44 @@ BSqlResult BSqlDatabase::deleteFrom(const QString &table, const BSqlWhere &where
     if (where.isValid())
         qs += " WHERE " + where.string();
     return exec(qs, where.boundValues());
+}
+
+bool BSqlDatabase::initializeFromSchema(const QString &schemaText)
+{
+    return initializeFromSchema(schemaFromText(schemaText));
+}
+
+bool BSqlDatabase::initializeFromSchema(const QStringList &schema)
+{
+    QStringList list = schemaFromText(schema.join("\n"));
+    if (list.isEmpty())
+        return false;
+    if (!transaction())
+        return false;
+    foreach (const QString &qs, list)
+    {
+        if (!exec(qs))
+        {
+            rollback();
+            return false;
+        }
+    }
+    if (!commit())
+    {
+        rollback();
+        return false;
+    }
+    return true;
+}
+
+bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, QTextCodec *codec)
+{
+    return initializeFromSchema(schemaFromFile(fileName, codec));
+}
+
+bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, const QString &codecName)
+{
+    return initializeFromSchema(schemaFromFile(fileName, codecName));
 }
 
 /*============================== Protected methods =========================*/

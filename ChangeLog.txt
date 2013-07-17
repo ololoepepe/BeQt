@@ -16,6 +16,7 @@
     * Improve BPassword
     * Improve BTerminalIOHandler
     * Improve BNetworkConnection
+    * Improve BSqlDatabase
     * Improve BFileDialog
     * Improve BPasswordWidget
     * Improve logging system

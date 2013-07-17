@@ -16,6 +16,7 @@
     * Улучшен класс BPassword
     * Улучшен класс BTerminalIOHandler
     * Улучшен класс BNetworkConnection
+    * Улучшен класс BSqlDatabase
     * Улучшен класс BFileDialog
     * Улучшен класс BPasswordWidget
     * Улучшена система ведения логов
