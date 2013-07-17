@@ -13,6 +13,7 @@ class QStringLit;
 #include <QObject>
 
 #define bReadLine BTerminalIOHandler::readLine
+#define bReadLineSecure BTerminalIOHandler::readLineSecure
 #define bWrite BTerminalIOHandler::write
 #define bWriteLine BTerminalIOHandler::writeLine
 #define bWriteErr BTerminalIOHandler::writeErr
@@ -56,6 +57,7 @@ public:
     static QStringList splitCommand(const QString &command);
     static QString mergeArguments(const QStringList &arguments);
     static QString readLine(const QString &text = QString());
+    static QString readLineSecure(const QString &text = QString());
     static void write(const QString &text);
     static void writeLine( const QString &text = QString() );
     static void writeErr(const QString &text);

@@ -327,6 +327,7 @@ void BCoreApplicationPrivate::setLocale(const QLocale &l)
     foreach (BTranslator *t, translators)
         t->setLocale(l);
     settings->setValue("BeQt/Core/locale", l);
+    languageChangeProxy->trigger();
 }
 
 QStringList BCoreApplicationPrivate::getDeactivatedPlugins() const
@@ -652,15 +653,14 @@ void BCoreApplication::setLocale(const QLocale &l)
 {
     if (!BCoreApplicationPrivate::testCoreInit())
         return;
-    B_DS(BCoreApplication);
     if (l == locale())
         return;
-    ds->setLocale(l);
+    ds_func()->setLocale(l);
 }
 
 QLocale BCoreApplication::locale()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return QLocale::system();
     return ds_func()->getLocale();
 }

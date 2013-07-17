@@ -314,6 +314,15 @@ QString BTerminalIOHandler::readLine(const QString &text)
     return line;
 }
 
+QString BTerminalIOHandler::readLineSecure(const QString &text)
+{
+    setStdinEchoEnabled(false);
+    QString line = readLine(text);
+    setStdinEchoEnabled(true);
+    writeLine();
+    return line;
+}
+
 void BTerminalIOHandler::write(const QString &text)
 {
     if (text.isEmpty())
@@ -520,7 +529,7 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
             writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
             return false;
         }
-        BSettingsNode *n = d_func()->root->find(args.first());
+        BSettingsNode *n = d_func()->root->find(args.last());
         if (!n)
         {
             writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));

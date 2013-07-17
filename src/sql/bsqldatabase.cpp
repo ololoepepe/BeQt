@@ -96,7 +96,7 @@ bool BSqlDatabasePrivate::handleOpenOnDemand()
 
 /*============================== Static public methods =====================*/
 
-QStringList schemaFromText(const QString &text)
+QStringList BSqlDatabase::schemaFromText(const QString &text)
 {
     QStringList list = text.split(";\n");
     foreach (int i, bRangeD(0, list.size() - 1))
@@ -109,12 +109,12 @@ QStringList schemaFromText(const QString &text)
     return list;
 }
 
-QStringList schemaFromFile(const QString &fileName, QTextCodec *codec)
+QStringList BSqlDatabase::schemaFromFile(const QString &fileName, QTextCodec *codec)
 {
     return schemaFromText(BDirTools::readTextFile(fileName, codec));
 }
 
-QStringList schemaFromFile(const QString &fileName, const QString &codecName)
+QStringList BSqlDatabase::schemaFromFile(const QString &fileName, const QString &codecName)
 {
     return schemaFromFile(fileName, BeQt::codec(codecName));
 }
@@ -533,13 +533,10 @@ BSqlResult BSqlDatabase::deleteFrom(const QString &table, const BSqlWhere &where
 
 bool BSqlDatabase::initializeFromSchema(const QString &schemaText)
 {
-    return initializeFromSchema(schemaFromText(schemaText));
-}
-
-bool BSqlDatabase::initializeFromSchema(const QStringList &schema)
-{
-    QStringList list = schemaFromText(schema.join("\n"));
+    QStringList list = schemaFromText(schemaText);
     if (list.isEmpty())
+        return false;
+    if (!isOpen() && !open())
         return false;
     if (!transaction())
         return false;
@@ -557,6 +554,11 @@ bool BSqlDatabase::initializeFromSchema(const QStringList &schema)
         return false;
     }
     return true;
+}
+
+bool BSqlDatabase::initializeFromSchema(const QStringList &schema)
+{
+    return initializeFromSchema(schema.join(";\n"));
 }
 
 bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, QTextCodec *codec)
