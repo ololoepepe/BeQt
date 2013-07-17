@@ -144,33 +144,9 @@ template <typename T> QVariant bVariant(T *ptr)
     return QVariant::fromValue((void *) ptr);
 }
 
-template<typename T> void bRetV(const T &)
+template<typename T> void bRet(const T &)
 {
     //
-}
-
-template<typename T> void bRetV(T *t, const T &tt)
-{
-    if (t)
-        *t = tt;
-}
-
-template<typename T, typename U> void bRetV(T *t, const T &tt, U *u, const U &uu)
-{
-    if (t)
-        *t = tt;
-    if (u)
-        *u = uu;
-}
-
-template<typename T, typename U, typename V> void bRetV(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
-{
-    if (t)
-        *t = tt;
-    if (u)
-        *u = uu;
-    if (v)
-        *v = vv;
 }
 
 template<typename T> T bRet(T *t, const T &tt)
@@ -226,6 +202,30 @@ template<typename T, typename U, typename V, typename W> W bRet(T *t, const T &t
     if (v)
         *v = vv;
     return ww;
+}
+
+template<typename T> void bSet(T *t, const T &tt)
+{
+    if (t)
+        *t = tt;
+}
+
+template<typename T, typename U> void bSet(T *t, const T &tt, U *u, const U &uu)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+}
+
+template<typename T, typename U, typename V> void bSet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
 }
 
 #endif // BGLOBAL_H

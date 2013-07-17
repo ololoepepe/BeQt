@@ -11,7 +11,7 @@
     * Добавлен модуль BeQtNetworkWidgets
     * Добавлены методы BeQt::serialize() и BeQt::deserialize()
     * Добавлены обработчики команд "help" и "set" в класс BTerminalIOHandler
-    * Исправлены сигнатуры bRet(), добавлена функция bRetV()
+    * Исправлены функции bRet()
     * Убраны лишние конструкторы в некоторых классах
     * Улучшен класс BPassword
     * Улучшен класс BTerminalIOHandler
