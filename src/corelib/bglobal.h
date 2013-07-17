@@ -144,18 +144,18 @@ template <typename T> QVariant bVariant(T *ptr)
     return QVariant::fromValue((void *) ptr);
 }
 
-template<typename T> void bRet(const T &)
+template<typename T> void bRetV(const T &)
 {
     //
 }
 
-template<typename T> void bRet(T *t, const T &tt)
+template<typename T> void bRetV(T *t, const T &tt)
 {
     if (t)
         *t = tt;
 }
 
-template<typename T, typename U> void bRet(T *t, const T &tt, U *u, const U &uu)
+template<typename T, typename U> void bRetV(T *t, const T &tt, U *u, const U &uu)
 {
     if (t)
         *t = tt;
@@ -163,7 +163,7 @@ template<typename T, typename U> void bRet(T *t, const T &tt, U *u, const U &uu)
         *u = uu;
 }
 
-template<typename T, typename U, typename V> void bRet(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
+template<typename T, typename U, typename V> void bRetV(T *t, const T &tt, U *u, const U &uu, V *v, const V &vv)
 {
     if (t)
         *t = tt;

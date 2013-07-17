@@ -11,6 +11,7 @@
     * Add BeQtNetworkWidgets module
     * Add BeQt::serialize() and BeQt::deserialize() methods
     * Add "help" and "set" handlers to BTerminalIOHandler
+    * Fix bRet() signatures, add bRetV() function
     * Remove extra constructors from some classes
     * Improve BPassword
     * Improve BTerminalIOHandler
