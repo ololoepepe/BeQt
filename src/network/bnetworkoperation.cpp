@@ -301,6 +301,22 @@ bool BNetworkOperation::isFinished() const
     return d_func()->isFinished;
 }
 
+bool BNetworkOperation::waitForStarted(int msecs)
+{
+    if (d_func()->isStarted)
+        return true;
+    BeQt::waitNonBlocking(this, SIGNAL(finished()), msecs);
+    return d_func()->isStarted;
+}
+
+bool BNetworkOperation::waitForFinished(int msecs)
+{
+    if (d_func()->isFinished)
+        return true;
+    BeQt::waitNonBlocking(this, SIGNAL(finished()), msecs);
+    return d_func()->isFinished;
+}
+
 /*============================== Public slots ==============================*/
 
 void BNetworkOperation::cancel()

@@ -61,9 +61,9 @@ B_CORE_EXPORT qreal area(const QRectF &r);
 B_CORE_EXPORT QByteArray variantToData(const QVariant &variant);
 B_CORE_EXPORT QVariant dataToVariant(const QByteArray &data);
 B_CORE_EXPORT void waitNonBlocking(int msecs);
-B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msecs = -1);
-B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,
-                                   int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(const QObject *sender, const char *signal, int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2,
+                                   const char *signal2, int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
 B_CORE_EXPORT Until until(const QObject *object, const char *signal);
 B_CORE_EXPORT Target target(const QObject *object, const char *method);

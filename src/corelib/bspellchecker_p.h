@@ -12,6 +12,13 @@ class BSpellCheckerDictionary;
 #include <QMap>
 #include <QSet>
 #include <QVariant>
+#include <QtGlobal>
+#include <QRegExp>
+#include <QList>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QRegularExpression>
+#endif
 
 /*============================================================================
 ================================ BSpellCheckerPrivate ========================
@@ -35,6 +42,12 @@ public:
     QString userDictPath;
     QSet<QString> ignored;
     QSet<QString> ignoredImplicitly;
+    QList<QRegExp> ignoredRx4;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    QList<QRegularExpression> ignoredRx5;
+#endif
+    int considerLeft;
+    int considerRight;
 private:
     Q_DISABLE_COPY(BSpellCheckerPrivate)
 };

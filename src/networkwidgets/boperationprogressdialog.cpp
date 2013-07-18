@@ -46,8 +46,8 @@ void BOperationProgressDialogPrivate::init()
     {
         connect(Operation, SIGNAL(finished()), this, SLOT(update()));
         connect(Operation, SIGNAL(error()), this, SLOT(update()));
-        connect(Operation, SIGNAL(uploadProgress(qint64,qint64)), proxy, SLOT(trigger()));
-        connect(Operation, SIGNAL(downloadProgress(qint64,qint64)), proxy, SLOT(trigger()));
+        connect(Operation, SIGNAL(uploadProgress(qint64, qint64)), proxy, SLOT(trigger()));
+        connect(Operation, SIGNAL(downloadProgress(qint64, qint64)), proxy, SLOT(trigger()));
     }
     QWidget *wgt = new QWidget;
       QVBoxLayout *vlt = new QVBoxLayout(wgt);

@@ -85,6 +85,7 @@ public:
     void setMaxHistoryCount(int count);
     void mergeWith(BCodeEditor *other);
     bool isBuisy() const;
+    bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second) const;
     StandardDocumentType documentType() const;
     QFont editFont() const;
     QString editFontFamily() const;

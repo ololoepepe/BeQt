@@ -19,6 +19,15 @@
 #include <QTimer>
 #include <QDir>
 #include <QUuid>
+#include <QtGlobal>
+#include <QRegExp>
+#include <QList>
+#include <QObject>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QRegularExpression>
+#include <QRegularExpressionMatch>
+#endif
 
 #include <QDebug>
 
@@ -54,7 +63,8 @@ BSpellCheckerPrivate::~BSpellCheckerPrivate()
 
 void BSpellCheckerPrivate::init()
 {
-    //
+    considerLeft = -1;
+    considerRight = -1;
 }
 
 /*============================== Public slots ==============================*/
@@ -75,14 +85,22 @@ void BSpellCheckerPrivate::flush()
 
 /*============================== Public constructors =======================*/
 
-BSpellChecker::BSpellChecker() :
-    BBase(*new BSpellCheckerPrivate(this))
+BSpellChecker::BSpellChecker(QObject *parent) :
+    QObject(parent), BBase(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
 }
 
 BSpellChecker::BSpellChecker(const QString &dictionaryPath, const QString &userDictionaryPath) :
-    BBase(*new BSpellCheckerPrivate(this))
+    QObject(0), BBase(*new BSpellCheckerPrivate(this))
+{
+    d_func()->init();
+    addDictionary(dictionaryPath);
+    setUserDictionary(userDictionaryPath);
+}
+
+BSpellChecker::BSpellChecker(QObject *parent, const QString &dictionaryPath, const QString &userDictionaryPath) :
+    QObject(parent), BBase(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
     addDictionary(dictionaryPath);
@@ -90,7 +108,16 @@ BSpellChecker::BSpellChecker(const QString &dictionaryPath, const QString &userD
 }
 
 BSpellChecker::BSpellChecker(const QStringList &dictionaryPaths, const QString &userDictionaryPath) :
-    BBase(*new BSpellCheckerPrivate(this))
+    QObject(0), BBase(*new BSpellCheckerPrivate(this))
+{
+    d_func()->init();
+    foreach (const QString &path, dictionaryPaths)
+        addDictionary(path);
+    setUserDictionary(userDictionaryPath);
+}
+
+BSpellChecker::BSpellChecker(QObject *parent, const QStringList &dictionaryPaths, const QString &userDictionaryPath) :
+    QObject(parent), BBase(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
     foreach (const QString &path, dictionaryPaths)
@@ -129,6 +156,7 @@ void BSpellChecker::addDictionary(const QString &path)
         return;
     }
     d_func()->dicts.insert(fn, dict);
+    Q_EMIT changed();
 }
 
 void BSpellChecker::removeDictionary(const QLocale &locale)
@@ -141,6 +169,7 @@ void BSpellChecker::removeDictionary(const QString &localeName)
     if (localeName.isEmpty())
         return;
     delete d_func()->dicts.take(localeName);
+    Q_EMIT changed();
 }
 
 void BSpellChecker::setUserDictionary(const QString &path)
@@ -150,13 +179,20 @@ void BSpellChecker::setUserDictionary(const QString &path)
     d_func()->ignored.clear();
     d_func()->userDictPath.clear();
     if (path.isEmpty())
+    {
+        Q_EMIT changed();
         return;
+    }
     bool ok = false;
     ignoreWords(BDirTools::readTextFile(path, "UTF-8", &ok).split('\n'));
     if (!ok && !BDirTools::touch(path))
+    {
+        Q_EMIT changed();
         return;
+    }
     d_func()->userDictPath = path;
     QTimer::singleShot(d_func()->ignored.size() * 100 + BeQt::Minute, d_func(), SLOT(flush()));
+    Q_EMIT changed();
 }
 
 QStringList BSpellChecker::dictionaryPaths() const
@@ -172,10 +208,23 @@ QString BSpellChecker::userDictionaryPath() const
     return d_func()->userDictPath;
 }
 
-bool BSpellChecker::spell(const QString &word) const
+bool BSpellChecker::spell(const QString &word, const QString &surrLeft, const QString &surrRight) const
 {
     if (word.isEmpty())
         return false;
+    QString w = word;
+    if (d_func()->considerLeft)
+        w.prepend(surrLeft.right(d_func()->considerLeft));
+    if (d_func()->considerRight)
+        w.append(surrRight.left(d_func()->considerRight));
+    foreach (const QRegExp &rx, d_func()->ignoredRx4)
+        if (rx.exactMatch(w))
+            return true;
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    foreach (const QRegularExpression &rx, d_func()->ignoredRx5)
+        if (rx.match(w).hasMatch())
+            return true;
+#endif
     if (d_func()->ignored.contains(word) || d_func()->ignoredImplicitly.contains(word))
         return true;
     foreach (BSpellCheckerDictionary *dict, d_func()->dicts)
@@ -208,6 +257,8 @@ void BSpellChecker::ignoreWords(const QStringList &words, bool ignore)
         else
             d_func()->ignored.remove(w);
     }
+    if (!words.isEmpty())
+        Q_EMIT changed();
 }
 
 void BSpellChecker::ignoreWordImplicitly(const QString &word, bool ignore)
@@ -224,22 +275,113 @@ void BSpellChecker::ignoreWordsImplicitly(const QStringList &words, bool ignore)
         else
             d_func()->ignoredImplicitly.remove(w);
     }
+    if (!words.isEmpty())
+        Q_EMIT changed();
+}
+
+void BSpellChecker::ignoreImplicitlyRegExp(const QRegExp &rx, bool ignore)
+{
+    if (ignore)
+        d_func()->ignoredRx4 << rx;
+    else
+        d_func()->ignoredRx4.removeAll(rx);
+    Q_EMIT changed();
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+void BSpellChecker::ignoreImplicitlyRegExp(const QRegularExpression &rx, bool ignore)
+{
+    if (ignore)
+    {
+        d_func()->ignoredRx5 << rx;
+        QRegularExpression &rxx = d_func()->ignoredRx5.last();
+        QString pattern = rxx.pattern();
+        if (!pattern.startsWith('^'))
+            pattern.prepend('^');
+        if (!pattern.endsWith('$'))
+            pattern.append('$');
+    }
+    else
+    {
+        d_func()->ignoredRx5.removeAll(rx);
+    }
+    Q_EMIT changed();
+}
+#endif
+
+void BSpellChecker::considerLeftSurrounding(int charCount)
+{
+    if (charCount < 0)
+        charCount = -1;
+    if (charCount == d_func()->considerLeft)
+        return;
+    d_func()->considerLeft = charCount;
+    Q_EMIT changed();
+}
+
+void BSpellChecker::considerRightSurrounding(int charCount)
+{
+    if (charCount < 0)
+        charCount = -1;
+    if (charCount == d_func()->considerRight)
+        return;
+    d_func()->considerRight = charCount;
+    Q_EMIT changed();
 }
 
 void BSpellChecker::clearIgnored()
 {
+    bool b = !d_func()->ignored.isEmpty();
     d_func()->ignored.clear();
+    if (b)
+        Q_EMIT changed();
 }
 
 void BSpellChecker::clearIgnoredImplicitly()
 {
+    bool b = !d_func()->ignoredImplicitly.isEmpty();
     d_func()->ignoredImplicitly.clear();
+    if (b)
+        Q_EMIT changed();
+}
+
+void BSpellChecker::clearIgnoredImplicitlyRegExp()
+{
+    bool b = !d_func()->ignoredRx4.isEmpty();
+    d_func()->ignoredRx4.clear();
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    b = b || d_func()->ignoredRx5.isEmpty();
+    d_func()->ignoredRx5.clear();
+#endif
+    if (b)
+        Q_EMIT changed();
 }
 
 bool BSpellChecker::isIgnored(const QString &word, bool *implicitly) const
 {
+    return isIgnored(implicitly, word);
+}
+
+bool BSpellChecker::isIgnored(bool *implicitly, const QString &word, const QString &surrLeft,
+                              const QString &surrRight) const
+{
     if (word.isEmpty())
         return false;
+    QString w = word;
+    if (d_func()->considerLeft)
+        w.prepend(surrLeft.right(d_func()->considerLeft));
+    if (d_func()->considerRight)
+        w.append(surrRight.left(d_func()->considerRight));
+    foreach (const QRegExp &rx, d_func()->ignoredRx4)
+    {
+        if (rx.exactMatch(w))
+            return bRet(implicitly, true, true);
+    }
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+    foreach (const QRegularExpression &rx, d_func()->ignoredRx5)
+        if (rx.match(w).hasMatch())
+            return bRet(implicitly, true, true);
+#endif
     if (d_func()->ignored.contains(word))
         return bRet(implicitly, false, true);
     else if (d_func()->ignoredImplicitly.contains(word))

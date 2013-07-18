@@ -1174,11 +1174,15 @@ void BCodeEditPrivate::handleBackspace()
     {
         int pos = tc.position();
         tc.setPosition(pos - 1);
-        tc.setPosition(pos, QTextCursor::KeepAnchor);
-        tc.removeSelectedText();
-        tc.movePosition(QTextCursor::EndOfBlock);
-        tc.insertText(" ");
-        tc.setPosition(pos - 1);
+        QString text = tc.block().text();
+        if (text.at(posb - 1) != ' ' || BeQt::removeTrailingSpaces(text).length() >= posb)
+        {
+            tc.setPosition(pos, QTextCursor::KeepAnchor);
+            tc.removeSelectedText();
+            tc.movePosition(QTextCursor::EndOfBlock);
+            tc.insertText(" ");
+            tc.setPosition(pos - 1);
+        }
     }
     else
     {

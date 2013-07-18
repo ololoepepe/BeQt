@@ -141,7 +141,15 @@ void BSyntaxHighlighter::highlightBlock(const QString &text)
             }
             else if (!w.isEmpty())
             {
-                if (!sc->spell(w))
+                QString sleft;
+                int j = i - w.length() - 1;
+                while (j >= 0 && !text.at(j).isSpace())
+                    sleft.prepend(text.at(j--));
+                QString sright;
+                j = i;
+                while (j < text.length() && !text.at(j).isSpace())
+                    sright.append(text.at(j++));
+                if (!sc->spell(w, sleft, sright))
                 {
                     foreach (int j, bRangeD(i - w.length(), i - 1))
                     {
@@ -223,6 +231,7 @@ void BAbstractCodeEditorDocumentPrivate::init()
     QVBoxLayout *vlt = new QVBoxLayout(q_func());
       vlt->setContentsMargins(0, 0, 0, 0);
     edit = 0;
+    document = 0;
     highlighter = 0;
     fileType = BAbstractFileType::defaultFileType();
     recognizedBrackets = fileType->brackets();
@@ -243,12 +252,14 @@ void BAbstractCodeEditorDocumentPrivate::init()
 
 bool BAbstractCodeEditorDocumentPrivate::createEdit()
 {
-    QTextDocument *doc = 0;
-    edit = q_func()->createEdit(&doc);
+    edit = q_func()->createEdit(&document);
     if (!edit)
+    {
+        document = 0;
         return false;
+    }
     static_cast<QVBoxLayout *>(q_func()->layout())->addWidget(edit);
-    highlighter = new BSyntaxHighlighter(q_func(), doc);
+    highlighter = new BSyntaxHighlighter(q_func(), document);
     BCodeEdit *cedt = qobject_cast<BCodeEdit *>(edit);
     if (cedt)
     {
@@ -561,13 +572,23 @@ QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &
     int i = p;
     while (i >= 0 && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
         w.prepend(text.at(i--));
+    int wbl = i;
     wordToReplace.first = tc.block().position() + i + 1;
     i = p + 1;
     while (i < text.length() && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
         w.append(text.at(i++));
+    int wbr = i;
     wordToReplace.second = wordToReplace.first + w.length();
     if (w.isEmpty())
         return 0;
+    QString sleft;
+    i = wbl;
+    while (i >= 0 && !text.at(i).isSpace())
+        sleft.prepend(text.at(i--));
+    QString sright;
+    i = wbr;
+    while (i < text.length() && !text.at(i).isSpace())
+        sright.append(text.at(i++));
     QMenu *mnu = new QMenu(tr("Spell check", "mnu title"));
     mnu->setEnabled(!readOnly);
     QStringList suggestions = spellChecker->suggest(w);
@@ -578,7 +599,7 @@ QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &
     if (!suggestions.isEmpty())
         mnu->addSeparator();
     bool implicitly = false;
-    if (spellChecker->isIgnored(w, &implicitly) && !implicitly)
+    if (spellChecker->isIgnored(&implicitly, w, sleft, sright) && !implicitly)
         mnu->addAction(tr("Remove from ignore list", "act text"), this,
                        SLOT(dontIgnoreWord()))->setProperty("beqt/word", w);
     else if (!spellChecker->spell(w))
@@ -774,6 +795,12 @@ void BAbstractCodeEditorDocument::setBracketHighlightingEnabled(bool enabled)
 
 void BAbstractCodeEditorDocument::setSpellChecker(BSpellChecker *sc)
 {
+    if (sc == d_func()->spellChecker)
+        return;
+    if (d_func()->spellChecker)
+        disconnect(d_func()->spellChecker, SIGNAL(changed()), this, SLOT(rehighlight()));
+    if (sc)
+        connect(sc, SIGNAL(changed()), this, SLOT(rehighlight()));
     d_func()->spellChecker = sc;
     d_func()->highlighter->rehighlight();
 }
@@ -1168,7 +1195,7 @@ QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
 
 QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
 {
-    return d_func()->highlighter ? d_func()->highlighter->document() : 0;
+    return d_func()->document;
 }
 
 /*============================== Protected slots ===========================*/

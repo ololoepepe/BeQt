@@ -55,6 +55,8 @@ public:
     int downloadProgress(int nth = 100) const;
     int uploadProgress(int nth = 100) const;
     bool isFinished() const;
+    bool waitForStarted(int msecs = 30 * BeQt::Second);
+    bool waitForFinished(int msecs = 30 * BeQt::Second);
 public Q_SLOTS:
     void cancel();
 Q_SIGNALS:

@@ -1692,6 +1692,14 @@ bool BCodeEditor::isBuisy() const
     return !d_func()->processedDocuments.isEmpty();
 }
 
+bool BCodeEditor::waitForAllDocumentsProcessed(int msecs) const
+{
+    if (!isBuisy())
+        return true;
+    BeQt::waitNonBlocking(this, SIGNAL(allDocumentsProcessed()), msecs);
+    return !isBuisy();
+}
+
 QFont BCodeEditor::editFont() const
 {
     return d_func()->editFont;
