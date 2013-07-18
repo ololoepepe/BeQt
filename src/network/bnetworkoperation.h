@@ -57,6 +57,10 @@ public:
     bool isFinished() const;
     bool waitForStarted(int msecs = 30 * BeQt::Second);
     bool waitForFinished(int msecs = 30 * BeQt::Second);
+    bool waitForDownload(qint64 bytes, int msecs = 30 * BeQt::Second);
+    bool waitForUpload(qint64 bytes, int msecs = 30 * BeQt::Second);
+    bool waitForDownloadProgress(int n, int nth = 100, int msecs = 30 * BeQt::Second);
+    bool waitForUploadProgress(int n, int nth = 100, int msecs = 30 * BeQt::Second);
 public Q_SLOTS:
     void cancel();
 Q_SIGNALS:

@@ -14,6 +14,7 @@
 #include <QTimer>
 #include <QVariant>
 #include <QDataStream>
+#include <QElapsedTimer>
 
 /*============================================================================
 ================================ BNetworkOperationPrivate ====================
@@ -285,7 +286,7 @@ int BNetworkOperation::downloadProgress(int nth) const
     if (nth < 1)
         nth = 100;
     const B_D(BNetworkOperation);
-    return (d->bytesInTotal != 0) ? ( (qreal) d->bytesInReady / (qreal) d->bytesInTotal ) * nth : 100;
+    return (d->bytesInTotal > 0) ? ((qreal) d->bytesInReady / (qreal) d->bytesInTotal) * nth : 100;
 }
 
 int BNetworkOperation::uploadProgress(int nth) const
@@ -293,7 +294,7 @@ int BNetworkOperation::uploadProgress(int nth) const
     if (nth < 1)
         nth = 100;
     const B_D(BNetworkOperation);
-    return (d->bytesOutTotal != 0) ? ( (qreal) d->bytesOutReady / (qreal) d->bytesOutTotal ) * nth : 100;
+    return (d->bytesOutTotal > 0) ? ((qreal) d->bytesOutReady / (qreal) d->bytesOutTotal) * nth : 100;
 }
 
 bool BNetworkOperation::isFinished() const
@@ -315,6 +316,118 @@ bool BNetworkOperation::waitForFinished(int msecs)
         return true;
     BeQt::waitNonBlocking(this, SIGNAL(finished()), msecs);
     return d_func()->isFinished;
+}
+
+bool BNetworkOperation::waitForDownload(qint64 bytes, int msecs)
+{
+    if (bytes <= 0)
+        return false;
+    if (downloadBytesReady() >= bytes)
+        return true;
+    if (msecs >= 0)
+    {
+        while (msecs > 0)
+        {
+            QElapsedTimer timer;
+            timer.start();
+            BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(qint64, qint64)), msecs);
+            msecs -= (int) timer.elapsed();
+            if (downloadBytesReady() >= bytes)
+                return true;
+        }
+        return downloadBytesReady() >= bytes;
+    }
+    else
+    {
+        BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(qint64, qint64)), msecs);
+        return downloadBytesReady() >= bytes;
+    }
+}
+
+bool BNetworkOperation::waitForUpload(qint64 bytes, int msecs)
+{
+    if (bytes <= 0)
+        return false;
+    if (uploadBytesReady() >= bytes)
+        return true;
+    if (msecs >= 0)
+    {
+        while (msecs > 0)
+        {
+            QElapsedTimer timer;
+            timer.start();
+            BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(qint64, qint64)), msecs);
+            msecs -= (int) timer.elapsed();
+            if (uploadBytesReady() >= bytes)
+                return true;
+        }
+        return uploadBytesReady() >= bytes;
+    }
+    else
+    {
+        BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(qint64, qint64)), msecs);
+        return uploadBytesReady() >= bytes;
+    }
+}
+
+bool BNetworkOperation::waitForDownloadProgress(int n, int nth, int msecs)
+{
+    if (n < 1)
+        return false;
+    if (nth < 1)
+        nth = 100;
+    if (n > nth)
+        return false;
+    if (downloadProgress(nth) >= n)
+        return true;
+    if (msecs >= 0)
+    {
+        while (msecs > 0)
+        {
+            QElapsedTimer timer;
+            timer.start();
+            BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(int, int)), msecs);
+            msecs -= (int) timer.elapsed();
+            if (downloadProgress(nth) >= n)
+                return true;
+        }
+        return downloadProgress(nth) >= n;
+    }
+    else
+    {
+        BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(int, int)), msecs);
+        return downloadProgress(nth) >= n;
+    }
+}
+
+bool BNetworkOperation::waitForUploadProgress(int n, int nth, int msecs)
+{
+    if (n < 1)
+        return false;
+    if (nth < 1)
+        nth = 100;
+    if (n > nth)
+        return false;
+    if (uploadProgress(nth) >= n)
+        return true;
+    if (msecs >= 0)
+    {
+        while (msecs > 0)
+        {
+            QElapsedTimer timer;
+            timer.start();
+            BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(int, int)), msecs);
+            msecs -= (int) timer.elapsed();
+            if (uploadProgress(nth) >= n)
+                return true;
+        }
+        return uploadProgress(nth) >= n;
+    }
+    else
+    {
+        BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(int, int)), msecs);
+        return uploadProgress(nth) >= n;
+    }
 }
 
 /*============================== Public slots ==============================*/

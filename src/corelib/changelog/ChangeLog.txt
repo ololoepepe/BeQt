@@ -19,6 +19,7 @@
     * Improve BNetworkConnection
     * Improve BSqlDatabase
     * Improve BFileDialog
+    * Improve BSettingsDialog and BAbstractSettingsTab
     * Improve BPasswordWidget
     * Improve logging system
     * Improve translation system

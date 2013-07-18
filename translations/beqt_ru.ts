@@ -936,70 +936,70 @@
     </message>
     <message>
         <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="76"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="86"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="163"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="88"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="167"/>
         <source>Close</source>
         <comment>btn text</comment>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="83"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="85"/>
         <source>Operation failed</source>
         <comment>lbl text</comment>
         <translation>Сбой операции</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="96"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="100"/>
         <source>Receiving reply...</source>
         <comment>lbl text</comment>
         <translation>Получение ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="103"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="107"/>
         <source>Waiting for reply...</source>
         <comment>lbl text</comment>
         <translation>Ожидане ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="110"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="114"/>
         <source>Sending request...</source>
         <comment>lbl text</comment>
         <translation>Отправка запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="117"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="149"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="121"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="153"/>
         <source>Waiting for the operation start...</source>
         <comment>lbl text</comment>
         <translation>Ожидание начала операции...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="122"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="154"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="126"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="158"/>
         <source>Cancel</source>
         <comment>btn text</comment>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="128"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="132"/>
         <source>Sending reply...</source>
         <comment>lbl text</comment>
         <translation>Отправка ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="135"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="139"/>
         <source>Processing request...</source>
         <comment>lbl text</comment>
         <translation>Обработка запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="142"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="146"/>
         <source>Receiving request...</source>
         <comment>lbl text</comment>
         <translation>Получение запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="159"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="163"/>
         <source>Invalid operation</source>
         <comment>lbl text</comment>
         <translation>Недействительная операция</translation>
@@ -1236,19 +1236,31 @@
 <context>
     <name>BSettingsDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="51"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="55"/>
         <source>Settings</source>
         <comment>windowTitle</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="59"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="64"/>
         <source>Show additional settings</source>
         <comment>cbox text</comment>
         <translation>Показать дополнительные настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="55"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="190"/>
+        <source>Restoring default settings</source>
+        <comment>msgbox windowTitle</comment>
+        <translation>Восстановление настроек по умолчанию</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="194"/>
+        <source>You are about to restore settings to their default state. Do you want to continue?</source>
+        <comment>msgbox text</comment>
+        <translation>Вы собираетесь вернуть настройки к их изначальному состоянию. Хотите продолжить?</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="59"/>
         <source>Restore default settings</source>
         <comment>btn text</comment>
         <translation>Восстановить настройки по умолчанию</translation>
@@ -1258,18 +1270,6 @@
         <source>invalid</source>
         <comment>windowTitle</comment>
         <translation>недействительно</translation>
-    </message>
-    <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="161"/>
-        <source>You are about to restore the application settings to their default state</source>
-        <comment>msgbox text</comment>
-        <translation>Вы собираетесь вернуть настройки приложения к их изначальному состоянию</translation>
-    </message>
-    <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="162"/>
-        <source>All settings changes will be discarded. Do you want to continue?</source>
-        <comment>msgbox informativeText</comment>
-        <translation>Все изменения настроек будут сброшены. Хотите продолжить?</translation>
     </message>
 </context>
 <context>

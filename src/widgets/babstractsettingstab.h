@@ -34,8 +34,11 @@ public:
     virtual QString title() const = 0;
     virtual QIcon icon() const;
     virtual bool hasAdvancedMode() const;
+    virtual bool isInAdvancedMode() const;
     virtual void setAdvancedMode(bool enabled);
+    virtual bool hasDefault() const;
     virtual bool restoreDefault();
+    virtual QString restoreDefaultHint() const;
     virtual bool saveSettings();
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)

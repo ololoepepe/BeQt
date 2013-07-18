@@ -19,6 +19,7 @@
     * Улучшен класс BNetworkConnection
     * Улучшен класс BSqlDatabase
     * Улучшен класс BFileDialog
+    * Улучшены классы BSettingsDialog и BAbstractSettingsTab
     * Улучшен класс BPasswordWidget
     * Улучшена система ведения логов
     * Улучшена система переводов

@@ -38,10 +38,10 @@ void BOperationProgressDialogPrivate::init()
 {
     B_Q(BOperationProgressDialog);
     q->setStretchEnabled(true);
-    proxy = new BSignalDelayProxy(250, 500);
+    proxy = new BSignalDelayProxy(125, 250);
     connect(proxy, SIGNAL(triggered()), this, SLOT(update()));
     canCancel = true;
-    autoCloseInterval = 0;
+    autoCloseInterval = -1;
     if (Operation)
     {
         connect(Operation, SIGNAL(finished()), this, SLOT(update()));
@@ -77,6 +77,8 @@ void BOperationProgressDialogPrivate::update()
             btn->setEnabled(true);
             if (autoCloseInterval > 0)
                 QTimer::singleShot(autoCloseInterval, q_func(), SLOT(close()));
+            else if (!autoCloseInterval)
+                q_func()->close();
         }
         else if (Operation->isError())
         {
@@ -87,6 +89,8 @@ void BOperationProgressDialogPrivate::update()
             btn->setEnabled(true);
             if (autoCloseInterval > 0)
                 QTimer::singleShot(autoCloseInterval, q_func(), SLOT(close()));
+            else if (!autoCloseInterval)
+                q_func()->close();
         }
         else if (Operation->isRequest())
         {
