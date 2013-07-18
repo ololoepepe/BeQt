@@ -15,6 +15,7 @@
     * Remove extra constructors from some classes
     * Improve BPassword
     * Improve BTerminalIOHandler
+    * Improve BNetworkOperation
     * Improve BNetworkConnection
     * Improve BSqlDatabase
     * Improve BFileDialog

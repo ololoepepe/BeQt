@@ -64,7 +64,8 @@ int main(int argc, char **argv)
     QMainWindow *mw = new QMainWindow;
     mw->resize(1200, 800);
     mw->move(400, 200);
-    mw->installEventFilter( cedtr->dropHandler() );
+    mw->installEventFilter(cedtr->dropHandler());
+    mw->installEventFilter(cedtr->closeHandler());
     mw->setAcceptDrops(true);
     mw->setCentralWidget(cedtr);
     mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::FileTypeIndicator) );

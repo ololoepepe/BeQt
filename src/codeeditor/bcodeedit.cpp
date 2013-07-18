@@ -872,9 +872,9 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
 {
     if ( txt.isEmpty() )
        return setTextToEmptyLine();
-    setBuisy(true);
     if (asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
     {
+        setBuisy(true);
         ptedt->setEnabled(false);
         ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
         ProcessTextResultFuture future = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
@@ -893,7 +893,6 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
         blockHighlighter(false);
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
-        setBuisy(false);
     }
 }
 
@@ -909,7 +908,6 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
 {
     if (q_func()->isBuisy())
         return;
-    setBuisy(true);
     QTextCursor tc = ptedt->textCursor();
     tc.beginEditBlock();
     QList<BCodeEdit::SplittedLinesRange> ranges;
@@ -917,10 +915,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     if (range.firstLineNumber >= 0)
         ranges << range;
     if ( txt.isEmpty() )
-    {
-        tc.endEditBlock();
-        return setBuisy(false);
-    }
+        return tc.endEditBlock();
     tc = ptedt->textCursor();
     int initialPos = tc.position();
     int finalPos = -1;
@@ -1053,7 +1048,6 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         requestRehighlightBlock(initialBlock);
     }
     tc.endEditBlock();
-    setBuisy(false);
     emitLinesSplitted(ranges);
     q_func()->setFocus();
     ptedt->ensureCursorVisible();

@@ -78,7 +78,6 @@ public:
     bool load(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
-    bool waitForProcessed(int msecs = 30 * BeQt::Second);
     bool isReadOnly() const;
     bool isModified() const;
     bool hasSelection() const;
@@ -173,6 +172,7 @@ Q_SIGNALS:
     void redoAvailableChanged(bool available);
     void cursorPositionChanged(const QPoint &pos);
     void buisyChanged(bool buisy);
+    void allProcessingFinished();
     void fileTypeChanged(BAbstractFileType *ft);
     void fileNameChanged(const QString &fn);
     void codecChanged(const QString &codecName);

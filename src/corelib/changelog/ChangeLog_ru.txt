@@ -15,6 +15,7 @@
     * Убраны лишние конструкторы в некоторых классах
     * Улучшен класс BPassword
     * Улучшен класс BTerminalIOHandler
+    * Улучшен класс BNetworkOperation
     * Улучшен класс BNetworkConnection
     * Улучшен класс BSqlDatabase
     * Улучшен класс BFileDialog

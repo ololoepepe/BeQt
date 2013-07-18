@@ -345,6 +345,59 @@ bool BDropHandler::eventFilter(QObject *o, QEvent *e)
 }
 
 /*============================================================================
+================================ BCloseHandler ===============================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BCloseHandler::BCloseHandler(BCodeEditorPrivate *parent) :
+    QObject(parent), Editor(parent)
+{
+    lastSender = 0;
+}
+
+BCloseHandler::~BCloseHandler()
+{
+    //
+}
+
+/*============================== Public methods ============================*/
+
+bool BCloseHandler::eventFilter(QObject *o, QEvent *e)
+{
+    if (!Editor || e->type() != QEvent::Close)
+        return false;
+    if (!Editor->closeAllDocuments())
+    {
+        e->ignore();
+        return true;
+    }
+    if (!Editor->processedDocuments.isEmpty())
+    {
+        if (!lastSender)
+        {
+            lastSender = o;
+            Editor->showClosingMessage(qobject_cast<QWidget *>(o));
+            connect(Editor->q_func(), SIGNAL(allDocumentsProcessed()), this, SLOT(processingFinished()));
+        }
+        e->ignore();
+        return true;
+    }
+    return false;
+}
+
+/*============================== Public slots ==============================*/
+
+void BCloseHandler::processingFinished()
+{
+    //disconnect(Editor->q_func(), SIGNAL(allDocumentsProcessed()), this, SLOT(processingFinished()));
+    QWidget *wgt = qobject_cast<QWidget *>(lastSender);
+    if (wgt)
+        wgt->close();
+    lastSender = 0;
+}
+
+/*============================================================================
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
@@ -420,6 +473,7 @@ void BCodeEditorPrivate::init()
       vlt->addWidget(twgt);
    //
    createDropHandler();
+   createCloseHandler();
 }
 
 bool BCodeEditorPrivate::eventFilter(QObject *o, QEvent *e)
@@ -861,6 +915,11 @@ int BCodeEditorPrivate::closeModifiedMessage(const QString &fileName)
     return msg.exec();
 }
 
+void BCodeEditorPrivate::showClosingMessage(QWidget *parent)
+{
+    q_func()->showClosingMessage(parent);
+}
+
 BSplittedLinesDialog *BCodeEditorPrivate::createSplittedLinesDialog(BCodeEditorDocument *doc,
                                                                     const QList<BCodeEdit::SplittedLinesRange> ranges)
 {
@@ -978,6 +1037,12 @@ void BCodeEditorPrivate::createDropHandler()
     foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
         doc->installDropHandler(dropHandler);
     connect( dropHandler, SIGNAL( destroyed() ), this, SLOT( createDropHandler() ) );
+}
+
+void BCodeEditorPrivate::createCloseHandler()
+{
+    closeHandler = new BCloseHandler(this);
+    connect(closeHandler, SIGNAL(destroyed()), this, SLOT(createCloseHandler()));
 }
 
 void BCodeEditorPrivate::twgtCurrentChanged(int index)
@@ -1120,15 +1185,20 @@ void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
     BAbstractCodeEditorDocument *doc = static_cast<BAbstractCodeEditorDocument *>(sender());
     if (!doc)
         return;
+    bool b = !processedDocuments.isEmpty();
     if (buisy)
     {
-        if ( !processedDocuments.contains(doc) )
+        if (!processedDocuments.contains(doc))
             processedDocuments << doc;
     }
     else
     {
         processedDocuments.removeAll(doc);
-        if ( processedDocuments.isEmpty() )
+    }
+    if (!processedDocuments.isEmpty() != b)
+    {
+        QMetaObject::invokeMethod(q_func(), "", Q_ARG(bool, !b));
+        if (b)
             QMetaObject::invokeMethod(q_func(), "allDocumentsProcessed");
     }
     if (doc == document)
@@ -1617,13 +1687,9 @@ void BCodeEditor::mergeWith(BCodeEditor *other)
     }
 }
 
-bool BCodeEditor::waitForAllDocumentsProcessed(int msecs)
+bool BCodeEditor::isBuisy() const
 {
-    B_D(BCodeEditor);
-    if (d->processedDocuments.isEmpty())
-        return true;
-    BeQt::waitNonBlocking(this, SIGNAL(allDocumentsProcessed()), msecs);
-    return d->processedDocuments.isEmpty();
+    return !d_func()->processedDocuments.isEmpty();
 }
 
 QFont BCodeEditor::editFont() const
@@ -1813,6 +1879,11 @@ QObject *BCodeEditor::dropHandler() const
     return d_func()->dropHandler;
 }
 
+QObject *BCodeEditor::closeHandler() const
+{
+    return d_func()->closeHandler;
+}
+
 /*============================== Public slots ==============================*/
 
 BAbstractCodeEditorDocument *BCodeEditor::addDocument(const QString &fileName)
@@ -1931,4 +2002,15 @@ BAbstractCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) co
     default:
         return 0;
     }
+}
+
+void BCodeEditor::showClosingMessage(QWidget *parent)
+{
+    QMessageBox *msg = new QMessageBox(parent);
+    msg->setWindowTitle(tr("Saving documents...", "msgbox windowTitle"));
+    msg->setIcon(QMessageBox::Information);
+    msg->setText(tr("The files are being saved. Please, wait...", "msgbox text"));
+    msg->setStandardButtons(0);
+    connect(this, SIGNAL(allDocumentsProcessed()), msg, SLOT(close()));
+    msg->open();
 }

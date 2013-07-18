@@ -165,6 +165,28 @@ private:
 };
 
 /*============================================================================
+================================ BCloseHandler ===============================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BCloseHandler : public QObject
+{
+    Q_OBJECT
+public:
+    explicit BCloseHandler(BCodeEditorPrivate *parent);
+    ~BCloseHandler();
+public:
+    bool eventFilter(QObject *o, QEvent *e);
+public Q_SLOTS:
+    void processingFinished();
+private:
+    BCodeEditorPrivate *const Editor;
+private:
+    QObject *lastSender;
+private:
+    Q_DISABLE_COPY(BCloseHandler)
+};
+
+/*============================================================================
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
@@ -211,6 +233,7 @@ public:
     void alreadyOpenedMessage(const QString &fileName);
     int reopenModifiedMessage(const QString &fileName);
     int closeModifiedMessage(const QString &fileName);
+    void showClosingMessage(QWidget *parent);
     BSplittedLinesDialog *createSplittedLinesDialog(BCodeEditorDocument *doc,
                                                     const QList<BCodeEdit::SplittedLinesRange> ranges);
     void emitDefaultCodecChanged(const QString &codecName);
@@ -228,6 +251,7 @@ public:
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
 public Q_SLOTS:
     void createDropHandler();
+    void createCloseHandler();
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);
     void documentReadOnlyChanged(bool ro);
@@ -272,13 +296,16 @@ public:
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *preferredFileType;
     BDropHandler *dropHandler;
+    BCloseHandler *closeHandler;
     QStringList fileHistory;
     int maxHistoryCount;
     QVBoxLayout *vlt;
       QTabWidget *twgt;
 private:
-    Q_DISABLE_COPY(BCodeEditorPrivate)
     friend class BDropHandler;
+    friend class BCloseHandler;
+private:
+    Q_DISABLE_COPY(BCodeEditorPrivate)
 };
 
 #endif // BCODEEDITOR_P_H

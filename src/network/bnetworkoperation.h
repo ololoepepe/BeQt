@@ -31,8 +31,15 @@ protected:
 private:
     explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, BNetworkConnection *parent);
 public:
+    void setAutoDelete(bool b);
+    void setStartTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
+    void setFinishTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
     void reply(const QByteArray &data = QByteArray());
     void reply(const QVariant &variant);
+    void onStarted(const QObject *receiver, const char *method, bool c = true);
+    void onFinished(const QObject *receiver, const char *method, bool c = true);
+    void onError(const QObject *receiver, const char *method, bool c = true);
+    bool autoDelete() const;
     BNetworkConnection *connection() const;
     const QByteArray &data() const;
     QVariant variantData() const;
@@ -48,7 +55,6 @@ public:
     int downloadProgress(int nth = 100) const;
     int uploadProgress(int nth = 100) const;
     bool isFinished() const;
-    bool waitForFinished(int msecs = 30 * BeQt::Second);
 public Q_SLOTS:
     void cancel();
 Q_SIGNALS:

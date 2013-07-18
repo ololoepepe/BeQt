@@ -31,10 +31,18 @@ public:
     void setDownloadProgress(qint64 bytesReady, qint64 bytesTotal);
     void setUploadProgress(qint64 bytesReady, qint64 bytesTotal);
     void setFinished( const QByteArray &dt = QByteArray() );
+public Q_SLOTS:
+    void testStarted();
+    void testFinished();
+Q_SIGNALS:
+    void startedTimeout();
+    void finishedTimeout();
 public:
     const BNetworkOperationMetaData MetaData;
     BNetworkConnection *const Connection;
 public:
+    bool autoDelete;
+    int finishedTimeoutMsecs;
     bool isStarted;
     bool isError;
     qint64 bytesInReady;

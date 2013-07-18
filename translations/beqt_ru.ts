@@ -96,7 +96,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="981"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="974"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -104,19 +104,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="569"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="571"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="580"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="582"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="583"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="585"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -284,43 +284,43 @@
 <context>
     <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2027"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2021"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2033"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2027"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2040"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2034"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2046"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2040"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2052"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2046"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2058"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2052"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2065"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2059"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -336,83 +336,98 @@
     </message>
 </context>
 <context>
+    <name>BCodeEditor</name>
+    <message>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2010"/>
+        <source>Saving documents...</source>
+        <comment>msgbox windowTitle</comment>
+        <translation>Сохранение документов...</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2012"/>
+        <source>The files are being saved. Please, wait...</source>
+        <comment>msgbox text</comment>
+        <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
+    </message>
+</context>
+<context>
     <name>BCodeEditorPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="370"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="423"/>
         <source>New document</source>
         <comment>fileName</comment>
         <translation>Новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="576"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="630"/>
         <source>The file is too large</source>
         <comment>msgbox informativeText</comment>
         <translation>Файл слишком большой</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="801"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="855"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="803"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="818"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="857"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="872"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="816"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="870"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="820"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="874"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="832"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="886"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="834"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="888"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="843"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="897"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="845"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="857"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="899"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="846"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="900"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="855"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="909"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="858"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="912"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
@@ -682,20 +697,20 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="320"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="331"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="319"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="330"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="616"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="615"/>
         <source>Unknown reply</source>
         <comment>log text</comment>
         <translation>Неизвестный ответ</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="623"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="622"/>
         <source>Unknown request</source>
         <comment>log text</comment>
         <translation>Неизвестный запрос</translation>
@@ -704,49 +719,49 @@
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="102"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="104"/>
         <source>Connected</source>
         <comment>log text</comment>
         <translation>Подключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="110"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="112"/>
         <source>Disconnected</source>
         <comment>log text</comment>
         <translation>Отключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="118"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="120"/>
         <source>Error:</source>
         <comment>log text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="142"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="144"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation>Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="179"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="181"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="202"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="204"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="224"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="226"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="236"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="238"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>

@@ -12,7 +12,6 @@
 #include <QUuid>
 #include <QByteArray>
 #include <QTimer>
-#include <QEventLoop>
 #include <QVariant>
 #include <QDataStream>
 
@@ -38,6 +37,8 @@ BNetworkOperationPrivate::~BNetworkOperationPrivate()
 
 void BNetworkOperationPrivate::init()
 {
+    autoDelete = false;
+    finishedTimeoutMsecs = 0;
     isStarted = false;
     isError = false;
     bytesInReady = 0;
@@ -51,12 +52,16 @@ void BNetworkOperationPrivate::setStarted()
 {
     isStarted = true;
     QMetaObject::invokeMethod(q_func(), "started");
+    if (finishedTimeoutMsecs > 0)
+        QTimer::singleShot(finishedTimeoutMsecs, this, SLOT(testFinished()));
 }
 
 void BNetworkOperationPrivate::setError()
 {
     isError = true;
     QMetaObject::invokeMethod(q_func(), "error");
+    if (autoDelete)
+        q_func()->deleteLater();
 }
 
 void BNetworkOperationPrivate::setDownloadProgress(qint64 bytesReady, qint64 bytesTotal)
@@ -81,6 +86,24 @@ void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
         data = dt;
     isFinished = true;
     QMetaObject::invokeMethod(q_func(), "finished");
+    if (autoDelete)
+        q_func()->deleteLater();
+}
+
+/*============================== Public slots ==============================*/
+
+void BNetworkOperationPrivate::testStarted()
+{
+    if (isStarted)
+        return;
+    Q_EMIT startedTimeout();
+}
+
+void BNetworkOperationPrivate::testFinished()
+{
+    if (isFinished)
+        return;
+    Q_EMIT finishedTimeout();
 }
 
 /*============================================================================
@@ -112,6 +135,42 @@ BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, 
 
 /*============================== Public methods ============================*/
 
+void BNetworkOperation::setAutoDelete(bool b)
+{
+    d_func()->autoDelete = b;
+    if (b && (d_func()->isFinished || d_func()->isError))
+        deleteLater();
+}
+
+void BNetworkOperation::setStartTimeout(int msecs, const QObject *receiver, const char *method)
+{
+    if (msecs <= 0 || d_func()->isStarted || d_func()->isError)
+        return;
+    if (!receiver || !method)
+    {
+        receiver = this;
+        method = SLOT(cancell());
+    }
+    connect(d_func(), SIGNAL(startedTimeout()), receiver, method);
+    QTimer::singleShot(msecs, d_func(), SLOT(testStarted()));
+}
+
+void BNetworkOperation::setFinishTimeout(int msecs, const QObject *receiver, const char *method)
+{
+    if (msecs <= 0 || d_func()->isFinished || d_func()->isError)
+        return;
+    if (!receiver || !method)
+    {
+        receiver = this;
+        method = SLOT(cancell());
+    }
+    connect(d_func(), SIGNAL(finishedTimeout()), receiver, method);
+    if (d_func()->isStarted)
+        QTimer::singleShot(msecs, d_func(), SLOT(testFinished()));
+    else
+        d_func()->finishedTimeoutMsecs = msecs;
+}
+
 void BNetworkOperation::reply(const QByteArray &data)
 {
     if (isRequest())
@@ -124,6 +183,41 @@ void BNetworkOperation::reply(const QVariant &variant)
     if (isRequest())
         return;
     connection()->sendReply(this, variant);
+}
+
+void BNetworkOperation::onStarted(const QObject *receiver, const char *method, bool c)
+{
+    if (!receiver || !method)
+        return;
+    if (c)
+        connect(this, SIGNAL(started()), receiver, method);
+    else
+        disconnect(this, SIGNAL(started()), receiver, method);
+}
+
+void BNetworkOperation::onFinished(const QObject *receiver, const char *method, bool c)
+{
+    if (!receiver || !method)
+        return;
+    if (c)
+        connect(this, SIGNAL(finished()), receiver, method);
+    else
+        disconnect(this, SIGNAL(finished()), receiver, method);
+}
+
+void BNetworkOperation::onError(const QObject *receiver, const char *method, bool c)
+{
+    if (!receiver || !method)
+        return;
+    if (c)
+        connect(this, SIGNAL(error()), receiver, method);
+    else
+        disconnect(this, SIGNAL(error()), receiver, method);
+}
+
+bool BNetworkOperation::autoDelete() const
+{
+    return d_func()->autoDelete;
 }
 
 BNetworkConnection *BNetworkOperation::connection() const
@@ -205,14 +299,6 @@ int BNetworkOperation::uploadProgress(int nth) const
 bool BNetworkOperation::isFinished() const
 {
     return d_func()->isFinished;
-}
-
-bool BNetworkOperation::waitForFinished(int msecs)
-{
-    if (isFinished() || isError())
-        return true;
-    BeQt::waitNonBlocking(this, SIGNAL(finished()), this, SIGNAL(error()), msecs);
-    return isFinished() || isError();
 }
 
 /*============================== Public slots ==============================*/

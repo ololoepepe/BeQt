@@ -270,6 +270,8 @@ void BAbstractCodeEditorDocumentPrivate::setBuisy(bool b)
         return;
     buisy = b;
     QMetaObject::invokeMethod(q_func(), "buisyChanged", Q_ARG(bool, b));
+    if (!b)
+        QMetaObject::invokeMethod(q_func(), "allProcessingFinished");
 }
 
 void BAbstractCodeEditorDocumentPrivate::setFileName(QString fn)
@@ -609,8 +611,8 @@ void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocument
         q_func()->setModification(false);
         q_func()->clearUndoRedoStacks(QTextDocument::UndoAndRedoStacks);
     }
-    QMetaObject::invokeMethod(q_func(), "loadingFinished", Q_ARG(bool, success));
     setBuisy(false);
+    QMetaObject::invokeMethod(q_func(), "loadingFinished", Q_ARG(bool, success));
 }
 
 void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::Operation &operation,
@@ -629,8 +631,8 @@ void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentD
             setCodec(operation.codec);
         q_func()->setModification(false);
     }
-    QMetaObject::invokeMethod(q_func(), "savingFinished", Q_ARG(bool, success));
     setBuisy(false);
+    QMetaObject::invokeMethod(q_func(), "savingFinished", Q_ARG(bool, success));
 }
 
 void BAbstractCodeEditorDocumentPrivate::replaceWord()
@@ -846,15 +848,6 @@ bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCod
     return true;
 }
 
-bool BAbstractCodeEditorDocument::waitForProcessed(int msecs)
-{
-    B_D(BAbstractCodeEditorDocument);
-    if (!d->buisy)
-        return true;
-    BeQt::waitNonBlocking(this, SIGNAL(buisyChanged(bool)), msecs);
-    return !d->buisy;
-}
-
 bool BAbstractCodeEditorDocument::isReadOnly() const
 {
     return d_func()->readOnly;
@@ -973,10 +966,10 @@ void BAbstractCodeEditorDocument::setText(const QString &txt)
 {
     if (txt.isEmpty())
        return setTextImplementation(txt);
-    setBuisy(true);
     TextProcessingFunction f = textPreprocessingFunction();
     if (f && shouldProcessAsynchronously(txt))
     {
+        setBuisy(true);
         innerEdit()->setEnabled(false);
         setTextImplementation(tr("Processing content, please wait..."));
         BAbstractCodeEditorDocumentPrivate::TextProcessingResultFuture future =
@@ -994,7 +987,6 @@ void BAbstractCodeEditorDocument::setText(const QString &txt)
         blockHighlighter(false);
         moveCursorImplementation(QPoint(0, 0));
         setFocusImplementation();
-        setBuisy(false);
         afterPreprocessing(res.userData);
     }
     else
@@ -1261,5 +1253,5 @@ void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)
 
 void BAbstractCodeEditorDocument::setBuisy(bool buisy)
 {
-    Q_EMIT buisyChanged(buisy);
+    d_func()->setBuisy(buisy);
 }

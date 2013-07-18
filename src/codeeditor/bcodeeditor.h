@@ -84,7 +84,7 @@ public:
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
     void mergeWith(BCodeEditor *other);
-    bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
+    bool isBuisy() const;
     StandardDocumentType documentType() const;
     QFont editFont() const;
     QString editFontFamily() const;
@@ -118,6 +118,7 @@ public:
     bool isCurrentDocumentModified() const;
     QStringList fileNames() const;
     QObject *dropHandler() const;
+    QObject *closeHandler() const;
 public Q_SLOTS:
     BAbstractCodeEditorDocument *addDocument(const QString &fileName = QString());
     BAbstractCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
@@ -136,6 +137,7 @@ public Q_SLOTS:
     void setCurrentDocumentText(const QString &text);
 protected:
     virtual BAbstractCodeEditorDocument *createDocument(BCodeEditor *editor) const;
+    virtual void showClosingMessage(QWidget *parent);
 Q_SIGNALS:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);
@@ -149,6 +151,7 @@ Q_SIGNALS:
     void documentAvailableChanged(bool available);
     void fileTypesChanged();
     void fileHistoryChanged(const QStringList &history);
+    bool buisyChanged(bool buisy);
     void allDocumentsProcessed();
 private:
     Q_DISABLE_COPY(BCodeEditor)
