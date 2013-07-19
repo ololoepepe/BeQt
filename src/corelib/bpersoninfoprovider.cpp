@@ -5,6 +5,7 @@
 #include "bbase.h"
 #include "bbase_p.h"
 #include "bcoreapplication.h"
+#include "bpersoninfo.h"
 
 #include <QObject>
 #include <QString>
@@ -37,17 +38,17 @@ BPersonInfoProviderPrivate::~BPersonInfoProviderPrivate()
 
 /*============================== Static public methods =====================*/
 
-BPersonInfoProvider::PersonInfo BPersonInfoProviderPrivate::infoForLocale(const PersonInfoMap &map,
-                                                                          const QString &localeName, bool noDefault)
+BPersonInfo BPersonInfoProviderPrivate::infoForLocale(const PersonInfoMap &map, const QString &localeName,
+                                                      bool noDefault)
 {
-    if ( localeName.isEmpty() )
-        return BPersonInfoProvider::PersonInfo();
-    if ( map.contains(localeName) )
+    if (localeName.isEmpty())
+        return BPersonInfo();
+    if (map.contains(localeName))
         return map.value(localeName);
     if (localeName != "en")
         return infoForLocale(map, (localeName.length() > 2) ? localeName.left(2) :
                                                               QString(!noDefault ? "en" : ""), noDefault);
-    return BPersonInfoProvider::PersonInfo();
+    return BPersonInfo();
 }
 
 void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what)
@@ -126,7 +127,7 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
     QTextStream in(&f);
     in.setCodec("UTF-8");
     infos.clear();
-    QMap<QString, BPersonInfoProvider::PersonInfo> info;
+    PersonInfoMap info;
     while ( !in.atEnd() )
     {
         QString line = in.readLine();
@@ -178,6 +179,42 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
 ================================ BPersonInfoProvider =========================
 ============================================================================*/
 
+/*============================== Static public methods =====================*/
+
+QString BPersonInfoProvider::infoListToString(const BPersonInfoList &list)
+{
+    QString s;
+    foreach (const BPersonInfo &info, list)
+    {
+        if (info.name.isEmpty())
+            continue;
+        s += tr("Name:", "info") + " " + info.name + "\n";
+        if (!info.role.isEmpty())
+            s += tr("Role:", "info") + " " + info.role + "\n";
+        if (!info.site.isEmpty())
+            s += tr("Website:", "info") + " " + info.site + "\n";
+        if (!info.mail.isEmpty())
+            s += tr("E-mail:", "info") + " " + info.mail + "\n";
+    }
+    if (!s.isEmpty())
+        s.remove(s.length() - 1, 1);
+    return s;
+}
+
+QString BPersonInfoProvider::infosString(const BPersonInfoProvider *prov, bool noDefault, const QLocale &locale)
+{
+    if (!prov)
+        return "";
+    return prov->infosString(noDefault, locale);
+}
+
+QString BPersonInfoProvider::infosString(const BPersonInfoProvider *prov, const QLocale &locale, bool noDefault)
+{
+    if (!prov)
+        return "";
+    return prov->infosString(locale, noDefault);
+}
+
 /*============================== Public constructors =======================*/
 
 BPersonInfoProvider::BPersonInfoProvider(QObject *parent) :
@@ -221,21 +258,31 @@ QString BPersonInfoProvider::fileName() const
     return d_func()->fileName;
 }
 
-BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(bool noDefault, const QLocale &locale) const
+BPersonInfoList BPersonInfoProvider::infos(bool noDefault, const QLocale &locale) const
 {
     return infos(locale.name(), noDefault);
 }
 
-BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QString &localeName, bool noDefault) const
+BPersonInfoList BPersonInfoProvider::infos(const QLocale &locale, bool noDefault) const
 {
-    PersonInfoList list;
+    BPersonInfoList list;
     foreach (const BPersonInfoProviderPrivate::PersonInfoMap &map, d_func()->infos)
     {
-        PersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, localeName, noDefault);
-        if ( !info.name.isEmpty() )
+        BPersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, locale.name(), noDefault);
+        if (!info.name.isEmpty())
             list << info;
     }
     return list;
+}
+
+QString BPersonInfoProvider::infosString(bool noDefault, const QLocale &locale) const
+{
+    return infoListToString(infos(noDefault, locale));
+}
+
+QString BPersonInfoProvider::infosString(const QLocale &locale, bool noDefault) const
+{
+    return infoListToString(infos(locale, noDefault));
 }
 
 /*============================== Public slots ==============================*/
@@ -243,7 +290,7 @@ BPersonInfoProvider::PersonInfoList BPersonInfoProvider::infos(const QString &lo
 void BPersonInfoProvider::reload()
 {
     B_D(BPersonInfoProvider);
-    if ( d->fileName.isEmpty() )
+    if (d->fileName.isEmpty())
         return;
     d->setFileName(d->fileName);
 }

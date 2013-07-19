@@ -54,7 +54,7 @@ protected:
 public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
 public:
-    void setDocumentType(StandardDocumentType t);
+    void setDocumentType(int type);
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
     void setEditFontPointSize(int pointSize);
@@ -74,6 +74,7 @@ public:
     void removeModule(BAbstractEditorModule *mdl);
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
+    void setCurrentDocument(BAbstractCodeEditorDocument *doc);
     void setDriver(BAbstractDocumentDriver *drv);
     void addFileType(BAbstractFileType *ft);
     void removeFileType(BAbstractFileType *ft);
@@ -86,7 +87,7 @@ public:
     void mergeWith(BCodeEditor *other);
     bool isBuisy() const;
     bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second) const;
-    StandardDocumentType documentType() const;
+    int documentType() const;
     QFont editFont() const;
     QString editFontFamily() const;
     int editFontPointSize() const;
@@ -137,7 +138,7 @@ public Q_SLOTS:
     void insertTextIntoCurrentDocument(const QString &text);
     void setCurrentDocumentText(const QString &text);
 protected:
-    virtual BAbstractCodeEditorDocument *createDocument(BCodeEditor *editor) const;
+    virtual BAbstractCodeEditorDocument *createDocument(int type, BCodeEditor *editor) const;
     virtual void showClosingMessage(QWidget *parent);
 Q_SIGNALS:
     void defaultCodecChanged(const QString &codecName);

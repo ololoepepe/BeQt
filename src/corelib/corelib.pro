@@ -22,6 +22,7 @@ HEADERS += \
     blogger_p.h \
     bnamespace.h \
     bpassword.h \
+    bpersoninfo.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \
     bplugininterface.h \

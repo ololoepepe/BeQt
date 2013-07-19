@@ -2,6 +2,7 @@
 #define BABOUTDIALOG_H
 
 class BAboutDialogPrivate;
+class BPersonInfoProvider;
 
 class QWidget;
 class QIcon;
@@ -10,7 +11,7 @@ class QSize;
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 #include <BeQtCore/BPluginInterface>
-#include <BeQtCore/BPersonInfoProvider>
+#include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BDirTools>
 
 #include <QDialog>
@@ -48,15 +49,16 @@ public:
     void setChangeLogFile(const QString &fileName);
     void setLicense(const QString &text);
     void setLicenseFile(const QString &fileName);
-    void setAuthors(const BPersonInfoProvider::PersonInfoList &list);
+    void setAuthors(const BPersonInfoList &list);
     void setAuthorsFile(const QString &fileName);
     void setAuthorsProvider(BPersonInfoProvider *prov);
-    void setTranslators(const BPersonInfoProvider::PersonInfoList &list);
+    void setTranslators(const BPersonInfoList &list);
     void setTranslatorsFile(const QString &fileName);
     void setTranslatorsProvider(BPersonInfoProvider *prov);
-    void setThanksTo(const BPersonInfoProvider::PersonInfoList &list);
+    void setThanksTo(const BPersonInfoList &list);
     void setThanksToFile(const QString &fileName);
     void setThanksToProvider(BPersonInfoProvider *prov);
+    void setupWithApplicationData();
     void setAboutQtShown(bool b);
     void setAboutBeqtShown(bool b);
 public Q_SLOTS:

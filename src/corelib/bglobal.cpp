@@ -59,3 +59,21 @@ QList<int> bRangeR(int lb, int ub, unsigned step)
 {
     return bRange(lb, ub, -1 * (step ? step : 1));
 }
+
+QList<int> bRangeM(int lb, int ub, unsigned multiplier)
+{
+    if (!lb || !ub || !multiplier || (lb < 0 && ub > 0) || (lb > 0 && ub < 0))
+        return QList<int>();
+    if (lb == ub)
+        return QList<int>() << lb;
+    if (1 == multiplier)
+        return QList<int>();
+    QList<int> r;
+    if (lb < ub)
+        for (int i = lb; i <= ub; i *= multiplier)
+            r << i;
+    else
+        for (int i = lb; i >= ub; i /= multiplier)
+            r << i;
+    return r;
+}

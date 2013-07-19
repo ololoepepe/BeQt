@@ -106,12 +106,12 @@ void BSettingsDialogPrivate::init()
     {
         BAbstractSettingsTab *tab = Tabs.first();
         vlt->addWidget(tab);
-        currentChanged();
         hspltr = 0;
         lstwgt = 0;
         stkdwgt = 0;
         twgt = 0;
         q->setWindowTitle( q->windowTitle() + ": " + tab->title() );
+        currentChanged();
     }
     else
     {

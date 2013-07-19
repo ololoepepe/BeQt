@@ -49,6 +49,7 @@ public:
     void setUserName(const QString &name);
     void setOpenOnDemand(bool b);
     void setCloseAfterTransaction(bool b);
+    void setRollbackOnCommitFail(bool b);
     void setOnOpenQueries(const QList<BSqlQuery> &list);
     void setOnOpenQueries(const QStringList &list);
     void setOnOpenQuery(const BSqlQuery &q);
@@ -70,6 +71,7 @@ public:
     QString userName() const;
     bool openOnDemand() const;
     bool closeAfterTransaction() const;
+    bool rollbackOnCommitFail() const;
     QList<BSqlQuery> onOpenQueries() const;
     BSqlQuery onOpenQuery() const;
     bool open();

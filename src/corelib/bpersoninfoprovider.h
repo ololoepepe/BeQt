@@ -7,6 +7,7 @@ class QString;
 
 #include "bglobal.h"
 #include "bbase.h"
+#include "bpersoninfo.h"
 #include "bcoreapplication.h"
 
 #include <QObject>
@@ -22,16 +23,10 @@ class B_CORE_EXPORT BPersonInfoProvider : public QObject, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BPersonInfoProvider)
 public:
-    struct PersonInfo
-    {
-        QString name;
-        QString role;
-        QString site;
-        QString mail;
-        QString image;
-    };
-public:
-    typedef QList<PersonInfo> PersonInfoList;
+    static QString infoListToString(const BPersonInfoList &list);
+    static QString infosString(const BPersonInfoProvider *prov, bool noDefault = false,
+                               const QLocale &locale = BCoreApplication::locale());
+    static QString infosString(const BPersonInfoProvider *prov, const QLocale &locale, bool noDefault = false);
 public:
     explicit BPersonInfoProvider(QObject *parent = 0);
     explicit BPersonInfoProvider(const QString &fileName, QObject *parent = 0);
@@ -41,8 +36,10 @@ protected:
 public:
     void setFileName(const QString &fileName);
     QString fileName() const;
-    PersonInfoList infos( bool noDefault = false, const QLocale &locale = BCoreApplication::locale() ) const;
-    PersonInfoList infos(const QString &localeName, bool noDefault = false) const;
+    BPersonInfoList infos(bool noDefault = false, const QLocale &locale = BCoreApplication::locale()) const;
+    BPersonInfoList infos(const QLocale &locale, bool noDefault = false) const;
+    QString infosString(bool noDefault = false, const QLocale &locale = BCoreApplication::locale()) const;
+    QString infosString(const QLocale &locale, bool noDefault = false) const;
 public Q_SLOTS:
     void reload();
 Q_SIGNALS:

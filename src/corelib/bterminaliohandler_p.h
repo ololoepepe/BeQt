@@ -78,7 +78,7 @@ public:
     BSettingsNode *root;
     bool translations;
     QString help;
-    QMap<QString, BTerminalIOHandler::CommandHelp> commandHelp;
+    QMap<QString, BTerminalIOHandler::CommandHelpList> commandHelp;
 private:
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
     friend class BTerminalIOHandlerThread;

@@ -542,7 +542,7 @@ bool BCodeEditorPrivate::findDocument(const QString &fileName)
 
 BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &fileName, const QString &text)
 {
-    BAbstractCodeEditorDocument *doc = q_func()->createDocument(q_func());
+    BAbstractCodeEditorDocument *doc = q_func()->createDocument(docType, q_func());
     if (!doc)
         return 0;
     doc->init();
@@ -1365,22 +1365,26 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
 
 /*============================== Public methods ============================*/
 
-void BCodeEditor::setDocumentType(StandardDocumentType t)
+void BCodeEditor::setDocumentType(int type)
 {
-    if (t == d_func()->docType)
+    if (type == d_func()->docType)
         return;
-    d_func()->docType = t;
+    d_func()->docType = type;
+    BAbstractCodeEditorDocument *cdoc = currentDocument();
     foreach (BAbstractCodeEditorDocument *doc, documents())
     {
         BAbstractCodeEditorDocument *ndoc = d_func()->createDocument(doc->fileName(), doc->text());
         if (!ndoc)
             continue;
+        if (cdoc == doc)
+            cdoc = ndoc;
         ndoc->setModification(doc->isModified());
         ndoc->moveCursor(doc->cursorPosition());
         ndoc->selectText(doc->selectionStart(), doc->selectionEnd());
         d_func()->removeDocument(doc);
         d_func()->addDocument(ndoc);
     }
+    setCurrentDocument(cdoc);
 }
 
 void BCodeEditor::setEditFont(const QFont &fnt)
@@ -1571,6 +1575,13 @@ void BCodeEditor::setModules(const QList<BAbstractEditorModule *> &list)
         addModule(mdl);
 }
 
+void BCodeEditor::setCurrentDocument(BAbstractCodeEditorDocument *doc)
+{
+    if (!doc || !documents().contains(doc))
+        return;
+    d_func()->twgt->setCurrentWidget(doc);
+}
+
 void BCodeEditor::setDriver(BAbstractDocumentDriver *drv)
 {
     if (!drv)
@@ -1674,17 +1685,21 @@ void BCodeEditor::mergeWith(BCodeEditor *other)
 {
     if (!other)
         return;
+    BAbstractCodeEditorDocument *cdoc = other->currentDocument();
     foreach (BAbstractCodeEditorDocument *doc, other->documents())
     {
         BAbstractCodeEditorDocument *ndoc = d_func()->createDocument(doc->fileName(), doc->text());
         if (!ndoc)
             continue;
+        if (cdoc == doc)
+            cdoc = ndoc;
         ndoc->setModification(doc->isModified());
         ndoc->moveCursor(doc->cursorPosition());
         ndoc->selectText(doc->selectionStart(), doc->selectionEnd());
         other->d_func()->removeDocument(doc);
         d_func()->addDocument(ndoc);
     }
+    setCurrentDocument(cdoc);
 }
 
 bool BCodeEditor::isBuisy() const
@@ -1999,16 +2014,15 @@ void BCodeEditor::setCurrentDocumentText(const QString &text)
 
 /*============================== Protected methods =========================*/
 
-BAbstractCodeEditorDocument *BCodeEditor::createDocument(BCodeEditor *editor) const
+BAbstractCodeEditorDocument *BCodeEditor::createDocument(int type, BCodeEditor *editor) const
 {
-    switch (d_func()->docType)
+    switch (type)
     {
-    case StandardDocument:
-        return new BCodeEditorDocument(editor);
     case SimpleDocument:
         return new BSimpleCodeEditorDocument(editor);
+    case StandardDocument:
     default:
-        return 0;
+        return new BCodeEditorDocument(editor);
     }
 }
 

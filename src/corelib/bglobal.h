@@ -9,6 +9,7 @@
 #include <QVariant>
 #include <QCoreApplication>
 #include <QMetaType>
+#include <QSet>
 
 #include <typeinfo>
 
@@ -115,6 +116,49 @@ B_CORE_EXPORT void bRegister();
 B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
 B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
 B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT QList<int> bRangeM(int lb, int ub, unsigned multiplier = 10);
+
+template<typename T> void bRemoveDuplicates(QList<T> &list)
+{
+    for (int i = 0; i < list.size(); ++i)
+    {
+        for (int j = list.size() - 1; j > i; --j)
+        {
+            if (list.at(i) == list.at(j))
+                list.removeAt(j);
+        }
+    }
+}
+
+template<typename T> void bRemoveDuplicates(QList<T> &list, bool (*areEqual)(const T &, const T &))
+{
+    if (!areEqual)
+        return;
+    for (int i = 0; i < list.size(); ++i)
+    {
+        for (int j = list.size() - 1; j > i; --j)
+        {
+            if (areEqual(list.at(i), list.at(j)))
+                list.removeAt(j);
+        }
+    }
+}
+
+template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list)
+{
+    QList<T> nlist = list;
+    bRemoveDuplicates(nlist);
+    return nlist;
+}
+
+template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list, bool (*areEqual)(const T &, const T &))
+{
+    if (!areEqual)
+        return list;
+    QList<T> nlist = list;
+    bRemoveDuplicates(nlist, areEqual);
+    return nlist;
+}
 
 template<typename T> bool bSetMapping(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
 {
@@ -146,7 +190,7 @@ template <typename T> QVariant bVariant(T *ptr)
 
 template<typename T> void bRet(const T &)
 {
-    //
+    //Calling "return bRet(...)" is the same as calling "return (void) ..."
 }
 
 template<typename T> T bRet(T *t, const T &tt)

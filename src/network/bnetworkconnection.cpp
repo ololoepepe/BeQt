@@ -479,6 +479,16 @@ void BNetworkConnection::installRequestHandler(StandardOperation op)
     installRequestHandler(operation(op), requestHandler(op));
 }
 
+void BNetworkConnection::installRequestHandler(StandardOperation op, InternalHandler handler)
+{
+    installRequestHandler(operation(op), handler);
+}
+
+void BNetworkConnection::installRequestHandler(StandardOperation op, ExternalHandler handler)
+{
+    installRequestHandler(operation(op), handler);
+}
+
 bool BNetworkConnection::isValid() const
 {
     const B_D(BNetworkConnection);

@@ -42,6 +42,7 @@ public:
         QString description;
     };
 public:
+    typedef QList<CommandHelp> CommandHelpList;
     typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
     typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &, const QStringList &);
 public:
@@ -52,6 +53,8 @@ protected:
 public:
     static QString command(StandardCommand cmd);
     static QStringList commands(StandardCommand cmd);
+    static CommandHelp commandHelp(StandardCommand cmd);
+    static CommandHelpList commandHelpList(StandardCommand cmd);
     static InternalHandler handler(StandardCommand cmd);
     static BTerminalIOHandler *instance();
     static QStringList splitCommand(const QString &command);
@@ -62,16 +65,21 @@ public:
     static void writeLine( const QString &text = QString() );
     static void writeErr(const QString &text);
     static void writeLineErr( const QString &text = QString() );
-    static void writeHelpLine(const QString &usage, const QString &description);
+    static void writeHelpLine(const QString &usage, const QString &description, bool translate = true);
+    static void writeHelpLines(const CommandHelpList &list, bool translate = true);
     static void setStdinEchoEnabled(bool enabled = true);
     static void setTerminalTitle(const QString &title);
     static void installHandler(const QString &command, InternalHandler handler);
-    static void installHandler(StandardCommand cmd);
     static void installHandler(const QString &command, ExternalHandler handler);
+    static void installHandler(StandardCommand cmd);
+    static void installHandler(StandardCommand cmd, InternalHandler handler);
+    static void installHandler(StandardCommand cmd, ExternalHandler handler);
     static void setRootSettingsNode(BSettingsNode *root);
+    static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
     static void setTranslationsEnabled(bool enabled);
     static void setHelpDescription(const QString &s);
     static void setCommandHelp(const QString &command, const CommandHelp &help);
+    static void setCommandHelp(const QString &command, const CommandHelpList &list);
     static BSettingsNode *rootSettingsNode();
     static bool translationsEnabled();
 protected:

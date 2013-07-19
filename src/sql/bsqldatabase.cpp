@@ -42,6 +42,7 @@ public:
     QSqlDatabase *db;
     bool openOnDemand;
     bool closeAfterTransaction;
+    bool rollback;
     QList<BSqlQuery> onOpen;
 private:
     Q_DISABLE_COPY(BSqlDatabasePrivate)
@@ -73,6 +74,7 @@ void BSqlDatabasePrivate::init()
     db = 0;
     openOnDemand = true;
     closeAfterTransaction = false;
+    rollback = true;
 }
 
 bool BSqlDatabasePrivate::handleOnOpen()
@@ -187,6 +189,11 @@ void BSqlDatabase::setCloseAfterTransaction(bool b)
     d_func()->closeAfterTransaction = b;
 }
 
+void BSqlDatabase::setRollbackOnCommitFail(bool b)
+{
+    d_func()->rollback = b;
+}
+
 void BSqlDatabase::setOnOpenQueries(const QList<BSqlQuery> &list)
 {
     d_func()->onOpen = list;
@@ -295,6 +302,11 @@ bool BSqlDatabase::closeAfterTransaction() const
     return d_func()->closeAfterTransaction;
 }
 
+bool BSqlDatabase::rollbackOnCommitFail() const
+{
+    return d_func()->rollback;
+}
+
 QList<BSqlQuery> BSqlDatabase::onOpenQueries() const
 {
     return d_func()->onOpen;
@@ -329,6 +341,8 @@ bool BSqlDatabase::commit()
 {
     B_D(BSqlDatabase);
     bool b = d->db->commit();
+    if (!b)
+        rollback();
     if (d->closeAfterTransaction)
         d->db->close();
     return b;
