@@ -22,8 +22,8 @@ class B_CORE_EXPORT BSettingsNode : public BBase
     Q_DECLARE_TR_FUNCTIONS(BSettingsNode)
     B_DECLARE_PRIVATE(BSettingsNode)
 public:
-    typedef bool (*SetFunction)(const QVariant &);
-    typedef bool (*ShowFunction)(const QVariant &);
+    typedef bool (*SetFunction)(const BSettingsNode *, const QVariant &);
+    typedef bool (*ShowFunction)(const BSettingsNode *, const QVariant &);
 public:
     explicit BSettingsNode(BSettingsNode *parent = 0);
     explicit BSettingsNode(const QString &key, BSettingsNode *parent = 0);

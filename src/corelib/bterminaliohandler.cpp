@@ -47,6 +47,31 @@ static bool areEqual(const BTerminalIOHandler::CommandHelpList &l1, const BTermi
     return true;
 }
 
+static bool setLocale(const BSettingsNode *, const QVariant &v)
+{
+
+    QString s;
+    if (!v.isNull())
+    {
+        bool ok = false;
+        s = BSettingsNode::variantToString(v, &ok);
+        if (!ok)
+            return false;
+    }
+    else
+    {
+        s = bReadLine(BeQt::translate("BTerminalIOHandler", "Enter locale:") + " ");
+        if (s.isEmpty())
+            return false;
+    }
+    bool ok = true;
+    QVariant vv = BSettingsNode::stringToVariant(s, QVariant::Locale, &ok);
+    if (!ok)
+        return false;
+    BCoreApplication::setLocale(vv.toLocale());
+    return true;
+}
+
 /*============================================================================
 ================================ BTerminalIOHandlerThread ====================
 ============================================================================*/
@@ -560,6 +585,7 @@ BSettingsNode *BTerminalIOHandler::createBeQtSettingsNode(BSettingsNode *parent)
     BSettingsNode *n = new BSettingsNode("BeQt", parent);
       BSettingsNode *nn = new BSettingsNode("Core", n);
         BSettingsNode *nnn = new BSettingsNode(QVariant::Locale, "locale", nn);
+          nnn->setUserSetFunction(&setLocale);
           nnn->setDescription(BTranslation::translate("BSettingsNode", "Locale for the whole application.\n"
                                                       "Format: ??_**, where ?? stands for mandatory language name,\n"
                                                       "and ** stands for optional country name.\n"

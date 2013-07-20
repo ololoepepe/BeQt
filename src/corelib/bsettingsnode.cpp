@@ -270,7 +270,7 @@ bool BSettingsNode::set(QString path, QString text, QChar separator) const
         return false;
     QVariant v;
     if (n->userSetFunction())
-        return n->userSetFunction()(v);
+        return n->userSetFunction()(n, v);
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
@@ -294,7 +294,7 @@ bool BSettingsNode::set(QString path, QVariant value, QChar separator) const
         return false;
     QVariant v = value;
     if (n->userSetFunction())
-        return n->userSetFunction()(v);
+        return n->userSetFunction()(n, v);
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
@@ -320,7 +320,7 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     path.replace(separator, '/');
     QVariant v = bSettings->value(path);
     if (n->userShowFunction())
-        return n->userShowFunction()(v);
+        return n->userShowFunction()(n, v);
     bool ok = false;
     QString vs = variantToString(v, &ok);
     if (!ok)
@@ -380,10 +380,16 @@ BTranslation BSettingsNode::description() const
 
 BSettingsNode::SetFunction BSettingsNode::userSetFunction() const
 {
-    return d_func()->setFunction;
+    if (d_func()->setFunction)
+        return d_func()->setFunction;
+    BSettingsNode *pn = d_func()->parentNode;
+    return pn ? pn->userSetFunction() : 0;
 }
 
 BSettingsNode::ShowFunction BSettingsNode::userShowFunction() const
 {
-    return d_func()->showFunction;
+    if (d_func()->showFunction)
+        return d_func()->showFunction;
+    BSettingsNode *pn = d_func()->parentNode;
+    return pn ? pn->userShowFunction() : 0;
 }
