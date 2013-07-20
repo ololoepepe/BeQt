@@ -7,9 +7,9 @@ class BSettingsNode;
 class QString;
 
 #include "bterminaliohandler.h"
-
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "btranslation.h"
 
 #include <QObject>
 #include <QThread>
@@ -77,7 +77,7 @@ public:
     QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
     BSettingsNode *root;
     bool translations;
-    QString help;
+    BTranslation help;
     QMap<QString, BTerminalIOHandler::CommandHelpList> commandHelp;
 private:
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)

@@ -5,6 +5,7 @@ class BSettingsNodePrivate;
 
 #include "bglobal.h"
 #include "bbase.h"
+#include "btranslation.h"
 
 #include <QString>
 #include <QList>
@@ -36,7 +37,7 @@ public:
     void setKey(const QString &key);
     void setType(QVariant::Type type);
     void setSecureInput(bool b);
-    void setDescription(const QString &s);
+    void setDescription(const BTranslation &t);
     void setUserSetFunction(SetFunction f);
     void setUserShowFunction(ShowFunction f);
     void addChild(BSettingsNode *node);
@@ -57,7 +58,7 @@ public:
     QString key() const;
     QVariant::Type type() const;
     bool secureInput() const;
-    QString description() const;
+    BTranslation description() const;
     SetFunction userSetFunction() const;
     ShowFunction userShowFunction() const;
 private:

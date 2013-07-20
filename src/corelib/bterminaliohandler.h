@@ -9,6 +9,7 @@ class QStringLit;
 
 #include "bglobal.h"
 #include "bbase.h"
+#include "btranslation.h"
 
 #include <QObject>
 
@@ -39,7 +40,7 @@ public:
     struct CommandHelp
     {
         QString usage;
-        QString description;
+        BTranslation description;
     };
 public:
     typedef QList<CommandHelp> CommandHelpList;
@@ -65,7 +66,8 @@ public:
     static void writeLine( const QString &text = QString() );
     static void writeErr(const QString &text);
     static void writeLineErr( const QString &text = QString() );
-    static void writeHelpLine(const QString &usage, const QString &description, bool translate = true);
+    static void writeHelpLine(const QString &usage, const QString &description);
+    static void writeHelpLine(const QString &usage, const BTranslation &description, bool translate = true);
     static void writeHelpLines(const CommandHelpList &list, bool translate = true);
     static void setStdinEchoEnabled(bool enabled = true);
     static void setTerminalTitle(const QString &title);
@@ -77,7 +79,7 @@ public:
     static void setRootSettingsNode(BSettingsNode *root);
     static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
     static void setTranslationsEnabled(bool enabled);
-    static void setHelpDescription(const QString &s);
+    static void setHelpDescription(const BTranslation &t);
     static void setCommandHelp(const QString &command, const CommandHelp &help);
     static void setCommandHelp(const QString &command, const CommandHelpList &list);
     static BSettingsNode *rootSettingsNode();

@@ -5,6 +5,7 @@
 #include "bnamespace.h"
 #include "bsettingsnode.h"
 #include "bcoreapplication.h"
+#include "btranslation.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -262,36 +263,36 @@ BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(Standard
     {
     case QuitCommand:
         h.usage = "quit|exit";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Quit the application");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Quit the application");
         l << h;
         break;
     case SetCommand:
         h.usage = "set --tree";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Show list of all available settings");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show list of all available settings");
         l << h;
         h.usage = "set --show|--description <key>";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Show the value for <key> or it's description");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show the value for <key> or it's description");
         l << h;
         h.usage = "set <key> [value]";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Set the value for <key> to [value] (if specified)\n"
-                                          "or request value input");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Set the value for <key> to [value] "
+                                                "(if specified)\nor request value input");
         l << h;
         break;
     case HelpCommand:
         h.usage = "help <command>";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Show description of <command>");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show description of <command>");
         l << h;
         h.usage = "help [--commands|--settings|--all]";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Show basic help, or:\n"
-                                          "  --commands - list of all available commands\n"
-                                          "  --settings - list of all available settings\n"
-                                          "  --all - all of the above (including basic help)");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show basic help, or:\n"
+                                                "  --commands - list of all available commands\n"
+                                                "  --settings - list of all available settings\n"
+                                                "  --all - all of the above (including basic help)");
         l << h;
         h.usage = "help --about description|changelog|license|authors|translations|thanksto";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Show information about this application");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show information about this application");
         l << h;
         h.usage = "help --about-beqt description|changelog|license|authors|translations|thanksto";
-        h.description = QT_TRANSLATE_NOOP("BTerminalIOHandler", "Show information about BeQt libraries");
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show information about BeQt libraries");
         l << h;
         break;
     default:
@@ -420,7 +421,7 @@ void BTerminalIOHandler::writeLineErr(const QString &text)
     writeErr(text + "\n");
 }
 
-void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &description, bool translate)
+void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &description)
 {
     if (usage.isEmpty())
         return;
@@ -434,9 +435,14 @@ void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &desc
             s += "\n" + QString().fill(' ', 30);
         else
             s += QString().fill(' ', 30 - s.length());
-        s += translate ? tr(description.toUtf8().constData()) : description;
+        s += description;
     }
     writeLine(s);
+}
+
+void BTerminalIOHandler::writeHelpLine(const QString &usage, const BTranslation &description, bool translate)
+{
+    writeHelpLine(usage, translate ? description.translate() : description.sourceText());
 }
 
 void BTerminalIOHandler::writeHelpLines(const CommandHelpList &list, bool translate)
@@ -554,18 +560,18 @@ BSettingsNode *BTerminalIOHandler::createBeQtSettingsNode(BSettingsNode *parent)
     BSettingsNode *n = new BSettingsNode("BeQt", parent);
       BSettingsNode *nn = new BSettingsNode("Core", n);
         BSettingsNode *nnn = new BSettingsNode(QVariant::Locale, "locale", nn);
-          nnn->setDescription(QT_TRANSLATE_NOOP("BSettingsNode", "Locale for the whole application.\n"
-                                                "Format: ??_**, where ?? stands for mandatory language name,\n"
-                                                "and ** stands for optional country name.\n"
-                                                "Examples: en, en_GB, ru, ru_RU"));
+          nnn->setDescription(BTranslation::translate("BSettingsNode", "Locale for the whole application.\n"
+                                                      "Format: ??_**, where ?? stands for mandatory language name,\n"
+                                                      "and ** stands for optional country name.\n"
+                                                      "Examples: en, en_GB, ru, ru_RU"));
     return n;
 }
 
-void BTerminalIOHandler::setHelpDescription(const QString &s)
+void BTerminalIOHandler::setHelpDescription(const BTranslation &t)
 {
     if (!BTerminalIOHandlerPrivate::testInit())
         return;
-    ds_func()->help = s;
+    ds_func()->help = t;
 }
 
 void BTerminalIOHandler::setCommandHelp(const QString &command, const CommandHelp &help)
@@ -645,13 +651,13 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
             writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));
             return false;
         }
-        QString s = n->description();
-        if (s.isEmpty())
+        BTranslation t = n->description();
+        if (!t.isValid())
         {
             writeLine(d_func()->translations ? tr("No description") : QString("No description"));
             return false;
         }
-        writeLine(d_func()->translations ? QCoreApplication::translate("BSettingsNode", s.toUtf8().constData()) : s);
+        writeLine(d_func()->translations ? t.translate() : t.sourceText());
     }
     else
     {
@@ -703,7 +709,7 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
 
 bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
 {
-    QString h = d_func()->translations ? tr(d_func()->help.toUtf8().constData()) : d_func()->help;
+    QString h = d_func()->translations ? d_func()->help.translate() : d_func()->help.sourceText();
     if (args.isEmpty())
     {
         if (h.isEmpty())

@@ -19,6 +19,7 @@
 #include "bspellcheckerdictionary.h"
 #include "bterminaliohandler.h"
 #include "btranslatefunctor.h"
+#include "btranslation.h"
 #include "btranslator.h"
 #include "bversion.h"
 

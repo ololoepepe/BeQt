@@ -39,6 +39,7 @@ HEADERS += \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
     btranslatefunctor.h \
+    btranslation.h \
     btranslator.h \
     btranslator_p.h \
     bversion.h
@@ -60,6 +61,7 @@ SOURCES += \
     bspellcheckerdictionary.cpp \
     bterminaliohandler.cpp \
     btranslatefunctor.cpp \
+    btranslation.cpp \
     btranslator.cpp \
     bversion.cpp
 

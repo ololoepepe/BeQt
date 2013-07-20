@@ -2,6 +2,7 @@
     * Add BVersion class
     * Add BSettingsNode class
     * Add BTranslateFunctor class
+    * Add BTranslation class
     * Add BClipboardNotifier class
     * Add BDialog class
     * Add BExtendedFileDialog class

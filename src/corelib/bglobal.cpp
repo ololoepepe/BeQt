@@ -1,5 +1,6 @@
 #include "bglobal.h"
 #include "bpassword.h"
+#include "btranslation.h"
 #include "bversion.h"
 
 #include <QString>
@@ -27,6 +28,10 @@ void bRegister()
         return;
     qRegisterMetaType<BPassword>();
     qRegisterMetaTypeStreamOperators<BPassword>();
+    qRegisterMetaType<BTranslation>();
+    qRegisterMetaTypeStreamOperators<BTranslation>();
+    qRegisterMetaType<BTr>("BTr");
+    qRegisterMetaTypeStreamOperators<BTr>("BTr");
     qRegisterMetaType<BVersion>();
     qRegisterMetaTypeStreamOperators<BVersion>();
     registered = true;

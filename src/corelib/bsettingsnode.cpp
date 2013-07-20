@@ -3,6 +3,7 @@
 #include "bbase_p.h"
 #include "bterminaliohandler.h"
 #include "bcoreapplication.h"
+#include "btranslation.h"
 
 #include <QString>
 #include <QList>
@@ -32,7 +33,7 @@ public:
     QString key;
     QVariant::Type type;
     bool secure;
-    QString description;
+    BTranslation description;
     BSettingsNode::SetFunction setFunction;
     BSettingsNode::ShowFunction showFunction;
 private:
@@ -173,9 +174,9 @@ void BSettingsNode::setSecureInput(bool b)
     d_func()->secure = b;
 }
 
-void BSettingsNode::setDescription(const QString &s)
+void BSettingsNode::setDescription(const BTranslation &t)
 {
-    d_func()->description = s;
+    d_func()->description = t;
 }
 
 void BSettingsNode::setUserSetFunction(SetFunction f)
@@ -372,7 +373,7 @@ bool BSettingsNode::secureInput() const
     return d_func()->secure;
 }
 
-QString BSettingsNode::description() const
+BTranslation BSettingsNode::description() const
 {
     return d_func()->description;
 }

@@ -2,6 +2,7 @@
     * Добавлен класс BVersion
     * Добавлен класс BSettingsNode
     * Добавлен класс BTranslateFunctor
+    * Добавлен класс BTranslation
     * Добавлен класс BClipboardNotifier
     * Добавлен класс BDialog
     * Добавлен класс BExtendedFileDialog
