@@ -436,6 +436,8 @@ void BAboutDialogPrivate::setupFromApplicationData()
     BCoreApplicationPrivate *dd = BApplication::ds_func();
     if (!dd)
         return;
+    q->setOrganization(QApplication::organizationName(), dd->appCopyrightYears);
+    q->setWebsite(QApplication::organizationDomain());
     if (!dd->appDescription.isEmpty())
         q->setDescription(dd->appDescription);
     else

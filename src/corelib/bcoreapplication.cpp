@@ -727,12 +727,19 @@ void BCoreApplication::saveSettings()
     ds_func()->saveSettings();
 }
 
+void BCoreApplication::setApplicationCopyrightPeriod(const QString &s)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appCopyrightYears = s;
+}
+
 void BCoreApplication::setApplicationDescription(const QString &s)
 {
     if (!BCoreApplicationPrivate::testCoreInit())
         return;
-   ds_func()->appDescription = s;
-   ds_func()->appDescriptionFileName.clear();
+    ds_func()->appDescription = s;
+    ds_func()->appDescriptionFileName.clear();
 }
 
 void BCoreApplication::setApplicationDescriptionFile(const QString &fileName)
@@ -830,6 +837,12 @@ QString BCoreApplication::applicationInfo(About type, const QLocale &loc)
     QString fn;
     switch (type)
     {
+    case Copyringt:
+    {
+        QString crp = (!ds_func()->appCopyrightYears.isEmpty() ? (ds_func()->appCopyrightYears + " ") :QString());
+        return tr("Copyright") + " (C) " + crp + QCoreApplication::organizationName()
+                + " [" + QCoreApplication::organizationDomain() + "]";
+    }
     case Description:
         if (!ds_func()->appDescription.isEmpty())
             return ds_func()->appDescription;
@@ -882,6 +895,8 @@ QString BCoreApplication::beqtInfo(About type, const QLocale &loc)
     QString bfn;
     switch (type)
     {
+    case Copyringt:
+        return tr("Copyright") + " (C) 2012-2013 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
     case Description:
         bfn = "description/DESCRIPTION.txt";
         break;

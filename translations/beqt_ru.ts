@@ -81,13 +81,13 @@
         <translation>Электронная почта</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="481"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="483"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="482"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="484"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>
@@ -431,6 +431,15 @@
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
+    </message>
+</context>
+<context>
+    <name>BCoreApplication</name>
+    <message>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="843"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="899"/>
+        <source>Copyright</source>
+        <translation>Авторские права</translation>
     </message>
 </context>
 <context>
@@ -1441,10 +1450,10 @@ or request value input</source>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="632"/>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="645"/>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="703"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="775"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="783"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="813"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="828"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="782"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="790"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="820"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="835"/>
         <source>Invalid parameters</source>
         <translation>Некорректные параметры</translation>
     </message>
@@ -1491,7 +1500,7 @@ or request value input</source>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="717"/>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="728"/>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="750"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="820"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="827"/>
         <source>Nothing to display</source>
         <translation>Нечего отобразить</translation>
     </message>

@@ -59,6 +59,7 @@ public:
     };
     enum About
     {
+        Copyringt,
         Description,
         ChangeLog,
         License,
@@ -101,6 +102,7 @@ public:
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
     static void loadSettings();
     static void saveSettings();
+    static void setApplicationCopyrightPeriod(const QString &s);
     static void setApplicationDescription(const QString &s);
     static void setApplicationDescriptionFile(const QString &fileName);
     static void setApplicationChangeLog(const QString &s);

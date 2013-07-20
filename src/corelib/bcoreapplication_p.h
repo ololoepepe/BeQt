@@ -92,6 +92,7 @@ public:
     BPersonInfoProvider *beqtAuthors;
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
+    QString appCopyrightYears;
     QString appDescription;
     QString appChangeLog;
     QString appLicense;

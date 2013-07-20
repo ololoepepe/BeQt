@@ -288,10 +288,10 @@ BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(Standard
                                                 "  --settings - list of all available settings\n"
                                                 "  --all - all of the above (including basic help)");
         l << h;
-        h.usage = "help --about description|changelog|license|authors|translations|thanksto";
+        h.usage = "help --about [description|changelog|license|authors|translations|thanksto]";
         h.description = BTranslation::translate("BTerminalIOHandler", "Show information about this application");
         l << h;
-        h.usage = "help --about-beqt description|changelog|license|authors|translations|thanksto";
+        h.usage = "help --about-beqt [description|changelog|license|authors|translations|thanksto]";
         h.description = BTranslation::translate("BTerminalIOHandler", "Show information about BeQt libraries");
         l << h;
         break;
@@ -765,6 +765,13 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
                 return false;
             }
             d_func()->root->showTree();
+        }
+        else if (args.first() == "--about" || args.first() == "--about-beqt")
+        {
+            if (args.first() == "--about-beqt")
+                writeLine(BCoreApplication::beqtInfo(BCoreApplication::Copyringt));
+            else
+                writeLine(BCoreApplication::applicationInfo(BCoreApplication::Copyringt));
         }
         else if (d_func()->commandHelp.contains(args.first()))
         {
