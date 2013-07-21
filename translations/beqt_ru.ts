@@ -1368,23 +1368,23 @@ Examples: en, en_GB, ru, ru_RU</source>
 <context>
     <name>BSqlDatabase</name>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="408"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="462"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="479"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="510"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="541"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="411"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="465"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="482"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="513"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="544"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="410"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="413"/>
         <source>Database is not opened</source>
         <comment>errorString</comment>
         <translation>База данных не открыта</translation>
     </message>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="413"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="416"/>
         <source>Failed to create query</source>
         <comment>errorString</comment>
         <translation>Не удалось создать запрос</translation>

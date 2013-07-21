@@ -100,7 +100,10 @@ bool BSqlDatabasePrivate::handleOpenOnDemand()
 
 QStringList BSqlDatabase::schemaFromText(const QString &text)
 {
-    QStringList list = text.split(";\n");
+    QStringList sl = text.split('\n');
+    foreach (int i, bRangeD(0, sl.size() - 1))
+        sl[i].remove(QRegExp("\\s*\\-\\-.*$")); //TODO: Not very safe, consider: ... '--'
+    QStringList list = sl.join("\n").split(";\n");
     foreach (int i, bRangeD(0, list.size() - 1))
     {
         list[i].replace('\n', ' ');
