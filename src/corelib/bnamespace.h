@@ -53,9 +53,9 @@ enum RegExpPattern
 enum FileSizeFormat
 {
     BytesFormat,
-    Kilobytes,
-    Megabytes,
-    Gigabytes
+    KilobytesFormat,
+    MegabytesFormat,
+    GigabytesFormat
 };
 
 typedef QPair<const QObject *, const char *> Until;
@@ -114,8 +114,8 @@ B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
 B_CORE_EXPORT void removeTrailingSpaces(QString *s);
 B_CORE_EXPORT TabWidth tabWidthFromInt(int tw);
 B_CORE_EXPORT QString standardRegExpPattern(RegExpPattern type);
-B_CORE_EXPORT QString fileSizeToString(qint64 size, FileSizeFormat format = Bytes, quint8 precision = 1);
-B_CORE_EXPORT QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format = Bytes, quint8 precision = 1);
+B_CORE_EXPORT QString fileSizeToString(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
+B_CORE_EXPORT QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
 
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);

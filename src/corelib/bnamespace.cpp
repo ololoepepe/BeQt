@@ -24,6 +24,8 @@
 #include <QRegExp>
 #include <QMap>
 
+#include <QDebug>
+
 namespace BeQt
 {
 
@@ -165,36 +167,29 @@ QString fileSizeToStringInternal(qint64 sz, FileSizeFormat f, quint8 p)
 {
     if (sz < 0)
         sz = 0;
-        int d = 1;
-    switch (format)
+    int d = 1;
+    int k = 1;
+    switch (f)
     {
     case MegabytesFormat:
         d = Megabyte;
+        k = 1000 * 1000;
         break;
     case KilobytesFormat:
         d = Kilobyte;
+        k = 1000;
         break;
     case BytesFormat:
     default:
         break;
     }
+    QString s = QString::number(sz / d);
+    if (1 == d || !p)
+        return s;
     if (p > 3)
         p = 3;
-    QString s = QString::number(sz / d);
-    if (p)
-        s += ".";
-    while (p--)
-    {
-        sz %= d;
-        d /= 10;
-        qint64 szt = sz / d;
-        if (!p && sz && !szt)
-            s += "1";
-        else
-            s += QString::number(szt);
-    }
-    return s;
-    
+    QString ss = QString::number((double) (((sz % d) * k) / d)).left(p);
+    return s + "." + ss;
 }
 
 //External
@@ -568,7 +563,7 @@ QString fileSizeToString(qint64 size, FileSizeFormat format, quint8 precision)
         s = translate("BeQt", "Byte(s)");
         break;
     }
-    return s + " " + fileSizeToString(size, format, p);
+    return fileSizeToStringInternal(size, format, precision) + " " + s;
 }
 
 QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precision)
@@ -587,7 +582,7 @@ QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precisio
         s = "Byte(s)";
         break;
     }
-    return s + " " + fileSizeToString(size, format, p);
+    return fileSizeToStringInternal(size, format, precision) + " " + s;
 }
 
 #if defined(Q_OS_MAC)

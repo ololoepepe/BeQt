@@ -110,7 +110,10 @@ void BPasswordWidgetPrivate::updateEdit()
     if (pwd.isEncrypted())
     {
         ledt->clear();
-        ledt->setPlaceholderText(QString(pwd.charCountHint() > 0 ? pwd.charCountHint() : 8, '*'));
+        if (pwd.encryptedPassword().isEmpty())
+            ledt->setPlaceholderText(QString(pwd.charCountHint() > 0 ? pwd.charCountHint() : 8, '*'));
+        else
+            ledt->setPlaceholderText("");
     }
     else
     {
