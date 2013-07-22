@@ -161,6 +161,38 @@ QString codecDescriptiveName(const QString &codecName)
     return "";
 }
 
+QString fileSizeToStringInternal(qint64 sz, FileSizeFormat f, quint8 p)
+{
+    if (sz < 0)
+        sz = 0;
+        int d = 1;
+    switch (format)
+    {
+    case MegabytesFormat:
+        d = Megabyte;
+        break;
+    case KilobytesFormat:
+        d = Kilobyte;
+        break;
+    case BytesFormat:
+    default:
+        break;
+    }
+    if (p > 3)
+        p = 3;
+    QString s = QString::number(sz / d);
+    if (p)
+        s += ".";
+    while (p--)
+    {
+        sz %= d;
+        d /= 10;
+        s += QString::number(sz / d);
+    }
+    return s;
+    
+}
+
 //External
 
 int area(const QRect &r)
@@ -514,6 +546,44 @@ QString standardRegExpPattern(RegExpPattern type)
     default:
         return "";
     }
+}
+
+QString fileSizeToString(qint64 size, FileSizeFormat format, quint8 precision)
+{
+    QString s;
+    switch (format)
+    {
+    case MegabytesFormat:
+        s = translate("BeQt", "Megabyte(s)");
+        break;
+    case KilobytesFormat:
+        s = translate("BeQt", "Kilobyte(s)");
+        break;
+    case BytesFormat:
+    default:
+        s = translate("BeQt", "Byte(s)");
+        break;
+    }
+    return s + " " + fileSizeToString(size, format, p);
+}
+
+QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precision)
+{
+    QString s;
+    switch (format)
+    {
+    case MegabytesFormat:
+        s = "Megabyte(s)";
+        break;
+    case KilobytesFormat:
+        s = "Kilobyte(s)";
+        break;
+    case BytesFormat:
+    default:
+        s = "Byte(s)";
+        break;
+    }
+    return s + " " + fileSizeToString(size, format, p);
 }
 
 #if defined(Q_OS_MAC)
