@@ -45,6 +45,11 @@ enum CodecsGroup
     MiddleEastGroup
 };
 
+enum RegExpPattern
+{
+    EmailPattern
+};
+
 typedef QPair<const QObject *, const char *> Until;
 typedef QPair<const QObject *, const char *> Target;
 
@@ -100,6 +105,7 @@ B_CORE_EXPORT CodecsGroup codecsGroupFromInt(int cg);
 B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
 B_CORE_EXPORT void removeTrailingSpaces(QString *s);
 B_CORE_EXPORT TabWidth tabWidthFromInt(int tw);
+B_CORE_EXPORT QString standardRegExpPattern(RegExpPattern type);
 
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);

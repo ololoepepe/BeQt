@@ -501,6 +501,21 @@ TabWidth tabWidthFromInt(int tw)
     return values.contains(tw) ? static_cast<TabWidth>(tw) : TabWidth4;
 }
 
+QString standardRegExpPattern(RegExpPattern type)
+{
+    static const QString email = "^[-a-z0-9!#$%&'*+/=?^_`{|}~]+(?:\\.[-a-z0-9!#$%&'*+/=?^_`{|}~]+)*@"
+        "(?:[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?\\.)*"
+        "(?:aero|arpa|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel|"
+        "[a-z][a-z])$";
+    switch (type)
+    {
+    case EmailPattern:
+        return email;
+    default:
+        return "";
+    }
+}
+
 #if defined(Q_OS_MAC)
 QString macVersionToString(QSysInfo::MacVersion version)
 {
