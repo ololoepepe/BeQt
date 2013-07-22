@@ -53,6 +53,7 @@ protected:
     explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
 public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
+    static StandardDocumentType standardDocumentTypeFromInt(int t);
 public:
     void setDocumentType(int type);
     void setEditFont(const QFont &fnt);

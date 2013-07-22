@@ -1363,6 +1363,12 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     return mdl;
 }
 
+BCodeEditor::StandardDocumentType BCodeEditor::standardDocumentTypeFromInt(int t)
+{
+    static QList<int> Types = bRangeD(StandardDocument, SimpleDocument);
+    return Types.contains(t) ? static_cast<StandardDocumentType>(t) : StandardDocument;
+}
+
 /*============================== Public methods ============================*/
 
 void BCodeEditor::setDocumentType(int type)

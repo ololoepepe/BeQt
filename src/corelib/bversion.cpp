@@ -196,6 +196,10 @@ int BVersion::compare(const BVersion &v1, const BVersion &v2)
         return -1;
     else if (v1.patch() > v2.patch())
         return 1;
+    if (v1.status() != NoStatus && v2.status() == NoStatus)
+        return -1;
+    else if (v1.status() == NoStatus && v2.status() != NoStatus)
+        return 1;
     if (v1.status() < v2.status())
         return -1;
     else if (v1.status() > v2.status())
