@@ -187,7 +187,11 @@ QString fileSizeToStringInternal(qint64 sz, FileSizeFormat f, quint8 p)
     {
         sz %= d;
         d /= 10;
-        s += QString::number(sz / d);
+        qint64 szt = sz / d;
+        if (!p && sz && !szt)
+            s += "1";
+        else
+            s += QString::number(szt);
     }
     return s;
     
