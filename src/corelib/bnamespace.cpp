@@ -168,16 +168,13 @@ QString fileSizeToStringInternal(qint64 sz, FileSizeFormat f, quint8 p)
     if (sz < 0)
         sz = 0;
     int d = 1;
-    int k = 1;
     switch (f)
     {
     case MegabytesFormat:
         d = Megabyte;
-        k = 1000 * 1000;
         break;
     case KilobytesFormat:
         d = Kilobyte;
-        k = 1000;
         break;
     case BytesFormat:
     default:
@@ -188,8 +185,12 @@ QString fileSizeToStringInternal(qint64 sz, FileSizeFormat f, quint8 p)
         return s;
     if (p > 3)
         p = 3;
-    QString ss = QString::number((double) (((sz % d) * k) / d)).left(p);
-    return s + "." + ss;
+    QString ss = QString::number((double) (sz % d) / (double) d).mid(2, p);
+    while (!ss.isEmpty() && ss.at(ss.length() - 1) == '0')
+        ss.remove(ss.length() - 1, 1);
+    if (ss.isEmpty() && (sz % d))
+        ss = "1";
+    return s + (!ss.isEmpty() ? ("." + ss) : QString());
 }
 
 //External

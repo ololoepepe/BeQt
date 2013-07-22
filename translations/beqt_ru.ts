@@ -338,13 +338,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2032"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2038"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2034"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2040"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -1660,53 +1660,53 @@ or request value input</source>
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="461"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="462"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="463"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="464"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="465"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="466"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="467"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="468"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="469"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="470"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="471"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="472"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="556"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="557"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="559"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="560"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="563"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="564"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>
