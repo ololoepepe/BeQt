@@ -10,7 +10,6 @@
 === MINOR ===
 
 * Add ability to change colsole output text color
-* Add a function for converting file size to user-readable string
 
 === MAJOR ===
 
