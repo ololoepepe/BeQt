@@ -204,9 +204,9 @@ int BVersion::compare(const BVersion &v1, const BVersion &v2)
         return -1;
     else if (v1.status() > v2.status())
         return 1;
-    if (v1.extra() < v2.extra())
+    if (v2.extra() != 1 && v1.extra() < v2.extra())
         return -1;
-    else if (v1.extra() > v2.extra())
+    else if (v1.extra() != 1 && v1.extra() > v2.extra())
         return 1;
     return 0;
 }
