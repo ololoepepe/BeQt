@@ -25,7 +25,7 @@ class QPushButton;
 ================================ BSettingsDialogPrivate ======================
 ============================================================================*/
 
-class BSettingsDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)

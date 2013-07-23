@@ -6,6 +6,7 @@
 #include "bsettingsnode.h"
 #include "bcoreapplication.h"
 #include "btranslation.h"
+#include "btexttools.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -385,7 +386,7 @@ QString BTerminalIOHandler::mergeArguments(const QStringList &arguments)
 {
     QString args;
     foreach (const QString &a, arguments)
-        args += (a.contains(' ') ? BeQt::wrapped(a) : a) + " ";
+        args += (a.contains(' ') ? BTextTools::wrapped(a) : a) + " ";
     if ( !args.isEmpty() )
         args.remove(args.length() - 1, 1);
     return args;
@@ -506,7 +507,7 @@ void BTerminalIOHandler::setTerminalTitle(const QString &title)
     QMutexLocker locker2(&BTerminalIOHandlerPrivate::writeMutex);
     BTerminalIOHandlerPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
     BTerminalIOHandlerPrivate::writeStream.flush();
-#elif defined(Q_OS_WINDOWS)
+#elif defined(Q_OS_WIN)
 
     if (sizeof(TCHAR) == > 1)
     {

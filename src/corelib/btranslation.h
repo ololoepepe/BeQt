@@ -7,8 +7,8 @@ class QDataStream;
 class QDebug;
 class QVariant;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include "bglobal.h"
+#include "bbase.h"
 
 #include <QString>
 #include <QMetaType>
@@ -17,7 +17,7 @@ class QVariant;
 ================================ BTranslation ================================
 ============================================================================*/
 
-class BTranslation : public BBase
+class B_CORE_EXPORT BTranslation : public BBase
 {
     B_DECLARE_PRIVATE(BTranslation)
 public:

@@ -62,7 +62,7 @@ public:
 ================================ BAbstractCodeEditorDocumentPrivate ==========
 ============================================================================*/
 
-class BAbstractCodeEditorDocumentPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocumentPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAbstractCodeEditorDocument)

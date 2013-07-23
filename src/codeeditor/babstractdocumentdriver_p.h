@@ -14,7 +14,7 @@ class BCodeEditor;
 ================================ BAbstractDocumentDriverPrivate ==============
 ============================================================================*/
 
-class BAbstractDocumentDriverPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractDocumentDriverPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAbstractDocumentDriver)

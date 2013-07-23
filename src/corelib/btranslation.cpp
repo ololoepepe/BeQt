@@ -1,9 +1,8 @@
 #include "btranslation.h"
-
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQt>
+#include "bglobal.h"
+#include "bbase.h"
+#include "bbase_p.h"
+#include "bnamespace.h"
 
 #include <QObject>
 #include <QString>

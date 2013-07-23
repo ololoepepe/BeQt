@@ -1,4 +1,6 @@
 === BeQt 3.0.0 (xx July 2013) ===
+    * Add BTextTools namespace
+    * Add BTextMatch and BTextMatchList classes
     * Add BVersion class
     * Add BSettingsNode class
     * Add BTranslateFunctor class

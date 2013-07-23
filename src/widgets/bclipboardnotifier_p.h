@@ -12,7 +12,7 @@
 ================================ BClipboardNotifierPrivate ===================
 ============================================================================*/
 
-class BClipboardNotifierPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BClipboardNotifierPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BClipboardNotifier)

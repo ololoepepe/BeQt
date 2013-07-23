@@ -29,7 +29,7 @@ class QVariant;
 ================================ BAbstractCodeEditorDocument =================
 ============================================================================*/
 
-class BAbstractCodeEditorDocument : public QWidget, public BBase
+class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocument : public QWidget, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractCodeEditorDocument)

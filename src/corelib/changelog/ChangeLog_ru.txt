@@ -1,4 +1,6 @@
 === BeQt 3.0.0 (xx июля 2013) ===
+    * Добавлено пространство имён BTextTools
+    * Добавлены классы BTextMatch и BTextMatchList
     * Добавлен класс BVersion
     * Добавлен класс BSettingsNode
     * Добавлен класс BTranslateFunctor

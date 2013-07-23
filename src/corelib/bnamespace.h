@@ -45,11 +45,6 @@ enum CodecsGroup
     MiddleEastGroup
 };
 
-enum RegExpPattern
-{
-    EmailPattern
-};
-
 enum FileSizeFormat
 {
     BytesFormat,
@@ -84,8 +79,6 @@ B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
-B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
-B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT QVariant deserialize(const QByteArray &data, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments);
@@ -110,10 +103,7 @@ B_CORE_EXPORT QString codecsGroupName(CodecsGroup group);
 B_CORE_EXPORT QList<QTextCodec *> codecsForGroup(CodecsGroup group);
 B_CORE_EXPORT QStringList codecNamesForGroup(CodecsGroup group);
 B_CORE_EXPORT CodecsGroup codecsGroupFromInt(int cg);
-B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
-B_CORE_EXPORT void removeTrailingSpaces(QString *s);
 B_CORE_EXPORT TabWidth tabWidthFromInt(int tw);
-B_CORE_EXPORT QString standardRegExpPattern(RegExpPattern type);
 B_CORE_EXPORT QString fileSizeToString(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
 B_CORE_EXPORT QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
 

@@ -38,11 +38,14 @@ HEADERS += \
     bspellcheckerdictionary.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
+    btexttools.h \
     btranslatefunctor.h \
     btranslation.h \
     btranslator.h \
     btranslator_p.h \
-    bversion.h
+    bversion.h \
+    btextmatch.h \
+    btextmatchlist.h
 
 SOURCES += \
     bbase.cpp \
@@ -60,10 +63,13 @@ SOURCES += \
     bspellchecker.cpp \
     bspellcheckerdictionary.cpp \
     bterminaliohandler.cpp \
+    btexttools.cpp \
     btranslatefunctor.cpp \
     btranslation.cpp \
     btranslator.cpp \
-    bversion.cpp
+    bversion.cpp \
+    btextmatch.cpp \
+    btextmatchlist.cpp
 
 ##############################################################################
 ################################ Hunspell ####################################

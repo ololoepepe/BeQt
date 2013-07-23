@@ -15,7 +15,7 @@ class QString;
 ================================ BOperationProgressDialog ====================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BOperationProgressDialog : public BDialog
+class B_NETWORKWIDGETS_EXPORT BOperationProgressDialog : public BDialog
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BOperationProgressDialog)
