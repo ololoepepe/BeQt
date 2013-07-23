@@ -1,6 +1,7 @@
 #include "bnamespace.h"
 #include "bterminaliohandler.h"
 #include "bdirtools.h"
+#include "btexttools.h"
 
 #include <QEventLoop>
 #include <QTimer>
@@ -296,32 +297,6 @@ QUuid uuidFromText(const QString &uuidText)
     return QUuid(canonicalUuidText(uuidText));
 }
 
-QString wrapped(const QString &text, const QString &wrappingText)
-{
-    if (text.isEmpty() || wrappingText.isEmpty())
-        return "";
-    int wl = wrappingText.length();
-    QString ntext = text;
-    if (text.left(wl) != wrappingText)
-        ntext.prepend(wrappingText);
-    if (text.right(wl) != wrappingText)
-        ntext.append(wrappingText);
-    return ntext;
-}
-
-QString unwrapped(const QString &text, const QString &wrappingText)
-{
-    if (text.isEmpty() || wrappingText.isEmpty())
-        return "";
-    int wl = wrappingText.length();
-    QString ntext = text;
-    if (ntext.left(wl) == wrappingText)
-        ntext.remove(0, wl);
-    if (ntext.right(wl) == wrappingText)
-        ntext.remove(ntext.length() - wl, wl);
-    return ntext;
-}
-
 QByteArray serialize(const QVariant &variant, QDataStream::Version version)
 {
     QByteArray data;
@@ -510,42 +485,10 @@ CodecsGroup codecsGroupFromInt(int cg)
     return groups.contains(cg) ? static_cast<CodecsGroup>(cg) : InvalidGroup;
 }
 
-QString removeTrailingSpaces(const QString &s)
-{
-    QString ns = s;
-    removeTrailingSpaces(&ns);
-    return ns;
-}
-
-void removeTrailingSpaces(QString *s)
-{
-    if (!s || s->isEmpty())
-        return;
-    QStringList sl = s->split('\n');
-    foreach (int i, bRangeD(0, sl.size() - 1))
-        sl[i].remove(QRegExp("\\s+$"));
-    *s = sl.join("\n");
-}
-
 TabWidth tabWidthFromInt(int tw)
 {
     static const QList<int> values = bRangeD(TabWidth2, TabWidth8);
     return values.contains(tw) ? static_cast<TabWidth>(tw) : TabWidth4;
-}
-
-QString standardRegExpPattern(RegExpPattern type)
-{
-    static const QString email = "^[-a-z0-9!#$%&'*+/=?^_`{|}~]+(?:\\.[-a-z0-9!#$%&'*+/=?^_`{|}~]+)*@"
-        "(?:[a-z0-9]([-a-z0-9]{0,61}[a-z0-9])?\\.)*"
-        "(?:aero|arpa|asia|biz|cat|com|coop|edu|gov|info|int|jobs|mil|mobi|museum|name|net|org|pro|tel|travel|"
-        "[a-z][a-z])$";
-    switch (type)
-    {
-    case EmailPattern:
-        return email;
-    default:
-        return "";
-    }
 }
 
 QString fileSizeToString(qint64 size, FileSizeFormat format, quint8 precision)
@@ -630,7 +573,7 @@ QString linuxVersion()
     if (!ok || sl.isEmpty())
         return "Unknown";
     sl = sl.last().split('=', QString::SkipEmptyParts);
-    return (sl.size() == 2) ? ("Linux " + unwrapped(sl.last())) : QString("Unknown");
+    return (sl.size() == 2) ? ("Linux " + BTextTools::unwrapped(sl.last())) : QString("Unknown");
 }
 #endif
 

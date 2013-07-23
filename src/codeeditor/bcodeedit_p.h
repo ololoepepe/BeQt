@@ -131,10 +131,6 @@ public:
     static ProcessTextResult processText(const QString &text, int ll, BeQt::TabWidth tw);
     static QString removeUnsupportedSymbols(const QString &text);
     static void removeUnsupportedSymbols(QString *text);
-    static QString appendTrailingSpaces(const QString &s, int ll);
-    static void appendTrailingSpaces(QString *s, int ll);
-    static QString replaceTabs(const QString &s, BeQt::TabWidth tw);
-    static void replaceTabs(QString *s, BeQt::TabWidth tw);
     static QList<QChar> createUnsupportedSymbols();
     static BCodeEdit::SplittedLinesRange createSplittedLinesRange();
     static QString makeBlock(const QString &text, int *length = 0);

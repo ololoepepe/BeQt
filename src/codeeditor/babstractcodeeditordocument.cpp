@@ -7,6 +7,7 @@
 #include "bcodeedit.h"
 #include "bspellchecker.h"
 #include "babstractfiletype_p.h"
+#include "btexttools.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -423,7 +424,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     const BracketPair *br = 0;
     while (tb.isValid())
     {
-        QString text = BeQt::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
+        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
         while (posInBlock >= 0)
         {
             if (testBracket(text, posInBlock, true, br))
@@ -481,7 +482,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     const BracketPair *br = 0;
     while ( tb.isValid() )
     {
-        QString text = BeQt::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
+        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
         while (posInBlock <= text.length())
         {
             if (testBracket(text, posInBlock, false, br))

@@ -7,8 +7,8 @@ class QDataStream;
 class QDebug;
 class QVariant;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include "bglobal.h"
+#include "bbase.h"
 
 #include <QString>
 #include <QMetaType>
