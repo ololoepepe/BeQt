@@ -2,7 +2,7 @@
 #define BPLUGININTERFACE_H
 
 #include "bglobal.h"
-#include "bpersoninfoprovider.h"
+#include "bpersoninfo.h"
 #include "bdirtools.h"
 
 #include <QString>
@@ -35,9 +35,9 @@ public:
         QString website;
         QString description;
         QString changeLog;
-        BPersonInfoProvider::PersonInfoList authors;
-        BPersonInfoProvider::PersonInfoList translators;
-        BPersonInfoProvider::PersonInfoList thanksTo;
+        BPersonInfoList authors;
+        BPersonInfoList translators;
+        BPersonInfoList thanksTo;
         QString license;
     };
 public:

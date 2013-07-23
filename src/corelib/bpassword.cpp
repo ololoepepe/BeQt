@@ -196,7 +196,9 @@ QByteArray BPassword::encryptedPassword(QCryptographicHash::Algorithm a, int *hi
 {
     if (hint)
         *hint = charCountHint();
-    return !d_func()->encrypted.isEmpty() ? d_func()->encrypted : QCryptographicHash::hash(d_func()->open.toUtf8(), a);
+    if (!d_func()->encrypted.isEmpty())
+        return d_func()->encrypted;
+    return !d_func()->open.isEmpty() ? QCryptographicHash::hash(d_func()->open.toUtf8(), a) : QByteArray();
 }
 
 int BPassword::charCountHint(Mode m) const
@@ -267,6 +269,11 @@ bool BPassword::operator ==(const BPassword &other) const
         return d->encrypted == dd->encrypted && d->charCount == dd->charCount && d->algorithm == dd->algorithm;
     else
         return d->open == dd->open;
+}
+
+BPassword::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
 }
 
 /*============================== Public friend operators ===================*/

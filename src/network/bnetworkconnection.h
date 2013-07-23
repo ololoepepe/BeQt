@@ -76,6 +76,8 @@ public:
     void installRequestHandler(const QString &operation, InternalHandler handler);
     void installRequestHandler(const QString &operation, ExternalHandler handler);
     void installRequestHandler(StandardOperation op);
+    void installRequestHandler(StandardOperation op, InternalHandler handler);
+    void installRequestHandler(StandardOperation op, ExternalHandler handler);
     bool isValid() const;
     bool isConnected() const;
     const QUuid uniqueId() const;

@@ -6,6 +6,7 @@ class BSqlResult;
 
 class QSqlDriver;
 class QSqlError;
+class QTextCodec;
 
 #include "bsqlquery.h"
 #include "bsqlwhere.h"
@@ -31,6 +32,10 @@ class B_SQL_EXPORT BSqlDatabase : public BBase
     B_DECLARE_PRIVATE(BSqlDatabase)
     Q_DECLARE_TR_FUNCTIONS(BSqlDatabase)
 public:
+    static QStringList schemaFromText(const QString &text);
+    static QStringList schemaFromFile(const QString &fileName, QTextCodec *codec = 0);
+    static QStringList schemaFromFile(const QString &fileName, const QString &codecName);
+public:
     explicit BSqlDatabase(const QString &type, const QString &connectionName = QLatin1String("defaultConnection"));
     explicit BSqlDatabase(QSqlDriver *driver, const QString &connectionName = QLatin1String("defaultConnection"));
     ~BSqlDatabase();
@@ -44,6 +49,7 @@ public:
     void setUserName(const QString &name);
     void setOpenOnDemand(bool b);
     void setCloseAfterTransaction(bool b);
+    void setRollbackOnCommitFail(bool b);
     void setOnOpenQueries(const QList<BSqlQuery> &list);
     void setOnOpenQueries(const QStringList &list);
     void setOnOpenQuery(const BSqlQuery &q);
@@ -65,6 +71,7 @@ public:
     QString userName() const;
     bool openOnDemand() const;
     bool closeAfterTransaction() const;
+    bool rollbackOnCommitFail() const;
     QList<BSqlQuery> onOpenQueries() const;
     BSqlQuery onOpenQuery() const;
     bool open();
@@ -100,6 +107,10 @@ public:
                       const QString &field2 = QString(), const QVariant &value2 = QVariant(),
                       const BSqlWhere &where = BSqlWhere());
     BSqlResult deleteFrom(const QString &table, const BSqlWhere &where = BSqlWhere());
+    bool initializeFromSchema(const QString &schemaText);
+    bool initializeFromSchema(const QStringList &schema);
+    bool initializeFromSchemaFile(const QString &fileName, QTextCodec *codec = 0);
+    bool initializeFromSchemaFile(const QString &fileName, const QString &codecName);
 protected:
     QSqlDatabase *innerDatabase() const;
 private:

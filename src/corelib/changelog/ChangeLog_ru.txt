@@ -1,3 +1,39 @@
+=== BeQt 3.0.0 (xx июля 2013) ===
+    * Добавлен класс BVersion
+    * Добавлен класс BSettingsNode
+    * Добавлен класс BTranslateFunctor
+    * Добавлен класс BTranslation
+    * Добавлен класс BClipboardNotifier
+    * Добавлен класс BDialog
+    * Добавлен класс BExtendedFileDialog
+    * Добавлен класс BTextCodecMenu
+    * Добавлен класс BTextCodecComboBox
+    * Добавлен класс BLineNumberWidget
+    * Добавлен модуль BeQtNetworkWidgets
+    * Добавлены методы BeQt::serialize() и BeQt::deserialize()
+    * Добавлены обработчики команд "help" и "set" в класс BTerminalIOHandler
+    * Исправлены функции bRet()
+    * Убраны лишние конструкторы в некоторых классах
+    * Улучшен класс BPassword
+    * Улучшен класс BTerminalIOHandler
+    * Улучшен класс BNetworkOperation
+    * Улучшен класс BNetworkConnection
+    * Улучшен класс BSqlDatabase
+    * Улучшен класс BFileDialog
+    * Улучшены классы BSettingsDialog и BAbstractSettingsTab
+    * Улучшен класс BPasswordWidget
+    * Улучшена система ведения логов
+    * Улучшена система переводов
+    * Классы данных теперь можно регистрировать для QVariant и QDataStream
+    * Для асинхронных операций используется QtConcurrent
+    * Courier New сделан моноширинным шрифтом по умолчанию на Windows
+    * Добавлена поддержка картинок в классе BPersonInfoProvider
+    * Улучшено форматирование истории изменений
+    * Добавлена проверка орфографии в текстовом редакторе
+    * Добавлена возможность использовать документы разных типов в BCodeEditor
+    * Улучшена предобработка текста в BeQtCodeEditor
+    * Методы для работы с кодеками перенесены из класса BCodeEditor в пространство имен BeQt
+
 === BeQt 2.1.3 (07 июля 2013) ===
     * Исправлено оповещение о ходе загрузки в классе BSocketWrapper (количество байтов для загрузки)
     * Исправлено оповещение об ошибке/отключении в классе BNetworkConnection

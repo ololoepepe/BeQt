@@ -23,6 +23,10 @@
 #include <QHBoxLayout>
 #include <QMessageBox>
 #include <QStringList>
+#include <QSize>
+#include <QTimer>
+
+#include <QDebug>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -53,20 +57,13 @@ void BSettingsDialogPrivate::init()
       QHBoxLayout *hlt = new QHBoxLayout;
         btnRestoreDefault = new QPushButton(q);
           btnRestoreDefault->setText( tr("Restore default settings", "btn text") );
+          btnRestoreDefault->setEnabled(false);
           connect( btnRestoreDefault, SIGNAL( clicked() ), this, SLOT( btnRestoreDefaultClicked() ) );
         hlt->addWidget(btnRestoreDefault);
         cboxAdvancedMode = new QCheckBox(q);
           cboxAdvancedMode->setText( tr("Show additional settings", "cbox text") );
           connect( cboxAdvancedMode, SIGNAL( stateChanged(int) ), this, SLOT( cboxAdvancedModeStateChanged(int) ) );
           cboxAdvancedMode->setEnabled(false);
-          foreach (BAbstractSettingsTab *t, Tabs)
-          {
-              if ( t->hasAdvancedMode() )
-              {
-                  cboxAdvancedMode->setEnabled(true);
-                  break;
-              }
-          }
         hlt->addWidget(cboxAdvancedMode);
         hlt->addStretch();
       vlt->addLayout(hlt);
@@ -79,6 +76,7 @@ void BSettingsDialogPrivate::init()
             hspltr->addWidget(lstwgt);
             stkdwgt = new QStackedWidget(q);
               connect( lstwgt, SIGNAL( currentRowChanged(int) ), stkdwgt, SLOT( setCurrentIndex(int) ) );
+              connect(stkdwgt, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
             hspltr->addWidget(stkdwgt);
             vlt->addWidget(hspltr);
             twgt = 0;
@@ -98,6 +96,7 @@ void BSettingsDialogPrivate::init()
             lstwgt = 0;
             stkdwgt = 0;
             twgt = new QTabWidget(q);
+            connect(twgt, SIGNAL(currentChanged(int)), this, SLOT(currentChanged(int)));
             vlt->addWidget(twgt);
             foreach (BAbstractSettingsTab *tab, Tabs)
                 twgt->addTab( tab, tab->icon(), tab->title() );
@@ -112,6 +111,7 @@ void BSettingsDialogPrivate::init()
         stkdwgt = 0;
         twgt = 0;
         q->setWindowTitle( q->windowTitle() + ": " + tab->title() );
+        currentChanged();
     }
     else
     {
@@ -133,43 +133,78 @@ void BSettingsDialogPrivate::init()
         wgt->setFocus();
 }
 
+BAbstractSettingsTab *BSettingsDialogPrivate::currentTab() const
+{
+    if (stkdwgt)
+        return Tabs.at(stkdwgt->currentIndex());
+    else if (twgt)
+        return Tabs.at(twgt->currentIndex());
+    else if (!Tabs.isEmpty())
+        return Tabs.first();
+    else
+        return 0;
+}
+
 /*============================== Public slots ==============================*/
 
 void BSettingsDialogPrivate::accepted()
 {
     foreach (BAbstractSettingsTab *t, Tabs)
-        if ( !t->saveSettings() )
+        if (!t->saveSettings())
             return;
     q_func()->accept();
 }
 
 void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
 {
+    BAbstractSettingsTab *tab = currentTab();
+    if (!tab)
+        return;
     bool b = (Qt::Checked == state);
-    foreach (BAbstractSettingsTab *t, Tabs)
-        t->setAdvancedMode(b);
+    if (tab->isInAdvancedMode() != b)
+    {
+        tab->setAdvancedMode(b);
+        QTimer::singleShot(10, this, SLOT(updateSize()));
+    }
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
         wgt->setFocus();
 }
 
+void BSettingsDialogPrivate::currentChanged(int)
+{
+    BAbstractSettingsTab *tab = currentTab();
+    if (!tab)
+        return;
+    btnRestoreDefault->setEnabled(tab->hasDefault());
+    cboxAdvancedMode->setEnabled(tab->hasAdvancedMode());
+    cboxAdvancedMode->setChecked(tab->isInAdvancedMode());
+}
+
 void BSettingsDialogPrivate::btnRestoreDefaultClicked()
 {
-    QMessageBox msg( q_func() );
-    msg.setWindowTitle( tr("", "msgbox windowTitle") );
+    BAbstractSettingsTab *tab = currentTab();
+    if (!tab)
+        return;
+    QMessageBox msg(q_func());
+    msg.setWindowTitle(tr("Restoring default settings", "msgbox windowTitle"));
     msg.setIcon(QMessageBox::Question);
-    msg.setText( tr("You are about to restore the application settings to their default state", "msgbox text") );
-    msg.setInformativeText( tr("All settings changes will be discarded. Do you want to continue?",
-                               "msgbox informativeText") );
+    QString text = tab->restoreDefaultHint();
+    if (text.isEmpty())
+        text = tr("You are about to restore settings to their default state. Do you want to continue?", "msgbox text");
+    msg.setText(text);
     msg.setStandardButtons(QMessageBox::Cancel | QMessageBox::Yes);
     msg.setDefaultButton(QMessageBox::Yes);
     if (msg.exec() == QMessageBox::Yes)
-        foreach (BAbstractSettingsTab *t, Tabs)
-            if ( !t->restoreDefault() )
-                break;
+        tab->restoreDefault();
     QWidget *wgt = cboxAdvancedMode->nextInFocusChain();
     if (wgt)
         wgt->setFocus();
+}
+
+void BSettingsDialogPrivate::updateSize()
+{
+    q_func()->resize(q_func()->sizeHint());
 }
 
 /*============================================================================

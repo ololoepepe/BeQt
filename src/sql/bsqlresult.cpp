@@ -127,9 +127,9 @@ QVariantMap BSqlResult::value() const
     return !d_func()->values.isEmpty() ? d_func()->values.first() : QVariantMap();
 }
 
-QVariant BSqlResult::value(const QString &key) const
+QVariant BSqlResult::value(const QString &key, const QVariant &defValue) const
 {
-    return (!key.isEmpty() && !d_func()->values.isEmpty()) ? d_func()->values.first().value(key) : QVariant();
+    return (!key.isEmpty() && !d_func()->values.isEmpty()) ? d_func()->values.first().value(key, defValue) : defValue;
 }
 
 QVariant BSqlResult::lastInsertId(QVariant::Type t) const

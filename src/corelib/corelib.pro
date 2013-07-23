@@ -22,6 +22,7 @@ HEADERS += \
     blogger_p.h \
     bnamespace.h \
     bpassword.h \
+    bpersoninfo.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \
     bplugininterface.h \
@@ -33,10 +34,12 @@ HEADERS += \
     bspamnotifier.h \
     bspamnotifier_p.h \
     bspellchecker.h \
+    bspellchecker_p.h \
     bspellcheckerdictionary.h \
     bterminaliohandler.h \
     bterminaliohandler_p.h \
     btranslatefunctor.h \
+    btranslation.h \
     btranslator.h \
     btranslator_p.h \
     bversion.h
@@ -58,6 +61,7 @@ SOURCES += \
     bspellcheckerdictionary.cpp \
     bterminaliohandler.cpp \
     btranslatefunctor.cpp \
+    btranslation.cpp \
     btranslator.cpp \
     bversion.cpp
 

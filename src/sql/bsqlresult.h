@@ -35,7 +35,7 @@ public:
     bool success() const;
     BVariantMapList values() const;
     QVariantMap value() const;
-    QVariant value(const QString &key) const;
+    QVariant value(const QString &key, const QVariant &defValue = QVariant()) const;
     QVariant lastInsertId(QVariant::Type t = QVariant::Invalid) const;
     QSqlError lastError() const;
 public:

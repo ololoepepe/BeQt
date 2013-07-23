@@ -22,7 +22,6 @@ class QEvent;
 class QCheckBox;
 class QPushButton;
 class QListWidgetItem;
-class QMenu;
 
 #include "bcodeeditor.h"
 #include "bcodeedit.h"
@@ -36,30 +35,8 @@ class QMenu;
 #include <QString>
 #include <QList>
 #include <QDialog>
-#include <QComboBox>
 #include <QFont>
 #include <QStringList>
-
-/*============================================================================
-================================ StructuredCodecsComboBox ====================
-============================================================================*/
-
-class StructuredCodecsComboBox : public QComboBox
-{
-    Q_OBJECT
-public:
-    explicit StructuredCodecsComboBox(QWidget *parent = 0);
-public:
-    void retranslate();
-    void setCodecName(const QString &codecName);
-    QString codecName() const;
-protected:
-    void showPopup();
-    void hidePopup();
-private:
-    QMenu *mnu;
-    QString cn;
-};
 
 /*============================================================================
 ================================ BSelectDocumentsDialog ======================
@@ -188,6 +165,28 @@ private:
 };
 
 /*============================================================================
+================================ BCloseHandler ===============================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BCloseHandler : public QObject
+{
+    Q_OBJECT
+public:
+    explicit BCloseHandler(BCodeEditorPrivate *parent);
+    ~BCloseHandler();
+public:
+    bool eventFilter(QObject *o, QEvent *e);
+public Q_SLOTS:
+    void processingFinished();
+private:
+    BCodeEditorPrivate *const Editor;
+private:
+    QObject *lastSender;
+private:
+    Q_DISABLE_COPY(BCloseHandler)
+};
+
+/*============================================================================
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
@@ -209,16 +208,6 @@ public:
     static QString defaultFileName();
     static QString createFileName(const QString &fileName, const QString &defaultName,
                                   const QStringList &existingNames);
-    static void removeUnsupportedCodecNames(QStringList &list);
-    static QStringList supportedUnicodeCodecNames();
-    static QStringList supportedEastEuropeanCodecNames();
-    static QStringList supportedWestEuropeanCodecNames();
-    static QStringList supportedEastAsianCodecNames();
-    static QStringList supportedSouthEastSouthWestAsianCodecNames();
-    static QStringList supportedMiddleEastCodecNames();
-    static QStringList supportedCodecNames();
-    static QMap<QTextCodec *, QString> supportedCodecsMap();
-    static QString codecDescriptiveName(const QString &codecName);
 public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);
@@ -244,6 +233,7 @@ public:
     void alreadyOpenedMessage(const QString &fileName);
     int reopenModifiedMessage(const QString &fileName);
     int closeModifiedMessage(const QString &fileName);
+    void showClosingMessage(QWidget *parent);
     BSplittedLinesDialog *createSplittedLinesDialog(BCodeEditorDocument *doc,
                                                     const QList<BCodeEdit::SplittedLinesRange> ranges);
     void emitDefaultCodecChanged(const QString &codecName);
@@ -261,6 +251,7 @@ public:
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
 public Q_SLOTS:
     void createDropHandler();
+    void createCloseHandler();
     void twgtCurrentChanged(int index);
     void twgtTabCloseRequested(int index);
     void documentReadOnlyChanged(bool ro);
@@ -283,7 +274,7 @@ public Q_SLOTS:
     void documentLoadingFinished(bool success);
     void documentSavingFinished(bool success);
 public:
-    BCodeEditor::StandardDocumentType docType;
+    int docType;
     QMap<QString, BAbstractEditorModule *> modules;
     BAbstractCodeEditorDocument *document;
     QMap<BAbstractCodeEditorDocument *, QString> openingDocuments;
@@ -305,13 +296,16 @@ public:
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *preferredFileType;
     BDropHandler *dropHandler;
+    BCloseHandler *closeHandler;
     QStringList fileHistory;
     int maxHistoryCount;
     QVBoxLayout *vlt;
       QTabWidget *twgt;
 private:
-    Q_DISABLE_COPY(BCodeEditorPrivate)
     friend class BDropHandler;
+    friend class BCloseHandler;
+private:
+    Q_DISABLE_COPY(BCodeEditorPrivate)
 };
 
 #endif // BCODEEDITOR_P_H

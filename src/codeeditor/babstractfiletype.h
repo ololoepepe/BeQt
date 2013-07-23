@@ -64,9 +64,6 @@ protected:
     void setFormat(int start, int count, const QColor &color);
     void setFormat(int start, int count, const QFont &font);
 private:
-    void setCurrentHighlighter(BSyntaxHighlighter *highlighter);
-    BSyntaxHighlighter *currentHighlighter() const;
-private:
     friend class BSyntaxHighlighter;
 };
 

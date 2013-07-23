@@ -92,8 +92,9 @@ void BRemoteLoggerPrivate::tryLogToRemote(const QString &text, BLogger::Level lv
         m.insert("text", text);
         m.insert("level", lvl);
         BNetworkOperation *op = c->sendRequest("", m);
-        op->waitForFinished(timeout);
-        op->deleteLater();
+        op->setAutoDelete(true);
+        op->setStartTimeout();
+        op->setFinishTimeout();
     }
 }
 

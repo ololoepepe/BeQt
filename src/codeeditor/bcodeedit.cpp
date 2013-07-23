@@ -586,8 +586,12 @@ bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
 {
-    static const int ContorlShiftModifier = ( (int) Qt::ControlModifier | (int) Qt::ShiftModifier );
-    static const int KeypadControlModifier = ( (int) Qt::KeypadModifier | (int) Qt::ControlModifier);
+    static const int ContorlShiftModifier = ((int) Qt::ControlModifier | (int) Qt::ShiftModifier);
+    static const int KeypadControlModifier = ((int) Qt::KeypadModifier | (int) Qt::ControlModifier);
+    static const int KeypadShiftModifier = ((int) Qt::KeypadModifier | (int) Qt::ShiftModifier);
+    static const int KeypadAltModifier = ((int) Qt::KeypadModifier | (int) Qt::AltModifier);
+    static const int KeypadControlShiftModifier = ((int) Qt::KeypadModifier | ContorlShiftModifier);
+    static const int KeypadControlAltModifier = (KeypadAltModifier | (int) Qt::ControlModifier);
     int modifiers = e->modifiers();
     int key = e->key();
     switch (modifiers)
@@ -656,6 +660,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_S:
             return !q_func()->isModified(); //Workaround to prevent entering 'S' when 'Save' action is disabled
             //Very "dirty" workaround. Maybe a Qt bug?
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
         default:
             break;
         }
@@ -675,6 +682,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_End:
             handleShiftEnd();
             return true;
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
         default:
             break;
         }
@@ -688,6 +698,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Down:
             move(key);
             return true;
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
         default:
             break;
         }
@@ -697,6 +710,22 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         {
         case Qt::Key_Z:
             q_func()->redo();
+            return true;
+        case Qt::Key_Return:
+            handleReturn();
+            return true;
+        default:
+            break;
+        }
+        break;
+    case KeypadShiftModifier:
+    case KeypadAltModifier:
+    case KeypadControlShiftModifier:
+    case KeypadControlAltModifier:
+        switch (key)
+        {
+        case Qt::Key_Enter:
+            handleReturn();
             return true;
         default:
             break;
@@ -720,6 +749,9 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         {
         case Qt::Key_End:
             handleEnd(true);
+            return true;
+        case Qt::Key_Enter:
+            handleReturn();
             return true;
         default:
             break;
@@ -840,9 +872,9 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
 {
     if ( txt.isEmpty() )
        return setTextToEmptyLine();
-    setBuisy(true);
     if (asyncIfLongerThan > 0 && txt.length() > asyncIfLongerThan)
     {
+        setBuisy(true);
         ptedt->setEnabled(false);
         ptedt->setPlainText( tr("Processing content, please wait...", "ptedt text") );
         ProcessTextResultFuture future = QtConcurrent::run(&BCodeEditPrivate::processText, txt, lineLength, tabWidth);
@@ -861,7 +893,6 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
         blockHighlighter(false);
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
-        setBuisy(false);
     }
 }
 
@@ -877,7 +908,6 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
 {
     if (q_func()->isBuisy())
         return;
-    setBuisy(true);
     QTextCursor tc = ptedt->textCursor();
     tc.beginEditBlock();
     QList<BCodeEdit::SplittedLinesRange> ranges;
@@ -885,10 +915,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     if (range.firstLineNumber >= 0)
         ranges << range;
     if ( txt.isEmpty() )
-    {
-        tc.endEditBlock();
-        return setBuisy(false);
-    }
+        return tc.endEditBlock();
     tc = ptedt->textCursor();
     int initialPos = tc.position();
     int finalPos = -1;
@@ -903,7 +930,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     bool b = blockMode && !asKeyPress && testBlock(sl, &blen);
     if (b)
     {
-        //TODO (release 3.0.0): Improve text insertion in block mode
+        //TODO: Improve text insertion in block mode
         int offset = ltext.length();
         QTextBlock tb = tc.block();
         int  i = 0;
@@ -1021,7 +1048,6 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
         requestRehighlightBlock(initialBlock);
     }
     tc.endEditBlock();
-    setBuisy(false);
     emitLinesSplitted(ranges);
     q_func()->setFocus();
     ptedt->ensureCursorVisible();
@@ -1148,11 +1174,15 @@ void BCodeEditPrivate::handleBackspace()
     {
         int pos = tc.position();
         tc.setPosition(pos - 1);
-        tc.setPosition(pos, QTextCursor::KeepAnchor);
-        tc.removeSelectedText();
-        tc.movePosition(QTextCursor::EndOfBlock);
-        tc.insertText(" ");
-        tc.setPosition(pos - 1);
+        QString text = tc.block().text();
+        if (text.at(posb - 1) != ' ' || BeQt::removeTrailingSpaces(text).length() >= posb)
+        {
+            tc.setPosition(pos, QTextCursor::KeepAnchor);
+            tc.removeSelectedText();
+            tc.movePosition(QTextCursor::EndOfBlock);
+            tc.insertText(" ");
+            tc.setPosition(pos - 1);
+        }
     }
     else
     {
@@ -1781,7 +1811,7 @@ int BCodeEdit::replaceInSelection(const QString &text, const QString &newText, Q
     int end = tc.selectionEnd();
     if (d->blockMode)
     {
-        //TODO (release 3.0.0): Improve replacing
+        //TODO: Improve replacing
         BPlainTextEditExtended::SelectionRange r = d->ptedt->selectionRanges().first();
         int plen = r.end - r.start;
         int min = r.start;

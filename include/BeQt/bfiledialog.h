@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bfiledialog.h"
+#include "../BeQtWidgets/bfiledialog.h"

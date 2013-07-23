@@ -6,6 +6,7 @@
 #include "btextblockuserdata.h"
 #include "bcodeedit.h"
 #include "bspellchecker.h"
+#include "babstractfiletype_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -123,9 +124,9 @@ void BSyntaxHighlighter::highlightBlock(const QString &text)
     BAbstractFileType *ft = EditorDocument ? EditorDocument->fileType() : 0;
     if (ft)
     {
-        ft->setCurrentHighlighter(this);
+        ft->d_func()->highlighter = this;
         ft->highlightBlock(text);
-        ft->setCurrentHighlighter(0);
+        ft->d_func()->highlighter = 0;
     }
     BSpellChecker *sc = EditorDocument ? EditorDocument->spellChecker() : 0;
     if (sc)
@@ -140,7 +141,15 @@ void BSyntaxHighlighter::highlightBlock(const QString &text)
             }
             else if (!w.isEmpty())
             {
-                if (!sc->spell(w))
+                QString sleft;
+                int j = i - w.length() - 1;
+                while (j >= 0 && !text.at(j).isSpace())
+                    sleft.prepend(text.at(j--));
+                QString sright;
+                j = i;
+                while (j < text.length() && !text.at(j).isSpace())
+                    sright.append(text.at(j++));
+                if (!sc->spell(w, sleft, sright))
                 {
                     foreach (int j, bRangeD(i - w.length(), i - 1))
                     {
@@ -222,6 +231,7 @@ void BAbstractCodeEditorDocumentPrivate::init()
     QVBoxLayout *vlt = new QVBoxLayout(q_func());
       vlt->setContentsMargins(0, 0, 0, 0);
     edit = 0;
+    document = 0;
     highlighter = 0;
     fileType = BAbstractFileType::defaultFileType();
     recognizedBrackets = fileType->brackets();
@@ -242,12 +252,14 @@ void BAbstractCodeEditorDocumentPrivate::init()
 
 bool BAbstractCodeEditorDocumentPrivate::createEdit()
 {
-    QTextDocument *doc = 0;
-    edit = q_func()->createEdit(&doc);
+    edit = q_func()->createEdit(&document);
     if (!edit)
+    {
+        document = 0;
         return false;
+    }
     static_cast<QVBoxLayout *>(q_func()->layout())->addWidget(edit);
-    highlighter = new BSyntaxHighlighter(q_func(), doc);
+    highlighter = new BSyntaxHighlighter(q_func(), document);
     BCodeEdit *cedt = qobject_cast<BCodeEdit *>(edit);
     if (cedt)
     {
@@ -269,6 +281,8 @@ void BAbstractCodeEditorDocumentPrivate::setBuisy(bool b)
         return;
     buisy = b;
     QMetaObject::invokeMethod(q_func(), "buisyChanged", Q_ARG(bool, b));
+    if (!b)
+        QMetaObject::invokeMethod(q_func(), "allProcessingFinished");
 }
 
 void BAbstractCodeEditorDocumentPrivate::setFileName(QString fn)
@@ -287,7 +301,7 @@ void BAbstractCodeEditorDocumentPrivate::setCodec(QTextCodec *c)
     bool b = (c != codec);
     codec = c;
     if (b)
-        QMetaObject::invokeMethod(q_func(), "codecChanged", Q_ARG(QString, BCodeEditor::codecName(c)));
+        QMetaObject::invokeMethod(q_func(), "codecChanged", Q_ARG(QString, BeQt::codecName(c)));
 }
 
 void BAbstractCodeEditorDocumentPrivate::rehighlight()
@@ -558,13 +572,23 @@ QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &
     int i = p;
     while (i >= 0 && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
         w.prepend(text.at(i--));
+    int wbl = i;
     wordToReplace.first = tc.block().position() + i + 1;
     i = p + 1;
     while (i < text.length() && (text.at(i).isLetterOrNumber() || text.at(i) == '_'))
         w.append(text.at(i++));
+    int wbr = i;
     wordToReplace.second = wordToReplace.first + w.length();
     if (w.isEmpty())
         return 0;
+    QString sleft;
+    i = wbl;
+    while (i >= 0 && !text.at(i).isSpace())
+        sleft.prepend(text.at(i--));
+    QString sright;
+    i = wbr;
+    while (i < text.length() && !text.at(i).isSpace())
+        sright.append(text.at(i++));
     QMenu *mnu = new QMenu(tr("Spell check", "mnu title"));
     mnu->setEnabled(!readOnly);
     QStringList suggestions = spellChecker->suggest(w);
@@ -575,7 +599,7 @@ QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &
     if (!suggestions.isEmpty())
         mnu->addSeparator();
     bool implicitly = false;
-    if (spellChecker->isIgnored(w, &implicitly) && !implicitly)
+    if (spellChecker->isIgnored(&implicitly, w, sleft, sright) && !implicitly)
         mnu->addAction(tr("Remove from ignore list", "act text"), this,
                        SLOT(dontIgnoreWord()))->setProperty("beqt/word", w);
     else if (!spellChecker->spell(w))
@@ -605,11 +629,11 @@ void BAbstractCodeEditorDocumentPrivate::loadingFinished(const BAbstractDocument
         if (operation.codec)
             setCodec(operation.codec);
         q_func()->setText(text);
-        q_func()->setModification(true);
+        q_func()->setModification(false);
         q_func()->clearUndoRedoStacks(QTextDocument::UndoAndRedoStacks);
     }
-    QMetaObject::invokeMethod(q_func(), "loadingFinished", Q_ARG(bool, success));
     setBuisy(false);
+    QMetaObject::invokeMethod(q_func(), "loadingFinished", Q_ARG(bool, success));
 }
 
 void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentDriver::Operation &operation,
@@ -628,8 +652,8 @@ void BAbstractCodeEditorDocumentPrivate::savingFinished(const BAbstractDocumentD
             setCodec(operation.codec);
         q_func()->setModification(false);
     }
-    QMetaObject::invokeMethod(q_func(), "savingFinished", Q_ARG(bool, success));
     setBuisy(false);
+    QMetaObject::invokeMethod(q_func(), "savingFinished", Q_ARG(bool, success));
 }
 
 void BAbstractCodeEditorDocumentPrivate::replaceWord()
@@ -771,6 +795,12 @@ void BAbstractCodeEditorDocument::setBracketHighlightingEnabled(bool enabled)
 
 void BAbstractCodeEditorDocument::setSpellChecker(BSpellChecker *sc)
 {
+    if (sc == d_func()->spellChecker)
+        return;
+    if (d_func()->spellChecker)
+        disconnect(d_func()->spellChecker, SIGNAL(changed()), this, SLOT(rehighlight()));
+    if (sc)
+        connect(sc, SIGNAL(changed()), this, SLOT(rehighlight()));
     d_func()->spellChecker = sc;
     d_func()->highlighter->rehighlight();
 }
@@ -843,15 +873,6 @@ bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCod
         return false;
     }
     return true;
-}
-
-bool BAbstractCodeEditorDocument::waitForProcessed(int msecs)
-{
-    B_D(BAbstractCodeEditorDocument);
-    if (!d->buisy)
-        return true;
-    BeQt::waitNonBlocking(this, SIGNAL(buisyChanged(bool)), msecs);
-    return !d->buisy;
 }
 
 bool BAbstractCodeEditorDocument::isReadOnly() const
@@ -972,10 +993,10 @@ void BAbstractCodeEditorDocument::setText(const QString &txt)
 {
     if (txt.isEmpty())
        return setTextImplementation(txt);
-    setBuisy(true);
     TextProcessingFunction f = textPreprocessingFunction();
     if (f && shouldProcessAsynchronously(txt))
     {
+        setBuisy(true);
         innerEdit()->setEnabled(false);
         setTextImplementation(tr("Processing content, please wait..."));
         BAbstractCodeEditorDocumentPrivate::TextProcessingResultFuture future =
@@ -993,7 +1014,6 @@ void BAbstractCodeEditorDocument::setText(const QString &txt)
         blockHighlighter(false);
         moveCursorImplementation(QPoint(0, 0));
         setFocusImplementation();
-        setBuisy(false);
         afterPreprocessing(res.userData);
     }
     else
@@ -1175,7 +1195,7 @@ QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
 
 QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
 {
-    return d_func()->highlighter ? d_func()->highlighter->document() : 0;
+    return d_func()->document;
 }
 
 /*============================== Protected slots ===========================*/
@@ -1260,5 +1280,5 @@ void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)
 
 void BAbstractCodeEditorDocument::setBuisy(bool buisy)
 {
-    Q_EMIT buisyChanged(buisy);
+    d_func()->setBuisy(buisy);
 }

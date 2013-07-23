@@ -88,6 +88,8 @@ BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOper
 {
     BNetworkOperation *op = new BNetworkOperation(metaData, q_func());
     operations.insert(op, metaData);
+    if (autoDelete && !metaData.isRequest())
+        op->setAutoDelete(true);
     connect(op, SIGNAL(canceled()), this, SLOT(operationCanceled()));
     connect(op, SIGNAL(destroyed(QObject *)), this, SLOT(operationDestroyed(QObject *)));
     return op;
@@ -235,10 +237,7 @@ void BNetworkConnectionPrivate::dataSent(const BNetworkOperationMetaData &metaDa
         if (loggingMode >= BNetworkConnection::DetailedLogging)
             q->log((translations ? tr("Reply sent:", "log text") : QString("Reply sent:")) + " "
                    + metaData.operation());
-        if (autoDelete)
-            op->deleteLater();
-        else
-            QMetaObject::invokeMethod( q, "replySent", Q_ARG(BNetworkOperation *, op) );
+        QMetaObject::invokeMethod(q, "replySent", Q_ARG(BNetworkOperation *, op));
     }
     sendNext();
 }
@@ -480,6 +479,16 @@ void BNetworkConnection::installRequestHandler(StandardOperation op)
     installRequestHandler(operation(op), requestHandler(op));
 }
 
+void BNetworkConnection::installRequestHandler(StandardOperation op, InternalHandler handler)
+{
+    installRequestHandler(operation(op), handler);
+}
+
+void BNetworkConnection::installRequestHandler(StandardOperation op, ExternalHandler handler)
+{
+    installRequestHandler(operation(op), handler);
+}
+
 bool BNetworkConnection::isValid() const
 {
     const B_D(BNetworkConnection);
@@ -649,8 +658,9 @@ BSocketWrapper *BNetworkConnection::socketWrapper() const
 bool BNetworkConnection::handleNoopRequest(BNetworkOperation *op)
 {
     op->reply();
-    op->waitForFinished();
-    op->deleteLater();
+    op->setAutoDelete(true);
+    op->setStartTimeout();
+    op->setFinishTimeout();
     return true;
 }
 
@@ -660,8 +670,9 @@ bool BNetworkConnection::handleWriteRequest(BNetworkOperation *op)
     QString text = m.value("text").toString();
     BTerminalIOHandler::write(text);
     op->reply();
-    op->waitForFinished();
-    op->deleteLater();
+    op->setAutoDelete(true);
+    op->setStartTimeout();
+    op->setFinishTimeout();
     return true;
 }
 
@@ -672,7 +683,8 @@ bool BNetworkConnection::handleLogRequest(BNetworkOperation *op)
     BLogger::Level lvl = static_cast<BLogger::Level>(m.value("level").toInt());
     log(text, lvl);
     op->reply();
-    op->waitForFinished();
-    op->deleteLater();
+    op->setAutoDelete(true);
+    op->setStartTimeout();
+    op->setFinishTimeout();
     return true;
 }

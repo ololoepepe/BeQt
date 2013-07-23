@@ -246,6 +246,9 @@ A: There are almost no restrictions. You may use BeQt as you wish,
 but don't forget that this statement doesn't apply to the Qt libraries.
 See: COPYING.txt, http://qt-project.org/products/licensing for details.
 
+Q: Where can I get Hunspell dictionaries?
+A: http://wiki.openoffice.org/wiki/Dictionaries or https://google.com
+
 Q: I'm having troubles using BeQt, where can I get help?
 A: E-mail/Jabber: ololoepepe@gmail.com
 

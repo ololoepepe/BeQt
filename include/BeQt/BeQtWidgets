@@ -7,6 +7,7 @@
 #include "bapplication.h"
 #include "bclipboardnotifier.h"
 #include "bdialog.h"
+#include "bfiledialog.h"
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"
@@ -18,5 +19,7 @@
 #include "bpluginssettingstab.h"
 #include "bsettingsdialog.h"
 #include "bterminalwidget.h"
+#include "btextcodeccombobox.h"
+#include "btextcodecmenu.h"
 
 #endif //BEQT_BEQTWIDGETS_MODULE_H

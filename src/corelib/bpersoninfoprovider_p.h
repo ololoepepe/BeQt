@@ -4,6 +4,7 @@
 class QString;
 
 #include "bpersoninfoprovider.h"
+#include "bpersoninfo.h"
 
 #include "bglobal.h"
 #include "bbase_p.h"
@@ -21,13 +22,12 @@ class B_CORE_EXPORT BPersonInfoProviderPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BPersonInfoProvider)
 public:
-    typedef QMap<QString, BPersonInfoProvider::PersonInfo> PersonInfoMap;
+    typedef QMap<QString, BPersonInfo> PersonInfoMap;
 public:
     explicit BPersonInfoProviderPrivate(BPersonInfoProvider *q);
     ~BPersonInfoProviderPrivate();
 public:
-    static BPersonInfoProvider::PersonInfo infoForLocale(const PersonInfoMap &map, const QString &localeName,
-                                                         bool noDefault);
+    static BPersonInfo infoForLocale(const PersonInfoMap &map, const QString &localeName, bool noDefault);
     static void tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what);
 public:
     void init();

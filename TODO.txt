@@ -5,34 +5,12 @@
 
 === PATCH ===
 
-[done] Update READMEs
-[done] Update infos
+
 
 === MINOR ===
 
-[done] Add BVersion class
-[done] Add BSettingsNode class
-[done] Add BTranslateFunctor class
-[done] Add BDialog class
-[done] Add "help" handler to BTerminalIOHandler
-[done] Add "set" handler to BTerminalIOHandler
-[done] Add BeQt::serialize() and BeQt::deserialize() methods
-[done] Improve BPassword class
-[done] Register container classes for QVariant and QDataStream
-[done] Add BeQtNetworkWidgets module
+* Add ability to change colsole output text color
 
 === MAJOR ===
 
-[done] Improve BTerminalIOHandler and BNetworkConnection handler methods
-[done] Improve translation system
-[done] Improve BPasswordWidget
-[done] Add image support to person info system
-[done] Improve logging system
-[done] Add spell checking support to code editor
-[done] Remove extra constructors from some classes
-[done] Use QtConcurrent for BCodeEditor asynchronous operations
-[done] Add ability to use documents of different type in BCodeEditor
-[done] Add BClipboardNotifier class
-[done] Make Courier New the default monospaced font on Windows
-[done] Make BLineNumberWidget reusable
-[done] Improve BeQtCodeEditor text preprocessing
+

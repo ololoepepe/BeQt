@@ -124,6 +124,7 @@ public:
     BCodeEditor *const Editor;
 public:
     QWidget *edit;
+    QTextDocument *document;
     BSyntaxHighlighter *highlighter;
     BAbstractFileType *fileType;
     BracketPairList recognizedBrackets;

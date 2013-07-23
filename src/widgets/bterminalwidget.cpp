@@ -139,7 +139,7 @@ bool BTerminalWidgetPrivate::handleKeyPress(int key, int modifiers)
     B_Q(BTerminalWidget);
     QTextCursor tc = ptedt->textCursor();
     QTextBlock tb = tc.block();
-    if (key >= Qt::Key_Left && key <= Qt::Key_Down) //TODO (release 3.0.0): Implement history using arrow keys
+    if (key >= Qt::Key_Left && key <= Qt::Key_Down) //TODO: Implement history using arrow keys
         return false;
     if (key == terminatingKey && modifiers == terminatingModifiers)
     {

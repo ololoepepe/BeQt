@@ -5,6 +5,7 @@ class BPasswordPrivate;
 
 class QDataStream;
 class QDebug;
+class QVariant;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -54,6 +55,7 @@ public:
 public:
     BPassword &operator =(const BPassword &other);
     bool operator ==(const BPassword &other) const;
+    operator QVariant() const;
 public:
     friend QDataStream &operator <<(QDataStream &stream, const BPassword &pwd);
     friend QDataStream &operator >>(QDataStream &stream, BPassword &pwd);

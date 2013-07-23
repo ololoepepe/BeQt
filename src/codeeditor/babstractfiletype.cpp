@@ -2,6 +2,7 @@ class QColor;
 class QFont;
 
 #include "babstractfiletype.h"
+#include "babstractfiletype_p.h"
 #include "bcodeedit.h"
 #include "btextblockuserdata.h"
 #include "babstractcodeeditordocument_p.h"
@@ -42,24 +43,6 @@ protected:
     static BDefaultFileType *_m_self;
 protected:
     void highlightBlock(const QString &text);
-};
-
-/*============================================================================
-================================ BAbstractFileTypePrivate ====================
-============================================================================*/
-
-class BAbstractFileTypePrivate : public BBasePrivate
-{
-    B_DECLARE_PUBLIC(BAbstractFileType)
-public:
-    explicit BAbstractFileTypePrivate(BAbstractFileType *q);
-    ~BAbstractFileTypePrivate();
-public:
-    void init();
-public:
-    BSyntaxHighlighter *highlighter;
-private:
-    Q_DISABLE_COPY(BAbstractFileTypePrivate)
 };
 
 /*============================================================================
@@ -292,16 +275,4 @@ void BAbstractFileType::setFormat(int start, int count, const QFont &font)
     if (!d_func()->highlighter)
         return;
     d_func()->highlighter->setFormat(start, count, font);
-}
-
-/*============================== Private methods ===========================*/
-
-void BAbstractFileType::setCurrentHighlighter(BSyntaxHighlighter *highlighter)
-{
-    d_func()->highlighter = highlighter;
-}
-
-BSyntaxHighlighter *BAbstractFileType::currentHighlighter() const
-{
-    return d_func()->highlighter;
 }

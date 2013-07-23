@@ -15,6 +15,7 @@ class QTextCodec;
 #include "bglobal.h"
 #include "bbase.h"
 #include "blogger.h"
+#include "bpersoninfo.h"
 
 #include <QObject>
 #include <QLocale>
@@ -56,8 +57,9 @@ public:
 #endif
         BuiltinResources
     };
-    enum BeQtInfo
+    enum About
     {
+        Copyringt,
         Description,
         ChangeLog,
         License,
@@ -100,7 +102,21 @@ public:
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
     static void loadSettings();
     static void saveSettings();
-    static QString beqtInfo( BeQtInfo type, const QLocale &loc = locale() );
+    static void setApplicationCopyrightPeriod(const QString &s);
+    static void setApplicationDescription(const QString &s);
+    static void setApplicationDescriptionFile(const QString &fileName);
+    static void setApplicationChangeLog(const QString &s);
+    static void setApplicationChangeLogFile(const QString &fileName);
+    static void setApplicationLicense(const QString &s);
+    static void setApplicationLicenseFile(const QString &fileName);
+    static void setApplicationAuthors(const BPersonInfoList &list);
+    static void setApplicationAuthorsFile(const QString &fileName);
+    static void setApplicationTranslations(const BPersonInfoList &list);
+    static void setApplicationTranslationsFile(const QString &fileName);
+    static void setApplicationThanksTo(const BPersonInfoList &list);
+    static void setApplicationThanksToFile(const QString &fileName);
+    static QString applicationInfo(About type, const QLocale &loc = locale());
+    static QString beqtInfo(About type, const QLocale &loc = locale());
     static void setLogger(BLogger *l);
     static BLogger *logger();
     static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);

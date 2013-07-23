@@ -5,6 +5,7 @@ class BSettingsNodePrivate;
 
 #include "bglobal.h"
 #include "bbase.h"
+#include "btranslation.h"
 
 #include <QString>
 #include <QList>
@@ -21,8 +22,8 @@ class B_CORE_EXPORT BSettingsNode : public BBase
     Q_DECLARE_TR_FUNCTIONS(BSettingsNode)
     B_DECLARE_PRIVATE(BSettingsNode)
 public:
-    typedef bool (*SetFunction)(QVariant &);
-    typedef bool (*ShowFunction)(const QVariant &);
+    typedef bool (*SetFunction)(const BSettingsNode *, const QVariant &);
+    typedef bool (*ShowFunction)(const BSettingsNode *, const QVariant &);
 public:
     explicit BSettingsNode(BSettingsNode *parent = 0);
     explicit BSettingsNode(const QString &key, BSettingsNode *parent = 0);
@@ -35,7 +36,8 @@ public:
     void setParent(BSettingsNode *parent);
     void setKey(const QString &key);
     void setType(QVariant::Type type);
-    void setDescription(const QString &s);
+    void setSecureInput(bool b);
+    void setDescription(const BTranslation &t);
     void setUserSetFunction(SetFunction f);
     void setUserShowFunction(ShowFunction f);
     void addChild(BSettingsNode *node);
@@ -55,7 +57,8 @@ public:
     int childCount() const;
     QString key() const;
     QVariant::Type type() const;
-    QString description() const;
+    bool secureInput() const;
+    BTranslation description() const;
     SetFunction userSetFunction() const;
     ShowFunction userShowFunction() const;
 private:

@@ -3,6 +3,7 @@
 #include "bbase_p.h"
 #include "bterminaliohandler.h"
 #include "bcoreapplication.h"
+#include "btranslation.h"
 
 #include <QString>
 #include <QList>
@@ -31,7 +32,8 @@ public:
     QList<BSettingsNode *> childNodes;
     QString key;
     QVariant::Type type;
-    QString description;
+    bool secure;
+    BTranslation description;
     BSettingsNode::SetFunction setFunction;
     BSettingsNode::ShowFunction showFunction;
 private:
@@ -63,6 +65,7 @@ void BSettingsNodePrivate::init()
 {
     parentNode = 0;
     type = QVariant::String;
+    secure = false;
     setFunction = 0;
     showFunction = 0;
 }
@@ -166,9 +169,14 @@ void BSettingsNode::setType(QVariant::Type type)
     d_func()->type = type;
 }
 
-void BSettingsNode::setDescription(const QString &s)
+void BSettingsNode::setSecureInput(bool b)
 {
-    d_func()->description = s;
+    d_func()->secure = b;
+}
+
+void BSettingsNode::setDescription(const BTranslation &t)
+{
+    d_func()->description = t;
 }
 
 void BSettingsNode::setUserSetFunction(SetFunction f)
@@ -261,17 +269,21 @@ bool BSettingsNode::set(QString path, QString text, QChar separator) const
     if (!n)
         return false;
     QVariant v;
-    if (n->userSetFunction() && !n->userSetFunction()(v))
-        return false;
+    if (n->userSetFunction())
+        return n->userSetFunction()(n, v);
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
-    QString s = BTerminalIOHandler::readLine(text.replace("%k", path.split("/").last()));
+    QString t = text.replace("%k", path.split("/").last());
+    QString s = n->secureInput() ? bReadLineSecure(t) : bReadLine(t);
     bool ok = false;
     v = stringToVariant(s, n->type(), &ok);
     if (!ok)
         return false;
-    bSettings->setValue(path, v);
+    if (path == "BeQt/Core/locale")
+        BCoreApplication::setLocale(v.toLocale());
+    else
+        bSettings->setValue(path, v);
     return true;
 }
 
@@ -281,12 +293,15 @@ bool BSettingsNode::set(QString path, QVariant value, QChar separator) const
     if (!n)
         return false;
     QVariant v = value;
-    if (n->userSetFunction() && !n->userSetFunction()(v))
-        return false;
+    if (n->userSetFunction())
+        return n->userSetFunction()(n, v);
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
-    bSettings->setValue(path, v);
+    if (path == "BeQt/Core/locale")
+        BCoreApplication::setLocale(v.toLocale());
+    else
+        bSettings->setValue(path, v);
     return true;
 }
 
@@ -304,8 +319,8 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
         separator = '.';
     path.replace(separator, '/');
     QVariant v = bSettings->value(path);
-    if (n->userShowFunction() && !n->userShowFunction()(v))
-        return false;
+    if (n->userShowFunction())
+        return n->userShowFunction()(n, v);
     bool ok = false;
     QString vs = variantToString(v, &ok);
     if (!ok)
@@ -319,6 +334,7 @@ BSettingsNode *BSettingsNode::clone(BSettingsNode *parent) const
     BSettingsNode *root = new BSettingsNode(parent);
     root->setKey(key());
     root->setType(type());
+    root->setSecureInput(secureInput());
     root->setDescription(description());
     root->setUserSetFunction(userSetFunction());
     root->setUserShowFunction(userShowFunction());
@@ -352,17 +368,28 @@ QVariant::Type BSettingsNode::type() const
     return d_func()->type;
 }
 
-QString BSettingsNode::description() const
+bool BSettingsNode::secureInput() const
+{
+    return d_func()->secure;
+}
+
+BTranslation BSettingsNode::description() const
 {
     return d_func()->description;
 }
 
 BSettingsNode::SetFunction BSettingsNode::userSetFunction() const
 {
-    return d_func()->setFunction;
+    if (d_func()->setFunction)
+        return d_func()->setFunction;
+    BSettingsNode *pn = d_func()->parentNode;
+    return pn ? pn->userSetFunction() : 0;
 }
 
 BSettingsNode::ShowFunction BSettingsNode::userShowFunction() const
 {
-    return d_func()->showFunction;
+    if (d_func()->showFunction)
+        return d_func()->showFunction;
+    BSettingsNode *pn = d_func()->parentNode;
+    return pn ? pn->userShowFunction() : 0;
 }

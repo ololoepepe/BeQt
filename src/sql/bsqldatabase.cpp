@@ -5,6 +5,7 @@
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BDirTools>
 
 #include <QObject>
 #include <QString>
@@ -19,6 +20,7 @@
 #include <QVariant>
 #include <QSqlRecord>
 #include <QScopedPointer>
+#include <QRegExp>
 
 #include <QDebug>
 
@@ -40,6 +42,7 @@ public:
     QSqlDatabase *db;
     bool openOnDemand;
     bool closeAfterTransaction;
+    bool rollback;
     QList<BSqlQuery> onOpen;
 private:
     Q_DISABLE_COPY(BSqlDatabasePrivate)
@@ -71,6 +74,7 @@ void BSqlDatabasePrivate::init()
     db = 0;
     openOnDemand = true;
     closeAfterTransaction = false;
+    rollback = true;
 }
 
 bool BSqlDatabasePrivate::handleOnOpen()
@@ -91,6 +95,34 @@ bool BSqlDatabasePrivate::handleOpenOnDemand()
 /*============================================================================
 ================================ BSqlDatabase ================================
 ============================================================================*/
+
+/*============================== Static public methods =====================*/
+
+QStringList BSqlDatabase::schemaFromText(const QString &text)
+{
+    QStringList sl = text.split('\n');
+    foreach (int i, bRangeD(0, sl.size() - 1))
+        sl[i].remove(QRegExp("\\s*\\-\\-.*$")); //TODO: Not very safe, consider: ... '--'
+    QStringList list = sl.join("\n").split(";\n");
+    foreach (int i, bRangeD(0, list.size() - 1))
+    {
+        list[i].replace('\n', ' ');
+        list[i].replace(QRegExp("\\s+"), " ");
+    }
+    list.removeAll("");
+    list.removeDuplicates();
+    return list;
+}
+
+QStringList BSqlDatabase::schemaFromFile(const QString &fileName, QTextCodec *codec)
+{
+    return schemaFromText(BDirTools::readTextFile(fileName, codec));
+}
+
+QStringList BSqlDatabase::schemaFromFile(const QString &fileName, const QString &codecName)
+{
+    return schemaFromFile(fileName, BeQt::codec(codecName));
+}
 
 /*============================== Public constructors =======================*/
 
@@ -158,6 +190,11 @@ void BSqlDatabase::setOpenOnDemand(bool b)
 void BSqlDatabase::setCloseAfterTransaction(bool b)
 {
     d_func()->closeAfterTransaction = b;
+}
+
+void BSqlDatabase::setRollbackOnCommitFail(bool b)
+{
+    d_func()->rollback = b;
 }
 
 void BSqlDatabase::setOnOpenQueries(const QList<BSqlQuery> &list)
@@ -268,6 +305,11 @@ bool BSqlDatabase::closeAfterTransaction() const
     return d_func()->closeAfterTransaction;
 }
 
+bool BSqlDatabase::rollbackOnCommitFail() const
+{
+    return d_func()->rollback;
+}
+
 QList<BSqlQuery> BSqlDatabase::onOpenQueries() const
 {
     return d_func()->onOpen;
@@ -302,6 +344,8 @@ bool BSqlDatabase::commit()
 {
     B_D(BSqlDatabase);
     bool b = d->db->commit();
+    if (!b)
+        rollback();
     if (d->closeAfterTransaction)
         d->db->close();
     return b;
@@ -502,6 +546,46 @@ BSqlResult BSqlDatabase::deleteFrom(const QString &table, const BSqlWhere &where
     if (where.isValid())
         qs += " WHERE " + where.string();
     return exec(qs, where.boundValues());
+}
+
+bool BSqlDatabase::initializeFromSchema(const QString &schemaText)
+{
+    QStringList list = schemaFromText(schemaText);
+    if (list.isEmpty())
+        return false;
+    if (!isOpen() && !open())
+        return false;
+    if (!transaction())
+        return false;
+    foreach (const QString &qs, list)
+    {
+        if (!exec(qs))
+        {
+            rollback();
+            return false;
+        }
+    }
+    if (!commit())
+    {
+        rollback();
+        return false;
+    }
+    return true;
+}
+
+bool BSqlDatabase::initializeFromSchema(const QStringList &schema)
+{
+    return initializeFromSchema(schema.join(";\n"));
+}
+
+bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, QTextCodec *codec)
+{
+    return initializeFromSchema(schemaFromFile(fileName, codec));
+}
+
+bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, const QString &codecName)
+{
+    return initializeFromSchema(schemaFromFile(fileName, codecName));
 }
 
 /*============================== Protected methods =========================*/

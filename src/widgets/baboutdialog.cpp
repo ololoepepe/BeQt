@@ -10,6 +10,7 @@ class QWidget;
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BPersonInfoProvider>
 #include <BeQtCore/BDirTools>
+#include <BeQtCore/BPersonInfo>
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -92,7 +93,8 @@ QString BAboutDialogPrivate::processChangeLog(const QString &text)
                         bool b = false;
                         for (int k = j + 1; k < l.length(); ++k)
                         {
-                            if (l.at(k) == ':')
+                            if (l.at(k) == ':' && k < l.length() - 1 && l.at(k + 1) != ':'
+                                    && k > 0 && l.at(k -1) != ':')
                             {
                                 l.insert(k + 1, "</font>");
                                 b = true;
@@ -293,12 +295,12 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const QString &text, bool html)
         tab->setPlainText(text);
 }
 
-void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoProvider::PersonInfoList &infos)
+void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoList &infos)
 {
     QString s;
     for (int i = 0; i < infos.size(); ++i)
     {
-        const BPersonInfoProvider::PersonInfo &inf = infos.at(i);
+        const BPersonInfo &inf = infos.at(i);
         if ( inf.name.isEmpty() || inf.role.isEmpty() )
             continue;
         QString sp = "";
@@ -428,6 +430,41 @@ void BAboutDialogPrivate::resetLicense()
     fillTab(LicenseTab, s, Qt::mightBeRichText(s));
 }
 
+void BAboutDialogPrivate::setupFromApplicationData()
+{
+    B_Q(BAboutDialog);
+    BCoreApplicationPrivate *dd = BApplication::ds_func();
+    if (!dd)
+        return;
+    q->setOrganization(QApplication::organizationName(), dd->appCopyrightYears);
+    q->setWebsite(QApplication::organizationDomain());
+    if (!dd->appDescription.isEmpty())
+        q->setDescription(dd->appDescription);
+    else
+        q->setDescriptionFile(dd->appDescriptionFileName);
+    if (!dd->appChangeLog.isEmpty())
+        q->setDescription(dd->appChangeLog);
+    else
+        q->setChangeLogFile(dd->appChangeLogFileName);
+    if (!dd->appLicense.isEmpty())
+        q->setLicense(dd->appLicense);
+    else
+        q->setLicenseFile(dd->appLicenseFileName);
+    if (!dd->appAuthorsList.isEmpty())
+        q->setAuthors(dd->appAuthorsList);
+    else
+        q->setAuthorsProvider(dd->appAuthors);
+    if (!dd->appTranslationsList.isEmpty())
+        q->setTranslators(dd->appTranslationsList);
+    else
+        q->setTranslatorsProvider(dd->appTranslations);
+    if (!dd->appThanksToList.isEmpty())
+        q->setThanksTo(dd->appThanksToList);
+    else
+        q->setThanksToProvider(dd->appThanksTo);
+    q->setPixmap(QApplication::windowIcon().pixmap(100000)); //Using such an extent to get the largest pixmap
+}
+
 /*============================== Public slots ==============================*/
 
 void BAboutDialogPrivate::retranslateUi()
@@ -450,18 +487,17 @@ void BAboutDialogPrivate::retranslateUi()
 
 void BAboutDialogPrivate::resetAuthors()
 {
-    fillTab( AuthorsTab, authorsProvider ? authorsProvider->infos() : BPersonInfoProvider::PersonInfoList() );
+    fillTab(AuthorsTab, authorsProvider ? authorsProvider->infos() : BPersonInfoList());
 }
 
 void BAboutDialogPrivate::resetTranslations()
 {
-    fillTab( TranslatorsTab, translationsProvider ? translationsProvider->infos(true) :
-                                                    BPersonInfoProvider::PersonInfoList() );
+    fillTab(TranslatorsTab, translationsProvider ? translationsProvider->infos(true) : BPersonInfoList());
 }
 
 void BAboutDialogPrivate::resetThanksTo()
 {
-    fillTab( ThanksToTab, thanksToProvider ? thanksToProvider->infos() : BPersonInfoProvider::PersonInfoList() );
+    fillTab(ThanksToTab, thanksToProvider ? thanksToProvider->infos() : BPersonInfoList());
 }
 
 void BAboutDialogPrivate::tbtnAboutBeqtClicked()
@@ -619,7 +655,7 @@ void BAboutDialog::setLicenseFile(const QString &fileName)
     d_func()->resetLicenseFile(fileName);
 }
 
-void BAboutDialog::setAuthors(const BPersonInfoProvider::PersonInfoList &list)
+void BAboutDialog::setAuthors(const BPersonInfoList &list)
 {
     d_func()->resetAuthorsProvider();
     d_func()->fillTab(BAboutDialogPrivate::AuthorsTab, list);
@@ -635,7 +671,7 @@ void BAboutDialog::setAuthorsProvider(BPersonInfoProvider *prov)
     d_func()->resetAuthorsProvider(prov);
 }
 
-void BAboutDialog::setTranslators(const BPersonInfoProvider::PersonInfoList &list)
+void BAboutDialog::setTranslators(const BPersonInfoList &list)
 {
     d_func()->resetTranslationProvider();
     d_func()->fillTab(BAboutDialogPrivate::TranslatorsTab, list);
@@ -651,7 +687,7 @@ void BAboutDialog::setTranslatorsProvider(BPersonInfoProvider *prov)
     d_func()->resetTranslationProvider(prov);
 }
 
-void BAboutDialog::setThanksTo(const BPersonInfoProvider::PersonInfoList &list)
+void BAboutDialog::setThanksTo(const BPersonInfoList &list)
 {
     d_func()->resetThanksToProvider();
     d_func()->fillTab(BAboutDialogPrivate::ThanksToTab, list);
@@ -665,6 +701,11 @@ void BAboutDialog::setThanksToFile(const QString &fileName)
 void BAboutDialog::setThanksToProvider(BPersonInfoProvider *prov)
 {
     d_func()->resetThanksToProvider(prov);
+}
+
+void BAboutDialog::setupWithApplicationData()
+{
+    d_func()->setupFromApplicationData();
 }
 
 void BAboutDialog::setAboutQtShown(bool b)

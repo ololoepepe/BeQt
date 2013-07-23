@@ -57,14 +57,29 @@ bool BAbstractSettingsTab::hasAdvancedMode() const
     return false;
 }
 
+bool BAbstractSettingsTab::isInAdvancedMode() const
+{
+    return false;
+}
+
 void BAbstractSettingsTab::setAdvancedMode(bool)
 {
     //
 }
 
+bool BAbstractSettingsTab::hasDefault() const
+{
+    return false;
+}
+
 bool BAbstractSettingsTab::restoreDefault()
 {
-    return true;
+    return false;
+}
+
+QString BAbstractSettingsTab::restoreDefaultHint() const
+{
+    return "";
 }
 
 bool BAbstractSettingsTab::saveSettings()

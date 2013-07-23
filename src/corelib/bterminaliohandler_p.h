@@ -7,9 +7,9 @@ class BSettingsNode;
 class QString;
 
 #include "bterminaliohandler.h"
-
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "btranslation.h"
 
 #include <QObject>
 #include <QThread>
@@ -64,6 +64,7 @@ public Q_SLOTS:
     void lineRead(const QString &text);
 public:
     static QMutex echoMutex;
+    static QMutex titleMutex;
     static QMutex readMutex;
     static QMutex writeMutex;
     static QMutex writeErrMutex;
@@ -76,8 +77,8 @@ public:
     QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
     BSettingsNode *root;
     bool translations;
-    QString help;
-    QMap<QString, BTerminalIOHandler::CommandHelp> commandHelp;
+    BTranslation help;
+    QMap<QString, BTerminalIOHandler::CommandHelpList> commandHelp;
 private:
     Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
     friend class BTerminalIOHandlerThread;

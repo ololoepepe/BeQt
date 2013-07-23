@@ -11,8 +11,6 @@ class BSpellChecker;
 
 class QStringList;
 class QTextCodec;
-class QMenu;
-class QComboBox;
 
 #include "bcodeedit.h"
 
@@ -40,16 +38,6 @@ public:
         OpenSaveModule,
         SearchModule
     };
-    enum CodecGroup
-    {
-        InvalidGroup = 0,
-        UnicodeGroup,
-        EastEuropeanGroup,
-        WestEuropeanGroup,
-        EastAsianGroup,
-        SouthEastSouthWestAsianGroup,
-        MiddleEastGroup
-    };
     enum StandardDocumentType
     {
         StandardDocument,
@@ -65,29 +53,9 @@ protected:
     explicit BCodeEditor(BCodeEditorPrivate &d, QWidget *parent = 0);
 public:
     static BAbstractEditorModule *createStandardModule(StandardModule type, BCodeEditor *parent = 0);
-    static bool supportsCodec(QTextCodec *codec);
-    static bool supportsCodec(const QString &codecName);
-    static QList<QTextCodec *> supportedCodecs();
-    static QStringList supportedCodecNames();
-    static QString codecName(QTextCodec *codec);
-    static QString fullCodecName(QTextCodec *codec);
-    static QString fullCodecName(const QString &codecName);
-    static QList<CodecGroup> codecGroups();
-    static QString codecGroupName(CodecGroup group);
-    static QList<QTextCodec *> codecsForGroup(CodecGroup group);
-    static QStringList codecNamesForGroup(CodecGroup group);
-    static QMenu *createPlainCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
-    static QMenu *createStructuredCodecsMenu(QObject *receiver, const char *member, QWidget *parent = 0);
-    static void retranslateCodecsMenu(QMenu *mnu);
-    static QComboBox *createPlainCodecsComboBox(QWidget *parent = 0);
-    static QComboBox *createStructuredCodecsComboBox(QWidget *parent = 0);
-    static void retranslateCodecsComboBox(QComboBox *cmbox);
-    static void selectCodec(QComboBox *cmbox, QTextCodec *codec);
-    static void selectCodec(QComboBox *cmbox, const QString &codecName);
-    static QTextCodec *selectedCodec(QComboBox *cmbox);
-    static QString selectedCodecName(QComboBox *cmbox);
+    static StandardDocumentType standardDocumentTypeFromInt(int t);
 public:
-    bool setDocumentType(StandardDocumentType t);
+    void setDocumentType(int type);
     void setEditFont(const QFont &fnt);
     void setEditFontFamily(const QString &family);
     void setEditFontPointSize(int pointSize);
@@ -107,6 +75,7 @@ public:
     void removeModule(BAbstractEditorModule *mdl);
     void removeModule(const QString &name);
     void setModules(const QList<BAbstractEditorModule *> &list);
+    void setCurrentDocument(BAbstractCodeEditorDocument *doc);
     void setDriver(BAbstractDocumentDriver *drv);
     void addFileType(BAbstractFileType *ft);
     void removeFileType(BAbstractFileType *ft);
@@ -116,9 +85,10 @@ public:
     void setPreferredFileType(const QString &id);
     void setFileHistory(const QStringList &list);
     void setMaxHistoryCount(int count);
-    bool mergeWith(BCodeEditor *other, int msecs = 30 * BeQt::Second);
-    bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second);
-    StandardDocumentType documentType() const;
+    void mergeWith(BCodeEditor *other);
+    bool isBuisy() const;
+    bool waitForAllDocumentsProcessed(int msecs = 30 * BeQt::Second) const;
+    int documentType() const;
     QFont editFont() const;
     QString editFontFamily() const;
     int editFontPointSize() const;
@@ -151,6 +121,7 @@ public:
     bool isCurrentDocumentModified() const;
     QStringList fileNames() const;
     QObject *dropHandler() const;
+    QObject *closeHandler() const;
 public Q_SLOTS:
     BAbstractCodeEditorDocument *addDocument(const QString &fileName = QString());
     BAbstractCodeEditorDocument *addDocument(const QString &fileName, const QString &text);
@@ -168,7 +139,8 @@ public Q_SLOTS:
     void insertTextIntoCurrentDocument(const QString &text);
     void setCurrentDocumentText(const QString &text);
 protected:
-    virtual BAbstractCodeEditorDocument *createDocument(BCodeEditor *editor) const;
+    virtual BAbstractCodeEditorDocument *createDocument(int type, BCodeEditor *editor) const;
+    virtual void showClosingMessage(QWidget *parent);
 Q_SIGNALS:
     void defaultCodecChanged(const QString &codecName);
     void editModeChanged(BCodeEdit::EditMode mode);
@@ -182,6 +154,7 @@ Q_SIGNALS:
     void documentAvailableChanged(bool available);
     void fileTypesChanged();
     void fileHistoryChanged(const QStringList &history);
+    bool buisyChanged(bool buisy);
     void allDocumentsProcessed();
 private:
     Q_DISABLE_COPY(BCodeEditor)

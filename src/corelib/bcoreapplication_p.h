@@ -5,10 +5,10 @@ class BPluginWrapper;
 class BTranslator;
 class BPluginWrapperPrivate;
 class BTranslatorPrivate;
-class BPersonInfoProvider;
 class BCoreApplicationPrivate;
 class BLogger;
 class BSignalDelayProxy;
+class BPersonInfoProvider;
 
 class QString;
 class QLocale;
@@ -17,6 +17,7 @@ class QEvent;
 #include "bcoreapplication.h"
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "bpersoninfo.h"
 
 #include <QtGlobal>
 #include <QList>
@@ -47,7 +48,6 @@ public:
     static bool testCoreInit(const char *where = 0);
     static bool testCoreUnique();
     static BCoreApplication::LocaleSupportInfo createLocaleSupportInfo();
-    static QString personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault = false);
 public:
     void init();
     bool eventFilter(QObject *o, QEvent *e);
@@ -92,6 +92,19 @@ public:
     BPersonInfoProvider *beqtAuthors;
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
+    QString appCopyrightYears;
+    QString appDescription;
+    QString appChangeLog;
+    QString appLicense;
+    QString appDescriptionFileName;
+    QString appChangeLogFileName;
+    QString appLicenseFileName;
+    BPersonInfoList appAuthorsList;
+    BPersonInfoList appTranslationsList;
+    BPersonInfoList appThanksToList;
+    BPersonInfoProvider *appAuthors;
+    BPersonInfoProvider *appTranslations;
+    BPersonInfoProvider *appThanksTo;
     BLogger *logger;
     BSignalDelayProxy *languageChangeProxy;
     BSignalDelayProxy *languageChangeEventProxy;

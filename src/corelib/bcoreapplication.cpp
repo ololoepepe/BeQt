@@ -126,7 +126,7 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
     return info;
 }
 
-QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault)
+/*QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault)
 {
     if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
         return "";
@@ -148,7 +148,7 @@ QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, con
     if ( !s.isEmpty() )
         s.remove(s.length() - 1, 1);
     return s;
-}
+}*/
 
 /*============================== Public methods ============================*/
 
@@ -173,6 +173,9 @@ void BCoreApplicationPrivate::init()
     beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
     beqtTranslations = new BPersonInfoProvider(BDirTools::findResource(spref + "translators.beqt-info", locs), this);
     beqtThanksTo = new BPersonInfoProvider(BDirTools::findResource(spref + "thanks-to.beqt-info", locs), this);
+    appAuthors = new BPersonInfoProvider(this);
+    appTranslations = new BPersonInfoProvider(this);
+    appThanksTo = new BPersonInfoProvider(this);
     logger = new BLogger(this);
     languageChangeProxy = new BSignalDelayProxy(100, 200, this);
     connect(languageChangeProxy, SIGNAL(triggered()), q_func(), SIGNAL(languageChanged()));
@@ -327,6 +330,7 @@ void BCoreApplicationPrivate::setLocale(const QLocale &l)
     foreach (BTranslator *t, translators)
         t->setLocale(l);
     settings->setValue("BeQt/Core/locale", l);
+    languageChangeProxy->trigger();
 }
 
 QStringList BCoreApplicationPrivate::getDeactivatedPlugins() const
@@ -584,7 +588,7 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, Interface
     BPluginWrapper::setAcceptableTypes(acceptableTypes);
     BPluginWrapper::setInterfaceTestFunction(function);
     //loading plugins
-    //TODO (release 3.0.0): No means to determine from which dir the plugin is loaded.
+    //TODO: No means to determine from which dir the plugin is loaded.
     //Plugins from user dir should replace plugins from other dirs, even if they are already loaded
     //For now it's only possible to reload ALL plugins, so ones located in user dir are loaded first
     QStringList dirs = locations(PluginsPath);
@@ -652,15 +656,14 @@ void BCoreApplication::setLocale(const QLocale &l)
 {
     if (!BCoreApplicationPrivate::testCoreInit())
         return;
-    B_DS(BCoreApplication);
     if (l == locale())
         return;
-    ds->setLocale(l);
+    ds_func()->setLocale(l);
 }
 
 QLocale BCoreApplication::locale()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return QLocale::system();
     return ds_func()->getLocale();
 }
@@ -719,18 +722,181 @@ void BCoreApplication::loadSettings()
 
 void BCoreApplication::saveSettings()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return;
     ds_func()->saveSettings();
 }
 
-QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
+void BCoreApplication::setApplicationCopyrightPeriod(const QString &s)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appCopyrightYears = s;
+}
+
+void BCoreApplication::setApplicationDescription(const QString &s)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appDescription = s;
+    ds_func()->appDescriptionFileName.clear();
+}
+
+void BCoreApplication::setApplicationDescriptionFile(const QString &fileName)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appDescriptionFileName = fileName;
+    ds_func()->appDescription.clear();
+}
+
+void BCoreApplication::setApplicationChangeLog(const QString &s)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appChangeLog = s;
+    ds_func()->appChangeLogFileName.clear();
+}
+
+void BCoreApplication::setApplicationChangeLogFile(const QString &fileName)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appChangeLogFileName = fileName;
+    ds_func()->appChangeLog.clear();
+}
+
+void BCoreApplication::setApplicationLicense(const QString &s)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appLicense = s;
+    ds_func()->appLicenseFileName.clear();
+}
+
+void BCoreApplication::setApplicationLicenseFile(const QString &fileName)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appLicenseFileName = fileName;
+    ds_func()->appLicense.clear();
+}
+
+void BCoreApplication::setApplicationAuthors(const BPersonInfoList &list)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appAuthorsList = list;
+    ds_func()->appAuthors->setFileName("");
+}
+
+void BCoreApplication::setApplicationAuthorsFile(const QString &fileName)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appAuthors->setFileName(fileName);
+    ds_func()->appAuthorsList.clear();
+}
+
+void BCoreApplication::setApplicationTranslations(const BPersonInfoList &list)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appTranslationsList = list;
+    ds_func()->appTranslations->setFileName("");
+}
+
+void BCoreApplication::setApplicationTranslationsFile(const QString &fileName)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appTranslations->setFileName(fileName);
+    ds_func()->appTranslationsList.clear();
+}
+
+void BCoreApplication::setApplicationThanksTo(const BPersonInfoList &list)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appThanksToList = list;
+    ds_func()->appThanksTo->setFileName("");
+}
+
+void BCoreApplication::setApplicationThanksToFile(const QString &fileName)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return;
+    ds_func()->appThanksTo->setFileName(fileName);
+    ds_func()->appThanksToList.clear();
+}
+
+QString BCoreApplication::applicationInfo(About type, const QLocale &loc)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
+        return "";
+    QString fn;
+    switch (type)
+    {
+    case Copyringt:
+    {
+        QString crp = (!ds_func()->appCopyrightYears.isEmpty() ? (ds_func()->appCopyrightYears + " ") :QString());
+        return tr("Copyright") + " (C) " + crp + QCoreApplication::organizationName()
+                + " [" + QCoreApplication::organizationDomain() + "]";
+    }
+    case Description:
+        if (!ds_func()->appDescription.isEmpty())
+            return ds_func()->appDescription;
+        else
+            fn = ds_func()->appDescriptionFileName;
+        break;
+    case ChangeLog:
+        if (!ds_func()->appChangeLog.isEmpty())
+            return ds_func()->appChangeLog;
+        else
+            fn = ds_func()->appChangeLogFileName;
+        break;
+    case License:
+        if (!ds_func()->appLicense.isEmpty())
+            return ds_func()->appLicense;
+        else
+            fn = ds_func()->appLicenseFileName;
+        break;
+    case Authors:
+        if (!ds_func()->appAuthorsList.isEmpty())
+            return BPersonInfoProvider::infoListToString(ds_func()->appAuthorsList);
+        else if (ds_func()->appAuthors)
+            return ds_func()->appAuthors->infosString(loc);
+        else
+            return "";
+    case Translators:
+        if (!ds_func()->appTranslationsList.isEmpty())
+            return BPersonInfoProvider::infoListToString(ds_func()->appTranslationsList);
+        else if (ds_func()->appTranslations)
+            return ds_func()->appTranslations->infosString(loc, true);
+        else
+            return "";
+    case ThanksTo:
+        if (!ds_func()->appThanksToList.isEmpty())
+            return BPersonInfoProvider::infoListToString(ds_func()->appThanksToList);
+        else if (ds_func()->appThanksTo)
+            return ds_func()->appThanksTo->infosString(loc);
+        else
+            return "";
+    default:
+        return "";
+    }
+    return BDirTools::readTextFile(BDirTools::localeBasedFileName(fn), "UTF-8");
+}
+
+QString BCoreApplication::beqtInfo(About type, const QLocale &loc)
+{
+    if (!BCoreApplicationPrivate::testCoreInit())
         return "";
     QString bfn;
     switch (type)
     {
+    case Copyringt:
+        return tr("Copyright") + " (C) 2012-2013 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
     case Description:
         bfn = "description/DESCRIPTION.txt";
         break;
@@ -741,23 +907,23 @@ QString BCoreApplication::beqtInfo(BeQtInfo type, const QLocale &loc)
         bfn = "copying/COPYING.txt";
         break;
     case Authors:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtAuthors, loc);
+        return BPersonInfoProvider::infosString(ds_func()->beqtAuthors, loc);
     case Translators:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtTranslations, loc, true);
+        return BPersonInfoProvider::infosString(ds_func()->beqtTranslations, loc, true);
     case ThanksTo:
-        return BCoreApplicationPrivate::personInfoString(ds_func()->beqtThanksTo, loc);
+        return BPersonInfoProvider::infosString(ds_func()->beqtThanksTo, loc);
     default:
         return "";
     }
     QString dir = location(BeqtPath, SharedResources) + "/";
     QString fn = BDirTools::localeBasedFileName(dir + bfn, loc);
-    if ( fn.isEmpty() )
+    if (fn.isEmpty())
     {
         dir = location(BeqtPath, BuiltinResources) + "/";
         fn = BDirTools::localeBasedFileName(dir + bfn, loc);
     }
 #if defined(Q_OS_MAC)
-    if ( fn.isEmpty() )
+    if (fn.isEmpty())
     {
         dir = location(BeqtPath, BundleResources) + "/";
         fn = BDirTools::localeBasedFileName(dir + bfn, loc);

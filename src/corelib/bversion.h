@@ -5,6 +5,7 @@ class BVersionPrivate;
 
 class QDataStream;
 class QDebug;
+class QVariant;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -74,6 +75,7 @@ public:
     bool operator <=(const BVersion &other) const;
     bool operator >=(const BVersion &other) const;
     operator QString() const;
+    operator QVariant() const;
 public:
     friend QDataStream &operator <<(QDataStream &stream, const BVersion &v);
     friend QDataStream &operator >>(QDataStream &stream, BVersion &v);

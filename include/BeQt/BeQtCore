@@ -8,6 +8,7 @@
 #include "blogger.h"
 #include "bnamespace.h"
 #include "bpassword.h"
+#include "bpersoninfo.h"
 #include "bpersoninfoprovider.h"
 #include "bplugininterface.h"
 #include "bpluginwrapper.h"
@@ -18,6 +19,7 @@
 #include "bspellcheckerdictionary.h"
 #include "bterminaliohandler.h"
 #include "btranslatefunctor.h"
+#include "btranslation.h"
 #include "btranslator.h"
 #include "bversion.h"
 

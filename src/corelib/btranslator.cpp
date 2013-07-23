@@ -29,7 +29,7 @@ BTranslatorPrivate::BTranslatorPrivate(BTranslator *q) :
 
 BTranslatorPrivate::~BTranslatorPrivate()
 {
-    remove();
+    q_func()->unload();
 }
 
 /*============================== Public methods ============================*/
@@ -113,9 +113,14 @@ void BTranslator::setFileName(const QString &fileName)
     bool wasInstalled = d->installed;
     if (wasInstalled)
         d->remove();
+    bool wasLoaded = d->loaded;
+    if (wasLoaded)
+        unload();
     d->fileName = fileName;
     if (!isValid())
         return;
+    if (wasLoaded)
+        load();
     if (wasInstalled)
         d->install();
 }
@@ -126,7 +131,12 @@ void BTranslator::setLocale(const QLocale &locale)
     bool wasInstalled = d->installed;
     if (wasInstalled)
         d->remove();
+    bool wasLoaded = d->loaded;
+    if (wasLoaded)
+        unload();
     d->locale = locale;
+    if (wasLoaded)
+        load();
     if (wasInstalled)
       d->install();
 }

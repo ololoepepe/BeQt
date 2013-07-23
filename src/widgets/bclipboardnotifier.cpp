@@ -52,7 +52,7 @@ void BClipboardNotifierPrivate::dataChanged()
     bool bb = (b != textDataAvailable);
     textDataAvailable = b;
     if (bb)
-        QMetaObject::invokeMethod(q_func(), "textDataAvailableChanged");
+        QMetaObject::invokeMethod(q_func(), "textDataAvailableChanged", Q_ARG(bool, b));
 }
 
 /*============================================================================

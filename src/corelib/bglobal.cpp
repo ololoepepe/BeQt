@@ -1,5 +1,6 @@
 #include "bglobal.h"
 #include "bpassword.h"
+#include "btranslation.h"
 #include "bversion.h"
 
 #include <QString>
@@ -17,7 +18,7 @@ bool bTest(bool condition, const char *where, const char *what)
 
 const char *bVersion()
 {
-    return "3.0.0-pa1";
+    return "3.0.0-a1";
 }
 
 void bRegister()
@@ -27,6 +28,10 @@ void bRegister()
         return;
     qRegisterMetaType<BPassword>();
     qRegisterMetaTypeStreamOperators<BPassword>();
+    qRegisterMetaType<BTranslation>();
+    qRegisterMetaTypeStreamOperators<BTranslation>();
+    qRegisterMetaType<BTr>("BTr");
+    qRegisterMetaTypeStreamOperators<BTr>("BTr");
     qRegisterMetaType<BVersion>();
     qRegisterMetaTypeStreamOperators<BVersion>();
     registered = true;
@@ -58,4 +63,22 @@ QList<int> bRangeD(int lb, int ub, unsigned step)
 QList<int> bRangeR(int lb, int ub, unsigned step)
 {
     return bRange(lb, ub, -1 * (step ? step : 1));
+}
+
+QList<int> bRangeM(int lb, int ub, unsigned multiplier)
+{
+    if (!lb || !ub || !multiplier || (lb < 0 && ub > 0) || (lb > 0 && ub < 0))
+        return QList<int>();
+    if (lb == ub)
+        return QList<int>() << lb;
+    if (1 == multiplier)
+        return QList<int>();
+    QList<int> r;
+    if (lb < ub)
+        for (int i = lb; i <= ub; i *= multiplier)
+            r << i;
+    else
+        for (int i = lb; i >= ub; i /= multiplier)
+            r << i;
+    return r;
 }

@@ -34,6 +34,30 @@ enum TabWidth
     TabWidth8 = 8
 };
 
+enum CodecsGroup
+{
+    InvalidGroup = 0,
+    UnicodeGroup,
+    EastEuropeanGroup,
+    WestEuropeanGroup,
+    EastAsianGroup,
+    SouthEastSouthWestAsianGroup,
+    MiddleEastGroup
+};
+
+enum RegExpPattern
+{
+    EmailPattern
+};
+
+enum FileSizeFormat
+{
+    BytesFormat,
+    KilobytesFormat,
+    MegabytesFormat,
+    GigabytesFormat
+};
+
 typedef QPair<const QObject *, const char *> Until;
 typedef QPair<const QObject *, const char *> Target;
 
@@ -50,9 +74,9 @@ B_CORE_EXPORT qreal area(const QRectF &r);
 B_CORE_EXPORT QByteArray variantToData(const QVariant &variant);
 B_CORE_EXPORT QVariant dataToVariant(const QByteArray &data);
 B_CORE_EXPORT void waitNonBlocking(int msecs);
-B_CORE_EXPORT void waitNonBlocking(QObject *sender, const char *signal, int msecs = -1);
-B_CORE_EXPORT void waitNonBlocking(QObject *sender1, const char *signal1, QObject *sender2, const char *signal2,
-                                   int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(const QObject *sender, const char *signal, int msecs = -1);
+B_CORE_EXPORT void waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2,
+                                   const char *signal2, int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
 B_CORE_EXPORT Until until(const QObject *object, const char *signal);
 B_CORE_EXPORT Target target(const QObject *object, const char *method);
@@ -71,12 +95,28 @@ B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT QString translate(const char *context, const char *sourceText, const char *disambiguation = 0,
                                 int n = -1);
+B_CORE_EXPORT bool isCodecSupported(QTextCodec *codec);
+B_CORE_EXPORT bool isCodecSupported(const QString &codecName);
+B_CORE_EXPORT QList<QTextCodec *> supportedCodecs();
+B_CORE_EXPORT QStringList supportedCodecsNames();
 B_CORE_EXPORT QString codecName(QTextCodec *codec);
 B_CORE_EXPORT QString codecName(const QByteArray &cn);
+B_CORE_EXPORT QString fullCodecName(QTextCodec *codec);
+B_CORE_EXPORT QString fullCodecName(const QString &codecName);
 B_CORE_EXPORT QTextCodec *codec(const QString &cn);
 B_CORE_EXPORT QTextCodec *codec(const QByteArray &cn);
+B_CORE_EXPORT QList<CodecsGroup> codecsGroups();
+B_CORE_EXPORT QString codecsGroupName(CodecsGroup group);
+B_CORE_EXPORT QList<QTextCodec *> codecsForGroup(CodecsGroup group);
+B_CORE_EXPORT QStringList codecNamesForGroup(CodecsGroup group);
+B_CORE_EXPORT CodecsGroup codecsGroupFromInt(int cg);
 B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
 B_CORE_EXPORT void removeTrailingSpaces(QString *s);
+B_CORE_EXPORT TabWidth tabWidthFromInt(int tw);
+B_CORE_EXPORT QString standardRegExpPattern(RegExpPattern type);
+B_CORE_EXPORT QString fileSizeToString(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
+B_CORE_EXPORT QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
+
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
 B_CORE_EXPORT QString macVersion();

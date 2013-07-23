@@ -7,7 +7,7 @@ class QTextCodec;
 
 #include "blocaldocumentdriver.h"
 #include "babstractdocumentdriver_p.h"
-#include "bfiledialog.h"
+#include "bextendedfiledialog.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
@@ -61,8 +61,9 @@ public:
     QString defaultDir;
     bool nativeLineEnd;
     QByteArray fileDialogState;
+    QByteArray fileDialogGeometry;
     BAbstractFileType *lastFileType;
-    BFileDialog::CodecsComboBoxStyle codecsCmboxStyle;
+    BTextCodecMenu::Style codecsComboBoxStyle;
 private:
     Q_DISABLE_COPY(BLocalDocumentDriverPrivate)
 };

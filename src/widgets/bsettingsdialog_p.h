@@ -35,6 +35,7 @@ public:
     ~BSettingsDialogPrivate();
 public:
     void init();
+    BAbstractSettingsTab *currentTab() const;
 public:
     const QList<BAbstractSettingsTab *> Tabs;
     const BSettingsDialog::Navigation Navigation;
@@ -53,7 +54,9 @@ public:
 public Q_SLOTS:
     void accepted();
     void cboxAdvancedModeStateChanged(int state);
+    void currentChanged(int index = 0);
     void btnRestoreDefaultClicked();
+    void updateSize();
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)
 };

@@ -4,6 +4,8 @@
 #include "bbase_p.h"
 #include "bnamespace.h"
 #include "bsettingsnode.h"
+#include "bcoreapplication.h"
+#include "btranslation.h"
 
 #include <QTextStream>
 #include <QIODevice>
@@ -26,6 +28,49 @@
 #elif defined(Q_OS_WIN)
 #include "windows.h"
 #endif
+
+/*============================================================================
+================================ Static global functions =====================
+============================================================================*/
+
+static bool areEqual(const BTerminalIOHandler::CommandHelpList &l1, const BTerminalIOHandler::CommandHelpList &l2)
+{
+    if (l1.size() != l2.size())
+        return false;
+    foreach (int i, bRangeD(0, l1.size() - 1))
+    {
+        const BTerminalIOHandler::CommandHelp &ch1 = l1.at(i);
+        const BTerminalIOHandler::CommandHelp &ch2 = l2.at(i);
+        if (ch1.usage != ch2.usage || ch1.description != ch2.description)
+            return false;
+    }
+    return true;
+}
+
+static bool setLocale(const BSettingsNode *, const QVariant &v)
+{
+
+    QString s;
+    if (!v.isNull())
+    {
+        bool ok = false;
+        s = BSettingsNode::variantToString(v, &ok);
+        if (!ok)
+            return false;
+    }
+    else
+    {
+        s = bReadLine(BeQt::translate("BTerminalIOHandler", "Enter locale:") + " ");
+        if (s.isEmpty())
+            return false;
+    }
+    bool ok = true;
+    QVariant vv = BSettingsNode::stringToVariant(s, QVariant::Locale, &ok);
+    if (!ok)
+        return false;
+    BCoreApplication::setLocale(vv.toLocale());
+    return true;
+}
 
 /*============================================================================
 ================================ BTerminalIOHandlerThread ====================
@@ -162,6 +207,7 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 /*============================== Static public variables ===================*/
 
 QMutex BTerminalIOHandlerPrivate::echoMutex;
+QMutex BTerminalIOHandlerPrivate::titleMutex;
 QMutex BTerminalIOHandlerPrivate::readMutex;
 QMutex BTerminalIOHandlerPrivate::writeMutex;
 QMutex BTerminalIOHandlerPrivate::writeErrMutex;
@@ -226,6 +272,58 @@ QStringList BTerminalIOHandler::commands(StandardCommand cmd)
         break;
     }
     return sl;
+}
+
+BTerminalIOHandler::CommandHelp BTerminalIOHandler::commandHelp(StandardCommand cmd)
+{
+    CommandHelpList l = commandHelpList(cmd);
+    return !l.isEmpty() ? l.first() : CommandHelp();
+}
+
+BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(StandardCommand cmd)
+{
+    CommandHelpList l;
+    CommandHelp h;
+    switch (cmd)
+    {
+    case QuitCommand:
+        h.usage = "quit|exit";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Quit the application");
+        l << h;
+        break;
+    case SetCommand:
+        h.usage = "set --tree";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show list of all available settings");
+        l << h;
+        h.usage = "set --show|--description <key>";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show the value for <key> or it's description");
+        l << h;
+        h.usage = "set <key> [value]";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Set the value for <key> to [value] "
+                                                "(if specified)\nor request value input");
+        l << h;
+        break;
+    case HelpCommand:
+        h.usage = "help <command>";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show description of <command>");
+        l << h;
+        h.usage = "help [--commands|--settings|--all]";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show basic help, or:\n"
+                                                "  --commands - list of all available commands\n"
+                                                "  --settings - list of all available settings\n"
+                                                "  --all - all of the above (including basic help)");
+        l << h;
+        h.usage = "help --about [description|changelog|license|authors|translations|thanksto]";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show information about this application");
+        l << h;
+        h.usage = "help --about-beqt [description|changelog|license|authors|translations|thanksto]";
+        h.description = BTranslation::translate("BTerminalIOHandler", "Show information about BeQt libraries");
+        l << h;
+        break;
+    default:
+        break;
+    }
+    return l;
 }
 
 BTerminalIOHandler::InternalHandler BTerminalIOHandler::handler(StandardCommand cmd)
@@ -313,6 +411,15 @@ QString BTerminalIOHandler::readLine(const QString &text)
     return line;
 }
 
+QString BTerminalIOHandler::readLineSecure(const QString &text)
+{
+    setStdinEchoEnabled(false);
+    QString line = readLine(text);
+    setStdinEchoEnabled(true);
+    writeLine();
+    return line;
+}
+
 void BTerminalIOHandler::write(const QString &text)
 {
     if (text.isEmpty())
@@ -343,7 +450,10 @@ void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &desc
 {
     if (usage.isEmpty())
         return;
-    QString s = "  " + usage;
+    QString s;
+    foreach (const QString &u, usage.split('\n'))
+        s += "  " + u + "\n";
+    s.remove(s.length() - 1, 1);
     if (!description.isEmpty())
     {
         if (s.length() > 28)
@@ -353,6 +463,17 @@ void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &desc
         s += description;
     }
     writeLine(s);
+}
+
+void BTerminalIOHandler::writeHelpLine(const QString &usage, const BTranslation &description, bool translate)
+{
+    writeHelpLine(usage, translate ? description.translate() : description.sourceText());
+}
+
+void BTerminalIOHandler::writeHelpLines(const CommandHelpList &list, bool translate)
+{
+    foreach (const CommandHelp &h, list)
+        writeHelpLine(h.usage, h.description, translate);
 }
 
 void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
@@ -378,6 +499,30 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 #endif
 }
 
+void BTerminalIOHandler::setTerminalTitle(const QString &title)
+{
+    QMutexLocker locker1(&BTerminalIOHandlerPrivate::titleMutex);
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    QMutexLocker locker2(&BTerminalIOHandlerPrivate::writeMutex);
+    BTerminalIOHandlerPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
+    BTerminalIOHandlerPrivate::writeStream.flush();
+#elif defined(Q_OS_WINDOWS)
+
+    if (sizeof(TCHAR) == > 1)
+    {
+        LPCTSTR s = new TCHAR[title.length() + 1];
+        title.toWCharArray(s);
+        s[title.length()] = '\0';
+        SetConsoleTitle(s);
+        delete [] s;
+    }
+    else
+    {
+        SetConsoleTitle(title.toLocal8Bit().constData());
+    }
+#endif
+}
+
 void BTerminalIOHandler::installHandler(const QString &command, InternalHandler handler)
 {
     if ( !BTerminalIOHandlerPrivate::testInit() )
@@ -388,13 +533,6 @@ void BTerminalIOHandler::installHandler(const QString &command, InternalHandler 
     if (ds->internalHandlers.contains(command))
         return;
     ds->internalHandlers.insert(command, handler);
-}
-
-void BTerminalIOHandler::installHandler(StandardCommand cmd)
-{
-    InternalHandler h = handler(cmd);
-    foreach (const QString &s, commands(cmd))
-        installHandler(s, h);
 }
 
 void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler handler)
@@ -409,6 +547,29 @@ void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler 
     ds->externalHandlers.insert(command, handler);
 }
 
+void BTerminalIOHandler::installHandler(StandardCommand cmd)
+{
+    InternalHandler h = handler(cmd);
+    CommandHelpList l = commandHelpList(cmd);
+    foreach (const QString &s, commands(cmd))
+    {
+        installHandler(s, h);
+        setCommandHelp(s, l);
+    }
+}
+
+void BTerminalIOHandler::installHandler(StandardCommand cmd, InternalHandler handler)
+{
+    foreach (const QString &s, commands(cmd))
+        installHandler(s, handler);
+}
+
+void BTerminalIOHandler::installHandler(StandardCommand cmd, ExternalHandler handler)
+{
+    foreach (const QString &s, commands(cmd))
+        installHandler(s, handler);
+}
+
 void BTerminalIOHandler::setRootSettingsNode(BSettingsNode *root)
 {
     if (!BTerminalIOHandlerPrivate::testInit())
@@ -419,20 +580,38 @@ void BTerminalIOHandler::setRootSettingsNode(BSettingsNode *root)
     ds->root = root;
 }
 
-void BTerminalIOHandler::setHelpDescription(const QString &s)
+BSettingsNode *BTerminalIOHandler::createBeQtSettingsNode(BSettingsNode *parent)
+{
+    BSettingsNode *n = new BSettingsNode("BeQt", parent);
+      BSettingsNode *nn = new BSettingsNode("Core", n);
+        BSettingsNode *nnn = new BSettingsNode(QVariant::Locale, "locale", nn);
+          nnn->setUserSetFunction(&setLocale);
+          nnn->setDescription(BTranslation::translate("BSettingsNode", "Locale for the whole application.\n"
+                                                      "Format: ??_**, where ?? stands for mandatory language name,\n"
+                                                      "and ** stands for optional country name.\n"
+                                                      "Examples: en, en_GB, ru, ru_RU"));
+    return n;
+}
+
+void BTerminalIOHandler::setHelpDescription(const BTranslation &t)
 {
     if (!BTerminalIOHandlerPrivate::testInit())
         return;
-    ds_func()->help = s;
+    ds_func()->help = t;
 }
 
 void BTerminalIOHandler::setCommandHelp(const QString &command, const CommandHelp &help)
+{
+    setCommandHelp(command, CommandHelpList() << help);
+}
+
+void BTerminalIOHandler::setCommandHelp(const QString &command, const CommandHelpList &list)
 {
     if (!BTerminalIOHandlerPrivate::testInit())
         return;
     if (command.isEmpty())
         return;
-    ds_func()->commandHelp.insert(command, help);
+    ds_func()->commandHelp.insert(command, list);
 }
 
 BSettingsNode *BTerminalIOHandler::rootSettingsNode()
@@ -460,7 +639,7 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
 {
     if (args.size() < 1)
     {
-        writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+        writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
         return false;
     }
     if (!d_func()->root)
@@ -476,7 +655,7 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
     {
         if (args.size() != 2)
         {
-            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
         if (!d_func()->root->show(args.last()))
@@ -489,22 +668,22 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
     {
         if (args.size() != 2)
         {
-            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
-        BSettingsNode *n = d_func()->root->find(args.first());
+        BSettingsNode *n = d_func()->root->find(args.last());
         if (!n)
         {
             writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));
             return false;
         }
-        QString s = n->description();
-        if (s.isEmpty())
+        BTranslation t = n->description();
+        if (!t.isValid())
         {
             writeLine(d_func()->translations ? tr("No description") : QString("No description"));
             return false;
         }
-        writeLine(d_func()->translations ? QCoreApplication::translate("BSettingsNode", s.toUtf8().constData()) : s);
+        writeLine(d_func()->translations ? t.translate() : t.sourceText());
     }
     else
     {
@@ -547,7 +726,7 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
         }
         else
         {
-            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
     }
@@ -556,12 +735,10 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
 
 bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
 {
-    QString h = d_func()->translations ?
-                QCoreApplication::translate("BTerminalIOHanlder", d_func()->help.toUtf8().constData()) :
-                d_func()->help;
+    QString h = d_func()->translations ? d_func()->help.translate() : d_func()->help.sourceText();
     if (args.isEmpty())
     {
-        if (!h.isEmpty())
+        if (h.isEmpty())
         {
             writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
             return false;
@@ -572,10 +749,38 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
     {
         if (args.first() == "--all")
         {
+            if (h.isEmpty() && d_func()->commandHelp.isEmpty())
+            {
+                writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+                return false;
+            }
             if (!h.isEmpty())
+            {
                 writeLine(h);
-            foreach (const CommandHelp &ch, d_func()->commandHelp)
-                writeHelpLine(ch.usage, ch.description);
+                if (!d_func()->commandHelp.isEmpty())
+                    writeLine();
+            }
+            if (!d_func()->commandHelp.isEmpty())
+            {
+                writeLine(d_func()->translations ? tr("The following commands are available:") :
+                                                   QString("The following commands are available:"));
+                writeLine();
+                foreach (const CommandHelpList &ch, bWithoutDuplicates(d_func()->commandHelp.values(), &areEqual))
+                    writeHelpLines(ch, d_func()->translations);
+            }
+        }
+        else if (args.first() == "--commands")
+        {
+            if (d_func()->commandHelp.isEmpty())
+            {
+                writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+                return false;
+            }
+            writeLine(d_func()->translations ? tr("The following commands are available:") :
+                                               QString("The following commands are available:"));
+            writeLine();
+            foreach (const CommandHelpList &ch, bWithoutDuplicates(d_func()->commandHelp.values(), &areEqual))
+                writeHelpLines(ch, d_func()->translations);
         }
         else if (args.first() == "--settings")
         {
@@ -587,23 +792,76 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
             }
             d_func()->root->showTree();
         }
+        else if (args.first() == "--about" || args.first() == "--about-beqt")
+        {
+            if (args.first() == "--about-beqt")
+                writeLine(BCoreApplication::beqtInfo(BCoreApplication::Copyringt));
+            else
+                writeLine(BCoreApplication::applicationInfo(BCoreApplication::Copyringt));
+        }
         else if (d_func()->commandHelp.contains(args.first()))
         {
-            const CommandHelp &ch = d_func()->commandHelp.value(args.first());
-            writeHelpLine(ch.usage, ch.description);
+            writeHelpLines(d_func()->commandHelp.value(args.first()), d_func()->translations);
         }
         else
         {
-            writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
     }
+    else if (args.size() == 2)
+    {
+        if (args.first() != "--about" && args.first() != "--about-beqt")
+        {
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            return false;
+        }
+        BCoreApplication::About type;
+        if (args.last() == "description")
+        {
+            type = BCoreApplication::Description;
+        }
+        else if (args.last() == "changelog")
+        {
+            type = BCoreApplication::ChangeLog;
+        }
+        else if (args.last() == "license")
+        {
+            type = BCoreApplication::License;
+        }
+        else if (args.last() == "authors")
+        {
+            type = BCoreApplication::Authors;
+        }
+        else if (args.last() == "translators")
+        {
+            type = BCoreApplication::Translators;
+        }
+        else if (args.last() == "thanksto")
+        {
+            type = BCoreApplication::ThanksTo;
+        }
+        else
+        {
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            return false;
+        }
+        QString s = (args.first() == "--about-beqt") ? BCoreApplication::beqtInfo(type) :
+                                                       BCoreApplication::applicationInfo(type);
+        if (s.isEmpty())
+        {
+            writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+            return false;
+        }
+        writeLine(s);
+        return true;
+    }
     else
     {
-        writeLine(d_func()->translations ? tr("Invalid parameters count") : QString("Invalid parameters count"));
+        writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
         return false;
     }
-    return false;
+    return true;
 }
 
 /*============================== Static protected variables ================*/

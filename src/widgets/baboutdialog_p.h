@@ -17,7 +17,7 @@ class QSize;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BPersonInfoProvider>
+#include <BeQtCore/BPersonInfo>
 
 #include <QObject>
 #include <QList>
@@ -70,7 +70,7 @@ public:
     int tabIndex(DialogTab t) const;
     void removeTab(DialogTab t);
     void fillTab(DialogTab t, const QString &text, bool html);
-    void fillTab(DialogTab t, const BPersonInfoProvider::PersonInfoList &infos);
+    void fillTab(DialogTab t, const BPersonInfoList &infos);
     void resetAuthorsProvider(BPersonInfoProvider *prov = 0);
     void resetTranslationProvider(BPersonInfoProvider *prov = 0);
     void resetThanksToProvider(BPersonInfoProvider *prov = 0);
@@ -80,6 +80,7 @@ public:
     void resetDescription();
     void resetChangeLog();
     void resetLicense();
+    void setupFromApplicationData();
 public Q_SLOTS:
    void retranslateUi();
    void resetAuthors();
