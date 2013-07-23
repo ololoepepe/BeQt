@@ -17,7 +17,7 @@ class BNetworkServer;
 ================================ BRemoteLogger ===============================
 ============================================================================*/
 
-class BRemoteLogger : public BLogger
+class B_NETWORK_EXPORT BRemoteLogger : public BLogger
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BRemoteLogger)

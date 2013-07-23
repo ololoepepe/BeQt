@@ -21,7 +21,7 @@ class QPushButton;
 ================================ BOperationProgressDialogPrivate =============
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BOperationProgressDialogPrivate : public BDialogPrivate
+class B_NETWORKWIDGETS_EXPORT BOperationProgressDialogPrivate : public BDialogPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BOperationProgressDialog)

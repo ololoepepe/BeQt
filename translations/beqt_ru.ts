@@ -64,30 +64,30 @@
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="317"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="322"/>
         <source>No image available</source>
         <translation>Изображение отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="323"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="328"/>
         <source>Website</source>
         <comment>personInfo text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="326"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="331"/>
         <source>E-mail</source>
         <comment>personInfo text</comment>
         <translation>Электронная почта</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="483"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="488"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="484"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="489"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>

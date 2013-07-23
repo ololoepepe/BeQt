@@ -26,6 +26,8 @@ enum ResourceLookupMode
     UserOnly
 };
 
+B_CORE_EXPORT bool fileExists(const QString &fileName);
+B_CORE_EXPORT bool dirExists(const QString &dirName);
 B_CORE_EXPORT bool touch(const QString &filePath);
 B_CORE_EXPORT bool mkpath(const QString &dirPath);
 B_CORE_EXPORT bool rmdir(const QString &dirName);

@@ -17,7 +17,7 @@ class QVariant;
 ================================ BTranslation ================================
 ============================================================================*/
 
-class BTranslation : public BBase
+class B_CORE_EXPORT BTranslation : public BBase
 {
     B_DECLARE_PRIVATE(BTranslation)
 public:

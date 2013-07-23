@@ -24,7 +24,7 @@ class BSpellCheckerDictionary;
 ================================ BSpellCheckerPrivate ========================
 ============================================================================*/
 
-class BSpellCheckerPrivate : public BBasePrivate
+class B_CORE_EXPORT BSpellCheckerPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSpellChecker)

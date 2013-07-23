@@ -306,8 +306,13 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoList &infos)
         QString sp = "";
         QString dsp = HtmlSpaceDouble;
         s += "<div>";
-        QString img = BDirTools::findResource(!inf.image.isEmpty() ? inf.image : "beqt/pixmaps/no_image.png");
+        QString img = BDirTools::findResource(inf.image);
         QPixmap pm(img);
+        if (pm.isNull())
+        {
+            img = BDirTools::findResource("beqt/pixmaps/no_image.png");
+            pm.load(img);
+        }
         if (!pm.isNull())
         {
             double k = 80.0 / (double) qMax(pm.height(), pm.width());

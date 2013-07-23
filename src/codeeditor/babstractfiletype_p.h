@@ -11,7 +11,7 @@ class BSyntaxHighlighter;
 ================================ BAbstractFileTypePrivate ====================
 ============================================================================*/
 
-class BAbstractFileTypePrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractFileTypePrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BAbstractFileType)
 public:

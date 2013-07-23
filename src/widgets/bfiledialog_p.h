@@ -22,7 +22,7 @@ class QEvent;
 ================================ BFileDialogPrivate ==========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BFileDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BFileDialogPrivate : public BBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BFileDialog)
