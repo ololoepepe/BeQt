@@ -301,7 +301,7 @@ BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(Standard
         l << h;
         h.usage = "set <key> [value]";
         h.description = BTranslation::translate("BTerminalIOHandler", "Set the value for <key> to [value] "
-                                                "(if specified)\nor request value input");
+                                                "(if specified) or request value input");
         l << h;
         break;
     case HelpCommand:
@@ -587,9 +587,9 @@ BSettingsNode *BTerminalIOHandler::createBeQtSettingsNode(BSettingsNode *parent)
       BSettingsNode *nn = new BSettingsNode("Core", n);
         BSettingsNode *nnn = new BSettingsNode(QVariant::Locale, "locale", nn);
           nnn->setUserSetFunction(&setLocale);
-          nnn->setDescription(BTranslation::translate("BSettingsNode", "Locale for the whole application.\n"
-                                                      "Format: ??_**, where ?? stands for mandatory language name,\n"
-                                                      "and ** stands for optional country name.\n"
+          nnn->setDescription(BTranslation::translate("BSettingsNode", "Locale for the whole application. "
+                                                      "Format: ??_**, where ?? stands for mandatory language name, "
+                                                      "and ** stands for optional country name. "
                                                       "Examples: en, en_GB, ru, ru_RU"));
     return n;
 }

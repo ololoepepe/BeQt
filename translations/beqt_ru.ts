@@ -1295,14 +1295,8 @@
     </message>
     <message>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="590"/>
-        <source>Locale for the whole application.
-Format: ??_**, where ?? stands for mandatory language name,
-and ** stands for optional country name.
-Examples: en, en_GB, ru, ru_RU</source>
-        <translation>Локаль для всего приложения.
-Формат: ??_**, где ?? означает обязательное название языка,
-а ** означает необязательное название страны.
-Примеры: en, en_GB, ru, ru_RU</translation>
+        <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
+        <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
 </context>
 <context>
@@ -1419,10 +1413,8 @@ Examples: en, en_GB, ru, ru_RU</source>
     </message>
     <message>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="303"/>
-        <source>Set the value for &lt;key&gt; to [value] (if specified)
-or request value input</source>
-        <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано)
-или запросить ввод этого значения</translation>
+        <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
+        <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="309"/>

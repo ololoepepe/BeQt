@@ -66,16 +66,6 @@ BTextMatch::BTextMatch() :
     d_func()->init();
 }
 
-BTextMatch::BTextMatch(const QString *const text, int position, int length) :
-    BBase(*new BTextMatchPrivate(this))
-{
-    B_D(BTextMatch);
-    d->init();
-    d->txt = text;
-    d->pos = position;
-    d->len = length;
-}
-
 BTextMatch::BTextMatch(const BTextMatch &other) :
     BBase(*new BTextMatchPrivate(this))
 {
@@ -86,6 +76,18 @@ BTextMatch::BTextMatch(const BTextMatch &other) :
 BTextMatch::~BTextMatch()
 {
     //
+}
+
+/*============================== Private constructors ======================*/
+
+BTextMatch::BTextMatch(const QString *const text, int position, int length) :
+    BBase(*new BTextMatchPrivate(this))
+{
+    B_D(BTextMatch);
+    d->init();
+    d->txt = text;
+    d->pos = position;
+    d->len = length;
 }
 
 /*============================== Public methods ============================*/
