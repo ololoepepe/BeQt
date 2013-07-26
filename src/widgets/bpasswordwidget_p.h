@@ -41,7 +41,9 @@ public Q_SLOTS:
     void resetShow();
     void passwordChanged(const QString &password);
 public:
+    bool wasEmpty;
     BPassword pwd;
+    BPassword pwdBackup;
     bool save;
     bool show;
     BPasswordWidget::GeneratePasswordFunction generateFunction;
