@@ -27,7 +27,7 @@ enum ResourceLookupMode
 };
 
 B_CORE_EXPORT bool fileExists(const QString &fileName);
-B_CORE_EXPORT bool mayBeExecutable(const QString &fileName);
+B_CORE_EXPORT bool mayBeExecutable(const QString &fileName, bool considerSuffix = true);
 B_CORE_EXPORT bool mayBeExecutable(const QByteArray &data, const QString &fileName = QString());
 B_CORE_EXPORT bool dirExists(const QString &dirName);
 B_CORE_EXPORT bool touch(const QString &filePath);

@@ -117,6 +117,11 @@ QString standardRegExpPattern(RegExpPattern type)
     }
 }
 
+QRegExp standardRegExp(RegExpPattern type)
+{
+    return QRegExp(standardRegExpPattern(type));
+}
+
 QStringList removeDuplicates(const QStringList &list, Qt::CaseSensitivity cs, int *count)
 {
     QStringList nlist = list;

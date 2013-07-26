@@ -31,9 +31,9 @@ bool fileExists(const QString &fileName)
     return fi.isAbsolute() && fi.isFile();
 }
 
-bool mayBeExecutable(const QString &fileName)
+bool mayBeExecutable(const QString &fileName, bool considerSuffix)
 {
-    return mayBeExecutable(readFile(fileName, 4), fileName);
+    return mayBeExecutable(readFile(fileName, 4), considerSuffix ? fileName : QString());
 }
 
 bool mayBeExecutable(const QByteArray &data, const QString &fileName)
@@ -44,14 +44,20 @@ bool mayBeExecutable(const QByteArray &data, const QString &fileName)
         if (fileName.indexOf(QRegExp("so(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?$")) > 0)
             return false;
 #if defined Q_OS_MAC
-        if (suffix == "dylib")
+        if (QFileInfo(fileName).suffix() == "dylib")
             return false;
 #endif
     }
     return data.mid(0, 4) == "\x7F""ELF" || data.mid(0, 2) == "#!";
 #elif defined Q_OS_WIN
-    if (!fileName.isEmpty() && !QFileInfo(fileName).suffix().compare("dll", Qt::CaseInsensitive))
-        return false;
+    if (!fileName.isEmpty())
+    {
+        QString suffix = QFileInfo(fileName).suffix();
+        if (!suffix.compare("bat", Qt::CaseInsensitive))
+            return true;
+        if (!suffix.compare("dll", Qt::CaseInsensitive))
+            return false;
+    }
     return data.mid(0, 2) == "MZ";
 #else
     return false;

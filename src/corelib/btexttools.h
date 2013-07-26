@@ -33,6 +33,7 @@ B_CORE_EXPORT void appendTrailingSpaces(QString *s, int ll);
 B_CORE_EXPORT QString replaceTabs(const QString &s, BeQt::TabWidth tw);
 B_CORE_EXPORT void replaceTabs(QString *s, BeQt::TabWidth tw);
 B_CORE_EXPORT QString standardRegExpPattern(RegExpPattern type);
+B_CORE_EXPORT QRegExp standardRegExp(RegExpPattern type);
 B_CORE_EXPORT QStringList removeDuplicates(const QStringList &list, Qt::CaseSensitivity cs = Qt::CaseSensitive,
                                           int *count  = 0);
 B_CORE_EXPORT int removeDuplicates(QStringList *list, Qt::CaseSensitivity cs = Qt::CaseSensitive);

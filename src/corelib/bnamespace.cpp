@@ -624,7 +624,38 @@ QString osVersion()
     return linuxVersion();
 #elif defined(Q_OS_WIN)
     return windowsVersion();
+#else
+    return "";
 #endif
+}
+
+OSType osType()
+{
+#if defined(Q_OS_MAC)
+    return MacOS;
+#elif defined(Q_OS_LINUX)
+    return LinuxOS;
+#elif defined(Q_OS_WIN)
+    return WindowsOS;
+#else
+    return UnknownOS;
+#endif
+}
+
+QString osTypeToString(OSType t)
+{
+    switch (t)
+    {
+    case LinuxOS:
+        return "Linux";
+    case MacOS:
+        return "MacOS X";
+    case WindowsOS:
+        return "Windows";
+    case UnknownOS:
+    default:
+        return "";
+    }
 }
 
 }
