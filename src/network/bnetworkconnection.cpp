@@ -111,6 +111,9 @@ void BNetworkConnectionPrivate::disconnected()
     if (loggingMode >= BNetworkConnection::NormalLogging)
         q->log(translations ? tr("Disconnected", "log text") : QString("Disconnected"));
     QMetaObject::invokeMethod(q, "disconnected");
+    foreach (BNetworkOperation *op, QList<BNetworkOperation *>() << requests.values() << replies.values())
+        if (!op->isFinished() && !op->isError())
+            op->d_func()->setError();
 }
 
 void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
@@ -119,6 +122,9 @@ void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
     if (loggingMode >= BNetworkConnection::NormalLogging)
         q->log((translations ? tr("Error:", "log text") : QString("Error:")) + " " + q->errorString());
     QMetaObject::invokeMethod( q, "error", Q_ARG(QAbstractSocket::SocketError, socketError) );
+    foreach (BNetworkOperation *op, QList<BNetworkOperation *>() << requests.values() << replies.values())
+        if (!op->isFinished() && !op->isError())
+            op->d_func()->setError();
 }
 
 void BNetworkConnectionPrivate::downloadProgress(const BNetworkOperationMetaData &metaData,

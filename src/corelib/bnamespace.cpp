@@ -234,7 +234,8 @@ void waitNonBlocking(const QObject *sender, const char *signal, int msecs)
     waitNonBlocking(QList<Until>() << until(sender, signal), msecs);
 }
 
-void waitNonBlocking(const QObject *sender1, const char *signal1, QObject *sender2, const char *signal2, int msecs)
+void waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2, const char *signal2,
+                     int msecs)
 {
     waitNonBlocking(QList<Until>() << until(sender1, signal1) << until(sender2, signal2), msecs);
 }
