@@ -19,6 +19,7 @@
 #include <QMutexLocker>
 #include <QFile>
 #include <QCoreApplication>
+#include <QScopedArrayPointer>
 
 #include <QDebug>
 
@@ -508,19 +509,15 @@ void BTerminalIOHandler::setTerminalTitle(const QString &title)
     BTerminalIOHandlerPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
     BTerminalIOHandlerPrivate::writeStream.flush();
 #elif defined(Q_OS_WIN)
-
-    if (sizeof(TCHAR) == > 1)
-    {
-        LPCTSTR s = new TCHAR[title.length() + 1];
-        title.toWCharArray(s);
-        s[title.length()] = '\0';
-        SetConsoleTitle(s);
-        delete [] s;
-    }
-    else
-    {
-        SetConsoleTitle(title.toLocal8Bit().constData());
-    }
+#ifdef _UNICODE
+    QScopedPointer<wchar_t> chars(new wchar_t[title.length() + 1]);
+    title.toWCharArray(chars);
+    chars[title.length()] = '\0';
+    LPCTSTR s = chars;
+#else
+    LPCTSTR s = title.toLocal8Bit().constData();
+#endif
+    SetConsoleTitle(s);
 #endif
 }
 

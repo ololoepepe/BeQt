@@ -1294,7 +1294,7 @@
         <translation>Значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="590"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="587"/>
         <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
         <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
@@ -1387,42 +1387,42 @@
 <context>
     <name>BTerminalIOHandler</name>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="629"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="626"/>
         <source>Unknown command</source>
         <translation>Неизвестная команда</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="292"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="293"/>
         <source>Quit the application</source>
         <translation>Выйти из приложения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="64"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="65"/>
         <source>Enter locale:</source>
         <translation>Введите локаль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="297"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="298"/>
         <source>Show list of all available settings</source>
         <translation>Показать список всех доступных настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="300"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="301"/>
         <source>Show the value for &lt;key&gt; or it&apos;s description</source>
         <translation>Показать значение для ключа &lt;key&gt; или его описание</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="303"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="304"/>
         <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
         <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="309"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="310"/>
         <source>Show description of &lt;command&gt;</source>
         <translation>Показать описание команды &lt;command&gt;</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="312"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="313"/>
         <source>Show basic help, or:
   --commands - list of all available commands
   --settings - list of all available settings
@@ -1433,77 +1433,77 @@
   --all - всё вышеперечисленное (включая основную справку)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="318"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="319"/>
         <source>Show information about this application</source>
         <translation>Показать информацию об это приложении</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="321"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="322"/>
         <source>Show information about BeQt libraries</source>
         <translation>Показать информацию о библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="643"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="659"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="672"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="730"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="809"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="817"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="847"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="862"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="640"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="656"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="669"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="727"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="806"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="814"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="844"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="859"/>
         <source>Invalid parameters</source>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="648"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="790"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="645"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="787"/>
         <source>Settings structure not set</source>
         <translation>Не задана структура настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="664"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="661"/>
         <source>Failed to show value</source>
         <translation>Не удалось показать значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="678"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="694"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="675"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="691"/>
         <source>No such option</source>
         <translation>Нет такой опции</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="684"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="681"/>
         <source>No description</source>
         <translation>Описание отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="703"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="700"/>
         <source>Invalid value</source>
         <translation>Недейтсивтельное значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="708"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="720"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="705"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="717"/>
         <source>Failed to set value</source>
         <translation>Не удалось установить значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="713"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="725"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="710"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="722"/>
         <source>OK</source>
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="744"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="755"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="777"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="854"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="741"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="752"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="774"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="851"/>
         <source>Nothing to display</source>
         <translation>Нечего отобразить</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="766"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="780"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="763"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="777"/>
         <source>The following commands are available:</source>
         <translation>Доступны следующие команды:</translation>
     </message>
