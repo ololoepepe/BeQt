@@ -44,8 +44,8 @@ public:
     };
 public:
     typedef QList<CommandHelp> CommandHelpList;
-    typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &, const QStringList &);
-    typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &, const QStringList &);
+    typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &cmd, const QStringList &args);
+    typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &cmd, const QStringList &args);
 public:
     explicit BTerminalIOHandler(QObject *parent = 0);
     ~BTerminalIOHandler();

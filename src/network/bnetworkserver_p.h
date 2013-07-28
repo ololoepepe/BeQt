@@ -22,6 +22,7 @@ class BSpamNotifier;
 #include <QString>
 #include <QThread>
 #include <QMutex>
+#include <QSet>
 
 /*============================================================================
 ================================ BNetworkServerWorker ========================
@@ -98,6 +99,7 @@ public:
     int maxConnectionCount;
     int maxThreadCount;
     BSpamNotifier *spamNotifier;
+    QSet<QString> banned;
     mutable QMutex connectionMutex;
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)
