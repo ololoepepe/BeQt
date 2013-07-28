@@ -53,6 +53,14 @@ enum FileSizeFormat
     GigabytesFormat
 };
 
+enum OSType
+{
+    UnknownOS,
+    LinuxOS,
+    MacOS,
+    WindowsOS
+};
+
 typedef QPair<const QObject *, const char *> Until;
 typedef QPair<const QObject *, const char *> Target;
 
@@ -119,6 +127,8 @@ B_CORE_EXPORT QString windowsVersionToString(QSysInfo::WinVersion version);
 B_CORE_EXPORT QString windowsVersion();
 #endif
 B_CORE_EXPORT QString osVersion();
+B_CORE_EXPORT OSType osType();
+B_CORE_EXPORT QString osTypeToString(OSType t);
 
 }
 

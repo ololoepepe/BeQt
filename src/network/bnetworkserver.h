@@ -7,6 +7,7 @@ class BGenericSocket;
 class BSpamNotifier;
 
 class QString;
+class QStringList;
 
 #include "bgenericserver.h"
 
@@ -38,7 +39,6 @@ public:
     bool isValid() const;
     bool isListening() const;
     bool listen(const QString &address, quint16 port = 0);
-    void close();
     BGenericServer::ServerType serverType() const;
     int maxConnectionCount() const;
     int currentConnectionCount() const;
@@ -46,6 +46,14 @@ public:
     int currentThreadCount() const;
     QList<BNetworkConnection *> connections() const;
     BSpamNotifier *spamNotifier() const;
+    QStringList banned() const;
+public Q_SLOTS:
+    void close();
+    void ban(const QString &address);
+    void ban(const QStringList &addresses);
+    void unban(const QString &address);
+    void unban(const QStringList &addresses);
+    void clearBanList();
 protected:
     virtual BNetworkConnection *createConnection(BGenericSocket *socket);
     virtual BGenericSocket *createSocket();

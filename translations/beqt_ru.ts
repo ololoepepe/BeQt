@@ -679,20 +679,20 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="319"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="330"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="325"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="336"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="625"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="631"/>
         <source>Unknown reply</source>
         <comment>log text</comment>
         <translation>Неизвестный ответ</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="632"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="638"/>
         <source>Unknown request</source>
         <comment>log text</comment>
         <translation>Неизвестный запрос</translation>
@@ -713,37 +713,37 @@
         <translation>Отключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="120"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="123"/>
         <source>Error:</source>
         <comment>log text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="144"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="150"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation>Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="181"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="187"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="204"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="210"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="226"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="232"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="238"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="244"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>
@@ -990,19 +990,19 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="129"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="130"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="130"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="131"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="131"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="132"/>
         <source>Generate password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сгенерировать пароль</translation>
@@ -1295,14 +1295,8 @@
     </message>
     <message>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="590"/>
-        <source>Locale for the whole application.
-Format: ??_**, where ?? stands for mandatory language name,
-and ** stands for optional country name.
-Examples: en, en_GB, ru, ru_RU</source>
-        <translation>Локаль для всего приложения.
-Формат: ??_**, где ?? означает обязательное название языка,
-а ** означает необязательное название страны.
-Примеры: en, en_GB, ru, ru_RU</translation>
+        <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
+        <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
 </context>
 <context>
@@ -1419,10 +1413,8 @@ Examples: en, en_GB, ru, ru_RU</source>
     </message>
     <message>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="303"/>
-        <source>Set the value for &lt;key&gt; to [value] (if specified)
-or request value input</source>
-        <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано)
-или запросить ввод этого значения</translation>
+        <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
+        <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
         <location filename="../src/corelib/bterminaliohandler.cpp" line="309"/>
@@ -1660,53 +1652,53 @@ or request value input</source>
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="437"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="438"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="439"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="440"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="441"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="442"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="443"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="444"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="445"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="446"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="447"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="448"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="500"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="501"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="503"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="504"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="507"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="508"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>

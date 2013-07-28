@@ -12,6 +12,7 @@
 #include <QTextCodec>
 #include <QList>
 #include <QByteArray>
+#include <QRegExp>
 
 #include <QDebug>
 
@@ -28,6 +29,39 @@ bool fileExists(const QString &fileName)
         return false;
     QFileInfo fi(fileName);
     return fi.isAbsolute() && fi.isFile();
+}
+
+bool mayBeExecutable(const QString &fileName, bool considerSuffix)
+{
+    return mayBeExecutable(readFile(fileName, 4), considerSuffix ? fileName : QString());
+}
+
+bool mayBeExecutable(const QByteArray &data, const QString &fileName)
+{
+#if defined(Q_OS_LINUX) || defined Q_OS_MAC
+    if (!fileName.isEmpty())
+    {
+        if (fileName.indexOf(QRegExp("so(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?$")) > 0)
+            return false;
+#if defined Q_OS_MAC
+        if (QFileInfo(fileName).suffix() == "dylib")
+            return false;
+#endif
+    }
+    return data.mid(0, 4) == "\x7F""ELF" || data.mid(0, 2) == "#!";
+#elif defined Q_OS_WIN
+    if (!fileName.isEmpty())
+    {
+        QString suffix = QFileInfo(fileName).suffix();
+        if (!suffix.compare("bat", Qt::CaseInsensitive))
+            return true;
+        if (!suffix.compare("dll", Qt::CaseInsensitive))
+            return false;
+    }
+    return data.mid(0, 2) == "MZ";
+#else
+    return false;
+#endif
 }
 
 bool dirExists(const QString &dirName)

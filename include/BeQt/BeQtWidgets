@@ -11,6 +11,7 @@
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"
+#include "binputfield.h"
 #include "blinenumberwidget.h"
 #include "blocalecombobox.h"
 #include "blocalterminaldriver.h"

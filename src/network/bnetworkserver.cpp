@@ -17,6 +17,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QMap>
+#include <QStringList>
 
 /*============================================================================
 ================================ BNetworkServerWorker ========================
@@ -40,11 +41,30 @@ BNetworkServerWorker::~BNetworkServerWorker()
 void BNetworkServerWorker::addConnection(int socketDescriptor)
 {
     BGenericSocket *s = ServerPrivate->createSocket();
-    if ( !s || !s->setSocketDescriptor(socketDescriptor) || !s->isValid() )
+    if (!s)
         return;
+    if (!s->setSocketDescriptor(socketDescriptor) || !s->isValid())
+    {
+        delete s;
+        return;
+    }
+    ServerPrivate->connectionMutex.lock();
+    if (ServerPrivate->banned.contains(s->peerAddress()))
+    {
+        s->disconnectFromHost();
+        delete s;
+        ServerPrivate->connectionMutex.unlock();
+        return;
+    }
+    ServerPrivate->connectionMutex.unlock();
     BNetworkConnection *c = ServerPrivate->createConnection(s);
-    if ( !c || !c->isValid() )
+    if (!c)
         return;
+    if (!c->isValid())
+    {
+        delete c;
+        return;
+    }
     BSignalDelayProxy *proxy = new BSignalDelayProxy(c);
     connect(c, SIGNAL(disconnected()), proxy, SLOT(trigger()));
     connect(c, SIGNAL(error(QAbstractSocket::SocketError)), proxy, SLOT(trigger()));
@@ -236,7 +256,7 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
         BGenericSocket *s = new BGenericSocket(BGenericSocket::TcpSocket);
         s->setSocketDescriptor(socketDescriptor);
         s->disconnectFromHost();
-        s->deleteLater();
+        delete s;
     }
 }
 
@@ -331,14 +351,6 @@ bool BNetworkServer::listen(const QString &address, quint16 port)
     return !d->server.isNull() && d->server->listen(address, port);
 }
 
-void BNetworkServer::close()
-{
-    B_D(BNetworkServer);
-    if ( d->server.isNull() )
-        return;
-    d->server->close();
-}
-
 BGenericServer::ServerType BNetworkServer::serverType() const
 {
     const B_D(BNetworkServer);
@@ -376,6 +388,58 @@ QList<BNetworkConnection *> BNetworkServer::connections() const
     foreach (BNetworkServerThread *t, d_func()->threads)
         list << t->connections;
     return list;
+}
+
+QStringList BNetworkServer::banned() const
+{
+    bool b = d_func()->connectionMutex.tryLock();
+    QStringList list = d_func()->banned.toList();
+    if (b)
+        d_func()->connectionMutex.unlock();
+    return list;
+}
+
+/*============================== Public slots ==============================*/
+
+void BNetworkServer::close()
+{
+    B_D(BNetworkServer);
+    if (d->server.isNull())
+        return;
+    d->server->close();
+}
+
+void BNetworkServer::ban(const QString &address)
+{
+    ban(QStringList() << address);
+}
+
+void BNetworkServer::ban(const QStringList &addresses)
+{
+    lock();
+    foreach (const QString &s, addresses)
+        d_func()->banned.insert(s);
+    unlock();
+}
+
+void BNetworkServer::unban(const QString &address)
+{
+    unban(QStringList() << address);
+}
+
+void BNetworkServer::unban(const QStringList &addresses)
+{
+    lock();
+    foreach (const QString &s, addresses)
+        d_func()->banned.remove(s);
+    unlock();
+}
+
+void BNetworkServer::clearBanList()
+{
+    lock();
+    d_func()->banned.clear();
+    unlock();
 }
 
 /*============================== Protected methods =========================*/

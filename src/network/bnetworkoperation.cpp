@@ -314,7 +314,9 @@ bool BNetworkOperation::waitForFinished(int msecs)
 {
     if (d_func()->isFinished)
         return true;
-    BeQt::waitNonBlocking(this, SIGNAL(finished()), msecs);
+    if (d_func()->isError)
+        return false;
+    BeQt::waitNonBlocking(this, SIGNAL(finished()), this, SIGNAL(error()), msecs);
     return d_func()->isFinished;
 }
 

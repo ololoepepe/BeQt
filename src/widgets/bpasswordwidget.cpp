@@ -55,6 +55,7 @@ BPasswordWidgetPrivate::~BPasswordWidgetPrivate()
 void BPasswordWidgetPrivate::init()
 {
     B_Q(BPasswordWidget);
+    wasEmpty = true;
     save = true; //Is reset to false, so it's false by default
     show = true; //Is reset to false, so it's false by default
     generateFunction = &defaultGeneratePasswordFunction;
@@ -149,7 +150,21 @@ void BPasswordWidgetPrivate::resetShow()
 void BPasswordWidgetPrivate::passwordChanged(const QString &password)
 {
     B_Q(BPasswordWidget);
-    pwd.setPassword(password);
+    if (wasEmpty && !password.isEmpty() && pwd.isEncrypted())
+    {
+        pwdBackup = pwd;
+        wasEmpty = false;
+        pwd.setPassword(password);
+    }
+    else if (!wasEmpty && password.isEmpty() && pwdBackup.isEncrypted())
+    {
+        pwd = pwdBackup;
+        wasEmpty = true;
+    }
+    else
+    {
+        pwd.setPassword(password);
+    }
     QMetaObject::invokeMethod(q, "passwordChanged");
     if (pwd.isEncrypted())
         QMetaObject::invokeMethod(q, "passwordChanged", Q_ARG(QByteArray, pwd.encryptedPassword()));
@@ -193,32 +208,71 @@ BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
 
 void BPasswordWidget::setMode(BPassword::Mode mode)
 {
+    if (d_func()->pwd.mode() == mode)
+        return;
     d_func()->pwd.setMode(mode);
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::setPassword(const BPassword &password)
 {
+    if (password == d_func()->pwd)
+        return;
     d_func()->pwd = password;
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::setPassword(const QString &password)
 {
-    d_func()->pwd = BPassword(password);
+    BPassword pwd(password);
+    if (pwd == d_func()->pwd)
+        return;
+    d_func()->pwd = pwd;
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::setPassword(QCryptographicHash::Algorithm a, const QByteArray &password, int charCount)
 {
-    d_func()->pwd = BPassword(a, password, charCount);
+    BPassword pwd(a, password, charCount);
+    if (pwd == d_func()->pwd)
+        return;
+    d_func()->pwd = pwd;
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::encrypt(QCryptographicHash::Algorithm a)
 {
-    d_func()->pwd.encrypt(a);
+    BPassword pwd = d_func()->pwd;
+    pwd.encrypt(a);
+    if (pwd == d_func()->pwd)
+        return;
+    d_func()->pwd = pwd;
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::setSavePasswordVisible(bool visible)
@@ -250,14 +304,32 @@ void BPasswordWidget::setGeneratedPasswordLength(int len)
 
 void BPasswordWidget::clear()
 {
-    d_func()->pwd.clear();
+    BPassword pwd = d_func()->pwd;
+    pwd.clear();
+    if (pwd == d_func()->pwd)
+        return;
+    d_func()->pwd = pwd;
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::restorePasswordState(const QByteArray &ba)
 {
-    d_func()->pwd.restore(ba);
+    BPassword pwd;
+    pwd.restore(ba);
+    if (pwd == d_func()->pwd)
+        return;
+    d_func()->pwd = pwd;
     d_func()->updateEdit();
+    Q_EMIT passwordChanged();
+    if (d_func()->pwd.isEncrypted())
+        Q_EMIT passwordChanged(d_func()->pwd.encryptedPassword());
+    else
+        Q_EMIT passwordChanged(d_func()->pwd.openPassword());
 }
 
 void BPasswordWidget::restoreWidgetState(const QByteArray &ba)
@@ -389,6 +461,6 @@ void BPasswordWidget::generatePassword()
     if (!d->generateFunction)
         return;
     QString pwd = d->generateFunction(d->generatedLength);
+    Q_EMIT passwordGenerated(pwd);
     setPassword(pwd);
-    emit passwordGenerated(pwd);
 }

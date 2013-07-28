@@ -117,7 +117,7 @@ BApplicationServer::BApplicationServer(const QString &serverName, int operationT
 }
 #endif
 
-BApplicationServer::BApplicationServer(const QString &serverName, quint16 port, int operationTimeout) :
+BApplicationServer::BApplicationServer(quint16 port, const QString &serverName, int operationTimeout) :
     BBase( *new BApplicationServerPrivate(this, serverName, port, operationTimeout) )
 {
     d_func()->init();

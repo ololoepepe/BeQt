@@ -137,19 +137,7 @@ void BSpellChecker::addDictionary(const QString &path)
     QString fn = QFileInfo(path).fileName();
     if (path.isEmpty() || d_func()->dicts.contains(fn))
         return;
-    QString npath;
-    if (path.startsWith(":/"))
-    {
-        npath = QDir::tempPath() + "/beqt/spellchecker/" + BeQt::pureUuidText(QUuid::createUuid()) + "/" + fn;
-        if (!BDirTools::copyDir(path, npath))
-        {
-            BDirTools::rmdir(npath);
-            return;
-        }
-    }
-    BSpellCheckerDictionary *dict = new BSpellCheckerDictionary(npath.isEmpty() ? path : npath);
-    if (!npath.isEmpty())
-        BDirTools::rmdir(QFileInfo(npath).path());
+    BSpellCheckerDictionary *dict = new BSpellCheckerDictionary(path);
     if (!dict->isValid())
     {
         delete dict;

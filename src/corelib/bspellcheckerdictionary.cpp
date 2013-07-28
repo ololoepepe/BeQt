@@ -1,6 +1,8 @@
 #include "bspellcheckerdictionary.h"
 #include "bglobal.h"
 #include "bbase_p.h"
+#include "bnamespace.h"
+#include "bdirtools.h"
 
 #if defined(BUILDING_LIBHUNSPELLS)
 #include "hunspell/hunspell.hxx"
@@ -14,6 +16,7 @@
 #include <QByteArray>
 #include <QFileInfo>
 #include <QLocale>
+#include <QUuid>
 
 #include <QDebug>
 
@@ -65,10 +68,21 @@ void BSpellCheckerDictionaryPrivate::init()
     codec = 0;
     if (Path.isEmpty() || QFileInfo(Path).fileName() != Locale.name())
         return;
-    QString aff = Path + "/" + Locale.name() + ".aff";
-    QString dic = Path + "/" + Locale.name() + ".dic";
+    QString npath;
+    if (Path.startsWith(":/"))
+    {
+        npath = QDir::tempPath() + "/beqt/spellcheckerdictionary/" + BeQt::pureUuidText(QUuid::createUuid()) + "/"
+                + QFileInfo(Path).fileName();
+        if (!BDirTools::copyDir(Path, npath))
+        {
+            BDirTools::rmdir(npath);
+            return;
+        }
+    }
+    QString aff = (!npath.isEmpty() ? npath : Path) + "/" + Locale.name() + ".aff";
+    QString dic = (!npath.isEmpty() ? npath : Path) + "/" + Locale.name() + ".dic";
     if (!QFileInfo(aff).isFile() || !QFileInfo(dic).isFile())
-        return;
+        return bRet(BDirTools::rmdir(QFileInfo(npath).path()));
     hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
     codec = QTextCodec::codecForName(hunspell->get_dic_encoding());
     if (!codec || !testValidity())
@@ -77,6 +91,8 @@ void BSpellCheckerDictionaryPrivate::init()
         hunspell = 0;
         codec = 0;
     }
+    if (!npath.isEmpty())
+        BDirTools::rmdir(QFileInfo(npath).path());
 }
 
 bool BSpellCheckerDictionaryPrivate::testValidity()

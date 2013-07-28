@@ -69,5 +69,7 @@
         <file>pixmaps/oxygen_logo.png</file>
         <file>pixmaps/no_image.png</file>
         <file>pixmaps/author_photo.png</file>
+        <file>icons/stop.png</file>
+        <file>icons/stop.svgz</file>
     </qresource>
 </RCC>

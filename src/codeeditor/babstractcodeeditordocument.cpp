@@ -815,7 +815,7 @@ void BAbstractCodeEditorDocument::setFileName(const QString &fn)
 
 void BAbstractCodeEditorDocument::setCodec(QTextCodec *codec)
 {
-    if (d_func())
+    if (d_func()->buisy)
         return;
     d_func()->setCodec(codec);
 }

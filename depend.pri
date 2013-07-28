@@ -126,7 +126,7 @@ contains(BEQT, widgets) {
     BEQT *= core
 }
 contains(BEQT, networkwidgets) {
-    QT *= core network gui widgets
+    QT *= core concurrent network gui widgets
     BEQT *= core network widgets
 }
 
