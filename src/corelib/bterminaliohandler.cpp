@@ -509,11 +509,11 @@ void BTerminalIOHandler::setTerminalTitle(const QString &title)
     BTerminalIOHandlerPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
     BTerminalIOHandlerPrivate::writeStream.flush();
 #elif defined(Q_OS_WIN)
-#ifdef _UNICODE
+#ifdef UNICODE
     QScopedPointer<wchar_t> chars(new wchar_t[title.length() + 1]);
-    title.toWCharArray(chars);
-    chars[title.length()] = '\0';
-    LPCTSTR s = chars;
+    title.toWCharArray(chars.data());
+    chars.data()[title.length()] = '\0';
+    LPCTSTR s = chars.data();
 #else
     LPCTSTR s = title.toLocal8Bit().constData();
 #endif
