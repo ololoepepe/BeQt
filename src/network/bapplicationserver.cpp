@@ -70,9 +70,9 @@ void BApplicationServerPrivate::init()
 void BApplicationServerPrivate::newPendingConnection()
 {
     QScopedPointer<BGenericSocket> s ( server->nextPendingConnection() );
-    if ( s.isNull() )
+    if (s.isNull())
         return;
-    if ( !s->waitForReadyRead(OperationTimeout) )
+    if (!s->waitForReadyRead(OperationTimeout))
         return;
     QByteArray ba = s->readAll();
     QDataStream in(ba);

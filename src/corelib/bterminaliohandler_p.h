@@ -4,8 +4,6 @@
 class BTerminalIOHandlerPrivate;
 class BSettingsNode;
 
-class QString;
-
 #include "bterminaliohandler.h"
 #include "bglobal.h"
 #include "bbase_p.h"
@@ -18,6 +16,8 @@ class QString;
 #include <QFile>
 #include <QEventLoop>
 #include <QMap>
+#include <QString>
+#include <QStringList>
 
 /*============================================================================
 ================================ BTerminalIOHandlerThread ====================
@@ -75,6 +75,8 @@ public:
 public:
     QMap<QString, BTerminalIOHandler::InternalHandler> internalHandlers;
     QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
+    QString lastCommand;
+    QStringList lastArgs;
     BSettingsNode *root;
     bool translations;
     BTranslation help;
