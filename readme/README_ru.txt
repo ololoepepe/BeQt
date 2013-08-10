@@ -94,36 +94,36 @@ BeQt рассчитан на использование совместно с Qt
    Задать распооложение внешней библиотеки Hunspell. По умолчанию используется
    внутренняя библиотека
 
- * "CONFIG+=no_network"
+ * "BEQT_CONFIG+=no_network"
    Не собирать модуль BeQtNetwork
 
- * "CONFIG+=no_qsl"
+ * "BEQT_CONFIG+=no_qsl"
    Не собирать модуль BeQtSql
 
- * "CONFIG+=no_widgets"
+ * "BEQT_CONFIG+=no_widgets"
    Не собирать модуль BeQtWidgets (модуль BeQtCodeEditor также не будет
    собран, поскольку зависит от модуля BeQtWidgets)
 
- * "CONFIG+=no_codeeditor"
+ * "BEQT_CONFIG+=no_codeeditor"
    Не собирать модуль BeQtCodeEditor
 
- * "CONFIG+=no_networkwidgets"
+ * "BEQT_CONFIG+=no_networkwidgets"
    Не собирать модуль BeQtNetworkWidgets
 
- * "CONFIG+=builtin_resources"
+ * "BEQT_CONFIG+=builtin_resources"
    Встроить ресурсы (включая переводы) в файлы библиотек
    Подробнее см.: http://qt-project.org/doc/qt-5.0/resources.html
 
- * "CONFIG+=examples"
+ * "BEQT_CONFIG+=examples"
    Собрать демонстрационные примеры (по умолчанию примеры не собираются)
 
- * "CONFIG+=no_install"
+ * "BEQT_CONFIG+=no_install"
    Не устанавливать никаких файлов (только сборка)
 
- * "CONFIG+=no_headers"
+ * "BEQT_CONFIG+=no_headers"
    Не устанавливать заголовочные файлы
 
- * "CONFIG+=private_headers"
+ * "BEQT_CONFIG+=private_headers"
    Устанавливать "закрытые" заголовочные файлы вместе с "открытыми"
 
  * "BEQT_PREFIX=<path>"

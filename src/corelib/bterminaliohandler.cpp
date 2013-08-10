@@ -19,6 +19,7 @@
 #include <QMutexLocker>
 #include <QFile>
 #include <QCoreApplication>
+#include <QScopedArrayPointer>
 
 #include <QDebug>
 
@@ -191,18 +192,18 @@ void BTerminalIOHandlerPrivate::init()
 
 void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 {
-    QStringList args = BTerminalIOHandler::splitCommand(text);
-    QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
-    if (cmd.isEmpty())
+    lastArgs = BTerminalIOHandler::splitCommand(text);
+    lastCommand = !lastArgs.isEmpty() ? lastArgs.takeFirst() : QString();
+    if (lastCommand.isEmpty())
         return;
     B_Q(BTerminalIOHandler);
-    QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, cmd), Q_ARG(QStringList, args));
-    if (internalHandlers.contains(cmd))
-        (q->*internalHandlers.value(cmd))(cmd, args);
-    else if (externalHandlers.contains(cmd))
-        externalHandlers.value(cmd)(q, cmd, args);
+    QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, lastCommand), Q_ARG(QStringList, lastArgs));
+    if (internalHandlers.contains(lastCommand))
+        (q->*internalHandlers.value(lastCommand))(lastCommand, lastArgs);
+    else if (externalHandlers.contains(lastCommand))
+        externalHandlers.value(lastCommand)(q, lastCommand, lastArgs);
     else
-        q->handleCommand(cmd, args);
+        q->handleCommand(lastCommand, lastArgs);
 }
 
 /*============================== Static public variables ===================*/
@@ -508,19 +509,15 @@ void BTerminalIOHandler::setTerminalTitle(const QString &title)
     BTerminalIOHandlerPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
     BTerminalIOHandlerPrivate::writeStream.flush();
 #elif defined(Q_OS_WIN)
-
-    if (sizeof(TCHAR) == > 1)
-    {
-        LPCTSTR s = new TCHAR[title.length() + 1];
-        title.toWCharArray(s);
-        s[title.length()] = '\0';
-        SetConsoleTitle(s);
-        delete [] s;
-    }
-    else
-    {
-        SetConsoleTitle(title.toLocal8Bit().constData());
-    }
+#ifdef UNICODE
+    QScopedPointer<wchar_t> chars(new wchar_t[title.length() + 1]);
+    title.toWCharArray(chars.data());
+    chars.data()[title.length()] = '\0';
+    LPCTSTR s = chars.data();
+#else
+    LPCTSTR s = title.toLocal8Bit().constData();
+#endif
+    SetConsoleTitle(s);
 #endif
 }
 
@@ -569,6 +566,11 @@ void BTerminalIOHandler::installHandler(StandardCommand cmd, ExternalHandler han
 {
     foreach (const QString &s, commands(cmd))
         installHandler(s, handler);
+}
+
+QString BTerminalIOHandler::lastCommand(QStringList *args)
+{
+    return bRet(args, ds_func()->lastArgs, ds_func()->lastCommand);
 }
 
 void BTerminalIOHandler::setRootSettingsNode(BSettingsNode *root)

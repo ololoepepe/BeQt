@@ -95,36 +95,36 @@ When building BeQt, you may pass some parameters to qmake:
  * "HUNSPELL_PREFIX=<path>"
    Set external Hunspell library location. By default the internal one is used
 
- * "CONFIG+=no_network"
+ * "BEQT_CONFIG+=no_network"
    Don't build the BeQtNetwork module
 
- * "CONFIG+=no_sql"
+ * "BEQT_CONFIG+=no_sql"
    Don't build the BeQtSql module
 
- * "CONFIG+=no_widgets"
+ * "BEQT_CONFIG+=no_widgets"
    Don't build the BeQtWidgets module (BeQtCodeEditor module also will not be
    built, because it depends on BeQtWidgets module)
 
- * "CONFIG+=no_codeeditor"
+ * "BEQT_CONFIG+=no_codeeditor"
    Don't build the BeQtCodeEditor module
 
- * "CONFIG+=no_networkwidgets"
+ * "BEQT_CONFIG+=no_networkwidgets"
    Don't build the BeQtNetworkWidgets module
 
- * "CONFIG+=builtin_resources"
+ * "BEQT_CONFIG+=builtin_resources"
    Embed resources (including translations) into library files
    See: http://qt-project.org/doc/qt-5.0/resources.html for details
 
- * "CONFIG+=examples"
+ * "BEQT_CONFIG+=examples"
    Build demo examples (by default examples are not built)
 
- * "CONFIG+=no_install"
+ * "BEQT_CONFIG+=no_install"
    Don't install any files (building only)
 
- * "CONFIG+=no_headers"
+ * "BEQT_CONFIG+=no_headers"
    Don't install headers
 
- * "CONFIG+=private_headers"
+ * "BEQT_CONFIG+=private_headers"
    Install private headers along with the public ones
 
  * "BEQT_PREFIX=<path>"

@@ -1,4 +1,4 @@
-=== BeQt 3.0.0 (xx July 2013) ===
+=== BeQt 3.0.0 (10 August 2013) ===
     * Add BTextTools namespace
     * Add BTextMatch and BTextMatchList classes
     * Add BVersion class

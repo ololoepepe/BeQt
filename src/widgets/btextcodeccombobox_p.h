@@ -37,4 +37,3 @@ private:
 };
 
 #endif // BTEXTCODECCOMBOBOX_P_H
-

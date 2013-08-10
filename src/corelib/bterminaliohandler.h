@@ -76,6 +76,7 @@ public:
     static void installHandler(StandardCommand cmd);
     static void installHandler(StandardCommand cmd, InternalHandler handler);
     static void installHandler(StandardCommand cmd, ExternalHandler handler);
+    static QString lastCommand(QStringList *args = 0);
     static void setRootSettingsNode(BSettingsNode *root);
     static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
     static void setTranslationsEnabled(bool enabled);

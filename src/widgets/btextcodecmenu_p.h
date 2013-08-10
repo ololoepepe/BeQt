@@ -37,4 +37,3 @@ private:
 };
 
 #endif // BTEXTCODECMENU_P_H
-
