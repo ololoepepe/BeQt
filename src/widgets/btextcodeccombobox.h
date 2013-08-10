@@ -45,4 +45,3 @@ private:
 };
 
 #endif // BTEXTCODECCOMBOBOX_H
-
