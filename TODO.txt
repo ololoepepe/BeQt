@@ -1,16 +1,20 @@
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
 * Improve MacOS support
-* Fix cursor positioning after insertion of text
 
 === PATCH ===
 
-
+[done] Fix BCodeEdit text preprocessing
+[done] Fix BVersion string parcing ("extra" part)
+[done] Improve BTextBrowser search
+[done] Fix BDirTools::mayBeExecutable() function
+[done] Increase BOperationProgressDialog default update interval
 
 === MINOR ===
 
 * Add ability to change colsole output text color
+* Add ability to remember entered commands in BTerminalIOHandler
 
 === MAJOR ===
 
-
+* Remove BeQt::variantToData and BeQt::dataToVatiant functions

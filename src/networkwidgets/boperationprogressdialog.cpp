@@ -38,7 +38,7 @@ void BOperationProgressDialogPrivate::init()
 {
     B_Q(BOperationProgressDialog);
     q->setStretchEnabled(true);
-    proxy = new BSignalDelayProxy(125, 250);
+    proxy = new BSignalDelayProxy(500, 1000);
     connect(proxy, SIGNAL(triggered()), this, SLOT(update()));
     canCancel = true;
     autoCloseInterval = -1;

@@ -592,43 +592,43 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="85"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="91"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="86"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="92"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="87"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="93"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="88"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="94"/>
         <source>Search:</source>
         <comment>lbl text</comment>
         <translation>Искать:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="94"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="100"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="133"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="127"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="136"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="138"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
