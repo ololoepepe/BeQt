@@ -4,11 +4,7 @@
 
 === PATCH ===
 
-[done] Fix BCodeEdit text preprocessing
-[done] Fix BVersion string parcing ("extra" part)
-[done] Improve BTextBrowser search
-[done] Fix BDirTools::mayBeExecutable() function
-[done] Increase BOperationProgressDialog default update interval
+
 
 === MINOR ===
 

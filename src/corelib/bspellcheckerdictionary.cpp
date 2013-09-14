@@ -75,7 +75,7 @@ void BSpellCheckerDictionaryPrivate::init()
                 + QFileInfo(Path).fileName();
         if (!BDirTools::copyDir(Path, npath))
         {
-            BDirTools::rmdir(npath);
+            BDirTools::rmdir(QFileInfo(npath).path());
             return;
         }
     }

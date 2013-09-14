@@ -12,6 +12,7 @@
 #include <QDialogButtonBox>
 #include <QTimer>
 #include <QPushButton>
+#include <QApplication>
 
 #include <QDebug>
 
@@ -38,7 +39,7 @@ void BOperationProgressDialogPrivate::init()
 {
     B_Q(BOperationProgressDialog);
     q->setStretchEnabled(true);
-    proxy = new BSignalDelayProxy(500, 1000);
+    proxy = new BSignalDelayProxy(250, 500);
     connect(proxy, SIGNAL(triggered()), this, SLOT(update()));
     canCancel = true;
     autoCloseInterval = -1;
@@ -166,6 +167,7 @@ void BOperationProgressDialogPrivate::update()
         btn->setEnabled(true);
         btn->setText(tr("Close", "btn text"));
     }
+    QApplication::processEvents();
 }
 
 void BOperationProgressDialogPrivate::btnClicked()

@@ -1,3 +1,10 @@
+=== BeQt 3.0.1 (14 September 2013) ===
+    * Fix BCodeEdit text preprocessing
+    * Fix BVersion string parcing ("extra" part)
+    * Improve BTextBrowser search
+    * Fix BDirTools::mayBeExecutable() function
+    * Fix BOperationProgressDialog
+
 === BeQt 3.0.0 (10 August 2013) ===
     * Add BTextTools namespace
     * Add BTextMatch and BTextMatchList classes
