@@ -2,6 +2,11 @@
 #include "bhelpbrowser_p.h"
 #include "bapplication.h"
 
+#include <BeQtCore/BTextTools>
+#include <BeQtCore/BDirTools>
+#include <BeQtCore/BTextMatch>
+#include <BeQtCore/BTextMatchList>
+
 #include <QApplication>
 #include <QWidget>
 #include <QString>
@@ -17,6 +22,7 @@
 #include <QFile>
 #include <QTextStream>
 #include <QTextCodec>
+#include <QRegExp>
 
 #include <QDebug>
 
@@ -101,38 +107,34 @@ void BHelpBrowserPrivate::updateCaption()
 void BHelpBrowserPrivate::search()
 {
     QString text = ledtSearch->text().toLower();
-    if ( text.isEmpty() )
+    if (text.isEmpty())
         return;
     QStringList sl = searchCache.value(text);
-    if ( sl.isEmpty() )
+    if (sl.isEmpty())
     {
-        foreach ( const QString &path, tbrsr->searchPaths() )
+        foreach (const QString &path, tbrsr->searchPaths())
         {
-            QDir dir(path);
-            QStringList files = dir.entryList(QStringList() << "*.html" << "*.htm", QDir::Files);
+            QStringList files = BDirTools::entryList(path, QStringList() << "*.html" << "*.htm", QDir::Files);
             foreach (const QString &file, files)
-            {
-                if ( file.contains(text, Qt::CaseInsensitive) )
+                if (BDirTools::readTextFile(file, codec).contains(text, Qt::CaseInsensitive))
                     sl << file;
-                QFile f( dir.absoluteFilePath(file) );
-                if ( !f.open(QFile::ReadOnly) )
-                    continue;
-                QTextStream in(&f);
-                in.setCodec(codec);
-                QString ft = in.readAll();
-                f.close();
-                if ( ft.contains(text, Qt::CaseInsensitive) )
-                    sl << file;
-            }
         }
     }
-    if ( sl.isEmpty() )
+    if (sl.isEmpty())
         return;
-    if ( !searchCache.contains(text) )
+    if (!searchCache.contains(text))
         searchCache.insert(text, sl);
     QString source = "<center><font size=5><b>" + tr("Search results", "tbrsr text") + "</b></font></center><br><br>";
     foreach (const QString &file, sl)
-        source += "<a href=\"" + file + "\">" + file + "</a><br>";
+    {
+        QString s = BDirTools::readTextFile(file, codec);
+        BTextMatchList ml = BTextTools::match(s, QRegExp(".+"), QRegExp("<title>(\n)*", Qt::CaseInsensitive),
+                                              QRegExp("(\n)*</title>", Qt::CaseInsensitive));
+        if (ml.isEmpty())
+            continue;
+        s = ml.first();
+        source += "<a href=\"" + QFileInfo(file).fileName() + "\">" + s + "</a><br>";
+    }
     source += "<br><br><a href=\"" + tbrsr->source().toString() + "\">" + tr("Back", "tbrsr text") + "</a>";
     tbrsr->setHtml(source);
 }

@@ -433,7 +433,7 @@ void BCodeEditPrivate::removeUnsupportedSymbols(QString *text)
 QList<QChar> BCodeEditPrivate::createUnsupportedSymbols()
 {
     QList<QChar> list;
-    list << QChar(1) << QChar(2) << QChar(3) << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8) << QChar(9);
+    list << QChar(1) << QChar(2) << QChar(3) << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8);
     list << QChar(11) << QChar(12) << QChar(13) << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18);
     list << QChar(19) << QChar(20) << QChar(21) << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26);
     list << QChar(27) << QChar(28) << QChar(29) << QChar(30) << QChar(31);

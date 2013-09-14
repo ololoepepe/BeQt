@@ -55,29 +55,24 @@ BVersionPrivate::~BVersionPrivate()
 bool BVersionPrivate::statusFromString(const QString &s, BVersion::Status &status, qint8 *extra)
 {
     int len = 0;
-    if (!s.left(2).compare("pa", Qt::CaseInsensitive))
-    {
-        status = BVersion::PreAlpha;
-        len = 2;
-    }
-    else if (!s.left(8).compare("prealpha", Qt::CaseInsensitive))
+    if (!s.left(8).compare("prealpha", Qt::CaseInsensitive))
     {
         status = BVersion::PreAlpha;
         len = 8;
     }
-    else if (!s.left(1).compare("a", Qt::CaseInsensitive))
+    else if (!s.left(2).compare("pa", Qt::CaseInsensitive))
     {
-        status = BVersion::Alpha;
-        len = 1;
+        status = BVersion::PreAlpha;
+        len = 2;
     }
     else if (!s.left(5).compare("alpha", Qt::CaseInsensitive))
     {
         status = BVersion::Alpha;
         len = 5;
     }
-    else if (!s.left(1).compare("b", Qt::CaseInsensitive))
+    else if (!s.left(1).compare("a", Qt::CaseInsensitive))
     {
-        status = BVersion::Beta;
+        status = BVersion::Alpha;
         len = 1;
     }
     else if (!s.left(4).compare("beta", Qt::CaseInsensitive))
@@ -85,15 +80,20 @@ bool BVersionPrivate::statusFromString(const QString &s, BVersion::Status &statu
         status = BVersion::Beta;
         len = 4;
     }
-    else if (!s.left(2).compare("rc", Qt::CaseInsensitive))
+    else if (!s.left(1).compare("b", Qt::CaseInsensitive))
     {
-        status = BVersion::ReleaseCandidate;
-        len = 2;
+        status = BVersion::Beta;
+        len = 1;
     }
     else if (!s.left(16).compare("releasecandidate", Qt::CaseInsensitive))
     {
         status = BVersion::ReleaseCandidate;
         len = 16;
+    }
+    else if (!s.left(2).compare("rc", Qt::CaseInsensitive))
+    {
+        status = BVersion::ReleaseCandidate;
+        len = 2;
     }
     else
     {

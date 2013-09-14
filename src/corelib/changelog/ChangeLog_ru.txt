@@ -1,3 +1,10 @@
+=== BeQt 3.0.1 (14 сентября 2013) ===
+    * Исправлена предварительная обработка текста в классе BCodeEdit
+    * Исправлен разбор строки в классе BVersion ("дополнительная" часть)
+    * Улучшен поиск в классе BTextBrowser
+    * Исправлена функция BDirTools::mayBeExecutable()
+    * Исправлен класс BOperationProgressDialog
+
 === BeQt 3.0.0 (10 августа 2013) ===
     * Добавлено пространство имён BTextTools
     * Добавлены классы BTextMatch и BTextMatchList

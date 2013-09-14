@@ -592,43 +592,43 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="85"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="91"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="86"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="92"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="87"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="93"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="88"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="94"/>
         <source>Search:</source>
         <comment>lbl text</comment>
         <translation>Искать:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="94"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="100"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="133"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="127"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="136"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="138"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
@@ -911,77 +911,77 @@
 <context>
     <name>BOperationProgressDialogPrivate</name>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="73"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="74"/>
         <source>Operation successfully completed</source>
         <comment>lbl text</comment>
         <translation>Операция успешно завершена</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="76"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="88"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="167"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="77"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="89"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="168"/>
         <source>Close</source>
         <comment>btn text</comment>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="85"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="86"/>
         <source>Operation failed</source>
         <comment>lbl text</comment>
         <translation>Сбой операции</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="100"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="101"/>
         <source>Receiving reply...</source>
         <comment>lbl text</comment>
         <translation>Получение ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="107"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="108"/>
         <source>Waiting for reply...</source>
         <comment>lbl text</comment>
         <translation>Ожидане ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="114"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="115"/>
         <source>Sending request...</source>
         <comment>lbl text</comment>
         <translation>Отправка запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="121"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="153"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="122"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="154"/>
         <source>Waiting for the operation start...</source>
         <comment>lbl text</comment>
         <translation>Ожидание начала операции...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="126"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="158"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="127"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="159"/>
         <source>Cancel</source>
         <comment>btn text</comment>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="132"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="133"/>
         <source>Sending reply...</source>
         <comment>lbl text</comment>
         <translation>Отправка ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="139"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="140"/>
         <source>Processing request...</source>
         <comment>lbl text</comment>
         <translation>Обработка запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="146"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="147"/>
         <source>Receiving request...</source>
         <comment>lbl text</comment>
         <translation>Получение запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="163"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="164"/>
         <source>Invalid operation</source>
         <comment>lbl text</comment>
         <translation>Недействительная операция</translation>
