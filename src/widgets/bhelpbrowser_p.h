@@ -11,6 +11,7 @@ class QLineEdit;
 class QTextBrowser;
 class QString;
 class QTextCodec;
+class QPushButton;
 
 #include "bhelpbrowser.h"
 
@@ -52,6 +53,7 @@ public:
         //separator
         QLabel *lblSearch;
         QLineEdit *ledtSearch;
+        QPushButton *btnFind;
       QTextBrowser *tbrsr;
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivate)

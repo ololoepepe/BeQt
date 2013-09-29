@@ -23,6 +23,8 @@
 #include <QTextStream>
 #include <QTextCodec>
 #include <QRegExp>
+#include <QDesktopServices>
+#include <QPushButton>
 
 #include <QDebug>
 
@@ -67,8 +69,12 @@ void BHelpBrowserPrivate::init()
         lblSearch = new QLabel;
         tbar->addWidget(lblSearch);
         ledtSearch = new QLineEdit;
-          QObject::connect( ledtSearch, SIGNAL( returnPressed() ), this, SLOT( search() ) );
+          connect( ledtSearch, SIGNAL( returnPressed() ), this, SLOT( search() ) );
         tbar->addWidget(ledtSearch);
+        btnFind = new QPushButton;
+          connect(btnFind, SIGNAL(clicked()), this, SLOT(search()));
+          connect(btnFind, SIGNAL(clicked()), ledtSearch, SLOT(setFocus()));
+        tbar->addWidget(btnFind);
       vlt->addWidget(tbar);
       tbrsr = new QTextBrowser(q);
         connect( tbtnBackward, SIGNAL( clicked() ), tbrsr, SLOT( backward() ) );
@@ -77,6 +83,7 @@ void BHelpBrowserPrivate::init()
         connect( tbrsr, SIGNAL( backwardAvailable(bool) ), tbtnBackward, SLOT( setEnabled(bool) ) );
         connect( tbrsr, SIGNAL( forwardAvailable(bool) ), tbtnForward, SLOT( setEnabled(bool) ) );
         connect( tbrsr, SIGNAL( sourceChanged(QUrl) ), this, SLOT( updateCaption() ) );
+        tbrsr->setOpenExternalLinks(true);
       vlt->addWidget(tbrsr);
     //
     tbrsr->setFocus();
@@ -92,6 +99,7 @@ void BHelpBrowserPrivate::retranslateUi()
     tbtnForward->setToolTip( tr("Forward", "tbtn toolTip") );
     tbtnHome->setToolTip( tr("Home", "tbtn toolTip") );
     lblSearch->setText(tr("Search:", "lbl text") + " ");
+    btnFind->setText(tr("Find", "btn text"));
     updateCaption();
 }
 

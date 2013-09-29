@@ -20,6 +20,11 @@
 
 #include <QDebug>
 
+static QString replaceSpecialLetters(QString w)
+{
+    return w.replace(L'\u0451', L'\u0435').replace(L'\u0401', L'\u0415');
+}
+
 /*============================================================================
 ================================ BSpellCheckerDictionaryPrivate ==============
 ============================================================================*/
@@ -129,7 +134,7 @@ bool BSpellCheckerDictionary::spell(const QString &word) const
 {
     if (!isValid())
         return false;
-    return d_func()->hunspell->spell(codec()->fromUnicode(word).constData());
+    return d_func()->hunspell->spell(codec()->fromUnicode(replaceSpecialLetters(word)).constData());
 }
 
 QStringList BSpellCheckerDictionary::suggest(const QString &word) const
@@ -137,7 +142,8 @@ QStringList BSpellCheckerDictionary::suggest(const QString &word) const
     if (!isValid())
         return QStringList();
     char ***list = new char **;
-    int count = d_func()->hunspell->suggest(list, d_func()->codec->fromUnicode(word).constData());
+    int count = d_func()->hunspell->suggest(list,
+                                            d_func()->codec->fromUnicode(replaceSpecialLetters(word)).constData());
     QStringList sl;
     foreach (int i, bRangeD(0, count - 1))
         sl << d_func()->codec->toUnicode((*list)[i]);
@@ -149,14 +155,14 @@ void BSpellCheckerDictionary::addWord(const QString &word)
 {
     if (!isValid())
         return;
-     d_func()->hunspell->add(codec()->fromUnicode(word).constData());
+     d_func()->hunspell->add(codec()->fromUnicode(replaceSpecialLetters(word)).constData());
 }
 
 void BSpellCheckerDictionary::removeWord(const QString &word)
 {
     if (!isValid())
         return;
-     d_func()->hunspell->remove(codec()->fromUnicode(word).constData());
+     d_func()->hunspell->remove(codec()->fromUnicode(replaceSpecialLetters(word)).constData());
 }
 
 QString BSpellCheckerDictionary::path() const

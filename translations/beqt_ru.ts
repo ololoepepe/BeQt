@@ -592,43 +592,49 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="91"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="98"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="92"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="99"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="93"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="100"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="94"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="101"/>
         <source>Search:</source>
         <comment>lbl text</comment>
-        <translation>Искать:</translation>
+        <translation>Поиск:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="100"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="102"/>
+        <source>Find</source>
+        <comment>btn text</comment>
+        <translation>Найти</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="108"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="127"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="135"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="138"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="146"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
@@ -932,21 +938,23 @@
     </message>
     <message>
         <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="101"/>
-        <source>Receiving reply...</source>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="147"/>
+        <source>Receiving data...</source>
         <comment>lbl text</comment>
-        <translation>Получение ответа...</translation>
+        <translation>Получение данных...</translation>
+    </message>
+    <message>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="115"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="133"/>
+        <source>Sending data...</source>
+        <comment>lbl text</comment>
+        <translation>Отправка данных...</translation>
     </message>
     <message>
         <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="108"/>
         <source>Waiting for reply...</source>
         <comment>lbl text</comment>
         <translation>Ожидане ответа...</translation>
-    </message>
-    <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="115"/>
-        <source>Sending request...</source>
-        <comment>lbl text</comment>
-        <translation>Отправка запроса...</translation>
     </message>
     <message>
         <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="122"/>
@@ -963,22 +971,10 @@
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="133"/>
-        <source>Sending reply...</source>
-        <comment>lbl text</comment>
-        <translation>Отправка ответа...</translation>
-    </message>
-    <message>
         <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="140"/>
         <source>Processing request...</source>
         <comment>lbl text</comment>
         <translation>Обработка запроса...</translation>
-    </message>
-    <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="147"/>
-        <source>Receiving request...</source>
-        <comment>lbl text</comment>
-        <translation>Получение запроса...</translation>
     </message>
     <message>
         <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="164"/>

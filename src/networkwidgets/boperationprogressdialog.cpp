@@ -98,7 +98,7 @@ void BOperationProgressDialogPrivate::update()
             if (Operation->downloadBytesTotal() > 0)
             {
                 lbl->setText(!receivingReplyText.isEmpty() ? receivingReplyText :
-                                                             tr("Receiving reply...", "lbl text"));
+                                                             tr("Receiving data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->downloadProgress());
             }
@@ -112,7 +112,7 @@ void BOperationProgressDialogPrivate::update()
             else if (Operation->uploadBytesTotal() > 0)
             {
                 lbl->setText(!sendingRequestText.isEmpty() ? sendingRequestText :
-                                                             tr("Sending request...", "lbl text"));
+                                                             tr("Sending data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->uploadProgress());
             }
@@ -130,7 +130,7 @@ void BOperationProgressDialogPrivate::update()
         {
             if (Operation->uploadBytesTotal() > 0)
             {
-                lbl->setText(!sendingReplyText.isEmpty() ? sendingReplyText : tr("Sending reply...", "lbl text"));
+                lbl->setText(!sendingReplyText.isEmpty() ? sendingReplyText : tr("Sending data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->uploadProgress());
             }
@@ -144,7 +144,7 @@ void BOperationProgressDialogPrivate::update()
             else if (Operation->downloadBytesTotal() > 0)
             {
                 lbl->setText(!receivingRequestText.isEmpty() ? receivingRequestText :
-                                                               tr("Receiving request...", "lbl text"));
+                                                               tr("Receiving data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->downloadProgress());
             }
