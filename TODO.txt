@@ -8,7 +8,7 @@
 
 === MINOR ===
 
-* Add ability to change colsole output text color
+* Add ability to change console output text color
 * Add ability to remember entered commands in BTerminalIOHandler
 
 === MAJOR ===
