@@ -1298,13 +1298,13 @@
 <context>
     <name>BSmtpSender</name>
     <message>
-        <location filename="../src/network/bsmtpsender.cpp" line="259"/>
+        <location filename="../src/network/bsmtpsender.cpp" line="261"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/network/bsmtpsender.cpp" line="263"/>
+        <location filename="../src/network/bsmtpsender.cpp" line="265"/>
         <source>Operation timed out</source>
         <comment>errorString</comment>
         <translation>Превышено время ожидания</translation>

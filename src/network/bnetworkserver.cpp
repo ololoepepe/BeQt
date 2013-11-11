@@ -25,8 +25,8 @@
 
 /*============================== Public constructors =======================*/
 
-BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *sp) :
-    QObject(0), ServerPrivate(sp)
+BNetworkServerWorker::BNetworkServerWorker(BNetworkServerPrivate *sp, BNetworkServerThread *thread) :
+    QObject(0), ServerPrivate(sp), Thread(thread)
 {
     //
 }
@@ -48,15 +48,13 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
         delete s;
         return;
     }
-    ServerPrivate->connectionMutex.lock();
+    QMutexLocker locker(ServerPrivate->connectionMutex);
     if (ServerPrivate->banned.contains(s->peerAddress()))
     {
         s->disconnectFromHost();
         delete s;
-        ServerPrivate->connectionMutex.unlock();
         return;
     }
-    ServerPrivate->connectionMutex.unlock();
     BNetworkConnection *c = ServerPrivate->createConnection(s);
     if (!c)
         return;
@@ -69,7 +67,8 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     connect(c, SIGNAL(disconnected()), proxy, SLOT(trigger()));
     connect(c, SIGNAL(error(QAbstractSocket::SocketError)), proxy, SLOT(trigger()));
     connect(proxy, SIGNAL(triggered()), this, SLOT(disconnected()));
-    Q_EMIT connectionAdded(c);
+    Thread->connections << c;
+    QMetaObject::invokeMethod(ServerPrivate, "emitConnectionAdded", Q_ARG(QObject *, c));
 }
 
 void BNetworkServerWorker::disconnected()
@@ -80,7 +79,13 @@ void BNetworkServerWorker::disconnected()
         return;
     disconnect(proxy, SIGNAL(triggered()), this, SLOT(disconnected()));
     c->close();
-    Q_EMIT disconnected(c);
+    QMutexLocker locker(ServerPrivate->connectionMutex);
+    QMetaObject::invokeMethod(ServerPrivate, "emitConnectionAboutToBeRemoved", Q_ARG(QObject *, c));
+    Thread->connections.removeAll(c);
+    bool b = Thread->connections.isEmpty();
+    QMetaObject::invokeMethod(c, "deleteLater", Qt::QueuedConnection);
+    if (b)
+        QMetaObject::invokeMethod(Thread, "quit", Qt::QueuedConnection);
 }
 
 /*============================================================================
@@ -90,12 +95,9 @@ void BNetworkServerWorker::disconnected()
 /*============================== Public constructors =======================*/
 
 BNetworkServerThread::BNetworkServerThread(BNetworkServerPrivate *serverPrivate) :
-    QThread(0), Worker( new BNetworkServerWorker(serverPrivate) )
+    QThread(0), Worker(new BNetworkServerWorker(serverPrivate, this))
 {
     Worker->moveToThread(this);
-    connect(Worker, SIGNAL( connectionAdded(QObject *) ),
-            this, SLOT( connectionAdded(QObject *) ), Qt::QueuedConnection);
-    connect(Worker, SIGNAL( disconnected(QObject *) ), this, SLOT( disconnected(QObject *) ), Qt::QueuedConnection);
 }
 
 BNetworkServerThread::~BNetworkServerThread()
@@ -107,37 +109,12 @@ BNetworkServerThread::~BNetworkServerThread()
 
 void BNetworkServerThread::addConnection(int socketDescriptor)
 {
-    QMetaObject::invokeMethod( Worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor) );
+    QMetaObject::invokeMethod(Worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor));
 }
 
 int BNetworkServerThread::connectionCount() const
 {
     return connections.size();
-}
-
-/*============================== Public slots ==============================*/
-
-void BNetworkServerThread::connectionAdded(QObject *obj)
-{
-    BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
-    if (!c)
-        return;
-    QMutexLocker locker(&Worker->ServerPrivate->connectionMutex);
-    connections << c;
-    Worker->ServerPrivate->emitConnectionAdded(c);
-}
-
-void BNetworkServerThread::disconnected(QObject *obj)
-{
-    BNetworkConnection *c = static_cast<BNetworkConnection *>(obj);
-    if (!c)
-        return;
-    QMutexLocker locker(&Worker->ServerPrivate->connectionMutex);
-    Worker->ServerPrivate->emitConnectionAboutToBeRemoved(c);
-    connections.removeAll(c);
-    QMetaObject::invokeMethod(c, "deleteLater", Qt::QueuedConnection);
-    if (connections.isEmpty())
-        quit();
 }
 
 /*============================================================================
@@ -156,21 +133,23 @@ BNetworkServerPrivate::~BNetworkServerPrivate()
 {
     foreach (BNetworkServerThread *t, threads)
     {
-        disconnect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
+        disconnect(t, SIGNAL(finished()), this, SLOT(finished()));
         t->quit();
         t->wait(1000);
     }
+    delete connectionMutex;
 }
 
 /*============================== Public methods ============================*/
 
 void BNetworkServerPrivate::init()
 {
+    connectionMutex = new QMutex(QMutex::Recursive);
     maxConnectionCount = 0;
     maxThreadCount = 0;
     spamNotifier = new BSpamNotifier(this);
     spamNotifier->setEnabled(false);
-    connect( spamNotifier, SIGNAL( spammed(int) ), this, SLOT( spammed() ) );
+    connect(spamNotifier, SIGNAL(spammed(int)), this, SLOT(spammed()));
 }
 
 BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket)
@@ -188,8 +167,9 @@ BGenericSocket *BNetworkServerPrivate::createSocket()
 
 BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
 {
+    QMutexLocker locker(connectionMutex);
     int ccount = connectionCount();
-    if (maxConnectionCount > 0 && ccount > maxConnectionCount)
+    if (maxConnectionCount > 0 && ccount == maxConnectionCount)
         return 0;
     if (maxThreadCount > 0 && ccount == maxThreadCount)
     {
@@ -209,7 +189,7 @@ BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
     else
     {
         BNetworkServerThread *t = new BNetworkServerThread(this);
-        QObject::connect( t, SIGNAL( finished() ), this, SLOT( finished() ) );
+        QObject::connect(t, SIGNAL(finished()), this, SLOT(finished()));
         t->start();
         threads << t;
         return t;
@@ -218,23 +198,23 @@ BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
 
 int BNetworkServerPrivate::connectionCount() const
 {
+    //Must lock
     int count = 0;
-    bool b = connectionMutex.tryLock();
     foreach (BNetworkServerThread *t, threads)
         count += t->connectionCount();
-    if (b)
-        connectionMutex.unlock();
     return count;
 }
 
-void BNetworkServerPrivate::emitConnectionAdded(BNetworkConnection *connection)
+void BNetworkServerPrivate::emitConnectionAdded(QObject *connection)
 {
-    QMetaObject::invokeMethod( q_func(), "connectionAdded", Q_ARG(BNetworkConnection *, connection) );
+    QMetaObject::invokeMethod(q_func(), "connectionAdded",
+                              Q_ARG(BNetworkConnection *, qobject_cast<BNetworkConnection *>(connection)));
 }
 
-void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(BNetworkConnection *connection)
+void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(QObject *connection)
 {
-    QMetaObject::invokeMethod( q_func(), "connectionAboutToBeRemoved", Q_ARG(BNetworkConnection *, connection) );
+    QMetaObject::invokeMethod(q_func(), "connectionAboutToBeRemoved",
+                              Q_ARG(BNetworkConnection *, qobject_cast<BNetworkConnection *>(connection)));
 }
 
 /*============================== Public slots ==============================*/
@@ -320,17 +300,17 @@ void BNetworkServer::setMaxThreadCount(int count)
 
 void BNetworkServer::lock()
 {
-    d_func()->connectionMutex.lock();
+    d_func()->connectionMutex->lock();
 }
 
 void BNetworkServer::unlock()
 {
-    d_func()->connectionMutex.unlock();
+    d_func()->connectionMutex->unlock();
 }
 
 bool BNetworkServer::tryLock()
 {
-    return d_func()->connectionMutex.tryLock();
+    return d_func()->connectionMutex->tryLock();
 }
 
 bool BNetworkServer::isValid() const
@@ -384,6 +364,7 @@ BSpamNotifier *BNetworkServer::spamNotifier() const
 
 QList<BNetworkConnection *> BNetworkServer::connections() const
 {
+    //Must lock
     QList<BNetworkConnection *> list;
     foreach (BNetworkServerThread *t, d_func()->threads)
         list << t->connections;
@@ -392,10 +373,8 @@ QList<BNetworkConnection *> BNetworkServer::connections() const
 
 QStringList BNetworkServer::banned() const
 {
-    bool b = d_func()->connectionMutex.tryLock();
+    //Must lock
     QStringList list = d_func()->banned.toList();
-    if (b)
-        d_func()->connectionMutex.unlock();
     return list;
 }
 

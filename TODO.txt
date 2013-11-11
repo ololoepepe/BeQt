@@ -4,13 +4,20 @@
 
 === PATCH ===
 
-
+[done] Fix BNetworkServer locking
+[done] Fix BSmtpSender encoding issue
 
 === MINOR ===
 
-* Add ability to change console output text color
+* Add function for changing console output text color
 * Add ability to remember entered commands in BTerminalIOHandler
+* Define file types using XML files
+* Add custom BAboutDialog tabs
+* Add widget class for displaying any type of images (particularly GIF)
+* Add BPasswordGroup class
 
 === MAJOR ===
 
 * Remove BeQt::variantToData and BeQt::dataToVatiant functions
+* Make BSocketWrapper class virtual (add virtual methods for reading and writing)
+* Add ability to listen on several ports/hosts to BNetworkServer
