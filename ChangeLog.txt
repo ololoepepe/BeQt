@@ -1,3 +1,7 @@
+=== BeQt 3.0.3 (13 November 2013) ===
+    * Fix BNetworkServer locking
+    * Fix BSmtpSender encoding issue
+
 === BeQt 3.0.2 (29 September 2013) ===
     * Open external links using default browser in BHelpBrowser
     * Fix BTextMatch::match() function exporting

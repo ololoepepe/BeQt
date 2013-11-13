@@ -32,7 +32,7 @@ class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
 {
     Q_OBJECT
 public:
-    explicit BNetworkServerWorker(BNetworkServerPrivate *sp);
+    explicit BNetworkServerWorker(BNetworkServerPrivate *sp, BNetworkServerThread *thread);
     ~BNetworkServerWorker();
 public Q_SLOTS:
     void addConnection(int socketDescriptor);
@@ -42,6 +42,7 @@ Q_SIGNALS:
     void disconnected(QObject *obj);
 public:
     BNetworkServerPrivate *const ServerPrivate;
+    BNetworkServerThread *const Thread;
 private:
     Q_DISABLE_COPY(BNetworkServerWorker)
 };
@@ -59,9 +60,6 @@ public:
 public:
     void addConnection(int socketDescriptor);
     int connectionCount() const;
-public Q_SLOTS:
-    void connectionAdded(QObject *obj);
-    void disconnected(QObject *obj);
 public:
     BNetworkServerWorker *const Worker;
 public:
@@ -87,9 +85,9 @@ public:
     BGenericSocket *createSocket();
     BNetworkServerThread *getOptimalThread();
     int connectionCount() const;
+public Q_SLOTS:
     void emitConnectionAdded(BNetworkConnection *connection);
     void emitConnectionAboutToBeRemoved(BNetworkConnection *connection);
-public Q_SLOTS:
     void newConnection(int socketDescriptor);
     void finished();
     void spammed();
@@ -100,7 +98,7 @@ public:
     int maxThreadCount;
     BSpamNotifier *spamNotifier;
     QSet<QString> banned;
-    mutable QMutex connectionMutex;
+    mutable QMutex *connectionMutex;
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)
     friend class BNetworkServerWorkerPrivate;
