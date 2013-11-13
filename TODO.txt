@@ -4,8 +4,7 @@
 
 === PATCH ===
 
-[done] Fix BNetworkServer locking
-[done] Fix BSmtpSender encoding issue
+
 
 === MINOR ===
 
@@ -21,3 +20,4 @@
 * Remove BeQt::variantToData and BeQt::dataToVatiant functions
 * Make BSocketWrapper class virtual (add virtual methods for reading and writing)
 * Add ability to listen on several ports/hosts to BNetworkServer
+* Improve BTextBlockUserData (multiple skipped intervals)

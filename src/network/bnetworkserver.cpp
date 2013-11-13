@@ -19,6 +19,8 @@
 #include <QMap>
 #include <QStringList>
 
+#include <QDebug>
+
 /*============================================================================
 ================================ BNetworkServerWorker ========================
 ============================================================================*/
@@ -68,22 +70,22 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
     connect(c, SIGNAL(error(QAbstractSocket::SocketError)), proxy, SLOT(trigger()));
     connect(proxy, SIGNAL(triggered()), this, SLOT(disconnected()));
     Thread->connections << c;
-    QMetaObject::invokeMethod(ServerPrivate, "emitConnectionAdded", Q_ARG(QObject *, c));
+    ServerPrivate->emitConnectionAdded(c);
 }
 
 void BNetworkServerWorker::disconnected()
 {
-    BSignalDelayProxy *proxy = static_cast<BSignalDelayProxy *>(sender());
-    BNetworkConnection *c = proxy ? static_cast<BNetworkConnection *>(proxy->parent()) : 0;
+    BSignalDelayProxy *proxy = qobject_cast<BSignalDelayProxy *>(sender());
+    BNetworkConnection *c = proxy ? qobject_cast<BNetworkConnection *>(proxy->parent()) : 0;
     if (!c)
         return;
     disconnect(proxy, SIGNAL(triggered()), this, SLOT(disconnected()));
     c->close();
     QMutexLocker locker(ServerPrivate->connectionMutex);
-    QMetaObject::invokeMethod(ServerPrivate, "emitConnectionAboutToBeRemoved", Q_ARG(QObject *, c));
+    ServerPrivate->emitConnectionAboutToBeRemoved(c);
     Thread->connections.removeAll(c);
     bool b = Thread->connections.isEmpty();
-    QMetaObject::invokeMethod(c, "deleteLater", Qt::QueuedConnection);
+    c->deleteLater();
     if (b)
         QMetaObject::invokeMethod(Thread, "quit", Qt::QueuedConnection);
 }
@@ -205,16 +207,20 @@ int BNetworkServerPrivate::connectionCount() const
     return count;
 }
 
-void BNetworkServerPrivate::emitConnectionAdded(QObject *connection)
+void BNetworkServerPrivate::emitConnectionAdded(BNetworkConnection *connection)
 {
-    QMetaObject::invokeMethod(q_func(), "connectionAdded",
-                              Q_ARG(BNetworkConnection *, qobject_cast<BNetworkConnection *>(connection)));
+    //The signal is invoked in the connection thread, not in the server thread
+    //You must connect the slots using Qt::DirectConnection
+    QMetaObject::invokeMethod(q_func(), "connectionAdded", Qt::DirectConnection,
+                              Q_ARG(BNetworkConnection *, connection));
 }
 
-void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(QObject *connection)
+void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(BNetworkConnection *connection)
 {
-    QMetaObject::invokeMethod(q_func(), "connectionAboutToBeRemoved",
-                              Q_ARG(BNetworkConnection *, qobject_cast<BNetworkConnection *>(connection)));
+    //The signal is invoked in the connection thread, not in the server thread
+    //You must connect the slots using Qt::DirectConnection
+    QMetaObject::invokeMethod(q_func(), "connectionAboutToBeRemoved", Qt::DirectConnection,
+                              Q_ARG(BNetworkConnection *, connection));
 }
 
 /*============================== Public slots ==============================*/
@@ -242,7 +248,7 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
 
 void BNetworkServerPrivate::finished()
 {
-    BNetworkServerThread *t = static_cast<BNetworkServerThread *>( sender() );
+    BNetworkServerThread *t = qobject_cast<BNetworkServerThread *>(sender());
     if (!t)
         return;
     threads.removeAll(t);
@@ -269,7 +275,7 @@ BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent)
     {
         d->server = new BGenericServer(type, this);
         d->server->setMaxPendingConnections(0);
-        connect( d->server.data(), SIGNAL( newConnection(int) ), d, SLOT( newConnection(int) ) );
+        connect(d->server.data(), SIGNAL(newConnection(int)), d, SLOT(newConnection(int)));
     }
 }
 

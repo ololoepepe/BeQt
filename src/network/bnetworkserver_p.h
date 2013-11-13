@@ -86,8 +86,8 @@ public:
     BNetworkServerThread *getOptimalThread();
     int connectionCount() const;
 public Q_SLOTS:
-    void emitConnectionAdded(QObject *connection);
-    void emitConnectionAboutToBeRemoved(QObject *connection);
+    void emitConnectionAdded(BNetworkConnection *connection);
+    void emitConnectionAboutToBeRemoved(BNetworkConnection *connection);
     void newConnection(int socketDescriptor);
     void finished();
     void spammed();
