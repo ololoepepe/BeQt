@@ -25,6 +25,7 @@
 #include <QRegExp>
 #include <QDesktopServices>
 #include <QPushButton>
+#include <QTimer>
 
 #include <QDebug>
 
@@ -86,7 +87,7 @@ void BHelpBrowserPrivate::init()
         tbrsr->setOpenExternalLinks(true);
       vlt->addWidget(tbrsr);
     //
-    tbrsr->setFocus();
+    QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
     retranslateUi();
     QObject::connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
@@ -110,6 +111,7 @@ void BHelpBrowserPrivate::updateCaption()
     if ( !dt.isEmpty() )
         title += ": " + dt;
     q_func()->setWindowTitle(title);
+    QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
 }
 
 void BHelpBrowserPrivate::search()
