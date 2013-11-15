@@ -71,5 +71,6 @@
         <file>pixmaps/author_photo.png</file>
         <file>icons/stop.png</file>
         <file>icons/stop.svgz</file>
+        <file>pixmaps/sadpanda.jpg</file>
     </qresource>
 </RCC>

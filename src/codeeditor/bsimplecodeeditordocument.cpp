@@ -16,6 +16,7 @@
 #include <QList>
 #include <QChar>
 #include <QPoint>
+#include <QTextBlock>
 
 #include <QDebug>
 
@@ -50,8 +51,9 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
             this, SLOT(updatePasteAvailable(bool)));
     B_Q(BSimpleCodeEditorDocument);
+    tabWidth = BeQt::TabWidth4;
     ptedt = new QPlainTextEdit;
-      ptedt->setTabStopWidth(BeQt::TabWidth4);
+      ptedt->installEventFilter(this);
     lnwgt = new BLineNumberWidget(ptedt);
     bool hasSel = ptedt->textCursor().hasSelection();
     q->setReadOnlyInternal(ptedt->isReadOnly());
@@ -73,6 +75,50 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     if (doc)
         *doc = ptedt->document();
     return ptedt;
+}
+
+bool BSimpleCodeEditorDocumentPrivate::eventFilter(QObject *obj, QEvent *e)
+{
+    switch (e->type())
+    {
+    case QEvent::KeyPress:
+        return keyPressEvent(static_cast<QKeyEvent *>(e));
+    default:
+        return QObject::eventFilter(obj, e);
+    }
+}
+
+bool BSimpleCodeEditorDocumentPrivate::keyPressEvent(QKeyEvent *e)
+{
+    int modifiers = e->modifiers();
+    int key = e->key();
+    switch (modifiers)
+    {
+    case Qt::NoModifier:
+        switch (key)
+        {
+        case Qt::Key_Tab:
+            handleTab();
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
+}
+
+void BSimpleCodeEditorDocumentPrivate::handleTab()
+{
+    if (ptedt->isReadOnly())
+        return;
+    QTextCursor tc = ptedt->textCursor();
+    tc = ptedt->textCursor();
+    int posb = tc.positionInBlock();
+    int spcount = tabWidth - (posb < tabWidth ? posb : posb % tabWidth);
+    if (!spcount)
+        spcount = tabWidth;
+    q_func()->insertText(QString().fill(' ', spcount));
 }
 
 /*============================== Public slots ==============================*/
@@ -143,7 +189,7 @@ void BSimpleCodeEditorDocument::setEditFont(const QFont &fnt)
 
 void BSimpleCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
 {
-    d_func()->ptedt->setTabStopWidth(tw);
+    d_func()->tabWidth = tw;
 }
 
 void BSimpleCodeEditorDocument::setLineNumberWidgetVisible(bool b)
@@ -227,7 +273,7 @@ QFont BSimpleCodeEditorDocument::editFont() const
 
 BeQt::TabWidth BSimpleCodeEditorDocument::editTabWidth() const
 {
-    return static_cast<BeQt::TabWidth>(d_func()->ptedt->tabStopWidth());
+    return d_func()->tabWidth;
 }
 
 bool BSimpleCodeEditorDocument::lineNumberWidgetVisible() const

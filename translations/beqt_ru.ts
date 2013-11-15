@@ -628,13 +628,19 @@
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="135"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="137"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="146"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="154"/>
+        <source>Sorry, nothing found.</source>
+        <comment>tbrsr text</comment>
+        <translation>Извините, ничего не найдено.</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="156"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
