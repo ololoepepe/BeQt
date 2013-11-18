@@ -42,9 +42,9 @@ public:
     int fileFlushInterval;
     QTimer *fileFlushTimer;
     QTextStream fileStream;
-    mutable QMutex formatMutex;
-    mutable QMutex consoleMutex;
-    mutable QMutex fileMutex;
+    mutable QMutex *formatMutex;
+    mutable QMutex *consoleMutex;
+    mutable QMutex *fileMutex;
 private:
     Q_DISABLE_COPY(BLoggerPrivate)
 };

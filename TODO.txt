@@ -4,9 +4,7 @@
 
 === PATCH ===
 
-[done] Improve Help: show message if keywords are not found
-[done] Fix tabulation width in BSimpleCodeEditorDocument
-[done] Fix BHelpBrowser initial focus
+
 
 === MINOR ===
 
