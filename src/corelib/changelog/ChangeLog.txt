@@ -1,3 +1,9 @@
+=== BeQt 3.0.4 (18 November 2013) ===
+    * Improve Help: show message if keywords are not found
+    * Fix tabulation width in BSimpleCodeEditorDocument
+    * Fix BHelpBrowser initial focus
+    * Improve BLogger locking: use recursive mutexes
+
 === BeQt 3.0.3 (13 November 2013) ===
     * Fix BNetworkServer locking
     * Fix BSmtpSender encoding issue

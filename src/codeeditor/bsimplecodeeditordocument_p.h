@@ -7,6 +7,8 @@ class BLineNumberWidget;
 class QTextDocument;
 class QWidget;
 class QPlainTextEdit;
+class QEvent;
+class QKeyEvent;
 
 #include "bsimplecodeeditordocument.h"
 #include "babstractcodeeditordocument_p.h"
@@ -31,6 +33,9 @@ public:
 public:
     void init();
     QWidget *createEdit(QTextDocument **doc);
+    bool eventFilter(QObject *obj, QEvent *e);
+    bool keyPressEvent(QKeyEvent *e);
+    void handleTab();
 public Q_SLOTS:
     void cursorPositionChanged();
     void selectionChanged();
@@ -38,6 +43,7 @@ public Q_SLOTS:
 public:
     QPlainTextEdit *ptedt;
     BLineNumberWidget *lnwgt;
+    BeQt::TabWidth tabWidth;
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocumentPrivate)
 };

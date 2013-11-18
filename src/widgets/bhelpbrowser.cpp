@@ -25,6 +25,7 @@
 #include <QRegExp>
 #include <QDesktopServices>
 #include <QPushButton>
+#include <QTimer>
 
 #include <QDebug>
 
@@ -86,7 +87,7 @@ void BHelpBrowserPrivate::init()
         tbrsr->setOpenExternalLinks(true);
       vlt->addWidget(tbrsr);
     //
-    tbrsr->setFocus();
+    QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
     retranslateUi();
     QObject::connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
@@ -110,6 +111,7 @@ void BHelpBrowserPrivate::updateCaption()
     if ( !dt.isEmpty() )
         title += ": " + dt;
     q_func()->setWindowTitle(title);
+    QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
 }
 
 void BHelpBrowserPrivate::search()
@@ -117,8 +119,8 @@ void BHelpBrowserPrivate::search()
     QString text = ledtSearch->text().toLower();
     if (text.isEmpty())
         return;
-    QStringList sl = searchCache.value(text);
-    if (sl.isEmpty())
+    QStringList sl;
+    if (!searchCache.contains(text))
     {
         foreach (const QString &path, tbrsr->searchPaths())
         {
@@ -128,20 +130,30 @@ void BHelpBrowserPrivate::search()
                     sl << file;
         }
     }
-    if (sl.isEmpty())
-        return;
+    else
+    {
+        sl = searchCache.value(text);
+    }
     if (!searchCache.contains(text))
         searchCache.insert(text, sl);
     QString source = "<center><font size=5><b>" + tr("Search results", "tbrsr text") + "</b></font></center><br><br>";
-    foreach (const QString &file, sl)
+    if (!sl.isEmpty())
     {
-        QString s = BDirTools::readTextFile(file, codec);
-        BTextMatchList ml = BTextTools::match(s, QRegExp(".+"), QRegExp("<title>(\n)*", Qt::CaseInsensitive),
-                                              QRegExp("(\n)*</title>", Qt::CaseInsensitive));
-        if (ml.isEmpty())
-            continue;
-        s = ml.first();
-        source += "<a href=\"" + QFileInfo(file).fileName() + "\">" + s + "</a><br>";
+        foreach (const QString &file, sl)
+        {
+            QString s = BDirTools::readTextFile(file, codec);
+            BTextMatchList ml = BTextTools::match(s, QRegExp(".+"), QRegExp("<title>(\n)*", Qt::CaseInsensitive),
+                                                  QRegExp("(\n)*</title>", Qt::CaseInsensitive));
+            if (ml.isEmpty())
+                continue;
+            s = ml.first();
+            source += "<a href=\"" + QFileInfo(file).fileName() + "\">" + s + "</a><br>";
+        }
+    }
+    else
+    {
+        source += "<img src=\"" + BDirTools::findResource("beqt/pixmaps/sadpanda.jpg", BDirTools::GlobalOnly) + "\">";
+        source += "<br><br>" + tr("Sorry, nothing found.", "tbrsr text");
     }
     source += "<br><br><a href=\"" + tbrsr->source().toString() + "\">" + tr("Back", "tbrsr text") + "</a>";
     tbrsr->setHtml(source);

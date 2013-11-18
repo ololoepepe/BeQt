@@ -25,7 +25,9 @@
 BLoggerPrivate::BLoggerPrivate(BLogger *q) :
     BBasePrivate(q)
 {
-    //
+    formatMutex = new QMutex(QMutex::Recursive);
+    consoleMutex = new QMutex(QMutex::Recursive);
+    fileMutex = new QMutex(QMutex::Recursive);
 }
 
 BLoggerPrivate::~BLoggerPrivate()
@@ -53,7 +55,7 @@ void BLoggerPrivate::init()
 
 void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
 {
-    QMutexLocker locker(&consoleMutex);
+    QMutexLocker locker(consoleMutex);
     if (!logToConsole)
         return;
     if (stderrLevel && useStderr)
@@ -64,7 +66,7 @@ void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
 
 void BLoggerPrivate::tryLogToFile(const QString &text)
 {
-    QMutexLocker locker(&fileMutex);
+    QMutexLocker locker(fileMutex);
     if ( !logToFile || !file.isOpen() )
         return;
     fileStream << text;
@@ -74,7 +76,7 @@ void BLoggerPrivate::tryLogToFile(const QString &text)
 
 QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl) const
 {
-    QMutexLocker locker(&formatMutex);
+    QMutexLocker locker(formatMutex);
     QString msg;
     if ( includeDateTime && !format.isEmpty() )
         msg += QDateTime::currentDateTime().toString(format) + " ";
@@ -168,49 +170,49 @@ QString BLogger::levelToString(Level lvl)
 void BLogger::setUseStderr(bool b)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->consoleMutex);
+    QMutexLocker locker(d->consoleMutex);
     d->useStderr = b;
 }
 
 void BLogger::setIncludeLevel(bool b)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->formatMutex);
+    QMutexLocker locker(d->formatMutex);
     d->includeLevel = b;
 }
 
 void BLogger::setIncludeDateTime(bool b)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->formatMutex);
+    QMutexLocker locker(d->formatMutex);
     d->includeDateTime = b;
 }
 
 void BLogger::setDateTimeFormat(const QString &format)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->formatMutex);
+    QMutexLocker locker(d->formatMutex);
     d->format = format;
 }
 
 void BLogger::setLogToConsoleEnabled(bool enabled)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->consoleMutex);
+    QMutexLocker locker(d->consoleMutex);
     d->logToConsole = enabled;
 }
 
 void BLogger::setLogToFileEnabled(bool enabled)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->fileMutex);
+    QMutexLocker locker(d->fileMutex);
     d->logToFile = enabled;
 }
 
 void BLogger::setFileName(const QString &fileName)
 {
     B_D(BLogger);
-    QMutexLocker locker(&d->fileMutex);
+    QMutexLocker locker(d->fileMutex);
     if ( d->file.isOpen() )
         d->file.close();
     d->file.setFileName(fileName);
@@ -236,49 +238,49 @@ void BLogger::setFileFlushInterval(int msecs)
 bool BLogger::isStderrUsed() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->consoleMutex);
+    QMutexLocker locker(d->consoleMutex);
     return d->useStderr;
 }
 
 bool BLogger::isLevelIncluded() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->formatMutex);
+    QMutexLocker locker(d->formatMutex);
     return d->includeLevel;
 }
 
 bool BLogger::isDateTimeIncluded() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->formatMutex);
+    QMutexLocker locker(d->formatMutex);
     return d->includeDateTime;
 }
 
 QString BLogger::dateTimeFormat() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->formatMutex);
+    QMutexLocker locker(d->formatMutex);
     return d->format;
 }
 
 bool BLogger::isLogToConsoleEnabled() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->consoleMutex);
+    QMutexLocker locker(d->consoleMutex);
     return d->logToConsole;
 }
 
 bool BLogger::isLogToFileEnabled() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->fileMutex);
+    QMutexLocker locker(d->fileMutex);
     return d->logToFile;
 }
 
 QString BLogger::fileName() const
 {
     const B_D(BLogger);
-    QMutexLocker locker(&d->fileMutex);
+    QMutexLocker locker(d->fileMutex);
     return d->file.fileName();
 }
 
