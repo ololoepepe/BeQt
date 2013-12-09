@@ -19,7 +19,7 @@ namespace BTextTools
 QString wrapped(const QString &text, const QString &wrappingText)
 {
     if (text.isEmpty() || wrappingText.isEmpty())
-        return "";
+        return text;
     int wl = wrappingText.length();
     QString ntext = text;
     if (text.left(wl) != wrappingText)
@@ -32,7 +32,7 @@ QString wrapped(const QString &text, const QString &wrappingText)
 QString unwrapped(const QString &text, const QString &wrappingText)
 {
     if (text.isEmpty() || wrappingText.isEmpty())
-        return "";
+        return text;
     int wl = wrappingText.length();
     QString ntext = text;
     if (ntext.left(wl) == wrappingText)
