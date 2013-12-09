@@ -80,7 +80,7 @@ SOURCES += \
     DEPENDPATH *= $${HUNSPELL_PREFIX}/include
     LIBS *= -L$${HUNSPELL_PREFIX}/lib/ -lhunspell
 } else {
-    DEFINES += BUILDING_LIBHUNSPELLS
+    DEFINES += BUILDING_LIBHUNSPELL
 
     HEADERS += $$files($${PWD}/hunspell/*.hxx)
     HEADERS += \
