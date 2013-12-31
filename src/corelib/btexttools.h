@@ -24,6 +24,8 @@ enum RegExpPattern
     EmailPattern
 };
 
+B_CORE_EXPORT void wrap(QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT void unwrap(QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
