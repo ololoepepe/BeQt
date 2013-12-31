@@ -16,29 +16,39 @@
 namespace BTextTools
 {
 
-QString wrapped(const QString &text, const QString &wrappingText)
+void wrap(QString &text, const QString &wrappingText)
 {
     if (text.isEmpty() || wrappingText.isEmpty())
-        return text;
+        return;
     int wl = wrappingText.length();
-    QString ntext = text;
     if (text.left(wl) != wrappingText)
-        ntext.prepend(wrappingText);
+        text.prepend(wrappingText);
     if (text.right(wl) != wrappingText)
-        ntext.append(wrappingText);
+        text.append(wrappingText);
+}
+
+void unwrap(QString &text, const QString &wrappingText)
+{
+    if (text.isEmpty() || wrappingText.isEmpty())
+        return;
+    int wl = wrappingText.length();
+    if (text.left(wl) == wrappingText)
+        text.remove(0, wl);
+    if (text.right(wl) == wrappingText)
+        text.remove(text.length() - wl, wl);
+}
+
+QString wrapped(const QString &text, const QString &wrappingText)
+{
+    QString ntext = text;
+    wrap(ntext, wrappingText);
     return ntext;
 }
 
 QString unwrapped(const QString &text, const QString &wrappingText)
 {
-    if (text.isEmpty() || wrappingText.isEmpty())
-        return text;
-    int wl = wrappingText.length();
     QString ntext = text;
-    if (ntext.left(wl) == wrappingText)
-        ntext.remove(0, wl);
-    if (ntext.right(wl) == wrappingText)
-        ntext.remove(ntext.length() - wl, wl);
+    unwrap(ntext, wrappingText);
     return ntext;
 }
 

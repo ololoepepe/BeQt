@@ -20,7 +20,7 @@
 * Add validity testing to BDialog
 * Implement text search with relevance information
 * Implement BDirTools::appendFile and BDirTools::appendTextFile functions
-* Implement BTextTools::wrap and BTextTools::unwrap functions
+[done] Implement BTextTools::wrap and BTextTools::unwrap functions
 * Implement BeQt::takeOwnership function
 * Use enca for encoding detection
 
