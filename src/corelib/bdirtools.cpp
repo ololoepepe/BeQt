@@ -255,6 +255,18 @@ bool writeFile(const QString &fileName, const QByteArray &data)
     return b;
 }
 
+bool appendFile(const QString &fileName, const QByteArray &data)
+{
+    if (fileName.isEmpty())
+        return false;
+    QFile f(fileName);
+    if (!touch(fileName) || !f.open(QFile::WriteOnly | QFile::Append))
+        return false;
+    bool b = (f.write(data) == data.size());
+    f.close();
+    return b;
+}
+
 QString readTextFile(const QString &fileName, QTextCodec *codec, bool *ok)
 {
     if (ok)
@@ -298,6 +310,27 @@ bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *cod
 bool writeTextFile(const QString &fileName, const QString &text, const QString &codecName)
 {
     return writeTextFile( fileName, text, QTextCodec::codecForName( codecName.toLatin1() ) );
+}
+
+bool appendTextFile(const QString &fileName, const QString &text, QTextCodec *codec)
+{
+    if (fileName.isEmpty())
+        return false;
+    QFile f(fileName);
+    if (!touch(fileName) || !f.open(QFile::WriteOnly | QFile::Append))
+        return false;
+    QTextStream out(&f);
+    if (codec)
+        out.setCodec(codec);
+    out << text;
+    bool b = (out.status() != QTextStream::WriteFailed);
+    f.close();
+    return b;
+}
+
+bool appendTextFile(const QString &fileName, const QString &text, const QString &codecName)
+{
+    return appendTextFile(fileName, text, QTextCodec::codecForName(codecName.toLatin1()));
 }
 
 QString findResource(const QString &subpath, ResourceLookupMode mode)
