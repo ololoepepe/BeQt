@@ -334,7 +334,7 @@ void BCoreApplicationPrivate::setLocale(const QLocale &l)
 }
 
 QStringList BCoreApplicationPrivate::getDeactivatedPlugins() const
-{;
+{
     return settings->value("BeQt/Core/deactivated_plugins").toStringList();
 }
 
@@ -396,7 +396,9 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
 
 void BCoreApplicationPrivate::pluginActivated(BPluginWrapper *pluginWrapper)
 {
-    getDeactivatedPlugins().removeAll( pluginWrapper->name() );
+    QStringList list = getDeactivatedPlugins();
+    list.removeAll(pluginWrapper->name());
+    setDeactivatedPlugins(list);
     QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
