@@ -12,9 +12,6 @@
 [done] Implement BTextTools::wrap and BTextTools::unwrap functions
 [done] Implement BeQt::takeOwnership function
 [done] Implement BeQt::deleteUnowned and BeQt::deleteLaterUnowned functions
-* Add position to point conversion method to BAbstractCodeEditorDocument
-* Add pure position retrieving method to BAbstractCodeEditorDocument
-* Add overloaded moveCursor method to BAbstractCodeEditorDocument
 [done] Add BPasswordGroup and BEditGroup classes
 * Add BLoginDialog class
 * Add validity testing to BDialog
@@ -38,3 +35,6 @@
 * Improve BLocaleComboBox (implement custom mode)
 * Implement native settings dialogs
 * Remove BGuiPluginInterface::handleSettings method
+* Add position to point conversion method to BAbstractCodeEditorDocument
+* Add pure position retrieving method to BAbstractCodeEditorDocument
+* Add overloaded moveCursor method to BAbstractCodeEditorDocument
