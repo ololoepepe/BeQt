@@ -39,7 +39,7 @@ public:
 public Q_SLOTS:
     void initSettings();
 public:
-    static QMap<QString, BPluginWrapper *> globalQMap;
+    static QMap<QString, BPluginWrapper *> globalMap;
     static QStringList acctptableTypes;
     static BPluginWrapper::InterfaceTestFunction testFunction;
 public:
