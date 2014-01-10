@@ -21,7 +21,8 @@
 * Implement text search with relevance information
 * Implement BDirTools::appendFile and BDirTools::appendTextFile functions
 [done] Implement BTextTools::wrap and BTextTools::unwrap functions
-* Implement BeQt::takeOwnership function
+[done] Implement BeQt::takeOwnership function
+[done] Implement BeQt::deleteUnowned and BeQt::deleteLaterUnowned functions
 * Integrate QSystemTrayIcon with BApplication
 * Use enca for encoding detection
 
