@@ -689,6 +689,39 @@
     </message>
 </context>
 <context>
+    <name>BLoginWidgetPrivate</name>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="58"/>
+        <source>Server address:</source>
+        <comment>lbl text</comment>
+        <translation>Адрес сервера:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="59"/>
+        <source>Port:</source>
+        <comment>lbl text</comment>
+        <translation>Порт:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="60"/>
+        <source>Login:</source>
+        <comment>lbl text</comment>
+        <translation>Логин:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="61"/>
+        <source>Password:</source>
+        <comment>lbl text</comment>
+        <translation>Пароль:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="62"/>
+        <source>Remove current address from history</source>
+        <comment>tbtn toolTip</comment>
+        <translation>Удалить текущий адрес из истории</translation>
+    </message>
+</context>
+<context>
     <name>BNetworkConnection</name>
     <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="325"/>
