@@ -46,7 +46,11 @@ HEADERS += \
     btextcodeccombobox.h \
     btextcodeccombobox_p.h \
     btextcodecmenu.h \
-    binputfield.h
+    binputfield.h \
+    bpasswordgroup_p.h \
+    bpasswordgroup.h \
+    beditgroup_p.h \
+    beditgroup.h
 
 SOURCES += \
     baboutdialog.cpp \
@@ -68,7 +72,9 @@ SOURCES += \
     bterminalwidget.cpp \
     btextcodeccombobox.cpp \
     btextcodecmenu.cpp \
-    binputfield.cpp
+    binputfield.cpp \
+    bpasswordgroup.cpp \
+    beditgroup.cpp
 
 contains(BEQT_CONFIG, builtin_resources) {
     RESOURCES += beqtwidgets.qrc
