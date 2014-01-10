@@ -114,6 +114,9 @@ B_CORE_EXPORT CodecsGroup codecsGroupFromInt(int cg);
 B_CORE_EXPORT TabWidth tabWidthFromInt(int tw);
 B_CORE_EXPORT QString fileSizeToString(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
 B_CORE_EXPORT QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format = BytesFormat, quint8 precision = 1);
+B_CORE_EXPORT void takeOwnership(QObject *object, QObject *newOwner);
+B_CORE_EXPORT void deleteUnowned(QObject *object, QObject *possibleOwner = 0);
+B_CORE_EXPORT void deleteLaterUnowned(QObject *object, QObject *possibleOwner = 0);
 
 #if defined(Q_OS_MAC)
 B_CORE_EXPORT QString macVersionToString(QSysInfo::MacVersion version);
