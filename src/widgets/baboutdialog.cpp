@@ -488,6 +488,13 @@ void BAboutDialogPrivate::retranslateUi()
     tbtnAboutQt->setToolTip( tr("About Qt", "tbtn toolTip") );
     tbtnAboutBeqt->setToolTip( tr("About BeQt", "tbtn toolTip") );
     retranslateAboutBeqtDialog();
+    foreach (int i, bRangeD(0, twgt->count() - 1))
+    {
+        QWidget *tab = twgt->widget(i);
+        if (!customTabTitles.contains(tab))
+            return;
+        twgt->setTabText(i, customTabTitles.value(tab));
+    }
 }
 
 void BAboutDialogPrivate::resetAuthors()
@@ -721,6 +728,25 @@ void BAboutDialog::setAboutQtShown(bool b)
 void BAboutDialog::setAboutBeqtShown(bool b)
 {
     d_func()->tbtnAboutBeqt->setVisible(b);
+}
+
+void  BAboutDialog::addTab(QWidget *tab, const BTranslation &title)
+{
+    if (!tab || !d_func()->customTabTitles.contains(tab))
+        return;
+    d_func()->twgt->addTab(tab, title);
+    d_func()->customTabTitles.insert(tab, title);
+}
+
+void BAboutDialog::removeTab(QWidget *tab)
+{
+    if (!tab)
+        return;
+    int ind = d_func()->twgt->indexOf(tab);
+    if (ind < 0)
+        return;
+    d_func()->twgt->removeTab(ind);
+    d_func()->customTabTitles.remove(tab);
 }
 
 /*============================== Public slots ==============================*/

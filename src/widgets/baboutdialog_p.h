@@ -12,12 +12,14 @@ class QTextBrowser;
 class QToolButton;
 class QDialogButtonBox;
 class QSize;
+class QWidget;
 
 #include "baboutdialog.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BPersonInfo>
+#include <BeQtCore/BTranslation>
 
 #include <QObject>
 #include <QList>
@@ -105,6 +107,7 @@ public:
     BPersonInfoProvider *translationsProvider;
     BPersonInfoProvider *thanksToProvider;
     QMap<DialogTab, QTextBrowser *> tbrsrs;
+    QMap<QWidget *, BTranslation> customTabTitles;
     BAboutDialog *aboutBeqtDlg;
     QVBoxLayout *vlt;
       QHBoxLayout *hltHeader;
