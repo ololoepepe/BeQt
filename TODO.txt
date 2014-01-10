@@ -19,7 +19,7 @@
 * Add BLoginDialog class
 * Add validity testing to BDialog
 * Implement text search with relevance information
-* Implement BDirTools::appendFile and BDirTools::appendTextFile functions
+[done] Implement BDirTools::appendFile and BDirTools::appendTextFile functions
 [done] Implement BTextTools::wrap and BTextTools::unwrap functions
 * Implement BeQt::takeOwnership function
 * Integrate QSystemTrayIcon with BApplication

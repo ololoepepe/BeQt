@@ -51,10 +51,13 @@ B_CORE_EXPORT QString localeBasedDirName( const QString &path, const QString &su
                                           const QLocale &loc = BCoreApplication::locale() );
 B_CORE_EXPORT QByteArray readFile(const QString &fileName, qint64 maxlen = -1, bool *ok = 0);
 B_CORE_EXPORT bool writeFile(const QString &fileName, const QByteArray &data);
+B_CORE_EXPORT bool appendFile(const QString &fileName, const QByteArray &data);
 B_CORE_EXPORT QString readTextFile(const QString &fileName, QTextCodec *codec = 0, bool *ok = 0);
 B_CORE_EXPORT QString readTextFile(const QString &fileName, const QString &codecName, bool *ok = 0);
 B_CORE_EXPORT bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *codec = 0);
 B_CORE_EXPORT bool writeTextFile(const QString &fileName, const QString &text, const QString &codecName);
+B_CORE_EXPORT bool appendTextFile(const QString &fileName, const QString &text, QTextCodec *codec = 0);
+B_CORE_EXPORT bool appendTextFile(const QString &fileName, const QString &text, const QString &codecName);
 B_CORE_EXPORT QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
 B_CORE_EXPORT QString findResource(const QString &subpath, const QStringList &locations);
 B_CORE_EXPORT bool createUserLocation(BCoreApplication::Location loc);
