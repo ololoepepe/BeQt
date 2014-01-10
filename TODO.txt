@@ -8,21 +8,21 @@
 
 === MINOR ===
 
-* Add function for changing console output text color
-* Add custom BAboutDialog tabs
-* Add widget class for displaying any type of images (particularly GIF)
-* Add BPasswordGroup class
-* Add position to point conversion method to BAbstractCodeEditorDocument
-* Add pure position retrieving method to BAbstractCodeEditorDocument
-* Add overloaded moveCursor method to BAbstractCodeEditorDocument
-* Improve code editor search (use regular expressions)
-* Add BLoginDialog class
-* Add validity testing to BDialog
-* Implement text search with relevance information
 [done] Implement BDirTools::appendFile and BDirTools::appendTextFile functions
 [done] Implement BTextTools::wrap and BTextTools::unwrap functions
 [done] Implement BeQt::takeOwnership function
 [done] Implement BeQt::deleteUnowned and BeQt::deleteLaterUnowned functions
+* Add position to point conversion method to BAbstractCodeEditorDocument
+* Add pure position retrieving method to BAbstractCodeEditorDocument
+* Add overloaded moveCursor method to BAbstractCodeEditorDocument
+* Add BPasswordGroup class
+* Add BLoginDialog class
+* Add validity testing to BDialog
+* Add widget class for displaying any type of images (particularly GIF)
+* Add function for changing console output text color
+* Add custom BAboutDialog tabs
+* Improve code editor search (use regular expressions)
+* Implement text search with relevance information
 * Integrate QSystemTrayIcon with BApplication
 * Use enca for encoding detection
 
