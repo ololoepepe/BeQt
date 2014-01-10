@@ -14,6 +14,7 @@
 [done] Implement BeQt::deleteUnowned and BeQt::deleteLaterUnowned functions
 [done] Add BPasswordGroup and BEditGroup classes
 [done] Add BLoginWidget class
+* Implement accessing parent BPluginWrapper from plugin instance
 * Add widget class for displaying any type of images (particularly GIF)
 * Add function for changing console output text color
 [done] Add custom BAboutDialog tabs
