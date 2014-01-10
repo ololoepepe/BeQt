@@ -436,8 +436,8 @@
 <context>
     <name>BCoreApplication</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="843"/>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="899"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="845"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="901"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>

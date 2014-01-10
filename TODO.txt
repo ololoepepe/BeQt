@@ -4,7 +4,7 @@
 
 === PATCH ===
 
-
+[done] Fix plugin activation
 
 === MINOR ===
 
@@ -22,6 +22,7 @@
 [done] Implement BDirTools::appendFile and BDirTools::appendTextFile functions
 [done] Implement BTextTools::wrap and BTextTools::unwrap functions
 * Implement BeQt::takeOwnership function
+* Integrate QSystemTrayIcon with BApplication
 * Use enca for encoding detection
 
 === MAJOR ===
@@ -35,3 +36,4 @@
 * Make BAbstractCodeEditorDocument::findNext method non-virtual
 * Improve BLocaleComboBox (implement custom mode)
 * Implement native settings dialogs
+* Remove BGuiPluginInterface::handleSettings method
