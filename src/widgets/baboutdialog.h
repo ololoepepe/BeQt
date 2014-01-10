@@ -3,6 +3,7 @@
 
 class BAboutDialogPrivate;
 class BPersonInfoProvider;
+class BTranslation;
 
 class QWidget;
 class QIcon;
@@ -61,6 +62,8 @@ public:
     void setupWithApplicationData();
     void setAboutQtShown(bool b);
     void setAboutBeqtShown(bool b);
+    void addTab(QWidget *tab, const BTranslation &title);
+    void removeTab(QWidget *tab);
 public Q_SLOTS:
     void resetTabs();
 private:
