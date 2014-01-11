@@ -175,6 +175,100 @@ void BTerminalIOHandlerPrivate::removeThread()
     threadMutex.unlock();
 }
 
+void BTerminalIOHandlerPrivate::resetColor()
+{
+#if defined(Q_OS_UNIX)
+    QString s = "\e[";
+    if (BTerminalIOHandler::DefaultColor != textColor)
+    {
+        s += "0;3" + QString::number(textColor);
+        if (BTerminalIOHandler::DefaultColor != backgroundColor)
+            s += ";4" + QString::number(backgroundColor);
+    }
+    else if (BTerminalIOHandler::DefaultColor != backgroundColor)
+    {
+        s += "7;3" + QString::number(backgroundColor);
+    }
+    else
+    {
+        s += "0";
+    }
+    s += "m";
+    BTerminalIOHandler::write(s);
+#elif defined (Q_OS_WIN)
+    init_once(WORD, DefCol, WORD())
+    {
+        CONSOLE_SCREEN_BUFFER_INFO csbi;
+        GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+        DefCol = csbi.wAttributes;
+    }
+    WORD c = DefCol;
+    if (BTerminalIOHandler::DefaultColor != textColor)
+    {
+        c = c & ~(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
+        switch (textColor)
+        {
+        case BTerminalIOHandler::Red:
+            c = c | FOREGROUND_RED;
+            break;
+        case BTerminalIOHandler::Green:
+            c = c | FOREGROUND_GREEN;
+            break;
+        case BTerminalIOHandler::Brown:
+            c = c | FOREGROUND_GREEN | FOREGROUND_RED;
+            break;
+        case BTerminalIOHandler::Blue:
+            c = c | FOREGROUND_BLUE;
+            break;
+        case BTerminalIOHandler::Magenta:
+            c = c | FOREGROUND_RED | FOREGROUND_BLUE;
+            break;
+        case BTerminalIOHandler::Cyan:
+            c = c | FOREGROUND_BLUE | FOREGROUND_GREEN;
+            break;
+        case BTerminalIOHandler::Lightgray:
+            c = c | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
+            break;
+        case BTerminalIOHandler::Black:
+        default:
+            break;
+        }
+    }
+    if (BTerminalIOHandler::DefaultColor != backgroundColor)
+    {
+        c = c & ~(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);
+        switch (backgroundColor)
+        {
+        case BTerminalIOHandler::Red:
+            c = c | BACKGROUND_RED;
+            break;
+        case BTerminalIOHandler::Green:
+            c = c | BACKGROUND_GREEN;
+            break;
+        case BTerminalIOHandler::Brown:
+            c = c | BACKGROUND_GREEN | BACKGROUND_RED;
+            break;
+        case BTerminalIOHandler::Blue:
+            c = c | BACKGROUND_BLUE;
+            break;
+        case BTerminalIOHandler::Magenta:
+            c = c | BACKGROUND_RED | BACKGROUND_BLUE;
+            break;
+        case BTerminalIOHandler::Cyan:
+            c = c | BACKGROUND_BLUE | BACKGROUND_GREEN;
+            break;
+        case BTerminalIOHandler::Lightgray:
+            c = c | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
+            break;
+        case BTerminalIOHandler::Black:
+        default:
+            break;
+        }
+    }
+    SetConsoleTextAttribute(GetStdHandle(STD_OUTPUT_HANDLE), c);
+#endif
+}
+
 /*============================== Public methods ============================*/
 
 void BTerminalIOHandlerPrivate::init()
@@ -208,6 +302,7 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 
 /*============================== Static public variables ===================*/
 
+QMutex BTerminalIOHandlerPrivate::colorMutex;
 QMutex BTerminalIOHandlerPrivate::echoMutex;
 QMutex BTerminalIOHandlerPrivate::titleMutex;
 QMutex BTerminalIOHandlerPrivate::readMutex;
@@ -217,6 +312,8 @@ QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly)
 QTextStream BTerminalIOHandlerPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
 BTerminalIOHandlerThread *BTerminalIOHandlerPrivate::readThread = 0;
 QMutex BTerminalIOHandlerPrivate::threadMutex;
+BTerminalIOHandler::Color BTerminalIOHandlerPrivate::textColor = BTerminalIOHandler::DefaultColor;
+BTerminalIOHandler::Color BTerminalIOHandlerPrivate::backgroundColor = BTerminalIOHandler::DefaultColor;
 
 /*============================================================================
 ================================ BTerminalIOHandler ==========================
@@ -519,6 +616,32 @@ void BTerminalIOHandler::setTerminalTitle(const QString &title)
 #endif
     SetConsoleTitle(s);
 #endif
+}
+
+void BTerminalIOHandler::setTextColor(Color color)
+{
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
+    BTerminalIOHandlerPrivate::textColor = color;
+    BTerminalIOHandlerPrivate::resetColor();
+}
+
+void BTerminalIOHandler::setBackgroundColor(Color color)
+{
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
+    BTerminalIOHandlerPrivate::backgroundColor = color;
+    BTerminalIOHandlerPrivate::resetColor();
+}
+
+BTerminalIOHandler::Color BTerminalIOHandler::textColor()
+{
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
+    return BTerminalIOHandlerPrivate::textColor;
+}
+
+BTerminalIOHandler::Color BTerminalIOHandler::backgroundColor()
+{
+    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
+    return BTerminalIOHandlerPrivate::backgroundColor;
 }
 
 void BTerminalIOHandler::installHandler(const QString &command, InternalHandler handler)
