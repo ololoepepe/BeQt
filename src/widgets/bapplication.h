@@ -15,6 +15,7 @@ class QToolBar;
 class QToolButton;
 class QObject;
 class QVBoxLayout;
+class QSystemTrayIcon;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BCoreApplication>
@@ -97,6 +98,7 @@ public:
     static void setRowVisible(QLayout *field, bool visible);
     static void setRowEnabled(QWidget *field, bool enabled);
     static void setRowEnabled(QLayout *field, bool enabled);
+    static QSystemTrayIcon *trayIcon();
 public Q_SLOTS:
     void showAboutDialog();
     void showSettingsDialog();

@@ -43,6 +43,7 @@
 #include <QLabel>
 #include <QLayout>
 #include <QFrame>
+#include <QSystemTrayIcon>
 
 #include <QDebug>
 #include <QPointer>
@@ -176,6 +177,7 @@ void BApplicationPrivate::init()
     helpBrowserGeometry = QRect(200, 200, 800, 600);
     themedIcons = true;
     connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    trayIcon = 0;
 }
 
 void BApplicationPrivate::initAboutDlg()
@@ -597,6 +599,18 @@ void BApplication::setRowEnabled(QLayout *field, bool enabled)
                 w->setEnabled(enabled);
         }
     }
+}
+
+QSystemTrayIcon *BApplication::trayIcon()
+{
+    if (!BCoreApplicationPrivate::testCoreInit("BApplication"))
+        return 0;
+    if (!ds_func()->trayIcon)
+    {
+        ds_func()->trayIcon = new QSystemTrayIcon(QApplication::windowIcon(), ds_func());
+        ds_func()->trayIcon->setToolTip(QApplication::applicationName());
+    }
+    return ds_func()->trayIcon;
 }
 
 /*============================== Public slots ==============================*/

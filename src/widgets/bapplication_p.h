@@ -5,6 +5,7 @@ class BApplicationPrivate;
 
 class QAction;
 class QRect;
+class QSystemTrayIcon;
 
 #include "bapplication.h"
 
@@ -57,6 +58,7 @@ public:
     QRect helpBrowserGeometry;
     bool themedIcons;
     QStringList preferredIconFormats;
+    QSystemTrayIcon *trayIcon;
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

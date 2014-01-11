@@ -20,7 +20,7 @@
 [done] Add functions for changing console output color
 [done] Add custom BAboutDialog tabs
 * Implement text search with relevance information
-* Integrate QSystemTrayIcon with BApplication
+[done] Integrate QSystemTrayIcon with BApplication (add BApplication::trayIcon method)
 * Use enca for encoding detection
 
 === MAJOR ===
