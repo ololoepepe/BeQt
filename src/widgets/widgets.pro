@@ -52,7 +52,8 @@ HEADERS += \
     beditgroup_p.h \
     beditgroup.h \
     bloginwidget_p.h \
-    bloginwidget.h
+    bloginwidget.h \
+    bimagewidget.h
 
 SOURCES += \
     baboutdialog.cpp \
@@ -77,7 +78,8 @@ SOURCES += \
     binputfield.cpp \
     bpasswordgroup.cpp \
     beditgroup.cpp \
-    bloginwidget.cpp
+    bloginwidget.cpp \
+    bimagewidget.cpp
 
 contains(BEQT_CONFIG, builtin_resources) {
     RESOURCES += beqtwidgets.qrc
