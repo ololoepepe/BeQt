@@ -592,55 +592,55 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="99"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="102"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="100"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="103"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="101"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="104"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="102"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="105"/>
         <source>Search:</source>
         <comment>lbl text</comment>
         <translation>Поиск:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="103"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="106"/>
         <source>Find</source>
         <comment>btn text</comment>
         <translation>Найти</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="109"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="112"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="139"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="155"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="156"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="171"/>
         <source>Sorry, nothing found.</source>
         <comment>tbrsr text</comment>
         <translation>Извините, ничего не найдено.</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="158"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="173"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>

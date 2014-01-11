@@ -11,6 +11,8 @@ class QString;
 
 #include <QtGlobal>
 #include <QRegExp>
+#include <QList>
+#include <QMap>
 
 /*============================================================================
 ================================ BTextTools ==================================
@@ -48,6 +50,12 @@ B_CORE_EXPORT BTextMatchList match(const QString &text, const QRegExp &what, con
                                   const QRegExp &postfixedBy = QRegExp());
 B_CORE_EXPORT bool intersects(const QStringList &list1, const QStringList &list2,
                               Qt::CaseSensitivity cs = Qt::CaseSensitive);
+B_CORE_EXPORT int termFrequency(const QString &term, const QString &document);
+B_CORE_EXPORT double inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs = 0);
+B_CORE_EXPORT QList<double> tfidf(const QString &term, const QStringList &documents);
+B_CORE_EXPORT QList<double> tfidf(const QStringList &terms, const QStringList &documents);
+B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents);
+B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents);
 
 }
 

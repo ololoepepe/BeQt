@@ -19,7 +19,7 @@
 [done] Add BImageWidget class for displaying any type of images (particularly GIF)
 [done] Add functions for changing console output color
 [done] Add custom BAboutDialog tabs
-* Implement text search with relevance information
+[done] Implement text search with relevance information
 [done] Integrate QSystemTrayIcon with BApplication (add BApplication::trayIcon method)
 * Use enca for encoding detection
 

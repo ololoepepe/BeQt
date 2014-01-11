@@ -6,6 +6,10 @@
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
+#include <QList>
+#include <QMap>
+
+#include <math.h>
 
 #include <QDebug>
 
@@ -283,6 +287,112 @@ bool intersects(const QStringList &list1, const QStringList &list2, Qt::CaseSens
         if (list2.contains(s1, cs))
             return true;
     return false;
+}
+
+int termFrequency(const QString &term, const QString &document)
+{
+    if (term.isEmpty() || document.isEmpty())
+        return 0;
+    return document.toLower().count(QRegExp("\\b" + term.toLower() + "\\b"));
+}
+
+double inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs)
+{
+    if (term.isEmpty() || documents.isEmpty())
+        return 0.0;
+    int count = 0;
+    if (tfs)
+    {
+        tfs->clear();
+        foreach (const QString &document, documents)
+        {
+            int tf = termFrequency(term, document);
+            if (tf)
+                ++count;
+            tfs->append(tf);
+        }
+    }
+    else
+    {
+        foreach (const QString &document, documents)
+            if (document.toLower().contains(QRegExp("\\b" + term.toLower() + "\\b")))
+                ++count;
+    }
+    if (!count)
+        return 0.0;
+    if (documents.size() == count)
+        return 1.0;
+    return log(double(documents.size()) / double(count));
+}
+
+QList<double> tfidf(const QString &term, const QStringList &documents)
+{
+    if (term.isEmpty() || documents.isEmpty())
+        return QList<double>();
+    QList<double> list;
+    QList<int> tfs;
+    double idf = inverseDocumentFrequency(term, documents, &tfs);
+    foreach (int i, bRangeD(0, documents.size() - 1))
+        list << double(tfs.at(i)) * idf;
+    return list;
+}
+
+QList<double> tfidf(const QStringList &terms, const QStringList &documents)
+{
+    if (terms.isEmpty() || documents.isEmpty())
+        return QList<double>();
+    QList<double> idfs;
+    QList<double> list;
+    QList< QList<int> > tfs;
+    foreach (const QString &term, terms)
+    {
+        tfs << QList<int>();
+        idfs << inverseDocumentFrequency(term, documents, &tfs.last());
+    }
+    foreach (int i, bRangeD(0, documents.size() - 1))
+    {
+        double d = 0.0;
+        foreach (int j, bRangeD(0, idfs.size() - 1))
+            d += double(tfs.at(j).at(i)) * idfs.at(j);
+        list << d;
+    }
+    return list;
+}
+
+QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents)
+{
+    QList<double> list = tfidf(term, documents);
+    QMap<double, int> map;
+    foreach(int i, bRangeD(0, list.size() - 1))
+        map.insertMulti(list.at(i), i);
+    QList<int> ret;
+    list = map.uniqueKeys();
+    foreach (int i, bRangeR(list.size() - 1, 0))
+    {
+        double d = list.at(i);
+        if ((d + 1.0) == 1.0)
+            continue;
+        ret << map.values(d);
+    }
+    return ret;
+}
+
+QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents)
+{
+    QList<double> list = tfidf(terms, documents);
+    QMap<double, int> map;
+    foreach(int i, bRangeD(0, list.size() - 1))
+        map.insertMulti(list.at(i), i);
+    QList<int> ret;
+    list = map.uniqueKeys();
+    foreach (int i, bRangeR(list.size() - 1, 0))
+    {
+        double d = list.at(i);
+        if ((d + 1.0) == 1.0)
+            continue;
+        ret << map.values(d);
+    }
+    return ret;
 }
 
 }
