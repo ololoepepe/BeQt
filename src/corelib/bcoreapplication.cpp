@@ -123,30 +123,6 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
     return info;
 }
 
-/*QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
-        return "";
-    if (!prov)
-        return "";
-    QString s;
-    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos(noDefault, loc) )
-    {
-        if ( info.name.isEmpty() )
-            continue;
-        s += tr("Name:", "info") + " " + info.name + "\n";
-        if ( !info.role.isEmpty() )
-            s += tr("Role:", "info") + " " + info.role + "\n";
-        if ( !info.site.isEmpty() )
-            s += tr("Website:", "info") + " " + info.site + "\n";
-        if ( !info.mail.isEmpty() )
-            s += tr("E-mail:", "info") + " " + info.mail + "\n";
-    }
-    if ( !s.isEmpty() )
-        s.remove(s.length() - 1, 1);
-    return s;
-}*/
-
 /*============================== Public methods ============================*/
 
 void BCoreApplicationPrivate::init()
@@ -899,7 +875,7 @@ QString BCoreApplication::beqtInfo(About type, const QLocale &loc)
     switch (type)
     {
     case Copyringt:
-        return tr("Copyright") + " (C) 2012-2013 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
+        return tr("Copyright") + " (C) 2012-2014 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
     case Description:
         bfn = "description/DESCRIPTION.txt";
         break;
