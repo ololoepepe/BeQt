@@ -125,19 +125,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="637"/>
+        <location filename="../src/widgets/bapplication.cpp" line="651"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="639"/>
+        <location filename="../src/widgets/bapplication.cpp" line="653"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="640"/>
+        <location filename="../src/widgets/bapplication.cpp" line="654"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -146,97 +146,97 @@
 <context>
     <name>BApplicationPrivate</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="86"/>
+        <location filename="../src/widgets/bapplication.cpp" line="87"/>
         <source>Settings...</source>
         <comment>act text</comment>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="87"/>
+        <location filename="../src/widgets/bapplication.cpp" line="88"/>
         <source>Show application settings</source>
         <comment>act toolTip</comment>
         <translation>Показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="88"/>
+        <location filename="../src/widgets/bapplication.cpp" line="89"/>
         <source>Use this action to show application settings</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="91"/>
+        <location filename="../src/widgets/bapplication.cpp" line="92"/>
         <source>Homepage</source>
         <comment>act text</comment>
         <translation>Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="92"/>
+        <location filename="../src/widgets/bapplication.cpp" line="93"/>
         <source>Open homepage</source>
         <comment>act toolTip</comment>
         <translation>Открыть домашнюю страницу</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="93"/>
+        <location filename="../src/widgets/bapplication.cpp" line="94"/>
         <source>Use this action to open application homepage with your browser</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть домашнюю страницу приложения в вашем браузере</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="96"/>
+        <location filename="../src/widgets/bapplication.cpp" line="97"/>
         <source>Help contents</source>
         <comment>act text</comment>
         <translation>Содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="97"/>
+        <location filename="../src/widgets/bapplication.cpp" line="98"/>
         <source>Show Help contents</source>
         <comment>act toolTip</comment>
         <translation>Показать содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="98"/>
+        <location filename="../src/widgets/bapplication.cpp" line="99"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать содержание справки (алфавитный указатель)</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="101"/>
+        <location filename="../src/widgets/bapplication.cpp" line="102"/>
         <source>Contextual Help</source>
         <comment>act text</comment>
         <translation>Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="102"/>
+        <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Show contextual Help</source>
         <comment>act toolTip</comment>
         <translation>Показать контекстную справку</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="103"/>
+        <location filename="../src/widgets/bapplication.cpp" line="104"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие, чтобы открыть страницу справки для активного элемента</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="107"/>
+        <location filename="../src/widgets/bapplication.cpp" line="108"/>
         <source>What&apos;s this?</source>
         <comment>act text</comment>
         <translation>Что это?</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="112"/>
+        <location filename="../src/widgets/bapplication.cpp" line="113"/>
         <source>About...</source>
         <comment>act text</comment>
         <translation>О программе...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="113"/>
+        <location filename="../src/widgets/bapplication.cpp" line="114"/>
         <source>Show info about this application</source>
         <comment>act toolTip</comment>
         <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="114"/>
+        <location filename="../src/widgets/bapplication.cpp" line="115"/>
         <source>Use this action to show information about the application, it&apos;s authors, etc.</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать информацию о приложении, его авторах и т.д.</translation>
