@@ -5,6 +5,7 @@
 === PATCH ===
 
 [done] Fix plugin activation
+* Update copyright years
 
 === MINOR ===
 

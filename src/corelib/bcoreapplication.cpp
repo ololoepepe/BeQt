@@ -56,14 +56,11 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
 
 BCoreApplicationPrivate::~BCoreApplicationPrivate()
 {
-    qApp->removeEventFilter(this);
-    foreach (BTranslator *t, translators)
-        delete t;
-    foreach (BPluginWrapper *pw, plugins)
-        delete pw;
-    if ( !settings.isNull() )
+    if (!qApp)
+        qApp->removeEventFilter(this);
+    if (!settings.isNull())
     {
-        disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+        disconnect(settings.data(), SIGNAL(destroyed()), this, SLOT(initSettings()));
         settings->sync();
         delete settings;
     }
@@ -477,6 +474,10 @@ BCoreApplication::BCoreApplication() :
 
 BCoreApplication::~BCoreApplication()
 {
+    foreach (BTranslator *t, d_func()->translators)
+        delete t;
+    foreach (BPluginWrapper *pw, d_func()->plugins)
+        delete pw;
     _m_self = 0;
 }
 

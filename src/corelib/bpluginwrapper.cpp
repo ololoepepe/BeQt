@@ -224,14 +224,14 @@ BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction()
     return BPluginWrapperPrivate::testFunction;
 }
 
-BPluginWrapper *BPluginWrapper::parentWrapper(BPluginInterface *i)
+BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
 {
     if (!i)
         return 0;
     return BPluginWrapperPrivate::globalMap.value(i->name());
 }
 
-QSettings *BPluginWrapper::settings(BPluginInterface *i)
+QSettings *BPluginWrapper::settings(const BPluginInterface *i)
 {
     BPluginWrapper *w = parentWrapper(i);
     return w ? w->settings() : 0;

@@ -35,8 +35,8 @@ public:
     static void setInterfaceTestFunction(InterfaceTestFunction function);
     static QStringList acceptableFileTypes();
     static InterfaceTestFunction interfacetestFunction();
-    static BPluginWrapper *parentWrapper(BPluginInterface *i);
-    static QSettings *settings(BPluginInterface *i);
+    static BPluginWrapper *parentWrapper(const BPluginInterface *i);
+    static QSettings *settings(const BPluginInterface *i);
 public:
     void setLoaded(bool b);
     void setActivated(bool b);
