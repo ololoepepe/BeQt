@@ -46,7 +46,7 @@ public:
     typedef QFuture<SaveResult> SaveResultFuture;
     typedef QFutureWatcher<SaveResult> SaveResultFutureWatcher;
 public:
-    static LoadResult loadFile(const Operation &op, const QString &fn, QTextCodec *codec);
+    static LoadResult loadFile(const Operation &op, const QString &fn, QTextCodec *codec, bool autoDetection);
     static SaveResult saveFile(const Operation &op, const QString &fn, QString txt, QTextCodec *codec,
                                bool native = false);
 public:

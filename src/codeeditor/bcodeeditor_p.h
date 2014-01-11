@@ -292,6 +292,7 @@ public:
     QString defaultFN;
     int maximumFileSize;
     int asyncMin;
+    bool autoCodecDetection;
     BAbstractDocumentDriver *driver;
     QMap<QString, BAbstractFileType *> fileTypes;
     BAbstractFileType *preferredFileType;

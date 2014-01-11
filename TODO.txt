@@ -21,7 +21,7 @@
 [done] Add custom BAboutDialog tabs
 [done] Implement text search with relevance information
 [done] Integrate QSystemTrayIcon with BApplication (add BApplication::trayIcon method)
-* Use enca for encoding detection
+[done] Use enca for encoding detection
 
 === MAJOR ===
 

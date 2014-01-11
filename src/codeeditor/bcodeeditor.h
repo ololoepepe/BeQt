@@ -70,6 +70,7 @@ public:
     void setDefaultFileName(const QString &fileName);
     void setMaximumFileSize(int sz);
     void setAsyncProcessingMinimumLength(int length);
+    void setAutoCodecDetectionEnabled(bool b);
     void addModule(BAbstractEditorModule *mdl);
     void addModule(StandardModule type);
     void removeModule(BAbstractEditorModule *mdl);
@@ -103,6 +104,7 @@ public:
     QString defaultFileName() const;
     int maximumFileSize() const;
     int asyncProcessingMinimumLength() const;
+    bool isAutoCodecDetectionEnabled() const;
     BAbstractEditorModule *module(const QString &name) const;
     BAbstractEditorModule *module(StandardModule type) const;
     QList<BAbstractEditorModule *> modules() const;

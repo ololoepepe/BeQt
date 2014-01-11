@@ -338,13 +338,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2038"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2049"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2040"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2051"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -359,75 +359,75 @@
         <translation>Новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="630"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="631"/>
         <source>The file is too large</source>
         <comment>msgbox informativeText</comment>
         <translation>Файл слишком большой</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="855"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="856"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="857"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="872"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="858"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="873"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="870"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="871"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="874"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="875"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="886"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="887"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="888"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="889"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="897"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="898"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="899"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="900"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="912"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="900"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="901"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="909"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="910"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="912"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="913"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
