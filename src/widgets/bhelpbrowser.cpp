@@ -6,6 +6,7 @@
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BTextMatch>
 #include <BeQtCore/BTextMatchList>
+#include <BeQtCore/BTerminalIOHandler>
 
 #include <QApplication>
 #include <QWidget>
@@ -26,6 +27,8 @@
 #include <QDesktopServices>
 #include <QPushButton>
 #include <QTimer>
+#include <QSet>
+#include <QPair>
 
 #include <QDebug>
 
@@ -116,38 +119,50 @@ void BHelpBrowserPrivate::updateCaption()
 
 void BHelpBrowserPrivate::search()
 {
-    QString text = ledtSearch->text().toLower();
+    QString text = ledtSearch->text();
     if (text.isEmpty())
         return;
-    QStringList sl;
+    QPair<QStringList, QStringList> p;
+    QStringList &sl = p.first;
+    QStringList &documents = p.second;
     if (!searchCache.contains(text))
     {
+        QStringList terms = BTerminalIOHandler::splitCommand(text);
         foreach (const QString &path, tbrsr->searchPaths())
         {
             QStringList files = BDirTools::entryList(path, QStringList() << "*.html" << "*.htm", QDir::Files);
             foreach (const QString &file, files)
-                if (BDirTools::readTextFile(file, codec).contains(text, Qt::CaseInsensitive))
-                    sl << file;
+            {
+                sl << file;
+                documents << BDirTools::readTextFile(file, codec);
+            }
         }
+        QSet<int> set = BTextTools::tfidfSortedIndexes(terms, documents).toSet();
+        foreach (int i, bRangeR(sl.size() - 1, 0))
+        {
+            if (!set.contains(i))
+            {
+                sl.removeAt(i);
+                documents.removeAt(i);
+            }
+        }
+        searchCache.insert(text, qMakePair(sl, documents));
     }
     else
     {
-        sl = searchCache.value(text);
+        p = searchCache.value(text);
     }
-    if (!searchCache.contains(text))
-        searchCache.insert(text, sl);
     QString source = "<center><font size=5><b>" + tr("Search results", "tbrsr text") + "</b></font></center><br><br>";
     if (!sl.isEmpty())
     {
-        foreach (const QString &file, sl)
+        foreach (int i, bRangeD(0, sl.size() - 1))
         {
-            QString s = BDirTools::readTextFile(file, codec);
-            BTextMatchList ml = BTextTools::match(s, QRegExp(".+"), QRegExp("<title>(\n)*", Qt::CaseInsensitive),
+            BTextMatchList ml = BTextTools::match(documents.at(i), QRegExp(".+"),
+                                                  QRegExp("<title>(\n)*", Qt::CaseInsensitive),
                                                   QRegExp("(\n)*</title>", Qt::CaseInsensitive));
             if (ml.isEmpty())
                 continue;
-            s = ml.first();
-            source += "<a href=\"" + QFileInfo(file).fileName() + "\">" + s + "</a><br>";
+            source += "<a href=\"" + QFileInfo(sl.at(i)).fileName() + "\">" + ml.first() + "</a><br>";
         }
     }
     else
@@ -161,7 +176,7 @@ void BHelpBrowserPrivate::search()
 
 /*============================== Static public variables ===================*/
 
-QMap<QString, QStringList> BHelpBrowserPrivate::searchCache;
+QMap< QString, QPair<QStringList, QStringList> > BHelpBrowserPrivate::searchCache;
 
 /*============================================================================
 ================================ BHelpBrowser ================================
