@@ -8,3 +8,8 @@ Name=Hunspell
 Role=BeQt uses Hunspell library for spell checkig
 Role[ru]=BeQt использует библиотеку Hunspell для проверки орфографии
 Site=http://hunspell.sourceforge.net
+
+Name=Enca
+Role=BeQt uses Enca library for encoding detection
+Role[ru]=BeQt использует библиотеку Enca для распознавания кодировок
+Site=http://freecode.com/projects/enca

@@ -64,8 +64,8 @@ bool BPluginWrapperPrivate::load()
     }
     QString tp = iface->type();
     QString nm = iface->name();
-    if ( ( !acctptableTypes.isEmpty() && !acctptableTypes.contains(tp) ) || ( testFunction && !testFunction(obj) ) ||
-         globalQMap.contains(nm) )
+    if ((!acctptableTypes.isEmpty() && !acctptableTypes.contains(tp)) || (testFunction && !testFunction(obj))
+            || globalMap.contains(nm))
     {
         deleteLoader();
         return false;
@@ -78,7 +78,7 @@ bool BPluginWrapperPrivate::load()
     staticInfo = interface->staticInfo();
     info = interface->info();
     loaded = true;
-    globalQMap.insert( nm, q_func() );
+    globalMap.insert( nm, q_func() );
     initSettings();
     return true;
 }
@@ -93,7 +93,7 @@ void BPluginWrapperPrivate::unload()
     instance = 0;
     interface = 0;
     loaded = false;
-    globalQMap.remove(name);
+    globalMap.remove(name);
     if ( !settings.isNull() )
     {
         disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
@@ -166,7 +166,7 @@ void BPluginWrapperPrivate::initSettings()
 
 /*============================== Static public variables ===================*/
 
-QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalQMap;
+QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalMap;
 QStringList BPluginWrapperPrivate::acctptableTypes;
 BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
 
@@ -222,6 +222,13 @@ QStringList BPluginWrapper::acceptableFileTypes()
 BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction()
 {
     return BPluginWrapperPrivate::testFunction;
+}
+
+BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
+{
+    if (!i)
+        return 0;
+    return BPluginWrapperPrivate::globalMap.value(i->name());
 }
 
 /*============================== Public methods ============================*/

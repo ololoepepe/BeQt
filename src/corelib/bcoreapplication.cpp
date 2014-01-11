@@ -56,14 +56,11 @@ BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
 
 BCoreApplicationPrivate::~BCoreApplicationPrivate()
 {
-    qApp->removeEventFilter(this);
-    foreach (BTranslator *t, translators)
-        delete t;
-    foreach (BPluginWrapper *pw, plugins)
-        delete pw;
-    if ( !settings.isNull() )
+    if (!qApp)
+        qApp->removeEventFilter(this);
+    if (!settings.isNull())
     {
-        disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
+        disconnect(settings.data(), SIGNAL(destroyed()), this, SLOT(initSettings()));
         settings->sync();
         delete settings;
     }
@@ -125,30 +122,6 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
     info.total = 0;
     return info;
 }
-
-/*QString BCoreApplicationPrivate::personInfoString(BPersonInfoProvider *prov, const QLocale &loc, bool noDefault)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BCoreApplicationPrivate") )
-        return "";
-    if (!prov)
-        return "";
-    QString s;
-    foreach ( const BPersonInfoProvider::PersonInfo &info, prov->infos(noDefault, loc) )
-    {
-        if ( info.name.isEmpty() )
-            continue;
-        s += tr("Name:", "info") + " " + info.name + "\n";
-        if ( !info.role.isEmpty() )
-            s += tr("Role:", "info") + " " + info.role + "\n";
-        if ( !info.site.isEmpty() )
-            s += tr("Website:", "info") + " " + info.site + "\n";
-        if ( !info.mail.isEmpty() )
-            s += tr("E-mail:", "info") + " " + info.mail + "\n";
-    }
-    if ( !s.isEmpty() )
-        s.remove(s.length() - 1, 1);
-    return s;
-}*/
 
 /*============================== Public methods ============================*/
 
@@ -334,7 +307,7 @@ void BCoreApplicationPrivate::setLocale(const QLocale &l)
 }
 
 QStringList BCoreApplicationPrivate::getDeactivatedPlugins() const
-{;
+{
     return settings->value("BeQt/Core/deactivated_plugins").toStringList();
 }
 
@@ -396,7 +369,9 @@ QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) co
 
 void BCoreApplicationPrivate::pluginActivated(BPluginWrapper *pluginWrapper)
 {
-    getDeactivatedPlugins().removeAll( pluginWrapper->name() );
+    QStringList list = getDeactivatedPlugins();
+    list.removeAll(pluginWrapper->name());
+    setDeactivatedPlugins(list);
     QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
@@ -475,6 +450,10 @@ BCoreApplication::BCoreApplication() :
 
 BCoreApplication::~BCoreApplication()
 {
+    foreach (BTranslator *t, d_func()->translators)
+        delete t;
+    foreach (BPluginWrapper *pw, d_func()->plugins)
+        delete pw;
     _m_self = 0;
 }
 
@@ -896,7 +875,7 @@ QString BCoreApplication::beqtInfo(About type, const QLocale &loc)
     switch (type)
     {
     case Copyringt:
-        return tr("Copyright") + " (C) 2012-2013 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
+        return tr("Copyright") + " (C) 2012-2014 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
     case Description:
         bfn = "description/DESCRIPTION.txt";
         break;

@@ -72,5 +72,7 @@
         <file>icons/stop.png</file>
         <file>icons/stop.svgz</file>
         <file>pixmaps/sadpanda.jpg</file>
+        <file>icons/editdelete.png</file>
+        <file>icons/editdelete.svgz</file>
     </qresource>
 </RCC>

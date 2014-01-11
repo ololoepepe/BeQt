@@ -22,6 +22,7 @@ class QPushButton;
 #include <QStringList>
 #include <QObject>
 #include <QMap>
+#include <QPair>
 
 /*============================================================================
 ================================ BHelpBrowserPrivate =========================
@@ -41,7 +42,7 @@ public Q_SLOTS:
     void updateCaption();
     void search();
 public:
-    static QMap<QString, QStringList> searchCache;
+    static QMap< QString, QPair<QStringList, QStringList> > searchCache;
 public:
     QTextCodec *codec;
     QVBoxLayout *vlt;

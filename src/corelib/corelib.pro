@@ -90,6 +90,45 @@ SOURCES += \
     SOURCES += $$files($${PWD}/hunspell/*.cxx)
 }
 
+##############################################################################
+################################ Enca ########################################
+##############################################################################
+
+!isEmpty(ENCA_PREFIX) {
+    INCLUDEPATH *= $${ENCA_PREFIX}
+    DEPENDPATH *= $${ENCA_PREFIX}
+    INCLUDEPATH *= $${ENCA_PREFIX}/lib
+    DEPENDPATH *= $${ENCA_PREFIX}/lib
+    INCLUDEPATH *= $${ENCA_PREFIX}/data
+    DEPENDPATH *= $${ENCA_PREFIX}/data
+    INCLUDEPATH *= $${ENCA_PREFIX}/tools
+    DEPENDPATH *= $${ENCA_PREFIX}/tools
+    LIBS *= -L$${ENCA_PREFIX}/lib/ -lenca
+} else {
+    DEFINES += BUILDING_LIBENCA
+
+    INCLUDEPATH *= $${PWD}/enca
+    DEPENDPATH *= $${PWD}/enca
+
+    HEADERS += $$files($${PWD}/enca/lib/*.h)
+    HEADERS += $$files($${PWD}/enca/data/bulgarian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/chinese/*.h)
+    HEADERS += $$files($${PWD}/enca/data/croatian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/czech/*.h)
+    HEADERS += $$files($${PWD}/enca/data/estonian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/hungarian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/latvian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/lithuanian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/polish/*.h)
+    HEADERS += $$files($${PWD}/enca/data/russian/*.h)
+    HEADERS += $$files($${PWD}/enca/data/slovak/*.h)
+    HEADERS += $$files($${PWD}/enca/data/slovene/*.h)
+    HEADERS += $$files($${PWD}/enca/data/ukrainian/*.h)
+    HEADERS += $$files($${PWD}/enca/tools/*.h)
+
+    SOURCES += $$files($${PWD}/enca/lib/*.c)
+}
+
 contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES
     RESOURCES += \

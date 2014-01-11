@@ -5,12 +5,17 @@ class BTextMatchList;
 
 class QStringList;
 class QString;
+class QByteArray;
+class QTextCodec;
 
 #include "bglobal.h"
 #include "bnamespace.h"
 
 #include <QtGlobal>
 #include <QRegExp>
+#include <QList>
+#include <QMap>
+#include <QLocale>
 
 /*============================================================================
 ================================ BTextTools ==================================
@@ -24,6 +29,8 @@ enum RegExpPattern
     EmailPattern
 };
 
+B_CORE_EXPORT void wrap(QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT void unwrap(QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
 B_CORE_EXPORT QString removeTrailingSpaces(const QString &s);
@@ -46,6 +53,20 @@ B_CORE_EXPORT BTextMatchList match(const QString &text, const QRegExp &what, con
                                   const QRegExp &postfixedBy = QRegExp());
 B_CORE_EXPORT bool intersects(const QStringList &list1, const QStringList &list2,
                               Qt::CaseSensitivity cs = Qt::CaseSensitive);
+B_CORE_EXPORT int termFrequency(const QString &term, const QString &document);
+B_CORE_EXPORT double inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs = 0);
+B_CORE_EXPORT QList<double> tfidf(const QString &term, const QStringList &documents);
+B_CORE_EXPORT QList<double> tfidf(const QStringList &terms, const QStringList &documents);
+B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents);
+B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents);
+B_CORE_EXPORT QString guessTextCodecName(const QByteArray &data, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QString guessFileCodecName(const QString &fileName, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QString guessFileCodecName(const QString &fileName, qint64 bytes,
+                                         const QLocale locale = QLocale::system());
+B_CORE_EXPORT QTextCodec *guessTextCodec(const QByteArray &data, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QTextCodec *guessFileCodec(const QString &fileName, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QTextCodec *guessFileCodec(const QString &fileName, qint64 bytes,
+                                         const QLocale locale = QLocale::system());
 
 }
 

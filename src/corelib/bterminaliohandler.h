@@ -36,6 +36,18 @@ public:
         SetCommand,
         HelpCommand
     };
+    enum Color
+    {
+        DefaultColor = -1,
+        Black = 0,
+        Red,
+        Green,
+        Brown,
+        Blue,
+        Magenta,
+        Cyan,
+        Lightgray
+    };
 public:
     struct CommandHelp
     {
@@ -71,6 +83,10 @@ public:
     static void writeHelpLines(const CommandHelpList &list, bool translate = true);
     static void setStdinEchoEnabled(bool enabled = true);
     static void setTerminalTitle(const QString &title);
+    static void setTextColor(Color color);
+    static void setBackgroundColor(Color color);
+    static Color textColor();
+    static Color backgroundColor();
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(const QString &command, ExternalHandler handler);
     static void installHandler(StandardCommand cmd);

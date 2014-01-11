@@ -125,19 +125,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="637"/>
+        <location filename="../src/widgets/bapplication.cpp" line="651"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="639"/>
+        <location filename="../src/widgets/bapplication.cpp" line="653"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="640"/>
+        <location filename="../src/widgets/bapplication.cpp" line="654"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -146,97 +146,97 @@
 <context>
     <name>BApplicationPrivate</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="86"/>
+        <location filename="../src/widgets/bapplication.cpp" line="87"/>
         <source>Settings...</source>
         <comment>act text</comment>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="87"/>
+        <location filename="../src/widgets/bapplication.cpp" line="88"/>
         <source>Show application settings</source>
         <comment>act toolTip</comment>
         <translation>Показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="88"/>
+        <location filename="../src/widgets/bapplication.cpp" line="89"/>
         <source>Use this action to show application settings</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="91"/>
+        <location filename="../src/widgets/bapplication.cpp" line="92"/>
         <source>Homepage</source>
         <comment>act text</comment>
         <translation>Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="92"/>
+        <location filename="../src/widgets/bapplication.cpp" line="93"/>
         <source>Open homepage</source>
         <comment>act toolTip</comment>
         <translation>Открыть домашнюю страницу</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="93"/>
+        <location filename="../src/widgets/bapplication.cpp" line="94"/>
         <source>Use this action to open application homepage with your browser</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть домашнюю страницу приложения в вашем браузере</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="96"/>
+        <location filename="../src/widgets/bapplication.cpp" line="97"/>
         <source>Help contents</source>
         <comment>act text</comment>
         <translation>Содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="97"/>
+        <location filename="../src/widgets/bapplication.cpp" line="98"/>
         <source>Show Help contents</source>
         <comment>act toolTip</comment>
         <translation>Показать содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="98"/>
+        <location filename="../src/widgets/bapplication.cpp" line="99"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать содержание справки (алфавитный указатель)</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="101"/>
+        <location filename="../src/widgets/bapplication.cpp" line="102"/>
         <source>Contextual Help</source>
         <comment>act text</comment>
         <translation>Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="102"/>
+        <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Show contextual Help</source>
         <comment>act toolTip</comment>
         <translation>Показать контекстную справку</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="103"/>
+        <location filename="../src/widgets/bapplication.cpp" line="104"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие, чтобы открыть страницу справки для активного элемента</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="107"/>
+        <location filename="../src/widgets/bapplication.cpp" line="108"/>
         <source>What&apos;s this?</source>
         <comment>act text</comment>
         <translation>Что это?</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="112"/>
+        <location filename="../src/widgets/bapplication.cpp" line="113"/>
         <source>About...</source>
         <comment>act text</comment>
         <translation>О программе...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="113"/>
+        <location filename="../src/widgets/bapplication.cpp" line="114"/>
         <source>Show info about this application</source>
         <comment>act toolTip</comment>
         <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="114"/>
+        <location filename="../src/widgets/bapplication.cpp" line="115"/>
         <source>Use this action to show information about the application, it&apos;s authors, etc.</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать информацию о приложении, его авторах и т.д.</translation>
@@ -338,13 +338,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2038"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2049"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2040"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2051"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -359,75 +359,75 @@
         <translation>Новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="630"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="631"/>
         <source>The file is too large</source>
         <comment>msgbox informativeText</comment>
         <translation>Файл слишком большой</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="855"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="856"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="857"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="872"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="858"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="873"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="870"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="871"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="874"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="875"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="886"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="887"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="888"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="889"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="897"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="898"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="899"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="900"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="912"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="900"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="901"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="909"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="910"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="912"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="913"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
@@ -436,8 +436,8 @@
 <context>
     <name>BCoreApplication</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="843"/>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="899"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="822"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="878"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>
@@ -592,55 +592,55 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="99"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="102"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="100"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="103"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="101"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="104"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="102"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="105"/>
         <source>Search:</source>
         <comment>lbl text</comment>
         <translation>Поиск:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="103"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="106"/>
         <source>Find</source>
         <comment>btn text</comment>
         <translation>Найти</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="109"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="112"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="139"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="155"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="156"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="171"/>
         <source>Sorry, nothing found.</source>
         <comment>tbrsr text</comment>
         <translation>Извините, ничего не найдено.</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="158"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="173"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
@@ -686,6 +686,39 @@
         <source>Could not find or start programm</source>
         <comment>terminalCommand return</comment>
         <translation>Не удалось найти или запустить программу</translation>
+    </message>
+</context>
+<context>
+    <name>BLoginWidgetPrivate</name>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="58"/>
+        <source>Server address:</source>
+        <comment>lbl text</comment>
+        <translation>Адрес сервера:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="59"/>
+        <source>Port:</source>
+        <comment>lbl text</comment>
+        <translation>Порт:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="60"/>
+        <source>Login:</source>
+        <comment>lbl text</comment>
+        <translation>Логин:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="61"/>
+        <source>Password:</source>
+        <comment>lbl text</comment>
+        <translation>Пароль:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bloginwidget.cpp" line="62"/>
+        <source>Remove current address from history</source>
+        <comment>tbtn toolTip</comment>
+        <translation>Удалить текущий адрес из истории</translation>
     </message>
 </context>
 <context>
@@ -1296,7 +1329,7 @@
         <translation>Значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="592"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="715"/>
         <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
         <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
@@ -1389,12 +1422,12 @@
 <context>
     <name>BTerminalIOHandler</name>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="631"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="754"/>
         <source>Unknown command</source>
         <translation>Неизвестная команда</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="293"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="390"/>
         <source>Quit the application</source>
         <translation>Выйти из приложения</translation>
     </message>
@@ -1404,27 +1437,27 @@
         <translation>Введите локаль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="298"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="395"/>
         <source>Show list of all available settings</source>
         <translation>Показать список всех доступных настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="301"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="398"/>
         <source>Show the value for &lt;key&gt; or it&apos;s description</source>
         <translation>Показать значение для ключа &lt;key&gt; или его описание</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="304"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="401"/>
         <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
         <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="310"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="407"/>
         <source>Show description of &lt;command&gt;</source>
         <translation>Показать описание команды &lt;command&gt;</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="313"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="410"/>
         <source>Show basic help, or:
   --commands - list of all available commands
   --settings - list of all available settings
@@ -1435,77 +1468,77 @@
   --all - всё вышеперечисленное (включая основную справку)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="319"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="416"/>
         <source>Show information about this application</source>
         <translation>Показать информацию об это приложении</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="322"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="419"/>
         <source>Show information about BeQt libraries</source>
         <translation>Показать информацию о библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="645"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="661"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="674"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="732"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="811"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="819"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="849"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="864"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="768"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="784"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="797"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="855"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="934"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="942"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="972"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="987"/>
         <source>Invalid parameters</source>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="650"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="792"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="773"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="915"/>
         <source>Settings structure not set</source>
         <translation>Не задана структура настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="666"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="789"/>
         <source>Failed to show value</source>
         <translation>Не удалось показать значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="680"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="696"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="803"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="819"/>
         <source>No such option</source>
         <translation>Нет такой опции</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="686"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="809"/>
         <source>No description</source>
         <translation>Описание отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="705"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="828"/>
         <source>Invalid value</source>
         <translation>Недейтсивтельное значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="710"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="722"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="833"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="845"/>
         <source>Failed to set value</source>
         <translation>Не удалось установить значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="715"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="727"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="838"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="850"/>
         <source>OK</source>
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="746"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="757"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="779"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="856"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="869"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="880"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="902"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="979"/>
         <source>Nothing to display</source>
         <translation>Нечего отобразить</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="768"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="782"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="891"/>
+        <location filename="../src/corelib/bterminaliohandler.cpp" line="905"/>
         <source>The following commands are available:</source>
         <translation>Доступны следующие команды:</translation>
     </message>

@@ -12,4 +12,5 @@ applications, and even it's own terminal emulator. Several frequently used
 auxiliary widgets are also provided. Moreover, BeQt implements a ready-to-use
 network client-server interaction model, based on Qt classes.
 Entire module is dedicated to a simple yet powerfull text editor,
-capable of selecting text by rectangular blocks.
+capable of spell check, automatic encoding detection,
+and selecting text by rectangular blocks.

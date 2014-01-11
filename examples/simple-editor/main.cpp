@@ -46,7 +46,7 @@ int main(int argc, char **argv)
     BApplication::installTranslator( new BTranslator("beqt") );
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
-    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2013");
+    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2014");
     BApplication::aboutDialogInstance()->setWebsite(QApplication::organizationDomain());
     BApplication::aboutDialogInstance()->setDescription("<center>Simple code editor.<br><a href="
                                                         + QApplication::organizationDomain()

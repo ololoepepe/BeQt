@@ -530,6 +530,30 @@ QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precisio
     return fileSizeToStringInternal(size, format, precision) + " " + s;
 }
 
+void takeOwnership(QObject *object, QObject *newOwner)
+{
+    if (!object || !newOwner)
+        return;
+    if (!object->parent())
+        object->setParent(newOwner);
+}
+
+void deleteUnowned(QObject *object, QObject *possibleOwner)
+{
+    if (!object)
+        return;
+    if (!object->parent() || object->parent() == possibleOwner)
+        delete object;
+}
+
+void deleteLaterUnowned(QObject *object, QObject *possibleOwner)
+{
+    if (!object)
+        return;
+    if (!object->parent() || object->parent() == possibleOwner)
+        object->deleteLater();
+}
+
 #if defined(Q_OS_MAC)
 QString macVersionToString(QSysInfo::MacVersion version)
 {

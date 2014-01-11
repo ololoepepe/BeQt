@@ -271,6 +271,11 @@ bool BPassword::operator ==(const BPassword &other) const
         return d->open == dd->open;
 }
 
+bool BPassword::operator !=(const BPassword &other) const
+{
+    return !(other == *this);
+}
+
 BPassword::operator QVariant() const
 {
     return QVariant::fromValue(*this);

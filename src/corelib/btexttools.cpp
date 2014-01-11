@@ -2,10 +2,24 @@
 #include "btextmatch.h"
 #include "btextmatchlist.h"
 #include "bnamespace.h"
+#include "bdirtools.h"
+
+#if defined(BUILDING_LIBENCA)
+#include "lib/enca.h"
+#else
+#include <lib/enca.h>
+#endif
 
 #include <QString>
 #include <QStringList>
 #include <QRegExp>
+#include <QList>
+#include <QMap>
+#include <QByteArray>
+#include <QLocale>
+#include <QTextCodec>
+
+#include <math.h>
 
 #include <QDebug>
 
@@ -16,29 +30,39 @@
 namespace BTextTools
 {
 
-QString wrapped(const QString &text, const QString &wrappingText)
+void wrap(QString &text, const QString &wrappingText)
 {
     if (text.isEmpty() || wrappingText.isEmpty())
-        return text;
+        return;
     int wl = wrappingText.length();
-    QString ntext = text;
     if (text.left(wl) != wrappingText)
-        ntext.prepend(wrappingText);
+        text.prepend(wrappingText);
     if (text.right(wl) != wrappingText)
-        ntext.append(wrappingText);
+        text.append(wrappingText);
+}
+
+void unwrap(QString &text, const QString &wrappingText)
+{
+    if (text.isEmpty() || wrappingText.isEmpty())
+        return;
+    int wl = wrappingText.length();
+    if (text.left(wl) == wrappingText)
+        text.remove(0, wl);
+    if (text.right(wl) == wrappingText)
+        text.remove(text.length() - wl, wl);
+}
+
+QString wrapped(const QString &text, const QString &wrappingText)
+{
+    QString ntext = text;
+    wrap(ntext, wrappingText);
     return ntext;
 }
 
 QString unwrapped(const QString &text, const QString &wrappingText)
 {
-    if (text.isEmpty() || wrappingText.isEmpty())
-        return text;
-    int wl = wrappingText.length();
     QString ntext = text;
-    if (ntext.left(wl) == wrappingText)
-        ntext.remove(0, wl);
-    if (ntext.right(wl) == wrappingText)
-        ntext.remove(ntext.length() - wl, wl);
+    unwrap(ntext, wrappingText);
     return ntext;
 }
 
@@ -273,6 +297,165 @@ bool intersects(const QStringList &list1, const QStringList &list2, Qt::CaseSens
         if (list2.contains(s1, cs))
             return true;
     return false;
+}
+
+int termFrequency(const QString &term, const QString &document)
+{
+    if (term.isEmpty() || document.isEmpty())
+        return 0;
+    return document.toLower().count(QRegExp("\\b" + term.toLower() + "\\b"));
+}
+
+double inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs)
+{
+    if (term.isEmpty() || documents.isEmpty())
+        return 0.0;
+    int count = 0;
+    if (tfs)
+    {
+        tfs->clear();
+        foreach (const QString &document, documents)
+        {
+            int tf = termFrequency(term, document);
+            if (tf)
+                ++count;
+            tfs->append(tf);
+        }
+    }
+    else
+    {
+        foreach (const QString &document, documents)
+            if (document.toLower().contains(QRegExp("\\b" + term.toLower() + "\\b")))
+                ++count;
+    }
+    if (!count)
+        return 0.0;
+    if (documents.size() == count)
+        return ++count;
+    return log(double(documents.size()) / double(count));
+}
+
+QList<double> tfidf(const QString &term, const QStringList &documents)
+{
+    if (term.isEmpty() || documents.isEmpty())
+        return QList<double>();
+    QList<double> list;
+    QList<int> tfs;
+    double idf = inverseDocumentFrequency(term, documents, &tfs);
+    foreach (int i, bRangeD(0, documents.size() - 1))
+        list << double(tfs.at(i)) * idf;
+    return list;
+}
+
+QList<double> tfidf(const QStringList &terms, const QStringList &documents)
+{
+    if (terms.isEmpty() || documents.isEmpty())
+        return QList<double>();
+    QList<double> idfs;
+    QList<double> list;
+    QList< QList<int> > tfs;
+    foreach (const QString &term, terms)
+    {
+        tfs << QList<int>();
+        idfs << inverseDocumentFrequency(term, documents, &tfs.last());
+    }
+    foreach (int i, bRangeD(0, documents.size() - 1))
+    {
+        double d = 0.0;
+        foreach (int j, bRangeD(0, idfs.size() - 1))
+            d += double(tfs.at(j).at(i)) * idfs.at(j);
+        list << d;
+    }
+    return list;
+}
+
+QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents)
+{
+    QList<double> list = tfidf(term, documents);
+    QMap<double, int> map;
+    foreach(int i, bRangeD(0, list.size() - 1))
+        map.insertMulti(list.at(i), i);
+    QList<int> ret;
+    list = map.uniqueKeys();
+    foreach (int i, bRangeR(list.size() - 1, 0))
+    {
+        double d = list.at(i);
+        if ((d + 1.0) == 1.0)
+            continue;
+        ret << map.values(d);
+    }
+    return ret;
+}
+
+QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents)
+{
+    QList<double> list = tfidf(terms, documents);
+    QMap<double, int> map;
+    foreach(int i, bRangeD(0, list.size() - 1))
+        map.insertMulti(list.at(i), i);
+    QList<int> ret;
+    list = map.uniqueKeys();
+    foreach (int i, bRangeR(list.size() - 1, 0))
+    {
+        double d = list.at(i);
+        if ((d + 1.0) == 1.0)
+            continue;
+        ret << map.values(d);
+    }
+    return ret;
+}
+
+QString guessTextCodecName(const QByteArray &data, const QLocale locale)
+{
+    struct Buffer
+    {
+        size_t size;
+        ssize_t pos;
+        const unsigned char *data;
+    };
+    if (data.isEmpty())
+        return "";
+    EncaAnalyser an = enca_analyser_alloc(locale.name().left(2).toLocal8Bit().constData());
+    if (!an)
+        return "";
+    enca_set_threshold(an, 1.38);
+    enca_set_multibyte(an, 1);
+    enca_set_ambiguity(an, 1);
+    enca_set_garbage_test(an, 1);
+    EncaEncoding result = enca_analyse_const(an, (const unsigned char *) data.constData(), data.size());
+    enca_analyser_free(an);
+    if (!enca_charset_is_known(result.charset))
+        return "";
+    return QString(enca_charset_name(result.charset, ENCA_NAME_STYLE_MIME));
+}
+
+QString guessFileCodecName(const QString &fileName, const QLocale locale)
+{
+    return guessFileCodecName(fileName, -1, locale);
+}
+
+QString guessFileCodecName(const QString &fileName, qint64 bytes, const QLocale locale)
+{
+    if (fileName.isEmpty())
+        return "";
+    bool ok = false;
+    QByteArray data = BDirTools::readFile(fileName, bytes, &ok);
+    return ok ? guessTextCodecName(data, locale) : QString();
+}
+
+QTextCodec *guessTextCodec(const QByteArray &data, const QLocale locale)
+{
+    return BeQt::codec(guessTextCodecName(data, locale));
+}
+
+QTextCodec *guessFileCodec(const QString &fileName, const QLocale locale)
+{
+    return BeQt::codec(guessFileCodecName(fileName, locale));
+}
+
+QTextCodec *guessFileCodec(const QString &fileName, qint64 bytes, const QLocale locale)
+{
+    return BeQt::codec(guessFileCodecName(fileName, bytes, locale));
 }
 
 }

@@ -461,6 +461,7 @@ void BCodeEditorPrivate::init()
     defaultFN = defaultFileName();
     maximumFileSize = BeQt::Megabyte;
     asyncMin = 100 * 1000;
+    autoCodecDetection = true;
     maxHistoryCount = 20;
     //
     vlt = new QVBoxLayout(q);
@@ -1533,6 +1534,11 @@ void BCodeEditor::setAsyncProcessingMinimumLength(int length)
         doc->setAsyncProcessingMinimumLength(length);
 }
 
+void BCodeEditor::setAutoCodecDetectionEnabled(bool b)
+{
+    d_func()->autoCodecDetection = b;
+}
+
 void BCodeEditor::addModule(BAbstractEditorModule *mdl)
 {
     if ( !mdl || mdl->isBuisy() )
@@ -1789,6 +1795,11 @@ int BCodeEditor::maximumFileSize() const
 int BCodeEditor::asyncProcessingMinimumLength() const
 {
     return d_func()->asyncMin;
+}
+
+bool BCodeEditor::isAutoCodecDetectionEnabled() const
+{
+    return d_func()->autoCodecDetection;
 }
 
 BAbstractEditorModule *BCodeEditor::module(const QString &name) const
