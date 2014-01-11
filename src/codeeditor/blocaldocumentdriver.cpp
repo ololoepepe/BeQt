@@ -10,6 +10,9 @@
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BTextTools>
+#include <BeQtCore/BDirTools>
+#include <BeQtCore/BCoreApplication>
 
 #include <QObject>
 #include <QString>
@@ -37,18 +40,27 @@
 /*============================== Static public methods =====================*/
 
 BLocalDocumentDriverPrivate::LoadResult BLocalDocumentDriverPrivate::loadFile(const Operation &op, const QString &fn,
-                                                                              QTextCodec *codec)
+                                                                              QTextCodec *codec, bool autoDetection)
 {
     QFile f(fn);
     LoadResult res;
     res.operation = op;
-    if (!f.open(QFile::ReadOnly))
+    bool ok = false;
+    QByteArray data = BDirTools::readFile(fn, -1, &ok);
+    if (!ok)
     {
         res.success = false;
         return res;
     }
-    QTextStream in(&f);
-    in.setCodec(codec);
+    QTextCodec *c = 0;
+    if (autoDetection)
+        c = BTextTools::guessTextCodec(data, BCoreApplication::locale());
+    if (!c)
+        c = codec;
+    else
+        res.operation.codec = c;
+    QTextStream in(data);
+    in.setCodec(c);
     res.text = in.readAll();
     f.close();
     res.success = true;
@@ -272,7 +284,8 @@ bool BLocalDocumentDriver::handleLoadOperation(const Operation &op)
     QString fn = !op.fileName.isEmpty() ? op.fileName : op.document->fileName();
     QTextCodec *c = op.codec ? op.codec : op.document->codec();
     BLocalDocumentDriverPrivate::LoadResultFuture future =
-            QtConcurrent::run(&BLocalDocumentDriverPrivate::loadFile, op, fn, c);
+            QtConcurrent::run(&BLocalDocumentDriverPrivate::loadFile, op, fn, c,
+                              editor()->isAutoCodecDetectionEnabled());
     BLocalDocumentDriverPrivate::LoadResultFutureWatcher *watcher =
             new BLocalDocumentDriverPrivate::LoadResultFutureWatcher(this);
     watcher->setFuture(future);

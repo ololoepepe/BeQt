@@ -5,6 +5,8 @@ class BTextMatchList;
 
 class QStringList;
 class QString;
+class QByteArray;
+class QTextCodec;
 
 #include "bglobal.h"
 #include "bnamespace.h"
@@ -13,6 +15,7 @@ class QString;
 #include <QRegExp>
 #include <QList>
 #include <QMap>
+#include <QLocale>
 
 /*============================================================================
 ================================ BTextTools ==================================
@@ -56,6 +59,14 @@ B_CORE_EXPORT QList<double> tfidf(const QString &term, const QStringList &docume
 B_CORE_EXPORT QList<double> tfidf(const QStringList &terms, const QStringList &documents);
 B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents);
 B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents);
+B_CORE_EXPORT QString guessTextCodecName(const QByteArray &data, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QString guessFileCodecName(const QString &fileName, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QString guessFileCodecName(const QString &fileName, qint64 bytes,
+                                         const QLocale locale = QLocale::system());
+B_CORE_EXPORT QTextCodec *guessTextCodec(const QByteArray &data, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QTextCodec *guessFileCodec(const QString &fileName, const QLocale locale = QLocale::system());
+B_CORE_EXPORT QTextCodec *guessFileCodec(const QString &fileName, qint64 bytes,
+                                         const QLocale locale = QLocale::system());
 
 }
 

@@ -95,6 +95,9 @@ When building BeQt, you may pass some parameters to qmake:
  * "HUNSPELL_PREFIX=<path>"
    Set external Hunspell library location. By default the internal one is used
 
+ * "ENCA_PREFIX=<path>"
+   Set external Enca library location. By default the internal one is used
+
  * "BEQT_CONFIG+=no_network"
    Don't build the BeQtNetwork module
 
@@ -204,6 +207,11 @@ If you compiled BeQt with external Hunspell library, you must specify the
 path to Hunspell again when linking BeQt:
 
  "HUNSPELL_PREFIX=<path>"
+
+If you compiled BeQt with external Enca library, you must specify the
+path to Enca again when linking BeQt:
+
+ "ENCA_PREFIX=<path>"
 
 Common .pro file example:
 
