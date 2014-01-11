@@ -321,7 +321,7 @@ double inverseDocumentFrequency(const QString &term, const QStringList &document
     if (!count)
         return 0.0;
     if (documents.size() == count)
-        return 1.0;
+        return ++count;
     return log(double(documents.size()) / double(count));
 }
 
