@@ -19,7 +19,6 @@
 [done] Add BImageWidget class for displaying any type of images (particularly GIF)
 [done] Add functions for changing console output color
 [done] Add custom BAboutDialog tabs
-* Improve code editor search (use regular expressions)
 * Implement text search with relevance information
 * Integrate QSystemTrayIcon with BApplication
 * Use enca for encoding detection
@@ -39,3 +38,4 @@
 * Add position to point conversion method to BAbstractCodeEditorDocument
 * Add pure position retrieving method to BAbstractCodeEditorDocument
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
+* Improve code editor search (use regular expressions)
