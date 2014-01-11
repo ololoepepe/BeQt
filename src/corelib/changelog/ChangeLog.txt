@@ -1,3 +1,20 @@
+=== BeQt 3.1.0 (11 January 2014) ===
+    * Implement BDirTools::appendFile and BDirTools::appendTextFile functions
+    * Implement BTextTools::wrap and BTextTools::unwrap functions
+    * Implement BeQt::takeOwnership function
+    * Implement BeQt::deleteUnowned and BeQt::deleteLaterUnowned functions
+    * Add BPasswordGroup and BEditGroup classes
+    * Add BLoginWidget class
+    * Implement accessing parent BPluginWrapper from plugin instance
+    * Add BImageWidget class for displaying any type of images (particularly GIF)
+    * Add functions for changing console output color
+    * Add custom BAboutDialog tabs
+    * Implement text search with relevance information
+    * Integrate QSystemTrayIcon with BApplication (add BApplication::trayIcon method)
+    * Use Enca for encoding detection
+    * Fix plugin deactivation
+    * Update copyright years
+
 === BeQt 3.0.5 (09 December 2013) ===
     * Fix Hunspell defines
     * Get rid of "CONFIG+=ordered"
