@@ -58,11 +58,13 @@ public:
     static bool testUnique();
     static BTerminalIOHandlerThread *initThread(bool silent = false);
     static void removeThread();
+    static void resetColor();
 public:
     void init();
 public Q_SLOTS:
     void lineRead(const QString &text);
 public:
+    static QMutex colorMutex;
     static QMutex echoMutex;
     static QMutex titleMutex;
     static QMutex readMutex;
@@ -72,6 +74,8 @@ public:
     static QTextStream writeErrStream;
     static BTerminalIOHandlerThread *readThread;
     static QMutex threadMutex;
+    static BTerminalIOHandler::Color textColor;
+    static BTerminalIOHandler::Color backgroundColor;
 public:
     QMap<QString, BTerminalIOHandler::InternalHandler> internalHandlers;
     QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;

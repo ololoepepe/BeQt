@@ -231,12 +231,6 @@ BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
     return BPluginWrapperPrivate::globalMap.value(i->name());
 }
 
-QSettings *BPluginWrapper::settings(const BPluginInterface *i)
-{
-    BPluginWrapper *w = parentWrapper(i);
-    return w ? w->settings() : 0;
-}
-
 /*============================== Public methods ============================*/
 
 void BPluginWrapper::setLoaded(bool b)
