@@ -4,25 +4,26 @@
 
 === PATCH ===
 
-
+[done] Remove Buffer struct from BTextTools::guessTextCodecName function
+[done] Fix BEditGroup
+[done] Fix BPasswordWidget
 
 === MINOR ===
 
-
+* Add BUuid class to fix Qt4 and Qt5 serialization issue
 
 === MAJOR ===
 
 * Remove BeQt::variantToData and BeQt::dataToVatiant functions
-* Make BSocketWrapper class virtual (add virtual methods for reading and writing)
+* Use BUuid class instead of QUuid
 * Add ability to listen on several ports/hosts to BNetworkServer
-* Improve BTextBlockUserData (multiple skipped intervals)
+* Improve BTextBlockUserData (implement multiple skip intervals)
 * Add ability to remember entered commands in BTerminalIOHandler
-* Define file types using XML files
-* Make BAbstractCodeEditorDocument::findNext method non-virtual
 * Improve BLocaleComboBox (implement custom mode)
 * Implement native settings dialogs
 * Remove BGuiPluginInterface::handleSettings method
+* Implement Katepart-compatible file type definition using XML files
+* Improve code editor search (use regular expressions)
 * Add position to point conversion method to BAbstractCodeEditorDocument
 * Add pure position retrieving method to BAbstractCodeEditorDocument
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
-* Improve code editor search (use regular expressions)

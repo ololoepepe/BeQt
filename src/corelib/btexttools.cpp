@@ -407,12 +407,6 @@ QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &docum
 
 QString guessTextCodecName(const QByteArray &data, const QLocale locale)
 {
-    struct Buffer
-    {
-        size_t size;
-        ssize_t pos;
-        const unsigned char *data;
-    };
     if (data.isEmpty())
         return "";
     EncaAnalyser an = enca_analyser_alloc(locale.name().left(2).toLocal8Bit().constData());

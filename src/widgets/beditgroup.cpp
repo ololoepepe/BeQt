@@ -98,7 +98,7 @@ void BEditGroup::addEdit(QLineEdit *ledt)
     if (!ledt || d_func()->ledtMap.contains(ledt))
         return;
     d_func()->ledtMap.insert(ledt, ledt);
-    connect(ledt, SIGNAL(textChanged()), d_func(), SLOT(textChanged()));
+    connect(ledt, SIGNAL(textChanged(QString)), d_func(), SLOT(textChanged()));
     connect(ledt, SIGNAL(destroyed(QObject *)), d_func(), SLOT(ledtDestroyed(QObject *)));
     d_func()->textChanged();
 }
