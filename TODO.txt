@@ -4,9 +4,7 @@
 
 === PATCH ===
 
-[done] Remove Buffer struct from BTextTools::guessTextCodecName function
-[done] Fix BEditGroup
-[done] Fix BPasswordWidget
+
 
 === MINOR ===
 

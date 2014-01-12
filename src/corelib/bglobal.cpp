@@ -18,7 +18,7 @@ bool bTest(bool condition, const char *where, const char *what)
 
 const char *bVersion()
 {
-    return "3.1.0";
+    return "3.1.1";
 }
 
 void bRegister()
