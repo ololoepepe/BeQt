@@ -234,7 +234,8 @@ void BPasswordWidget::setPassword(const BPassword &password)
 
 void BPasswordWidget::setPassword(const QString &password)
 {
-    BPassword pwd(password);
+    BPassword pwd(d_func()->pwd.mode());
+    pwd.setPassword(password, d_func()->pwd.algorithm());
     if (pwd == d_func()->pwd)
         return;
     d_func()->pwd = pwd;
@@ -248,7 +249,8 @@ void BPasswordWidget::setPassword(const QString &password)
 
 void BPasswordWidget::setPassword(QCryptographicHash::Algorithm a, const QByteArray &password, int charCount)
 {
-    BPassword pwd(a, password, charCount);
+    BPassword pwd(d_func()->pwd.mode());
+    pwd.setPassword(a, password, charCount);
     if (pwd == d_func()->pwd)
         return;
     d_func()->pwd = pwd;

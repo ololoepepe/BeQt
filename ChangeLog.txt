@@ -1,3 +1,9 @@
+=== BeQt 3.1.1 (12 January 2014) ===
+    * Remove Buffer struct from BTextTools::guessTextCodecName function
+    * Fix BEditGroup
+    * Fix BPasswordWidget
+    * Fix BLoginWidget
+
 === BeQt 3.1.0 (11 January 2014) ===
     * Implement BDirTools::appendFile and BDirTools::appendTextFile functions
     * Implement BTextTools::wrap and BTextTools::unwrap functions

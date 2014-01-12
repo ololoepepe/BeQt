@@ -69,9 +69,11 @@ void BLoginWidgetPrivate::init()
       tbtnRemoveAddress = 0;
       ledtPort = 0;
       ledtLogin = new QLineEdit;
+        connect(ledtLogin, SIGNAL(textChanged(QString)), this, SLOT(checkInputs()));
       flt->addRow(loginLabel, ledtLogin);
       ledtPassword = 0;
       pwdwgt = new BPasswordWidget;
+        connect(pwdwgt, SIGNAL(passwordChanged()), this, SLOT(checkInputs()));
       flt->addRow(passwordLabel, pwdwgt);
     //
     connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
@@ -117,7 +119,7 @@ void BLoginWidgetPrivate::checkInputs()
             nvalid = ledtAddress->hasAcceptableInput();
         else if (cmboxAddress && cmboxAddress->lineEdit())
             nvalid = cmboxAddress->lineEdit()->hasAcceptableInput();
-        else
+        else if (cmboxAddress && cmboxAddress->currentIndex() < 0)
             nvalid = false;
     }
     if (portRequired)
@@ -212,12 +214,14 @@ void BLoginWidget::setAddressType(AddressType t, bool required)
     {
         d_func()->ledtAddress = new QLineEdit;
         d_func()->flt->insertRow(0, d_func()->addressLabel, d_func()->ledtAddress);
+        connect(d_func()->ledtAddress, SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
     }
     else if (StaticComboAddress == t)
     {
         d_func()->cmboxAddress = new QComboBox;
         d_func()->cmboxAddress->setEditable(false);
         d_func()->flt->insertRow(0, d_func()->addressLabel, d_func()->cmboxAddress);
+        connect(d_func()->cmboxAddress, SIGNAL(currentIndexChanged(int)), d_func(), SLOT(checkInputs()));
     }
     else if (EditableComboAddress == t)
     {
@@ -233,6 +237,7 @@ void BLoginWidget::setAddressType(AddressType t, bool required)
           connect(d_func()->tbtnRemoveAddress, SIGNAL(clicked()), d_func(), SLOT(removeCurrentAddress()));
         d_func()->hltAddress->addWidget(d_func()->tbtnRemoveAddress);
         d_func()->flt->insertRow(0, d_func()->addressLabel, d_func()->hltAddress);
+        connect(d_func()->cmboxAddress->lineEdit(), SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
     }
     else
     {
@@ -251,6 +256,7 @@ void BLoginWidget::setPortEnabled(bool b, bool required)
         d_func()->ledtPort->setValidator(new QIntValidator(this));
         int ind = (NoAddress == d_func()->addressType) ? 0 : 1;
         d_func()->flt->insertRow(ind, d_func()->portLabel, d_func()->ledtPort);
+        connect(d_func()->ledtPort, SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
     }
     else
     {
@@ -272,6 +278,7 @@ void BLoginWidget::setLoginEnabled(bool b, bool required)
         d_func()->ledtLogin = new QLineEdit;
         int ind = (NoPassword == d_func()->passwordType) ? d_func()->flt->rowCount() : (d_func()->flt->rowCount() - 1);
         d_func()->flt->insertRow(ind, d_func()->loginLabel, d_func()->ledtLogin);
+        connect(d_func()->ledtLogin, SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
     }
     else
     {
@@ -307,11 +314,13 @@ void BLoginWidget::setPasswordType(PasswordType t, bool required)
     {
         d_func()->ledtPassword = new QLineEdit;
         d_func()->flt->addRow(d_func()->passwordLabel, d_func()->ledtPassword);
+        connect(d_func()->ledtPassword, SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
     }
     else if (SecurePassword == t)
     {
         d_func()->pwdwgt = new BPasswordWidget;
         d_func()->flt->addRow(d_func()->passwordLabel, d_func()->pwdwgt);
+        connect(d_func()->pwdwgt, SIGNAL(passwordChanged()), d_func(), SLOT(checkInputs()));
     }
     else
     {
@@ -370,6 +379,8 @@ void BLoginWidget::setAvailableAddresses(const QStringList &list)
         return;
     d_func()->cmboxAddress->clear();
     d_func()->cmboxAddress->addItems(list);
+    if (d_func()->cmboxAddress->count())
+        d_func()->cmboxAddress->setCurrentIndex(0);
 }
 
 void BLoginWidget::setPersistentAddress(const QString &a)
