@@ -60,6 +60,7 @@ void BPasswordWidgetPrivate::init()
     hlt = new QHBoxLayout(q);
     hlt->setContentsMargins(0, 0, 0, 0);
     ledt = new QLineEdit(q);
+      ledt->setEchoMode(QLineEdit::Password);
       connect(ledt, SIGNAL(textChanged(QString)), this, SLOT(passwordChanged(QString)));
       connect(ledt, SIGNAL(textEdited(QString)), q, SIGNAL(passwordEdited(QString)));
       connect(ledt, SIGNAL(returnPressed()), q, SIGNAL(returnPressed()));
