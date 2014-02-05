@@ -27,7 +27,7 @@
 #include <QDesktopServices>
 #include <QPushButton>
 #include <QTimer>
-#include <QSet>
+#include <QList>
 #include <QPair>
 
 #include <QDebug>
@@ -137,15 +137,14 @@ void BHelpBrowserPrivate::search()
                 documents << BDirTools::readTextFile(file, codec);
             }
         }
-        QSet<int> set = BTextTools::tfidfSortedIndexes(terms, documents).toSet();
-        foreach (int i, bRangeR(sl.size() - 1, 0))
+        QList<int> list = BTextTools::tfidfSortedIndexes(terms, documents);
+        foreach (int i, bRangeD(0, list.size() - 1))
         {
-            if (!set.contains(i))
-            {
-                sl.removeAt(i);
-                documents.removeAt(i);
-            }
+            sl.swap(i, list.at(i));
+            documents.swap(i, list.at(i));
         }
+        sl = sl.mid(0, list.size());
+        documents = documents.mid(0, list.size());
         searchCache.insert(text, qMakePair(sl, documents));
     }
     else

@@ -127,6 +127,7 @@ BCoreApplication::LocaleSupportInfo BCoreApplicationPrivate::createLocaleSupport
 
 void BCoreApplicationPrivate::init()
 {
+    destructorCalled = false;
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_INIT_RESOURCE(beqtcore);
     Q_INIT_RESOURCE(beqt_translations);
@@ -377,7 +378,8 @@ void BCoreApplicationPrivate::pluginActivated(BPluginWrapper *pluginWrapper)
 
 void BCoreApplicationPrivate::pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
 {
-    addDeactivatedPlugin( pluginWrapper->name() );
+    if (!destructorCalled)
+        addDeactivatedPlugin( pluginWrapper->name() );
     QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper) );
 }
 
@@ -450,6 +452,7 @@ BCoreApplication::BCoreApplication() :
 
 BCoreApplication::~BCoreApplication()
 {
+    ds_func()->destructorCalled = true;
     foreach (BTranslator *t, d_func()->translators)
         delete t;
     foreach (BPluginWrapper *pw, d_func()->plugins)

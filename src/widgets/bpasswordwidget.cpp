@@ -20,7 +20,6 @@
 #include <QDataStream>
 #include <QIODevice>
 #include <QTimer>
-#include <QEvent>
 #include <QMetaObject>
 #include <QUuid>
 #include <QVariant>
@@ -56,8 +55,6 @@ void BPasswordWidgetPrivate::init()
 {
     B_Q(BPasswordWidget);
     wasEmpty = true;
-    save = true; //Is reset to false, so it's false by default
-    show = true; //Is reset to false, so it's false by default
     generateFunction = &defaultGeneratePasswordFunction;
     generatedLength = 16;
     hlt = new QHBoxLayout(q);
@@ -68,16 +65,15 @@ void BPasswordWidgetPrivate::init()
       connect(ledt, SIGNAL(returnPressed()), q, SIGNAL(returnPressed()));
     hlt->addWidget(ledt);
     tbtnSave = new QToolButton(q);
-      tbtnSave->setIcon( BApplication::icon("filesave") );
-      tbtnSave->installEventFilter(this);
-      connect( tbtnSave, SIGNAL( clicked() ), this, SLOT( resetSave() ) );
-      resetSave();
+      tbtnSave->setCheckable(true);
+      tbtnSave->setIcon(BApplication::icon("filesave"));
+      connect(tbtnSave, SIGNAL(toggled(bool)), this, SLOT(resetSave(bool)));
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
-      tbtnShow->setIcon( BApplication::icon("decrypted") );
+      tbtnShow->setCheckable(true);
+      tbtnShow->setIcon(BApplication::icon("decrypted"));
       tbtnShow->installEventFilter(this);
-      connect( tbtnShow, SIGNAL( clicked() ), this, SLOT( resetShow() ) );
-      resetShow();
+      connect(tbtnShow, SIGNAL(toggled(bool)), this, SLOT(resetShow(bool)));
     hlt->addWidget(tbtnShow);
     tbtnGenerate = new QToolButton(q);
       tbtnGenerate->setIcon(BApplication::icon("charset"));
@@ -86,24 +82,7 @@ void BPasswordWidgetPrivate::init()
     hlt->addWidget(tbtnGenerate);
     //
     retranslateUi();
-    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
-}
-
-bool BPasswordWidgetPrivate::eventFilter(QObject *o, QEvent *e)
-{
-    if (e->type() != QEvent::FocusIn && e->type() != QEvent::FocusOut)
-        return false;
-    if (o == tbtnSave)
-    {
-        save = !save;
-        QTimer::singleShot( 0, this, SLOT( resetSave() ) );
-    }
-    if (o == tbtnShow)
-    {
-        show = !show;
-        QTimer::singleShot( 0, this, SLOT( resetShow() ) );
-    }
-    return false;
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 void BPasswordWidgetPrivate::updateEdit()
@@ -127,24 +106,20 @@ void BPasswordWidgetPrivate::updateEdit()
 
 void BPasswordWidgetPrivate::retranslateUi()
 {
-    tbtnSave->setToolTip( tr("Save password", "tbtn toolTip") );
-    tbtnShow->setToolTip( tr("Show password", "tbtn toolTip") );
+    tbtnSave->setToolTip(tr("Save password", "tbtn toolTip"));
+    tbtnShow->setToolTip(tr("Show password", "tbtn toolTip"));
     tbtnGenerate->setToolTip(tr("Generate password", "tbtn toolTip"));
 }
 
-void BPasswordWidgetPrivate::resetSave()
+void BPasswordWidgetPrivate::resetSave(bool b)
 {
-    save = !save;
-    tbtnSave->setDown(save);
-    QMetaObject::invokeMethod(q_func(), "savePasswordChanged", Q_ARG(bool, save));
+    QMetaObject::invokeMethod(q_func(), "savePasswordChanged", Q_ARG(bool, b));
 }
 
-void BPasswordWidgetPrivate::resetShow()
+void BPasswordWidgetPrivate::resetShow(bool b)
 {
-    show = !show;
-    tbtnShow->setDown(show);
-    ledt->setEchoMode(show ? QLineEdit::Normal : QLineEdit::Password);
-    QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, show));
+    ledt->setEchoMode(b ? QLineEdit::Normal : QLineEdit::Password);
+    QMetaObject::invokeMethod(q_func(), "showPasswordChanged", Q_ARG(bool, b));
 }
 
 void BPasswordWidgetPrivate::passwordChanged(const QString &password)
@@ -385,12 +360,12 @@ QCryptographicHash::Algorithm BPasswordWidget::algorithm() const
 
 bool BPasswordWidget::savePassword() const
 {
-    return d_func()->save;
+    return d_func()->tbtnSave->isChecked();
 }
 
 bool BPasswordWidget::showPassword() const
 {
-    return d_func()->show;
+    return d_func()->tbtnShow->isChecked();
 }
 
 bool BPasswordWidget::savePasswordVisible() const
@@ -443,18 +418,12 @@ QByteArray BPasswordWidget::saveState(BPassword::Mode mode) const
 
 void BPasswordWidget::setSavePassword(bool b)
 {
-    B_D(BPasswordWidget);
-    if (b == d->save)
-        return;
-    d->resetSave();
+    d_func()->tbtnSave->setChecked(b);
 }
 
 void BPasswordWidget::setShowPassword(bool b)
 {
-    B_D(BPasswordWidget);
-    if (b == d->show)
-        return;
-    d->resetShow();
+    d_func()->tbtnShow->setChecked(b);
 }
 
 void BPasswordWidget::generatePassword()

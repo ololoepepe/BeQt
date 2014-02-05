@@ -436,8 +436,8 @@
 <context>
     <name>BCoreApplication</name>
     <message>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="822"/>
-        <location filename="../src/corelib/bcoreapplication.cpp" line="878"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="825"/>
+        <location filename="../src/corelib/bcoreapplication.cpp" line="881"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>
@@ -628,19 +628,19 @@
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="155"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="154"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="171"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="170"/>
         <source>Sorry, nothing found.</source>
         <comment>tbrsr text</comment>
         <translation>Извините, ничего не найдено.</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="173"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="172"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
@@ -1025,19 +1025,19 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="130"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="109"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="131"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="110"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="132"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="111"/>
         <source>Generate password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сгенерировать пароль</translation>
