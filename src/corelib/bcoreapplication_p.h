@@ -109,6 +109,7 @@ public:
     BSignalDelayProxy *languageChangeProxy;
     BSignalDelayProxy *languageChangeEventProxy;
     bool blockLanguageChangeEvent;
+    bool destructorCalled;
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
     friend class BPluginWrapperPrivate;

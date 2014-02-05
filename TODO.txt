@@ -9,11 +9,15 @@
 === MINOR ===
 
 * Add BUuid class to fix Qt4 and Qt5 serialization issue
+* Add method to determine executable file target platform
 
 === MAJOR ===
 
 * Remove BeQt::variantToData and BeQt::dataToVatiant functions
 * Use BUuid class instead of QUuid
+* Reimplement BCoreApplication, BApplication, and resource lookup system
+* Move some methods to separate namespaces
+* Implement locking of global object instances
 * Add ability to listen on several ports/hosts to BNetworkServer
 * Improve BTextBlockUserData (implement multiple skip intervals)
 * Add ability to remember entered commands in BTerminalIOHandler

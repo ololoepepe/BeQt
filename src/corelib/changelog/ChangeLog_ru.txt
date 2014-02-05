@@ -1,3 +1,8 @@
+=== BeQt 3.1.2 (05 февраля 2014) ===
+    * Исправлен поиск в классе BHelpBrowser
+    * Исправлена деактивация плагинов
+    * Улучшен код класса BPasswordWidget
+
 === BeQt 3.1.1 (12 января 2014) ===
     * Убрана структура Buffer из функции BTextTools::guessTextCodecName
     * Исправлен класс BEditGroup
