@@ -4,9 +4,7 @@
 
 === PATCH ===
 
-[done] Fix BHelpBrowser search
-[done] Fix plugin deactivation
-[done] Improve BPasswordWidget code
+
 
 === MINOR ===
 
