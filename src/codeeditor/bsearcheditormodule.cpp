@@ -37,6 +37,7 @@
 #include <QPointer>
 #include <QList>
 #include <QMetaObject>
+#include <QCompleter>
 
 #include <QDebug>
 
@@ -79,6 +80,7 @@ void BSearchDialogPrivate::init()
           cmboxSearch->setMaxVisibleItems(DefMaximumHistorySize);
           cmboxSearch->setInsertPolicy(QComboBox::InsertAtTop);
           cmboxSearch->setEditable(true);
+          cmboxSearch->lineEdit()->completer()->setCaseSensitivity(Qt::CaseSensitive);
           connect( cmboxSearch, SIGNAL( editTextChanged(QString) ), this, SLOT( checkSearchReplace() ) );
         hltSearch->addWidget(cmboxSearch);
       vlt->addLayout(hltSearch);
@@ -91,6 +93,7 @@ void BSearchDialogPrivate::init()
           cmboxReplace->setMaxVisibleItems(DefMaximumHistorySize);
           cmboxReplace->setInsertPolicy(QComboBox::InsertAtTop);
           cmboxReplace->setEditable(true);
+          cmboxReplace->lineEdit()->completer()->setCaseSensitivity(Qt::CaseSensitive);
         hltReplace->addWidget(cmboxReplace);
       vlt->addLayout(hltReplace);
       gboxOptions = new QGroupBox(q);

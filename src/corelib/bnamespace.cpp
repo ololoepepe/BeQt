@@ -333,7 +333,9 @@ void startProcess(QProcess *proc, const QString &command, const QStringList &arg
 int execProcess(const QString &command, const QStringList &arguments,
                 int startTimeout, int finishTimeout, QString *output, QTextCodec *codec)
 {
-    return execProcess("", command, arguments, startTimeout, finishTimeout, output, codec);
+    QFileInfo fi(command);
+    return execProcess(fi.isAbsolute() ? fi.path() : QString(), command, arguments, startTimeout, finishTimeout,
+                       output, codec);
 }
 
 int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,

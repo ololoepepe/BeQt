@@ -1109,85 +1109,85 @@
 <context>
     <name>BSearchDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="182"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="185"/>
         <source>Find and replace</source>
         <comment>windowTitle</comment>
         <translation>Найти и заменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="182"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="185"/>
         <source>Find</source>
         <comment>windowTitle</comment>
         <translation>Найти</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="190"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="193"/>
         <source>Find:</source>
         <comment>lbl text</comment>
         <translation>Найти:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="191"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="194"/>
         <source>Replace with:</source>
         <comment>lbl text</comment>
         <translation>Заменить на:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="192"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="195"/>
         <source>Options</source>
         <comment>gbox title</comment>
         <translation>Опции</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="193"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="196"/>
         <source>Case sensitive</source>
         <comment>cbox text</comment>
         <translation>Учитывать регистр</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="194"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="197"/>
         <source>Whole words only</source>
         <comment>cbox text</comment>
         <translation>Только слова целиком</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="195"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="198"/>
         <source>Reverse search</source>
         <comment>cbox text</comment>
         <translation>Обратный поиск</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="196"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="199"/>
         <source>Cyclic search</source>
         <comment>cbox text</comment>
         <translation>Циклический поиск</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="197"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="200"/>
         <source>Replace all</source>
         <comment>btn text</comment>
         <translation>Заменить все</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="198"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="201"/>
         <source>in selection</source>
         <comment>act text</comment>
         <translation>в выделении</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="199"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="202"/>
         <source>in document</source>
         <comment>act text</comment>
         <translation>в документе</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="200"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="203"/>
         <source>Replace</source>
         <comment>btn text</comment>
         <translation>Заменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="201"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="204"/>
         <source>Find</source>
         <comment>btn text</comment>
         <translation>Найти</translation>
@@ -1196,61 +1196,61 @@
 <context>
     <name>BSearchEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="539"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="542"/>
         <source>Text</source>
         <comment>msg text</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="539"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="542"/>
         <source>not found</source>
         <comment>msg text</comment>
         <translation>не найден</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="548"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="551"/>
         <source>Find and replace...</source>
         <comment>act text</comment>
         <translation>Найти и заменить...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="549"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="552"/>
         <source>Find and replace text</source>
         <comment>act toolTip</comment>
         <translation>Найти и заменить текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="550"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="553"/>
         <source>Use this action to open a find and replace dialog</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть диалог поиска и замены</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="554"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="557"/>
         <source>Find next</source>
         <comment>act text</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="555"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="558"/>
         <source>Find next</source>
         <comment>act toolTip</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="556"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="559"/>
         <source>Use this action to find next occurrence of the text</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы найти следующее вхождение текста</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="583"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="586"/>
         <source>Found and replaced</source>
         <comment>msg text</comment>
         <translation>Найдено и заменено</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="584"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="587"/>
         <source>entries</source>
         <comment>msg text</comment>
         <translation>вхождений</translation>
@@ -1687,53 +1687,53 @@
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="438"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="440"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="440"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="442"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="442"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="444"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="444"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="446"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="446"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="448"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="448"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="450"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="501"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="503"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="504"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="506"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="508"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="510"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>

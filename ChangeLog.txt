@@ -1,3 +1,8 @@
+=== BeQt 3.1.3 (07 February 2014) ===
+    * Retranslate encodings menu and combo box
+    * Fix BeQt::execProcess behavior
+    * Fix BSearchEditorModule
+
 === BeQt 3.1.2 (05 February 2014) ===
     * Fix BHelpBrowser search
     * Fix plugin deactivation
