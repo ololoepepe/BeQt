@@ -6,6 +6,7 @@
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BCoreApplication>
 
 #include <QComboBox>
 #include <QMenu>
@@ -52,6 +53,7 @@ void BTextCodecComboBoxPrivate::init()
             q_func()->addItem("", cn);
         retranslateUi();
     }
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 /*============================== Public slots ==============================*/

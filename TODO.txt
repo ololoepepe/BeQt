@@ -29,3 +29,4 @@
 * Add position to point conversion method to BAbstractCodeEditorDocument
 * Add pure position retrieving method to BAbstractCodeEditorDocument
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
+* Implement autocompletion

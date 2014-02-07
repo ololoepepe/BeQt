@@ -5,6 +5,7 @@
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BCoreApplication>
 
 #include <QMenu>
 #include <QString>
@@ -60,6 +61,7 @@ void BTextCodecMenuPrivate::init()
         }
     }
     retranslateUi();
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 /*============================== Public slots ==============================*/
