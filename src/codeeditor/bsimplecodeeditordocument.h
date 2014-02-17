@@ -17,6 +17,7 @@ class QString;
 #include <QObject>
 #include <QList>
 #include <QTextDocument>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocument ===================
@@ -68,6 +69,8 @@ protected:
     void redoImplementation();
     void installDropHandler(QObject *handler);
     void installInnerEventFilter(QObject *filter);
+    //TextProcessingFunction textPreprocessingFunction() const;
+    //QVariantMap preprocessingUserData();
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocument)
 };

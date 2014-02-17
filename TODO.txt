@@ -1,6 +1,7 @@
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
 * Improve MacOS support
+* Fix code editor document modification on setText
 
 === PATCH ===
 
@@ -10,6 +11,12 @@
 
 * Add BUuid class to fix Qt4 and Qt5 serialization issue
 * Add method to determine executable file target platform
+* Add methods for removing rows from QFormLayout
+* Add BeQt::startProcessDetached function
+* Add BCodeEdit::textChanged signal
+* Add a function for blocking waiting
+* Add ability to set multiple copyright owners
+* Add BAbstractCodeEditorDocument::clear method
 
 === MAJOR ===
 
@@ -30,3 +37,7 @@
 * Add pure position retrieving method to BAbstractCodeEditorDocument
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
 * Implement autocompletion
+* Improve document-wide and selection-wide replacing
+* Add methods to navigate through BAbstractCodeEditorDocument
+* Fix insertion of spaces and tabulations in code editor documents
+* Improve plugin loading system

@@ -872,7 +872,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     BCodeEdit::SplittedLinesRange range = deleteSelection();
     if (range.firstLineNumber >= 0)
         ranges << range;
-    if ( txt.isEmpty() )
+    if (txt.isEmpty())
         return tc.endEditBlock();
     tc = ptedt->textCursor();
     int initialPos = tc.position();

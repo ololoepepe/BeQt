@@ -626,7 +626,7 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::openDocument(QString fileName, 
     fileName = QDir::fromNativeSeparators(fileName);
     if ( fileName.isEmpty() || findDocument(fileName) )
         return 0;
-    if (QFileInfo(fileName).size() > maximumFileSize)
+    if (maximumFileSize && QFileInfo(fileName).size() > maximumFileSize)
     {
         failedToOpenMessage(fileName, tr("The file is too large", "msgbox informativeText"));
         return 0;
@@ -1518,7 +1518,7 @@ void BCodeEditor::setDefaultFileName(const QString &fileName)
 void BCodeEditor::setMaximumFileSize(int sz)
 {
     if (sz < 1)
-        return;
+        sz = 0;
     d_func()->maximumFileSize = sz;
 }
 

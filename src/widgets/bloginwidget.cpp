@@ -79,6 +79,27 @@ void BLoginWidgetPrivate::init()
     connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
+void BLoginWidgetPrivate::updateTabOrder()
+{
+    QList<QWidget *> list;
+    if (ledtAddress)
+        list << ledtAddress;
+    if (cmboxAddress)
+        list << cmboxAddress;
+    if (tbtnRemoveAddress)
+        list << tbtnRemoveAddress;
+    if (ledtPort)
+        list << ledtPort;
+    if (ledtLogin)
+        list << ledtLogin;
+    if (ledtPassword)
+        list << ledtPassword;
+    if (pwdwgt)
+        list << pwdwgt;
+    for (int i = 0; i < list.size() - 1; ++i)
+        QWidget::setTabOrder(list.at(i), list.at(i + 1));
+}
+
 /*============================== Public slots ==============================*/
 
 void BLoginWidgetPrivate::retranslateUi()
@@ -243,6 +264,7 @@ void BLoginWidget::setAddressType(AddressType t, bool required)
     {
         required = false;
     }
+    d_func()->updateTabOrder();
     setAddressRequired(required);
 }
 
@@ -266,6 +288,7 @@ void BLoginWidget::setPortEnabled(bool b, bool required)
         delete lbl;
         required = false;
     }
+    d_func()->updateTabOrder();
     setPortRequired(required);
 }
 
@@ -288,6 +311,7 @@ void BLoginWidget::setLoginEnabled(bool b, bool required)
         delete lbl;
         required = false;
     }
+    d_func()->updateTabOrder();
     setLoginRequired(required);
 }
 
@@ -326,6 +350,7 @@ void BLoginWidget::setPasswordType(PasswordType t, bool required)
     {
         required = false;
     }
+    d_func()->updateTabOrder();
     setPasswordRequired(required);
 }
 

@@ -564,7 +564,7 @@ void BCoreApplication::unregisterPluginWrapper(BPluginWrapper *plugin)
 
 void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return;
     B_DS(BCoreApplication);
     BPluginWrapper::setAcceptableTypes(acceptableTypes);
@@ -580,17 +580,17 @@ void BCoreApplication::loadPlugins(const QStringList &acceptableTypes, Interface
         QStringList files = dir.entryList(BCoreApplicationPrivate::PluginSuffixes, QDir::Files);
         foreach (QString file, files)
         {
-            BPluginWrapper *pw = new BPluginWrapper( dir.absoluteFilePath(file) );
-            if ( !pw->load() )
+            BPluginWrapper *pw = new BPluginWrapper(dir.absoluteFilePath(file));
+            if (!pw->load())
             {
                 pw->deleteLater();
                 continue;
             }
-            if ( ds->getDeactivatedPlugins().contains( pw->name() ) )
+            ds->plugins << pw;
+            if (ds->getDeactivatedPlugins().contains(pw->name()))
                 pw->unload();
             else
                 pw->activate();
-            ds->plugins << pw;
         }
     }
 }

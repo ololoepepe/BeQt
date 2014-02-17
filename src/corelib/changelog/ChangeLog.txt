@@ -1,3 +1,10 @@
+=== BeQt 3.1.4 (17 February 2014) ===
+    * Fix BLoginWidget focus order
+    * Fix BeQt::fileSizeToString: consider BeQt::GigabytesFormat
+    * Fix BCodeEditor maximum file size treating
+    * Fix text wrapping in BSimpleCodeEditorDocument
+    * Fix plugin loading
+
 === BeQt 3.1.3 (07 February 2014) ===
     * Retranslate encodings menu and combo box
     * Fix BeQt::execProcess behavior

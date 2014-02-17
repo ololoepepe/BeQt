@@ -52,6 +52,7 @@ bool BPluginWrapperPrivate::load()
     createLoader();
     if ( !loader->load() )
     {
+        qDebug() << loader->errorString();
         deleteLoader();
         return false;
     }

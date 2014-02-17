@@ -31,6 +31,7 @@ public:
     ~BLoginWidgetPrivate();
 public:
     void init();
+    void updateTabOrder();
 public:
     bool valid;
     BLoginWidget::AddressType addressType;
