@@ -181,7 +181,7 @@ defineReplace(getActualPrivateHeaders) {
     beqtInstallsDepend.files=depend.pri
     beqtInstallsDepend.path=$${BEQT_RESOURCES_INSTALLS_PATH}
     INSTALLS += beqtInstallsDepend
-}
+} #end !contains(BEQT_CONFIG, no_headers)
 
 ##############################################################################
 ################################ Translations ################################

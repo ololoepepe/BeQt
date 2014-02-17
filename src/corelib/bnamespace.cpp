@@ -171,6 +171,9 @@ QString fileSizeToStringInternal(qint64 sz, FileSizeFormat f, quint8 p)
     int d = 1;
     switch (f)
     {
+    case GigabytesFormat:
+        d = Gigabyte;
+        break;
     case MegabytesFormat:
         d = Megabyte;
         break;

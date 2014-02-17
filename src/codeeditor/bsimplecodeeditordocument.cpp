@@ -5,6 +5,7 @@
 #include <BeQtCore/BeQt>
 #include <BeQtWidgets/BClipboardNotifier>
 #include <BeQtWidgets/BLineNumberWidget>
+#include <BeQtCore/BTextTools>
 
 #include <QObject>
 #include <QString>
@@ -17,8 +18,19 @@
 #include <QChar>
 #include <QPoint>
 #include <QTextBlock>
+#include <QVariant>
+#include <QVariantMap>
 
 #include <QDebug>
+
+/*static BAbstractCodeEditorDocument::TextProcessingResult procFunc(const QString &text, const QVariantMap &m)
+{
+    BAbstractCodeEditorDocument::TextProcessingResult r;
+    r.text = text;
+    //r.text.remove();
+    BTextTools::replaceTabs(&r.text, static_cast<BeQt::TabWidth>(m.value("tab_width").toInt()));
+    return r;
+}*/
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocumentPrivate ============
@@ -53,6 +65,8 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     B_Q(BSimpleCodeEditorDocument);
     tabWidth = BeQt::TabWidth4;
     ptedt = new QPlainTextEdit;
+      ptedt->setLineWrapMode(QPlainTextEdit::NoWrap);
+      ptedt->setWordWrapMode(QTextOption::NoWrap);
       ptedt->installEventFilter(this);
     lnwgt = new BLineNumberWidget(ptedt);
     bool hasSel = ptedt->textCursor().hasSelection();
@@ -447,3 +461,15 @@ void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
 {
     d_func()->ptedt->installEventFilter(filter);
 }
+
+/*BAbstractCodeEditorDocument::TextProcessingFunction BSimpleCodeEditorDocument::textPreprocessingFunction() const
+{
+    return &procFunc;
+}
+
+QVariantMap BSimpleCodeEditorDocument::preprocessingUserData()
+{
+    QVariantMap m;
+    m.insert("tab_width", editTabWidth());
+    return m;
+}*/
