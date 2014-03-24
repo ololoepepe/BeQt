@@ -1721,7 +1721,18 @@ void BCodeEdit::setLineNumberWidgetVisible(bool b)
 
 void BCodeEdit::setExtraSelections(const ExtraSelectionList &list)
 {
-    d_func()->ptedt->setExtraSelections(list);
+    ExtraSelectionList nlist = list;
+    QTextCursor tc = d_func()->ptedt->textCursor();
+    for (int i = 0; i < nlist.size(); ++i)
+    {
+        QTextCursor &ntc = nlist[i].cursor;
+        int start = ntc.selectionStart();
+        int end = ntc.selectionEnd();
+        ntc = tc;
+        ntc.setPosition(start);
+        ntc.setPosition(end, QTextCursor::KeepAnchor);
+    }
+    d_func()->ptedt->setExtraSelections(nlist);
 }
 
 void BCodeEdit::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
