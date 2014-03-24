@@ -50,7 +50,7 @@ QStringList supportedEastEuropeanCodecNames()
 {
     init_once(QStringList, list, QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257" << "ISO 8859-5")
     {
-        list << "KOI8-R" << "Windows-1251" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2" << "Windows-1250";
+        list << "KOI8-R" << "Windows-1251" << "IBM 866" << "KOI8-U" << "ISO 8859-16" << "ISO 8859-2" << "Windows-1250";
         removeUnsupportedCodecNames(list);
     }
     return list;
@@ -107,9 +107,10 @@ QString codecDescriptiveName(const QString &codecName)
     }
     else if (supportedEastEuropeanCodecNames().contains(codecName))
     {
-        if ((QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257").contains(codecName,Qt::CaseInsensitive))
+        if ((QStringList() << "ISO 8859-13" << "ISO 8859-4" << "Windows-1257").contains(codecName, Qt::CaseInsensitive))
             return translate("BeQt", "Baltic", "codec descriptiveName");
-        else if ((QStringList() << "ISO 8859-5" << "KOI8-R" << "Windows-1251").contains(codecName,Qt::CaseInsensitive))
+        else if ((QStringList() << "ISO 8859-5" << "KOI8-R"
+                  << "Windows-1251" << "IBM 866").contains(codecName, Qt::CaseInsensitive))
             return translate("BeQt", "Cyrillic", "codec descriptiveName");
         else if (!codecName.compare("KOI8-U", Qt::CaseInsensitive))
             return translate("BeQt", "Cyrillic (Ukrainian)", "codec descriptiveName");

@@ -17,6 +17,7 @@
 * Add a function for blocking waiting
 * Add ability to set multiple copyright owners
 * Add BAbstractCodeEditorDocument::clear method
+* Add method for getting terminal window size
 
 === MAJOR ===
 
@@ -41,3 +42,7 @@
 * Add methods to navigate through BAbstractCodeEditorDocument
 * Fix insertion of spaces and tabulations in code editor documents
 * Improve plugin loading system
+* Add BGuiPluginWrapper class
+* Add ability to add extra locations and to restrict locations
+* Improve BLineNumberWidget: add virtual functions
+* Add ncurses binding
