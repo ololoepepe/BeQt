@@ -82,12 +82,15 @@ SOURCES += \
 } else {
     DEFINES += BUILDING_LIBHUNSPELL
 
-    HEADERS += $$files($${PWD}/hunspell/*.hxx)
-    HEADERS += \
-    hunspell/config.h \
-    hunspell/hunvisapi.h
+    INCLUDEPATH *= $${PWD}/../3rdparty/hunspell
+    DEPENDPATH *= $${PWD}/../3rdparty/hunspell
 
-    SOURCES += $$files($${PWD}/hunspell/*.cxx)
+    HEADERS += $$files($${PWD}/../3rdparty/hunspell/*.hxx)
+    HEADERS += \
+    ../3rdparty/hunspell/config.h \
+    ../3rdparty/hunspell/hunvisapi.h
+
+    SOURCES += $$files($${PWD}/../3rdparty/hunspell/*.cxx)
 }
 
 ##############################################################################
@@ -107,26 +110,26 @@ SOURCES += \
 } else {
     DEFINES += BUILDING_LIBENCA
 
-    INCLUDEPATH *= $${PWD}/enca
-    DEPENDPATH *= $${PWD}/enca
+    INCLUDEPATH *= $${PWD}/../3rdparty/enca
+    DEPENDPATH *= $${PWD}/../3rdparty/enca
 
-    HEADERS += $$files($${PWD}/enca/lib/*.h)
-    HEADERS += $$files($${PWD}/enca/data/bulgarian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/chinese/*.h)
-    HEADERS += $$files($${PWD}/enca/data/croatian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/czech/*.h)
-    HEADERS += $$files($${PWD}/enca/data/estonian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/hungarian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/latvian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/lithuanian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/polish/*.h)
-    HEADERS += $$files($${PWD}/enca/data/russian/*.h)
-    HEADERS += $$files($${PWD}/enca/data/slovak/*.h)
-    HEADERS += $$files($${PWD}/enca/data/slovene/*.h)
-    HEADERS += $$files($${PWD}/enca/data/ukrainian/*.h)
-    HEADERS += $$files($${PWD}/enca/tools/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/lib/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/bulgarian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/chinese/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/croatian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/czech/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/estonian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/hungarian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/latvian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/lithuanian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/polish/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/russian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/slovak/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/slovene/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/data/ukrainian/*.h)
+    HEADERS += $$files($${PWD}/../3rdparty/enca/tools/*.h)
 
-    SOURCES += $$files($${PWD}/enca/lib/*.c)
+    SOURCES += $$files($${PWD}/../3rdparty/enca/lib/*.c)
 }
 
 contains(BEQT_CONFIG, builtin_resources) {
