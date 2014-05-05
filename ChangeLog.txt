@@ -1,3 +1,10 @@
+=== BeQt 3.1.6 (5 May 2014) ===
+    * Add GPL headers to files
+    * Move 3rdparty libraries files to src/3rdparty subdir
+    * Fix BCodeEdit scrolling on selectText and moveCursor calls
+    * Fix Enter key event handling in BCodeEdit
+    * Mark BCodeEdit as modified when splitting lines
+
 === BeQt 3.1.5 (24 March 2014) ===
     * Fix extra selection setting in BCodeEdit
     * Add IBM 866 codec support

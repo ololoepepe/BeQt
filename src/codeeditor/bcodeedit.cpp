@@ -1,3 +1,24 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the BeQtCodeEditor module of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
 class QTextCharFormat;
 class QColor;
 class QFont;
@@ -558,6 +579,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         switch (key)
         {
         case Qt::Key_Return:
+        case Qt::Key_Enter:
             handleReturn();
             return true;
         case Qt::Key_Space:
@@ -619,6 +641,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             return !q_func()->isModified(); //Workaround to prevent entering 'S' when 'Save' action is disabled
             //Very "dirty" workaround. Maybe a Qt bug?
         case Qt::Key_Return:
+        case Qt::Key_Enter:
             handleReturn();
             return true;
         default:
@@ -641,6 +664,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             handleShiftEnd();
             return true;
         case Qt::Key_Return:
+        case Qt::Key_Enter:
             handleReturn();
             return true;
         default:
@@ -657,6 +681,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             move(key);
             return true;
         case Qt::Key_Return:
+        case Qt::Key_Enter:
             handleReturn();
             return true;
         default:
@@ -670,6 +695,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             q_func()->redo();
             return true;
         case Qt::Key_Return:
+        case Qt::Key_Enter:
             handleReturn();
             return true;
         default:
@@ -682,6 +708,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
     case KeypadControlAltModifier:
         switch (key)
         {
+        case Qt::Key_Return:
         case Qt::Key_Enter:
             handleReturn();
             return true;
@@ -692,6 +719,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
     case Qt::KeypadModifier:
         switch (key)
         {
+        case Qt::Key_Return:
         case Qt::Key_Enter:
             handleReturn();
             return true;
@@ -708,6 +736,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_End:
             handleEnd(true);
             return true;
+        case Qt::Key_Return:
         case Qt::Key_Enter:
             handleReturn();
             return true;
@@ -1013,6 +1042,8 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
 
 void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges)
 {
+    if (ranges.size())
+        QMetaObject::invokeMethod(ptedt->document(), "setModified", Qt::QueuedConnection, Q_ARG(bool, true));
     if (ranges.size() > 1)
         QMetaObject::invokeMethod( q_func(), "linesSplitted",
                                    Q_ARG(QList<BCodeEdit::SplittedLinesRange>, ranges) );
@@ -1702,7 +1733,7 @@ void BCodeEdit::setEditLineLength(int ll)
     QString text = d->ptedt->toPlainText();
     bool pm = d->ptedt->document()->isModified();
     d->setText(text, -1);
-    d->ptedt->document()->setModified(pm);
+    d->ptedt->document()->setModified(pm || d->ptedt->document()->isModified());
     setFocus();
 }
 
@@ -2075,6 +2106,7 @@ void BCodeEdit::moveCursor(const QPoint &pos)
     QTextCursor tc = d->ptedt->textCursor();
     tc.setPosition( tb.position() + (pos.x() > 0 ? pos.x() : 0) );
     d->ptedt->setTextCursor(tc);
+    d->ptedt->centerCursor();
     setFocus();
 }
 
@@ -2091,6 +2123,7 @@ void BCodeEdit::selectText(const QPoint &start, const QPoint &end)
     tc.setPosition(tbs.position() + (start.x() > 0 ? start.x() : 0) );
     tc.setPosition(tbe.position() + (end.x() > 0 ? end.x() : 0), QTextCursor::KeepAnchor);
     d->ptedt->setTextCursor(tc);
+    d->ptedt->centerCursor();
     setFocus();
 }
 
@@ -2102,6 +2135,8 @@ void BCodeEdit::selectText(int start, int end)
     tc.setPosition(start);
     tc.setPosition(end, QTextCursor::KeepAnchor);
     d_func()->ptedt->setTextCursor(tc);
+    d_func()->ptedt->centerCursor();
+    setFocus();
 }
 
 void BCodeEdit::selectLines(int firstLine, int lastLine)
@@ -2131,6 +2166,7 @@ void BCodeEdit::deselectText()
         return;
     tc.setPosition( tc.selectionEnd() );
     d->ptedt->setTextCursor(tc);
+    d->ptedt->centerCursor();
     setFocus();
 }
 
