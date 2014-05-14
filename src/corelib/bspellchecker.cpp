@@ -33,7 +33,6 @@
 #include <QLocale>
 #include <QMap>
 #include <QFileInfo>
-#include <QSet>
 #include <QFile>
 #include <QTextStream>
 #include <QtConcurrentRun>
@@ -75,7 +74,7 @@ BSpellCheckerPrivate::~BSpellCheckerPrivate()
 {
     if (userDictPath.isEmpty())
         return;
-    QStringList words = ignored.toList();
+    QStringList words = ignored.keys();
     words.removeAll("");
     flush(userDictPath, words);
 }
@@ -94,7 +93,7 @@ void BSpellCheckerPrivate::flush()
 {
     if (userDictPath.isEmpty())
         return;
-    QStringList words = ignored.toList();
+    QStringList words = ignored.keys();
     words.removeAll("");
     QtConcurrent::run(&BSpellCheckerPrivate::flush, userDictPath, words);
     QTimer::singleShot(BeQt::Minute, this, SLOT(flush()));
@@ -262,7 +261,7 @@ void BSpellChecker::ignoreWords(const QStringList &words, bool ignore)
     foreach (const QString &w, words)
     {
         if (ignore)
-            d_func()->ignored.insert(w);
+            d_func()->ignored.insert(w, true);
         else
             d_func()->ignored.remove(w);
     }
@@ -280,7 +279,7 @@ void BSpellChecker::ignoreWordsImplicitly(const QStringList &words, bool ignore)
     foreach (const QString &w, words)
     {
         if (ignore)
-            d_func()->ignoredImplicitly.insert(w);
+            d_func()->ignoredImplicitly.insert(w, true);
         else
             d_func()->ignoredImplicitly.remove(w);
     }

@@ -34,7 +34,14 @@ class LIBHUNSPELL_DLL_EXPORTED HashMgr
 
 
 public:
-  HashMgr(const char * tpath, const char * apath, const char * key = NULL);
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+  HashMgr(const char * tpath, const char * apath, const char * key = NULL, bool tpathIsData = false,
+          bool apathIsData = false);
+private:
+  bool mtpathIsData;
+  bool mapathIsData;
+public:
+//BeQt patch end ------------------------------------------------------------------------------------------------------
   ~HashMgr();
 
   struct hentry * lookup(const char *) const;

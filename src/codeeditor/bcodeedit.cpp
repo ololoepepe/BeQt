@@ -1110,7 +1110,7 @@ void BCodeEditPrivate::handleSpace()
     }
     else
     {
-        q_func()->insertText(" ");
+        insertText(" ", true);
     }
     tc.endEditBlock();
 }
@@ -1143,7 +1143,7 @@ void BCodeEditPrivate::handleTab()
     }
     else
     {
-        q_func()->insertText( QString().fill(' ', spcount) );
+        insertText(QString().fill(' ', spcount), true);
     }
     tc.endEditBlock();
 }

@@ -22,6 +22,8 @@
 * Add method for getting terminal window size
 * Add QMap-based set class
 * Add recursive BDirTools::entryList function version
+* Add function for unzipping Hunspell dictionaries
+* Add alternative constructor for BSpellCheckerDictionary (raw data)
 
 === MAJOR ===
 
@@ -52,3 +54,4 @@
 * Add PDCurses binding
 * Add ability to set compression for every operation independently
 * Add public function for handling events to BAbstractCodeEditorDocument
+* Add version information to plugins

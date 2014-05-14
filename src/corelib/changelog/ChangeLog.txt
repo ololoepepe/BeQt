@@ -1,3 +1,8 @@
+=== BeQt 3.1.7 (14 May 2014) ===
+    * Patch Hunspell to work with raw binary data
+    * Fix typing in BCodeEdit in block mode
+    * Replace QSet with QMap for ignored words storage in BSpellChecker
+
 === BeQt 3.1.6 (5 May 2014) ===
     * Add GPL headers to files
     * Move 3rdparty libraries files to src/3rdparty subdir
