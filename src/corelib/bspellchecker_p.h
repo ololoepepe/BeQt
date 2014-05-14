@@ -31,7 +31,6 @@ class BSpellCheckerDictionary;
 #include <QObject>
 #include <QString>
 #include <QMap>
-#include <QSet>
 #include <QVariant>
 #include <QtGlobal>
 #include <QRegExp>
@@ -61,8 +60,8 @@ public Q_SLOTS:
 public:
     QMap<QString, BSpellCheckerDictionary *> dicts;
     QString userDictPath;
-    QSet<QString> ignored;
-    QSet<QString> ignoredImplicitly;
+    QMap<QString, bool> ignored;
+    QMap<QString, bool> ignoredImplicitly;
     QList<QRegExp> ignoredRx4;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QList<QRegularExpression> ignoredRx5;

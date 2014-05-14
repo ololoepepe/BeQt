@@ -109,8 +109,12 @@ class LIBHUNSPELL_DLL_EXPORTED AffixMgr
 
 public:
 
-  AffixMgr(const char * affpath, HashMgr** ptr, int * md,
-    const char * key = NULL);
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+  AffixMgr(const char * affpath, HashMgr** ptr, int * md, const char * key = NULL, bool apathIsData = false);
+private:
+  bool mapathIsData;
+public:
+//BeQt patch end ------------------------------------------------------------------------------------------------------
   ~AffixMgr();
   struct hentry *     affix_check(const char * word, int len,
             const unsigned short needflag = (unsigned short) 0,

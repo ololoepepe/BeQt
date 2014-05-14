@@ -7,6 +7,11 @@
 #include "hunzip.hxx"
 #include <stdio.h>
 
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+#include <QByteArray>
+#include <QBuffer>
+//BeQt patch end ------------------------------------------------------------------------------------------------------
+
 class LIBHUNSPELL_DLL_EXPORTED FileMgr
 {
 protected:
@@ -17,7 +22,14 @@ protected:
     int linenum;
 
 public:
-    FileMgr(const char * filename, const char * key = NULL);
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+    FileMgr(const char * filename, const char * key = NULL, bool fnIsData = false);
+private:
+    bool mfnIsData;
+    QByteArray mdata;
+    QBuffer mbuffer;
+public:
+//BeQt patch end ------------------------------------------------------------------------------------------------------
     ~FileMgr();
     char * getline();
     int getlinenum();

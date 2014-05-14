@@ -94,22 +94,19 @@ void BSpellCheckerDictionaryPrivate::init()
     codec = 0;
     if (Path.isEmpty() || QFileInfo(Path).fileName() != Locale.name())
         return;
-    QString npath;
+    QString aff = Path + "/" + Locale.name() + ".aff";
+    QString dic = Path + "/" + Locale.name() + ".dic";
     if (Path.startsWith(":/"))
     {
-        npath = QDir::tempPath() + "/beqt/spellcheckerdictionary/" + BeQt::pureUuidText(QUuid::createUuid()) + "/"
-                + QFileInfo(Path).fileName();
-        if (!BDirTools::copyDir(Path, npath))
-        {
-            BDirTools::rmdir(QFileInfo(npath).path());
-            return;
-        }
+        QByteArray affdata = BDirTools::readFile(aff);
+        QByteArray dicdata = BDirTools::readFile(dic);
+        hunspell = new Hunspell(affdata.constData(), dicdata.constData(), 0, true, true);
+        //Warning: hzipped files can not be loaded here. Unzip them first
     }
-    QString aff = (!npath.isEmpty() ? npath : Path) + "/" + Locale.name() + ".aff";
-    QString dic = (!npath.isEmpty() ? npath : Path) + "/" + Locale.name() + ".dic";
-    if (!QFileInfo(aff).isFile() || !QFileInfo(dic).isFile())
-        return bRet(BDirTools::rmdir(QFileInfo(npath).path()));
-    hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
+    else
+    {
+        hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
+    }
     codec = QTextCodec::codecForName(hunspell->get_dic_encoding());
     if (!codec || !testValidity())
     {
@@ -117,8 +114,6 @@ void BSpellCheckerDictionaryPrivate::init()
         hunspell = 0;
         codec = 0;
     }
-    if (!npath.isEmpty())
-        BDirTools::rmdir(QFileInfo(npath).path());
 }
 
 bool BSpellCheckerDictionaryPrivate::testValidity()

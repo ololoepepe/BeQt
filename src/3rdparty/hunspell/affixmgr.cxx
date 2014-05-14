@@ -14,8 +14,13 @@
 
 #include "csutil.hxx"
 
-AffixMgr::AffixMgr(const char * affpath, HashMgr** ptr, int * md, const char * key)
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+AffixMgr::AffixMgr(const char *affpath, HashMgr **ptr, int *md, const char *key, bool apathIsData)
+//BeQt patch end ------------------------------------------------------------------------------------------------------
 {
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+  mapathIsData = apathIsData;
+//BeQt patch end ------------------------------------------------------------------------------------------------------
   // register hash manager and load affix data from aff file
   pHMgr = ptr[0];
   alldic = ptr;
@@ -268,7 +273,9 @@ int  AffixMgr::parse_file(const char * affpath, const char * key)
   int firstline = 1;
 
   // open the affix file
-  FileMgr * afflst = new FileMgr(affpath, key);
+//BeQt patch ----------------------------------------------------------------------------------------------------------
+  FileMgr * afflst = new FileMgr(affpath, key, mapathIsData);
+//BeQt patch end ------------------------------------------------------------------------------------------------------
   if (!afflst) {
     HUNSPELL_WARNING(stderr, "error: could not open affix description file %s\n",affpath);
     return 1;
