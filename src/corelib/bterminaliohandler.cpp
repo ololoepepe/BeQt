@@ -48,6 +48,7 @@
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
 #include "termios.h"
+#include "unistd.h"
 #elif defined(Q_OS_WIN)
 #include "windows.h"
 #endif

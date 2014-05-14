@@ -241,6 +241,20 @@ template<typename T, typename U, typename V> T bRet(T *t, const T &tt, U *u, con
     return tt;
 }
 
+template<typename T, typename U, typename V, typename W> T bRet(T *t, const T &tt, U *u, const U &uu, V *v,
+                                                                const V &vv, W *w, const W &ww)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+    if (w)
+        *w = ww;
+    return tt;
+}
+
 template<typename T, typename U> U bRet(T *t, const T &tt, const U &uu)
 {
     if (t)
@@ -269,6 +283,21 @@ template<typename T, typename U, typename V, typename W> W bRet(T *t, const T &t
     return ww;
 }
 
+template<typename T, typename U, typename V, typename W, typename X> X bRet(T *t, const T &tt, U *u, const U &uu,
+                                                                            V *v, const V &vv, W *w, const W &ww,
+                                                                            const X &xx)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+    if (w)
+        *w = ww;
+    return xx;
+}
+
 template<typename T> void bSet(T *t, const T &tt)
 {
     if (t)
@@ -291,6 +320,19 @@ template<typename T, typename U, typename V> void bSet(T *t, const T &tt, U *u, 
         *u = uu;
     if (v)
         *v = vv;
+}
+
+template<typename T, typename U, typename V, typename W> void bSet(T *t, const T &tt, U *u, const U &uu,
+                                                                   V *v, const V &vv, W *w, const W &ww)
+{
+    if (t)
+        *t = tt;
+    if (u)
+        *u = uu;
+    if (v)
+        *v = vv;
+    if (w)
+        *w = ww;
 }
 
 #endif // BGLOBAL_H
