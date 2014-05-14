@@ -1,7 +1,7 @@
-VERSION = 3.1.6
+VERSION = 3.1.7
 VER_MAJ = 3
 VER_MIN = 1
-VER_PAT = 6
+VER_PAT = 7
 
 #Gets module short name, for example "core", "widgets", etc.
 #Returns corresponding full module name, for example "BeQtCore", "BeQtWidgets", etc.
