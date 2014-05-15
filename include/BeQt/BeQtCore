@@ -24,6 +24,7 @@
 #include "btranslatefunctor.h"
 #include "btranslation.h"
 #include "btranslator.h"
+#include "buuid.h"
 #include "bversion.h"
 
 #endif //BEQT_BEQTCORE_MODULE_H

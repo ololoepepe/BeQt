@@ -11,6 +11,7 @@
 #include "bfiledialog.h"
 #include "bflowlayout.h"
 #include "bguiplugininterface.h"
+#include "bguitools.h"
 #include "bhelpbrowser.h"
 #include "bimagewidget.h"
 #include "binputfield.h"

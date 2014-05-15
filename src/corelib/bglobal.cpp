@@ -23,6 +23,7 @@
 #include "bpassword.h"
 #include "btranslation.h"
 #include "bversion.h"
+#include "buuid.h"
 
 #include <QString>
 #include <QList>
@@ -39,7 +40,7 @@ bool bTest(bool condition, const char *where, const char *what)
 
 const char *bVersion()
 {
-    return "3.2.0";
+    return "3.2.1";
 }
 
 void bRegister()
@@ -53,6 +54,8 @@ void bRegister()
     qRegisterMetaTypeStreamOperators<BTranslation>();
     qRegisterMetaType<BTr>("BTr");
     qRegisterMetaTypeStreamOperators<BTr>("BTr");
+    qRegisterMetaType<BUuid>();
+    qRegisterMetaTypeStreamOperators<BUuid>();
     qRegisterMetaType<BVersion>();
     qRegisterMetaTypeStreamOperators<BVersion>();
     registered = true;
