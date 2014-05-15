@@ -1,3 +1,7 @@
+=== BeQt 3.2.1 (15 May 2014) ===
+    * Add header for BUuid and BGuiTools
+    * Register BUuid in meta-object system
+
 === BeQt 3.2.0 (15 May 2014) ===
     * Include unistd.h in BTerminalIOHandler on UNIX-like systems
     * Add bRet and bSet templates for 4 argument-value pairs

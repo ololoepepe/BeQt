@@ -13,6 +13,7 @@ class QString;
 
 #include <QtGlobal>
 #include <QUuid>
+#include <QMetaType>
 
 #if defined(Q_OS_WIN)
 #ifndef GUID_DEFINED
@@ -86,5 +87,7 @@ public:
     B_CORE_EXPORT friend uint qHash(const BUuid &uuid, uint seed = 0);
     B_CORE_EXPORT friend QDebug operator<< (QDebug dbg, const BUuid &id);
 };
+
+Q_DECLARE_METATYPE(BUuid)
 
 #endif // BUUID_H
