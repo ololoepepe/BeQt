@@ -45,6 +45,7 @@
 #include <QCoreApplication>
 #include <QRegExp>
 #include <QMap>
+#include <QThread>
 
 #include <QDebug>
 
@@ -52,6 +53,33 @@ namespace BeQt
 {
 
 //Internal
+
+class ThreadHack : public QThread
+{
+public:
+    static void msleepHack(unsigned long msecs);
+    static void sleepHack(unsigned long secs);
+    static void usleepHack(unsigned long usecs);
+private:
+    explicit ThreadHack();
+private:
+    Q_DISABLE_COPY(ThreadHack)
+};
+
+void ThreadHack::msleepHack(unsigned long msecs)
+{
+    msleep(msecs);
+}
+
+void ThreadHack::sleepHack(unsigned long secs)
+{
+    sleep(secs);
+}
+
+void ThreadHack::usleepHack(unsigned long usecs)
+{
+    usleep(usecs);
+}
 
 void removeUnsupportedCodecNames(QStringList &list)
 {
@@ -249,6 +277,21 @@ QVariant dataToVariant(const QByteArray &data)
     return v;
 }
 
+void msleep(unsigned long msecs)
+{
+    ThreadHack::msleepHack(msecs);
+}
+
+void sleep(unsigned long secs)
+{
+    ThreadHack::sleepHack(secs);
+}
+
+void usleep(unsigned long usecs)
+{
+    ThreadHack::usleepHack(usecs);
+}
+
 void waitNonBlocking(int msecs)
 {
     waitNonBlocking(QList<Until>(), msecs);
@@ -352,6 +395,15 @@ void startProcess(QProcess *proc, const QString &command, const QStringList &arg
 #else
     proc->start(command, arguments);
 #endif
+    //End of the workaround
+}
+
+bool startProcessDetached(const QString &command, const QStringList &arguments)
+{
+    if (command.isEmpty())
+        return false;
+    //Workaround to handle long arguments on Windows
+    return QProcess::startDetached(command + " " + BTerminalIOHandler::mergeArguments(arguments));
     //End of the workaround
 }
 

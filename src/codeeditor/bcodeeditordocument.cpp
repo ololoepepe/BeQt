@@ -78,6 +78,7 @@ QWidget *BCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     q->setCursorPosition(cedt->cursorPosition());
     q->setBuisy(cedt->isBuisy());
     connect(cedt, SIGNAL(selectionChanged()), q, SLOT(emitSelectionChanged()));
+    connect(cedt, SIGNAL(textChanged()), q, SLOT(emitTextChanged()));
     connect(cedt, SIGNAL(readOnlyChanged(bool)), q, SLOT(setReadOnlyInternal(bool)));
     connect(cedt, SIGNAL(modificationChanged(bool)), q, SLOT(setModificationInternal(bool)));
     connect(cedt, SIGNAL(hasSelectionChanged(bool)), q, SLOT(setHasSelection(bool)));

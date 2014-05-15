@@ -1227,6 +1227,11 @@ void BAbstractCodeEditorDocument::emitSelectionChanged()
     Q_EMIT selectionChanged();
 }
 
+void BAbstractCodeEditorDocument::emitTextChanged()
+{
+    Q_EMIT textChanged();
+}
+
 void BAbstractCodeEditorDocument::setReadOnlyInternal(bool ro)
 {
     if (ro == d_func()->readOnly)

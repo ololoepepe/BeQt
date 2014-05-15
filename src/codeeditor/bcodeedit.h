@@ -129,6 +129,7 @@ protected:
     BPlainTextEdit *innerEdit() const;
     QTextDocument *innerDocument() const;
 Q_SIGNALS:
+    void textChanged();
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);
     void selectionChanged();
