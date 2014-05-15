@@ -83,10 +83,8 @@ public:
 public:
     B_CORE_EXPORT friend QDataStream &operator<< (QDataStream &s, const BUuid &id);
     B_CORE_EXPORT friend QDataStream &operator>> (QDataStream &s, BUuid &id);
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     B_CORE_EXPORT friend uint qHash(const BUuid &uuid, uint seed = 0);
     B_CORE_EXPORT friend QDebug operator<< (QDebug dbg, const BUuid &id);
-#endif
 };
 
 #endif // BUUID_H

@@ -62,6 +62,8 @@ public:
     ~BSpellChecker();
 public:
     void addDictionary(const QString &path);
+    void addDictionary(const QByteArray &affixData, const QByteArray &dictionaryData, const QString &locale);
+    void addDictionary(const QByteArray &affixData, const QByteArray &dictionaryData, const QLocale &locale);
     void removeDictionary(const QLocale &locale);
     void removeDictionary(const QString &localeName);
     void setUserDictionary(const QString &path);

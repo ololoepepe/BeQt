@@ -239,6 +239,23 @@ QStringList entryList(const QString &dirName, QDir::Filters filters, QDir::SortF
     return entryList(dirName, QStringList(), filters, sort);
 }
 
+QStringList entryListRecursive(const QString &dirName, const QStringList &nameFilters, QDir::Filters filters,
+                               QDir::SortFlags sort)
+{
+    QStringList sl;
+    QDir d(dirName);
+    foreach (const QString &fn, d.entryList(nameFilters, filters, sort))
+        sl << d.absoluteFilePath(fn);
+    foreach (const QString &dn, d.entryList(nameFilters, QDir::Dirs | QDir::NoDotAndDotDot, sort))
+        sl << entryListRecursive(dirName + "/" + dn, nameFilters, filters, sort);
+    return sl;
+}
+
+QStringList entryListRecursive(const QString &dirName, QDir::Filters filters, QDir::SortFlags sort)
+{
+    return entryListRecursive(dirName, QStringList(), filters, sort);
+}
+
 QString localeBasedFileName(const QString &fileName, const QLocale &loc)
 {
     if ( fileName.isEmpty() )

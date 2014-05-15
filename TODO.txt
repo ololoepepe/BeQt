@@ -4,6 +4,7 @@
 * Fix code editor document modification on setText
 * Implement multi-cursor in code editor
 * Implement code folding in code editor
+* Add function for unzipping Hunspell dictionaries
 
 === PATCH ===
 
@@ -22,10 +23,9 @@
 [done] Add textChanged signal to BCodeEdit and BAbstractCodeEditorDocument
 [done] Add sleep, usleep and msleep functions for blocking waiting
 [done] Add method for getting terminal window size
-* Add QMap-based set class
-* Add recursive version of BDirTools::entryList function
-* Add function for unzipping Hunspell dictionaries
-* Add alternative constructor for BSpellCheckerDictionary (raw data)
+[done] Add recursive version of BDirTools::entryList function
+[done] Add alternative constructors for BSpellChecker and BSpellCheckerDictionary (raw data)
+[done] Add BSpellCheckerDictionary::localeName method
 
 === MAJOR ===
 

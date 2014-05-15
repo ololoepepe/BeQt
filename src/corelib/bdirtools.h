@@ -70,6 +70,11 @@ B_CORE_EXPORT QStringList entryList(const QString &dirName, const QStringList &n
                                     QDir::Filters filters = QDir::NoFilter, QDir::SortFlags sort = QDir::NoSort);
 B_CORE_EXPORT QStringList entryList(const QString &dirName, QDir::Filters filters = QDir::NoFilter,
                                     QDir::SortFlags sort = QDir::NoSort);
+B_CORE_EXPORT QStringList entryListRecursive(const QString &dirName, const QStringList &nameFilters,
+                                             QDir::Filters filters = QDir::NoFilter,
+                                             QDir::SortFlags sort = QDir::NoSort);
+B_CORE_EXPORT QStringList entryListRecursive(const QString &dirName, QDir::Filters filters = QDir::NoFilter,
+                                             QDir::SortFlags sort = QDir::NoSort);
 B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QLocale &loc = BCoreApplication::locale() );
 B_CORE_EXPORT QString localeBasedDirName( const QString &path, const QString &subpath = QString(),
                                           const QLocale &loc = BCoreApplication::locale() );

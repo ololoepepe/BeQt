@@ -266,15 +266,16 @@ QDataStream &operator>> (QDataStream &s, BUuid &id)
     return s;
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 uint qHash(const BUuid &uuid, uint seed)
 {
-    return qHash(uuid.d_func()->muuid, seed);
+    const QUuid &u = uuid.d_func()->muuid;
+    return u.data1 ^ u.data2 ^ (u.data3 << 16)
+            ^ ((u.data4[0] << 24) | (u.data4[1] << 16) | (u.data4[2] << 8) | u.data4[3])
+            ^ ((u.data4[4] << 24) | (u.data4[5] << 16) | (u.data4[6] << 8) | u.data4[7]) ^ seed;
 }
 
 QDebug operator<< (QDebug dbg, const BUuid &id)
 {
-    dbg << id.d_func()->muuid;
-    return dbg;
+    dbg.nospace() << "BUuid(" << id.toString() << ')';
+    return dbg.space();
 }
-#endif
