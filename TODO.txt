@@ -12,8 +12,9 @@
 
 === MINOR ===
 
-* Add BUuid class to fix Qt4 and Qt5 serialization issue
+[done] Add BUuid class to fix Qt4 and Qt5 serialization issue
 * Add method to determine executable file target platform
+* Add BGuiTools namespace
 * Add methods for removing rows from QFormLayout
 * Add BeQt::startProcessDetached function
 * Add BCodeEdit::textChanged signal

@@ -45,7 +45,8 @@ HEADERS += \
     btranslator_p.h \
     bversion.h \
     btextmatch.h \
-    btextmatchlist.h
+    btextmatchlist.h \
+    buuid.h
 
 SOURCES += \
     bbase.cpp \
@@ -69,7 +70,8 @@ SOURCES += \
     btranslator.cpp \
     bversion.cpp \
     btextmatch.cpp \
-    btextmatchlist.cpp
+    btextmatchlist.cpp \
+    buuid.cpp
 
 ##############################################################################
 ################################ Hunspell ####################################
