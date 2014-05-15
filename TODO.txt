@@ -8,24 +8,11 @@
 
 === PATCH ===
 
-[done] Include unistd.h in BTerminalIOHandler on UNIX-like systems
-[done] Add bRet and bSet templates for 4 argument-value pairs
-[done] Implement BApplication::formLayout static methods
+
 
 === MINOR ===
 
-[done] Add BUuid class to fix Qt4 and Qt5 serialization issue
-[done] Add BeQt::OSType::UnixOS enum member
-[done] Add method to determine executable file target platform
-[done] Add BGuiTools namespace
-[done] Add methods for removing rows from QFormLayout
-[done] Add BeQt::startProcessDetached function
-[done] Add textChanged signal to BCodeEdit and BAbstractCodeEditorDocument
-[done] Add sleep, usleep and msleep functions for blocking waiting
-[done] Add method for getting terminal window size
-[done] Add recursive version of BDirTools::entryList function
-[done] Add alternative constructors for BSpellChecker and BSpellCheckerDictionary (raw data)
-[done] Add BSpellCheckerDictionary::localeName method
+
 
 === MAJOR ===
 

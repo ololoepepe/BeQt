@@ -1,7 +1,7 @@
 TEMPLATE = app
 TARGET = console-app
 
-CONFIG += release
+CONFIG += release console
 
 QT = core
 

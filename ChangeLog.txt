@@ -1,3 +1,20 @@
+=== BeQt 3.2.0 (15 May 2014) ===
+    * Include unistd.h in BTerminalIOHandler on UNIX-like systems
+    * Add bRet and bSet templates for 4 argument-value pairs
+    * Implement BApplication::formLayout static methods
+    * Add BUuid class to fix Qt4 and Qt5 serialization issue
+    * Add BeQt::OSType::UnixOS enum member
+    * Add method to determine executable file target platform: BDirTools::executablePlatform
+    * Add BGuiTools namespace
+    * Add methods for removing rows from QFormLayout: BGuiTools::removeRow
+    * Add BeQt::startProcessDetached function
+    * Add textChanged signal to BCodeEdit and BAbstractCodeEditorDocument
+    * Add sleep, usleep and msleep functions for blocking waiting to BeQt namespace
+    * Add method for getting terminal window size to BTerminalIOHandler
+    * Add recursive version of BDirTools::entryList function
+    * Add alternative constructors for BSpellChecker and BSpellCheckerDictionary
+    * Add BSpellCheckerDictionary::localeName method
+
 === BeQt 3.1.7 (14 May 2014) ===
     * Patch Hunspell to work with raw binary data
     * Fix typing in BCodeEdit in block mode
