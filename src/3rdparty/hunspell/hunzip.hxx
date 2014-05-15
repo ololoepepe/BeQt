@@ -35,8 +35,8 @@ protected:
     int getcode(const char * key);
     int getbuf();
     int fail(const char * err, const char * par);
-    
-public:   
+
+public:
     Hunzip(const char * filename, const char * key = NULL);
     ~Hunzip();
     const char * getline();

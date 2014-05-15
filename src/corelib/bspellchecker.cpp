@@ -167,6 +167,25 @@ void BSpellChecker::addDictionary(const QString &path)
     Q_EMIT changed();
 }
 
+void BSpellChecker::addDictionary(const QByteArray &affixData, const QByteArray &dictionaryData, const QString &locale)
+{
+    if (affixData.isEmpty() || dictionaryData.isEmpty() || locale.isEmpty() || d_func()->dicts.contains(locale))
+        return;
+    BSpellCheckerDictionary *dict = new BSpellCheckerDictionary(affixData, dictionaryData, locale);
+    if (!dict->isValid())
+    {
+        delete dict;
+        return;
+    }
+    d_func()->dicts.insert(locale, dict);
+    Q_EMIT changed();
+}
+
+void BSpellChecker::addDictionary(const QByteArray &affixData, const QByteArray &dictionaryData, const QLocale &locale)
+{
+    addDictionary(affixData, dictionaryData, locale.name());
+}
+
 void BSpellChecker::removeDictionary(const QLocale &locale)
 {
     removeDictionary(locale.name());

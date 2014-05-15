@@ -27,6 +27,7 @@ class QByteArray;
 
 #include "bglobal.h"
 #include "bcoreapplication.h"
+#include "bnamespace.h"
 
 #include <QString>
 #include <QStringList>
@@ -50,6 +51,8 @@ enum ResourceLookupMode
 B_CORE_EXPORT bool fileExists(const QString &fileName);
 B_CORE_EXPORT bool mayBeExecutable(const QString &fileName, bool considerSuffix = true);
 B_CORE_EXPORT bool mayBeExecutable(const QByteArray &data, const QString &fileName = QString());
+B_CORE_EXPORT BeQt::OSType executablePlatform(const QString &fileName, bool considerSuffix = true);
+B_CORE_EXPORT BeQt::OSType executablePlatform(const QByteArray &data, const QString &fileName = QString());
 B_CORE_EXPORT bool dirExists(const QString &dirName);
 B_CORE_EXPORT bool touch(const QString &filePath);
 B_CORE_EXPORT bool mkpath(const QString &dirPath);
@@ -67,6 +70,11 @@ B_CORE_EXPORT QStringList entryList(const QString &dirName, const QStringList &n
                                     QDir::Filters filters = QDir::NoFilter, QDir::SortFlags sort = QDir::NoSort);
 B_CORE_EXPORT QStringList entryList(const QString &dirName, QDir::Filters filters = QDir::NoFilter,
                                     QDir::SortFlags sort = QDir::NoSort);
+B_CORE_EXPORT QStringList entryListRecursive(const QString &dirName, const QStringList &nameFilters,
+                                             QDir::Filters filters = QDir::NoFilter,
+                                             QDir::SortFlags sort = QDir::NoSort);
+B_CORE_EXPORT QStringList entryListRecursive(const QString &dirName, QDir::Filters filters = QDir::NoFilter,
+                                             QDir::SortFlags sort = QDir::NoSort);
 B_CORE_EXPORT QString localeBasedFileName( const QString &fileName, const QLocale &loc = BCoreApplication::locale() );
 B_CORE_EXPORT QString localeBasedDirName( const QString &path, const QString &subpath = QString(),
                                           const QLocale &loc = BCoreApplication::locale() );

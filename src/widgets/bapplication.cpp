@@ -558,6 +558,56 @@ void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QLayout *field
     vlt->addLayout(hlt);
 }
 
+QFormLayout *BApplication::formLayout(QWidget *field)
+{
+    QWidget *pw = field ? field->parentWidget() : 0;
+    if (!pw)
+        return 0;
+    QStack<QLayout *> s;
+    s.push(pw->layout());
+    while (!s.isEmpty())
+    {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        QFormLayout *flt = qobject_cast<QFormLayout *>(lt);
+        if (flt)
+        {
+            QWidget *w = flt->labelForField(field);
+            if (w)
+                return flt;
+        }
+        foreach (int i, bRangeD(0, lt->count() - 1))
+            s.push(lt->itemAt(i)->layout());
+    }
+    return 0;
+}
+
+QFormLayout *BApplication::formLayout(QLayout *field)
+{
+    QWidget *pw = field ? field->parentWidget() : 0;
+    if (!pw)
+        return 0;
+    QStack<QLayout *> s;
+    s.push(pw->layout());
+    while (!s.isEmpty())
+    {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        QFormLayout *flt = qobject_cast<QFormLayout *>(lt);
+        if (flt)
+        {
+            QWidget *w = flt->labelForField(field);
+            if (w)
+                return flt;
+        }
+        foreach (int i, bRangeD(0, lt->count() - 1))
+            s.push(lt->itemAt(i)->layout());
+    }
+    return 0;
+}
+
 void BApplication::setRowVisible(QWidget *field, bool visible)
 {
     QWidget *w = labelForField<QWidget>(field);

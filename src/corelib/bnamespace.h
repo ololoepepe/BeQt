@@ -79,7 +79,8 @@ enum OSType
     UnknownOS,
     LinuxOS,
     MacOS,
-    WindowsOS
+    WindowsOS,
+    UnixOS
 };
 
 typedef QPair<const QObject *, const char *> Until;
@@ -97,6 +98,9 @@ B_CORE_EXPORT int area(const QRect &r);
 B_CORE_EXPORT qreal area(const QRectF &r);
 B_CORE_EXPORT QByteArray variantToData(const QVariant &variant);
 B_CORE_EXPORT QVariant dataToVariant(const QByteArray &data);
+B_CORE_EXPORT void msleep(unsigned long msecs);
+B_CORE_EXPORT void sleep(unsigned long secs);
+B_CORE_EXPORT void usleep(unsigned long usecs);
 B_CORE_EXPORT void waitNonBlocking(int msecs);
 B_CORE_EXPORT void waitNonBlocking(const QObject *sender, const char *signal, int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2,
@@ -111,6 +115,7 @@ B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT QVariant deserialize(const QByteArray &data, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments);
+B_CORE_EXPORT bool startProcessDetached(const QString &command, const QStringList &arguments);
 B_CORE_EXPORT int execProcess(const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,

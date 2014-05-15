@@ -27,6 +27,7 @@ class BSpellCheckerDictionaryPrivate;
 class QString;
 class QTextCodec;
 class QLocale;
+class QByteArray;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -42,6 +43,10 @@ class B_CORE_EXPORT BSpellCheckerDictionary : public BBase
     B_DECLARE_PRIVATE(BSpellCheckerDictionary)
 public:
     explicit BSpellCheckerDictionary(const QString &path);
+    explicit BSpellCheckerDictionary(const QByteArray &affixData, const QByteArray &dictionaryData,
+                                     const QString &locale);
+    explicit BSpellCheckerDictionary(const QByteArray &affixData, const QByteArray &dictionaryData,
+                                     const QLocale &locale);
     ~BSpellCheckerDictionary();
 public:
     bool spell(const QString &word) const;
@@ -49,7 +54,10 @@ public:
     void addWord(const QString &word);
     void removeWord(const QString &word);
     QString path() const;
+    QByteArray affixData() const;
+    QByteArray dictionaryData() const;
     QLocale locale() const;
+    QString localeName() const;
     QTextCodec *codec() const;
     QString codecName() const;
     bool isValid() const;

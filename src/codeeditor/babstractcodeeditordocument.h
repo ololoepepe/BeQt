@@ -170,6 +170,7 @@ protected:
     QWidget *innerEdit(QTextDocument **doc = 0) const;
     QTextDocument *innerDocument() const;
 protected Q_SLOTS:
+    void emitTextChanged();
     void emitSelectionChanged();
     void setReadOnlyInternal(bool ro);
     void setModificationInternal(bool modified);
@@ -182,6 +183,7 @@ protected Q_SLOTS:
     void setCursorPosition(const QPoint &pos);
     void setBuisy(bool buisy);
 Q_SIGNALS:
+    void textChanged();
     void readOnlyChanged(bool ro);
     void modificationChanged(bool modified);
     void selectionChanged();

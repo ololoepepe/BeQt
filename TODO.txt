@@ -4,6 +4,7 @@
 * Fix code editor document modification on setText
 * Implement multi-cursor in code editor
 * Implement code folding in code editor
+* Add function for unzipping Hunspell dictionaries
 
 === PATCH ===
 
@@ -11,22 +12,13 @@
 
 === MINOR ===
 
-* Add BUuid class to fix Qt4 and Qt5 serialization issue
-* Add method to determine executable file target platform
-* Add methods for removing rows from QFormLayout
-* Add BeQt::startProcessDetached function
-* Add BCodeEdit::textChanged signal
-* Add a function for blocking waiting
-* Add ability to set multiple copyright owners
-* Add BAbstractCodeEditorDocument::clear method
-* Add method for getting terminal window size
-* Add QMap-based set class
-* Add recursive BDirTools::entryList function version
-* Add function for unzipping Hunspell dictionaries
-* Add alternative constructor for BSpellCheckerDictionary (raw data)
+
 
 === MAJOR ===
 
+* Fix BVersion: rename "minor", "major", etc.
+* Fix BeQt::OSType enum values
+* Merge similar GUI method pairs into templates
 * Remove BeQt::variantToData and BeQt::dataToVatiant functions
 * Use BUuid class instead of QUuid
 * Reimplement BCoreApplication, BApplication, and resource lookup system
@@ -38,6 +30,7 @@
 * Improve BLocaleComboBox (implement custom mode)
 * Implement native settings dialogs
 * Remove BGuiPluginInterface::handleSettings method
+* Remove old methods from BPluginsSettingsTab
 * Implement Katepart-compatible file type definition using XML files
 * Improve code editor search (use regular expressions)
 * Add position to point conversion method to BAbstractCodeEditorDocument
@@ -55,3 +48,5 @@
 * Add ability to set compression for every operation independently
 * Add public function for handling events to BAbstractCodeEditorDocument
 * Add version information to plugins
+* Add BAbstractCodeEditorDocument::clear method
+* Add ability to set multiple copyright owners

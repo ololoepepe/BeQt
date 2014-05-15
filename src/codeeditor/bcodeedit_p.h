@@ -195,6 +195,7 @@ public Q_SLOTS:
     void updateUndoAvailable(bool available);
     void updateRedoAvailable(bool available);
     void emitModificationChanged(bool modified);
+    void emitTextChanged();
     void emitSelectionChanged();
     void setTextToEmptyLine();
     void delayedSetLineLength();

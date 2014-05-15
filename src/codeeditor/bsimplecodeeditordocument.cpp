@@ -104,6 +104,7 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     connect(ptedt, SIGNAL(cursorPositionChanged()), this, SLOT(cursorPositionChanged()));
     connect(ptedt, SIGNAL(selectionChanged()), this, SLOT(selectionChanged()));
     connect(ptedt, SIGNAL(selectionChanged()), q, SLOT(emitSelectionChanged()));
+    connect(ptedt, SIGNAL(textChanged()), q, SLOT(emitTextChanged()));
     connect(ptedt, SIGNAL(modificationChanged(bool)), q, SLOT(setModificationInternal(bool)));
     connect(ptedt, SIGNAL(undoAvailable(bool)), q, SLOT(setUndoAvailable(bool)));
     connect(ptedt, SIGNAL(redoAvailable(bool)), q, SLOT(setRedoAvailable(bool)));

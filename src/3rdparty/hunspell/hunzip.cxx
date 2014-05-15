@@ -1,6 +1,6 @@
-#include <stdlib.h> 
+#include <stdlib.h>
 #include <string.h>
-#include <stdio.h> 
+#include <stdio.h>
 
 #include "hunzip.hxx"
 
@@ -65,8 +65,8 @@ int Hunzip::getcode(const char * key) {
         c[0] ^= *enc;
         if (*(++enc) == '\0') enc = key;
         c[1] ^= *enc;
-    }        
-    
+    }
+
     n = ((int) c[0] << 8) + c[1];
     dec = (struct bit *) malloc(BASEBITREC * sizeof(struct bit));
     if (!dec) return fail(MSG_MEMORY, filename);
@@ -80,9 +80,9 @@ int Hunzip::getcode(const char * key) {
         if (key) {
             if (*(++enc) == '\0') enc = key;
             c[0] ^= *enc;
-            if (*(++enc) == '\0') enc = key;            
+            if (*(++enc) == '\0') enc = key;
             c[1] ^= *enc;
-        }        
+        }
         if (fread(&l, 1, 1, fin) < 1) return fail(MSG_FORMAT, filename);
         if (key) {
             if (*(++enc) == '\0') enc = key;

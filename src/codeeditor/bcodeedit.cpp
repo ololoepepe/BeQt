@@ -536,13 +536,14 @@ void BCodeEditPrivate::init()
         ptedt->setFont( BApplication::createMonospaceFont() );
         setTextToEmptyLine();
         ptedt->document()->setModified(false);
-        connect( ptedt, SIGNAL( cursorPositionChanged() ), this, SLOT( updateCursorPosition() ) );
-        connect( ptedt->document(), SIGNAL( modificationChanged(bool) ), this, SLOT( emitModificationChanged(bool) ) );
-        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( emitSelectionChanged() ) );
-        connect( ptedt, SIGNAL( selectionChanged() ), this, SLOT( updateHasSelection() ) );
-        connect( ptedt, SIGNAL( copyAvailable(bool) ), this, SLOT( updateCopyAvailable(bool) ) );
-        connect( ptedt, SIGNAL( undoAvailable(bool) ), this, SLOT( updateUndoAvailable(bool) ) );
-        connect( ptedt, SIGNAL( redoAvailable(bool) ), this, SLOT( updateRedoAvailable(bool) ) );
+        connect(ptedt, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorPosition()));
+        connect(ptedt->document(), SIGNAL(modificationChanged(bool)), this, SLOT(emitModificationChanged(bool)));
+        connect(ptedt, SIGNAL(textChanged()), this, SLOT(emitTextChanged()));
+        connect(ptedt, SIGNAL(selectionChanged()), this, SLOT(emitSelectionChanged()));
+        connect(ptedt, SIGNAL(selectionChanged()), this, SLOT(updateHasSelection()));
+        connect(ptedt, SIGNAL(copyAvailable(bool)), this, SLOT(updateCopyAvailable(bool)));
+        connect(ptedt, SIGNAL(undoAvailable(bool)), this, SLOT(updateUndoAvailable(bool)));
+        connect(ptedt, SIGNAL(redoAvailable(bool)), this, SLOT(updateRedoAvailable(bool)));
       hlt->addWidget(ptedt);
     lnwgt = new BLineNumberWidget(ptedt);
     connect(q, SIGNAL(buisyChanged(bool)), this, SLOT(delayedSetLineLength()));
@@ -550,14 +551,14 @@ void BCodeEditPrivate::init()
 
 bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
 {
-    switch ( e->type() )
+    switch (e->type())
     {
     case QEvent::KeyPress:
-        return keyPressEvent( static_cast<QKeyEvent *>(e) );
+        return keyPressEvent(static_cast<QKeyEvent *>(e));
     case QEvent::MouseButtonDblClick:
-        return mouseDoubleClickEvent( static_cast<QMouseEvent *>(e) );
+        return mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
     case QEvent::MouseButtonPress:
-        return mousePressEvent( static_cast<QMouseEvent *>(e) );
+        return mousePressEvent(static_cast<QMouseEvent *>(e));
     default:
         return QObject::eventFilter(obj, e);
     }
@@ -1607,6 +1608,11 @@ void BCodeEditPrivate::updateRedoAvailable(bool available)
 void BCodeEditPrivate::emitModificationChanged(bool modified)
 {
     QMetaObject::invokeMethod( q_func(), "modificationChanged", Q_ARG(bool, modified) );
+}
+
+void BCodeEditPrivate::emitTextChanged()
+{
+    QMetaObject::invokeMethod(q_func(), "textChanged");
 }
 
 void BCodeEditPrivate::emitSelectionChanged()

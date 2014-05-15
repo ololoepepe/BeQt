@@ -22,6 +22,7 @@
 #include "bdirtools.h"
 #include "bcoreapplication.h"
 #include "bcoreapplication_p.h"
+#include "bnamespace.h"
 
 #include <QString>
 #include <QDir>
@@ -70,6 +71,33 @@ bool mayBeExecutable(const QByteArray &data, const QString &fileName)
     if (!fileName.indexOf(QRegExp("so(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?$")))
         return true;
     return false;
+}
+
+BeQt::OSType executablePlatform(const QString &fileName, bool considerSuffix)
+{
+    return executablePlatform(readFile(fileName, 4), considerSuffix ? fileName : QString());
+}
+
+BeQt::OSType executablePlatform(const QByteArray &data, const QString &fileName)
+{
+    if (data.mid(0, 2) == "MZ")
+        return BeQt::WindowsOS;
+    else if (data.mid(0, 4) == "\xFE""\xED""\xFA""\xCE" || data.mid(0, 4) == "\xFE""\xED""\xFA""\xCF")
+        return BeQt::MacOS;
+    else if (data.mid(0, 4) == "\x7F""ELF")
+        return BeQt::LinuxOS;
+    else if (data.mid(0, 2) == "#!")
+        return BeQt::UnixOS;
+    if (fileName.isEmpty())
+        return BeQt::UnknownOS;
+    QString suffix = QFileInfo(fileName).suffix();
+    if (suffix.compare("dylib", Qt::CaseInsensitive))
+        return BeQt::MacOS;
+    else if (suffix.compare("dll", Qt::CaseInsensitive) || suffix.compare("bat", Qt::CaseInsensitive))
+        return BeQt::WindowsOS;
+    else if (fileName.indexOf(QRegExp("so(\\.\\d+)?(\\.\\d+)?(\\.\\d+)?$")))
+        return BeQt::UnixOS;
+    return BeQt::UnknownOS;
 }
 
 bool dirExists(const QString &dirName)
@@ -209,6 +237,23 @@ QStringList entryList(const QString &dirName, const QStringList &nameFilters, QD
 QStringList entryList(const QString &dirName, QDir::Filters filters, QDir::SortFlags sort)
 {
     return entryList(dirName, QStringList(), filters, sort);
+}
+
+QStringList entryListRecursive(const QString &dirName, const QStringList &nameFilters, QDir::Filters filters,
+                               QDir::SortFlags sort)
+{
+    QStringList sl;
+    QDir d(dirName);
+    foreach (const QString &fn, d.entryList(nameFilters, filters, sort))
+        sl << d.absoluteFilePath(fn);
+    foreach (const QString &dn, d.entryList(nameFilters, QDir::Dirs | QDir::NoDotAndDotDot, sort))
+        sl << entryListRecursive(dirName + "/" + dn, nameFilters, filters, sort);
+    return sl;
+}
+
+QStringList entryListRecursive(const QString &dirName, QDir::Filters filters, QDir::SortFlags sort)
+{
+    return entryListRecursive(dirName, QStringList(), filters, sort);
 }
 
 QString localeBasedFileName(const QString &fileName, const QLocale &loc)

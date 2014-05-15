@@ -54,13 +54,18 @@ class BSpellCheckerDictionaryPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSpellCheckerDictionary)
 public:
-    explicit BSpellCheckerDictionaryPrivate(BSpellCheckerDictionary *q, const QString &path);
+        explicit BSpellCheckerDictionaryPrivate(BSpellCheckerDictionary *q, const QString &path,
+                                                const QByteArray &affixData = QByteArray(),
+                                                const QByteArray &dictionaryData = QByteArray(),
+                                                const QString &locale = QString());
     ~BSpellCheckerDictionaryPrivate();
 public:
     void init();
     bool testValidity();
 public:
     const QString Path;
+    const QByteArray AffixData;
+    const QByteArray DictionaryData;
     const QLocale Locale;
 public:
     Hunspell *hunspell;
@@ -75,8 +80,12 @@ private:
 
 /*============================== Public constructors =======================*/
 
-BSpellCheckerDictionaryPrivate::BSpellCheckerDictionaryPrivate(BSpellCheckerDictionary *q, const QString &path) :
-    BBasePrivate(q), Path(path), Locale(QFileInfo(path).fileName())
+BSpellCheckerDictionaryPrivate::BSpellCheckerDictionaryPrivate(BSpellCheckerDictionary *q, const QString &path,
+                                                               const QByteArray &affixData,
+                                                               const QByteArray &dictionaryData,
+                                                               const QString &locale) :
+    BBasePrivate(q), Path(path), AffixData(affixData), DictionaryData(dictionaryData),
+    Locale(!locale.isEmpty() ? locale : QFileInfo(path).fileName())
 {
     //
 }
@@ -92,20 +101,27 @@ void BSpellCheckerDictionaryPrivate::init()
 {
     hunspell = 0;
     codec = 0;
-    if (Path.isEmpty() || QFileInfo(Path).fileName() != Locale.name())
+    if (Path.isEmpty() && (AffixData.isEmpty() || DictionaryData.isEmpty()))
         return;
-    QString aff = Path + "/" + Locale.name() + ".aff";
-    QString dic = Path + "/" + Locale.name() + ".dic";
-    if (Path.startsWith(":/"))
+    if (Path.isEmpty())
     {
-        QByteArray affdata = BDirTools::readFile(aff);
-        QByteArray dicdata = BDirTools::readFile(dic);
-        hunspell = new Hunspell(affdata.constData(), dicdata.constData(), 0, true, true);
-        //Warning: hzipped files can not be loaded here. Unzip them first
+        hunspell = new Hunspell(AffixData.constData(), DictionaryData.constData(), 0, true, true);
     }
     else
     {
-        hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
+        QString aff = Path + "/" + Locale.name() + ".aff";
+        QString dic = Path + "/" + Locale.name() + ".dic";
+        if (Path.startsWith(":/"))
+        {
+            QByteArray affdata = BDirTools::readFile(aff);
+            QByteArray dicdata = BDirTools::readFile(dic);
+            hunspell = new Hunspell(affdata.constData(), dicdata.constData(), 0, true, true);
+            //Warning: hzipped files can not be loaded here. Unzip them first
+        }
+        else
+        {
+            hunspell = new Hunspell(aff.toLocal8Bit().constData(), dic.toLocal8Bit().constData());
+        }
     }
     codec = QTextCodec::codecForName(hunspell->get_dic_encoding());
     if (!codec || !testValidity())
@@ -135,6 +151,20 @@ bool BSpellCheckerDictionaryPrivate::testValidity()
 
 BSpellCheckerDictionary::BSpellCheckerDictionary(const QString &path) :
     BBase(*new BSpellCheckerDictionaryPrivate(this, path))
+{
+    d_func()->init();
+}
+
+BSpellCheckerDictionary::BSpellCheckerDictionary(const QByteArray &affixData, const QByteArray &dictionaryData,
+                                                 const QString &locale) :
+    BBase(*new BSpellCheckerDictionaryPrivate(this, "", affixData, dictionaryData, locale))
+{
+    d_func()->init();
+}
+
+BSpellCheckerDictionary::BSpellCheckerDictionary(const QByteArray &affixData, const QByteArray &dictionaryData,
+                                                 const QLocale &locale) :
+    BBase(*new BSpellCheckerDictionaryPrivate(this, "", affixData, dictionaryData, locale.name()))
 {
     d_func()->init();
 }
@@ -186,9 +216,24 @@ QString BSpellCheckerDictionary::path() const
     return d_func()->Path;
 }
 
+QByteArray BSpellCheckerDictionary::affixData() const
+{
+    return d_func()->AffixData;
+}
+
+QByteArray BSpellCheckerDictionary::dictionaryData() const
+{
+    return d_func()->DictionaryData;
+}
+
 QLocale BSpellCheckerDictionary::locale() const
 {
     return d_func()->Locale;
+}
+
+QString BSpellCheckerDictionary::localeName() const
+{
+    return isValid() ? d_func()->Locale.name() : QString();
 }
 
 QTextCodec *BSpellCheckerDictionary::codec() const
