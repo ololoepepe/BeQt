@@ -27,6 +27,7 @@ class BSettingsNode;
 
 class QString;
 class QStringLit;
+class QSize;
 
 #include "bglobal.h"
 #include "bbase.h"
@@ -108,6 +109,9 @@ public:
     static void setBackgroundColor(Color color);
     static Color textColor();
     static Color backgroundColor();
+    static QSize terminalSize();
+    static int terminalColumnCount();
+    static int terminalRowCount();
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(const QString &command, ExternalHandler handler);
     static void installHandler(StandardCommand cmd);

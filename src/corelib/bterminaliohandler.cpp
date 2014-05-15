@@ -41,14 +41,16 @@
 #include <QFile>
 #include <QCoreApplication>
 #include <QScopedArrayPointer>
+#include <QSize>
 
 #include <QDebug>
 
 #include <cstdio>
 
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-#include "termios.h"
-#include "unistd.h"
+#include <termios.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 #elif defined(Q_OS_WIN)
 #include "windows.h"
 #endif
@@ -664,6 +666,45 @@ BTerminalIOHandler::Color BTerminalIOHandler::backgroundColor()
 {
     QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
     return BTerminalIOHandlerPrivate::backgroundColor;
+}
+
+QSize BTerminalIOHandler::terminalSize()
+{
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+    return QSize(w.ws_col, w.ws_row);
+#elif defined(Q_OS_WIN)
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    return QSize(csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+#endif
+}
+
+int BTerminalIOHandler::terminalColumnCount()
+{
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+    return w.ws_col;
+#elif defined(Q_OS_WIN)
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    return csbi.srWindow.Right - csbi.srWindow.Left + 1;
+#endif
+}
+
+int BTerminalIOHandler::terminalRowCount()
+{
+#if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
+    winsize w;
+    ioctl(0, TIOCGWINSZ, &w);
+    return w.ws_row;
+#elif defined(Q_OS_WIN)
+    CONSOLE_SCREEN_BUFFER_INFO csbi;
+    GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
+    return csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
+#endif
 }
 
 void BTerminalIOHandler::installHandler(const QString &command, InternalHandler handler)
