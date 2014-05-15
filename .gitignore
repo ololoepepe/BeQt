@@ -65,6 +65,9 @@ BeQtSql
 BeQtWidgets
 BeQtNetworkWidgets
 simple-editor
+console-app
+!examples/simple-editor
+!examples/console-app
 !include/BeQt/BeQtCodeEditor
 !include/BeQt/BeQtCore
 !include/BeQt/BeQtNetwork
