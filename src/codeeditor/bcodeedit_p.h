@@ -200,6 +200,7 @@ public Q_SLOTS:
     void setTextToEmptyLine();
     void delayedSetLineLength();
 public:
+    bool onceEdited;
     bool blockMode;
     int lineLength;
     int tmpLineLength;

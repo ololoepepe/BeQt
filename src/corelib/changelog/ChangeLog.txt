@@ -1,3 +1,8 @@
+=== BeQt 3.2.2 (20 May 2014) ===
+    * Fix BPluginsSettingsTab About dialog
+    * Fix BCodeEdit line length setting
+    * Fix BeQt::execProcess function
+
 === BeQt 3.2.1 (15 May 2014) ===
     * Add header for BUuid and BGuiTools
     * Register BUuid in meta-object system
