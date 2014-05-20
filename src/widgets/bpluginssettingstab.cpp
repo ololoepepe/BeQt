@@ -78,9 +78,9 @@ void BPluginsSettingsTabPrivate::init()
             lwi->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
             lwi->setCheckState(pw->isActivated() ? Qt::Checked : Qt::Unchecked);
             lwi->setText( pw->name() );
-            BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
+            BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
             if (gpi)
-                lwi->setIcon( QIcon( gpi->pixmap() ) );
+                lwi->setIcon(QIcon(gpi->pixmap()));
             lstwgt->addItem(lwi);
         }
         connect( lstwgt, SIGNAL( currentRowChanged(int) ), this, SLOT( lstwgtCurrentRowChanged(int) ) );
@@ -143,7 +143,8 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
 void BPluginsSettingsTabPrivate::btnAboutClicked()
 {
     BPluginWrapper *pw = plugins.at( lstwgt->currentRow() );
-    BAboutDialog ad( q_func() );
+    BAboutDialog ad(q_func(), pw->name(), "1.0"); //TODO: Version
+    ad.setWindowTitle(pw->name());
     if ( pw->prefereStaticInfo() )
     {
         BPluginInterface::PluginInfoStatic sinf = pw->staticInfo();

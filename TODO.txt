@@ -12,7 +12,7 @@
 
 === MINOR ===
 
-
+* Add function for removing old plugin settings
 
 === MAJOR ===
 
@@ -50,3 +50,9 @@
 * Add version information to plugins
 * Add BAbstractCodeEditorDocument::clear method
 * Add ability to set multiple copyright owners
+* Disable changing parent editor of code editor modules
+* Add Help ingormation to plugin info
+* Fix BAboutSettingsTab About dialog version
+* Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
+* Move setBlockComment method from BCodeEdit
+* Add working directory argument to BeQt::startProcessDetached function

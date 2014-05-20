@@ -514,6 +514,7 @@ void BCodeEditPrivate::init()
         new BClipboardNotifier;
     connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
             this, SLOT(updatePasteAvailable(bool)));
+    onceEdited = false;
     blockMode = false;
     lineLength = 120;
     tmpLineLength = -1;
@@ -881,6 +882,7 @@ void BCodeEditPrivate::setText(const QString &txt, int asyncIfLongerThan)
         blockHighlighter(false);
         ptedt->setFocus();
         emitLinesSplitted(res.splittedLinesRanges);
+        onceEdited = true;
     }
 }
 
@@ -1039,11 +1041,12 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     emitLinesSplitted(ranges);
     q_func()->setFocus();
     ptedt->ensureCursorVisible();
+    onceEdited = true;
 }
 
 void BCodeEditPrivate::emitLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> &ranges)
 {
-    if (ranges.size())
+    if (ranges.size() && onceEdited)
         QMetaObject::invokeMethod(ptedt->document(), "setModified", Qt::QueuedConnection, Q_ARG(bool, true));
     if (ranges.size() > 1)
         QMetaObject::invokeMethod( q_func(), "linesSplitted",
@@ -1549,6 +1552,7 @@ void BCodeEditPrivate::parceTaskFinished()
     ptedt->setFocus();
     setBuisy(false);
     emitLinesSplitted(res.splittedLinesRanges);
+    onceEdited = true;
 }
 
 void BCodeEditPrivate::updateCursorPosition()
@@ -1736,11 +1740,18 @@ void BCodeEdit::setEditLineLength(int ll)
         return;
     }
     d->lineLength = ll;
-    QString text = d->ptedt->toPlainText();
-    bool pm = d->ptedt->document()->isModified();
-    d->setText(text, -1);
-    d->ptedt->document()->setModified(pm || d->ptedt->document()->isModified());
-    setFocus();
+    if (d->onceEdited)
+    {
+        QString text = d->ptedt->toPlainText();
+        bool pm = d->ptedt->document()->isModified();
+        d->setText(text, -1);
+        d->ptedt->document()->setModified(pm || d->ptedt->document()->isModified());
+        setFocus();
+    }
+    else
+    {
+        d->setTextToEmptyLine();
+    }
 }
 
 void BCodeEdit::setEditTabWidth(BeQt::TabWidth tw)

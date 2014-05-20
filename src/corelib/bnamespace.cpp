@@ -433,7 +433,16 @@ int execProcess(const QString &workingDir, const QString &command, const QString
     QTextStream in(&proc);
     if (codec)
         in.setCodec(codec);
-    return (proc.exitStatus() == QProcess::NormalExit) ? bRet(output, in.readAll(), proc.exitCode()) : -1;
+    if (proc.exitStatus() == QProcess::NormalExit)
+    {
+        bSet(output, in.readAll());
+        BeQt::waitNonBlocking(100);
+        return proc.exitCode();
+    }
+    else
+    {
+        return -1;
+    }
 }
 
 QString translate(const char *context, const char *sourceText, const char *disambiguation, int n)
