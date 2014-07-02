@@ -1,3 +1,7 @@
+=== BeQt 3.2.3 (02 July 2014) ===
+    * Add processor architecture defines
+    * Fix getting global plugins path on Linux
+
 === BeQt 3.2.2 (20 May 2014) ===
     * Fix BPluginsSettingsTab About dialog
     * Fix BCodeEdit line length setting
@@ -29,7 +33,7 @@
     * Fix typing in BCodeEdit in block mode
     * Replace QSet with QMap for ignored words storage in BSpellChecker
 
-=== BeQt 3.1.6 (5 May 2014) ===
+=== BeQt 3.1.6 (05 May 2014) ===
     * Add GPL headers to files
     * Move 3rdparty libraries files to src/3rdparty subdir
     * Fix BCodeEdit scrolling on selectText and moveCursor calls

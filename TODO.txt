@@ -8,13 +8,15 @@
 
 === PATCH ===
 
-[done] Add processor architecture defines
+
 
 === MINOR ===
 
 * Add function for removing old plugin settings
 * Add processor architecture enum
 * Add ability to remember entered commands in BTerminalIOHandler
+* Add ability to set auto-indentation in code editor
+* Add overloaded BCoreApplication::installTranslator method
 
 === MAJOR ===
 

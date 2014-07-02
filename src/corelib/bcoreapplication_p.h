@@ -76,7 +76,10 @@ public:
     QString getOrgName() const;
     QString getAppPath() const;
     QString getUserPrefix() const;
-    QString getSharedPrefix() const;
+    QString getSharedPrefix(bool forPlugins = false) const;
+#if defined(Q_OS_LINUX)
+    QString getSharedPrefixPlugins() const;
+#endif
 #if defined(Q_OS_MAC)
     QString getBundlePrefix() const;
 #endif
@@ -88,7 +91,7 @@ public:
     void addDeactivatedPlugin(const QString &pluginName);
     QSettings *createSettingsInstance(const QString &fileName) const;
     QString confFileName(const QString &path, const QString &name) const;
-    QString prefix(BCoreApplication::ResourcesType type) const;
+    QString prefix(BCoreApplication::ResourcesType type, bool forPlugins = false) const;
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void installTranslator(BTranslator *translator);
@@ -104,6 +107,9 @@ public:
     mutable QString appPath;
     mutable QString userPrefix;
     mutable QString sharedPrefix;
+#if defined(Q_OS_LINUX)
+    mutable QString sharedPrefixPlugins;
+#endif
 #if defined(Q_OS_MAC)
     mutable QString bundlePrefix;
 #endif
