@@ -247,30 +247,48 @@ QString BCoreApplicationPrivate::getUserPrefix() const
     return userPrefix;
 }
 
-QString BCoreApplicationPrivate::getSharedPrefix() const
+QString BCoreApplicationPrivate::getSharedPrefix(bool forPlugins) const
 {
+#if defined(Q_OS_LINUX)
+    if (forPlugins)
+        return getSharedPrefixPlugins();
+#endif
     getIsPortable();
-    if ( !sharedPrefix.isEmpty() )
+    if (!sharedPrefix.isEmpty())
         return sharedPrefix;
 #if defined(Q_OS_MAC)
     QString an = getAppName();
     QString on = getOrgName();
-    if ( an.isEmpty() || on.isEmpty() )
+    if (an.isEmpty() || on.isEmpty())
         return "";
     sharedPrefix = "/Library/Application Support/" + on + "/" + an;
 #elif defined (Q_OS_LINUX)
     QString an = getAppName();
-    if ( an.isEmpty() )
+    if (an.isEmpty())
         return "";
     sharedPrefix = "/usr/share/" + toLowerNoSpaces(an);
 #elif defined(Q_OS_WIN)
     QString ap = getAppPath();
-    if ( ap.isEmpty() )
+    if (ap.isEmpty())
         return "";
     sharedPrefix = ap;
 #endif
     return sharedPrefix;
 }
+
+#if defined(Q_OS_LINUX)
+QString BCoreApplicationPrivate::getSharedPrefixPlugins() const
+{
+    getIsPortable();
+    if (!sharedPrefixPlugins.isEmpty())
+        return sharedPrefixPlugins;
+    QString an = getAppName();
+    if (an.isEmpty())
+        return "";
+    sharedPrefixPlugins = "/usr/lib/" + toLowerNoSpaces(an);
+    return sharedPrefixPlugins;
+}
+#endif
 
 #if defined(Q_OS_MAC)
 QString BCoreApplicationPrivate::getBundlePrefix() const
@@ -292,11 +310,14 @@ bool BCoreApplicationPrivate::getIsPortable() const
     QString an = getAppName();
     if ( ap.isEmpty() || an.isEmpty() )
         return false;
-    bool b = QFileInfo( confFileName(ap, an) ).isFile();
+    bool b = QFileInfo(confFileName(ap, an)).isFile();
     if (b)
     {
         userPrefix = ap;
         sharedPrefix = ap;
+#if defined(Q_OS_LINUX)
+        sharedPrefixPlugins = ap;
+#endif
     #if defined(Q_OS_MAC)
         bundlePrefix = ap;
     #endif
@@ -307,6 +328,10 @@ bool BCoreApplicationPrivate::getIsPortable() const
             userPrefix.clear();
         if (ap == sharedPrefix)
             sharedPrefix.clear();
+#if defined(Q_OS_LINUX)
+        if (ap == sharedPrefixPlugins)
+            sharedPrefixPlugins.clear();
+#endif
 #if defined(Q_OS_MAC)
         if (ap == bundlePrefix)
             bundlePrefix.clear();
@@ -370,14 +395,14 @@ QString BCoreApplicationPrivate::confFileName(const QString &path, const QString
     return path + "/settings/" + bfn + ".conf";
 }
 
-QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type) const
+QString BCoreApplicationPrivate::prefix(BCoreApplication::ResourcesType type, bool forPlugins) const
 {
     switch (type)
     {
     case BCoreApplication::UserResources :
         return getUserPrefix();
     case BCoreApplication::SharedResources :
-        return getSharedPrefix();
+        return getSharedPrefix(forPlugins);
 #if defined(Q_OS_MAC)
     case BCoreApplication::BundleResources :
         return getBundlePrefix();
@@ -500,19 +525,23 @@ BCoreApplication *BCoreApplication::instance()
 
 QString BCoreApplication::location(Location loc, ResourcesType type)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return "";
-    QDir d( ds_func()->prefix(type) + "/" + BCoreApplicationPrivate::subdir(loc) );
+    QDir d(ds_func()->prefix(type, PluginsPath == loc) + "/" + BCoreApplicationPrivate::subdir(loc));
     return d.exists() ? d.absolutePath() : "";
 }
 
 QString BCoreApplication::location(const QString &subdir, ResourcesType type)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit() )
+    if (!BCoreApplicationPrivate::testCoreInit())
         return "";
-    if ( subdir.isEmpty() )
+    if (subdir.isEmpty())
         return "";
-    QDir d(ds_func()->prefix(type) + "/" + subdir);
+    bool forPlugins = false;
+#if defined(Q_OS_LINUX)
+    forPlugins = !subdir.compare("plugins", Qt::CaseSensitive);
+#endif
+    QDir d(ds_func()->prefix(type, forPlugins) + "/" + subdir);
     return d.exists() ? d.absolutePath() : "";
 }
 

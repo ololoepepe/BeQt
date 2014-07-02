@@ -13,6 +13,10 @@
 === MINOR ===
 
 * Add function for removing old plugin settings
+* Add processor architecture enum
+* Add ability to remember entered commands in BTerminalIOHandler
+* Add ability to set auto-indentation in code editor
+* Add overloaded BCoreApplication::installTranslator method
 
 === MAJOR ===
 
@@ -26,7 +30,6 @@
 * Implement locking of global object instances
 * Add ability to listen on several ports/hosts to BNetworkServer
 * Improve BTextBlockUserData (implement multiple skip intervals)
-* Add ability to remember entered commands in BTerminalIOHandler
 * Improve BLocaleComboBox (implement custom mode)
 * Implement native settings dialogs
 * Remove BGuiPluginInterface::handleSettings method
@@ -48,11 +51,12 @@
 * Add ability to set compression for every operation independently
 * Add public function for handling events to BAbstractCodeEditorDocument
 * Add version information to plugins
+* Add Help information to plugin info
+* Add ability to set user About dialog tabs for plugins
 * Add BAbstractCodeEditorDocument::clear method
 * Add ability to set multiple copyright owners
 * Disable changing parent editor of code editor modules
-* Add Help ingormation to plugin info
-* Fix BAboutSettingsTab About dialog version
+* Fix BPluginsSettingsTab About dialog version
 * Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
 * Move setBlockComment method from BCodeEdit
 * Add working directory argument to BeQt::startProcessDetached function
