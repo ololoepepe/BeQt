@@ -32,6 +32,7 @@ class QWidget;
 #include <BeQtCore/BPersonInfoProvider>
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPersonInfo>
+#include <BeQtCore/BVersion>
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -56,6 +57,7 @@ class QWidget;
 #include <QTextOption>
 #include <QDialogButtonBox>
 #include <QSize>
+#include <QChar>
 
 #include <QDebug>
 
@@ -611,11 +613,19 @@ void BAboutDialog::setAppName(const QString &name)
 
 void BAboutDialog::setAppVersion(const QString &version)
 {
-    if ( version.isEmpty() )
+    if (version.isEmpty())
         return;
     B_D(BAboutDialog);
     d->appVersion = version;
     d->lblName->setText(d->appName + " v" + d->appVersion);
+}
+
+void BAboutDialog::setAppVersion(const BVersion &version, BVersion::StatusRepresentation r, QChar versionSeparator,
+                                 QChar statusSeparator)
+{
+    if (!version.isValid())
+        return;
+    setAppVersion(version.toString(r, versionSeparator, statusSeparator));
 }
 
 void BAboutDialog::setOrganization(const QString &organization, const QString &copyrightPeriod)

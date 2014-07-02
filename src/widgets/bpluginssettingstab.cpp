@@ -124,7 +124,7 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
 {
     BPluginWrapper *pw = plugins.at( lstwgt->currentRow() );
     BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
-    BAbstractSettingsTab *ast = gpi ? gpi->settingsTab() : 0;
+    BAbstractSettingsTab *ast = gpi ? gpi->createSettingsTab() : 0;
     if (ast)
     {
         QList<BAbstractSettingsTab *> tabs;
@@ -142,12 +142,12 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
 
 void BPluginsSettingsTabPrivate::btnAboutClicked()
 {
-    BPluginWrapper *pw = plugins.at( lstwgt->currentRow() );
-    BAboutDialog ad(q_func(), pw->name(), "1.0"); //TODO: Version
+    BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
+    BAboutDialog ad(q_func(), pw->name(), pw->version());
     ad.setWindowTitle(pw->name());
-    if ( pw->prefereStaticInfo() )
+    if (pw->prefereStaticInfo())
     {
-        BPluginInterface::PluginInfoStatic sinf = pw->staticInfo();
+        BPluginInterface::StaticPluginInfo sinf = pw->staticInfo();
         ad.setOrganization(sinf.organization, sinf.copyrightYears);
         ad.setWebsite(sinf.website);
         ad.setDescription(sinf.description);
@@ -169,11 +169,11 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         ad.setTranslatorsFile(inf.translatorsFileName);
         ad.setThanksToFile(inf.thanksToFileName);
     }
-    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
+    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
     QPixmap pm;
     if (gpi)
         pm = gpi->pixmap();
-    if ( !pm.isNull() )
+    if (!pm.isNull())
         ad.setPixmap(pm);
     ad.exec();
 }
@@ -213,9 +213,4 @@ QString BPluginsSettingsTab::title() const
 QIcon BPluginsSettingsTab::icon() const
 {
     return BApplication::icon("binary");
-}
-
-QVariantMap BPluginsSettingsTab::valueMap() const
-{
-    return QVariantMap();
 }

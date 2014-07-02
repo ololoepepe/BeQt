@@ -56,7 +56,14 @@ class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkConnection)
 public:
-    typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
+    int al;
+    struct Data
+    {
+        QByteArray data;
+        BNetworkOperationMetaData metaData;
+        int compressionLevel;
+    };
+    //typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
 public:
     explicit BNetworkConnectionPrivate(BNetworkConnection *q, BNetworkServer *server = 0);
     ~BNetworkConnectionPrivate();
@@ -64,6 +71,10 @@ public:
     void init();
     void setSocket(BGenericSocket *s);
     void sendNext();
+    BNetworkOperation *sendRequest(const QString &op, const QByteArray &data);
+    BNetworkOperation *sendRequest(const QString &op, int compressionLevel, const QByteArray &data);
+    bool sendReply(BNetworkOperation *op, const QByteArray &data);
+    bool sendReply(BNetworkOperation *op, int compressionLevel, const QByteArray &data);
     BNetworkOperation *createOperation(const BNetworkOperationMetaData &metaData);
 public Q_SLOTS:
     void connected();

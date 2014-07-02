@@ -22,13 +22,13 @@
 #ifndef BPLUGININTERFACE_H
 #define BPLUGININTERFACE_H
 
+class BVersion;
+
 #include "bglobal.h"
 #include "bpersoninfo.h"
-#include "bdirtools.h"
 
 #include <QString>
 #include <QtPlugin>
-#include <QList>
 
 /*============================================================================
 ================================ BPluginInterface ============================
@@ -49,7 +49,7 @@ public:
         QString translatorsFileName;
         QString thanksToFileName;
     };
-    struct PluginInfoStatic
+    struct StaticPluginInfo
     {
         QString organization;
         QString copyrightYears;
@@ -66,8 +66,9 @@ public:
 public:
     virtual QString type() const = 0;
     virtual QString name() const = 0;
+    virtual BVersion version() const = 0;
     virtual bool prefereStaticInfo() const = 0;
-    virtual PluginInfoStatic staticInfo() const = 0;
+    virtual StaticPluginInfo staticInfo() const = 0;
     virtual PluginInfo info() const = 0;
     virtual void activate() = 0;
     virtual void deactivate() = 0;

@@ -5,6 +5,8 @@
 * Implement multi-cursor in code editor
 * Implement code folding in code editor
 * Add function for unzipping Hunspell dictionaries
+* Sort includes, class members, etc.
+* Use Qt coding style
 
 === PATCH ===
 
@@ -17,13 +19,16 @@
 * Add ability to remember entered commands in BTerminalIOHandler
 * Add ability to set auto-indentation in code editor
 * Add overloaded BCoreApplication::installTranslator method
+* Add method for setting terminal window size to BTerminalIOHandler
+[done] Add template methods for secure casting int and QVariant to enum (enum_cast)
 
 === MAJOR ===
 
-* Fix BVersion: rename "minor", "major", etc.
+[done] Add BVersion::clear method
+[done] Fix BVersion: rename "minor", "major", etc.
 * Fix BeQt::OSType enum values
 * Merge similar GUI method pairs into templates
-* Remove BeQt::variantToData and BeQt::dataToVatiant functions
+[done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
 * Use BUuid class instead of QUuid
 * Reimplement BCoreApplication, BApplication, and resource lookup system
 * Move some methods to separate namespaces
@@ -32,8 +37,8 @@
 * Improve BTextBlockUserData (implement multiple skip intervals)
 * Improve BLocaleComboBox (implement custom mode)
 * Implement native settings dialogs
-* Remove BGuiPluginInterface::handleSettings method
-* Remove old methods from BPluginsSettingsTab
+[done] Remove BGuiPluginInterface::handleSettings method
+[done] Remove old methods from BPluginsSettingsTab
 * Implement Katepart-compatible file type definition using XML files
 * Improve code editor search (use regular expressions)
 * Add position to point conversion method to BAbstractCodeEditorDocument
@@ -48,15 +53,21 @@
 * Add ability to add extra locations and to restrict locations
 * Improve BLineNumberWidget: add virtual functions
 * Add PDCurses binding
-* Add ability to set compression for every operation independently
+[done] Add ability to set compression for every network operation independently
 * Add public function for handling events to BAbstractCodeEditorDocument
-* Add version information to plugins
-* Add Help information to plugin info
-* Add ability to set user About dialog tabs for plugins
+[done] Add version information to plugins
+* Show plugin version information
+[done] Add Help information to plugin info
+* Show plugin Help
+[done] Rename PluginInfoStatic into StaticPluginInfo
+[done] Rename BGuiPluginInterface settingsTab method into createSettingsTab
+* Add ability to set user About dialog for plugins
 * Add BAbstractCodeEditorDocument::clear method
 * Add ability to set multiple copyright owners
-* Disable changing parent editor of code editor modules
-* Fix BPluginsSettingsTab About dialog version
-* Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
+* Disable changing parent editor of code editor modules (not sure)
+[done] Fix BPluginsSettingsTab About dialog version
+[done] Overload BAboutDuialog::setAppVersion method
+[done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
 * Move setBlockComment method from BCodeEdit
-* Add working directory argument to BeQt::startProcessDetached function
+[done] Add working directory argument to BeQt::startProcessDetached function
+* Add .pri files for Hunspell and Enca

@@ -359,6 +359,30 @@ template <typename T> QVariant bVariant(T *ptr)
     return QVariant::fromValue((void *) ptr);
 }
 
+template <typename T> T enum_cast(int i, const QList<T> &enumMembers, T defaultEnumMember)
+{
+    return (enumMembers.contains(i)) ? static_cast<T>(i) : defaultEnumMember;
+}
+
+template <typename T> T enum_cast(int i, T firstEnumMember, T lastEnumMember)
+{
+    return bRangeD(firstEnumMember, lastEnumMember).contains(i) ? static_cast<T>(i) : firstEnumMember;
+}
+
+template <typename T> T enum_cast(const QVariant &v, const QList<T> &enumMembers, T defaultEnumMember)
+{
+    bool ok = false;
+    int i = v.toInt(&ok);
+    return ok ? enum_cast(i, enumMembers, defaultEnumMember) : defaultEnumMember;
+}
+
+template <typename T> T enum_cast(const QVariant &v, T firstEnumMember, T lastEnumMember)
+{
+    bool ok = false;
+    int i = v.toInt(&ok);
+    return (ok && bRangeD(firstEnumMember, lastEnumMember).contains(i)) ? static_cast<T>(i) : firstEnumMember;
+}
+
 template<typename T> void bRet(const T &)
 {
     //Calling "return bRet(...)" is the same as calling "return (void) ..."

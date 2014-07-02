@@ -35,11 +35,13 @@ class QSize;
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BDirTools>
+#include <BeQtCore/BVersion>
 
 #include <QDialog>
 #include <QList>
 #include <QString>
 #include <QCoreApplication>
+#include <QChar>
 
 /*============================================================================
 ================================ BAboutDialog ================================
@@ -61,6 +63,8 @@ public:
 public:
     void setAppName(const QString &name);
     void setAppVersion(const QString &version);
+    void setAppVersion(const BVersion &version, BVersion::StatusRepresentation r = BVersion::ShortLowercase,
+                       QChar versionSeparator = '.', QChar statusSeparator = '-');
     void setOrganization( const QString &organization, const QString &copyrightPeriod = QString() );
     void setWebsite(const QString &site);
     void setPixmap(const QPixmap &pixmap);

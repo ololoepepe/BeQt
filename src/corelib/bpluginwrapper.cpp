@@ -24,6 +24,7 @@
 #include "bcoreapplication.h"
 #include "bcoreapplication_p.h"
 #include "bpluginwrapper_p.h"
+#include "bversion.h"
 
 #include <QtGlobal>
 #include <QObject>
@@ -86,6 +87,7 @@ bool BPluginWrapperPrivate::load()
     }
     QString tp = iface->type();
     QString nm = iface->name();
+    BVersion v = iface->version();
     if ((!acctptableTypes.isEmpty() && !acctptableTypes.contains(tp)) || (testFunction && !testFunction(obj))
             || globalMap.contains(nm))
     {
@@ -96,6 +98,7 @@ bool BPluginWrapperPrivate::load()
     interface = iface;
     type = tp;
     name = nm;
+    version = v;
     prefereStaticInfo = interface->prefereStaticInfo();
     staticInfo = interface->staticInfo();
     info = interface->info();
@@ -241,7 +244,7 @@ QStringList BPluginWrapper::acceptableFileTypes()
     return BPluginWrapperPrivate::acctptableTypes;
 }
 
-BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfacetestFunction()
+BPluginWrapper::InterfaceTestFunction BPluginWrapper::interfaceTestFunction()
 {
     return BPluginWrapperPrivate::testFunction;
 }
@@ -279,8 +282,9 @@ void BPluginWrapper::setFileName(const QString &fn)
     if (fn == d->fileName)
         return;
     d->fileName = fn;
-    d->type = "";
-    d->name = "";
+    d->type.clear();
+    d->name.clear();
+    d->version.clear();
     d->info = BPluginInterface::PluginInfo();
 }
 
@@ -309,6 +313,11 @@ QString BPluginWrapper::name() const
     return d_func()->name;
 }
 
+BVersion BPluginWrapper::version() const
+{
+    return d_func()->version;
+}
+
 bool BPluginWrapper::prefereStaticInfo() const
 {
     return d_func()->prefereStaticInfo;
@@ -319,7 +328,7 @@ BPluginInterface::PluginInfo BPluginWrapper::info() const
     return d_func()->info;
 }
 
-BPluginInterface::PluginInfoStatic BPluginWrapper::staticInfo() const
+BPluginInterface::StaticPluginInfo BPluginWrapper::staticInfo() const
 {
     return d_func()->staticInfo;
 }

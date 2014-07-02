@@ -30,6 +30,7 @@ class QSettings;
 #include "bglobal.h"
 #include "bplugininterface.h"
 #include "bbase.h"
+#include "bversion.h"
 
 #include <QObject>
 #include <QList>
@@ -55,7 +56,7 @@ public:
     static void setAcceptableTypes(const QStringList &list);
     static void setInterfaceTestFunction(InterfaceTestFunction function);
     static QStringList acceptableFileTypes();
-    static InterfaceTestFunction interfacetestFunction();
+    static InterfaceTestFunction interfaceTestFunction();
     static BPluginWrapper *parentWrapper(const BPluginInterface *i);
 public:
     void setLoaded(bool b);
@@ -66,9 +67,10 @@ public:
     QString fileName() const;
     QString type() const;
     QString name() const;
+    BVersion version() const;
     bool prefereStaticInfo() const;
     BPluginInterface::PluginInfo info() const;
-    BPluginInterface::PluginInfoStatic staticInfo() const;
+    BPluginInterface::StaticPluginInfo staticInfo() const;
     QObject *instance() const;
     BPluginInterface *interface() const;
     QSettings *settings() const;

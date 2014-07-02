@@ -95,14 +95,60 @@ void BNetworkConnectionPrivate::sendNext()
     if ( !q_func()->isConnected() || socketWrapper->isBuisy() || dataQueue.isEmpty() )
         return;
     Data data = dataQueue.dequeue();
-    if ( !data.second.isValid() )
+    if (!data.metaData.isValid())
         return;
-    BNetworkOperation *op = data.second.isRequest() ? requests.value(data.second) : replies.value(data.second);
+    BNetworkOperation *op = data.metaData.isRequest() ? requests.value(data.metaData) : replies.value(data.metaData);
     if (op)
     {
         BNetworkOperationPrivate *opd = op->d_func();
-        socketWrapper->sendData(data.first, data.second) ? opd->setStarted() : opd->setError();
+        socketWrapper->sendData(data.data, data.compressionLevel, data.metaData) ? opd->setStarted() : opd->setError();
     }
+}
+
+BNetworkOperation *BNetworkConnectionPrivate::sendRequest(const QString &op, const QByteArray &data)
+{
+    return sendRequest(op, socketWrapper->compressionLevel(), data);
+}
+
+BNetworkOperation *BNetworkConnectionPrivate::sendRequest(const QString &op, int compressionLevel, const QByteArray &data)
+{
+    if (!q_func()->isConnected() || op.isEmpty())
+        return 0;
+    if (compressionLevel < 0)
+        compressionLevel = -1;
+    else if (compressionLevel > 9)
+        compressionLevel = 9;
+    Data dat;
+    dat.data = data;
+    dat.metaData.setId(QUuid::createUuid());
+    dat.metaData.setIsRequest(true);
+    dat.metaData.setOperation(op);
+    BNetworkOperation *nop = createOperation(dat.metaData);
+    requests.insert(dat.metaData, nop);
+    dataQueue.enqueue(dat);
+    sendNext();
+    return nop;
+}
+
+bool BNetworkConnectionPrivate::sendReply(BNetworkOperation *op, const QByteArray &data)
+{
+    return sendReply(op, socketWrapper->compressionLevel(), data);
+}
+
+bool BNetworkConnectionPrivate::sendReply(BNetworkOperation *op, int compressionLevel, const QByteArray &data)
+{
+    if (!q_func()->isConnected() || !op || !op->isValid() || op->isRequest())
+        return false;
+    if (compressionLevel < 0)
+        compressionLevel = -1;
+    else if (compressionLevel > 9)
+        compressionLevel = 9;
+    Data dat;
+    dat.data = data;
+    dat.metaData = op->metaData();
+    dataQueue.enqueue(dat);
+    sendNext();
+    return true;
 }
 
 BNetworkOperation *BNetworkConnectionPrivate::createOperation(const BNetworkOperationMetaData &metaData)
@@ -589,42 +635,42 @@ QString BNetworkConnection::peerAddress() const
 
 BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QByteArray &data)
 {
-    if (!isConnected() || op.isEmpty())
-        return 0;
-    B_D(BNetworkConnection);
-    BNetworkConnectionPrivate::Data dat;
-    dat.first = data;
-    dat.second.setId(QUuid::createUuid());
-    dat.second.setIsRequest(true);
-    dat.second.setOperation(op);
-    BNetworkOperation *nop = d->createOperation(dat.second);
-    d->requests.insert(dat.second, nop);
-    d->dataQueue.enqueue(dat);
-    d->sendNext();
-    return nop;
+    return d_func()->sendRequest(op, data);
 }
 
 BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, const QVariant &variant)
 {
-    return sendRequest(op, BeQt::variantToData(variant));
+    return d_func()->sendRequest(op, BeQt::serialize(variant));
+}
+
+BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, int compressionLevel, const QByteArray &data)
+{
+    return d_func()->sendRequest(op, compressionLevel, data);
+}
+
+BNetworkOperation *BNetworkConnection::sendRequest(const QString &op, int compressionLevel, const QVariant &variant)
+{
+    return d_func()->sendRequest(op, compressionLevel, BeQt::serialize(variant));
 }
 
 bool BNetworkConnection::sendReply(BNetworkOperation *op, const QByteArray &data)
 {
-    if (!isConnected() || !op || !op->isValid() || op->isRequest())
-        return false;
-    B_D(BNetworkConnection);
-    BNetworkConnectionPrivate::Data dat;
-    dat.first = data;
-    dat.second = op->metaData();
-    d->dataQueue.enqueue(dat);
-    d->sendNext();
-    return true;
+    return d_func()->sendReply(op, data);
 }
 
 bool BNetworkConnection::sendReply(BNetworkOperation *op, const QVariant &variant)
 {
-    return sendReply(op, BeQt::variantToData(variant));
+    return d_func()->sendReply(op, BeQt::serialize(variant));
+}
+
+bool BNetworkConnection::sendReply(BNetworkOperation *op, int compressionLevel, const QByteArray &data)
+{
+    return d_func()->sendReply(op, compressionLevel, data);
+}
+
+bool BNetworkConnection::sendReply(BNetworkOperation *op, int compressionLevel, const QVariant &variant)
+{
+    return d_func()->sendReply(op, compressionLevel, BeQt::serialize(variant));
 }
 
 /*============================== Public slots ==============================*/

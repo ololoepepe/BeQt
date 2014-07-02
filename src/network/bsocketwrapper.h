@@ -61,8 +61,12 @@ public:
     qint64 criticalBufferSize() const;
     bool closeOnCriticalBufferSize() const;
     bool isBuisy() const;
-    bool sendData( const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
-    bool sendData( const QVariant &variant, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData() );
+    bool sendData(const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
+    bool sendData(const QVariant &variant, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
+    bool sendData(const QByteArray &data, int compressionLevel,
+                  const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
+    bool sendData(const QVariant &variant, int compressionLevel,
+                  const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
 Q_SIGNALS:
     void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);

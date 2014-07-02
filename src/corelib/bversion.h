@@ -35,14 +35,6 @@ class QVariant;
 #include <QChar>
 #include <QMetaType>
 
-#if defined(major)
-#undef major
-#endif
-
-#if defined(minor)
-#undef minor
-#endif
-
 /*============================================================================
 ================================ BVersion ====================================
 ============================================================================*/
@@ -66,23 +58,25 @@ public:
         Full
     };
 public:
-    static QString statusToString(Status s, StatusRepresentation r = ShortLowercase);
+    static QString statusToString(Status vs, StatusRepresentation r = ShortLowercase);
     static int compare(const BVersion &v1, const BVersion &v2);
 public:
-    explicit BVersion(qint8 major = -1, qint8 minor = -1, qint8 patch = -1, Status s = NoStatus, qint8 extra = -1);
+    explicit BVersion(qint8 vmajor = -1, qint8 vminor = -1, qint8 vpatch = -1, Status vs = NoStatus,
+                      qint8 vextra = -1);
     explicit BVersion(const QString &s);
     BVersion(const BVersion &other);
     ~BVersion();
 protected:
     explicit BVersion(BVersionPrivate &d);
 public:
-    void setVersion(qint8 major, qint8 minor = -1, qint8 patch = -1, Status s = NoStatus, qint8 extra = -1);
+    void setVersion(qint8 vmajor, qint8 vminor = -1, qint8 vpatch = -1, Status vs = NoStatus, qint8 vextra = -1);
     void setVersion(const QString &s, QChar versionSeparator = QChar('.'), QChar statusSeparator = QChar('-'));
-    qint8 major() const;
-    qint8 minor() const;
-    qint8 patch() const;
-    Status status() const;
-    qint8 extra() const;
+    void clear();
+    qint8 vmajor() const;
+    qint8 vminor() const;
+    qint8 vpatch() const;
+    Status vstatus() const;
+    qint8 vextra() const;
     QString toString(StatusRepresentation r = ShortLowercase, QChar versionSeparator = QChar('.'),
                      QChar statusSeparator = QChar('-')) const;
     int compare(const BVersion &other) const;

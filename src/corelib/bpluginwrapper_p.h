@@ -30,6 +30,7 @@ class QPluginLoader;
 #include "bglobal.h"
 #include "bplugininterface.h"
 #include "bbase_p.h"
+#include "bversion.h"
 
 #include <QList>
 #include <QString>
@@ -73,9 +74,10 @@ public:
     bool activated;
     QString type;
     QString name;
+    BVersion version;
     bool prefereStaticInfo;
     BPluginInterface::PluginInfo info;
-    BPluginInterface::PluginInfoStatic staticInfo;
+    BPluginInterface::StaticPluginInfo staticInfo;
 private:
     Q_DISABLE_COPY(BPluginWrapperPrivate)
     friend class BCoreApplicationPrivate;

@@ -50,7 +50,6 @@ protected:
 public:
     QString title() const;
     QIcon icon() const;
-    QVariantMap valueMap() const;
 private:
     Q_DISABLE_COPY(BPluginsSettingsTab)
 };

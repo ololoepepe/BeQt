@@ -35,6 +35,7 @@
 #include <QUuid>
 #include <QMetaObject>
 #include <QVariant>
+#include <QMetaObject>
 
 /*============================================================================
 ================================ BSocketWrapperPrivate =======================
@@ -75,6 +76,60 @@ void BSocketWrapperPrivate::resetOut()
     bytesOutTotal = 0;
     bytesOutReady = 0;
     metaOut.invalidate();
+}
+
+bool BSocketWrapperPrivate::sendData(const QByteArray &data, const BNetworkOperationMetaData &metaData)
+{
+    return sendData(data, comprLvl, metaData);
+}
+
+bool BSocketWrapperPrivate::sendData(const QByteArray &data, int compressionLevel,
+                                     const BNetworkOperationMetaData &metaData)
+{
+    if (socket.isNull() || !socket->isWritable() || q_func()->isBuisy())
+        return false;
+    if (!metaData.isValid() && data.isEmpty())
+        return true;
+    if (metaData.isValid())
+    {
+        metaOut = metaData;
+        QByteArray bam;
+        QDataStream outm(&bam, QIODevice::WriteOnly);
+        outm.setVersion(BeQt::DataStreamVersion);
+        outm << (qint64) 0;
+        outm << true;
+        outm << metaData.id();
+        outm << metaData.isRequest();
+        outm << metaData.operation();
+        outm.device()->seek(0);
+        outm << (qint64) (bam.size() - sizeof(qint64));
+        qint64 bom = socket->write(bam);
+        if (bom > 0)
+            bytesOutTotal = bom;
+        else
+            return false;
+    }
+    if (compressionLevel < 0)
+        compressionLevel = -1;
+    else if (compressionLevel > 9)
+        compressionLevel = 9;
+    QByteArray ba;
+    QDataStream out(&ba, QIODevice::WriteOnly);
+    out.setVersion(BeQt::DataStreamVersion);
+    out << (qint64) 0;
+    out << false;
+    out << qCompress(data, compressionLevel);
+    out.device()->seek(0);
+    out << (qint64) (ba.size() - sizeof(qint64));
+    qint64 bo = socket->write(ba);
+    if (bo < 0)
+        return false;
+    bytesOutTotal += bo;
+    if (metaOut.isValid())
+        QMetaObject::invokeMethod(q_func(), "uploadProgress", Q_ARG(BNetworkOperationMetaData, metaOut),
+                                  Q_ARG(qint64, bytesOutReady), Q_ARG(qint64, bytesOutReady));
+    socket->flush();
+    return true;
 }
 
 /*============================== Public slots ==============================*/
@@ -274,49 +329,20 @@ bool BSocketWrapper::isBuisy() const
 
 bool BSocketWrapper::sendData(const QByteArray &data, const BNetworkOperationMetaData &metaData)
 {
-    B_D(BSocketWrapper);
-    if ( d->socket.isNull() || !d->socket->isWritable() || isBuisy() )
-        return false;
-    if ( !metaData.isValid() && data.isEmpty() )
-        return true;
-    if ( metaData.isValid() )
-    {
-        d->metaOut = metaData;
-        QByteArray bam;
-        QDataStream outm(&bam, QIODevice::WriteOnly);
-        outm.setVersion(BeQt::DataStreamVersion);
-        outm << (qint64) 0;
-        outm << true;
-        outm << metaData.id();
-        outm << metaData.isRequest();
-        outm << metaData.operation();
-        outm.device()->seek(0);
-        outm << (qint64) ( bam.size() - sizeof(qint64) );
-        qint64 bom = d->socket->write(bam);
-        if (bom > 0)
-            d->bytesOutTotal = bom;
-        else
-            return false;
-    }
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    out << (qint64) 0;
-    out << false;
-    out << qCompress(data, d->comprLvl);
-    out.device()->seek(0);
-    out << (qint64) ( ba.size() - sizeof(qint64) );
-    qint64 bo = d->socket->write(ba);
-    if (bo < 0)
-        return false;
-    d->bytesOutTotal += bo;
-    if ( d->metaOut.isValid() )
-        Q_EMIT uploadProgress(d->metaOut, d->bytesOutReady, d->bytesOutReady);
-    d->socket->flush();
-    return true;
+    return d_func()->sendData(data, metaData);
 }
 
 bool BSocketWrapper::sendData(const QVariant &variant, const BNetworkOperationMetaData &metaData)
 {
-    return sendData(BeQt::variantToData(variant), metaData);
+    return d_func()->sendData(BeQt::serialize(variant), metaData);
+}
+
+bool BSocketWrapper::sendData(const QByteArray &data, int compressionLevel, const BNetworkOperationMetaData &metaData)
+{
+    return d_func()->sendData(data, compressionLevel, metaData);
+}
+
+bool BSocketWrapper::sendData(const QVariant &variant, int compressionLevel, const BNetworkOperationMetaData &metaData)
+{
+    return d_func()->sendData(BeQt::serialize(variant), compressionLevel, metaData);
 }

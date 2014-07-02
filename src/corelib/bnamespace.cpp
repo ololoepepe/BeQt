@@ -259,24 +259,6 @@ qreal area(const QRectF &r)
     return r.size().width() * r.size().height();
 }
 
-QByteArray variantToData(const QVariant &variant)
-{
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(DataStreamVersion);
-    out << variant;
-    return ba;
-}
-
-QVariant dataToVariant(const QByteArray &data)
-{
-    QDataStream in(data);
-    in.setVersion(DataStreamVersion);
-    QVariant v;
-    in >> v;
-    return v;
-}
-
 void msleep(unsigned long msecs)
 {
     ThreadHack::msleepHack(msecs);
@@ -400,10 +382,16 @@ void startProcess(QProcess *proc, const QString &command, const QStringList &arg
 
 bool startProcessDetached(const QString &command, const QStringList &arguments)
 {
+    return startProcessDetached(command, QString(), arguments);
+}
+
+bool startProcessDetached(const QString &command, const QString &workingDir, const QStringList &arguments)
+{
     if (command.isEmpty())
         return false;
     //Workaround to handle long arguments on Windows
-    return QProcess::startDetached(command + " " + BTerminalIOHandler::mergeArguments(arguments));
+    return QProcess::startDetached(command + " " + BTerminalIOHandler::mergeArguments(arguments), QStringList(),
+                                   workingDir);
     //End of the workaround
 }
 

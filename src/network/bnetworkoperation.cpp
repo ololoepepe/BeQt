@@ -254,7 +254,7 @@ const QByteArray &BNetworkOperation::data() const
 
 QVariant BNetworkOperation::variantData() const
 {
-    return BeQt::dataToVariant(data());
+    return BeQt::deserialize(data());
 }
 
 BNetworkOperationMetaData BNetworkOperation::metaData() const

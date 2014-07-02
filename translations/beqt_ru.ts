@@ -4,90 +4,90 @@
 <context>
     <name>BAboutDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="234"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="236"/>
         <source>About</source>
         <comment>windowTitle</comment>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="245"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="247"/>
         <source>Website</source>
         <comment>lbl text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="240"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="242"/>
         <source>Copyright</source>
         <comment>lbl text</comment>
         <translation>Авторские права</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="226"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="228"/>
         <source>About BeQt</source>
         <comment>adlg windowTitle</comment>
         <translation>О библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="254"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="256"/>
         <source>Description</source>
         <comment>twgt tabText</comment>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="256"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="258"/>
         <source>Change log</source>
         <comment>twgt tabText</comment>
         <translation>История изменений</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="258"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="260"/>
         <source>Authors</source>
         <comment>twgt tabText</comment>
         <translation>Авторы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="260"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="262"/>
         <source>Translators</source>
         <comment>twgt tabText</comment>
         <translation>Переводчики</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="262"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="264"/>
         <source>Thanks to</source>
         <comment>twgt tabText</comment>
         <translation>Благодарности</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="264"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="266"/>
         <source>License</source>
         <comment>twgt tabText</comment>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="343"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="345"/>
         <source>No image available</source>
         <translation>Изображение отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="349"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="351"/>
         <source>Website</source>
         <comment>personInfo text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="352"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="354"/>
         <source>E-mail</source>
         <comment>personInfo text</comment>
         <translation>Электронная почта</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="509"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="511"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="510"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="512"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>
@@ -724,20 +724,20 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="346"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="357"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="392"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="403"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
         <translation>Входящее соединение</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="652"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="698"/>
         <source>Unknown reply</source>
         <comment>log text</comment>
         <translation>Неизвестный ответ</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="659"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="705"/>
         <source>Unknown request</source>
         <comment>log text</comment>
         <translation>Неизвестный запрос</translation>
@@ -746,49 +746,49 @@
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="125"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="171"/>
         <source>Connected</source>
         <comment>log text</comment>
         <translation>Подключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="133"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="179"/>
         <source>Disconnected</source>
         <comment>log text</comment>
         <translation>Отключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="144"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="190"/>
         <source>Error:</source>
         <comment>log text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="171"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="217"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation>Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="208"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="254"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="231"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="277"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="253"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="299"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="265"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="311"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>
@@ -1687,53 +1687,53 @@
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="526"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="514"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="528"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="516"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="530"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="518"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="532"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="520"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="534"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="522"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="536"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="524"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="589"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="577"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="592"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="580"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="596"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="584"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>

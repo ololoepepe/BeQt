@@ -23,9 +23,7 @@
 #define BNAMESPACE_H
 
 class QUuid;
-class QString;
 class QProcess;
-class QStringList;
 class QTextCodec;
 class QObject;
 class QRect;
@@ -40,6 +38,8 @@ class QByterray;
 #include <QPair>
 #include <QSysInfo>
 #include <QDataStream>
+#include <QStringList>
+#include <QString>
 
 /*============================================================================
 ================================ BeQt ========================================
@@ -96,8 +96,6 @@ const QDataStream::Version DataStreamVersion = QDataStream::Qt_4_8;
 
 B_CORE_EXPORT int area(const QRect &r);
 B_CORE_EXPORT qreal area(const QRectF &r);
-B_CORE_EXPORT QByteArray variantToData(const QVariant &variant);
-B_CORE_EXPORT QVariant dataToVariant(const QByteArray &data);
 B_CORE_EXPORT void msleep(unsigned long msecs);
 B_CORE_EXPORT void sleep(unsigned long secs);
 B_CORE_EXPORT void usleep(unsigned long usecs);
@@ -114,8 +112,10 @@ B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT QVariant deserialize(const QByteArray &data, QDataStream::Version version = DataStreamVersion);
-B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments);
-B_CORE_EXPORT bool startProcessDetached(const QString &command, const QStringList &arguments);
+B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments = QStringList());
+B_CORE_EXPORT bool startProcessDetached(const QString &command, const QStringList &arguments = QStringList());
+B_CORE_EXPORT bool startProcessDetached(const QString &command, const QString &workingDir,
+                                        const QStringList &arguments = QStringList());
 B_CORE_EXPORT int execProcess(const QString &command, const QStringList &arguments,
                               int startTimeout, int finishTimeout, QString *output = 0, QTextCodec *codec = 0);
 B_CORE_EXPORT int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,

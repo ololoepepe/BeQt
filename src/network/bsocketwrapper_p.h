@@ -24,6 +24,8 @@
 
 class BSocketWrapperPrivate;
 
+class QByteArray;
+
 #include "bgenericsocket.h"
 #include "bsocketwrapper.h"
 #include "bnetworkoperationmetadata.h"
@@ -50,6 +52,9 @@ public:
     void init();
     void resetIn();
     void resetOut();
+    bool sendData(const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
+    bool sendData(const QByteArray &data, int compressionLevel,
+                  const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
 public Q_SLOTS:
     void bytesWritten(qint64 bytes);
     void disconnected();

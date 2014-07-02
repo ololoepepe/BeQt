@@ -23,6 +23,7 @@
 #define BGUIPLUGININTERFACE_H
 
 class BAbstractSettingsTab;
+class BAboutDialog;
 
 class QPixmap;
 
@@ -30,6 +31,7 @@ class QPixmap;
 
 #include <QtPlugin>
 #include <QVariantMap>
+#include <QStringList>
 
 /*============================================================================
 ================================ BGuiPluginInterface =========================
@@ -41,8 +43,11 @@ public:
     virtual ~BGuiPluginInterface() {}
 public:
     virtual QPixmap pixmap() const = 0;
-    virtual BAbstractSettingsTab *settingsTab() const = 0;
-    virtual void handleSettings(const QVariantMap &s) = 0;
+    virtual BAbstractSettingsTab *createSettingsTab() = 0;
+    virtual QStringList helpSearchPaths() const = 0;
+    virtual QString helpIndex() const = 0;
+    virtual BAboutDialog *createAboutDialog() = 0;
+    virtual void processStandardAboutDialog(BAboutDialog *dlg) const = 0;
 };
 
 Q_DECLARE_INTERFACE(BGuiPluginInterface, "BeQt.BGuiPluginInterface")
