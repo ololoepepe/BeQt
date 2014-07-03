@@ -167,6 +167,91 @@ QRegExp standardRegExp(RegExpPattern type)
     return QRegExp(standardRegExpPattern(type));
 }
 
+QStringList splitCommand(const QString &cmd, bool *ok)
+{
+    bool b = false;
+    QStringList args;
+    QString command = splitCommand(cmd, args, &b);
+    if (!b)
+        return bRet(ok, false, QStringList());
+    args.prepend(command);
+    return bRet(ok, true, args);
+}
+
+QStringList splitCommand(const QString &cmd, QString &command, bool *ok)
+{
+    bool b = false;
+    QStringList args;
+    QString c = splitCommand(cmd, args, &b);
+    if (!b)
+    {
+        command.clear();
+        return bRet(ok, false, QStringList());
+    }
+    command = c;
+    return bRet(ok, true, args);
+}
+
+QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
+{
+    //TODO: implement single quote support
+    QStringList args;
+    QString arg;
+    bool quot = false;
+    for (int i = 0; i < cmd.length(); ++i)
+    {
+        const QChar &c = cmd.at(i);
+        if (c.isSpace())
+        {
+            if (quot)
+            {
+                arg.append(c);
+            }
+            else if (!arg.isEmpty())
+            {
+                args << arg;
+                arg.clear();
+            }
+        }
+        else
+        {
+            if (c == '\"' && (i < 1 || cmd.at(i - 1) != '\\'))
+                quot = !quot;
+            else
+                arg.append(c);
+        }
+    }
+    if (!arg.isEmpty())
+    {
+        if (quot)
+        {
+            arguments.clear();
+            return bRet(ok, false, QString());
+        }
+        args << arg;
+    }
+    QString command;
+    if (!args.isEmpty())
+        command = args.takeFirst();
+    arguments = args;
+    return bRet(ok, true, command);
+}
+
+QString mergeArguments(const QStringList &list)
+{
+    QString args;
+    foreach (const QString &a, list)
+        args += (a.contains(' ') ? BTextTools::wrapped(a) : a) + " ";
+    if (!args.isEmpty())
+        args.remove(args.length() - 1, 1);
+    return args;
+}
+
+QString mergeArguments(const QString &command, const QStringList &arguments)
+{
+    return mergeArguments(QStringList() << command << arguments);
+}
+
 QStringList removeDuplicates(const QStringList &list, Qt::CaseSensitivity cs, int *count)
 {
     QStringList nlist = list;

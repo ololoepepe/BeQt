@@ -19,8 +19,8 @@
 **
 ****************************************************************************/
 
-#include "bterminaliohandler.h"
-#include "bterminaliohandler_p.h"
+#include "bterminal.h"
+#include "bterminal_p.h"
 #include "bglobal.h"
 #include "bbaseobject.h"
 #include "bbaseobject_p.h"
@@ -60,14 +60,14 @@
 ================================ Static global functions =====================
 ============================================================================*/
 
-static bool areEqual(const BTerminalIOHandler::CommandHelpList &l1, const BTerminalIOHandler::CommandHelpList &l2)
+static bool areEqual(const BTerminal::CommandHelpList &l1, const BTerminal::CommandHelpList &l2)
 {
     if (l1.size() != l2.size())
         return false;
     foreach (int i, bRangeD(0, l1.size() - 1))
     {
-        const BTerminalIOHandler::CommandHelp &ch1 = l1.at(i);
-        const BTerminalIOHandler::CommandHelp &ch2 = l2.at(i);
+        const BTerminal::CommandHelp &ch1 = l1.at(i);
+        const BTerminal::CommandHelp &ch2 = l2.at(i);
         if (ch1.usage != ch2.usage || ch1.description != ch2.description)
             return false;
     }
@@ -87,7 +87,7 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
     }
     else
     {
-        s = bReadLine(BeQt::translate("BTerminalIOHandler", "Enter locale:") + " ");
+        s = bReadLine(BeQt::translate("BTerminal", "Enter locale:") + " ");
         if (s.isEmpty())
             return false;
     }
@@ -100,25 +100,25 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
 }
 
 /*============================================================================
-================================ BTerminalIOHandlerThread ====================
+================================ BTerminalThread =============================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
 
-BTerminalIOHandlerThread::BTerminalIOHandlerThread() :
+BTerminalThread::BTerminalThread() :
     QThread(0), readStream(stdin, QIODevice::ReadOnly)
 {
     //
 }
 
-BTerminalIOHandlerThread::~BTerminalIOHandlerThread()
+BTerminalThread::~BTerminalThread()
 {
     //
 }
 
 /*============================== Protected methods =========================*/
 
-void BTerminalIOHandlerThread::run()
+void BTerminalThread::run()
 {
     forever
     {
@@ -137,18 +137,18 @@ void BTerminalIOHandlerThread::run()
 }
 
 /*============================================================================
-================================ BTerminalIOHandlerPrivate
+================================ BTerminalPrivate ============================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
 
-BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
+BTerminalPrivate::BTerminalPrivate(BTerminal *q) :
     BBaseObjectPrivate(q)
 {
     //
 }
 
-BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
+BTerminalPrivate::~BTerminalPrivate()
 {
     delete root;
     removeThread();
@@ -156,19 +156,19 @@ BTerminalIOHandlerPrivate::~BTerminalIOHandlerPrivate()
 
 /*============================== Static public methods =====================*/
 
-bool BTerminalIOHandlerPrivate::testInit(const char *where)
+bool BTerminalPrivate::testInit(const char *where)
 {
-    const char *w = where ? where : "BTerminalIOHandler";
-    B_QS(BTerminalIOHandler);
-    return bTest(qs, w, "There must be a BTerminalIOHandler instance");
+    const char *w = where ? where : "BTerminal";
+    B_QS(BTerminal);
+    return bTest(qs, w, "There must be a BTerminal instance");
 }
 
-bool BTerminalIOHandlerPrivate::testUnique()
+bool BTerminalPrivate::testUnique()
 {
-    return bTest(!qs_func(), "BTerminalIOHandler", "There must be only one instance of BTerminalIOHandler");
+    return bTest(!qs_func(), "BTerminal", "There must be only one instance of BTerminal");
 }
 
-BTerminalIOHandlerThread *BTerminalIOHandlerPrivate::initThread(bool silent)
+BTerminalThread *BTerminalPrivate::initThread(bool silent)
 {
     if (readThread)
         return readThread;
@@ -177,15 +177,15 @@ BTerminalIOHandlerThread *BTerminalIOHandlerPrivate::initThread(bool silent)
         return readThread;
     if (silent && !QCoreApplication::instance())
         return 0;
-    if (!silent && !bTest(QCoreApplication::instance(), "BTerminalIOHandlerPrivate",
+    if (!silent && !bTest(QCoreApplication::instance(), "BTerminalPrivate",
                           "There must be a QCoreApplication instance"))
         return 0;
-    readThread = new BTerminalIOHandlerThread;
+    readThread = new BTerminalThread;
     readThread->start();
     return readThread;
 }
 
-void BTerminalIOHandlerPrivate::removeThread()
+void BTerminalPrivate::removeThread()
 {
     if (!readThread)
         return;
@@ -200,17 +200,17 @@ void BTerminalIOHandlerPrivate::removeThread()
     threadMutex.unlock();
 }
 
-void BTerminalIOHandlerPrivate::resetColor()
+void BTerminalPrivate::resetColor()
 {
 #if defined(Q_OS_UNIX)
     QString s = "\e[";
-    if (BTerminalIOHandler::DefaultColor != textColor)
+    if (BTerminal::DefaultColor != textColor)
     {
         s += "0;3" + QString::number(textColor);
-        if (BTerminalIOHandler::DefaultColor != backgroundColor)
+        if (BTerminal::DefaultColor != backgroundColor)
             s += ";4" + QString::number(backgroundColor);
     }
-    else if (BTerminalIOHandler::DefaultColor != backgroundColor)
+    else if (BTerminal::DefaultColor != backgroundColor)
     {
         s += "7;3" + QString::number(backgroundColor);
     }
@@ -219,7 +219,7 @@ void BTerminalIOHandlerPrivate::resetColor()
         s += "0";
     }
     s += "m";
-    BTerminalIOHandler::write(s);
+    BTerminal::write(s);
 #elif defined (Q_OS_WIN)
     init_once(WORD, DefCol, WORD())
     {
@@ -228,64 +228,64 @@ void BTerminalIOHandlerPrivate::resetColor()
         DefCol = csbi.wAttributes;
     }
     WORD c = DefCol;
-    if (BTerminalIOHandler::DefaultColor != textColor)
+    if (BTerminal::DefaultColor != textColor)
     {
         c = c & ~(FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE);
         switch (textColor)
         {
-        case BTerminalIOHandler::Red:
+        case BTerminal::Red:
             c = c | FOREGROUND_RED;
             break;
-        case BTerminalIOHandler::Green:
+        case BTerminal::Green:
             c = c | FOREGROUND_GREEN;
             break;
-        case BTerminalIOHandler::Brown:
+        case BTerminal::Brown:
             c = c | FOREGROUND_GREEN | FOREGROUND_RED;
             break;
-        case BTerminalIOHandler::Blue:
+        case BTerminal::Blue:
             c = c | FOREGROUND_BLUE;
             break;
-        case BTerminalIOHandler::Magenta:
+        case BTerminal::Magenta:
             c = c | FOREGROUND_RED | FOREGROUND_BLUE;
             break;
-        case BTerminalIOHandler::Cyan:
+        case BTerminal::Cyan:
             c = c | FOREGROUND_BLUE | FOREGROUND_GREEN;
             break;
-        case BTerminalIOHandler::Lightgray:
+        case BTerminal::Lightgray:
             c = c | FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED;
             break;
-        case BTerminalIOHandler::Black:
+        case BTerminal::Black:
         default:
             break;
         }
     }
-    if (BTerminalIOHandler::DefaultColor != backgroundColor)
+    if (BTerminal::DefaultColor != backgroundColor)
     {
         c = c & ~(BACKGROUND_RED | BACKGROUND_GREEN | BACKGROUND_BLUE);
         switch (backgroundColor)
         {
-        case BTerminalIOHandler::Red:
+        case BTerminal::Red:
             c = c | BACKGROUND_RED;
             break;
-        case BTerminalIOHandler::Green:
+        case BTerminal::Green:
             c = c | BACKGROUND_GREEN;
             break;
-        case BTerminalIOHandler::Brown:
+        case BTerminal::Brown:
             c = c | BACKGROUND_GREEN | BACKGROUND_RED;
             break;
-        case BTerminalIOHandler::Blue:
+        case BTerminal::Blue:
             c = c | BACKGROUND_BLUE;
             break;
-        case BTerminalIOHandler::Magenta:
+        case BTerminal::Magenta:
             c = c | BACKGROUND_RED | BACKGROUND_BLUE;
             break;
-        case BTerminalIOHandler::Cyan:
+        case BTerminal::Cyan:
             c = c | BACKGROUND_BLUE | BACKGROUND_GREEN;
             break;
-        case BTerminalIOHandler::Lightgray:
+        case BTerminal::Lightgray:
             c = c | BACKGROUND_BLUE | BACKGROUND_GREEN | BACKGROUND_RED;
             break;
-        case BTerminalIOHandler::Black:
+        case BTerminal::Black:
         default:
             break;
         }
@@ -296,11 +296,11 @@ void BTerminalIOHandlerPrivate::resetColor()
 
 /*============================== Public methods ============================*/
 
-void BTerminalIOHandlerPrivate::init()
+void BTerminalPrivate::init()
 {
     root = 0;
     translations = true;
-    BTerminalIOHandlerThread *t = initThread();
+    BTerminalThread *t = initThread();
     if (!t)
         return;
     t->disconnect(SIGNAL(lineRead(QString)));
@@ -309,13 +309,13 @@ void BTerminalIOHandlerPrivate::init()
 
 /*============================== Public slots ==============================*/
 
-void BTerminalIOHandlerPrivate::lineRead(const QString &text)
+void BTerminalPrivate::lineRead(const QString &text)
 {
-    lastArgs = BTerminalIOHandler::splitCommand(text);
+    lastArgs = BTextTools::splitCommand(text);
     lastCommand = !lastArgs.isEmpty() ? lastArgs.takeFirst() : QString();
     if (lastCommand.isEmpty())
         return;
-    B_Q(BTerminalIOHandler);
+    B_Q(BTerminal);
     QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, lastCommand), Q_ARG(QStringList, lastArgs));
     if (internalHandlers.contains(lastCommand))
         (q->*internalHandlers.value(lastCommand))(lastCommand, lastArgs);
@@ -327,34 +327,34 @@ void BTerminalIOHandlerPrivate::lineRead(const QString &text)
 
 /*============================== Static public variables ===================*/
 
-QMutex BTerminalIOHandlerPrivate::colorMutex;
-QMutex BTerminalIOHandlerPrivate::echoMutex;
-QMutex BTerminalIOHandlerPrivate::titleMutex;
-QMutex BTerminalIOHandlerPrivate::readMutex;
-QMutex BTerminalIOHandlerPrivate::writeMutex;
-QMutex BTerminalIOHandlerPrivate::writeErrMutex;
-QTextStream BTerminalIOHandlerPrivate::writeStream(stdout, QIODevice::WriteOnly);
-QTextStream BTerminalIOHandlerPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
-BTerminalIOHandlerThread *BTerminalIOHandlerPrivate::readThread = 0;
-QMutex BTerminalIOHandlerPrivate::threadMutex;
-BTerminalIOHandler::Color BTerminalIOHandlerPrivate::textColor = BTerminalIOHandler::DefaultColor;
-BTerminalIOHandler::Color BTerminalIOHandlerPrivate::backgroundColor = BTerminalIOHandler::DefaultColor;
+QMutex BTerminalPrivate::colorMutex;
+QMutex BTerminalPrivate::echoMutex;
+QMutex BTerminalPrivate::titleMutex;
+QMutex BTerminalPrivate::readMutex;
+QMutex BTerminalPrivate::writeMutex;
+QMutex BTerminalPrivate::writeErrMutex;
+QTextStream BTerminalPrivate::writeStream(stdout, QIODevice::WriteOnly);
+QTextStream BTerminalPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
+BTerminalThread *BTerminalPrivate::readThread = 0;
+QMutex BTerminalPrivate::threadMutex;
+BTerminal::Color BTerminalPrivate::textColor = BTerminal::DefaultColor;
+BTerminal::Color BTerminalPrivate::backgroundColor = BTerminal::DefaultColor;
 
 /*============================================================================
-================================ BTerminalIOHandler ==========================
+================================ BTerminal ===================================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
 
-BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
-    QObject(parent), BBaseObject(*new BTerminalIOHandlerPrivate(this))
+BTerminal::BTerminal(QObject *parent) :
+    QObject(parent), BBaseObject(*new BTerminalPrivate(this))
 {
     d_func()->init();
-    BTerminalIOHandlerPrivate::testUnique();
+    BTerminalPrivate::testUnique();
     _m_self = this;
 }
 
-BTerminalIOHandler::~BTerminalIOHandler()
+BTerminal::~BTerminal()
 {
     _m_self = 0;
 }
@@ -362,23 +362,23 @@ BTerminalIOHandler::~BTerminalIOHandler()
 
 /*============================== Protected constructors ====================*/
 
-BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
+BTerminal::BTerminal(BTerminalPrivate &d, QObject *parent) :
     QObject(parent), BBaseObject(d)
 {
     d_func()->init();
-    BTerminalIOHandlerPrivate::testUnique();
+    BTerminalPrivate::testUnique();
     _m_self = this;
 }
 
 /*============================== Static public methods =====================*/
 
-QString BTerminalIOHandler::command(StandardCommand cmd)
+QString BTerminal::command(StandardCommand cmd)
 {
     QStringList sl = commands(cmd);
     return !sl.isEmpty() ? sl.first() : QString();
 }
 
-QStringList BTerminalIOHandler::commands(StandardCommand cmd)
+QStringList BTerminal::commands(StandardCommand cmd)
 {
     QStringList sl;
     switch (cmd)
@@ -398,13 +398,13 @@ QStringList BTerminalIOHandler::commands(StandardCommand cmd)
     return sl;
 }
 
-BTerminalIOHandler::CommandHelp BTerminalIOHandler::commandHelp(StandardCommand cmd)
+BTerminal::CommandHelp BTerminal::commandHelp(StandardCommand cmd)
 {
     CommandHelpList l = commandHelpList(cmd);
     return !l.isEmpty() ? l.first() : CommandHelp();
 }
 
-BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(StandardCommand cmd)
+BTerminal::CommandHelpList BTerminal::commandHelpList(StandardCommand cmd)
 {
     CommandHelpList l;
     CommandHelp h;
@@ -412,36 +412,36 @@ BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(Standard
     {
     case QuitCommand:
         h.usage = "quit|exit";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Quit the application");
+        h.description = BTranslation::translate("BTerminal", "Quit the application");
         l << h;
         break;
     case SetCommand:
         h.usage = "set --tree";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Show list of all available settings");
+        h.description = BTranslation::translate("BTerminal", "Show list of all available settings");
         l << h;
         h.usage = "set --show|--description <key>";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Show the value for <key> or it's description");
+        h.description = BTranslation::translate("BTerminal", "Show the value for <key> or it's description");
         l << h;
         h.usage = "set <key> [value]";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Set the value for <key> to [value] "
+        h.description = BTranslation::translate("BTerminal", "Set the value for <key> to [value] "
                                                 "(if specified) or request value input");
         l << h;
         break;
     case HelpCommand:
         h.usage = "help <command>";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Show description of <command>");
+        h.description = BTranslation::translate("BTerminal", "Show description of <command>");
         l << h;
         h.usage = "help [--commands|--settings|--all]";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Show basic help, or:\n"
+        h.description = BTranslation::translate("BTerminal", "Show basic help, or:\n"
                                                 "  --commands - list of all available commands\n"
                                                 "  --settings - list of all available settings\n"
                                                 "  --all - all of the above (including basic help)");
         l << h;
         h.usage = "help --about [description|changelog|license|authors|translations|thanksto]";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Show information about this application");
+        h.description = BTranslation::translate("BTerminal", "Show information about this application");
         l << h;
         h.usage = "help --about-beqt [description|changelog|license|authors|translations|thanksto]";
-        h.description = BTranslation::translate("BTerminalIOHandler", "Show information about BeQt libraries");
+        h.description = BTranslation::translate("BTerminal", "Show information about BeQt libraries");
         l << h;
         break;
     default:
@@ -450,77 +450,32 @@ BTerminalIOHandler::CommandHelpList BTerminalIOHandler::commandHelpList(Standard
     return l;
 }
 
-BTerminalIOHandler::InternalHandler BTerminalIOHandler::handler(StandardCommand cmd)
+BTerminal::InternalHandler BTerminal::handler(StandardCommand cmd)
 {
     switch (cmd)
     {
     case QuitCommand:
-        return &BTerminalIOHandler::handleQuit;
+        return &BTerminal::handleQuit;
     case SetCommand:
-        return &BTerminalIOHandler::handleSet;
+        return &BTerminal::handleSet;
     case HelpCommand:
-        return &BTerminalIOHandler::handleHelp;
+        return &BTerminal::handleHelp;
     default:
         return 0;
     }
 }
 
-BTerminalIOHandler *BTerminalIOHandler::instance()
+BTerminal *BTerminal::instance()
 {
     return _m_self;
 }
 
-QStringList BTerminalIOHandler::splitCommand(const QString &command)
-{
-    QStringList args;
-    QString arg;
-    bool quot = false;
-    for (int i = 0; i < command.length(); ++i)
-    {
-        const QChar &c = command.at(i);
-        if ( c.isSpace() )
-        {
-            if (quot)
-            {
-                arg.append(c);
-            }
-            else if ( !arg.isEmpty() )
-            {
-                args << arg;
-                arg.clear();
-            }
-        }
-        else
-        {
-            if ( c == '\"' && (i < 1 || command.at(i - 1) != '\\') )
-                quot = !quot;
-            else
-                arg.append(c);
-        }
-    }
-    if (!arg.isEmpty() && !quot)
-        args << arg;
-    if ( !args.isEmpty() )
-        args.first().toLower();
-    return args;
-}
-
-QString BTerminalIOHandler::mergeArguments(const QStringList &arguments)
-{
-    QString args;
-    foreach (const QString &a, arguments)
-        args += (a.contains(' ') ? BTextTools::wrapped(a) : a) + " ";
-    if ( !args.isEmpty() )
-        args.remove(args.length() - 1, 1);
-    return args;
-}
-
-QString BTerminalIOHandler::readLine(const QString &text)
+QString BTerminal::readLine(const QString &text)
 {
     if (!text.isEmpty())
         write(text);
-    BTerminalIOHandlerThread *t = BTerminalIOHandlerPrivate::initThread(true);
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::readMutex);
+    BTerminalThread *t = BTerminalPrivate::initThread(true);
+    QMutexLocker locker(&BTerminalPrivate::readMutex);
     QString line;
     if (t)
     {
@@ -535,7 +490,7 @@ QString BTerminalIOHandler::readLine(const QString &text)
     return line;
 }
 
-QString BTerminalIOHandler::readLineSecure(const QString &text)
+QString BTerminal::readLineSecure(const QString &text)
 {
     setStdinEchoEnabled(false);
     QString line = readLine(text);
@@ -544,33 +499,33 @@ QString BTerminalIOHandler::readLineSecure(const QString &text)
     return line;
 }
 
-void BTerminalIOHandler::write(const QString &text)
+void BTerminal::write(const QString &text)
 {
     if (text.isEmpty())
         return;
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::writeMutex);
-    BTerminalIOHandlerPrivate::writeStream << text;
-    BTerminalIOHandlerPrivate::writeStream.flush();
+    QMutexLocker locker(&BTerminalPrivate::writeMutex);
+    BTerminalPrivate::writeStream << text;
+    BTerminalPrivate::writeStream.flush();
 }
 
-void BTerminalIOHandler::writeLine(const QString &text)
+void BTerminal::writeLine(const QString &text)
 {
     write(text + "\n");
 }
 
-void BTerminalIOHandler::writeErr(const QString &text)
+void BTerminal::writeErr(const QString &text)
 {
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::writeErrMutex);
-    BTerminalIOHandlerPrivate::writeErrStream << text;
-    BTerminalIOHandlerPrivate::writeErrStream.flush();
+    QMutexLocker locker(&BTerminalPrivate::writeErrMutex);
+    BTerminalPrivate::writeErrStream << text;
+    BTerminalPrivate::writeErrStream.flush();
 }
 
-void BTerminalIOHandler::writeLineErr(const QString &text)
+void BTerminal::writeLineErr(const QString &text)
 {
     writeErr(text + "\n");
 }
 
-void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &description)
+void BTerminal::writeHelpLine(const QString &usage, const QString &description)
 {
     if (usage.isEmpty())
         return;
@@ -589,20 +544,20 @@ void BTerminalIOHandler::writeHelpLine(const QString &usage, const QString &desc
     writeLine(s);
 }
 
-void BTerminalIOHandler::writeHelpLine(const QString &usage, const BTranslation &description, bool translate)
+void BTerminal::writeHelpLine(const QString &usage, const BTranslation &description, bool translate)
 {
     writeHelpLine(usage, translate ? description.translate() : description.sourceText());
 }
 
-void BTerminalIOHandler::writeHelpLines(const CommandHelpList &list, bool translate)
+void BTerminal::writeHelpLines(const CommandHelpList &list, bool translate)
 {
     foreach (const CommandHelp &h, list)
         writeHelpLine(h.usage, h.description, translate);
 }
 
-void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
+void BTerminal::setStdinEchoEnabled(bool enabled)
 {
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::echoMutex);
+    QMutexLocker locker(&BTerminalPrivate::echoMutex);
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
@@ -623,13 +578,13 @@ void BTerminalIOHandler::setStdinEchoEnabled(bool enabled)
 #endif
 }
 
-void BTerminalIOHandler::setTerminalTitle(const QString &title)
+void BTerminal::setTerminalTitle(const QString &title)
 {
-    QMutexLocker locker1(&BTerminalIOHandlerPrivate::titleMutex);
+    QMutexLocker locker1(&BTerminalPrivate::titleMutex);
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    QMutexLocker locker2(&BTerminalIOHandlerPrivate::writeMutex);
-    BTerminalIOHandlerPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
-    BTerminalIOHandlerPrivate::writeStream.flush();
+    QMutexLocker locker2(&BTerminalPrivate::writeMutex);
+    BTerminalPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
+    BTerminalPrivate::writeStream.flush();
 #elif defined(Q_OS_WIN)
 #ifdef UNICODE
     QScopedPointer<wchar_t> chars(new wchar_t[title.length() + 1]);
@@ -643,33 +598,33 @@ void BTerminalIOHandler::setTerminalTitle(const QString &title)
 #endif
 }
 
-void BTerminalIOHandler::setTextColor(Color color)
+void BTerminal::setTextColor(Color color)
 {
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
-    BTerminalIOHandlerPrivate::textColor = color;
-    BTerminalIOHandlerPrivate::resetColor();
+    QMutexLocker locker(&BTerminalPrivate::colorMutex);
+    BTerminalPrivate::textColor = color;
+    BTerminalPrivate::resetColor();
 }
 
-void BTerminalIOHandler::setBackgroundColor(Color color)
+void BTerminal::setBackgroundColor(Color color)
 {
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
-    BTerminalIOHandlerPrivate::backgroundColor = color;
-    BTerminalIOHandlerPrivate::resetColor();
+    QMutexLocker locker(&BTerminalPrivate::colorMutex);
+    BTerminalPrivate::backgroundColor = color;
+    BTerminalPrivate::resetColor();
 }
 
-BTerminalIOHandler::Color BTerminalIOHandler::textColor()
+BTerminal::Color BTerminal::textColor()
 {
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
-    return BTerminalIOHandlerPrivate::textColor;
+    QMutexLocker locker(&BTerminalPrivate::colorMutex);
+    return BTerminalPrivate::textColor;
 }
 
-BTerminalIOHandler::Color BTerminalIOHandler::backgroundColor()
+BTerminal::Color BTerminal::backgroundColor()
 {
-    QMutexLocker locker(&BTerminalIOHandlerPrivate::colorMutex);
-    return BTerminalIOHandlerPrivate::backgroundColor;
+    QMutexLocker locker(&BTerminalPrivate::colorMutex);
+    return BTerminalPrivate::backgroundColor;
 }
 
-QSize BTerminalIOHandler::terminalSize()
+QSize BTerminal::terminalSize()
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     winsize w;
@@ -682,7 +637,7 @@ QSize BTerminalIOHandler::terminalSize()
 #endif
 }
 
-int BTerminalIOHandler::terminalColumnCount()
+int BTerminal::terminalColumnCount()
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     winsize w;
@@ -695,7 +650,7 @@ int BTerminalIOHandler::terminalColumnCount()
 #endif
 }
 
-int BTerminalIOHandler::terminalRowCount()
+int BTerminal::terminalRowCount()
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     winsize w;
@@ -708,31 +663,31 @@ int BTerminalIOHandler::terminalRowCount()
 #endif
 }
 
-void BTerminalIOHandler::installHandler(const QString &command, InternalHandler handler)
+void BTerminal::installHandler(const QString &command, InternalHandler handler)
 {
-    if ( !BTerminalIOHandlerPrivate::testInit() )
+    if ( !BTerminalPrivate::testInit() )
         return;
     if (command.isEmpty() || !handler)
         return;
-    B_DS(BTerminalIOHandler);
+    B_DS(BTerminal);
     if (ds->internalHandlers.contains(command))
         return;
     ds->internalHandlers.insert(command, handler);
 }
 
-void BTerminalIOHandler::installHandler(const QString &command, ExternalHandler handler)
+void BTerminal::installHandler(const QString &command, ExternalHandler handler)
 {
-    if ( !BTerminalIOHandlerPrivate::testInit() )
+    if ( !BTerminalPrivate::testInit() )
         return;
     if (command.isEmpty() || !handler)
         return;
-    B_DS(BTerminalIOHandler);
+    B_DS(BTerminal);
     if (ds->externalHandlers.contains(command))
         return;
     ds->externalHandlers.insert(command, handler);
 }
 
-void BTerminalIOHandler::installHandler(StandardCommand cmd)
+void BTerminal::installHandler(StandardCommand cmd)
 {
     InternalHandler h = handler(cmd);
     CommandHelpList l = commandHelpList(cmd);
@@ -743,34 +698,34 @@ void BTerminalIOHandler::installHandler(StandardCommand cmd)
     }
 }
 
-void BTerminalIOHandler::installHandler(StandardCommand cmd, InternalHandler handler)
+void BTerminal::installHandler(StandardCommand cmd, InternalHandler handler)
 {
     foreach (const QString &s, commands(cmd))
         installHandler(s, handler);
 }
 
-void BTerminalIOHandler::installHandler(StandardCommand cmd, ExternalHandler handler)
+void BTerminal::installHandler(StandardCommand cmd, ExternalHandler handler)
 {
     foreach (const QString &s, commands(cmd))
         installHandler(s, handler);
 }
 
-QString BTerminalIOHandler::lastCommand(QStringList *args)
+QString BTerminal::lastCommand(QStringList *args)
 {
     return bRet(args, ds_func()->lastArgs, ds_func()->lastCommand);
 }
 
-void BTerminalIOHandler::setRootSettingsNode(BSettingsNode *root)
+void BTerminal::setRootSettingsNode(BSettingsNode *root)
 {
-    if (!BTerminalIOHandlerPrivate::testInit())
+    if (!BTerminalPrivate::testInit())
         return;
-    B_DS(BTerminalIOHandler);
+    B_DS(BTerminal);
     if (ds->root)
         delete ds->root;
     ds->root = root;
 }
 
-BSettingsNode *BTerminalIOHandler::createBeQtSettingsNode(BSettingsNode *parent)
+BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
 {
     BSettingsNode *n = new BSettingsNode("BeQt", parent);
       BSettingsNode *nn = new BSettingsNode("Core", n);
@@ -783,49 +738,49 @@ BSettingsNode *BTerminalIOHandler::createBeQtSettingsNode(BSettingsNode *parent)
     return n;
 }
 
-void BTerminalIOHandler::setHelpDescription(const BTranslation &t)
+void BTerminal::setHelpDescription(const BTranslation &t)
 {
-    if (!BTerminalIOHandlerPrivate::testInit())
+    if (!BTerminalPrivate::testInit())
         return;
     ds_func()->help = t;
 }
 
-void BTerminalIOHandler::setCommandHelp(const QString &command, const CommandHelp &help)
+void BTerminal::setCommandHelp(const QString &command, const CommandHelp &help)
 {
     setCommandHelp(command, CommandHelpList() << help);
 }
 
-void BTerminalIOHandler::setCommandHelp(const QString &command, const CommandHelpList &list)
+void BTerminal::setCommandHelp(const QString &command, const CommandHelpList &list)
 {
-    if (!BTerminalIOHandlerPrivate::testInit())
+    if (!BTerminalPrivate::testInit())
         return;
     if (command.isEmpty())
         return;
     ds_func()->commandHelp.insert(command, list);
 }
 
-BSettingsNode *BTerminalIOHandler::rootSettingsNode()
+BSettingsNode *BTerminal::rootSettingsNode()
 {
-    if (!BTerminalIOHandlerPrivate::testInit())
+    if (!BTerminalPrivate::testInit())
         return 0;
     return ds_func()->root;
 }
 
 /*============================== Protected methods =========================*/
 
-bool BTerminalIOHandler::handleCommand(const QString &, const QStringList &)
+bool BTerminal::handleCommand(const QString &, const QStringList &)
 {
     writeLine(d_func()->translations ? tr("Unknown command") : QString("Unknown command"));
     return false;
 }
 
-bool BTerminalIOHandler::handleQuit(const QString &, const QStringList &)
+bool BTerminal::handleQuit(const QString &, const QStringList &)
 {
     QCoreApplication::quit();
     return true;
 }
 
-bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
+bool BTerminal::handleSet(const QString &, const QStringList &args)
 {
     if (args.size() < 1)
     {
@@ -923,7 +878,7 @@ bool BTerminalIOHandler::handleSet(const QString &, const QStringList &args)
     return true;
 }
 
-bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
+bool BTerminal::handleHelp(const QString &, const QStringList &args)
 {
     QString h = d_func()->translations ? d_func()->help.translate() : d_func()->help.sourceText();
     if (args.isEmpty())
@@ -1056,4 +1011,4 @@ bool BTerminalIOHandler::handleHelp(const QString &, const QStringList &args)
 
 /*============================== Static protected variables ================*/
 
-BTerminalIOHandler *BTerminalIOHandler::_m_self = 0;
+BTerminal *BTerminal::_m_self = 0;

@@ -27,7 +27,6 @@
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BTextMatch>
 #include <BeQtCore/BTextMatchList>
-#include <BeQtCore/BTerminalIOHandler>
 
 #include <QApplication>
 #include <QWidget>
@@ -148,7 +147,7 @@ void BHelpBrowserPrivate::search()
     QStringList &documents = p.second;
     if (!searchCache.contains(text))
     {
-        QStringList terms = BTerminalIOHandler::splitCommand(text);
+        QStringList terms = BTextTools::splitCommand(text);
         foreach (const QString &path, tbrsr->searchPaths())
         {
             QStringList files = BDirTools::entryList(path, QStringList() << "*.html" << "*.htm", QDir::Files);

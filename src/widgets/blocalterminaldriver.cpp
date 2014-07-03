@@ -24,7 +24,7 @@
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BTerminalIOHandler>
+#include <BeQtCore/BTerminal>
 
 #include <QObject>
 #include <QString>

@@ -62,6 +62,11 @@ B_CORE_EXPORT QString replaceTabs(const QString &s, BeQt::TabWidth tw);
 B_CORE_EXPORT void replaceTabs(QString *s, BeQt::TabWidth tw);
 B_CORE_EXPORT QString standardRegExpPattern(RegExpPattern type);
 B_CORE_EXPORT QRegExp standardRegExp(RegExpPattern type);
+B_CORE_EXPORT QStringList splitCommand(const QString &cmd, bool *ok = 0);
+B_CORE_EXPORT QStringList splitCommand(const QString &cmd, QString &command, bool *ok = 0);
+B_CORE_EXPORT QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok = 0);
+B_CORE_EXPORT QString mergeArguments(const QStringList &list);
+B_CORE_EXPORT QString mergeArguments(const QString &command, const QStringList &arguments);
 B_CORE_EXPORT QStringList removeDuplicates(const QStringList &list, Qt::CaseSensitivity cs = Qt::CaseSensitive,
                                           int *count  = 0);
 B_CORE_EXPORT int removeDuplicates(QStringList *list, Qt::CaseSensitivity cs = Qt::CaseSensitive);

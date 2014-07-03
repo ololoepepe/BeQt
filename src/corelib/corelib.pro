@@ -38,8 +38,8 @@ HEADERS += \
     bspellchecker.h \
     bspellchecker_p.h \
     bspellcheckerdictionary.h \
-    bterminaliohandler.h \
-    bterminaliohandler_p.h \
+    bterminal.h \
+    bterminal_p.h \
     btexttools.h \
     btranslatefunctor.h \
     btranslation.h \
@@ -66,7 +66,7 @@ SOURCES += \
     bspamnotifier.cpp \
     bspellchecker.cpp \
     bspellcheckerdictionary.cpp \
-    bterminaliohandler.cpp \
+    bterminal.cpp \
     btexttools.cpp \
     btranslatefunctor.cpp \
     btranslation.cpp \

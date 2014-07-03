@@ -25,7 +25,7 @@
 #include "bplaintextedit.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BTerminalIOHandler>
+#include <BeQtCore/BTextTools>
 
 #include <QWidget>
 #include <QObject>
@@ -353,7 +353,7 @@ bool BTerminalWidget::isActive() const
 
 void BTerminalWidget::terminalCommand(const QString &command)
 {
-    QStringList args = BTerminalIOHandler::splitCommand(command);
+    QStringList args = BTextTools::splitCommand(command);
     QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
     terminalCommand(cmd, args);
 }
@@ -396,7 +396,7 @@ void BTerminalWidget::terminalCommand(const QVariant &data)
 
 void BTerminalWidget::processCommand(const QString &command)
 {
-    QStringList args = BTerminalIOHandler::splitCommand(command);
+    QStringList args = BTextTools::splitCommand(command);
     QString cmd = !args.isEmpty() ? args.takeFirst() : QString();
     processCommand(cmd, args);
 }

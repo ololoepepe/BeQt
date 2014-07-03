@@ -19,13 +19,13 @@
 **
 ****************************************************************************/
 
-#ifndef BTERMINALIOHANDLER_P_H
-#define BTERMINALIOHANDLER_P_H
+#ifndef BTERMINAL_P_H
+#define BTERMINAL_P_H
 
-class BTerminalIOHandlerPrivate;
+class BTerminalPrivate;
 class BSettingsNode;
 
-#include "bterminaliohandler.h"
+#include "bterminal.h"
 #include "bglobal.h"
 #include "bbaseobject_p.h"
 #include "btranslation.h"
@@ -41,15 +41,15 @@ class BSettingsNode;
 #include <QStringList>
 
 /*============================================================================
-================================ BTerminalIOHandlerThread ====================
+================================ BTerminalThread =============================
 ============================================================================*/
 
-class BTerminalIOHandlerThread : public QThread
+class BTerminalThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit BTerminalIOHandlerThread();
-    ~BTerminalIOHandlerThread();
+    explicit BTerminalThread();
+    ~BTerminalThread();
 protected:
     void run();
 signals:
@@ -59,25 +59,25 @@ public:
     QEventLoop readLoop;
     QString lastLine;
 private:
-    Q_DISABLE_COPY(BTerminalIOHandlerThread)
+    Q_DISABLE_COPY(BTerminalThread)
 };
 
 /*============================================================================
-================================ BTerminalIOHandlerPrivate ===================
+================================ BTerminalPrivate ============================
 ============================================================================*/
 
-class B_CORE_EXPORT BTerminalIOHandlerPrivate : public BBaseObjectPrivate
+class B_CORE_EXPORT BTerminalPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
-    B_DECLARE_PUBLIC(BTerminalIOHandler)
-    B_DECLARE_PUBLIC_S(BTerminalIOHandler)
+    B_DECLARE_PUBLIC(BTerminal)
+    B_DECLARE_PUBLIC_S(BTerminal)
 public:
-    explicit BTerminalIOHandlerPrivate(BTerminalIOHandler *q);
-    ~BTerminalIOHandlerPrivate();
+    explicit BTerminalPrivate(BTerminal *q);
+    ~BTerminalPrivate();
 public:
     static bool testInit(const char *where = 0);
     static bool testUnique();
-    static BTerminalIOHandlerThread *initThread(bool silent = false);
+    static BTerminalThread *initThread(bool silent = false);
     static void removeThread();
     static void resetColor();
 public:
@@ -93,22 +93,22 @@ public:
     static QMutex writeErrMutex;
     static QTextStream writeStream;
     static QTextStream writeErrStream;
-    static BTerminalIOHandlerThread *readThread;
+    static BTerminalThread *readThread;
     static QMutex threadMutex;
-    static BTerminalIOHandler::Color textColor;
-    static BTerminalIOHandler::Color backgroundColor;
+    static BTerminal::Color textColor;
+    static BTerminal::Color backgroundColor;
 public:
-    QMap<QString, BTerminalIOHandler::InternalHandler> internalHandlers;
-    QMap<QString, BTerminalIOHandler::ExternalHandler> externalHandlers;
+    QMap<QString, BTerminal::InternalHandler> internalHandlers;
+    QMap<QString, BTerminal::ExternalHandler> externalHandlers;
     QString lastCommand;
     QStringList lastArgs;
     BSettingsNode *root;
     bool translations;
     BTranslation help;
-    QMap<QString, BTerminalIOHandler::CommandHelpList> commandHelp;
+    QMap<QString, BTerminal::CommandHelpList> commandHelp;
 private:
-    Q_DISABLE_COPY(BTerminalIOHandlerPrivate)
-    friend class BTerminalIOHandlerThread;
+    Q_DISABLE_COPY(BTerminalPrivate)
+    friend class BTerminalThread;
 };
 
-#endif // BTERMINALIOHANDLER_P_H
+#endif // BTERMINAL_P_H

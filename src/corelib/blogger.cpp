@@ -24,7 +24,7 @@
 #include "bglobal.h"
 #include "bbase.h"
 #include "bbase_p.h"
-#include "bterminaliohandler.h"
+#include "bterminal.h"
 #include "bdirtools.h"
 #include "bnamespace.h"
 
@@ -80,9 +80,9 @@ void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
     if (!logToConsole)
         return;
     if (stderrLevel && useStderr)
-        BTerminalIOHandler::writeErr(text);
+        BTerminal::writeErr(text);
     else
-        BTerminalIOHandler::write(text);
+        BTerminal::write(text);
 }
 
 void BLoggerPrivate::tryLogToFile(const QString &text)

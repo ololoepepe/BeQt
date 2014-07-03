@@ -10,7 +10,7 @@
 
 === PATCH ===
 
-
+* Implement single quote support for BTextTools::splitCommand function
 
 === MINOR ===
 
@@ -73,7 +73,9 @@
 [done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
 * Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
 * Make BTerminalIOHandler a singleton
-* Rename BTerminalIOHandler into BTerminal
-[done] Add alternative base classes with non-QObject private base
+* Implement terminal modes (standard mode and PDCurses mode)
+[done] Rename BTerminalIOHandler into BTerminal
+[done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
+[done] Add alternative base class pair with non-QObject private base
 * Make BPersonInfo and BPersonInfoList serializable
 * Make data classes serializable

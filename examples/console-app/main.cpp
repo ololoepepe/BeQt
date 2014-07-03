@@ -21,7 +21,7 @@
 
 #include <BCoreApplication>
 #include <BLogger>
-#include <BTerminalIOHandler>
+#include <BTerminal>
 #include <BTranslator>
 
 #include <QCoreApplication>
@@ -47,9 +47,9 @@ int main(int argc, char **argv)
     bLog("Application started", BLogger::InfoLevel);
     BCoreApplication::installTranslator(new BTranslator("beqt"));
     //Communicating with user through BTerminalIOHandler
-    QString s = BTerminalIOHandler::readLine("Enter something: ");
-    BTerminalIOHandler::writeLine("You entered: \"" + s + "\"");
-    QSize sz = BTerminalIOHandler::terminalSize();
+    QString s = BTerminal::readLine("Enter something: ");
+    BTerminal::writeLine("You entered: \"" + s + "\"");
+    QSize sz = BTerminal::terminalSize();
     bWriteLine("By the way, terminal size is " + QString::number(sz.width()) + "x" + QString::number(sz.height()));
     bWriteLine("Goodbye!");
     return 0;

@@ -28,7 +28,7 @@
 
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BLogger>
-#include <BeQtCore/BTerminalIOHandler>
+#include <BeQtCore/BTerminal>
 
 #include <QObject>
 #include <QDataStream>
@@ -713,9 +713,9 @@ void BNetworkConnection::log(const QString &text, BLogger::Level lvl)
     if (logger)
         logger->log(msg, lvl);
     else if (BLogger::isStderrLevel(lvl))
-        BTerminalIOHandler::writeLineErr(msg);
+        BTerminal::writeLineErr(msg);
     else
-        BTerminalIOHandler::writeLine(msg);
+        BTerminal::writeLine(msg);
 }
 
 BGenericSocket *BNetworkConnection::socket() const
@@ -741,7 +741,7 @@ bool BNetworkConnection::handleWriteRequest(BNetworkOperation *op)
 {
     QVariantMap m = op->variantData().toMap();
     QString text = m.value("text").toString();
-    BTerminalIOHandler::write(text);
+    BTerminal::write(text);
     op->reply();
     op->setAutoDelete(true);
     op->setStartTimeout();

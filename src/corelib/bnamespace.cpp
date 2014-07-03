@@ -20,7 +20,6 @@
 ****************************************************************************/
 
 #include "bnamespace.h"
-#include "bterminaliohandler.h"
 #include "bdirtools.h"
 #include "btexttools.h"
 
@@ -372,7 +371,7 @@ void startProcess(QProcess *proc, const QString &command, const QStringList &arg
         return;
     //Workaround to handle long arguments on Windows
 #if defined(Q_OS_WIN)
-    proc->setNativeArguments(BTerminalIOHandler::mergeArguments(arguments));
+    proc->setNativeArguments(BTextTools::mergeArguments(arguments));
     proc->start(command);
 #else
     proc->start(command, arguments);
@@ -390,8 +389,7 @@ bool startProcessDetached(const QString &command, const QString &workingDir, con
     if (command.isEmpty())
         return false;
     //Workaround to handle long arguments on Windows
-    return QProcess::startDetached(command + " " + BTerminalIOHandler::mergeArguments(arguments), QStringList(),
-                                   workingDir);
+    return QProcess::startDetached(command + " " + BTextTools::mergeArguments(arguments), QStringList(), workingDir);
     //End of the workaround
 }
 

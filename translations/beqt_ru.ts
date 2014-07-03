@@ -592,55 +592,55 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="123"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="122"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="124"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="123"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="125"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="124"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="126"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="125"/>
         <source>Search:</source>
         <comment>lbl text</comment>
         <translation>Поиск:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="127"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="126"/>
         <source>Find</source>
         <comment>btn text</comment>
         <translation>Найти</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="133"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="132"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="175"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="174"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="191"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="190"/>
         <source>Sorry, nothing found.</source>
         <comment>tbrsr text</comment>
         <translation>Извините, ничего не найдено.</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="193"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="192"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
@@ -1329,7 +1329,7 @@
         <translation>Значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="779"/>
+        <location filename="../src/corelib/bterminal.cpp" line="734"/>
         <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
         <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
@@ -1420,127 +1420,216 @@
     </message>
 </context>
 <context>
-    <name>BTerminalIOHandler</name>
+    <name>BTerminal</name>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="818"/>
-        <source>Unknown command</source>
-        <translation>Неизвестная команда</translation>
-    </message>
-    <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="415"/>
-        <source>Quit the application</source>
-        <translation>Выйти из приложения</translation>
-    </message>
-    <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="90"/>
+        <location filename="../src/corelib/bterminal.cpp" line="90"/>
         <source>Enter locale:</source>
-        <translation>Введите локаль:</translation>
+        <translation type="unfinished">Введите локаль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="420"/>
+        <location filename="../src/corelib/bterminal.cpp" line="415"/>
+        <source>Quit the application</source>
+        <translation type="unfinished">Выйти из приложения</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminal.cpp" line="420"/>
         <source>Show list of all available settings</source>
-        <translation>Показать список всех доступных настроек</translation>
+        <translation type="unfinished">Показать список всех доступных настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="423"/>
+        <location filename="../src/corelib/bterminal.cpp" line="423"/>
         <source>Show the value for &lt;key&gt; or it&apos;s description</source>
-        <translation>Показать значение для ключа &lt;key&gt; или его описание</translation>
+        <translation type="unfinished">Показать значение для ключа &lt;key&gt; или его описание</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="426"/>
+        <location filename="../src/corelib/bterminal.cpp" line="426"/>
         <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
-        <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
+        <translation type="unfinished">Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="432"/>
+        <location filename="../src/corelib/bterminal.cpp" line="432"/>
         <source>Show description of &lt;command&gt;</source>
-        <translation>Показать описание команды &lt;command&gt;</translation>
+        <translation type="unfinished">Показать описание команды &lt;command&gt;</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="435"/>
+        <location filename="../src/corelib/bterminal.cpp" line="435"/>
         <source>Show basic help, or:
   --commands - list of all available commands
   --settings - list of all available settings
   --all - all of the above (including basic help)</source>
-        <translation>Показать основную справку, или:
+        <translation type="unfinished">Показать основную справку, или:
   --commands - список всех доступных команд
   --settings - список всех доступных настроек
   --all - всё вышеперечисленное (включая основную справку)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="441"/>
+        <location filename="../src/corelib/bterminal.cpp" line="441"/>
         <source>Show information about this application</source>
-        <translation>Показать информацию об это приложении</translation>
+        <translation type="unfinished">Показать информацию об это приложении</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="444"/>
+        <location filename="../src/corelib/bterminal.cpp" line="444"/>
         <source>Show information about BeQt libraries</source>
-        <translation>Показать информацию о библиотеках BeQt</translation>
+        <translation type="unfinished">Показать информацию о библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="832"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="848"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="861"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="919"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="998"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="1006"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="1036"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="1051"/>
+        <location filename="../src/corelib/bterminal.cpp" line="773"/>
+        <source>Unknown command</source>
+        <translation type="unfinished">Неизвестная команда</translation>
+    </message>
+    <message>
+        <location filename="../src/corelib/bterminal.cpp" line="787"/>
+        <location filename="../src/corelib/bterminal.cpp" line="803"/>
+        <location filename="../src/corelib/bterminal.cpp" line="816"/>
+        <location filename="../src/corelib/bterminal.cpp" line="874"/>
+        <location filename="../src/corelib/bterminal.cpp" line="953"/>
+        <location filename="../src/corelib/bterminal.cpp" line="961"/>
+        <location filename="../src/corelib/bterminal.cpp" line="991"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1006"/>
         <source>Invalid parameters</source>
-        <translation>Некорректные параметры</translation>
+        <translation type="unfinished">Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="837"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="979"/>
+        <location filename="../src/corelib/bterminal.cpp" line="792"/>
+        <location filename="../src/corelib/bterminal.cpp" line="934"/>
         <source>Settings structure not set</source>
-        <translation>Не задана структура настроек</translation>
+        <translation type="unfinished">Не задана структура настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="853"/>
+        <location filename="../src/corelib/bterminal.cpp" line="808"/>
         <source>Failed to show value</source>
-        <translation>Не удалось показать значение</translation>
+        <translation type="unfinished">Не удалось показать значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="867"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="883"/>
+        <location filename="../src/corelib/bterminal.cpp" line="822"/>
+        <location filename="../src/corelib/bterminal.cpp" line="838"/>
         <source>No such option</source>
-        <translation>Нет такой опции</translation>
+        <translation type="unfinished">Нет такой опции</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="873"/>
+        <location filename="../src/corelib/bterminal.cpp" line="828"/>
         <source>No description</source>
-        <translation>Описание отсутствует</translation>
+        <translation type="unfinished">Описание отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="892"/>
+        <location filename="../src/corelib/bterminal.cpp" line="847"/>
         <source>Invalid value</source>
-        <translation>Недейтсивтельное значение</translation>
+        <translation type="unfinished">Недейтсивтельное значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="897"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="909"/>
+        <location filename="../src/corelib/bterminal.cpp" line="852"/>
+        <location filename="../src/corelib/bterminal.cpp" line="864"/>
         <source>Failed to set value</source>
-        <translation>Не удалось установить значение</translation>
+        <translation type="unfinished">Не удалось установить значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="902"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="914"/>
+        <location filename="../src/corelib/bterminal.cpp" line="857"/>
+        <location filename="../src/corelib/bterminal.cpp" line="869"/>
         <source>OK</source>
-        <translation>ОК</translation>
+        <translation type="unfinished">ОК</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="933"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="944"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="966"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="1043"/>
+        <location filename="../src/corelib/bterminal.cpp" line="888"/>
+        <location filename="../src/corelib/bterminal.cpp" line="899"/>
+        <location filename="../src/corelib/bterminal.cpp" line="921"/>
+        <location filename="../src/corelib/bterminal.cpp" line="998"/>
         <source>Nothing to display</source>
-        <translation>Нечего отобразить</translation>
+        <translation type="unfinished">Нечего отобразить</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="955"/>
-        <location filename="../src/corelib/bterminaliohandler.cpp" line="969"/>
+        <location filename="../src/corelib/bterminal.cpp" line="910"/>
+        <location filename="../src/corelib/bterminal.cpp" line="924"/>
         <source>The following commands are available:</source>
-        <translation>Доступны следующие команды:</translation>
+        <translation type="unfinished">Доступны следующие команды:</translation>
+    </message>
+</context>
+<context>
+    <name>BTerminalIOHandler</name>
+    <message>
+        <source>Unknown command</source>
+        <translation type="obsolete">Неизвестная команда</translation>
+    </message>
+    <message>
+        <source>Quit the application</source>
+        <translation type="obsolete">Выйти из приложения</translation>
+    </message>
+    <message>
+        <source>Enter locale:</source>
+        <translation type="obsolete">Введите локаль:</translation>
+    </message>
+    <message>
+        <source>Show list of all available settings</source>
+        <translation type="obsolete">Показать список всех доступных настроек</translation>
+    </message>
+    <message>
+        <source>Show the value for &lt;key&gt; or it&apos;s description</source>
+        <translation type="obsolete">Показать значение для ключа &lt;key&gt; или его описание</translation>
+    </message>
+    <message>
+        <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
+        <translation type="obsolete">Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
+    </message>
+    <message>
+        <source>Show description of &lt;command&gt;</source>
+        <translation type="obsolete">Показать описание команды &lt;command&gt;</translation>
+    </message>
+    <message>
+        <source>Show basic help, or:
+  --commands - list of all available commands
+  --settings - list of all available settings
+  --all - all of the above (including basic help)</source>
+        <translation type="obsolete">Показать основную справку, или:
+  --commands - список всех доступных команд
+  --settings - список всех доступных настроек
+  --all - всё вышеперечисленное (включая основную справку)</translation>
+    </message>
+    <message>
+        <source>Show information about this application</source>
+        <translation type="obsolete">Показать информацию об это приложении</translation>
+    </message>
+    <message>
+        <source>Show information about BeQt libraries</source>
+        <translation type="obsolete">Показать информацию о библиотеках BeQt</translation>
+    </message>
+    <message>
+        <source>Invalid parameters</source>
+        <translation type="obsolete">Некорректные параметры</translation>
+    </message>
+    <message>
+        <source>Settings structure not set</source>
+        <translation type="obsolete">Не задана структура настроек</translation>
+    </message>
+    <message>
+        <source>Failed to show value</source>
+        <translation type="obsolete">Не удалось показать значение</translation>
+    </message>
+    <message>
+        <source>No such option</source>
+        <translation type="obsolete">Нет такой опции</translation>
+    </message>
+    <message>
+        <source>No description</source>
+        <translation type="obsolete">Описание отсутствует</translation>
+    </message>
+    <message>
+        <source>Invalid value</source>
+        <translation type="obsolete">Недейтсивтельное значение</translation>
+    </message>
+    <message>
+        <source>Failed to set value</source>
+        <translation type="obsolete">Не удалось установить значение</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation type="obsolete">ОК</translation>
+    </message>
+    <message>
+        <source>Nothing to display</source>
+        <translation type="obsolete">Нечего отобразить</translation>
+    </message>
+    <message>
+        <source>The following commands are available:</source>
+        <translation type="obsolete">Доступны следующие команды:</translation>
     </message>
 </context>
 <context>
@@ -1561,179 +1650,179 @@
 <context>
     <name>BeQt</name>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="155"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="154"/>
         <source>Unicode</source>
         <comment>codec descriptiveName</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="160"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="159"/>
         <source>Baltic</source>
         <comment>codec descriptiveName</comment>
         <translation>Балтийская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="163"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="162"/>
         <source>Cyrillic</source>
         <comment>codec descriptiveName</comment>
         <translation>Кириллица</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="165"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="164"/>
         <source>Cyrillic (Ukrainian)</source>
         <comment>codec descriptiveName</comment>
         <translation>Кириллица (украинская)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="167"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="166"/>
         <source>Romanic</source>
         <comment>codec descriptiveName</comment>
         <translation>Романская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="169"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="168"/>
         <source>Central European</source>
         <comment>codec descriptiveName</comment>
         <translation>Центральноевропейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="174"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="173"/>
         <source>Greek</source>
         <comment>codec descriptiveName</comment>
         <translation>Греческая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="177"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="176"/>
         <source>Western</source>
         <comment>codec descriptiveName</comment>
         <translation>Западная</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="179"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="178"/>
         <source>Celtic</source>
         <comment>codec descriptiveName</comment>
         <translation>Кельтская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="181"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="180"/>
         <source>Nordic</source>
         <comment>codec descriptiveName</comment>
         <translation>Северная</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="183"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="182"/>
         <source>South European</source>
         <comment>codec descriptiveName</comment>
         <translation>Восточноевропейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="188"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="187"/>
         <source>Vietnamese</source>
         <comment>codec descriptiveName</comment>
         <translation>Вьетнамская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="190"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="189"/>
         <source>Traditional Chinese</source>
         <comment>codec descriptiveName</comment>
         <translation>Китайская традиционная</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="192"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="191"/>
         <source>Simplified Chinese</source>
         <comment>codec descriptiveName</comment>
         <translation>Китайская упрощённая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="194"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="193"/>
         <source>Korean</source>
         <comment>codec descriptiveName</comment>
         <translation>Корейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="196"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="195"/>
         <source>Japanese</source>
         <comment>codec descriptiveName</comment>
         <translation>Японская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="201"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="200"/>
         <source>Thai</source>
         <comment>codec descriptiveName</comment>
         <translation>Тайская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="203"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="202"/>
         <source>Turkish</source>
         <comment>codec descriptiveName</comment>
         <translation>Турецкая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="208"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="207"/>
         <source>Arabic</source>
         <comment>codec descriptiveName</comment>
         <translation>Арабская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="210"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="209"/>
         <source>Hebrew</source>
         <comment>codec descriptiveName</comment>
         <translation>Еврейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="212"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="211"/>
         <source>Hebrew (visual)</source>
         <comment>codec descriptiveName</comment>
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="514"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="512"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="516"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="514"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="518"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="516"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="520"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="518"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="522"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="520"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="524"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="522"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="577"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="575"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="580"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="578"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="584"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="582"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>

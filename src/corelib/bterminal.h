@@ -19,10 +19,10 @@
 **
 ****************************************************************************/
 
-#ifndef BTERMINALIOHANDLER_H
-#define BTERMINALIOHANDLER_H
+#ifndef BTERMINAL_H
+#define BTERMINAL_H
 
-class BTerminalIOHandlerPrivate;
+class BTerminalPrivate;
 class BSettingsNode;
 
 class QString;
@@ -35,22 +35,22 @@ class QSize;
 
 #include <QObject>
 
-#define bReadLine BTerminalIOHandler::readLine
-#define bReadLineSecure BTerminalIOHandler::readLineSecure
-#define bWrite BTerminalIOHandler::write
-#define bWriteLine BTerminalIOHandler::writeLine
-#define bWriteErr BTerminalIOHandler::writeErr
-#define bWriteLineErr BTerminalIOHandler::writeLineErr
+#define bReadLine BTerminal::readLine
+#define bReadLineSecure BTerminal::readLineSecure
+#define bWrite BTerminal::write
+#define bWriteLine BTerminal::writeLine
+#define bWriteErr BTerminal::writeErr
+#define bWriteLineErr BTerminal::writeLineErr
 
 /*============================================================================
-================================ BTerminalIOHandler ==========================
+================================ BTerminal ==================================
 ============================================================================*/
 
-class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBaseObject
+class B_CORE_EXPORT BTerminal : public QObject, public BBaseObject
 {
     Q_OBJECT
-    B_DECLARE_PRIVATE(BTerminalIOHandler)
-    B_DECLARE_PRIVATE_S(BTerminalIOHandler)
+    B_DECLARE_PRIVATE(BTerminal)
+    B_DECLARE_PRIVATE_S(BTerminal)
 public:
     enum StandardCommand
     {
@@ -78,22 +78,20 @@ public:
     };
 public:
     typedef QList<CommandHelp> CommandHelpList;
-    typedef bool (BTerminalIOHandler::*InternalHandler)(const QString &cmd, const QStringList &args);
-    typedef bool (*ExternalHandler)(BTerminalIOHandler *, const QString &cmd, const QStringList &args);
+    typedef bool (BTerminal::*InternalHandler)(const QString &cmd, const QStringList &args);
+    typedef bool (*ExternalHandler)(BTerminal *, const QString &cmd, const QStringList &args);
 public:
-    explicit BTerminalIOHandler(QObject *parent = 0);
-    ~BTerminalIOHandler();
+    explicit BTerminal(QObject *parent = 0);
+    ~BTerminal();
 protected:
-    explicit BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent = 0);
+    explicit BTerminal(BTerminalPrivate &d, QObject *parent = 0);
 public:
     static QString command(StandardCommand cmd);
     static QStringList commands(StandardCommand cmd);
     static CommandHelp commandHelp(StandardCommand cmd);
     static CommandHelpList commandHelpList(StandardCommand cmd);
     static InternalHandler handler(StandardCommand cmd);
-    static BTerminalIOHandler *instance();
-    static QStringList splitCommand(const QString &command);
-    static QString mergeArguments(const QStringList &arguments);
+    static BTerminal *instance();
     static QString readLine(const QString &text = QString());
     static QString readLineSecure(const QString &text = QString());
     static void write(const QString &text);
@@ -134,9 +132,9 @@ protected:
 Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:
-    static BTerminalIOHandler *_m_self;
+    static BTerminal *_m_self;
 private:
-    Q_DISABLE_COPY(BTerminalIOHandler)
+    Q_DISABLE_COPY(BTerminal)
 };
 
-#endif // BTERMINALIOHANDLER_H
+#endif // BTERMINAL_H

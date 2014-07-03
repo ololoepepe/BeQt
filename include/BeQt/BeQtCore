@@ -18,7 +18,7 @@
 #include "bspamnotifier.h"
 #include "bspellchecker.h"
 #include "bspellcheckerdictionary.h"
-#include "bterminaliohandler.h"
+#include "bterminal.h"
 #include "btextmatch.h"
 #include "btextmatchlist.h"
 #include "btexttools.h"

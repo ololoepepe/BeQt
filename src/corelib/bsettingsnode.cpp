@@ -22,7 +22,7 @@
 #include "bsettingsnode.h"
 #include "bglobal.h"
 #include "bbase_p.h"
-#include "bterminaliohandler.h"
+#include "bterminal.h"
 #include "bcoreapplication.h"
 #include "btranslation.h"
 
@@ -236,7 +236,7 @@ void BSettingsNode::showTree(int indentStep, int initialIndent) const
     if (initialIndent < 0)
         initialIndent = 0;
     if (!key().isEmpty())
-        BTerminalIOHandler::writeLine(QString(initialIndent, ' ') + key());
+        BTerminal::writeLine(QString(initialIndent, ' ') + key());
     foreach (BSettingsNode *n, childNodes())
         n->showTree(indentStep, initialIndent + (!key().isEmpty() ? indentStep : 0));
 }
@@ -346,7 +346,7 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     QString vs = variantToString(v, &ok);
     if (!ok)
         return false;
-    BTerminalIOHandler::writeLine(text.replace("%k", path.split("/").last()).replace("%v", vs));
+    BTerminal::writeLine(text.replace("%k", path.split("/").last()).replace("%v", vs));
     return true;
 }
 
