@@ -19,34 +19,28 @@
 **
 ****************************************************************************/
 
-#ifndef BTRANSLATEFUNCTOR_H
-#define BTRANSLATEFUNCTOR_H
-
-class BTranslateFunctorPrivate;
-class BTranslator;
+#ifndef BABSTRACTLOCATIONPROVIDER_H
+#define BABSTRACTLOCATIONPROVIDER_H
 
 class QString;
 
 #include "bglobal.h"
-#include "bbase.h"
+#include "bapplicationbase.h"
 
 /*============================================================================
-================================ BTranslateFunctor ===========================
+================================ BAbstractLocationProvider ===================
 ============================================================================*/
 
-class B_CORE_EXPORT BTranslateFunctor : public BBase
+class B_CORE_EXPORT BAbstractLocationProvider
 {
-    B_DECLARE_PRIVATE(BTranslateFunctor)
 public:
-    explicit BTranslateFunctor(BTranslator *t = 0);
-    BTranslateFunctor(const BTranslateFunctor &other);
-    ~BTranslateFunctor();
+    explicit BAbstractLocationProvider();
+    virtual ~BAbstractLocationProvider();
 public:
-    void setTranslator(BTranslator *t);
-    BTranslator * translator() const;
-public:
-    BTranslateFunctor &operator =(const BTranslateFunctor &other);
-    QString operator ()(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) const;
+    virtual QString locationName() const = 0;
+    virtual QString locationPath(BApplicationBase::ResourcesType type) const = 0;
+private:
+    Q_DISABLE_COPY(BAbstractLocationProvider)
 };
 
-#endif // BTRANSLATEFUNCTOR_H
+#endif // BABSTRACTLOCATIONPROVIDER_H

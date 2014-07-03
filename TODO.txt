@@ -32,7 +32,7 @@
 * Implement locking of global object instances
 * Show plugin version information
 * Add ability to set multiple copyright owners
-
+[done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
 [done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
 [done] Rename PluginInfoStatic into StaticPluginInfo
@@ -43,10 +43,10 @@
 [done] Rename BCoreApplication::translators method into beqtTranslators
 [done] Rename BCoreApplication::installTranslator method into installBeqtTranslator
 [done] Rename BCoreApplication::removeTranslator method into removeBeqtTranslator
-[done] Rename some BTerminalIOHandler::terminalTitle into title
-[done] Rename some BTerminalIOHandler::terminalSize into size
-[done] Rename some BTerminalIOHandler::terminalColumnCount into columnCount
-[done] Rename some BTerminalIOHandler::terminalRowCount into rowCount
+[done] Rename BTerminalIOHandler::terminalTitle method into title
+[done] Rename BTerminalIOHandler::terminalSize method into size
+[done] Rename BTerminalIOHandler::terminalColumnCount method into columnCount
+[done] Rename BTerminalIOHandler::terminalRowCount method into rowCount
 [done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
 [done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
 [done] Add BApplicationBase class
@@ -55,13 +55,14 @@
 [done] Add alternative base class pair with non-QObject private base
 [done] Add BVersion::clear method
 [done] Add version information to BPluginInterface
+[done] Add BAbstractLocationProvider, BAbstractMultiLocationProvider and BLocationProvider classes
+* Add ability to add extra locations and to restrict locations
 * Make BTerminalIOHandler a singleton
 * Fix BeQt::OSType enum values
 * Make BPersonInfo and BPersonInfoList serializable
 * Reimplement BCoreApplication and resource lookup system
 * Improve plugin loading system
 * Improve ChangeLog files displaying
-* Add ability to add extra locations and to restrict locations
 * Add PDCurses binding
 * Add serialization of data classes
 * Implement terminal modes (standard mode and PDCurses mode)

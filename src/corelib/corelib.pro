@@ -12,6 +12,8 @@ include(../module.pri)
 DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
+    babstractlocationprovider.h \
+    babstractmultilocationprovider.h \
     bapplicationbase.h \
     bapplicationbase_p.h \
     bbase.h \
@@ -22,6 +24,7 @@ HEADERS += \
     bcoreapplication_p.h \
     bdirtools.h \
     bglobal.h \
+    blocationprovider.h \
     blogger.h \
     blogger_p.h \
     bnamespace.h \
@@ -43,7 +46,6 @@ HEADERS += \
     bterminal.h \
     bterminal_p.h \
     btexttools.h \
-    btranslatefunctor.h \
     btranslation.h \
     btranslator.h \
     btranslator_p.h \
@@ -53,12 +55,15 @@ HEADERS += \
     buuid.h
 
 SOURCES += \
+    babstractlocationprovider.cpp \
+    babstractmultilocationprovider.cpp \
     bapplicationbase.cpp \
     bbase.cpp \
     bbaseobject.cpp \
     bcoreapplication.cpp \
     bdirtools.cpp \
     bglobal.cpp \
+    blocationprovider.cpp \
     blogger.cpp \
     bnamespace.cpp \
     bpassword.cpp \
@@ -71,7 +76,6 @@ SOURCES += \
     bspellcheckerdictionary.cpp \
     bterminal.cpp \
     btexttools.cpp \
-    btranslatefunctor.cpp \
     btranslation.cpp \
     btranslator.cpp \
     bversion.cpp \

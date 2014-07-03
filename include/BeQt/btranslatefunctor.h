@@ -1,1 +1,0 @@
-#include "../BeQtCore/btranslatefunctor.h"
