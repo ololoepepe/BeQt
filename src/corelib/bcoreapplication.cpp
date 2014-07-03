@@ -70,7 +70,7 @@ const QStringList BCoreApplicationPrivate::PluginSuffixes = QStringList("*.dll")
 /*============================== Public constructors =======================*/
 
 BCoreApplicationPrivate::BCoreApplicationPrivate(BCoreApplication *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -182,7 +182,7 @@ void BCoreApplicationPrivate::init()
 bool BCoreApplicationPrivate::eventFilter(QObject *o, QEvent *e)
 {
     if (!blockLanguageChangeEvent || e->type() != QEvent::LanguageChange || o != QCoreApplication::instance())
-        return BBasePrivate::eventFilter(o, e);
+        return BBaseObjectPrivate::eventFilter(o, e);
     languageChangeEventProxy->trigger();
     return true;
 }
@@ -489,7 +489,7 @@ void BCoreApplicationPrivate::sendLanguageChangeEvent()
 /*============================== Public constructors =======================*/
 
 BCoreApplication::BCoreApplication() :
-    QObject(0), BBase( *new BCoreApplicationPrivate(this) )
+    QObject(0), BBaseObject( *new BCoreApplicationPrivate(this) )
 {
     d_func()->init();
     BCoreApplicationPrivate::testCoreUnique();
@@ -509,7 +509,7 @@ BCoreApplication::~BCoreApplication()
 /*============================== Protected constructors ====================*/
 
 BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d) :
-    BBase(d)
+    BBaseObject(d)
 {
     d_func()->init();
     BCoreApplicationPrivate::testCoreUnique();

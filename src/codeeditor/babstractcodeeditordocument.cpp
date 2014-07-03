@@ -31,8 +31,8 @@
 #include "btexttools.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQt>
 #include <BeQtWidgets/BPlainTextEdit>
 
@@ -236,7 +236,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
 
 BAbstractCodeEditorDocumentPrivate::BAbstractCodeEditorDocumentPrivate(BAbstractCodeEditorDocument *q,
                                                                        BCodeEditor *editor) :
-    BBasePrivate(q), Editor(editor)
+    BBaseObjectPrivate(q), Editor(editor)
 {
     //
 }
@@ -757,7 +757,7 @@ void BAbstractCodeEditorDocumentPrivate::preprocessingFinished()
 /*============================== Public constructors =======================*/
 
 BAbstractCodeEditorDocument::BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent) :
-    QWidget(parent), BBase(*new BAbstractCodeEditorDocumentPrivate(this, editor))
+    QWidget(parent), BBaseObject(*new BAbstractCodeEditorDocumentPrivate(this, editor))
 {
     d_func()->init();
 }
@@ -770,7 +770,7 @@ BAbstractCodeEditorDocument::~BAbstractCodeEditorDocument()
 /*============================== Protected constructors ====================*/
 
 BAbstractCodeEditorDocument::BAbstractCodeEditorDocument(BAbstractCodeEditorDocumentPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

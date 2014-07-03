@@ -25,7 +25,7 @@
 #include "btextcodecmenu.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -36,7 +36,7 @@ class QSignalMapper;
 ================================ BTextCodecMenuPrivate =======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecMenuPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BTextCodecMenuPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BTextCodecMenu)

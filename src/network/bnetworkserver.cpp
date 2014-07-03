@@ -25,7 +25,7 @@
 #include "bgenericserver.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BSpamNotifier>
 #include <BeQtCore/BSignalDelayProxy>
@@ -147,7 +147,7 @@ int BNetworkServerThread::connectionCount() const
 /*============================== Public constructors =======================*/
 
 BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -288,7 +288,7 @@ void BNetworkServerPrivate::spammed()
 /*============================== Public constructors =======================*/
 
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkServerPrivate(this) )
+    QObject(parent), BBaseObject( *new BNetworkServerPrivate(this) )
 {
     d_func()->init();
     B_D(BNetworkServer);
@@ -308,7 +308,7 @@ BNetworkServer::~BNetworkServer()
 /*============================== Protected constructors ====================*/
 
 BNetworkServer::BNetworkServer(BNetworkServerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

@@ -24,8 +24,8 @@
 
 #include "bglobal.h"
 #include "bnamespace.h"
-#include "bbase_p.h"
-#include "bbase_p.h"
+#include "bbaseobject.h"
+#include "bbaseobject_p.h"
 
 #include <QObject>
 #include <QString>
@@ -40,7 +40,7 @@
 /*============================== Public constructors =======================*/
 
 BSignalDelayProxyPrivate::BSignalDelayProxyPrivate(BSignalDelayProxy *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -99,13 +99,13 @@ void BSignalDelayProxyPrivate::timeout()
 /*============================== Public constructors =======================*/
 
 BSignalDelayProxy::BSignalDelayProxy(QObject *parent) :
-    QObject(parent), BBase( *new BSignalDelayProxyPrivate(this) )
+    QObject(parent), BBaseObject( *new BSignalDelayProxyPrivate(this) )
 {
     d_func()->init();
 }
 
 BSignalDelayProxy::BSignalDelayProxy(int intermediateDelay, int maximumDelay, QObject *parent) :
-    QObject(parent), BBase( *new BSignalDelayProxyPrivate(this) )
+    QObject(parent), BBaseObject( *new BSignalDelayProxyPrivate(this) )
 {
     d_func()->init();
     setIntermediateDelay(intermediateDelay);
@@ -120,7 +120,7 @@ BSignalDelayProxy::~BSignalDelayProxy()
 /*============================== Protected constructors ====================*/
 
 BSignalDelayProxy::BSignalDelayProxy(BSignalDelayProxyPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

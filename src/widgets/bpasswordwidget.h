@@ -28,7 +28,7 @@ class QByteArray;
 class QString;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BPassword>
 
 #include <QWidget>
@@ -38,7 +38,7 @@ class QString;
 ================================ BPasswordWidget =============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBase
+class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPasswordWidget)

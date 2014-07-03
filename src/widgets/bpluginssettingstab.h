@@ -30,7 +30,7 @@ class QIcon;
 #include "babstractsettingstab.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QVariantMap>
 
@@ -38,7 +38,7 @@ class QIcon;
 ================================ BPluginsSettingsTab =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public BBase
+class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginsSettingsTab)

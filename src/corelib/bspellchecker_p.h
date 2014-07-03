@@ -26,7 +26,7 @@ class BSpellCheckerDictionary;
 
 #include "bspellchecker.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject_p.h"
 
 #include <QObject>
 #include <QString>
@@ -44,7 +44,7 @@ class BSpellCheckerDictionary;
 ================================ BSpellCheckerPrivate ========================
 ============================================================================*/
 
-class B_CORE_EXPORT BSpellCheckerPrivate : public BBasePrivate
+class B_CORE_EXPORT BSpellCheckerPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSpellChecker)

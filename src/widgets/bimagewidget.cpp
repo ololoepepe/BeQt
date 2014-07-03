@@ -85,7 +85,7 @@ void BImageWidgetPrivate::init()
     QVBoxLayout *vlt = new QVBoxLayout(q_func());
       vlt->setContentsMargins(0, 0, 0, 0);
       lbl = new QLabel;
-        mov = new QMovie(this);
+        mov = new QMovie(q_func());
       vlt->addWidget(lbl);
 }
 

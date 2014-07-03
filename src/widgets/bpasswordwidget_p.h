@@ -33,7 +33,7 @@ class QToolButton;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BPassword>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QApplication>
@@ -44,7 +44,7 @@ class QToolButton;
 ================================ BPasswordWidgetPrivate ======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPasswordWidgetPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BPasswordWidget)

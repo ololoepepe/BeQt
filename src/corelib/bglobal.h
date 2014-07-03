@@ -87,11 +87,11 @@ static QString translate(const char *context, const char *sourceText, const char
 #define B_DECLARE_PRIVATE(Class) \
 inline Class##Private *d_func() \
 { \
-    return reinterpret_cast<Class##Private *>( qGetPtrHelper(_m_d) ); \
+    return reinterpret_cast<Class##Private *>(qGetPtrHelper(_m_d)); \
 } \
 inline const Class##Private *d_func() const \
 { \
-    return reinterpret_cast<const Class##Private *>( qGetPtrHelper(_m_d) ); \
+    return reinterpret_cast<const Class##Private *>(qGetPtrHelper(_m_d)); \
 } \
 friend class Class##Private;
 
@@ -109,13 +109,13 @@ friend class Class;
 #define B_DECLARE_PRIVATE_S(Class) \
 static inline Class##Private *ds_func() \
 { \
-    return reinterpret_cast<Class##Private *>( qGetPtrHelper(static_cast<Class *>( qGetPtrHelper(_m_self) )->_m_d) ); \
+    return reinterpret_cast<Class##Private *>(qGetPtrHelper(static_cast<Class *>(qGetPtrHelper(_m_self))->_m_d)); \
 }
 
 #define B_DECLARE_PUBLIC_S(Class) \
 static Class *qs_func() \
 { \
-    return static_cast<Class *>( qGetPtrHelper(Class::_m_self) ); \
+    return static_cast<Class *>(qGetPtrHelper(Class::_m_self)); \
 }
 
 #define B_D(Class) Class##Private *const d = d_func()

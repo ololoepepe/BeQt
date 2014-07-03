@@ -24,7 +24,7 @@
 #include "bnetworkoperation_p.h"
 #include "bnetworkconnection.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BeQt>
 
@@ -45,7 +45,7 @@
 
 BNetworkOperationPrivate::BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md,
                                                    BNetworkConnection *connection) :
-    BBasePrivate(q), MetaData(md), Connection(connection)
+    BBaseObjectPrivate(q), MetaData(md), Connection(connection)
 {
     //
 }
@@ -142,7 +142,7 @@ BNetworkOperation::~BNetworkOperation()
 /*============================== Protected constructors ====================*/
 
 BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }
@@ -150,7 +150,7 @@ BNetworkOperation::BNetworkOperation(BNetworkOperationPrivate &d, QObject *paren
 /*============================== Private constructors ======================*/
 
 BNetworkOperation::BNetworkOperation(const BNetworkOperationMetaData &metaData, BNetworkConnection *parent) :
-    QObject(parent), BBase( *new BNetworkOperationPrivate(this, metaData, parent) )
+    QObject(parent), BBaseObject( *new BNetworkOperationPrivate(this, metaData, parent) )
 {
     d_func()->init();
 }

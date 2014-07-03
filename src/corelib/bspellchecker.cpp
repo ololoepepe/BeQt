@@ -23,7 +23,8 @@
 #include "bspellchecker_p.h"
 #include "bspellcheckerdictionary.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject.h"
+#include "bbaseobject_p.h"
 #include "bnamespace.h"
 #include "bdirtools.h"
 
@@ -65,7 +66,7 @@ void BSpellCheckerPrivate::flush(const QString &fileName, const QStringList &wor
 /*============================== Public constructors =======================*/
 
 BSpellCheckerPrivate::BSpellCheckerPrivate(BSpellChecker *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -106,13 +107,13 @@ void BSpellCheckerPrivate::flush()
 /*============================== Public constructors =======================*/
 
 BSpellChecker::BSpellChecker(QObject *parent) :
-    QObject(parent), BBase(*new BSpellCheckerPrivate(this))
+    QObject(parent), BBaseObject(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
 }
 
 BSpellChecker::BSpellChecker(const QString &dictionaryPath, const QString &userDictionaryPath) :
-    QObject(0), BBase(*new BSpellCheckerPrivate(this))
+    QObject(0), BBaseObject(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
     addDictionary(dictionaryPath);
@@ -120,7 +121,7 @@ BSpellChecker::BSpellChecker(const QString &dictionaryPath, const QString &userD
 }
 
 BSpellChecker::BSpellChecker(QObject *parent, const QString &dictionaryPath, const QString &userDictionaryPath) :
-    QObject(parent), BBase(*new BSpellCheckerPrivate(this))
+    QObject(parent), BBaseObject(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
     addDictionary(dictionaryPath);
@@ -128,7 +129,7 @@ BSpellChecker::BSpellChecker(QObject *parent, const QString &dictionaryPath, con
 }
 
 BSpellChecker::BSpellChecker(const QStringList &dictionaryPaths, const QString &userDictionaryPath) :
-    QObject(0), BBase(*new BSpellCheckerPrivate(this))
+    QObject(0), BBaseObject(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
     foreach (const QString &path, dictionaryPaths)
@@ -137,7 +138,7 @@ BSpellChecker::BSpellChecker(const QStringList &dictionaryPaths, const QString &
 }
 
 BSpellChecker::BSpellChecker(QObject *parent, const QStringList &dictionaryPaths, const QString &userDictionaryPath) :
-    QObject(parent), BBase(*new BSpellCheckerPrivate(this))
+    QObject(parent), BBaseObject(*new BSpellCheckerPrivate(this))
 {
     d_func()->init();
     foreach (const QString &path, dictionaryPaths)

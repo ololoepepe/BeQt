@@ -35,7 +35,7 @@ class QVariant;
 #include "bsocketwrapper.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BLogger>
 
@@ -47,7 +47,7 @@ class QVariant;
 ================================ BNetworkConnection ==========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBase
+class B_NETWORK_EXPORT BNetworkConnection : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkConnection)

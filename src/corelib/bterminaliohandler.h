@@ -30,7 +30,7 @@ class QStringLit;
 class QSize;
 
 #include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 #include "btranslation.h"
 
 #include <QObject>
@@ -46,7 +46,7 @@ class QSize;
 ================================ BTerminalIOHandler ==========================
 ============================================================================*/
 
-class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBase
+class B_CORE_EXPORT BTerminalIOHandler : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTerminalIOHandler)

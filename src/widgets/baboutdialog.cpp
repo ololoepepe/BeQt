@@ -77,7 +77,7 @@ const QString BAboutDialogPrivate::HtmlGT = "&gt;";
 /*============================== Public constructors =======================*/
 
 BAboutDialogPrivate::BAboutDialogPrivate(BAboutDialog *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -561,13 +561,13 @@ QSize BAboutDialogPrivate::defMinSize = QSize(700, 500);
 /*============================== Public constructors =======================*/
 
 BAboutDialog::BAboutDialog(QWidget *parent) :
-    QDialog(parent), BBase( *new BAboutDialogPrivate(this) )
+    QDialog(parent), BBaseObject( *new BAboutDialogPrivate(this) )
 {
     d_func()->init();
 }
 
 BAboutDialog::BAboutDialog(QWidget *parent, const QString &appName, const QString &appVersion) :
-    QDialog(parent), BBase( *new BAboutDialogPrivate(this) )
+    QDialog(parent), BBaseObject( *new BAboutDialogPrivate(this) )
 {
     d_func()->init();
     setAppName(appName);
@@ -582,7 +582,7 @@ BAboutDialog::~BAboutDialog()
 /*============================== Protected constructors ====================*/
 
 BAboutDialog::BAboutDialog(BAboutDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }

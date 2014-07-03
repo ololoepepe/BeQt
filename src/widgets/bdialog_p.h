@@ -29,7 +29,7 @@ class QWidget;
 #include "bdialog.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 
@@ -37,7 +37,7 @@ class QWidget;
 ================================ BDialogPrivate ==============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BDialog)

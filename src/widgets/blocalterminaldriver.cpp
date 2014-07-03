@@ -80,12 +80,12 @@ BLocalTerminalDriverPrivate::~BLocalTerminalDriverPrivate()
 void BLocalTerminalDriverPrivate::init()
 {
     B_Q(BLocalTerminalDriver);
-    process = new QProcess(this);
+    process = new QProcess(q);
     workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
     codec = QTextCodec::codecForLocale();
-    connect( process, SIGNAL( finished(int) ), q, SLOT( emitFinished(int) ) );
-    connect( process, SIGNAL( readyRead() ), q, SLOT( emitReadyRead() ) );
+    QObject::connect( process, SIGNAL( finished(int) ), q, SLOT( emitFinished(int) ) );
+    QObject::connect( process, SIGNAL( readyRead() ), q, SLOT( emitReadyRead() ) );
 }
 
 /*============================================================================

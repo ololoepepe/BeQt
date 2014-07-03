@@ -70,4 +70,10 @@
 [done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
 * Move setBlockComment method from BCodeEdit
 [done] Add working directory argument to BeQt::startProcessDetached function
-* Add .pri files for Hunspell and Enca
+[done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
+* Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
+* Make BTerminalIOHandler a singleton
+* Rename BTerminalIOHandler into BTerminal
+[done] Add alternative base classes with non-QObject private base
+* Make BPersonInfo and BPersonInfoList serializable
+* Make data classes serializable

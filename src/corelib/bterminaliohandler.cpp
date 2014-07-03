@@ -22,7 +22,8 @@
 #include "bterminaliohandler.h"
 #include "bterminaliohandler_p.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject.h"
+#include "bbaseobject_p.h"
 #include "bnamespace.h"
 #include "bsettingsnode.h"
 #include "bcoreapplication.h"
@@ -142,7 +143,7 @@ void BTerminalIOHandlerThread::run()
 /*============================== Public constructors =======================*/
 
 BTerminalIOHandlerPrivate::BTerminalIOHandlerPrivate(BTerminalIOHandler *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -346,7 +347,7 @@ BTerminalIOHandler::Color BTerminalIOHandlerPrivate::backgroundColor = BTerminal
 /*============================== Public constructors =======================*/
 
 BTerminalIOHandler::BTerminalIOHandler(QObject *parent) :
-    QObject(parent), BBase(*new BTerminalIOHandlerPrivate(this))
+    QObject(parent), BBaseObject(*new BTerminalIOHandlerPrivate(this))
 {
     d_func()->init();
     BTerminalIOHandlerPrivate::testUnique();
@@ -362,7 +363,7 @@ BTerminalIOHandler::~BTerminalIOHandler()
 /*============================== Protected constructors ====================*/
 
 BTerminalIOHandler::BTerminalIOHandler(BTerminalIOHandlerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
     BTerminalIOHandlerPrivate::testUnique();

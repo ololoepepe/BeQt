@@ -24,8 +24,8 @@
 #include "bpasswordwidget.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPassword>
 
 #include <QObject>
@@ -42,7 +42,7 @@
 /*============================== Public constructors =======================*/
 
 BPasswordGroupPrivate::BPasswordGroupPrivate(BPasswordGroup *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -96,7 +96,7 @@ void BPasswordGroupPrivate::passwordChanged()
 /*============================== Public constructors =======================*/
 
 BPasswordGroup::BPasswordGroup(QObject *parent) :
-    QObject(parent), BBase(*new BPasswordGroupPrivate(this))
+    QObject(parent), BBaseObject(*new BPasswordGroupPrivate(this))
 {
     d_func()->init();
 }
@@ -109,7 +109,7 @@ BPasswordGroup::~BPasswordGroup()
 /*============================== Protected constructors ====================*/
 
 BPasswordGroup::BPasswordGroup(BPasswordGroupPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

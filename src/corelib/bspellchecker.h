@@ -36,7 +36,7 @@ class QRegularExpression;
 #endif
 
 #include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 
 #include <QStringList>
 #include <QString>
@@ -47,7 +47,7 @@ class QRegularExpression;
 ================================ BSpellChecker ===============================
 ============================================================================*/
 
-class B_CORE_EXPORT BSpellChecker : public QObject, public BBase
+class B_CORE_EXPORT BSpellChecker : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSpellChecker)

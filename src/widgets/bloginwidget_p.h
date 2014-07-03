@@ -33,7 +33,7 @@ class QToolButton;
 #include "bloginwidget.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BTranslation>
 
 #include <QObject>
@@ -43,7 +43,7 @@ class QToolButton;
 ================================ BLoginWidgetPrivate =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BLoginWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BLoginWidgetPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BLoginWidget)

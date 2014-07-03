@@ -29,7 +29,7 @@ class QStringList;
 class QTextCodec;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QWidget>
 
@@ -37,7 +37,7 @@ class QTextCodec;
 ================================ BHelpBrowser ================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBase
+class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BHelpBrowser)

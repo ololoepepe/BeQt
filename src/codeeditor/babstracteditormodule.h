@@ -37,7 +37,7 @@ class QByteArray;
 #include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QPoint>
@@ -47,7 +47,7 @@ class QByteArray;
 ================================ BAbstractEditorModule =======================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractEditorModule : public QObject, public BBase
+class B_CODEEDITOR_EXPORT BAbstractEditorModule : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractEditorModule)

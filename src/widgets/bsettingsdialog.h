@@ -29,7 +29,7 @@ class QWidget;
 class QStringList;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QDialog>
 #include <QList>
@@ -38,7 +38,7 @@ class QStringList;
 ================================ BSettingsDialog =============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBase
+class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSettingsDialog)

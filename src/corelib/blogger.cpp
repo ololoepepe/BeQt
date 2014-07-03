@@ -44,7 +44,7 @@
 /*============================== Public constructors =======================*/
 
 BLoggerPrivate::BLoggerPrivate(BLogger *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     formatMutex = new QMutex(QMutex::Recursive);
     consoleMutex = new QMutex(QMutex::Recursive);
@@ -133,13 +133,13 @@ void BLoggerPrivate::timeout()
 /*============================== Public constructors =======================*/
 
 BLogger::BLogger(QObject *parent) :
-    QObject(parent), BBase( *new BLoggerPrivate(this) )
+    QObject(parent), BBaseObject( *new BLoggerPrivate(this) )
 {
     d_func()->init();
 }
 
 BLogger::BLogger(const QString &fileName, QObject *parent) :
-    QObject(parent), BBase( *new BLoggerPrivate(this) )
+    QObject(parent), BBaseObject( *new BLoggerPrivate(this) )
 {
     d_func()->init();
     setFileName(fileName);
@@ -153,7 +153,7 @@ BLogger::~BLogger()
 /*============================== Protected constructors ====================*/
 
 BLogger::BLogger(BLoggerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

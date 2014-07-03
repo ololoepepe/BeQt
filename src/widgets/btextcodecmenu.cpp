@@ -23,8 +23,8 @@
 #include "btextcodecmenu_p.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BCoreApplication>
 
@@ -42,7 +42,7 @@
 /*============================== Public constructors =======================*/
 
 BTextCodecMenuPrivate::BTextCodecMenuPrivate(BTextCodecMenu *q, BTextCodecMenu::Style s) :
-    BBasePrivate(q), Style(s)
+    BBaseObjectPrivate(q), Style(s)
 {
     //
 }
@@ -125,13 +125,13 @@ void BTextCodecMenuPrivate::codecSelected(const QString &cn)
 /*============================== Public constructors =======================*/
 
 BTextCodecMenu::BTextCodecMenu(QWidget *parent) :
-    QMenu(parent), BBase(*new BTextCodecMenuPrivate(this, StructuredStyle))
+    QMenu(parent), BBaseObject(*new BTextCodecMenuPrivate(this, StructuredStyle))
 {
     d_func()->init();
 }
 
 BTextCodecMenu::BTextCodecMenu(Style s, QWidget *parent) :
-    QMenu(parent), BBase(*new BTextCodecMenuPrivate(this, s))
+    QMenu(parent), BBaseObject(*new BTextCodecMenuPrivate(this, s))
 {
     d_func()->init();
 }
@@ -144,7 +144,7 @@ BTextCodecMenu::~BTextCodecMenu()
 /*============================== Protected constructors ====================*/
 
 BTextCodecMenu::BTextCodecMenu(BTextCodecMenuPrivate &d, QWidget *parent) :
-    QMenu(parent), BBase(d)
+    QMenu(parent), BBaseObject(d)
 {
     d_func()->init();
 }

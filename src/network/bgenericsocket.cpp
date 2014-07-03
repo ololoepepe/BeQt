@@ -48,7 +48,7 @@
 /*============================== Public constructors =======================*/
 
 BGenericSocketPrivate::BGenericSocketPrivate(BGenericSocket *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -143,7 +143,7 @@ void BGenericSocketPrivate::lsocketStateChanged(QLocalSocket::LocalSocketState s
 /*============================== Public constructors =======================*/
 
 BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
-    QObject(parent), BBase( *new BGenericSocketPrivate(this) )
+    QObject(parent), BBaseObject( *new BGenericSocketPrivate(this) )
 {
     d_func()->init();
     switch (type)
@@ -166,7 +166,7 @@ BGenericSocket::BGenericSocket(SocketType type, QObject *parent) :
 }
 
 BGenericSocket::BGenericSocket(QAbstractSocket *socket, QObject *parent) :
-    QObject(parent), BBase( *new BGenericSocketPrivate(this) )
+    QObject(parent), BBaseObject( *new BGenericSocketPrivate(this) )
 {
     d_func()->init();
     if (!socket)
@@ -175,7 +175,7 @@ BGenericSocket::BGenericSocket(QAbstractSocket *socket, QObject *parent) :
 }
 
 BGenericSocket::BGenericSocket(QLocalSocket *socket, QObject *parent) :
-    QObject(parent), BBase( *new BGenericSocketPrivate(this) )
+    QObject(parent), BBaseObject( *new BGenericSocketPrivate(this) )
 {
     d_func()->init();
     if (!socket)
@@ -191,7 +191,7 @@ BGenericSocket::~BGenericSocket()
 /*============================== Protected constructors ====================*/
 
 BGenericSocket::BGenericSocket(BGenericSocketPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

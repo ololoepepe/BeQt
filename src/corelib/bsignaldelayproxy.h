@@ -28,7 +28,7 @@ class QString;
 
 #include "bglobal.h"
 #include "bnamespace.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 
 #include <QObject>
 
@@ -36,7 +36,7 @@ class QString;
 ================================ BSignalDelayProxy ===========================
 ============================================================================*/
 
-class B_CORE_EXPORT BSignalDelayProxy : public QObject, public BBase
+class B_CORE_EXPORT BSignalDelayProxy : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSignalDelayProxy)

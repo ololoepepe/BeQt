@@ -29,7 +29,7 @@ class QPluginLoader;
 #include "bpluginwrapper.h"
 #include "bglobal.h"
 #include "bplugininterface.h"
-#include "bbase_p.h"
+#include "bbaseobject_p.h"
 #include "bversion.h"
 
 #include <QList>
@@ -43,7 +43,7 @@ class QPluginLoader;
 ================================ BPluginWrapperPrivate =======================
 ============================================================================*/
 
-class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
+class B_CORE_EXPORT BPluginWrapperPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BPluginWrapper)

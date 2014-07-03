@@ -44,7 +44,7 @@
 /*============================== Public constructors =======================*/
 
 BSocketWrapperPrivate::BSocketWrapperPrivate(BSocketWrapper *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -218,20 +218,20 @@ void BSocketWrapperPrivate::readyRead()
 /*============================== Public constructors =======================*/
 
 BSocketWrapper::BSocketWrapper(QObject *parent) :
-    QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
+    QObject(parent), BBaseObject( *new BSocketWrapperPrivate(this) )
 {
     d_func()->init();
 }
 
 BSocketWrapper::BSocketWrapper(BGenericSocket *socket, QObject *parent) :
-    QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
+    QObject(parent), BBaseObject( *new BSocketWrapperPrivate(this) )
 {
     d_func()->init();
     setSocket(socket);
 }
 
 BSocketWrapper::BSocketWrapper(BGenericSocket::SocketType type, QObject *parent) :
-    QObject(parent), BBase( *new BSocketWrapperPrivate(this) )
+    QObject(parent), BBaseObject( *new BSocketWrapperPrivate(this) )
 {
     d_func()->init();
     setSocket( new BGenericSocket(type) );
@@ -245,7 +245,7 @@ BSocketWrapper::~BSocketWrapper()
 /*============================== Protected constructors ====================*/
 
 BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

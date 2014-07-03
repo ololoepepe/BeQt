@@ -28,7 +28,7 @@ class QWidget;
 class QMimeData;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QPlainTextEdit>
 
@@ -36,7 +36,7 @@ class QMimeData;
 ================================ BPlainTextEdit ==============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBase
+class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPlainTextEdit)

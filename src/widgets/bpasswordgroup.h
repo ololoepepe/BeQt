@@ -27,7 +27,7 @@ class BPasswordWidget;
 class BPassword;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 
@@ -35,7 +35,7 @@ class BPassword;
 ================================ BPasswordGroup ==============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPasswordGroup : public QObject, public BBase
+class B_WIDGETS_EXPORT BPasswordGroup : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPasswordGroup)

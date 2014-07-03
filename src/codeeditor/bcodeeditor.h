@@ -36,7 +36,7 @@ class QTextCodec;
 #include "bcodeedit.h"
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QWidget>
 #include <QList>
@@ -46,7 +46,7 @@ class QTextCodec;
 ================================ BCodeEditor =================================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEditor : public QWidget, public BBase
+class B_CODEEDITOR_EXPORT BCodeEditor : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BCodeEditor)

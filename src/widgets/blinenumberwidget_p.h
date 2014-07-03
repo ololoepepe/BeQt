@@ -30,7 +30,7 @@ class QEvent;
 #include "blinenumberwidget.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 
@@ -38,7 +38,7 @@ class QEvent;
 ================================ BLineNumberWidgetPrivate ====================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BLineNumberWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BLineNumberWidgetPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BLineNumberWidget)

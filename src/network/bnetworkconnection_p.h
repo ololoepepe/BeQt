@@ -35,7 +35,7 @@ class QByteArray;
 #include "bnetworkconnection.h"
 #include "bgenericsocket.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -51,7 +51,7 @@ class QByteArray;
 ================================ BNetworkConnectionPrivate ===================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BNetworkConnectionPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkConnection)
@@ -63,7 +63,6 @@ public:
         BNetworkOperationMetaData metaData;
         int compressionLevel;
     };
-    //typedef QPair<QByteArray, BNetworkOperationMetaData> Data;
 public:
     explicit BNetworkConnectionPrivate(BNetworkConnection *q, BNetworkServer *server = 0);
     ~BNetworkConnectionPrivate();

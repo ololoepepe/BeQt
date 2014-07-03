@@ -30,7 +30,7 @@ class QString;
 #include "btextcodecmenu.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QComboBox>
 
@@ -38,7 +38,7 @@ class QString;
 ================================ BTextCodecComboBox ==========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecComboBox : public QComboBox, public BBase
+class B_WIDGETS_EXPORT BTextCodecComboBox : public QComboBox, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTextCodecComboBox)

@@ -30,7 +30,7 @@ class QLocalServer;
 
 #include "bgenericserver.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -75,7 +75,7 @@ Q_SIGNALS:
 ================================ BGenericServerPrivate =======================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BGenericServerPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BGenericServer)

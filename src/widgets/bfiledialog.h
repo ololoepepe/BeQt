@@ -31,7 +31,7 @@ class QByteArray;
 #include "btextcodecmenu.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QFileDialog>
@@ -41,7 +41,7 @@ class QByteArray;
 ================================ BFileDialog =================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BFileDialog : public QFileDialog, public BBase
+class B_WIDGETS_EXPORT BFileDialog : public QFileDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BFileDialog)

@@ -26,7 +26,7 @@
 #include "btextcodecmenu.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -35,7 +35,7 @@
 ================================ BTextCodecComboBoxPrivate ===================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecComboBoxPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BTextCodecComboBoxPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BTextCodecComboBox)

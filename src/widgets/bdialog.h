@@ -30,7 +30,7 @@ class QAbstractButton;
 class QPushButton;
 class QString;
 
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
 #include <QDialog>
@@ -41,7 +41,7 @@ class QString;
 ================================ BDialog =====================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BDialog : public QDialog, public BBase
+class B_WIDGETS_EXPORT BDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BDialog)

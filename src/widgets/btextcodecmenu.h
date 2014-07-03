@@ -28,7 +28,7 @@ class QTextCodec;
 class QString;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QMenu>
 
@@ -36,7 +36,7 @@ class QString;
 ================================ BTextCodecMenu ==============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecMenu : public QMenu, public BBase
+class B_WIDGETS_EXPORT BTextCodecMenu : public QMenu, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTextCodecMenu)

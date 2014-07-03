@@ -27,7 +27,7 @@
 #include "bsettingsdialog.h"
 #include "babstractsettingstab.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BPluginWrapper>
 
@@ -53,7 +53,7 @@
 /*============================== Public constructors =======================*/
 
 BPluginsSettingsTabPrivate::BPluginsSettingsTabPrivate(BPluginsSettingsTab *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -185,7 +185,7 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
 /*============================== Public constructors =======================*/
 
 BPluginsSettingsTab::BPluginsSettingsTab() :
-    BBase( *new BPluginsSettingsTabPrivate(this) )
+    BBaseObject( *new BPluginsSettingsTabPrivate(this) )
 {
     d_func()->init();
 }
@@ -198,7 +198,7 @@ BPluginsSettingsTab::~BPluginsSettingsTab()
 /*============================== Protected constructors ====================*/
 
 BPluginsSettingsTab::BPluginsSettingsTab(BPluginsSettingsTabPrivate &d) :
-    BBase(d)
+    BBaseObject(d)
 {
     d_func()->init();
 }

@@ -27,7 +27,7 @@ class QLineEdit;
 #include "beditgroup.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QMap>
@@ -36,7 +36,7 @@ class QLineEdit;
 ================================ BEditGroupPrivate ===========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BEditGroupPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BEditGroupPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BEditGroup)

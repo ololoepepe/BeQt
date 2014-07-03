@@ -47,7 +47,7 @@
 /*============================== Public constructors =======================*/
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BNetworkServer *server) :
-    BBasePrivate(q), UniqueId( QUuid::createUuid() ), Server(server)
+    BBaseObjectPrivate(q), UniqueId( QUuid::createUuid() ), Server(server)
 {
     //
 }
@@ -382,7 +382,7 @@ BNetworkConnection::InternalHandler BNetworkConnection::requestHandler(StandardO
 /*============================== Public constructors =======================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
+    QObject(parent), BBaseObject( *new BNetworkConnectionPrivate(this) )
 {
     d_func()->init();
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
@@ -393,7 +393,7 @@ BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) 
 }
 
 BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *socket) :
-    QObject(0), BBase( *new BNetworkConnectionPrivate(this, server) )
+    QObject(0), BBaseObject( *new BNetworkConnectionPrivate(this, server) )
 {
     d_func()->init();
     if ( !socket || socket->thread() != thread() || !socket->isOpen() )
@@ -404,7 +404,7 @@ BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *s
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
-    QObject(parent), BBase( *new BNetworkConnectionPrivate(this) )
+    QObject(parent), BBaseObject( *new BNetworkConnectionPrivate(this) )
 {
     d_func()->init();
     BGenericSocket *s = new BGenericSocket(type);
@@ -422,7 +422,7 @@ BNetworkConnection::~BNetworkConnection()
 /*============================== Protected constructors ====================*/
 
 BNetworkConnection::BNetworkConnection(BNetworkConnectionPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

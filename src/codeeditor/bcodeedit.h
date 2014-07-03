@@ -34,7 +34,7 @@ class QFont;
 class QTextBlock;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QWidget>
 #include <QList>
@@ -45,7 +45,7 @@ class QTextBlock;
 ================================ BCodeEdit ===================================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEdit : public QWidget, public BBase
+class B_CODEEDITOR_EXPORT BCodeEdit : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BCodeEdit)

@@ -23,8 +23,8 @@
 #include "beditgroup_p.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QMap>
@@ -40,7 +40,7 @@
 /*============================== Public constructors =======================*/
 
 BEditGroupPrivate::BEditGroupPrivate(BEditGroup *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -94,7 +94,7 @@ void BEditGroupPrivate::textChanged()
 /*============================== Public constructors =======================*/
 
 BEditGroup::BEditGroup(QObject *parent) :
-    QObject(parent), BBase(*new BEditGroupPrivate(this))
+    QObject(parent), BBaseObject(*new BEditGroupPrivate(this))
 {
     d_func()->init();
 }
@@ -107,7 +107,7 @@ BEditGroup::~BEditGroup()
 /*============================== Protected constructors ====================*/
 
 BEditGroup::BEditGroup(BEditGroupPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

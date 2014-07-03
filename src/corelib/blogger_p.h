@@ -26,7 +26,7 @@ class QTimer;
 
 #include "blogger.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject_p.h"
 
 #include <QString>
 #include <QFile>
@@ -37,7 +37,7 @@ class QTimer;
 ================================ BLoggerPrivate ==============================
 ============================================================================*/
 
-class B_CORE_EXPORT BLoggerPrivate : public BBasePrivate
+class B_CORE_EXPORT BLoggerPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BLogger)

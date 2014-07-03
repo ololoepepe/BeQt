@@ -27,9 +27,9 @@
 #include "bcodeeditor.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtWidgets/BApplication>
 
 #include <QObject>
@@ -73,7 +73,7 @@ const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
 /*============================== Public constructors =======================*/
 
 BSearchDialogPrivate::BSearchDialogPrivate(BSearchDialog *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -276,13 +276,13 @@ void BSearchDialogPrivate::actDocumentTriggered()
 /*============================== Public constructors =======================*/
 
 BSearchDialog::BSearchDialog(QWidget *parent) :
-    QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
+    QDialog(parent), BBaseObject( *new BSearchDialogPrivate(this) )
 {
     d_func()->init();
 }
 
 BSearchDialog::BSearchDialog(bool replaceEnabled, QWidget *parent) :
-    QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
+    QDialog(parent), BBaseObject( *new BSearchDialogPrivate(this) )
 {
     d_func()->init();
     setReplaceEnabled(replaceEnabled);
@@ -296,7 +296,7 @@ BSearchDialog::~BSearchDialog()
 /*============================== Protected constructors ====================*/
 
 BSearchDialog::BSearchDialog(BSearchDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }

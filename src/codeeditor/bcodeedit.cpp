@@ -31,8 +31,8 @@ class QFont;
 #include "btexttools.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BPlainTextEdit>
 #include <BeQtWidgets/BClipboardNotifier>
@@ -373,7 +373,7 @@ void BPlainTextEditExtended::paintEvent(QPaintEvent *e)
 /*============================== Public constructors =======================*/
 
 BCodeEditPrivate::BCodeEditPrivate(BCodeEdit *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -1647,7 +1647,7 @@ void BCodeEditPrivate::delayedSetLineLength()
 /*============================== Public constructors =======================*/
 
 BCodeEdit::BCodeEdit(QWidget *parent) :
-    QWidget(parent), BBase( *new BCodeEditPrivate(this) )
+    QWidget(parent), BBaseObject( *new BCodeEditPrivate(this) )
 {
     d_func()->init();
 }
@@ -1660,7 +1660,7 @@ BCodeEdit::~BCodeEdit()
 /*============================== Protected constructors ====================*/
 
 BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

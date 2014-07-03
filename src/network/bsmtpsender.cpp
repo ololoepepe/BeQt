@@ -41,7 +41,7 @@
 /*============================== Public constructors =======================*/
 
 BSmtpSenderPrivate::BSmtpSenderPrivate(BSmtpSender *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -293,7 +293,7 @@ bool BSmtpSender::send(const QString &address, const BEmail &email, int timeout,
 /*============================== Public constructors =======================*/
 
 BSmtpSender::BSmtpSender(QObject *parent) :
-    QObject(parent), BBase(*new BSmtpSenderPrivate(this))
+    QObject(parent), BBaseObject(*new BSmtpSenderPrivate(this))
 {
     d_func()->init();
 }
@@ -306,7 +306,7 @@ BSmtpSender::~BSmtpSender()
 /*============================== Protected constructors ====================*/
 
 BSmtpSender::BSmtpSender(BSmtpSenderPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

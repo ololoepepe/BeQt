@@ -40,7 +40,7 @@ class QMenu;
 #include "bcodeedit.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtWidgets/BPlainTextEdit>
 #include <BeQtWidgets/private/bplaintextedit_p.h>
 
@@ -131,7 +131,7 @@ private:
 ================================ BCodeEditPrivate ============================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEditPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BCodeEditPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BCodeEdit)

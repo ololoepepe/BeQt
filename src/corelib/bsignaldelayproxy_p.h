@@ -26,7 +26,7 @@ class QTimer;
 
 #include "bsignaldelayproxy.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject_p.h"
 
 #include <QObject>
 #include <QVariant>
@@ -35,7 +35,7 @@ class QTimer;
 ================================ BSignalDelayProxyPrivate ====================
 ============================================================================*/
 
-class B_CORE_EXPORT BSignalDelayProxyPrivate : public BBasePrivate
+class B_CORE_EXPORT BSignalDelayProxyPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSignalDelayProxy)

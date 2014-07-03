@@ -22,7 +22,7 @@
 #include "bclipboardnotifier.h"
 #include "bclipboardnotifier_p.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QApplication>
@@ -42,7 +42,7 @@ static void clipboardNotifierCleanup()
 /*============================== Public constructors =======================*/
 
 BClipboardNotifierPrivate::BClipboardNotifierPrivate(BClipboardNotifier *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -83,7 +83,7 @@ void BClipboardNotifierPrivate::dataChanged()
 /*============================== Public constructors =======================*/
 
 BClipboardNotifier::BClipboardNotifier() :
-    QObject(0), BBase(*new BClipboardNotifierPrivate(this))
+    QObject(0), BBaseObject(*new BClipboardNotifierPrivate(this))
 {
     bTest(!_m_self, "BClipboardNotifier", "There should be only one instance of BClipboardNotifier");
     if (_m_self)

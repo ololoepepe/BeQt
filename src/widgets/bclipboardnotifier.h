@@ -27,7 +27,7 @@ class BClipboardNotifierPrivate;
 class QWidget;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 
@@ -35,7 +35,7 @@ class QWidget;
 ================================ BClipboardNotifier ==========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BClipboardNotifier : public QObject, public BBase
+class B_WIDGETS_EXPORT BClipboardNotifier : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BClipboardNotifier)

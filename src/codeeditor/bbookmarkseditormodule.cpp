@@ -104,18 +104,18 @@ void BBookmarksEditorModulePrivate::init()
     B_Q(BBookmarksEditorModule);
     maxBookmarks = 4;
     //
-    actMakeBookmark = new QAction(this);
+    actMakeBookmark = new QAction(q);
       actMakeBookmark->setIcon( BApplication::icon("bookmark_add") );
       actMakeBookmark->setShortcut(QKeySequence("Ctrl+Shift+K"));
-      connect( actMakeBookmark.data(), SIGNAL( triggered() ), q, SLOT( makeBookmark() ) );
-    actGotoNextBookmark = new QAction(this);
+      QObject::connect( actMakeBookmark.data(), SIGNAL( triggered() ), q, SLOT( makeBookmark() ) );
+    actGotoNextBookmark = new QAction(q);
       actGotoNextBookmark->setIcon( BApplication::icon("bookmark") );
       actGotoNextBookmark->setShortcut(QKeySequence("Ctrl+K"));
-      connect( actGotoNextBookmark.data(), SIGNAL( triggered() ), q, SLOT( gotoNextBookmark() ) );
+      QObject::connect( actGotoNextBookmark.data(), SIGNAL( triggered() ), q, SLOT( gotoNextBookmark() ) );
     //
     checkBookmarks();
     retranslateUi();
-    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    QObject::connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
 }
 
 void BBookmarksEditorModulePrivate::checkBookmarks()

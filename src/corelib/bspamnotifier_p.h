@@ -25,9 +25,8 @@
 class QTimer;
 
 #include "bspamnotifier.h"
-
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include "bglobal.h"
+#include "bbaseobject_p.h"
 
 #include <QObject>
 
@@ -36,10 +35,10 @@ class QElapsedTimer;
 #endif
 
 /*============================================================================
-================================ BSpamNotifierPrivate
+================================ BSpamNotifierPrivate ========================
 ============================================================================*/
 
-class B_CORE_EXPORT BSpamNotifierPrivate : public BBasePrivate
+class B_CORE_EXPORT BSpamNotifierPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSpamNotifier)

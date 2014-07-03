@@ -45,7 +45,7 @@
 /*============================== Public constructors =======================*/
 
 BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -202,13 +202,13 @@ BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
 /*============================== Public constructors =======================*/
 
 BPluginWrapper::BPluginWrapper(QObject *parent) :
-    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
+    QObject(parent), BBaseObject( *new BPluginWrapperPrivate(this) )
 {
     d_func()->init();
 }
 
 BPluginWrapper::BPluginWrapper(const QString &fileName, QObject *parent) :
-    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
+    QObject(parent), BBaseObject( *new BPluginWrapperPrivate(this) )
 {
     d_func()->init();
     setFileName(fileName);
@@ -222,7 +222,7 @@ BPluginWrapper::~BPluginWrapper()
 /*============================== Protected constructors ====================*/
 
 BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

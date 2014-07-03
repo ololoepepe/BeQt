@@ -25,7 +25,7 @@
 class BApplicationServerPrivate;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
 #include <QString>
@@ -35,7 +35,7 @@ class BApplicationServerPrivate;
 ================================ BApplicationServer ==========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BApplicationServer : public BBase
+class B_NETWORK_EXPORT BApplicationServer : public BBaseObject
 {
     B_DECLARE_PRIVATE(BApplicationServer)
 public:

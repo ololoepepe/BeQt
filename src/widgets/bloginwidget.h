@@ -34,7 +34,7 @@ class QByteArray;
 #include "bpasswordwidget.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QWidget>
@@ -43,7 +43,7 @@ class QByteArray;
 ================================ BLoginWidget ================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BLoginWidget : public QWidget, public BBase
+class B_WIDGETS_EXPORT BLoginWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BLoginWidget)

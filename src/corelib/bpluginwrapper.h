@@ -29,7 +29,7 @@ class QSettings;
 
 #include "bglobal.h"
 #include "bplugininterface.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 #include "bversion.h"
 
 #include <QObject>
@@ -40,7 +40,7 @@ class QSettings;
 ================================ BPluginWrapper ==============================
 ============================================================================*/
 
-class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
+class B_CORE_EXPORT BPluginWrapper : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginWrapper)

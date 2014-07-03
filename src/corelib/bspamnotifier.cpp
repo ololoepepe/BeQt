@@ -23,8 +23,8 @@
 #include "bspamnotifier_p.h"
 
 #include "bglobal.h"
-#include "bbase.h"
-#include "bbase_p.h"
+#include "bbaseobject.h"
+#include "bbaseobject_p.h"
 
 #include <QObject>
 #include <QTimer>
@@ -41,7 +41,7 @@
 /*============================== Public constructors =======================*/
 
 BSpamNotifierPrivate::BSpamNotifierPrivate(BSpamNotifier *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -112,13 +112,13 @@ int BSpamNotifierPrivate::timeElapsed() const
 /*============================== Public constructors =======================*/
 
 BSpamNotifier::BSpamNotifier(QObject *parent) :
-    QObject(parent), BBase( *new BSpamNotifierPrivate(this) )
+    QObject(parent), BBaseObject( *new BSpamNotifierPrivate(this) )
 {
     d_func()->init();
 }
 
 BSpamNotifier::BSpamNotifier(QObject *parent, int checkInterval, int eventLimit) :
-    QObject(parent), BBase( *new BSpamNotifierPrivate(this) )
+    QObject(parent), BBaseObject( *new BSpamNotifierPrivate(this) )
 {
     d_func()->init();
     setCheckInterval(checkInterval);
@@ -133,7 +133,7 @@ BSpamNotifier::~BSpamNotifier()
 /*============================== Protected constructors ====================*/
 
 BSpamNotifier::BSpamNotifier(BSpamNotifierPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

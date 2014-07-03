@@ -37,7 +37,7 @@ class QPushButton;
 #include "bhelpbrowser.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QApplication>
 #include <QStringList>
@@ -49,7 +49,7 @@ class QPushButton;
 ================================ BHelpBrowserPrivate =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BHelpBrowser)

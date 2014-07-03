@@ -54,7 +54,7 @@
 /*============================== Public constructors =======================*/
 
 BTerminalWidgetPrivate::BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode) :
-    BBasePrivate(q), NormalMode(nmode)
+    BBaseObjectPrivate(q), NormalMode(nmode)
 {
     //
 }
@@ -274,13 +274,13 @@ void BTerminalWidgetPrivate::unblockTerminal()
 /*============================== Public constructors =======================*/
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, QWidget *parent) :
-    QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
+    QWidget(parent), BBaseObject( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
     d_func()->init();
 }
 
 BTerminalWidget::BTerminalWidget(TerminalMode mode, BAbstractTerminalDriver *driver, QWidget *parent) :
-    QWidget(parent), BBase( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
+    QWidget(parent), BBaseObject( *new BTerminalWidgetPrivate(this, NormalMode == mode) )
 {
     d_func()->init();
     setDriver(driver);
@@ -294,7 +294,7 @@ BTerminalWidget::~BTerminalWidget()
 /*============================== Protected constructors ====================*/
 
 BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

@@ -37,7 +37,7 @@ class QEvent;
 
 #include "bcoreapplication.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject_p.h"
 #include "bpersoninfo.h"
 
 #include <QtGlobal>
@@ -52,7 +52,7 @@ class QEvent;
 ================================ BCoreApplicationPrivate =====================
 ============================================================================*/
 
-class B_CORE_EXPORT BCoreApplicationPrivate : public BBasePrivate
+class B_CORE_EXPORT BCoreApplicationPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BCoreApplication)

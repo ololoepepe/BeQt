@@ -30,7 +30,7 @@ class QByteArray;
 #include "bsocketwrapper.h"
 #include "bnetworkoperationmetadata.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -41,7 +41,7 @@ class QByteArray;
 ================================ BSocketWrapperPrivate =======================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSocketWrapper)

@@ -28,7 +28,7 @@ class QTextCodec;
 #include "bcodeeditordocument.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QByteArray>
@@ -42,7 +42,7 @@ class QTextCodec;
 /*============================== Public constructors =======================*/
 
 BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -71,7 +71,7 @@ void BAbstractDocumentDriverPrivate::setEditor(BCodeEditor *edr)
 /*============================== Public constructors =======================*/
 
 BAbstractDocumentDriver::BAbstractDocumentDriver(QObject *parent) :
-    QObject(parent)
+    QObject(parent), BBaseObject(*new BBaseObjectPrivate(this))
 {
     d_func()->init();
 }
@@ -84,7 +84,7 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
 /*============================== Protected constructors ====================*/
 
 BAbstractDocumentDriver::BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

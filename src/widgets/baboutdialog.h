@@ -31,7 +31,7 @@ class QIcon;
 class QSize;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BDirTools>
@@ -47,7 +47,7 @@ class QSize;
 ================================ BAboutDialog ================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBase
+class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAboutDialog)

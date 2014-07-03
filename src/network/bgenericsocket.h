@@ -29,7 +29,7 @@ class QSslSocket;
 class QUdpSocket;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
 #include <QObject>
@@ -43,7 +43,7 @@ class QUdpSocket;
 ================================ BGenericSocket ==============================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericSocket : public QObject, public BBase
+class B_NETWORK_EXPORT BGenericSocket : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BGenericSocket)

@@ -26,7 +26,7 @@
 #include "bdirtools.h"
 
 #if defined(BUILDING_LIBENCA)
-#include "lib/enca.h"
+#include "../3rdparty/enca/lib/enca.h"
 #else
 #include <lib/enca.h>
 #endif

@@ -34,7 +34,7 @@ class QEvent;
 #include "btextcodeccombobox.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -43,7 +43,7 @@ class QEvent;
 ================================ BFileDialogPrivate ==========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BFileDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BFileDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BFileDialog)

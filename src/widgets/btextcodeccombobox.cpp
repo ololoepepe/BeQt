@@ -24,8 +24,8 @@
 #include "btextcodecmenu.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BCoreApplication>
 
@@ -44,7 +44,7 @@
 /*============================== Public constructors =======================*/
 
 BTextCodecComboBoxPrivate::BTextCodecComboBoxPrivate(BTextCodecComboBox *q, BTextCodecMenu::Style s) :
-    BBasePrivate(q), Style(s)
+    BBaseObjectPrivate(q), Style(s)
 {
     //
 }
@@ -111,13 +111,13 @@ void BTextCodecComboBoxPrivate::currentIndexChanged(int index)
 /*============================== Public constructors =======================*/
 
 BTextCodecComboBox::BTextCodecComboBox(QWidget *parent) :
-    QComboBox(parent), BBase(*new BTextCodecComboBoxPrivate(this, BTextCodecMenu::StructuredStyle))
+    QComboBox(parent), BBaseObject(*new BTextCodecComboBoxPrivate(this, BTextCodecMenu::StructuredStyle))
 {
     d_func()->init();
 }
 
 BTextCodecComboBox::BTextCodecComboBox(BTextCodecMenu::Style s, QWidget *parent) :
-    QComboBox(parent), BBase(*new BTextCodecComboBoxPrivate(this, s))
+    QComboBox(parent), BBaseObject(*new BTextCodecComboBoxPrivate(this, s))
 {
     d_func()->init();
 }
@@ -131,7 +131,7 @@ BTextCodecComboBox::~BTextCodecComboBox()
 /*============================== Protected constructors ====================*/
 
 BTextCodecComboBox::BTextCodecComboBox(BTextCodecComboBoxPrivate &d, QWidget *parent) :
-    QComboBox(parent), BBase(d)
+    QComboBox(parent), BBaseObject(d)
 {
     d_func()->init();
 }

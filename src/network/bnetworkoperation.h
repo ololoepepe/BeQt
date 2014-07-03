@@ -32,7 +32,7 @@ class QVariant;
 #include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QByteArray>
@@ -41,7 +41,7 @@ class QVariant;
 ================================ BNetworkOperation ===========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkOperation : public QObject, public BBase
+class B_NETWORK_EXPORT BNetworkOperation : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkOperation)

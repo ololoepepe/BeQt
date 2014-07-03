@@ -39,8 +39,8 @@ class BSpellChecker;
 #include "bsimplecodeeditordocument.h"
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtWidgets/BApplication>
 
 #include <QObject>
@@ -89,7 +89,7 @@ class BSpellChecker;
 
 BSelectDocumentsDialogPrivate::BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q,
                                                              const QList<BAbstractCodeEditorDocument *> &list) :
-    BBasePrivate(q), Documents(list)
+    BBaseObjectPrivate(q), Documents(list)
 {
     //
 }
@@ -170,7 +170,7 @@ void BSelectDocumentsDialogPrivate::dlgbboxClicked(QAbstractButton *button)
 
 BSelectDocumentsDialog::BSelectDocumentsDialog(const QList<BAbstractCodeEditorDocument *> &documents,
                                                QWidget *parent) :
-    QDialog(parent), BBase( *new BSelectDocumentsDialogPrivate(this, documents) )
+    QDialog(parent), BBaseObject( *new BSelectDocumentsDialogPrivate(this, documents) )
 {
     d_func()->init();
 }
@@ -183,7 +183,7 @@ BSelectDocumentsDialog::~BSelectDocumentsDialog()
 /*============================== Protected constructors ====================*/
 
 BSelectDocumentsDialog::BSelectDocumentsDialog(BSelectDocumentsDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     //
 }
@@ -213,7 +213,7 @@ QList<BAbstractCodeEditorDocument *> BSelectDocumentsDialog::selectedDocuments()
 
 BSplittedLinesDialogPrivate::BSplittedLinesDialogPrivate(
         BSplittedLinesDialog *q, const QList<BCodeEdit::SplittedLinesRange> &ranges, int lineLength) :
-    BBasePrivate(q), Ranges(ranges), LineLength(lineLength)
+    BBaseObjectPrivate(q), Ranges(ranges), LineLength(lineLength)
 {
     //
 }
@@ -300,7 +300,7 @@ void BSplittedLinesDialogPrivate::btnGotoClicked()
 
 BSplittedLinesDialog::BSplittedLinesDialog(const QList<BCodeEdit::SplittedLinesRange> &ranges,
                                            int lineLength, QWidget *parent) :
-    QDialog(parent), BBase( *new BSplittedLinesDialogPrivate(this, ranges, lineLength) )
+    QDialog(parent), BBaseObject( *new BSplittedLinesDialogPrivate(this, ranges, lineLength) )
 {
     d_func()->init();
 }
@@ -313,7 +313,7 @@ BSplittedLinesDialog::~BSplittedLinesDialog()
 /*============================== Protected constructors ====================*/
 
 BSplittedLinesDialog::BSplittedLinesDialog(BSplittedLinesDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }
@@ -425,7 +425,7 @@ void BCloseHandler::processingFinished()
 /*============================== Public constructors =======================*/
 
 BCodeEditorPrivate::BCodeEditorPrivate(BCodeEditor *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -501,10 +501,10 @@ void BCodeEditorPrivate::init()
 bool BCodeEditorPrivate::eventFilter(QObject *o, QEvent *e)
 {
     if (e->type() != QEvent::KeyPress)
-        return BBasePrivate::eventFilter(o, e);
+        return BBaseObjectPrivate::eventFilter(o, e);
     QKeyEvent *ke = static_cast<QKeyEvent *>(e);
     if (ke->modifiers() != Qt::ControlModifier || ke->key() != Qt::Key_Tab)
-        return BBasePrivate::eventFilter(o, e);
+        return BBaseObjectPrivate::eventFilter(o, e);
     int count = twgt->count();
     if (!count)
         return true;
@@ -1321,7 +1321,7 @@ void BCodeEditorPrivate::documentSavingFinished(bool success)
 /*============================== Public constructors =======================*/
 
 BCodeEditor::BCodeEditor(QWidget *parent) :
-    QWidget(parent), BBase(*new BCodeEditorPrivate(this))
+    QWidget(parent), BBaseObject(*new BCodeEditorPrivate(this))
 {
     d_func()->init();
     addModule(EditModule);
@@ -1331,7 +1331,7 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
 }
 
 BCodeEditor::BCodeEditor(StandardDocumentType t, QWidget *parent) :
-    QWidget(parent), BBase(*new BCodeEditorPrivate(this))
+    QWidget(parent), BBaseObject(*new BCodeEditorPrivate(this))
 {
     d_func()->init();
     d_func()->docType = t;
@@ -1349,7 +1349,7 @@ BCodeEditor::~BCodeEditor()
 /*============================== Protected constructors ====================*/
 
 BCodeEditor::BCodeEditor(BCodeEditorPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

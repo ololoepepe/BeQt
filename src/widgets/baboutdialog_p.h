@@ -38,7 +38,7 @@ class QWidget;
 #include "baboutdialog.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BTranslation>
 
@@ -50,7 +50,7 @@ class QWidget;
 ================================ BAboutDialogPrivate =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BAboutDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAboutDialog)

@@ -90,7 +90,7 @@ void BTcpServer::incomingConnection(int handle)
 /*============================== Public constructors =======================*/
 
 BGenericServerPrivate::BGenericServerPrivate(BGenericServer *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -141,7 +141,7 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
 /*============================== Public constructors =======================*/
 
 BGenericServer::BGenericServer(ServerType type, QObject *parent) :
-    QObject(parent), BBase( *new BGenericServerPrivate(this) )
+    QObject(parent), BBaseObject( *new BGenericServerPrivate(this) )
 {
     d_func()->init();
     B_D(BGenericServer);
@@ -173,7 +173,7 @@ BGenericServer::~BGenericServer()
 /*============================== Protected constructors ====================*/
 
 BGenericServer::BGenericServer(BGenericServerPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

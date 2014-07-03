@@ -27,7 +27,7 @@ class BSettingsNode;
 
 #include "bterminaliohandler.h"
 #include "bglobal.h"
-#include "bbase_p.h"
+#include "bbaseobject_p.h"
 #include "btranslation.h"
 
 #include <QObject>
@@ -66,7 +66,7 @@ private:
 ================================ BTerminalIOHandlerPrivate ===================
 ============================================================================*/
 
-class B_CORE_EXPORT BTerminalIOHandlerPrivate : public BBasePrivate
+class B_CORE_EXPORT BTerminalIOHandlerPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BTerminalIOHandler)

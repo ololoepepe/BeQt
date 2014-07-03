@@ -32,7 +32,7 @@ class QString;
 #include "bgenericsocket.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QAbstractSocket>
@@ -41,7 +41,7 @@ class QString;
 ================================ BGenericServer ==============================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericServer : public QObject, public BBase
+class B_NETWORK_EXPORT BGenericServer : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BGenericServer)

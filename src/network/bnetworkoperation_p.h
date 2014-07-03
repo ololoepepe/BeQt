@@ -29,7 +29,7 @@ class BNetworkConnection;
 #include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QByteArray>
 
@@ -37,7 +37,7 @@ class BNetworkConnection;
 ================================ BNetworkOperationPrivate ====================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkOperationPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BNetworkOperationPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkOperation)

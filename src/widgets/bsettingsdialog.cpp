@@ -23,7 +23,7 @@
 #include "bsettingsdialog_p.h"
 #include "babstractsettingstab.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QString>
 #include <QDialog>
@@ -57,7 +57,7 @@
 
 BSettingsDialogPrivate::BSettingsDialogPrivate(BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
                                                BSettingsDialog::Navigation navigation) :
-    BBasePrivate(q), Tabs(tabs), Navigation(navigation)
+    BBaseObjectPrivate(q), Tabs(tabs), Navigation(navigation)
 {
     //
 }
@@ -235,19 +235,19 @@ void BSettingsDialogPrivate::updateSize()
 /*============================== Public constructors =======================*/
 
 BSettingsDialog::BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs) )
+    QDialog(parent), BBaseObject( *new BSettingsDialogPrivate(this, tabs) )
 {
     d_func()->init();
 }
 
 BSettingsDialog::BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, Navigation navigation, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, tabs, navigation) )
+    QDialog(parent), BBaseObject( *new BSettingsDialogPrivate(this, tabs, navigation) )
 {
     d_func()->init();
 }
 
 BSettingsDialog::BSettingsDialog(BAbstractSettingsTab *tab, QWidget *parent) :
-    QDialog(parent), BBase( *new BSettingsDialogPrivate(this, QList<BAbstractSettingsTab *>() << tab) )
+    QDialog(parent), BBaseObject( *new BSettingsDialogPrivate(this, QList<BAbstractSettingsTab *>() << tab) )
 {
     d_func()->init();
 }
@@ -260,7 +260,7 @@ BSettingsDialog::~BSettingsDialog()
 /*============================== Protected constructors ====================*/
 
 BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }

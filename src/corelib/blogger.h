@@ -25,7 +25,7 @@
 class BLoggerPrivate;
 
 #include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 
 #include <QString>
 #include <QObject>
@@ -34,7 +34,7 @@ class BLoggerPrivate;
 ================================ BLogger =====================================
 ============================================================================*/
 
-class B_CORE_EXPORT BLogger : public QObject, public BBase
+class B_CORE_EXPORT BLogger : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BLogger)

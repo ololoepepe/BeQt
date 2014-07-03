@@ -34,7 +34,7 @@ class QPushButton;
 #include "bsettingsdialog.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QList>
@@ -46,7 +46,7 @@ class QPushButton;
 ================================ BSettingsDialogPrivate ======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)

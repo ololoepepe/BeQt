@@ -22,7 +22,7 @@
 #include "blinenumberwidget.h"
 #include "blinenumberwidget_p.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QWidget>
@@ -48,7 +48,7 @@
 /*============================== Public constructors =======================*/
 
 BLineNumberWidgetPrivate::BLineNumberWidgetPrivate(BLineNumberWidget *q, QPlainTextEdit *edit) :
-    BBasePrivate(q), Edit(edit)
+    BBaseObjectPrivate(q), Edit(edit)
 {
     //
 }
@@ -190,7 +190,7 @@ void BLineNumberWidgetPrivate::resize()
 /*============================== Public constructors =======================*/
 
 BLineNumberWidget::BLineNumberWidget(QPlainTextEdit *edit) :
-    QWidget(edit), BBase(*new BLineNumberWidgetPrivate(this, edit))
+    QWidget(edit), BBaseObject(*new BLineNumberWidgetPrivate(this, edit))
 {
     d_func()->init();
 }

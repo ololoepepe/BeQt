@@ -31,7 +31,7 @@ class QWidget;
 class QTextCodec;
 class QByteArray;
 
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -42,7 +42,7 @@ class QByteArray;
 ================================ BAbstractDocumentDriver =====================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractDocumentDriver : public QObject, public BBase
+class B_CODEEDITOR_EXPORT BAbstractDocumentDriver : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractDocumentDriver)

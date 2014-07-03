@@ -25,8 +25,8 @@
 #include "bgenericsocket.h"
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -46,13 +46,13 @@
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, quint16 port, int timeout) :
-    BBasePrivate(q), ServerName(QString()), Port(port), OperationTimeout(timeout)
+    BBaseObjectPrivate(q), ServerName(QString()), Port(port), OperationTimeout(timeout)
 {
     //
 }
 #else
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout) :
-    BBasePrivate(q), ServerName(serverName), Port(0), OperationTimeout(timeout)
+    BBaseObjectPrivate(q), ServerName(serverName), Port(0), OperationTimeout(timeout)
 {
         //
 }
@@ -60,7 +60,7 @@ BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, cons
 
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, quint16 port,
                                                      int timeout) :
-    BBasePrivate(q), ServerName(serverName), Port(port), OperationTimeout(timeout)
+    BBaseObjectPrivate(q), ServerName(serverName), Port(port), OperationTimeout(timeout)
 {
         //
 }
@@ -126,20 +126,20 @@ void BApplicationServerPrivate::newPendingConnection()
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 BApplicationServer::BApplicationServer(quint16 port, int operationTimeout) :
-    BBase( *new BApplicationServerPrivate(this, port, operationTimeout) )
+    BBaseObject( *new BApplicationServerPrivate(this, port, operationTimeout) )
 {
     d_func()->init();
 }
 #else
 BApplicationServer::BApplicationServer(const QString &serverName, int operationTimeout) :
-    BBase( *new BApplicationServerPrivate(this, serverName, operationTimeout) )
+    BBaseObject( *new BApplicationServerPrivate(this, serverName, operationTimeout) )
 {
     d_func()->init();
 }
 #endif
 
 BApplicationServer::BApplicationServer(quint16 port, const QString &serverName, int operationTimeout) :
-    BBase( *new BApplicationServerPrivate(this, serverName, port, operationTimeout) )
+    BBaseObject( *new BApplicationServerPrivate(this, serverName, port, operationTimeout) )
 {
     d_func()->init();
 }
@@ -152,7 +152,7 @@ BApplicationServer::~BApplicationServer()
 /*============================== Protected constructors ====================*/
 
 BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
-    BBase(d)
+    BBaseObject(d)
 {
     d_func()->init();
 }

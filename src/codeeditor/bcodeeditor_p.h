@@ -50,6 +50,8 @@ class QListWidgetItem;
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QMap>
@@ -63,7 +65,7 @@ class QListWidgetItem;
 ================================ BSelectDocumentsDialog ======================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSelectDocumentsDialog)
@@ -83,7 +85,7 @@ private:
 ================================ BSelectDocumentsDialogPrivate ===============
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSelectDocumentsDialog)
@@ -116,7 +118,7 @@ private:
 ================================ BSplittedLinesDialog ========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSplittedLinesDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSplittedLinesDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSplittedLinesDialog)
@@ -137,7 +139,7 @@ private:
 ================================ BSplittedLinesDialogPrivate =================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSplittedLinesDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSplittedLinesDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSplittedLinesDialog)
@@ -211,7 +213,7 @@ private:
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BCodeEditor)

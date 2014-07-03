@@ -34,7 +34,7 @@ class BSpamNotifier;
 #include "bgenericserver.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -93,7 +93,7 @@ private:
 ================================ BNetworkServerPrivate =======================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkServerPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BNetworkServerPrivate : public BBaseObjectPrivate
 {
     B_DECLARE_PUBLIC(BNetworkServer)
     Q_OBJECT

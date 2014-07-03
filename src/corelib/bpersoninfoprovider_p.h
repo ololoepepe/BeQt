@@ -30,7 +30,6 @@ class QString;
 #include "bglobal.h"
 #include "bbase_p.h"
 
-#include <QObject>
 #include <QList>
 #include <QMap>
 
@@ -40,7 +39,6 @@ class QString;
 
 class B_CORE_EXPORT BPersonInfoProviderPrivate : public BBasePrivate
 {
-    Q_OBJECT
     B_DECLARE_PUBLIC(BPersonInfoProvider)
 public:
     typedef QMap<QString, BPersonInfo> PersonInfoMap;

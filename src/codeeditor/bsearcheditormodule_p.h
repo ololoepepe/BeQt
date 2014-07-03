@@ -46,8 +46,8 @@ class QEvent;
 #include "babstracteditormodule_p.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QDialog>
@@ -58,7 +58,7 @@ class QEvent;
 ================================ BSearchDialog ===============================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSearchDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSearchDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSearchDialog)
@@ -107,7 +107,7 @@ private:
 ================================ BSearchDialogPrivate ========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSearchDialog)

@@ -33,7 +33,7 @@ class QListWidgetItem;
 #include "bpluginssettingstab.h"
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QApplication>
 #include <QList>
@@ -43,7 +43,7 @@ class QListWidgetItem;
 ================================ BPluginsSettingsTabPrivate ==================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BPluginsSettingsTab)

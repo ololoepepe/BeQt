@@ -29,7 +29,7 @@ class QSize;
 class QPlainTextEdit;
 
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QWidget>
 #include <QObject>
@@ -38,7 +38,7 @@ class QPlainTextEdit;
 ================================ BLineNumberWidget ===========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BLineNumberWidget : public QWidget, public BBase
+class B_WIDGETS_EXPORT BLineNumberWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BLineNumberWidget)

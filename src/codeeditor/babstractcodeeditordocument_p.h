@@ -41,7 +41,7 @@ class QMenu;
 #include "babstractdocumentdriver.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -83,7 +83,7 @@ public:
 ================================ BAbstractCodeEditorDocumentPrivate ==========
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocumentPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocumentPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAbstractCodeEditorDocument)

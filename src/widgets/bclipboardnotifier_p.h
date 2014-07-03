@@ -25,7 +25,7 @@
 #include "bclipboardnotifier.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 
@@ -33,7 +33,7 @@
 ================================ BClipboardNotifierPrivate ===================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BClipboardNotifierPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BClipboardNotifierPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BClipboardNotifier)

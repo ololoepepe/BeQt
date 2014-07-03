@@ -32,7 +32,7 @@ class QVBoxLayout;
 
 #include "bterminalwidget.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QCoreApplication>
@@ -42,7 +42,7 @@ class QVBoxLayout;
 ================================ BTerminalWidgetPrivate ======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BTerminalWidget)

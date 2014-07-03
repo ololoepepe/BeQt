@@ -24,9 +24,9 @@
 #include "bapplication.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPassword>
 
 #include <QWidget>
@@ -60,7 +60,7 @@ static QString defaultGeneratePasswordFunction(int len)
 /*============================== Public constructors =======================*/
 
 BPasswordWidgetPrivate::BPasswordWidgetPrivate(BPasswordWidget *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -176,13 +176,13 @@ void BPasswordWidgetPrivate::passwordChanged(const QString &password)
 /*============================== Public constructors =======================*/
 
 BPasswordWidget::BPasswordWidget(QWidget *parent) :
-    QWidget(parent), BBase(*new BPasswordWidgetPrivate(this))
+    QWidget(parent), BBaseObject(*new BPasswordWidgetPrivate(this))
 {
     d_func()->init();
 }
 
 BPasswordWidget::BPasswordWidget(const BPassword &password, QWidget *parent) :
-    QWidget(parent), BBase(*new BPasswordWidgetPrivate(this))
+    QWidget(parent), BBaseObject(*new BPasswordWidgetPrivate(this))
 {
     d_func()->init();
     setPassword(password);
@@ -196,7 +196,7 @@ BPasswordWidget::~BPasswordWidget()
 /*============================== Protected constructors ====================*/
 
 BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

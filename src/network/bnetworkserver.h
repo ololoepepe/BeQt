@@ -33,7 +33,7 @@ class QStringList;
 #include "bgenericserver.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QList>
@@ -42,7 +42,7 @@ class QStringList;
 ================================ BNetworkServer ==============================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkServer : public QObject, public BBase
+class B_NETWORK_EXPORT BNetworkServer : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkServer)

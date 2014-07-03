@@ -28,7 +28,7 @@ class QLocalSocket;
 
 #include "bgenericsocket.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -40,7 +40,7 @@ class QLocalSocket;
 ================================ BGenericSocketPrivate =======================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BGenericSocketPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BGenericSocket)

@@ -41,7 +41,6 @@ class QTranslator;
 
 class B_CORE_EXPORT BTranslatorPrivate : public BBasePrivate
 {
-    Q_OBJECT
     B_DECLARE_PUBLIC(BTranslator)
 public:
     explicit BTranslatorPrivate(BTranslator *q);

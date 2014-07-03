@@ -34,7 +34,7 @@ class QSettings;
 class QTextCodec;
 
 #include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 #include "blogger.h"
 #include "bpersoninfo.h"
 
@@ -54,7 +54,7 @@ class QTextCodec;
 ================================ BCoreApplication ============================
 ============================================================================*/
 
-class B_CORE_EXPORT BCoreApplication : public QObject, public BBase
+class B_CORE_EXPORT BCoreApplication : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BCoreApplication)

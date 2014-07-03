@@ -25,9 +25,9 @@
 #include "btextcodeccombobox.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -117,7 +117,7 @@ bool ProxyModel::filterAcceptsRow(int row, const QModelIndex &parent) const
 /*============================== Public constructors =======================*/
 
 BFileDialogPrivate::BFileDialogPrivate(BFileDialog *q, BTextCodecMenu::Style comboBoxStyle, const QString &topDir) :
-    BBasePrivate(q), CmboxStyle(comboBoxStyle), TopDir(chooseDir(topDir))
+    BBaseObjectPrivate(q), CmboxStyle(comboBoxStyle), TopDir(chooseDir(topDir))
 {
     //
 }
@@ -231,26 +231,26 @@ void BFileDialogPrivate::checkLineEdit(const QString &text)
 /*============================== Public constructors =======================*/
 
 BFileDialog::BFileDialog(QWidget *parent) :
-    QFileDialog(parent), BBase(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle))
+    QFileDialog(parent), BBaseObject(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle))
 {
     d_func()->init();
 }
 
 BFileDialog::BFileDialog(const QString &topDir, QWidget *parent) :
     QFileDialog(parent, "", chooseDir(topDir)),
-    BBase(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle, topDir))
+    BBaseObject(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle, topDir))
 {
     d_func()->init();
 }
 
 BFileDialog::BFileDialog(BTextCodecMenu::Style comboBoxStyle, QWidget *parent) :
-    QFileDialog(parent), BBase(*new BFileDialogPrivate(this, comboBoxStyle))
+    QFileDialog(parent), BBaseObject(*new BFileDialogPrivate(this, comboBoxStyle))
 {
     d_func()->init();
 }
 
 BFileDialog::BFileDialog(BTextCodecMenu::Style comboBoxStyle, const QString &topDir, QWidget *parent) :
-    QFileDialog(parent, "", chooseDir(topDir)), BBase(*new BFileDialogPrivate(this, comboBoxStyle, topDir))
+    QFileDialog(parent, "", chooseDir(topDir)), BBaseObject(*new BFileDialogPrivate(this, comboBoxStyle, topDir))
 {
     d_func()->init();
 }
@@ -263,7 +263,7 @@ BFileDialog::~BFileDialog()
 /*============================== Protected constructors ====================*/
 
 BFileDialog::BFileDialog(BFileDialogPrivate &d, QWidget *parent) :
-    QFileDialog(parent), BBase(d)
+    QFileDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }

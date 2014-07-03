@@ -43,7 +43,7 @@
 /*============================== Public constructors =======================*/
 
 BDialogPrivate::BDialogPrivate(BDialog *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -86,13 +86,13 @@ void BDialogPrivate::resetWidget(QWidget *w)
 /*============================== Public constructors =======================*/
 
 BDialog::BDialog(QWidget *parent) :
-    QDialog(parent), BBase(*new BDialogPrivate(this))
+    QDialog(parent), BBaseObject(*new BDialogPrivate(this))
 {
     d_func()->init();
 }
 
 BDialog::BDialog(QDialogButtonBox::StandardButtons buttons, QWidget *parent) :
-    QDialog(parent), BBase(*new BDialogPrivate(this))
+    QDialog(parent), BBaseObject(*new BDialogPrivate(this))
 {
     d_func()->init();
     d_func()->dlgbbox->setStandardButtons(buttons);
@@ -106,7 +106,7 @@ BDialog::~BDialog()
 /*============================== Protected constructors ====================*/
 
 BDialog::BDialog(BDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }

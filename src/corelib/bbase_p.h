@@ -22,20 +22,17 @@
 #ifndef BBASE_P_H
 #define BBASE_P_H
 
-class BBase;
-
 #include "bglobal.h"
+#include "bbase.h"
 
 #include <QtGlobal>
-#include <QObject>
 
 /*============================================================================
 ================================ BBasePrivate ================================
 ============================================================================*/
 
-class B_CORE_EXPORT BBasePrivate : public QObject
+class B_CORE_EXPORT BBasePrivate
 {
-    Q_OBJECT
     B_DECLARE_PUBLIC(BBase)
 public:
     explicit BBasePrivate(BBase *q);

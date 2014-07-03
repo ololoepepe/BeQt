@@ -25,8 +25,8 @@
 #include "bapplication.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPassword>
 #include <BeQtCore/BTranslation>
 
@@ -55,7 +55,7 @@
 /*============================== Public constructors =======================*/
 
 BLoginWidgetPrivate::BLoginWidgetPrivate(BLoginWidget *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -208,7 +208,7 @@ void BLoginWidgetPrivate::removeCurrentAddress()
 /*============================== Public constructors =======================*/
 
 BLoginWidget::BLoginWidget(QWidget *parent) :
-    QWidget(parent), BBase(*new BLoginWidgetPrivate(this))
+    QWidget(parent), BBaseObject(*new BLoginWidgetPrivate(this))
 {
     d_func()->init();
 }
@@ -221,7 +221,7 @@ BLoginWidget::~BLoginWidget()
 /*============================== Protected constructors ====================*/
 
 BLoginWidget::BLoginWidget(BLoginWidgetPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

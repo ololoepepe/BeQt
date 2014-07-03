@@ -30,7 +30,7 @@ class QStringList;
 class QVariant;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QWidget>
 #include <QString>
@@ -40,7 +40,7 @@ class QVariant;
 ================================ BTerminalWidget =============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBase
+class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTerminalWidget)

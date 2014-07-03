@@ -29,8 +29,8 @@ class QWidget;
 #include "bcodeeditor_p.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QPoint>
@@ -48,7 +48,7 @@ class QWidget;
 /*============================== Public constructors =======================*/
 
 BAbstractEditorModulePrivate::BAbstractEditorModulePrivate(BAbstractEditorModule *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -82,7 +82,7 @@ void BAbstractEditorModulePrivate::setEditor(BCodeEditor *edr)
 /*============================== Public constructors =======================*/
 
 BAbstractEditorModule::BAbstractEditorModule(QObject *parent) :
-    QObject(parent), BBase( *new BAbstractEditorModulePrivate(this) )
+    QObject(parent), BBaseObject( *new BAbstractEditorModulePrivate(this) )
 {
     d_func()->init();
 }
@@ -95,7 +95,7 @@ BAbstractEditorModule::~BAbstractEditorModule()
 /*============================== Protected constructors ====================*/
 
 BAbstractEditorModule::BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }

@@ -28,7 +28,7 @@ class BGenericServer;
 #include "bapplicationserver.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QCoreApplication>
@@ -38,7 +38,7 @@ class BGenericServer;
 ================================ BApplicationServerPrivate ===================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BApplicationServerPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BApplicationServerPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BApplicationServer)

@@ -60,7 +60,7 @@
 /*============================== Public constructors =======================*/
 
 BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -205,20 +205,20 @@ QMap< QString, QPair<QStringList, QStringList> > BHelpBrowserPrivate::searchCach
 /*============================== Public constructors =======================*/
 
 BHelpBrowser::BHelpBrowser(QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject( *new BHelpBrowserPrivate(this) )
 {
     d_func()->init();
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject( *new BHelpBrowserPrivate(this) )
 {
     d_func()->init();
     d_func()->tbrsr->setSearchPaths(searchPaths);
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject( *new BHelpBrowserPrivate(this) )
 {
     d_func()->init();
     B_D(BHelpBrowser);
@@ -228,7 +228,7 @@ BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &file, 
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &index, const QString &file,
                            QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject( *new BHelpBrowserPrivate(this) )
 {
     d_func()->init();
     B_D(BHelpBrowser);
@@ -247,7 +247,7 @@ BHelpBrowser::~BHelpBrowser()
 /*============================== Protected constructors ====================*/
 
 BHelpBrowser::BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }

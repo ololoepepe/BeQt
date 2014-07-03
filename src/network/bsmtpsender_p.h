@@ -30,7 +30,7 @@ class QTextStream;
 #include "bemail.h"
 #include "bgenericsocket.h"
 
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
@@ -41,7 +41,7 @@ class QTextStream;
 ================================ BSmtpSenderPrivate ==========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BSmtpSenderPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BSmtpSenderPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSmtpSender)

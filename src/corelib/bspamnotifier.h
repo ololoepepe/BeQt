@@ -25,7 +25,7 @@
 class BSpamNotifierPrivate;
 
 #include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 
 #include <QObject>
 
@@ -33,7 +33,7 @@ class BSpamNotifierPrivate;
 ================================ BSpamNotifier ===============================
 ============================================================================*/
 
-class B_CORE_EXPORT BSpamNotifier : public QObject, public BBase
+class B_CORE_EXPORT BSpamNotifier : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSpamNotifier)

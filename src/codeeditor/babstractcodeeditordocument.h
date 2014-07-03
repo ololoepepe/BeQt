@@ -37,7 +37,7 @@ class QVariant;
 #include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
 #include <QObject>
@@ -50,7 +50,7 @@ class QVariant;
 ================================ BAbstractCodeEditorDocument =================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocument : public QWidget, public BBase
+class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocument : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractCodeEditorDocument)
