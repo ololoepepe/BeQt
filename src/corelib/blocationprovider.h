@@ -30,6 +30,8 @@ class BLocationProviderPrivate;
 #include "babstractlocationprovider.h"
 
 #include <QString>
+#include <QStringList>
+#include <QMap>
 
 /*============================================================================
 ================================ BLocationProvider ===========================
@@ -39,17 +41,25 @@ class B_CORE_EXPORT BLocationProvider : public BAbstractLocationProvider, public
 {
     B_DECLARE_PRIVATE(BLocationProvider)
 public:
-    explicit BLocationProvider(const QString &locationName = QString());
+    typedef QMap<BApplicationBase::ResourcesType, QStringList> PathsMap;
+    typedef QMap<QString, PathsMap> LocationMap;
+public:
+    explicit BLocationProvider(const LocationMap &locations = LocationMap());
     BLocationProvider(const BLocationProvider &other);
     ~BLocationProvider();
 protected:
     BLocationProvider(BLocationProviderPrivate &d);
 public:
-    void setLocationName(const QString &name);
-    void setLocationPath(BApplicationBase::ResourcesType type, const QString &path);
-    QString locationName() const;
-    QString locationPath(BApplicationBase::ResourcesType type) const;
-    bool isValid() const;
+    void setLocations(const LocationMap &locations);
+    void addLocation(const QString &name, const PathsMap &paths);
+    void removeLocation(const QString &name);
+    void setLocationPaths(const QString &locationName, const PathsMap &paths);
+    void addLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type, const QStringList &paths);
+    void removeLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type);
+    void setLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type, const QStringList &paths);
+    QStringList locationNames() const;
+    QStringList locationPaths(const QString &locationName, BApplicationBase::ResourcesType type) const;
+    bool isEmpty() const;
 public:
     BLocationProvider &operator=(const BLocationProvider &other);
     bool operator==(const BLocationProvider &other) const;

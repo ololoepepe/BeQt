@@ -2,7 +2,6 @@
 #define BEQT_BEQTCORE_MODULE_H
 
 #include "babstractlocationprovider.h"
-#include "babstractmultilocationprovider.h"
 #include "bapplicationbase.h"
 #include "bbase.h"
 #include "bbaseobject.h"

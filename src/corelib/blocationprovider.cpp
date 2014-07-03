@@ -26,6 +26,7 @@
 
 #include <QMap>
 #include <QString>
+#include <QStringList>
 
 /*============================================================================
 ================================ BLocationProviderPrivate ====================
@@ -40,8 +41,7 @@ public:
 public:
     void init();
 public:
-    QString name;
-    QMap<BApplicationBase::ResourcesType, QString> paths;
+    BLocationProvider::LocationMap locations;
 private:
     Q_DISABLE_COPY(BLocationProviderPrivate)
 };
@@ -76,11 +76,11 @@ void BLocationProviderPrivate::init()
 
 /*============================== Public constructors =======================*/
 
-BLocationProvider::BLocationProvider(const QString &locationName) :
+BLocationProvider::BLocationProvider(const LocationMap &locations) :
     BAbstractLocationProvider(), BBase(*new BLocationProviderPrivate(this))
 {
     d_func()->init();
-    d_func()->name = locationName;
+    d_func()->locations = locations;
 }
 
 BLocationProvider::BLocationProvider(const BLocationProvider &other) :
@@ -104,56 +104,82 @@ BLocationProvider::BLocationProvider(BLocationProviderPrivate &d) :
 
 /*============================== Public methods ============================*/
 
-void BLocationProvider::setLocationName(const QString &name)
+void BLocationProvider::setLocations(const LocationMap &locations)
 {
-    d_func()->name = name;
+    d_func()->locations = locations;
 }
 
-void BLocationProvider::setLocationPath(BApplicationBase::ResourcesType type, const QString &path)
+void BLocationProvider::addLocation(const QString &name, const PathsMap &paths)
 {
-    if (!path.isEmpty())
-        d_func()->paths.insert(type, path);
-    else
-        d_func()->paths.remove(type);
+    if (name.isEmpty())
+        return;
+    if (d_func()->locations.contains(name))
+        return;
+    d_func()->locations.insert(name, paths);
 }
 
-QString BLocationProvider::locationName() const
+void BLocationProvider::removeLocation(const QString &name)
 {
-    return d_func()->name;
+    if (name.isEmpty())
+        return;
+    d_func()->locations.remove(name);
 }
 
-QString BLocationProvider::locationPath(BApplicationBase::ResourcesType type) const
+void BLocationProvider::setLocationPaths(const QString &locationName, const PathsMap &paths)
 {
-    return d_func()->paths.value(type);
+    if (locationName.isEmpty())
+        return;
+    d_func()->locations[locationName] = paths;
 }
 
-bool BLocationProvider::isValid() const
+void BLocationProvider::addLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type,
+                                         const QStringList &paths)
 {
-    if (d_func()->name.isEmpty())
-        return false;
-    foreach (const QString &p, d_func()->paths.values()) {
-        if (!p.isEmpty())
-            return true;
-    }
-    return false;
+    if (locationName.isEmpty())
+        return;
+    if (!d_func()->locations.contains(locationName))
+        return;
+    PathsMap &m = d_func()->locations[locationName];
+    if (m.contains(type))
+        return;
+    m.insert(type, paths);
+}
+
+void BLocationProvider::removeLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type)
+{
+    if (locationName.isEmpty())
+        return;
+    if (!d_func()->locations.contains(locationName))
+        return;
+    d_func()->locations[locationName].remove(type);
+}
+
+void BLocationProvider::setLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type,
+                                         const QStringList &paths)
+{
+    if (locationName.isEmpty())
+        return;
+    if (!d_func()->locations.contains(locationName))
+        return;
+    d_func()->locations[locationName][type] = paths;
+}
+
+bool BLocationProvider::isEmpty() const
+{
+    return d_func()->locations.isEmpty();
 }
 
 /*============================== Public operators ==========================*/
 
 BLocationProvider &BLocationProvider::operator=(const BLocationProvider &other)
 {
-    B_D(BLocationProvider);
-    const BLocationProviderPrivate *dd = other.d_func();
-    d->name = dd->name;
-    d->paths = dd->paths;
+    d_func()->locations = other.d_func()->locations;
     return *this;
 }
 
 bool BLocationProvider::operator==(const BLocationProvider &other) const
 {
-    const B_D(BLocationProvider);
-    const BLocationProviderPrivate *dd = other.d_func();
-    return d->name == dd->name && d->paths == dd->paths;
+    return d_func()->locations == other.d_func()->locations;
 }
 
 bool BLocationProvider::operator!=(const BLocationProvider &other) const

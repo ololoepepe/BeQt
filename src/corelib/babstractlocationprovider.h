@@ -23,6 +23,7 @@
 #define BABSTRACTLOCATIONPROVIDER_H
 
 class QString;
+class QStringList;
 
 #include "bglobal.h"
 #include "bapplicationbase.h"
@@ -37,8 +38,8 @@ public:
     explicit BAbstractLocationProvider();
     virtual ~BAbstractLocationProvider();
 public:
-    virtual QString locationName() const = 0;
-    virtual QString locationPath(BApplicationBase::ResourcesType type) const = 0;
+    virtual QStringList locationNames() const = 0;
+    virtual QStringList locationPaths(const QString &locationName, BApplicationBase::ResourcesType type) const = 0;
 private:
     Q_DISABLE_COPY(BAbstractLocationProvider)
 };

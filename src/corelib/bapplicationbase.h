@@ -29,7 +29,6 @@ class BPluginWrapperPrivate;
 class BDirToolsPrivate;
 class BPluginWrapper;
 class BAbstractLocationProvider;
-class BAbstractMultiLocationProvider;
 
 class QLocale;
 class QSettings;

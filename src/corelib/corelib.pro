@@ -14,7 +14,6 @@ DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
     babstractlocationprovider.h \
-    babstractmultilocationprovider.h \
     bapplicationbase.h \
     bapplicationbase_p.h \
     bbase.h \
@@ -57,7 +56,6 @@ HEADERS += \
 
 SOURCES += \
     babstractlocationprovider.cpp \
-    babstractmultilocationprovider.cpp \
     bapplicationbase.cpp \
     bbase.cpp \
     bbaseobject.cpp \
