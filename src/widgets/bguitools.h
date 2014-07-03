@@ -80,7 +80,7 @@ B_WIDGETS_EXPORT QAction *createStandardAction(BApplication::StandardAction type
 B_WIDGETS_EXPORT QAction *createSeparator(QObject *parent = 0);
 B_WIDGETS_EXPORT QFrame *createFrame(QFrame::Shape shape, QWidget *parent = 0);
 B_WIDGETS_EXPORT QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent = 0);
-B_WIDGETS_EXPORT QFont createMonospaceFont();
+B_WIDGETS_EXPORT QFont createMonospaceFont(int pointSize = 0);
 B_WIDGETS_EXPORT QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
 B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field);
 B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field);

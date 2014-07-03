@@ -47,7 +47,7 @@ QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent)
     return fr;
 }
 
-QFont createMonospaceFont()
+QFont createMonospaceFont(int pointSize)
 {
 #if defined Q_OS_WIN
     //On Windows some weird fonts are selected, so we set the font explicitly
@@ -57,7 +57,7 @@ QFont createMonospaceFont()
 #endif
     //Using such a construct to guarantee that the font will be monospaced
     QFont fnt(QFontInfo(QFont(f)).family());
-    fnt.setPointSize(QApplication::font().pointSize());
+    fnt.setPointSize((pointSize > 0) ? pointSize : QApplication::font().pointSize());
     return fnt;
 }
 

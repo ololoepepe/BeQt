@@ -102,14 +102,14 @@ public:
     static void writeHelpLine(const QString &usage, const BTranslation &description, bool translate = true);
     static void writeHelpLines(const CommandHelpList &list, bool translate = true);
     static void setStdinEchoEnabled(bool enabled = true);
-    static void setTerminalTitle(const QString &title);
+    static void setTitle(const QString &title);
     static void setTextColor(Color color);
     static void setBackgroundColor(Color color);
     static Color textColor();
     static Color backgroundColor();
-    static QSize terminalSize();
-    static int terminalColumnCount();
-    static int terminalRowCount();
+    static QSize size();
+    static int columnCount();
+    static int rowCount();
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(const QString &command, ExternalHandler handler);
     static void installHandler(StandardCommand cmd);

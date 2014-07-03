@@ -673,28 +673,50 @@ QList<BPluginWrapper *> BApplicationBase::pluginWrappers(const QString &type)
     return list;
 }
 
-void BApplicationBase::binstallTranslator(BTranslator *translator)
+void BApplicationBase::installBeqtTranslator(BTranslator *translator)
 {
     if (!BApplicationBasePrivate::testCoreInit())
         return;
     ds_func()->installTranslator(translator);
 }
 
-void BApplicationBase::bremoveTranslator(BTranslator *translator)
+void BApplicationBase::installBeqtTranslator(const QString &id)
+{
+    if (!BApplicationBasePrivate::testCoreInit())
+        return;
+    if (id.isEmpty())
+        return;
+    if (ds_func()->translators.contains(id))
+        return;
+    ds_func()->installTranslator(new BTranslator(id));
+}
+
+void BApplicationBase::removeBeqtTranslator(BTranslator *translator)
 {
     if (!BApplicationBasePrivate::testCoreInit())
         return;
     ds_func()->removeTranslator(translator);
 }
 
-QList<BTranslator *> BApplicationBase::translators()
+void BApplicationBase::removeBeqtTranslator(const QString &id)
+{
+    if (!BApplicationBasePrivate::testCoreInit())
+        return;
+    if (id.isEmpty())
+        return;
+    if (!ds_func()->translators.contains(id))
+        return;
+    ds_func()->removeTranslator(ds_func()->translators.value(id));
+}
+
+QList<BTranslator *> BApplicationBase::beqtTranslators()
 {
     if ( !BApplicationBasePrivate::testCoreInit() )
         return QList<BTranslator *>();
     return ds_func()->translators.values();
 }
 
-BTranslator *BApplicationBase::translator(const QString &fileName)
+BTranslator *BApplicationBase::beqtTranslator(const QString &fileName)
 {
     if (!BApplicationBasePrivate::testCoreInit())
         return 0;

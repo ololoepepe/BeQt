@@ -15,72 +15,88 @@
 === MINOR ===
 
 * Add function for removing old plugin settings
-* Add processor architecture enum
 * Add ability to remember entered commands in BTerminalIOHandler
 * Add ability to set auto-indentation in code editor
-* Add overloaded BCoreApplication::installTranslator method
-* Add method for setting terminal window size to BTerminalIOHandler
+[done] Add overloaded BCoreApplication installTranslator and removeTranslator methods
 [done] Add template methods for secure casting int and QVariant to enum (enum_cast)
+
+* Add method for setting terminal window size to BTerminal
 
 === MAJOR ===
 
-[done] Add BVersion::clear method
-[done] Fix BVersion: rename "minor", "major", etc.
-* Fix BeQt::OSType enum values
-[done] Merge similar GUI method pairs into templates
-[done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
+[done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
+
+* Use enum_cast wherever it makes sense
 * Use BUuid class instead of QUuid
-* Reimplement BCoreApplication, BApplication, and resource lookup system
-[done] Remove some static methods from BApplication
-[done] Remove some template methods from BApplication and BAbstractSettingsTab
 * Move some methods to separate namespaces
 * Implement locking of global object instances
+* Show plugin version information
+* Add ability to set multiple copyright owners
+
+[done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
+[done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
+[done] Rename PluginInfoStatic into StaticPluginInfo
+[done] Rename BTerminalIOHandler into BTerminal
+[done] Rename BVersion members: "minor", "major", etc.
+[done] Rename BCoreApplication::instance method into binstance
+[done] Rename BCoreApplication::translator method into beqtTranslator
+[done] Rename BCoreApplication::translators method into beqtTranslators
+[done] Rename BCoreApplication::installTranslator method into installBeqtTranslator
+[done] Rename BCoreApplication::removeTranslator method into removeBeqtTranslator
+[done] Rename some BTerminalIOHandler::terminalTitle into title
+[done] Rename some BTerminalIOHandler::terminalSize into size
+[done] Rename some BTerminalIOHandler::terminalColumnCount into columnCount
+[done] Rename some BTerminalIOHandler::terminalRowCount into rowCount
+[done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
+[done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
+[done] Add BApplicationBase class
+[done] Add working directory argument to BeQt::startProcessDetached function
+[done] Add InitialSettings class to BApplicationBase
+[done] Add alternative base class pair with non-QObject private base
+[done] Add BVersion::clear method
+[done] Add version information to BPluginInterface
+* Make BTerminalIOHandler a singleton
+* Fix BeQt::OSType enum values
+* Make BPersonInfo and BPersonInfoList serializable
+* Reimplement BCoreApplication and resource lookup system
+* Improve plugin loading system
+* Improve ChangeLog files displaying
+* Add ability to add extra locations and to restrict locations
+* Add PDCurses binding
+* Add serialization of data classes
+* Implement terminal modes (standard mode and PDCurses mode)
+
+[done] Add ability to set compression for every network operation independently
 * Add ability to listen on several ports/hosts to BNetworkServer
-* Improve BTextBlockUserData (implement multiple skip intervals)
-* Improve BLocaleComboBox (implement custom mode)
-* Implement native settings dialogs
+
+[done] Remove some static methods from BApplication
+[done] Remove some template methods from BApplication and BAbstractSettingsTab
 [done] Remove BGuiPluginInterface::handleSettings method
 [done] Remove old methods from BPluginsSettingsTab
-* Implement Katepart-compatible file type definition using XML files
+[done] Rename BGuiPluginInterface settingsTab method into createSettingsTab
+[done] Merge similar GUI method pairs into templates
+[done] Fix BPluginsSettingsTab About dialog version
+[done] Add Help information to plugin BGuiPluginInterface
+[done] Overload BAboutDuialog::setAppVersion method
+[done] Add pointSize parameter to BApplication::createMonospaceFont
+* Improve BLocaleComboBox (implement custom mode)
+* Implement native settings dialogs
+* Improve BLineNumberWidget: add virtual functions
+* Show plugin Help
+* Add BGuiPluginWrapper class
+* Add ability to set user About dialog for plugins
+
+[done] Move setBlockComment method from BCodeEdit to BTextBlockUserData
+[done] Add BAbstractCodeEditorDocument::clear method
+* Disable changing parent editor of code editor modules (not sure)
+* Improve BTextBlockUserData (implement multiple skip intervals)
 * Improve code editor search (use regular expressions)
+* Improve document-wide and selection-wide replacing
+* Fix insertion of spaces and tabulations in code editor documents
 * Add position to point conversion method to BAbstractCodeEditorDocument
 * Add pure position retrieving method to BAbstractCodeEditorDocument
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
-* Implement autocompletion
-* Improve document-wide and selection-wide replacing
-* Add methods to navigate through BAbstractCodeEditorDocument
-* Fix insertion of spaces and tabulations in code editor documents
-* Improve plugin loading system
-* Add BGuiPluginWrapper class
-* Add ability to add extra locations and to restrict locations
-* Improve BLineNumberWidget: add virtual functions
-* Add PDCurses binding
-[done] Add ability to set compression for every network operation independently
 * Add public function for handling events to BAbstractCodeEditorDocument
-[done] Add version information to plugins
-* Show plugin version information
-[done] Add Help information to plugin info
-* Show plugin Help
-[done] Rename PluginInfoStatic into StaticPluginInfo
-[done] Rename BGuiPluginInterface settingsTab method into createSettingsTab
-* Add ability to set user About dialog for plugins
-[done] Add BAbstractCodeEditorDocument::clear method
-* Add ability to set multiple copyright owners
-* Disable changing parent editor of code editor modules (not sure)
-[done] Fix BPluginsSettingsTab About dialog version
-[done] Overload BAboutDuialog::setAppVersion method
-[done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
-[done] Move setBlockComment method from BCodeEdit
-[done] Add working directory argument to BeQt::startProcessDetached function
-[done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
-[done] Add BApplicationBase class
-[done] Add InitialSettings class to BApplicationBase
-[done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
-* Make BTerminalIOHandler a singleton
-* Implement terminal modes (standard mode and PDCurses mode)
-[done] Rename BTerminalIOHandler into BTerminal
-[done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
-[done] Add alternative base class pair with non-QObject private base
-* Make BPersonInfo and BPersonInfoList serializable
-* Make data classes serializable
-* Use enum_cast wherever it makes sense
+* Add methods to navigate through BAbstractCodeEditorDocument
+* Implement autocompletion
+* Implement Katepart-compatible file type definition using XML files

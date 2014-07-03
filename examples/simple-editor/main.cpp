@@ -63,7 +63,7 @@ int main(int argc, char **argv)
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);
-    BApplication::binstallTranslator( new BTranslator("beqt") );
+    BApplication::installBeqtTranslator("beqt");
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
     BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2014");

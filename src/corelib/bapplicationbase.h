@@ -127,11 +127,13 @@ public:
     static void registerPluginWrapper(BPluginWrapper *plugin);
     static void unregisterPluginWrapper(BPluginWrapper *plugin);
     static void loadPlugins(const QStringList &acceptableTypes = QStringList(), InterfaceTestFunction function = 0);
-    static QList<BTranslator *> translators();
-    static BTranslator *translator(const QString &fileName);
+    static QList<BTranslator *> beqtTranslators();
+    static BTranslator *beqtTranslator(const QString &fileName);
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
-    static void binstallTranslator(BTranslator *translator);
-    static void bremoveTranslator(BTranslator *translator);
+    static void installBeqtTranslator(BTranslator *translator);
+    static void installBeqtTranslator(const QString &id);
+    static void removeBeqtTranslator(BTranslator *translator);
+    static void removeBeqtTranslator(const QString &id);
     static void setLocale(const QLocale &l);
     static QLocale locale();
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);

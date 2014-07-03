@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     Q_UNUSED(app)
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
-    BCoreApplication::binstallTranslator(new BTranslator("beqt"));
+    BCoreApplication::installBeqtTranslator("beqt");
     //Communicating with user through BTerminalIOHandler
     QString s = BTerminal::readLine("Enter something: ");
     BTerminal::writeLine("You entered: \"" + s + "\"");

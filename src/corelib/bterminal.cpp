@@ -578,7 +578,7 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
 #endif
 }
 
-void BTerminal::setTerminalTitle(const QString &title)
+void BTerminal::setTitle(const QString &title)
 {
     QMutexLocker locker1(&BTerminalPrivate::titleMutex);
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
@@ -624,7 +624,7 @@ BTerminal::Color BTerminal::backgroundColor()
     return BTerminalPrivate::backgroundColor;
 }
 
-QSize BTerminal::terminalSize()
+QSize BTerminal::size()
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     winsize w;
@@ -637,7 +637,7 @@ QSize BTerminal::terminalSize()
 #endif
 }
 
-int BTerminal::terminalColumnCount()
+int BTerminal::columnCount()
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     winsize w;
@@ -650,7 +650,7 @@ int BTerminal::terminalColumnCount()
 #endif
 }
 
-int BTerminal::terminalRowCount()
+int BTerminal::rowCount()
 {
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
     winsize w;
