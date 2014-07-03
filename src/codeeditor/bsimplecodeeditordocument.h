@@ -76,6 +76,7 @@ protected:
     void activateWindowImplementation();
     void setTextImplementation(const QString &txt);
     void insertTextImplementation(const QString &txt);
+    void clearImplementation();
     void moveCursorImplementation(const QPoint &pos);
     void selectTextImplementation(const QPoint &start, const QPoint &end);
     void selectTextImplementation(int start, int end);

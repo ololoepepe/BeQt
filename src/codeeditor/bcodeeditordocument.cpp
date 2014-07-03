@@ -270,6 +270,11 @@ void BCodeEditorDocument::insertTextImplementation(const QString &txt)
     d_func()->cedt->insertText(txt);
 }
 
+void BCodeEditorDocument::clearImplementation()
+{
+    d_func()->cedt->clear();
+}
+
 void BCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
 {
     d_func()->cedt->moveCursor(pos);

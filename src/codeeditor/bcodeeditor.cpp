@@ -42,6 +42,7 @@ class BSpellChecker;
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtWidgets/BApplication>
+#include <BeQtWidgets/BGuiTools>
 
 #include <QObject>
 #include <QWidget>
@@ -467,7 +468,7 @@ void BCodeEditorPrivate::init()
     B_Q(BCodeEditor);
     docType = BCodeEditor::StandardDocument;
     document = 0;
-    editFont = BApplication::createMonospaceFont();
+    editFont = BGuiTools::createMonospaceFont();
     editMode = BCodeEdit::NormalMode;
     editLineLength = 120;
     editTabWidth = BeQt::TabWidth4;

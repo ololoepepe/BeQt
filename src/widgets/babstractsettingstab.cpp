@@ -44,28 +44,6 @@ BAbstractSettingsTab::~BAbstractSettingsTab()
     //
 }
 
-/*============================== Static public methods======================*/
-
-void BAbstractSettingsTab::setRowVisible(QWidget *field, bool visible)
-{
-    BApplication::setRowVisible(field, visible);
-}
-
-void BAbstractSettingsTab::setRowVisible(QLayout *field, bool visible)
-{
-    BApplication::setRowVisible(field, visible);
-}
-
-void BAbstractSettingsTab::setRowEnabled(QWidget *field, bool enabled)
-{
-    BApplication::setRowEnabled(field, enabled);
-}
-
-void BAbstractSettingsTab::setRowEnabled(QLayout *field, bool enabled)
-{
-    BApplication::setRowEnabled(field, enabled);
-}
-
 /*============================== Public methods ============================*/
 
 QIcon BAbstractSettingsTab::icon() const

@@ -23,6 +23,7 @@
 #include "bloginwidget_p.h"
 #include "bpasswordwidget.h"
 #include "bapplication.h"
+#include "bguitools.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
@@ -126,7 +127,7 @@ void BLoginWidgetPrivate::updateTabOrder()
 void BLoginWidgetPrivate::retranslateUi()
 {
     if (hltAddress)
-        BApplication::labelForField<QLabel>(hltAddress)->setText(addressLabel);
+        BGuiTools::labelForField<QLabel>(hltAddress)->setText(addressLabel);
     if (ledtAddress)
         ledtAddress->setPlaceholderText(addressPlaceholderText);
     if (cmboxAddress && cmboxAddress->lineEdit())
@@ -135,21 +136,21 @@ void BLoginWidgetPrivate::retranslateUi()
         tbtnRemoveAddress->setToolTip(removeAddressButtonToolTip);
     if (ledtPort)
     {
-        BApplication::labelForField<QLabel>(ledtPort)->setText(portLabel);
+        BGuiTools::labelForField<QLabel>(ledtPort)->setText(portLabel);
         ledtPort->setPlaceholderText(portPlaceholderText);
     }
     if (ledtLogin)
     {
-        BApplication::labelForField<QLabel>(ledtLogin)->setText(loginLabel);
+        BGuiTools::labelForField<QLabel>(ledtLogin)->setText(loginLabel);
         ledtLogin->setPlaceholderText(loginPlaceholderText);
     }
     if (ledtPassword)
     {
-        BApplication::labelForField<QLabel>(ledtPassword)->setText(passwordLabel);
+        BGuiTools::labelForField<QLabel>(ledtPassword)->setText(passwordLabel);
         ledtPassword->setPlaceholderText(passwordPlaceholderText);
     }
     if (pwdwgt)
-        BApplication::labelForField<QLabel>(pwdwgt)->setText(passwordLabel);
+        BGuiTools::labelForField<QLabel>(pwdwgt)->setText(passwordLabel);
 }
 
 void BLoginWidgetPrivate::checkInputs()
@@ -235,14 +236,14 @@ void BLoginWidget::setAddressType(AddressType t, bool required)
     d_func()->addressType = t;
     if (d_func()->ledtAddress)
     {
-        QWidget *lbl = BApplication::labelForField<QWidget>(d_func()->ledtAddress);
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->ledtAddress);
         delete d_func()->ledtAddress;
         d_func()->ledtAddress = 0;
         delete lbl;
     }
     if (d_func()->cmboxAddress)
     {
-        QWidget *lbl = BApplication::labelForField<QWidget>(d_func()->hltAddress);
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->hltAddress);
         delete d_func()->hltAddress;
         d_func()->hltAddress = 0;
         delete d_func()->cmboxAddress;
@@ -303,7 +304,7 @@ void BLoginWidget::setPortEnabled(bool b, bool required)
     }
     else
     {
-        QWidget *lbl = BApplication::labelForField<QWidget>(d_func()->ledtPort);
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->ledtPort);
         delete d_func()->ledtPort;
         d_func()->ledtPort = 0;
         delete lbl;
@@ -326,7 +327,7 @@ void BLoginWidget::setLoginEnabled(bool b, bool required)
     }
     else
     {
-        QWidget *lbl = BApplication::labelForField<QWidget>(d_func()->ledtLogin);
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->ledtLogin);
         delete d_func()->ledtLogin;
         d_func()->ledtLogin = 0;
         delete lbl;
@@ -343,14 +344,14 @@ void BLoginWidget::setPasswordType(PasswordType t, bool required)
     d_func()->passwordType = t;
     if (d_func()->ledtPassword)
     {
-        QWidget *lbl = BApplication::labelForField<QWidget>(d_func()->ledtPassword);
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->ledtPassword);
         delete d_func()->ledtPassword;
         d_func()->ledtPassword = 0;
         delete lbl;
     }
     if (d_func()->pwdwgt)
     {
-        QWidget *lbl = BApplication::labelForField<QWidget>(d_func()->pwdwgt);
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->pwdwgt);
         delete d_func()->pwdwgt;
         d_func()->pwdwgt = 0;
         delete lbl;

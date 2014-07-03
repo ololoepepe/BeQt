@@ -9,14 +9,15 @@ class QToolButton;
 class QToolBar;
 class QVBoxLayout;
 class QString;
-class QLayout;
-class QFormLayout;
 
 #include "bapplication.h"
 
 #include <BeQtCore/BeQtGlobal>
 
 #include <QFrame>
+#include <QStack>
+#include <QFormLayout>
+#include <QLayout>
 
 /*============================================================================
 ================================ BGuiTools ===================================
@@ -25,7 +26,7 @@ class QFormLayout;
 namespace BGuiTools
 {
 
-template <typename T> T *labelForField(QWidget *field)
+template <typename T, typename U> T *labelForField(U *field)
 {
     QWidget *pw = field ? field->parentWidget() : 0;
     if (!pw)
@@ -50,7 +51,7 @@ template <typename T> T *labelForField(QWidget *field)
     return 0;
 }
 
-template <typename T> T *labelForField(QLayout *field)
+template <typename T> QFormLayout *formLayout(T *field)
 {
     QWidget *pw = field ? field->parentWidget() : 0;
     if (!pw)
@@ -67,7 +68,7 @@ template <typename T> T *labelForField(QLayout *field)
         {
             QWidget *w = flt->labelForField(field);
             if (w)
-                return qobject_cast<T *>(w);
+                return flt;
         }
         foreach (int i, bRangeD(0, lt->count() - 1))
             s.push(lt->itemAt(i)->layout());
@@ -85,8 +86,6 @@ B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QWidget *fi
 B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field);
 B_WIDGETS_EXPORT void removeRow(QVBoxLayout *vlt, QWidget *field);
 B_WIDGETS_EXPORT void removeRow(QVBoxLayout *vlt, QLayout *field);
-B_WIDGETS_EXPORT QFormLayout *formLayout(QWidget *field);
-B_WIDGETS_EXPORT QFormLayout *formLayout(QLayout *field);
 B_WIDGETS_EXPORT void setRowVisible(QWidget *field, bool visible);
 B_WIDGETS_EXPORT void setRowVisible(QLayout *field, bool visible);
 B_WIDGETS_EXPORT void setRowEnabled(QWidget *field, bool enabled);

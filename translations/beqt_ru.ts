@@ -125,19 +125,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="763"/>
+        <location filename="../src/widgets/bapplication.cpp" line="579"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="765"/>
+        <location filename="../src/widgets/bapplication.cpp" line="581"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="766"/>
+        <location filename="../src/widgets/bapplication.cpp" line="582"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -155,97 +155,97 @@
 <context>
     <name>BApplicationPrivate</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="112"/>
+        <location filename="../src/widgets/bapplication.cpp" line="103"/>
         <source>Settings...</source>
         <comment>act text</comment>
         <translation>Настройки...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="113"/>
+        <location filename="../src/widgets/bapplication.cpp" line="104"/>
         <source>Show application settings</source>
         <comment>act toolTip</comment>
         <translation>Показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="114"/>
+        <location filename="../src/widgets/bapplication.cpp" line="105"/>
         <source>Use this action to show application settings</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать настройки приложения</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="117"/>
+        <location filename="../src/widgets/bapplication.cpp" line="108"/>
         <source>Homepage</source>
         <comment>act text</comment>
         <translation>Домашняя страница</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="118"/>
+        <location filename="../src/widgets/bapplication.cpp" line="109"/>
         <source>Open homepage</source>
         <comment>act toolTip</comment>
         <translation>Открыть домашнюю страницу</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="119"/>
+        <location filename="../src/widgets/bapplication.cpp" line="110"/>
         <source>Use this action to open application homepage with your browser</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть домашнюю страницу приложения в вашем браузере</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="122"/>
+        <location filename="../src/widgets/bapplication.cpp" line="113"/>
         <source>Help contents</source>
         <comment>act text</comment>
         <translation>Содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="123"/>
+        <location filename="../src/widgets/bapplication.cpp" line="114"/>
         <source>Show Help contents</source>
         <comment>act toolTip</comment>
         <translation>Показать содержание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="124"/>
+        <location filename="../src/widgets/bapplication.cpp" line="115"/>
         <source>Use this action to show Help contents (index)</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать содержание справки (алфавитный указатель)</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="127"/>
+        <location filename="../src/widgets/bapplication.cpp" line="118"/>
         <source>Contextual Help</source>
         <comment>act text</comment>
         <translation>Контекстная справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="128"/>
+        <location filename="../src/widgets/bapplication.cpp" line="119"/>
         <source>Show contextual Help</source>
         <comment>act toolTip</comment>
         <translation>Показать контекстную справку</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="129"/>
+        <location filename="../src/widgets/bapplication.cpp" line="120"/>
         <source>Use this action to open context-specific Help page</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие, чтобы открыть страницу справки для активного элемента</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="133"/>
+        <location filename="../src/widgets/bapplication.cpp" line="124"/>
         <source>What&apos;s this?</source>
         <comment>act text</comment>
         <translation>Что это?</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="138"/>
+        <location filename="../src/widgets/bapplication.cpp" line="129"/>
         <source>About...</source>
         <comment>act text</comment>
         <translation>О программе...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="139"/>
+        <location filename="../src/widgets/bapplication.cpp" line="130"/>
         <source>Show info about this application</source>
         <comment>act toolTip</comment>
         <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="140"/>
+        <location filename="../src/widgets/bapplication.cpp" line="131"/>
         <source>Use this action to show information about the application, it&apos;s authors, etc.</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы показать информацию о приложении, его авторах и т.д.</translation>
@@ -293,43 +293,43 @@
 <context>
     <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2042"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2024"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2048"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2030"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2055"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2037"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2061"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2043"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2067"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2049"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2073"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2055"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2080"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2062"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -338,7 +338,7 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="868"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="869"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
@@ -347,13 +347,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2070"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2071"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2072"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2073"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -362,81 +362,81 @@
 <context>
     <name>BCodeEditorPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="444"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="445"/>
         <source>New document</source>
         <comment>fileName</comment>
         <translation>Новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="652"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="653"/>
         <source>The file is too large</source>
         <comment>msgbox informativeText</comment>
         <translation>Файл слишком большой</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="877"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="878"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="879"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="894"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="880"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="895"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="892"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="893"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="896"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="897"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="908"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="909"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="910"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="919"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="920"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="921"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="933"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="922"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="934"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="922"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="923"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="931"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="932"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="934"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="935"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
@@ -698,31 +698,31 @@
 <context>
     <name>BLoginWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bloginwidget.cpp" line="79"/>
+        <location filename="../src/widgets/bloginwidget.cpp" line="80"/>
         <source>Server address:</source>
         <comment>lbl text</comment>
         <translation>Адрес сервера:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bloginwidget.cpp" line="80"/>
+        <location filename="../src/widgets/bloginwidget.cpp" line="81"/>
         <source>Port:</source>
         <comment>lbl text</comment>
         <translation>Порт:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bloginwidget.cpp" line="81"/>
+        <location filename="../src/widgets/bloginwidget.cpp" line="82"/>
         <source>Login:</source>
         <comment>lbl text</comment>
         <translation>Логин:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bloginwidget.cpp" line="82"/>
+        <location filename="../src/widgets/bloginwidget.cpp" line="83"/>
         <source>Password:</source>
         <comment>lbl text</comment>
         <translation>Пароль:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bloginwidget.cpp" line="83"/>
+        <location filename="../src/widgets/bloginwidget.cpp" line="84"/>
         <source>Remove current address from history</source>
         <comment>tbtn toolTip</comment>
         <translation>Удалить текущий адрес из истории</translation>
@@ -1266,19 +1266,19 @@
 <context>
     <name>BSelectDocumentsDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="115"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="116"/>
         <source>Some documents are modified. Do you want to save them before closing?</source>
         <comment>lbl text</comment>
         <translation>Некоторые документы изменены. Хотите сохранить их перед закрытием?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="119"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="120"/>
         <source>Choose documents that you want to save:</source>
         <comment>lbl text</comment>
         <translation>Выберите документы, которые хотите сохранить:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="134"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="135"/>
         <source>If you don&apos;t save the documents, all changes will be lost</source>
         <comment>lbl text</comment>
         <translation>Если вы не сохраните документы, все изменения будут потеряны</translation>
@@ -1359,43 +1359,43 @@
 <context>
     <name>BSplittedLinesDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="236"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="237"/>
         <source>Lines:</source>
         <comment>lstwgti text</comment>
         <translation>Строки:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="237"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="238"/>
         <source>total:</source>
         <comment>lstwgti text</comment>
         <translation>всего:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="247"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="248"/>
         <source>Splitted lines</source>
         <comment>windowTitle</comment>
         <translation>Разделённые строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="252"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="253"/>
         <source>Some lines in this document were too long, so they were splitted into several lines</source>
         <comment>lbl text</comment>
         <translation>Некоторые строки в этом документе оказались слишком длинными, поэтому они были разделены на несколько строк</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="258"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="259"/>
         <source>Doubleclick an item to go to the corresponding line</source>
         <comment>lstwgt toolTip</comment>
         <translation>Используйте двойной щелчок для перехода к соответствующей строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="264"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="265"/>
         <source>Select text when going to line</source>
         <comment>cbox text</comment>
         <translation>Выделять текст при переходе к строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="271"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="272"/>
         <source>Go to line</source>
         <comment>btn text</comment>
         <translation>Перейти к строке</translation>

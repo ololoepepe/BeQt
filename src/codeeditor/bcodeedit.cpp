@@ -37,6 +37,7 @@ class QFont;
 #include <BeQtWidgets/BPlainTextEdit>
 #include <BeQtWidgets/BClipboardNotifier>
 #include <BeQtWidgets/BLineNumberWidget>
+#include <BeQtWidgets/BGuiTools>
 
 #include <QObject>
 #include <QWidget>
@@ -534,7 +535,7 @@ void BCodeEditPrivate::init()
         ptedt->setWordWrapMode(QTextOption::NoWrap);
         ptedt->setDragEnabled(false);
         ptedt->installEventFilter(this);
-        ptedt->setFont( BApplication::createMonospaceFont() );
+        ptedt->setFont(BGuiTools::createMonospaceFont());
         setTextToEmptyLine();
         ptedt->document()->setModified(false);
         connect(ptedt, SIGNAL(cursorPositionChanged()), this, SLOT(updateCursorPosition()));
@@ -1665,25 +1666,6 @@ BCodeEdit::BCodeEdit(BCodeEditPrivate &d, QWidget *parent) :
     d_func()->init();
 }
 
-/*============================== Static public methods =====================*/
-
-void BCodeEdit::setBlockComment(QTextBlock block, int start, int end)
-{
-    BTextBlockUserData *ud = dynamic_cast<BTextBlockUserData *>( block.userData() );
-    if (!ud)
-    {
-        if (start < 0)
-            return;
-        ud = new BTextBlockUserData(start, end);
-    }
-    else
-    {
-        ud->skipFrom = start;
-        ud->skipTo = end;
-    }
-    block.setUserData(ud);
-}
-
 /*============================== Public methods ============================*/
 
 void BCodeEdit::setReadOnly(bool ro)
@@ -2112,6 +2094,11 @@ void BCodeEdit::switchMode()
 void BCodeEdit::insertText(const QString &txt)
 {
     d_func()->insertText(txt);
+}
+
+void BCodeEdit::clear()
+{
+    setText("");
 }
 
 void BCodeEdit::moveCursor(const QPoint &pos)

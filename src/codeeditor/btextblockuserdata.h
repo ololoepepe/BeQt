@@ -25,6 +25,7 @@
 class BTextBlock;
 
 class QString;
+class QTextBlock;
 
 #include <BeQtCore/BeQtGlobal>
 
@@ -43,6 +44,7 @@ public:
     static QString textWithoutComments(const BTextBlockUserData *ud, const QString &text);
     static QString textWithoutComments(const QTextBlock &block);
     static int blockSkipFrom(const QTextBlock &block);
+    static void setBlockComment(QTextBlock block, int start = -1, int end = -1);
 public:
     int skipFrom;
     int skipTo;

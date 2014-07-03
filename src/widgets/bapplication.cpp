@@ -55,19 +55,10 @@ class QSettings;
 #include <QList>
 #include <QImageReader>
 #include <QByteArray>
-#include <QFont>
-#include <QFontInfo>
 #include <QPointer>
 #include <QRect>
 #include <QMessageBox>
-#include <QToolButton>
-#include <QToolBar>
 #include <QWidget>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QLayout>
-#include <QFrame>
 #include <QSystemTrayIcon>
 
 #include <QDebug>
@@ -531,186 +522,11 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
     return act;
 }
 
-QAction *BApplication::createSeparator(QObject *parent)
-{
-    QAction *act = new QAction(parent);
-    act->setSeparator(true);
-    return act;
-}
-
-QFrame *BApplication::createFrame(QFrame::Shape shape, QWidget *parent)
-{
-    return createFrame(shape, QFrame::Plain, parent);
-}
-
-QFrame *BApplication::createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent)
-{
-    QFrame *fr = new QFrame(parent);
-    fr->setFrameShape(shape);
-    fr->setFrameShadow(shadow);
-    return fr;
-}
-
-QFont BApplication::createMonospaceFont()
-{
-#if defined Q_OS_WIN
-    //On Windows some weird fonts are selected, so we set the font explicitly
-    QString f = "Courier New";
-#else
-    QString f = "monospace";
-#endif
-    //Using such a construct to guarantee that the font will be monospaced
-    QFont fnt(QFontInfo(QFont(f)).family());
-    fnt.setPointSize(QApplication::font().pointSize());
-    return fnt;
-}
-
 void BApplication::setHelpBrowserDefaultGeometry(const QRect &geometry)
 {
     if ( !geometry.isValid() )
         return;
     ds_func()->helpBrowserGeometry = geometry;
-}
-
-QToolButton *BApplication::toolButtonForAction(QToolBar *toolBar, QAction *action)
-{
-    if (!toolBar || !action)
-        return 0;
-    return static_cast<QToolButton *>( toolBar->widgetForAction(action) );
-}
-
-void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)
-{
-    if (!vlt || !field)
-        return;
-    QHBoxLayout *hlt = new QHBoxLayout;
-    hlt->addWidget( new QLabel(label) );
-    hlt->addWidget(field);
-    vlt->addLayout(hlt);
-}
-
-void BApplication::addRow(QVBoxLayout *vlt, const QString &label, QLayout *field)
-{
-    if (!vlt || !field)
-        return;
-    QHBoxLayout *hlt = new QHBoxLayout;
-    hlt->addWidget( new QLabel(label) );
-    hlt->addLayout(field);
-    vlt->addLayout(hlt);
-}
-
-QFormLayout *BApplication::formLayout(QWidget *field)
-{
-    QWidget *pw = field ? field->parentWidget() : 0;
-    if (!pw)
-        return 0;
-    QStack<QLayout *> s;
-    s.push(pw->layout());
-    while (!s.isEmpty())
-    {
-        QLayout *lt = s.pop();
-        if (!lt)
-            continue;
-        QFormLayout *flt = qobject_cast<QFormLayout *>(lt);
-        if (flt)
-        {
-            QWidget *w = flt->labelForField(field);
-            if (w)
-                return flt;
-        }
-        foreach (int i, bRangeD(0, lt->count() - 1))
-            s.push(lt->itemAt(i)->layout());
-    }
-    return 0;
-}
-
-QFormLayout *BApplication::formLayout(QLayout *field)
-{
-    QWidget *pw = field ? field->parentWidget() : 0;
-    if (!pw)
-        return 0;
-    QStack<QLayout *> s;
-    s.push(pw->layout());
-    while (!s.isEmpty())
-    {
-        QLayout *lt = s.pop();
-        if (!lt)
-            continue;
-        QFormLayout *flt = qobject_cast<QFormLayout *>(lt);
-        if (flt)
-        {
-            QWidget *w = flt->labelForField(field);
-            if (w)
-                return flt;
-        }
-        foreach (int i, bRangeD(0, lt->count() - 1))
-            s.push(lt->itemAt(i)->layout());
-    }
-    return 0;
-}
-
-void BApplication::setRowVisible(QWidget *field, bool visible)
-{
-    QWidget *w = labelForField<QWidget>(field);
-    if (!field || !w)
-        return;
-    w->setVisible(visible);
-    field->setVisible(visible);
-}
-
-void BApplication::setRowVisible(QLayout *field, bool visible)
-{
-    QWidget *w = labelForField<QWidget>(field);
-    if (!field || !w)
-        return;
-    w->setVisible(visible);
-    QStack<QLayout *> s;
-    s.push(field);
-    while (!s.isEmpty())
-    {
-        QLayout *lt = s.pop();
-        if (!lt)
-            continue;
-        foreach (int i, bRangeD(0, lt->count() - 1))
-        {
-            s.push(lt->itemAt(i)->layout());
-            QWidget *w = lt->itemAt(i)->widget();
-            if (w)
-                w->setVisible(visible);
-        }
-    }
-}
-
-void BApplication::setRowEnabled(QWidget *field, bool enabled)
-{
-    QWidget *w = labelForField<QWidget>(field);
-    if (!field || !w)
-        return;
-    w->setEnabled(enabled);
-    field->setEnabled(enabled);
-}
-
-void BApplication::setRowEnabled(QLayout *field, bool enabled)
-{
-    QWidget *w = labelForField<QWidget>(field);
-    if (!field || !w)
-        return;
-    w->setEnabled(enabled);
-    QStack<QLayout *> s;
-    s.push(field);
-    while (!s.isEmpty())
-    {
-        QLayout *lt = s.pop();
-        if (!lt)
-            continue;
-        foreach (int i, bRangeD(0, lt->count() - 1))
-        {
-            s.push(lt->itemAt(i)->layout());
-            QWidget *w = lt->itemAt(i)->widget();
-            if (w)
-                w->setEnabled(enabled);
-        }
-    }
 }
 
 QSystemTrayIcon *BApplication::trayIcon()

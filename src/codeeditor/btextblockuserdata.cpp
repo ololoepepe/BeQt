@@ -68,3 +68,20 @@ int BTextBlockUserData::blockSkipFrom(const QTextBlock &block)
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( block.userData() );
     return ud ? ud->skipFrom : -1;
 }
+
+void BTextBlockUserData::setBlockComment(QTextBlock block, int start, int end)
+{
+    BTextBlockUserData *ud = dynamic_cast<BTextBlockUserData *>(block.userData());
+    if (!ud)
+    {
+        if (start < 0)
+            return;
+        ud = new BTextBlockUserData(start, end);
+    }
+    else
+    {
+        ud->skipFrom = start;
+        ud->skipTo = end;
+    }
+    block.setUserData(ud);
+}

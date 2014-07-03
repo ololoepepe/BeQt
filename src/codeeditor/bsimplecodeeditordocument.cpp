@@ -374,6 +374,11 @@ void BSimpleCodeEditorDocument::insertTextImplementation(const QString &txt)
     d_func()->ptedt->insertPlainText(txt);
 }
 
+void BSimpleCodeEditorDocument::clearImplementation()
+{
+    d_func()->ptedt->clear();
+}
+
 void BSimpleCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
 {
     B_D(BSimpleCodeEditorDocument);

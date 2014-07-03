@@ -124,6 +124,7 @@ public Q_SLOTS:
     void activateWindow();
     void setText(const QString &txt);
     void insertText(const QString &txt);
+    void clear();
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
     void selectText(int start, int end);
@@ -144,6 +145,7 @@ protected:
     virtual void activateWindowImplementation() = 0;
     virtual void setTextImplementation(const QString &txt) = 0;
     virtual void insertTextImplementation(const QString &txt) = 0;
+    virtual void clearImplementation() = 0;
     virtual void moveCursorImplementation(const QPoint &pos) = 0;
     virtual void selectTextImplementation(const QPoint &start, const QPoint &end) = 0;
     virtual void selectTextImplementation(int start, int end) = 0;

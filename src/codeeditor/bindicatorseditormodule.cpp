@@ -29,6 +29,7 @@
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
+#include <BeQtWidgets/BGuiTools>
 
 #include <QObject>
 #include <QString>
@@ -70,18 +71,17 @@ BIndicatorsEditorModulePrivate::~BIndicatorsEditorModulePrivate()
 void BIndicatorsEditorModulePrivate::init()
 {
     lblCursorPos = new QLabel;
-    lblCursorPos->setFont( BApplication::createMonospaceFont() );
+    lblCursorPos->setFont(BGuiTools::createMonospaceFont());
     updateCursorPosIndicator();
     lblEncoding = new QLabel;
-    lblEncoding->setFont( BApplication::createMonospaceFont() );
+    lblEncoding->setFont(BGuiTools::createMonospaceFont());
     updateEncodingIndicator();
     cmboxFileType = new QComboBox;
     cmboxFileType->setMinimumWidth(150);
-    connect( cmboxFileType.data(), SIGNAL( currentIndexChanged(int) ),
-             this, SLOT( cmboxFileTypeCurrentIndexChanged(int) ) );
+    connect(cmboxFileType.data(), SIGNAL(currentIndexChanged(int)), this, SLOT(cmboxFileTypeCurrentIndexChanged(int)));
     updateFileTypeIndicator();
     //
-    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()

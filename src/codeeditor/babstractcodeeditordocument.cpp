@@ -1051,6 +1051,11 @@ void BAbstractCodeEditorDocument::insertText(const QString &txt)
     insertTextImplementation(txt);
 }
 
+void BAbstractCodeEditorDocument::clear()
+{
+    clearImplementation();
+}
+
 void BAbstractCodeEditorDocument::moveCursor(const QPoint &pos)
 {
     moveCursorImplementation(pos);

@@ -71,8 +71,6 @@ public:
 protected:
     explicit BCodeEdit(BCodeEditPrivate &d, QWidget *parent = 0);
 public:
-    static void setBlockComment(QTextBlock block, int start = -1, int end = -1);
-public:
     void setReadOnly(bool ro);
     void setModification(bool modified);
     void setEditFont(const QFont &fnt);
@@ -113,6 +111,7 @@ public Q_SLOTS:
     void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
     void switchMode();
     void insertText(const QString &txt);
+    void clear();
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
     void selectText(int start, int end);
