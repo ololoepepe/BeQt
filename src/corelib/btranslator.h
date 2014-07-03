@@ -66,6 +66,7 @@ public:
 private:
     Q_DISABLE_COPY(BTranslator)
     friend class BCoreApplicationPrivate;
+    friend class BApplicationBasePrivate;
 };
 
 #endif // BTRANSLATOR_H

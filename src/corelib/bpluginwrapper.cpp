@@ -23,6 +23,8 @@
 #include "bplugininterface.h"
 #include "bcoreapplication.h"
 #include "bcoreapplication_p.h"
+#include "bapplicationbase.h"
+#include "bapplicationbase_p.h"
 #include "bpluginwrapper_p.h"
 #include "bversion.h"
 
@@ -138,7 +140,7 @@ bool BPluginWrapperPrivate::activate()
     QMetaObject::invokeMethod(q, "activated");
     if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
     {
-        BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
+        BApplicationBasePrivate *const dapp = BApplicationBase::binstance()->d_func();
         if ( dapp->plugins.contains(q) )
             dapp->pluginActivated(q);
     }
@@ -153,7 +155,7 @@ void BPluginWrapperPrivate::deactivate()
     QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
     if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
     {
-        BCoreApplicationPrivate *const dapp = BCoreApplication::instance()->d_func();
+        BApplicationBasePrivate *const dapp = BApplicationBase::binstance()->d_func();
         if ( dapp->plugins.contains(q) )
             dapp->pluginAboutToBeDeactivated(q);
     }
@@ -184,7 +186,7 @@ void BPluginWrapperPrivate::initSettings()
 {
     if (!interface)
         return;
-    settings = BCoreApplication::ds_func()->createSettingsInstance( interface->name() );
+    settings = BApplicationBase::ds_func()->createSettingsInstance( interface->name() );
     if ( !settings.isNull() )
         connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
 }

@@ -12,6 +12,8 @@ include(../module.pri)
 DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
+    bapplicationbase.h \
+    bapplicationbase_p.h \
     bbase.h \
     bbase_p.h \
     bbaseobject.h \
@@ -51,6 +53,7 @@ HEADERS += \
     buuid.h
 
 SOURCES += \
+    bapplicationbase.cpp \
     bbase.cpp \
     bbaseobject.cpp \
     bcoreapplication.cpp \

@@ -71,7 +71,9 @@
 * Move setBlockComment method from BCodeEdit
 [done] Add working directory argument to BeQt::startProcessDetached function
 [done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
-* Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
+[done] Add BApplicationBase class
+[done] Add InitialSettings class to BApplicationBase
+[done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
 * Make BTerminalIOHandler a singleton
 * Implement terminal modes (standard mode and PDCurses mode)
 [done] Rename BTerminalIOHandler into BTerminal
@@ -79,3 +81,4 @@
 [done] Add alternative base class pair with non-QObject private base
 * Make BPersonInfo and BPersonInfoList serializable
 * Make data classes serializable
+* Use enum_cast wherever it makes sense

@@ -23,15 +23,17 @@
 #define BAPPLICATION_P_H
 
 class BApplicationPrivate;
+class BPluginWrapper;
 
 class QAction;
 class QRect;
 class QSystemTrayIcon;
+class QSettings;
 
 #include "bapplication.h"
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bcoreapplication_p.h>
+#include <BeQtCore/private/bapplicationbase_p.h>
 
 #include <QObject>
 #include <QString>
@@ -44,7 +46,7 @@ class QSystemTrayIcon;
 ================================ BApplicationPrivate =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BApplicationPrivate : public BCoreApplicationPrivate
+class B_WIDGETS_EXPORT BApplicationPrivate : public BApplicationBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BApplication)
@@ -58,6 +60,11 @@ public:
     static QIcon iconFromTheme(const QString &name);
 public:
     void init();
+    void emitPluginActivated(BPluginWrapper *pluginWrapper);
+    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void emitLanguageChanged();
+    void emitSettingsLoaded(QSettings *s);
+    void emitSettingsSaved(QSettings *s);
     void initAboutDlg();
     void showAbout();
     QString helpContext(QWidget *widget = 0) const;

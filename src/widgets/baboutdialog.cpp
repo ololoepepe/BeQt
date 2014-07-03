@@ -28,7 +28,7 @@ class QWidget;
 
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPluginInterface>
-#include <BeQtCore/BCoreApplication>
+#include <BeQtCore/BApplicationBase>
 #include <BeQtCore/BPersonInfoProvider>
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPersonInfo>
@@ -461,7 +461,7 @@ void BAboutDialogPrivate::resetLicense()
 void BAboutDialogPrivate::setupFromApplicationData()
 {
     B_Q(BAboutDialog);
-    BCoreApplicationPrivate *dd = BApplication::ds_func();
+    BApplicationBasePrivate *dd = BApplication::ds_func();
     if (!dd)
         return;
     q->setOrganization(QApplication::organizationName(), dd->appCopyrightYears);

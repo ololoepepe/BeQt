@@ -32,20 +32,17 @@
 
 int main(int argc, char **argv)
 {
-    //Creating QCoreApplication instance
-    QCoreApplication *app = new QCoreApplication(argc, argv);
-    Q_UNUSED(app)
-    //QApplication initialization
-    QCoreApplication::setApplicationName("Console app");
-    QCoreApplication::setOrganizationName("Andrey Bogdanov");
-    QCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
-    QCoreApplication::setApplicationVersion("0.1.0");
     //Creating BCoreApplication instance
-    BCoreApplication *bapp = new BCoreApplication;
-    Q_UNUSED(bapp)
+    BCoreApplication::InitialSettings settings;
+    settings.applicationName = "Console app";
+    settings.organizationName = "Andrey Bogdanov";
+    settings.organizationDomain = QUrl::fromUserInput("https://github.com/the-dark-angel");
+    settings.applicationVersion = BVersion::fromString("0.1.0");
+    BCoreApplication app(argc, argv, settings);
+    Q_UNUSED(app)
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
-    BCoreApplication::installTranslator(new BTranslator("beqt"));
+    BCoreApplication::binstallTranslator(new BTranslator("beqt"));
     //Communicating with user through BTerminalIOHandler
     QString s = BTerminal::readLine("Enter something: ");
     BTerminal::writeLine("You entered: \"" + s + "\"");

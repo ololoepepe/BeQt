@@ -60,10 +60,12 @@ public:
 public:
     static QString statusToString(Status vs, StatusRepresentation r = ShortLowercase);
     static int compare(const BVersion &v1, const BVersion &v2);
+    static BVersion fromString(const QString &s, QChar versionSeparator = QChar('.'),
+                               QChar statusSeparator = QChar('-'));
 public:
     explicit BVersion(qint8 vmajor = -1, qint8 vminor = -1, qint8 vpatch = -1, Status vs = NoStatus,
                       qint8 vextra = -1);
-    explicit BVersion(const QString &s);
+    explicit BVersion(const QString &s, QChar versionSeparator = QChar('.'), QChar statusSeparator = QChar('-'));
     BVersion(const BVersion &other);
     ~BVersion();
 protected:

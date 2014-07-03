@@ -47,24 +47,23 @@
 #include <QByteArray>
 #include <QToolButton>
 #include <QWidget>
+#include <QUrl>
 
 #include <QDebug>
 
 int main(int argc, char **argv)
 {
-    //Creating QApplication instance
-    QApplication *app = new QApplication(argc, argv);
-    //QApplication initialization
-    QApplication::setApplicationName("Simple Editor");
-    QApplication::setOrganizationName("Andrey Bogdanov");
-    QApplication::setOrganizationDomain("https://github.com/the-dark-angel");
-    QApplication::setApplicationVersion("0.1.0");
     //Creating BApplication instance
-    BApplication *bapp = new BApplication;
+    BApplication::InitialSettings settings;
+    settings.applicationName = "Simple Editor";
+    settings.organizationName = "Andrey Bogdanov";
+    settings.organizationDomain = QUrl::fromUserInput("https://github.com/the-dark-angel");
+    settings.applicationVersion = BVersion::fromString("0.1.0");
+    BApplication app(argc, argv, settings);
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);
-    BApplication::installTranslator( new BTranslator("beqt") );
+    BApplication::binstallTranslator( new BTranslator("beqt") );
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
     BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2014");
@@ -142,7 +141,7 @@ int main(int argc, char **argv)
     mw->restoreState( s ? s->value("main_window/state").toByteArray() : mw->saveState() ) ;
     mw->show();
     //Running main event loop
-    int ret = app->exec();
+    int ret = app.exec();
     //Saving settings
     if (s)
     {
@@ -154,8 +153,6 @@ int main(int argc, char **argv)
     }
     //Deleting objects
     delete mw;
-    delete bapp;
-    delete app;
     //Returning from main
     return ret;
 }

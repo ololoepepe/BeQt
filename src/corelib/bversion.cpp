@@ -232,6 +232,11 @@ int BVersion::compare(const BVersion &v1, const BVersion &v2)
     return 0;
 }
 
+BVersion BVersion::fromString(const QString &s, QChar versionSeparator, QChar statusSeparator)
+{
+    return BVersion(s, versionSeparator, statusSeparator);
+}
+
 /*============================== Public constructors =======================*/
 
 BVersion::BVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 vextra) :
@@ -241,11 +246,11 @@ BVersion::BVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 ve
     setVersion(vmajor, vminor, vpatch, vs, vextra);
 }
 
-BVersion::BVersion(const QString &s) :
+BVersion::BVersion(const QString &s, QChar versionSeparator, QChar statusSeparator) :
     BBase(*new BVersionPrivate(this))
 {
     d_func()->init();
-    setVersion(s);
+    setVersion(s, versionSeparator, statusSeparator);
 }
 
 BVersion::BVersion(const BVersion &other) :

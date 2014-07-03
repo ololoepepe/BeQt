@@ -19,6 +19,10 @@
 **
 ****************************************************************************/
 
+class BPluginWrapper;
+
+class QSettings;
+
 #include "bapplication.h"
 #include "bapplication_p.h"
 #include "baboutdialog.h"
@@ -27,7 +31,7 @@
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BCoreApplication>
-#include <BeQtCore/private/bcoreapplication_p.h>
+#include <BeQtCore/private/bapplicationbase_p.h>
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPersonInfoProvider>
 
@@ -76,7 +80,7 @@
 /*============================== Public constructors =======================*/
 
 BApplicationPrivate::BApplicationPrivate(BApplication *q) :
-    BCoreApplicationPrivate(q)
+    BApplicationBasePrivate(q)
 {
     //
 }
@@ -197,8 +201,33 @@ void BApplicationPrivate::init()
     navigation = BApplication::DefaultNavigation;
     helpBrowserGeometry = QRect(200, 200, 800, 600);
     themedIcons = true;
-    connect( q_func(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    connect(q_func(), SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
     trayIcon = 0;
+}
+
+void BApplicationPrivate::emitPluginActivated(BPluginWrapper *pluginWrapper)
+{
+    QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper));
+}
+
+void BApplicationPrivate::emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
+{
+    QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper));
+}
+
+void BApplicationPrivate::emitLanguageChanged()
+{
+    QMetaObject::invokeMethod(q_func(), "languageChanged");
+}
+
+void BApplicationPrivate::emitSettingsLoaded(QSettings *s)
+{
+    QMetaObject::invokeMethod(q_func(), "settingsLoaded", Q_ARG(QSettings *, s));
+}
+
+void BApplicationPrivate::emitSettingsSaved(QSettings *s)
+{
+    QMetaObject::invokeMethod(q_func(), "settingsSaved", Q_ARG(QSettings *, s));
 }
 
 void BApplicationPrivate::initAboutDlg()
@@ -296,8 +325,14 @@ void BApplicationPrivate::actionDestroyed(QObject *act)
 
 /*============================== Public constructors =======================*/
 
-BApplication::BApplication() :
-    BCoreApplication( *new BApplicationPrivate(this) )
+BApplication::BApplication(int &argc, char **argv, const QString &applicationName) :
+    QApplication(argc, argv), BApplicationBase(*new BApplicationPrivate(this), applicationName)
+{
+    d_func()->init();
+}
+
+BApplication::BApplication(int &argc, char **argv, const InitialSettings &s) :
+    QApplication(argc, argv), BApplicationBase(*new BApplicationPrivate(this), s)
 {
     d_func()->init();
 }
@@ -309,8 +344,14 @@ BApplication::~BApplication()
 
 /*============================== Protected constructors ====================*/
 
-BApplication::BApplication(BApplicationPrivate &d) :
-    BCoreApplication(d)
+BApplication::BApplication(BApplicationPrivate &d, int &argc, char **argv, const QString &applicationName) :
+    QApplication(argc, argv), BApplicationBase(d, applicationName)
+{
+    d_func()->init();
+}
+
+BApplication::BApplication(BApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s) :
+    QApplication(argc, argv), BApplicationBase(d, s)
 {
     d_func()->init();
 }
@@ -319,7 +360,7 @@ BApplication::BApplication(BApplicationPrivate &d) :
 
 QIcon BApplication::icon(const QString &name, const QIcon &fallback)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return QIcon();
     B_DS(BApplication);
     if ( ds->iconCaching && ds->iconCache.contains(name) )
@@ -340,7 +381,7 @@ QIcon BApplication::icon(const QString &name, const QIcon &fallback)
 
 QIcon BApplication::beqtIcon(const QString &name)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return QIcon();
     B_DS(BApplication);
     QString suff = "svgz";
@@ -361,7 +402,7 @@ QIcon BApplication::beqtIcon(const QString &name)
 
 QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return QPixmap();
     QString fn = BApplicationPrivate::findImage("beqt/pixmaps", name);
     if ( name.isEmpty() )
@@ -372,42 +413,42 @@ QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
 
 void BApplication::setIconCachingEnabled(bool enabled)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     ds_func()->iconCaching = enabled;
 }
 
 void BApplication::clearIconCache()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     ds_func()->iconCache.clear();
 }
 
 void BApplication::setThemedIconsEnabled(bool enabled)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     ds_func()->themedIcons = enabled;
 }
 
 bool BApplication::themedIconsEnabled()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return false;
     return ds_func()->themedIcons;
 }
 
 void BApplication::setPreferredIconFormats(const QStringList &suffixes)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     ds_func()->preferredIconFormats = suffixes;
 }
 
 QStringList BApplication::preferredIconFormats()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return QStringList();
     return ds_func()->preferredIconFormats;
 }
@@ -423,21 +464,21 @@ BAboutDialog *BApplication::aboutDialogInstance()
 
 void BApplication::setSettingsTabDefaultNavigation(SettingsTabNavigation navigation)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     ds_func()->navigation = navigation;
 }
 
 void BApplication::setHelpIndex(const QString &index)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     ds_func()->helpIndex = index;
 }
 
 QAction *BApplication::createStandardAction(StandardAction type, QObject *parent)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return 0;
     QAction *act = 0;
     switch (type)
@@ -448,25 +489,25 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
         act->setObjectName("ActionSettings");
         act->setIcon( icon("configure") );
         act->setShortcut(QKeySequence::Preferences);
-        connect( act, SIGNAL( triggered() ), _m_self, SLOT( showSettingsDialog() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( showSettingsDialog() ) );
         break;
     case HomepageAction:
         act = new QAction(parent);
         act->setObjectName("ActionHomepage");
         act->setIcon( icon("gohome") );
-        connect( act, SIGNAL( triggered() ), _m_self, SLOT( openHomepage() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( openHomepage() ) );
         break;
     case HelpContentsAction:
         act = new QAction(parent);
         act->setObjectName("ActionHelpContents");
         act->setIcon( beqtIcon("help_contents") );
-        connect( act, SIGNAL( triggered() ), _m_self, SLOT( showHelpContents() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( showHelpContents() ) );
         break;
     case ContextualHelpAction:
         act = new QAction(parent);
         act->setObjectName("ActionContextualHelp");
         act->setIcon( icon("help_contextual") );
-        connect( act, SIGNAL( triggered() ), _m_self, SLOT( showContextualHelp() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( showContextualHelp() ) );
         break;
     case WhatsThisAction:
         act = QWhatsThis::createAction(parent);
@@ -478,7 +519,7 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
         act->setMenuRole(QAction::AboutRole);
         act->setObjectName("ActionAbout");
         act->setIcon( icon("help_about") );
-        connect( act, SIGNAL( triggered() ), _m_self, SLOT( showAboutDialog() ) );
+        connect( act, SIGNAL( triggered() ), bApp, SLOT( showAboutDialog() ) );
         break;
     default:
         return 0;
@@ -674,7 +715,7 @@ void BApplication::setRowEnabled(QLayout *field, bool enabled)
 
 QSystemTrayIcon *BApplication::trayIcon()
 {
-    if (!BCoreApplicationPrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return 0;
     if (!ds_func()->trayIcon)
     {
@@ -688,7 +729,7 @@ QSystemTrayIcon *BApplication::trayIcon()
 
 void BApplication::showAboutDialog()
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BApplication") )
+    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
         return;
     d_func()->showAbout();
 }

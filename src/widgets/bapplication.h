@@ -39,7 +39,7 @@ class QVBoxLayout;
 class QSystemTrayIcon;
 
 #include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BCoreApplication>
+#include <BeQtCore/BApplicationBase>
 #include <BeQtCore/BPersonInfoProvider>
 
 #include <QObject>
@@ -52,17 +52,18 @@ class QSystemTrayIcon;
 #include <QLayout>
 #include <QStack>
 #include <QLayoutItem>
+#include <QApplication>
 
 #if defined(bApp)
-#undef bApp
+#   undef bApp
 #endif
-#define bApp ( static_cast<BApplication *>( BCoreApplication::instance() ) )
+#define bApp (static_cast<BApplication *>(BApplicationBase::binstance()))
 
 /*============================================================================
 ================================ BApplication ================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BApplication : public BCoreApplication
+class B_WIDGETS_EXPORT BApplication : public QApplication, public BApplicationBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BApplication)
@@ -84,10 +85,13 @@ public:
         AboutAction
     };
 public:
-    explicit BApplication();
+    explicit BApplication(int &argc, char **argv, const QString &applicationName);
+    explicit BApplication(int &argc, char **argv, const InitialSettings &s = InitialSettings());
     ~BApplication();
 protected:
-    explicit BApplication(BApplicationPrivate &d);
+    explicit BApplication(BApplicationPrivate &d, int &argc, char **argv, const QString &applicationName);
+    explicit BApplication(BApplicationPrivate &d, int &argc, char **argv,
+                          const InitialSettings &s = InitialSettings());
 public:
     template <typename T> static T *labelForField(QWidget *field);
     template <typename T> static T *labelForField(QLayout *field);
@@ -128,6 +132,12 @@ public Q_SLOTS:
     void showContextualHelp();
     void openHomepage();
     bool openLocalFile(const QString &fileName);
+Q_SIGNALS:
+    void pluginActivated(BPluginWrapper *pluginWrapper);
+    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void languageChanged();
+    void settingsLoaded(QSettings *s);
+    void settingsSaved(QSettings *s);
 protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:
