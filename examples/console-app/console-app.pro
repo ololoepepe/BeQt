@@ -3,8 +3,6 @@ TARGET = console-app
 
 CONFIG += release console
 
-QT = core
-
 BEQT = core
 
 include(../example.pri)

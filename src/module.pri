@@ -51,11 +51,7 @@ defineTest(addBeqtModule) {
     INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
     DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
     libFinalPath=$${beqtLibsPath}/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/
-    mac:contains(CONFIG, lib_bundle) {
-        LIBS *= -F$${libFinalPath} -framework $${fullName}
-    } else {
-        LIBS *= -L$${libFinalPath} -l$${fullName}$${libNameSuffix}
-    }
+    LIBS *= -L$${libFinalPath} -l$${fullName}$${libNameSuffix}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     export(LIBS)
@@ -78,26 +74,32 @@ contains(BEQT, all) {
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui widgets concurrent
+    QT *= core gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core widgets
 }
 contains(BEQT,core) {
-    QT *= core concurrent
+    QT *= core
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
 }
 contains(BEQT, network) {
-    QT *= core network concurrent
+    QT *= core network
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
     BEQT *= core network
 }
 contains(BEQT, sql) {
-    QT *= core sql concurrent
+    QT *= core sql
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
     BEQT *= core
 }
 contains(BEQT, widgets) {
-    QT *= core gui widgets concurrent
+    QT *= core gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core widgets
 }
 contains(BEQT, networkwidgets) {
-    QT *= core network gui widgets concurrent
+    QT *= core network gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core network widgets
 }
 

@@ -3,7 +3,8 @@ TARGET = BeQtCore
 
 CONFIG += release
 
-QT = core concurrent
+QT = core
+greaterThan(QT_MAJOR_VERSION, 4):QT += concurrent
 
 BEQT =
 
@@ -84,8 +85,6 @@ SOURCES += \
     buuid.cpp
 
 include(../3rdparty/3rdparty.pri)
-
-message($${HEADERS})
 
 contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES

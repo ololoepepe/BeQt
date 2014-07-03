@@ -3,8 +3,6 @@ TARGET = BeQtCodeEditor
 
 CONFIG += release
 
-QT = core gui widgets concurrent
-
 BEQT = core widgets
 
 include(../module.pri)

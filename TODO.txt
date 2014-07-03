@@ -1,6 +1,5 @@
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
-* Improve MacOS support
 * Fix code editor document modification on setText
 * Implement multi-cursor in code editor
 * Implement code folding in code editor
@@ -25,6 +24,8 @@
 === MAJOR ===
 
 [done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
+[done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
+[done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
 
 * Use enum_cast wherever it makes sense
 * Use BUuid class instead of QUuid
@@ -32,6 +33,7 @@
 * Implement locking of global object instances
 * Show plugin version information
 * Add ability to set multiple copyright owners
+
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
 [done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
@@ -61,6 +63,7 @@
 * Fix BeQt::OSType enum values
 * Make BPersonInfo and BPersonInfoList serializable
 * Reimplement BCoreApplication and resource lookup system
+* Use UNIX resouce structure for all types of applications
 * Improve plugin loading system
 * Improve ChangeLog files displaying
 * Add PDCurses binding

@@ -3,8 +3,6 @@ TARGET = BeQtNetworkWidgets
 
 CONFIG += release
 
-QT = core network gui widgets
-
 BEQT = core network widgets
 
 include(../module.pri)
