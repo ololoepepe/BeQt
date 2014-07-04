@@ -70,6 +70,11 @@ public:
         Cyan,
         Lightgray
     };
+    enum Mode
+    {
+        NoMode = 0,
+        StandardMode
+    };
 public:
     struct CommandHelp
     {
@@ -80,18 +85,21 @@ public:
     typedef QList<CommandHelp> CommandHelpList;
     typedef bool (BTerminal::*InternalHandler)(const QString &cmd, const QStringList &args);
     typedef bool (*ExternalHandler)(BTerminal *, const QString &cmd, const QStringList &args);
-public:
-    explicit BTerminal(QObject *parent = 0);
-    ~BTerminal();
 protected:
-    explicit BTerminal(BTerminalPrivate &d, QObject *parent = 0);
+    explicit BTerminal(Mode mode);
+    explicit BTerminal(BTerminalPrivate &d);
+    ~BTerminal();
 public:
+    static void setMode(Mode mode);
+    static Mode mode();
+    static void destroy();
     static QString command(StandardCommand cmd);
     static QStringList commands(StandardCommand cmd);
     static CommandHelp commandHelp(StandardCommand cmd);
     static CommandHelpList commandHelpList(StandardCommand cmd);
     static InternalHandler handler(StandardCommand cmd);
-    static BTerminal *instance();
+    static void connectToCommandEntered(QObject *receiver, const char *method);
+    static void disconnectFromCommandEntered(QObject *receiver, const char *method);
     static QString readLine(const QString &text = QString());
     static QString readLineSecure(const QString &text = QString());
     static void write(const QString &text);
@@ -125,7 +133,6 @@ public:
     static BSettingsNode *rootSettingsNode();
     static bool translationsEnabled();
 protected:
-    virtual bool handleCommand(const QString &command, const QStringList &arguments);
     bool handleQuit(const QString &command, const QStringList &arguments);
     bool handleSet(const QString &command, const QStringList &arguments);
     bool handleHelp(const QString &command, const QStringList &arguments);

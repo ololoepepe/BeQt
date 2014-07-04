@@ -6,6 +6,7 @@
 * Add function for unzipping Hunspell dictionaries
 * Sort includes, class members, etc.
 * Use Qt coding style
+* Add PDCurses binding
 
 === PATCH ===
 
@@ -56,6 +57,7 @@
 [done] Reimplement resource lookup system
 [done] Use UNIX resouce structure for all types of applications
 [done] Improve plugin loading system
+[done] Make BTerminalIOHandler a singleton
 [done] Add BApplicationBase class
 [done] Add working directory argument to BeQt::startProcessDetached function
 [done] Add InitialSettings class to BApplicationBase
@@ -64,13 +66,11 @@
 [done] Add version information to BPluginInterface
 [done] Add BAbstractLocationProvider and BLocationProvider classes
 [done] Add ability to add extra locations
-* Make BTerminalIOHandler a singleton
+[done] Implement terminal modes
 * Fix BeQt::OSType enum values
 * Make BPersonInfo and BPersonInfoList serializable
 * Improve ChangeLog files displaying
-* Add PDCurses binding
 * Add serialization of data classes
-* Implement terminal modes (standard mode and PDCurses mode)
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer

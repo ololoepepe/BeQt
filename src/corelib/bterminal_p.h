@@ -72,11 +72,10 @@ class B_CORE_EXPORT BTerminalPrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC(BTerminal)
     B_DECLARE_PUBLIC_S(BTerminal)
 public:
-    explicit BTerminalPrivate(BTerminal *q);
+    explicit BTerminalPrivate(BTerminal *q, BTerminal::Mode m);
     ~BTerminalPrivate();
 public:
     static bool testInit(const char *where = 0);
-    static bool testUnique();
     static BTerminalThread *initThread(bool silent = false);
     static void removeThread();
     static void resetColor();
@@ -97,6 +96,9 @@ public:
     static QMutex threadMutex;
     static BTerminal::Color textColor;
     static BTerminal::Color backgroundColor;
+    static BTerminal::Mode mode;
+public:
+    const BTerminal::Mode Mode;
 public:
     QMap<QString, BTerminal::InternalHandler> internalHandlers;
     QMap<QString, BTerminal::ExternalHandler> externalHandlers;
