@@ -68,7 +68,6 @@ public:
     QString translate(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) const;
 private:
     Q_DISABLE_COPY(BTranslator)
-    friend class BApplicationBasePrivate;
 };
 
 #endif // BTRANSLATOR_H

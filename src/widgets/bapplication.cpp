@@ -279,7 +279,7 @@ void BApplicationPrivate::showHelp(const QString &file)
 
 QIcon BApplicationPrivate::cacheIcon(const QIcon &icon, const QString &name)
 {
-    if ( iconCaching && !icon.isNull() )
+    if (iconCaching && !icon.isNull())
         iconCache.insert(name, icon);
     return icon;
 }
@@ -515,9 +515,18 @@ QAction *BApplication::createStandardAction(StandardAction type, QObject *parent
 
 void BApplication::setHelpBrowserDefaultGeometry(const QRect &geometry)
 {
-    if ( !geometry.isValid() )
+    if (!BApplicationBasePrivate::testInit("BApplication"))
+        return;
+    if (!geometry.isValid())
         return;
     ds_func()->helpBrowserGeometry = geometry;
+}
+
+QRect BApplication::helpBrowserDefaultGeometry()
+{
+    if (!BApplicationBasePrivate::testInit("BApplication"))
+        return QRect();
+    return ds_func()->helpBrowserGeometry;
 }
 
 QSystemTrayIcon *BApplication::trayIcon()

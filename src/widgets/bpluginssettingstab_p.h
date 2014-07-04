@@ -57,6 +57,7 @@ public Q_SLOTS:
     void lstwgtItemChanged(QListWidgetItem *item);
     void btnSettingsClicked();
     void btnAboutClicked();
+    void btnHelpClicked();
 public:
     QList<BPluginWrapper *> plugins;
     QHBoxLayout *hlt;
@@ -64,6 +65,7 @@ public:
       QVBoxLayout *vlt;
         QPushButton *btnSettings;
         QPushButton *btnAbout;
+        QPushButton *btnHelp;
 private:
     Q_DISABLE_COPY(BPluginsSettingsTabPrivate)
 };

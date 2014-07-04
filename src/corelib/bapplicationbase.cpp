@@ -432,9 +432,8 @@ void BApplicationBasePrivate::installTranslator(BTranslator *translator)
     if (!translator || !translator->isValid() || translators.contains(translator->fileName()))
         return;
     translator->setLocale(getLocale());
-    if (!translator->d_func()->install())
-        return;
     translators.insert(translator->fileName(), translator);
+    translator->install();
     languageChangeProxy->trigger();
 }
 
@@ -443,7 +442,7 @@ void BApplicationBasePrivate::removeTranslator(BTranslator *translator)
     if (!translator || !translators.contains(translator->fileName()))
         return;
     translators.remove(translator->fileName());
-    translator->d_func()->remove();
+    translator->remove();
     languageChangeProxy->trigger();
 }
 

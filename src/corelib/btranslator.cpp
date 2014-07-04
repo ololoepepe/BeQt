@@ -161,11 +161,17 @@ void BTranslator::setLocale(const QLocale &locale)
 
 void BTranslator::install()
 {
+    if (d_func()->installed)
+        return;
+    d_func()->install();
     BApplicationBase::installBeqtTranslator(this);
 }
 
 void BTranslator::remove()
 {
+    if (!d_func()->installed)
+        return;
+    d_func()->remove();
     BApplicationBase::removeBeqtTranslator(this);
 }
 

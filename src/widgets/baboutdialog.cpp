@@ -123,7 +123,7 @@ QString BAboutDialogPrivate::processChangeLog(const QString &text)
         s += "<br>";
     }
     if (!s.isEmpty())
-        s.remove(s.length() - 1, 4);
+        s.remove(s.length() - 4, 4);
     return s;
 }
 

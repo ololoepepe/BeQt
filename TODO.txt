@@ -11,7 +11,7 @@
 * Add serialization of data classes
 * Use enum_cast wherever it makes sense
 * Implement native settings dialogs
-* Improve BTextTools::toHtml
+* Improve BTextTools::toHtml function
 
 === PATCH ===
 
@@ -70,8 +70,9 @@
 [done] Add BAbstractLocationProvider and BLocationProvider classes
 [done] Add ability to add extra locations
 [done] Add ability to set multiple copyright owners
+[done] Add BTextTools:toHtml function
 [done] Implement terminal modes
-[done] Fix BeQt::OSType enum values
+[done] Change BeQt::OSType enum values
 [done] Improve ChangeLog files displaying
 
 [done] Add ability to set compression for every network operation independently
@@ -85,11 +86,11 @@
 [done] Merge similar GUI method pairs into templates
 [done] Fix BPluginsSettingsTab About dialog version
 [done] Add Help information to plugin BGuiPluginInterface
+[done] Show plugin Help
 [done] Overload BAboutDuialog::setAppVersion method
 [done] Add pointSize parameter to BApplication::createMonospaceFont
 [done] Add ability to set user About dialog for plugins
 * Improve BLocaleComboBox (implement custom mode)
-* Show plugin Help
 
 [done] Move setBlockComment method from BCodeEdit to BTextBlockUserData
 [done] Add BAbstractCodeEditorDocument::clear method

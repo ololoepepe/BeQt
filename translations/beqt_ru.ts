@@ -155,19 +155,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="570"/>
+        <location filename="../src/widgets/bapplication.cpp" line="579"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="572"/>
+        <location filename="../src/widgets/bapplication.cpp" line="581"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="573"/>
+        <location filename="../src/widgets/bapplication.cpp" line="582"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1138"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1147"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1209"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1137"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1146"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1208"/>
         <source>Copyright</source>
         <translation type="unfinished">Авторские права</translation>
     </message>
@@ -1111,7 +1111,7 @@
 <context>
     <name>BPluginsSettingsTab</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="219"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="245"/>
         <source>Plugins</source>
         <comment>title</comment>
         <translation>Плагины</translation>
@@ -1132,13 +1132,19 @@
         <translation>О плагине</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="137"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="103"/>
+        <source>Plugin Help</source>
+        <comment>btn text</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="146"/>
         <source>No settings</source>
         <comment>msgbox title</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="138"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="147"/>
         <source>This plugin does not have any settings</source>
         <comment>msgbox text</comment>
         <translation>У этого плагина отсутствуют какие-либо настройки</translation>

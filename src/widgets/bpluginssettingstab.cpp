@@ -26,6 +26,7 @@
 #include "baboutdialog.h"
 #include "bsettingsdialog.h"
 #include "babstractsettingstab.h"
+#include "bhelpbrowser.h"
 
 #include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPluginInterface>
@@ -83,20 +84,24 @@ void BPluginsSettingsTabPrivate::init()
                 lwi->setIcon(QIcon(gpi->pixmap()));
             lstwgt->addItem(lwi);
         }
-        connect( lstwgt, SIGNAL( currentRowChanged(int) ), this, SLOT( lstwgtCurrentRowChanged(int) ) );
-        connect( lstwgt, SIGNAL( itemChanged(QListWidgetItem *) ),
-                 this, SLOT( lstwgtItemChanged(QListWidgetItem *) ) );
+        connect(lstwgt, SIGNAL(currentRowChanged(int)), this, SLOT(lstwgtCurrentRowChanged(int)));
+        connect(lstwgt, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(lstwgtItemChanged(QListWidgetItem *)));
       hlt->addWidget(lstwgt);
       vlt = new QVBoxLayout;
         btnSettings = new QPushButton(q);
-          btnSettings->setIcon( BApplication::icon("configure") );
-          btnSettings->setText( tr("Configure plugin", "btn text") );
-          connect( btnSettings, SIGNAL( clicked() ), this, SLOT( btnSettingsClicked() ) );
+          btnSettings->setIcon(BApplication::icon("configure"));
+          btnSettings->setText(tr("Configure plugin", "btn text"));
+          connect(btnSettings, SIGNAL(clicked()), this, SLOT(btnSettingsClicked()));
         vlt->addWidget(btnSettings);
         btnAbout = new QPushButton(q);
           btnAbout->setIcon( BApplication::icon("help_about") );
           btnAbout->setText( tr("About plugin", "btn text") );
-          connect( btnAbout, SIGNAL( clicked() ), this, SLOT( btnAboutClicked() ) );
+          connect(btnAbout, SIGNAL(clicked()), this, SLOT(btnAboutClicked()));
+        vlt->addWidget(btnAbout);
+        btnHelp = new QPushButton(q);
+          btnHelp->setIcon( BApplication::icon("help_contents") );
+          btnHelp->setText( tr("Plugin Help", "btn text") );
+          connect(btnHelp, SIGNAL(clicked()), this, SLOT(btnHelpClicked()));
         vlt->addWidget(btnAbout);
         vlt->addStretch();
       hlt->addLayout(vlt);
@@ -109,21 +114,25 @@ void BPluginsSettingsTabPrivate::init()
 void BPluginsSettingsTabPrivate::lstwgtCurrentRowChanged(int currentRow)
 {
     bool b = (currentRow >= 0);
-    btnSettings->setEnabled( b && plugins.at(currentRow)->isActivated() );
+    btnSettings->setEnabled(b && plugins.at(currentRow)->isActivated());
     btnAbout->setEnabled(b);
+    BGuiPluginInterface *gpi = b ? qobject_cast<BGuiPluginInterface *>(plugins.at(currentRow)->instance()) : 0;
+    btnHelp->setEnabled(gpi && !gpi->helpSearchPaths().isEmpty() && !gpi->helpIndex().isEmpty());
 }
 
 void BPluginsSettingsTabPrivate::lstwgtItemChanged(QListWidgetItem *item)
 {
     bool b = (item->checkState() == Qt::Checked);
-    plugins.at( lstwgt->row(item) )->setActivated(b);
+    plugins.at(lstwgt->row(item))->setActivated(b);
     btnSettings->setEnabled(b);
 }
 
 void BPluginsSettingsTabPrivate::btnSettingsClicked()
 {
-    BPluginWrapper *pw = plugins.at( lstwgt->currentRow() );
-    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>( pw->instance() );
+    BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
+    if (!pw)
+        return;
+    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
     BAbstractSettingsTab *ast = gpi ? gpi->createSettingsTab() : 0;
     if (ast)
     {
@@ -143,6 +152,8 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
 void BPluginsSettingsTabPrivate::btnAboutClicked()
 {
     BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
+    if (!pw)
+        return;
     BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
     if (gpi) {
         BAboutDialog *ad = gpi->createAboutDialog();
@@ -185,6 +196,21 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
     if (!pm.isNull())
         ad.setPixmap(pm);
     ad.exec();
+}
+
+void BPluginsSettingsTabPrivate::btnHelpClicked()
+{
+    BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
+    if (!pw)
+        return;
+    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
+    if (!gpi)
+        return;
+    QString index = gpi->helpIndex();
+    BHelpBrowser *hb = new BHelpBrowser(gpi->helpSearchPaths(), index, index);
+    hb->setAttribute(Qt::WA_DeleteOnClose, true);
+    hb->setGeometry(BApplication::helpBrowserDefaultGeometry());
+    hb->show();
 }
 
 /*============================================================================

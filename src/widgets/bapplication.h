@@ -98,6 +98,7 @@ public:
     static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
     static void setHelpIndex(const QString &index);
     static void setHelpBrowserDefaultGeometry(const QRect &geometry);
+    static QRect helpBrowserDefaultGeometry();
     static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
     static QSystemTrayIcon *trayIcon();
 public Q_SLOTS:
