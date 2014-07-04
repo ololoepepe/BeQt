@@ -48,14 +48,19 @@ public:
     BUuid(const BUuid &other);
     ~BUuid();
 public:
-    BUuid createUuid();
-    BUuid fromRfc4122(const QByteArray & bytes);
+    static BUuid createUuid();
+    static BUuid fromRfc4122(const QByteArray & bytes);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-    BUuid createUuidV3(const BUuid &ns, const QByteArray &baseData);
-    BUuid createUuidV3(const BUuid &ns, const QString &baseData);
-    BUuid createUuidV5(const BUuid &ns, const QByteArray &baseData);
-    BUuid createUuidV5(const BUuid &ns, const QString &baseData);
+    static BUuid createUuidV3(const BUuid &ns, const QByteArray &baseData);
+    static BUuid createUuidV3(const BUuid &ns, const QString &baseData);
+    static BUuid createUuidV5(const BUuid &ns, const QByteArray &baseData);
+    static BUuid createUuidV5(const BUuid &ns, const QString &baseData);
 #endif
+public:
+    uint &data1;
+    ushort &data2;
+    ushort &data3;
+    uchar (&data4)[8];
 public:
     bool isNull() const;
     QUuid toUuid() const;

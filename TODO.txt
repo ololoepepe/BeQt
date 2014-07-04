@@ -12,6 +12,7 @@
 * Use enum_cast wherever it makes sense
 * Implement native settings dialogs
 * Improve BTextTools::toHtml function
+* Implement locking of global object instances
 
 === PATCH ===
 
@@ -35,8 +36,6 @@
 
 * Use BUuid class instead of QUuid
 * Move some methods to separate namespaces
-* Implement locking of global object instances
-* Show plugin version information
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
@@ -74,6 +73,7 @@
 [done] Add BCoreApplication deactivatedPlugins and setDeactivatedPlugins methods
 [done] Implement terminal modes
 [done] Change BeQt::OSType enum values
+[done] Improve BUuid serialization
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer

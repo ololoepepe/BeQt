@@ -10,6 +10,8 @@
 #include <QDebug>
 #include <QtGlobal>
 #include <QUuid>
+#include <QIODevice>
+#include <QtEndian>
 
 /*============================================================================
 ================================ BUuidPrivate ================================
@@ -60,7 +62,8 @@ void BUuidPrivate::init()
 /*============================== Public constructors =======================*/
 
 BUuid::BUuid(const QUuid &uuid) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     d_func()->muuid = uuid;
@@ -68,28 +71,32 @@ BUuid::BUuid(const QUuid &uuid) :
 
 BUuid::BUuid(uint l, ushort w1, ushort w2, uchar b1, uchar b2, uchar b3, uchar b4, uchar b5, uchar b6, uchar b7,
              uchar b8) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     d_func()->muuid = QUuid(l, w1, w2, b1, b2, b3, b4, b5, b6, b7, b8);
 }
 
 BUuid::BUuid(const QString &text) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     d_func()->muuid = QUuid(text);
 }
 
 BUuid::BUuid(const char *text) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     d_func()->muuid = QUuid(text);
 }
 
 BUuid::BUuid(const QByteArray &text) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     d_func()->muuid = QUuid(text);
@@ -97,7 +104,8 @@ BUuid::BUuid(const QByteArray &text) :
 
 #if defined(Q_OS_WIN)
 BUuid::BUuid(const GUID &guid) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     d_func()->muuid = QUuid(guid);
@@ -105,7 +113,8 @@ BUuid::BUuid(const GUID &guid) :
 #endif
 
 BUuid::BUuid(const BUuid &other) :
-    BBase(*new BUuidPrivate(this))
+    BBase(*new BUuidPrivate(this)), data1(d_func()->muuid.data1), data2(d_func()->muuid.data2),
+    data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
     *this = other;
@@ -254,15 +263,51 @@ bool BUuid::operator== (const GUID &guid) const
 
 QDataStream &operator<< (QDataStream &s, const BUuid &id)
 {
-    s << id.d_func()->muuid.toString();
+    QByteArray bytes;
+    if (s.byteOrder() == QDataStream::BigEndian) {
+        bytes = id.toRfc4122();
+    } else {
+        bytes = QByteArray(16, Qt::Uninitialized);
+        uchar *data = reinterpret_cast<uchar *>(bytes.data());
+        qToLittleEndian(id.data1, data);
+        data += sizeof(quint32);
+        qToLittleEndian(id.data2, data);
+        data += sizeof(quint16);
+        qToLittleEndian(id.data3, data);
+        data += sizeof(quint16);
+        for (int i = 0; i < 8; ++i) {
+            *(data) = id.data4[i];
+            data++;
+        }
+    }
+    if (s.writeRawData(bytes.data(), 16) != 16) {
+        s.setStatus(QDataStream::WriteFailed);
+    }
     return s;
 }
 
 QDataStream &operator>> (QDataStream &s, BUuid &id)
 {
-    QString string;
-    s >> string;
-    id.d_func()->muuid = QUuid(string);
+    QByteArray bytes(16, Qt::Uninitialized);
+    if (s.readRawData(bytes.data(), 16) != 16) {
+        s.setStatus(QDataStream::ReadPastEnd);
+        return s;
+    }
+    if (s.byteOrder() == QDataStream::BigEndian) {
+        id = BUuid::fromRfc4122(bytes);
+    } else {
+        const uchar *data = reinterpret_cast<const uchar *>(bytes.constData());
+        id.data1 = qFromLittleEndian<quint32>(data);
+        data += sizeof(quint32);
+        id.data2 = qFromLittleEndian<quint16>(data);
+        data += sizeof(quint16);
+        id.data3 = qFromLittleEndian<quint16>(data);
+        data += sizeof(quint16);
+        for (int i = 0; i < 8; ++i) {
+            id.data4[i] = *(data);
+            data++;
+        }
+    }
     return s;
 }
 
