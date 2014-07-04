@@ -42,7 +42,7 @@
 #include <QIODevice>
 #include <QTimer>
 #include <QMetaObject>
-#include <QUuid>
+#include <BUuid>
 #include <QVariant>
 #include <QVariantMap>
 
@@ -50,7 +50,7 @@
 
 static QString defaultGeneratePasswordFunction(int len)
 {
-    return QUuid::createUuid().toString().remove('{').remove('-').remove('}').left(len);
+    return BUuid::createUuid().toString().remove('{').remove('-').remove('}').left(len);
 }
 
 /*============================================================================

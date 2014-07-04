@@ -45,7 +45,7 @@ class QByteArray;
 #include <QQueue>
 #include <QPair>
 #include <QMap>
-#include <QUuid>
+#include <BUuid>
 
 /*============================================================================
 ================================ BNetworkConnectionPrivate ===================
@@ -86,7 +86,7 @@ public Q_SLOTS:
     void operationCanceled();
     void operationDestroyed(QObject *obj);
 public:
-    const QUuid UniqueId;
+    const BUuid UniqueId;
     BNetworkServer *const Server;
 public:
     QPointer<BGenericSocket> socket;

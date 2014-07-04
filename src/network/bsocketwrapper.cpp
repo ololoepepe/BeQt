@@ -24,6 +24,7 @@
 #include "bsocketwrapper_p.h"
 
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BUuid>
 
 #include <QDataStream>
 #include <QObject>
@@ -32,7 +33,6 @@
 #include <QByteArray>
 #include <QIODevice>
 #include <QThread>
-#include <QUuid>
 #include <QMetaObject>
 #include <QVariant>
 #include <QMetaObject>
@@ -189,7 +189,7 @@ void BSocketWrapperPrivate::readyRead()
         in >> meta;
         if (meta)
         {
-            QUuid id;
+            BUuid id;
             bool req;
             QString op;
             in >> id;
@@ -204,8 +204,8 @@ void BSocketWrapperPrivate::readyRead()
         {
             QByteArray ba;
             in >> ba;
-            QMetaObject::invokeMethod( q, "dataReceived", Q_ARG( QByteArray, qUncompress(ba) ),
-                                       Q_ARG(BNetworkOperationMetaData, metaIn) );
+            QMetaObject::invokeMethod(q, "dataReceived", Q_ARG( QByteArray, qUncompress(ba)),
+                                      Q_ARG(BNetworkOperationMetaData, metaIn));
             resetIn();
         }
     }

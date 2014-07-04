@@ -39,7 +39,6 @@
 #include <QtConcurrentRun>
 #include <QTimer>
 #include <QDir>
-#include <QUuid>
 #include <QtGlobal>
 #include <QRegExp>
 #include <QList>

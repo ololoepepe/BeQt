@@ -29,6 +29,7 @@
 #include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BLogger>
 #include <BeQtCore/BTerminal>
+#include <BeQtCore/BUuid>
 
 #include <QObject>
 #include <QDataStream>
@@ -47,7 +48,7 @@
 /*============================== Public constructors =======================*/
 
 BNetworkConnectionPrivate::BNetworkConnectionPrivate(BNetworkConnection *q, BNetworkServer *server) :
-    BBaseObjectPrivate(q), UniqueId( QUuid::createUuid() ), Server(server)
+    BBaseObjectPrivate(q), UniqueId(BUuid::createUuid()), Server(server)
 {
     //
 }
@@ -120,7 +121,7 @@ BNetworkOperation *BNetworkConnectionPrivate::sendRequest(const QString &op, int
         compressionLevel = 9;
     Data dat;
     dat.data = data;
-    dat.metaData.setId(QUuid::createUuid());
+    dat.metaData.setId(BUuid::createUuid());
     dat.metaData.setIsRequest(true);
     dat.metaData.setOperation(op);
     BNetworkOperation *nop = createOperation(dat.metaData);
@@ -573,7 +574,7 @@ bool BNetworkConnection::isConnected() const
     return isValid() && d_func()->socket->state() == QAbstractSocket::ConnectedState;
 }
 
-const QUuid BNetworkConnection::uniqueId() const
+const BUuid BNetworkConnection::uniqueId() const
 {
     return d_func()->UniqueId;
 }

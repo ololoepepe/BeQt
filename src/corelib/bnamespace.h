@@ -22,7 +22,8 @@
 #ifndef BNAMESPACE_H
 #define BNAMESPACE_H
 
-class QUuid;
+class BUuid;
+
 class QProcess;
 class QTextCodec;
 class QObject;
@@ -107,10 +108,10 @@ B_CORE_EXPORT void waitNonBlocking(const QObject *sender1, const char *signal1, 
 B_CORE_EXPORT void waitNonBlocking(const QList<Until> &list, int msecs = -1);
 B_CORE_EXPORT Until until(const QObject *object, const char *signal);
 B_CORE_EXPORT Target target(const QObject *object, const char *method);
-B_CORE_EXPORT QString pureUuidText(const QUuid &uuid);
+B_CORE_EXPORT QString pureUuidText(const BUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
 B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
-B_CORE_EXPORT QUuid uuidFromText(const QString &uuidText);
+B_CORE_EXPORT BUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT QVariant deserialize(const QByteArray &data, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments = QStringList());

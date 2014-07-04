@@ -22,10 +22,10 @@
 #include "bnamespace.h"
 #include "bdirtools.h"
 #include "btexttools.h"
+#include "buuid.h"
 
 #include <QEventLoop>
 #include <QTimer>
-#include <QUuid>
 #include <QString>
 #include <QProcess>
 #include <QStringList>
@@ -323,7 +323,7 @@ Target target(const QObject *object, const char *method)
     return p;
 }
 
-QString pureUuidText(const QUuid &uuid)
+QString pureUuidText(const BUuid &uuid)
 {
     QString t = uuid.toString();
     return t.mid(1, t.length() - 2);
@@ -331,7 +331,7 @@ QString pureUuidText(const QUuid &uuid)
 
 QString pureUuidText(const QString &uuidText)
 {
-    return pureUuidText(QUuid(canonicalUuidText(uuidText)));
+    return pureUuidText(BUuid(canonicalUuidText(uuidText)));
 }
 
 QString canonicalUuidText(const QString &uuidText)
@@ -339,12 +339,12 @@ QString canonicalUuidText(const QString &uuidText)
     if (uuidText.isEmpty())
         return "";
     QString t = (uuidText.at(0) != '{' ? "{" : "") + uuidText + (uuidText.at(uuidText.length() - 1) != '}' ? "}" : "");
-    return !QUuid(t).isNull() ? t : QString();
+    return !BUuid(t).isNull() ? t : QString();
 }
 
-QUuid uuidFromText(const QString &uuidText)
+BUuid uuidFromText(const QString &uuidText)
 {
-    return QUuid(canonicalUuidText(uuidText));
+    return BUuid(canonicalUuidText(uuidText));
 }
 
 QByteArray serialize(const QVariant &variant, QDataStream::Version version)

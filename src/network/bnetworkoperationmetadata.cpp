@@ -22,9 +22,9 @@
 #include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BUuid>
 
 #include <QString>
-#include <QUuid>
 
 /*============================================================================
 ================================ BNetworkOperationMetaDataPrivate ============
@@ -39,7 +39,7 @@ public:
 public:
     void init();
 public:
-    QUuid id;
+    BUuid id;
     bool request;
     QString operation;
 private:
@@ -89,7 +89,7 @@ BNetworkOperationMetaData::BNetworkOperationMetaData(const BNetworkOperationMeta
     *this = other;
 }
 
-BNetworkOperationMetaData::BNetworkOperationMetaData(const QUuid &id, bool request, const QString &operation) :
+BNetworkOperationMetaData::BNetworkOperationMetaData(const BUuid &id, bool request, const QString &operation) :
     BBase( *new BNetworkOperationMetaDataPrivate(this) )
 {
     d_func()->init();
@@ -113,7 +113,7 @@ void BNetworkOperationMetaData::setIsRequest(bool request)
     d_func()->request = request;
 }
 
-void BNetworkOperationMetaData::setId(const QUuid &id)
+void BNetworkOperationMetaData::setId(const BUuid &id)
 {
     d_func()->id = id;
 }
@@ -126,12 +126,12 @@ void BNetworkOperationMetaData::setOperation(const QString &operation)
 void BNetworkOperationMetaData::invalidate()
 {
     B_D(BNetworkOperationMetaData);
-    d->id = QUuid();
+    d->id = BUuid();
     d->request = true;
     d->operation.clear();
 }
 
-const QUuid BNetworkOperationMetaData::id() const
+const BUuid BNetworkOperationMetaData::id() const
 {
     return d_func()->id;
 }

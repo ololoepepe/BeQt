@@ -37,7 +37,6 @@
 #include <QByteArray>
 #include <QFileInfo>
 #include <QLocale>
-#include <QUuid>
 
 #include <QDebug>
 

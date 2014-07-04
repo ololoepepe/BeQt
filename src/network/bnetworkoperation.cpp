@@ -30,7 +30,6 @@
 
 #include <QObject>
 #include <QString>
-#include <QUuid>
 #include <QByteArray>
 #include <QTimer>
 #include <QVariant>

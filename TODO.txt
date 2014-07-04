@@ -34,7 +34,6 @@
 [done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
 
-* Use BUuid class instead of QUuid
 * Move some methods to separate namespaces
 
 [done] Remove BTranslateFunctor class
@@ -74,6 +73,7 @@
 [done] Implement terminal modes
 [done] Change BeQt::OSType enum values
 [done] Improve BUuid serialization
+[done] Use BUuid class instead of QUuid
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer
@@ -91,6 +91,7 @@
 [done] Overload BAboutDuialog::setAppVersion method
 [done] Add pointSize parameter to BApplication::createMonospaceFont
 [done] Add ability to set user About dialog for plugins
+* Improve BLineNumberWidget: add virtual functions
 
 [done] Move setBlockComment method from BCodeEdit to BTextBlockUserData
 [done] Add BAbstractCodeEditorDocument::clear method
@@ -104,6 +105,5 @@
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
 * Add public function for handling events to BAbstractCodeEditorDocument
 * Add methods to navigate through BAbstractCodeEditorDocument
-* Improve BLineNumberWidget: add virtual functions
 * Implement autocompletion
 * Implement Katepart-compatible file type definition using XML files

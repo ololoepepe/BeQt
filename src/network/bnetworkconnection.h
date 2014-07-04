@@ -25,9 +25,9 @@
 class BNetworkConnectionPrivate;
 class BNetworkOperation;
 class BNetworkServer;
+class BUuid;
 
 class QString;
-class QUuid;
 class QByteArray;
 class QVariant;
 
@@ -101,7 +101,7 @@ public:
     void installRequestHandler(StandardOperation op, ExternalHandler handler);
     bool isValid() const;
     bool isConnected() const;
-    const QUuid uniqueId() const;
+    const BUuid uniqueId() const;
     BNetworkServer *server() const;
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
