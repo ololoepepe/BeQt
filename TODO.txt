@@ -36,6 +36,8 @@
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
+[done] Remove BCoreApplication saveSettings and loadSettings methods
+[done] Remove BDirTools createUserLocation and createUserLocations functions
 [done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
 [done] Rename PluginInfoStatic into StaticPluginInfo
 [done] Rename BTerminalIOHandler into BTerminal
@@ -51,20 +53,20 @@
 [done] Rename BTerminalIOHandler::terminalRowCount method into rowCount
 [done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
 [done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
+[done] Reimplement resource lookup system
+[done] Use UNIX resouce structure for all types of applications
+[done] Improve plugin loading system
 [done] Add BApplicationBase class
 [done] Add working directory argument to BeQt::startProcessDetached function
 [done] Add InitialSettings class to BApplicationBase
 [done] Add alternative base class pair with non-QObject private base
 [done] Add BVersion::clear method
 [done] Add version information to BPluginInterface
-[done] Add BAbstractLocationProvider, BAbstractMultiLocationProvider and BLocationProvider classes
-* Add ability to add extra locations and to restrict locations
+[done] Add BAbstractLocationProvider and BLocationProvider classes
+[done] Add ability to add extra locations
 * Make BTerminalIOHandler a singleton
 * Fix BeQt::OSType enum values
 * Make BPersonInfo and BPersonInfoList serializable
-* Reimplement BCoreApplication and resource lookup system
-* Use UNIX resouce structure for all types of applications
-* Improve plugin loading system
 * Improve ChangeLog files displaying
 * Add PDCurses binding
 * Add serialization of data classes
@@ -87,7 +89,6 @@
 * Implement native settings dialogs
 * Improve BLineNumberWidget: add virtual functions
 * Show plugin Help
-* Add BGuiPluginWrapper class
 * Add ability to set user About dialog for plugins
 
 [done] Move setBlockComment method from BCodeEdit to BTextBlockUserData

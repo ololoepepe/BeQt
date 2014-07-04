@@ -36,9 +36,9 @@ int main(int argc, char **argv)
     BCoreApplication::InitialSettings settings;
     settings.applicationName = "Console app";
     settings.organizationName = "Andrey Bogdanov";
-    settings.organizationDomain = QUrl::fromUserInput("https://github.com/the-dark-angel");
-    settings.applicationVersion = BVersion::fromString("0.1.0");
     BCoreApplication app(argc, argv, settings);
+    BCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
+    BCoreApplication::setApplicationVersion("0.1.0");
     Q_UNUSED(app)
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);

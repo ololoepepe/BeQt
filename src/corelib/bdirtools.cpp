@@ -402,34 +402,26 @@ bool appendTextFile(const QString &fileName, const QString &text, const QString 
 
 QString findResource(const QString &subpath, ResourceLookupMode mode)
 {
-    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
-        return "";
     QStringList sl;
     switch (mode)
     {
     case GlobalOnly:
     {
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
-#if defined(Q_OS_MAC)
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
-#endif
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResources);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResource);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResource);
         break;
     }
     case UserOnly:
     {
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResources);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResource);
         break;
     }
     case AllResources:
     default:
     {
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResources);
-#if defined(Q_OS_MAC)
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BundleResources);
-#endif
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResources);
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResources);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResource);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResource);
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResource);
         break;
     }
     }
@@ -438,36 +430,13 @@ QString findResource(const QString &subpath, ResourceLookupMode mode)
 
 QString findResource(const QString &subpath, const QStringList &locations)
 {
-    if ( subpath.isEmpty() || locations.isEmpty() )
-        return "";
-    foreach (const QString &loc, locations)
-        if ( !loc.isEmpty() && QFileInfo(loc + "/" + subpath).exists() )
+    if (subpath.isEmpty() || locations.isEmpty())
+        return QString();
+    foreach (const QString &loc, locations) {
+        if (!loc.isEmpty() && QFileInfo(loc + "/" + subpath).exists())
             return loc + "/" + subpath;
-    return "";
-}
-
-bool createUserLocation(BCoreApplication::Location loc)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
-        return false;
-    return mkpath( BCoreApplicationPrivate::instance()->getUserPrefix() + "/" + BCoreApplicationPrivate::subdir(loc) );
-}
-
-bool createUserLocation(const QString &subdir)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
-        return false;
-    return mkpath(BCoreApplicationPrivate::instance()->getUserPrefix() + "/" + subdir);
-}
-
-bool createUserLocations(const QStringList &subdirs)
-{
-    if ( !BCoreApplicationPrivate::testCoreInit("BDirTools") )
-        return false;
-    foreach (const QString &subdir, subdirs)
-        if ( !createUserLocation(subdir) )
-            return false;
-    return true;
+    }
+    return QString();
 }
 
 }

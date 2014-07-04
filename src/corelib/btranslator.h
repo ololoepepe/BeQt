@@ -53,11 +53,14 @@ protected:
 public:
     void setFileName(const QString &fileName);
     void setLocale(const QLocale &locale);
+    void install();
+    void remove();
     bool load(const QString &fileName = QString());
     bool load(const QLocale &locale, const QString &fileName = QString());
     void unload();
     bool isValid() const;
     bool isLoaded() const;
+    bool isInstalled() const;
     QString fileName() const;
     QLocale locale() const;
     QList<QLocale> availableLocales() const;
@@ -65,7 +68,6 @@ public:
     QString translate(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) const;
 private:
     Q_DISABLE_COPY(BTranslator)
-    friend class BCoreApplicationPrivate;
     friend class BApplicationBasePrivate;
 };
 

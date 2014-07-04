@@ -138,7 +138,7 @@ void BApplicationPrivate::retranslateStandardAction(QAction *act)
 
 QString BApplicationPrivate::findImage(const QString &subdir, const QString &name, const QStringList &preferredFormats)
 {
-    if ( !testCoreInit("BApplication") )
+    if (!testInit("BApplication"))
         return "";
     if ( subdir.isEmpty() || name.isEmpty() )
         return "";
@@ -209,16 +209,6 @@ void BApplicationPrivate::emitPluginAboutToBeDeactivated(BPluginWrapper *pluginW
 void BApplicationPrivate::emitLanguageChanged()
 {
     QMetaObject::invokeMethod(q_func(), "languageChanged");
-}
-
-void BApplicationPrivate::emitSettingsLoaded(QSettings *s)
-{
-    QMetaObject::invokeMethod(q_func(), "settingsLoaded", Q_ARG(QSettings *, s));
-}
-
-void BApplicationPrivate::emitSettingsSaved(QSettings *s)
-{
-    QMetaObject::invokeMethod(q_func(), "settingsSaved", Q_ARG(QSettings *, s));
 }
 
 void BApplicationPrivate::initAboutDlg()
@@ -316,8 +306,8 @@ void BApplicationPrivate::actionDestroyed(QObject *act)
 
 /*============================== Public constructors =======================*/
 
-BApplication::BApplication(int &argc, char **argv, const QString &applicationName) :
-    QApplication(argc, argv), BApplicationBase(*new BApplicationPrivate(this), applicationName)
+BApplication::BApplication(int &argc, char **argv, const QString &applicationName, const QString &organizationName) :
+    QApplication(argc, argv), BApplicationBase(*new BApplicationPrivate(this), applicationName, organizationName)
 {
     d_func()->init();
 }
@@ -335,8 +325,9 @@ BApplication::~BApplication()
 
 /*============================== Protected constructors ====================*/
 
-BApplication::BApplication(BApplicationPrivate &d, int &argc, char **argv, const QString &applicationName) :
-    QApplication(argc, argv), BApplicationBase(d, applicationName)
+BApplication::BApplication(BApplicationPrivate &d, int &argc, char **argv, const QString &applicationName,
+                           const QString &organizationName) :
+    QApplication(argc, argv), BApplicationBase(d, applicationName, organizationName)
 {
     d_func()->init();
 }
@@ -351,7 +342,7 @@ BApplication::BApplication(BApplicationPrivate &d, int &argc, char **argv, const
 
 QIcon BApplication::icon(const QString &name, const QIcon &fallback)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return QIcon();
     B_DS(BApplication);
     if ( ds->iconCaching && ds->iconCache.contains(name) )
@@ -372,7 +363,7 @@ QIcon BApplication::icon(const QString &name, const QIcon &fallback)
 
 QIcon BApplication::beqtIcon(const QString &name)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return QIcon();
     B_DS(BApplication);
     QString suff = "svgz";
@@ -393,7 +384,7 @@ QIcon BApplication::beqtIcon(const QString &name)
 
 QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return QPixmap();
     QString fn = BApplicationPrivate::findImage("beqt/pixmaps", name);
     if ( name.isEmpty() )
@@ -404,49 +395,49 @@ QPixmap BApplication::beqtPixmap(const QString &name, const QSize &scale)
 
 void BApplication::setIconCachingEnabled(bool enabled)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     ds_func()->iconCaching = enabled;
 }
 
 void BApplication::clearIconCache()
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     ds_func()->iconCache.clear();
 }
 
 void BApplication::setThemedIconsEnabled(bool enabled)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     ds_func()->themedIcons = enabled;
 }
 
 bool BApplication::themedIconsEnabled()
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return false;
     return ds_func()->themedIcons;
 }
 
 void BApplication::setPreferredIconFormats(const QStringList &suffixes)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     ds_func()->preferredIconFormats = suffixes;
 }
 
 QStringList BApplication::preferredIconFormats()
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return QStringList();
     return ds_func()->preferredIconFormats;
 }
 
 BAboutDialog *BApplication::aboutDialogInstance()
 {
-    if ( !BApplicationPrivate::testCoreInit("BApplication") )
+    if ( !BApplicationPrivate::testInit("BApplication") )
         return 0;
     if ( ds_func()->aboutDlg.isNull() )
         ds_func()->initAboutDlg();
@@ -455,21 +446,21 @@ BAboutDialog *BApplication::aboutDialogInstance()
 
 void BApplication::setSettingsTabDefaultNavigation(SettingsTabNavigation navigation)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     ds_func()->navigation = navigation;
 }
 
 void BApplication::setHelpIndex(const QString &index)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     ds_func()->helpIndex = index;
 }
 
 QAction *BApplication::createStandardAction(StandardAction type, QObject *parent)
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return 0;
     QAction *act = 0;
     switch (type)
@@ -531,7 +522,7 @@ void BApplication::setHelpBrowserDefaultGeometry(const QRect &geometry)
 
 QSystemTrayIcon *BApplication::trayIcon()
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return 0;
     if (!ds_func()->trayIcon)
     {
@@ -545,7 +536,7 @@ QSystemTrayIcon *BApplication::trayIcon()
 
 void BApplication::showAboutDialog()
 {
-    if (!BApplicationBasePrivate::testCoreInit("BApplication"))
+    if (!BApplicationBasePrivate::testInit("BApplication"))
         return;
     d_func()->showAbout();
 }

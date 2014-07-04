@@ -47,7 +47,6 @@
 #include <QByteArray>
 #include <QToolButton>
 #include <QWidget>
-#include <QUrl>
 
 #include <QDebug>
 
@@ -57,9 +56,9 @@ int main(int argc, char **argv)
     BApplication::InitialSettings settings;
     settings.applicationName = "Simple Editor";
     settings.organizationName = "Andrey Bogdanov";
-    settings.organizationDomain = QUrl::fromUserInput("https://github.com/the-dark-angel");
-    settings.applicationVersion = BVersion::fromString("0.1.0");
     BApplication app(argc, argv, settings);
+    BCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
+    BCoreApplication::setApplicationVersion("0.1.0");
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);

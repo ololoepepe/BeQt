@@ -36,3 +36,15 @@ BAbstractLocationProvider::~BAbstractLocationProvider()
 {
     //
 }
+
+/*============================== Public methods ============================*/
+
+bool BAbstractLocationProvider::canCreateLocationPath(const QString &, BApplicationBase::ResourceType) const
+{
+    return false;
+}
+
+bool BAbstractLocationProvider::createLocationPath(const QString &, BApplicationBase::ResourceType)
+{
+    return false;
+}

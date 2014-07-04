@@ -41,8 +41,8 @@ class B_CORE_EXPORT BLocationProvider : public BAbstractLocationProvider, public
 {
     B_DECLARE_PRIVATE(BLocationProvider)
 public:
-    typedef QMap<BApplicationBase::ResourcesType, QStringList> PathsMap;
-    typedef QMap<QString, PathsMap> LocationMap;
+    typedef QMap<BApplicationBase::ResourceType, QString> PathMap;
+    typedef QMap<QString, PathMap> LocationMap;
 public:
     explicit BLocationProvider(const LocationMap &locations = LocationMap());
     BLocationProvider(const BLocationProvider &other);
@@ -50,15 +50,19 @@ public:
 protected:
     BLocationProvider(BLocationProviderPrivate &d);
 public:
-    void setLocations(const LocationMap &locations);
-    void addLocation(const QString &name, const PathsMap &paths);
-    void removeLocation(const QString &name);
-    void setLocationPaths(const QString &locationName, const PathsMap &paths);
-    void addLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type, const QStringList &paths);
-    void removeLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type);
-    void setLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type, const QStringList &paths);
     QStringList locationNames() const;
-    QStringList locationPaths(const QString &locationName, BApplicationBase::ResourcesType type) const;
+    QString locationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
+    void setLocations(const LocationMap &locations);
+    void addLocation(const QString &name, const PathMap &paths);
+    void removeLocation(const QString &name);
+    void setLocationPaths(const QString &locationName, const PathMap &paths);
+    void addLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
+    void removeLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
+    void setLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
+    void setAutoCreatePaths(bool enabled);
+    bool autoCreatePaths() const;
     bool isEmpty() const;
 public:
     BLocationProvider &operator=(const BLocationProvider &other);

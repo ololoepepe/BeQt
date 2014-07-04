@@ -47,7 +47,7 @@
 /*============================== Public constructors =======================*/
 
 BPluginWrapperPrivate::BPluginWrapperPrivate(BPluginWrapper *q) :
-    BBaseObjectPrivate(q)
+    BBasePrivate(q)
 {
     //
 }
@@ -74,16 +74,14 @@ bool BPluginWrapperPrivate::load()
     if (loaded)
         return true;
     createLoader();
-    if ( !loader->load() )
-    {
+    if (!loader->load()) {
         qDebug() << loader->errorString();
         deleteLoader();
         return false;
     }
     QObject *obj = loader->instance();
     BPluginInterface *iface = qobject_cast<BPluginInterface *>(obj);
-    if (!obj || !iface)
-    {
+    if (!obj || !iface) {
         deleteLoader();
         return false;
     }
@@ -91,8 +89,7 @@ bool BPluginWrapperPrivate::load()
     QString nm = iface->name();
     BVersion v = iface->version();
     if ((!acctptableTypes.isEmpty() && !acctptableTypes.contains(tp)) || (testFunction && !testFunction(obj))
-            || globalMap.contains(nm))
-    {
+            || globalMap.contains(nm)) {
         deleteLoader();
         return false;
     }
@@ -106,7 +103,8 @@ bool BPluginWrapperPrivate::load()
     info = interface->info();
     loaded = true;
     globalMap.insert( nm, q_func() );
-    initSettings();
+    //TODO
+    //settings = BApplicationBase::ds_func()->createSettingsInstance( interface->name() );
     return true;
 }
 
@@ -121,29 +119,19 @@ void BPluginWrapperPrivate::unload()
     interface = 0;
     loaded = false;
     globalMap.remove(name);
-    if ( !settings.isNull() )
-    {
-        disconnect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
-        settings->deleteLater();
-    }
+    delete settings;
 }
 
 bool BPluginWrapperPrivate::activate()
 {
     if (activated)
         return true;
-    if ( !loaded && !load() )
+    if (!loaded && !load())
         return false;
     interface->activate();
     activated = true;
     B_Q(BPluginWrapper);
     QMetaObject::invokeMethod(q, "activated");
-    if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
-    {
-        BApplicationBasePrivate *const dapp = BApplicationBase::binstance()->d_func();
-        if ( dapp->plugins.contains(q) )
-            dapp->pluginActivated(q);
-    }
     return true;
 }
 
@@ -153,19 +141,13 @@ void BPluginWrapperPrivate::deactivate()
         return;
     B_Q(BPluginWrapper);
     QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
-    if ( BCoreApplicationPrivate::testCoreInit("BPluginWrapper") )
-    {
-        BApplicationBasePrivate *const dapp = BApplicationBase::binstance()->d_func();
-        if ( dapp->plugins.contains(q) )
-            dapp->pluginAboutToBeDeactivated(q);
-    }
     interface->deactivate();
     activated = false;
 }
 
 void BPluginWrapperPrivate::createLoader()
 {
-    if ( !loader.isNull() )
+    if (!loader.isNull())
         return;
     loader = new QPluginLoader;
     loader->setFileName(fileName);
@@ -173,22 +155,11 @@ void BPluginWrapperPrivate::createLoader()
 
 void BPluginWrapperPrivate::deleteLoader()
 {
-    if ( loader.isNull() )
+    if (loader.isNull())
         return;
-    if ( loader->isLoaded() )
+    if (loader->isLoaded())
         loader->unload();
     loader->deleteLater();
-}
-
-/*============================== Public slots ==============================*/
-
-void BPluginWrapperPrivate::initSettings()
-{
-    if (!interface)
-        return;
-    settings = BApplicationBase::ds_func()->createSettingsInstance( interface->name() );
-    if ( !settings.isNull() )
-        connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
 }
 
 /*============================== Static public variables ===================*/
@@ -204,13 +175,13 @@ BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
 /*============================== Public constructors =======================*/
 
 BPluginWrapper::BPluginWrapper(QObject *parent) :
-    QObject(parent), BBaseObject( *new BPluginWrapperPrivate(this) )
+    QObject(parent), BBase( *new BPluginWrapperPrivate(this) )
 {
     d_func()->init();
 }
 
 BPluginWrapper::BPluginWrapper(const QString &fileName, QObject *parent) :
-    QObject(parent), BBaseObject( *new BPluginWrapperPrivate(this) )
+    QObject(parent), BBase(*new BPluginWrapperPrivate(this))
 {
     d_func()->init();
     setFileName(fileName);
@@ -224,7 +195,7 @@ BPluginWrapper::~BPluginWrapper()
 /*============================== Protected constructors ====================*/
 
 BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
-    QObject(parent), BBaseObject(d)
+    QObject(parent), BBase(d)
 {
     d_func()->init();
 }
@@ -241,7 +212,7 @@ void BPluginWrapper::setInterfaceTestFunction(InterfaceTestFunction function)
     BPluginWrapperPrivate::testFunction = function;
 }
 
-QStringList BPluginWrapper::acceptableFileTypes()
+QStringList BPluginWrapper::acceptableTypes()
 {
     return BPluginWrapperPrivate::acctptableTypes;
 }
@@ -260,22 +231,6 @@ BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
 
 /*============================== Public methods ============================*/
 
-void BPluginWrapper::setLoaded(bool b)
-{
-    if (b)
-        load();
-    else
-        unload();
-}
-
-void BPluginWrapper::setActivated(bool b)
-{
-    if (b)
-        activate();
-    else
-        deactivate();
-}
-
 void BPluginWrapper::setFileName(const QString &fn)
 {
     if ( isActivated() || isLoaded() )
@@ -288,6 +243,16 @@ void BPluginWrapper::setFileName(const QString &fn)
     d->name.clear();
     d->version.clear();
     d->info = BPluginInterface::PluginInfo();
+}
+
+void BPluginWrapper::install()
+{
+    BApplicationBase::installPlugin(this);
+}
+
+void BPluginWrapper::remove()
+{
+    BApplicationBase::removePlugin(this);
 }
 
 bool BPluginWrapper::isLoaded() const
@@ -370,4 +335,20 @@ bool BPluginWrapper::activate()
 void BPluginWrapper::deactivate()
 {
     d_func()->deactivate();
+}
+
+void BPluginWrapper::setLoaded(bool b)
+{
+    if (b)
+        load();
+    else
+        unload();
+}
+
+void BPluginWrapper::setActivated(bool b)
+{
+    if (b)
+        activate();
+    else
+        deactivate();
 }

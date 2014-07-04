@@ -47,13 +47,15 @@ class B_CORE_EXPORT BCoreApplication : public QCoreApplication, public BApplicat
     B_DECLARE_PRIVATE(BCoreApplication)
     B_DECLARE_PRIVATE_S(BCoreApplication)
 public:
-    explicit BCoreApplication(int &argc, char **argv, const QString &applicationName);
-    explicit BCoreApplication(int &argc, char **argv, const InitialSettings &s = InitialSettings());
+    explicit BCoreApplication(int &argc, char **argv, const QString &applicationName = QString(),
+                              const QString &organizationName = QString());
+    explicit BCoreApplication(int &argc, char **argv, const InitialSettings &s);
     ~BCoreApplication();
 protected:
-    explicit BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const QString &applicationName);
     explicit BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv,
-                              const InitialSettings &s = InitialSettings());
+                              const QString &applicationName = QString(),
+                              const QString &organizationName = QString());
+    explicit BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s);
 public:
     static BCoreApplication *binstance();
 Q_SIGNALS:

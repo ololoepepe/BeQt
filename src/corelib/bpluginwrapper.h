@@ -29,7 +29,7 @@ class QSettings;
 
 #include "bglobal.h"
 #include "bplugininterface.h"
-#include "bbaseobject.h"
+#include "bbase.h"
 #include "bversion.h"
 
 #include <QObject>
@@ -40,7 +40,7 @@ class QSettings;
 ================================ BPluginWrapper ==============================
 ============================================================================*/
 
-class B_CORE_EXPORT BPluginWrapper : public QObject, public BBaseObject
+class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginWrapper)
@@ -55,13 +55,13 @@ protected:
 public:
     static void setAcceptableTypes(const QStringList &list);
     static void setInterfaceTestFunction(InterfaceTestFunction function);
-    static QStringList acceptableFileTypes();
+    static QStringList acceptableTypes();
     static InterfaceTestFunction interfaceTestFunction();
     static BPluginWrapper *parentWrapper(const BPluginInterface *i);
 public:
-    void setLoaded(bool b);
-    void setActivated(bool b);
     void setFileName(const QString &fn);
+    void install();
+    void remove();
     bool isLoaded() const;
     bool isActivated() const;
     QString fileName() const;
@@ -79,12 +79,13 @@ public Q_SLOTS:
     void unload();
     bool activate();
     void deactivate();
+    void setLoaded(bool b);
+    void setActivated(bool b);
 Q_SIGNALS:
     void activated();
     void aboutToBeDeactivated();
 private:
     Q_DISABLE_COPY(BPluginWrapper)
-    friend class BCoreApplicationPrivate;
 };
 
 #endif // BPLUGINWRAPPER_H

@@ -32,7 +32,7 @@ class QWidget;
 #include "bpersoninfoprovider.h"
 #include "blogger.h"
 #include "bsignaldelayproxy.h"
-#include "bversion.h"
+#include "babstractlocationprovider.h"
 
 #include <QObject>
 #include <QString>
@@ -51,9 +51,191 @@ class QWidget;
 #include <QEvent>
 #include <QVariantMap>
 #include <QTextCodec>
-#include <QUrl>
 
 #include <QDebug>
+
+static QString toLowerNoSpaces(const QString &string)
+{
+    return string.toLower().replace(QRegExp("\\s"), "-");
+}
+
+static QString platformSpecificAppName(const QString &appName)
+{
+#if defined(Q_OS_UNIX)
+    return appName.toLower().replace(QRegExp("\\s"), "-");
+#endif
+    return appName;
+}
+
+static QString confFileName(const QString &path, const QString &appName)
+{
+    if (path.isEmpty() || appName.isEmpty())
+        return QString();
+    return path + "/settings/" + platformSpecificAppName(appName) + ".conf";
+}
+
+/*============================================================================
+================================ BInternalLocationProvider ===================
+============================================================================*/
+
+class BInternalLocationProvider : public BAbstractLocationProvider
+{
+public:
+    explicit BInternalLocationProvider(const QString &appName, const QString &orgName, bool portable);
+    ~BInternalLocationProvider();
+public:
+    QStringList locationNames() const;
+    QString locationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
+private:
+    static QStringList createNames();
+    static QString createAppName(const QString &appName);
+    static QString createOrgName(const QString &orgName);
+    static bool testPortable(BApplicationBase::Portability portability, const QString &appName);
+    static QString createUserPrefix(const QString &appName, const QString &orgName);
+    static QString createSharedPrefix();
+    static QString sharedPrefix(const QString &sharedPrefix, bool plugins = false);
+private:
+    const QStringList Names;
+    const QString AppName;
+    const QString OrgName;
+    const bool Portable;
+    const QString UserPrefix;
+    const QString SharedPrefix;
+};
+
+/*============================================================================
+================================ BInternalLocationProvider ===================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BInternalLocationProvider::BInternalLocationProvider(const QString &appName, const QString &orgName, bool portable) :
+    Names(createNames()), AppName(appName), OrgName(orgName), Portable(portable),
+    UserPrefix(createUserPrefix(AppName, OrgName)), SharedPrefix(createSharedPrefix())
+{
+
+}
+
+BInternalLocationProvider::~BInternalLocationProvider()
+{
+    //
+}
+
+/*============================== Public methods ============================*/
+
+QStringList BInternalLocationProvider::locationNames() const
+{
+    return Names;
+}
+
+QString BInternalLocationProvider::locationPath(const QString &locationName, BApplicationBase::ResourceType type) const
+{
+    if (locationName.isEmpty() || !Names.contains(locationName))
+        return QString();
+    bool plugins = ("plugins" == locationName);
+    QString prefix;
+    switch (type)
+    {
+    case BApplicationBase::UserResource:
+        prefix = Portable ? sharedPrefix(SharedPrefix, plugins) : UserPrefix;
+        break;
+    case BApplicationBase::SharedResource:
+        prefix = sharedPrefix(SharedPrefix, plugins);
+        break;
+    case BApplicationBase::BuiltinResource:
+        prefix = ":";
+        break;
+    default:
+        break;
+    }
+    if (prefix.isEmpty())
+        return QString();
+    if (plugins)
+        return prefix + "/lib/" + toLowerNoSpaces(AppName) + "/plugins";
+    else if ("data" == locationName)
+        return prefix;
+    else if ("documentation" == locationName)
+        return prefix + "/doc";
+    else if ("settings" == locationName)
+        return prefix + "/settings";
+    else if ("translations" == locationName)
+        return prefix + "/translations";
+    else if ("beqt" == locationName)
+        return prefix + "/beqt";
+    return QString();
+}
+
+bool BInternalLocationProvider::canCreateLocationPath(const QString &locationName,
+                                                      BApplicationBase::ResourceType type) const
+{
+    //TODO: For some locations there may not exist shared or user component
+    if (!Names.contains(locationName))
+        return false;
+    if (BApplicationBase::UserResource == type)
+        return true;
+#if defined(Q_OS_WIN)
+    if (BApplicationBase::SharedResource == type)
+        return true;
+#endif
+    return false;
+}
+
+bool BInternalLocationProvider::createLocationPath(const QString &locationName, BApplicationBase::ResourceType type)
+{
+    if (!canCreateLocationPath(locationName, type))
+        return false;
+    QString s = locationPath(locationName, type);
+    return !s.isEmpty() && BDirTools::mkpath(s);
+}
+
+/*============================== Static private methods ====================*/
+
+QStringList BInternalLocationProvider::createNames()
+{
+    QStringList names;
+    names << "data";
+    names << "documentation";
+    names << "plugins";
+    names << "settings";
+    names << "translations";
+    names << "beqt";
+    return names;
+}
+
+QString BInternalLocationProvider::createUserPrefix(const QString &appName, const QString &orgName)
+{
+    Q_UNUSED(orgName)
+    if (appName.isEmpty())
+        return QString();
+#if !defined (Q_OS_LINUX)
+    if (orgName.isEmpty())
+        return QString();
+#endif
+#if defined(Q_OS_MAC)
+    return QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
+#elif defined (Q_OS_LINUX)
+    return QDir::homePath() + "/." + platformSpecificAppName(appName);
+#elif defined(Q_OS_WIN)
+    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
+        return QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
+    else
+        return QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
+#endif
+}
+
+QString BInternalLocationProvider::createSharedPrefix()
+{
+    return QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../shared");
+}
+
+QString BInternalLocationProvider::sharedPrefix(const QString &sharedPrefix, bool plugins)
+{
+    if (sharedPrefix.isEmpty())
+        return QString();
+    return plugins ? QDir::cleanPath(sharedPrefix + "/..") : sharedPrefix;
+}
 
 /*============================================================================
 ================================ BApplicationBasePrivate =====================
@@ -62,12 +244,17 @@ class QWidget;
 /*============================== Static public constants ===================*/
 
 #if defined(Q_OS_MAC)
-const QStringList BApplicationBasePrivate::PluginSuffixes = QStringList("*.dylib");
+const QStringList BApplicationBasePrivate::PluginSuffixes = QStringList() << "*.dylib" << "*.so";
 #elif defined(Q_OS_LINUX)
 const QStringList BApplicationBasePrivate::PluginSuffixes = QStringList("*.so");
 #elif defined(Q_OS_WIN)
 const QStringList BApplicationBasePrivate::PluginSuffixes = QStringList("*.dll");
 #endif
+
+/*============================== Static private constants ==================*/
+
+const QString BApplicationBasePrivate::DefaultAppName = "BeQt-based Application";
+const QString BApplicationBasePrivate::DefaultOrgName = "BeQt";
 
 /*============================== Public constructors =======================*/
 
@@ -81,9 +268,9 @@ BApplicationBasePrivate::~BApplicationBasePrivate()
 {
     if (!qApp)
         qApp->removeEventFilter(this);
-    if (!settings.isNull())
-    {
-        disconnect(settings.data(), SIGNAL(destroyed()), this, SLOT(initSettings()));
+    foreach (BAbstractLocationProvider *p, locationProviders)
+        delete p;
+    if (!settings.isNull()) {
         settings->sync();
         delete settings;
     }
@@ -100,39 +287,14 @@ BApplicationBasePrivate *BApplicationBasePrivate::instance()
     return qs_func() ? qs_func()->ds_func() : 0;
 }
 
-QString BApplicationBasePrivate::toLowerNoSpaces(const QString &string)
-{
-    return string.toLower().replace(QRegExp("\\s"), "-");
-}
-
-QString BApplicationBasePrivate::subdir(BApplicationBase::Location loc)
-{
-    switch (loc)
-    {
-    case BApplicationBase::DocumentationPath:
-        return "doc";
-    case BApplicationBase::PluginsPath:
-        return "plugins";
-    case BApplicationBase::SettingsPath:
-        return "settings";
-    case BApplicationBase::TranslationsPath:
-        return "translations";
-    case BApplicationBase::BeqtPath:
-        return "beqt";
-    case BApplicationBase::DataPath:
-    default:
-        return "";
-    }
-}
-
-bool BApplicationBasePrivate::testCoreInit(const char *where)
+bool BApplicationBasePrivate::testInit(const char *where)
 {
     const char *w = where ? where : "BApplicationBase";
     B_QS(BApplicationBase);
     return bTest(qs, w, "There must be a BApplicationBase instance");
 }
 
-bool BApplicationBasePrivate::testCoreUnique()
+bool BApplicationBasePrivate::testUnique()
 {
     return bTest(!qs_func(), "BApplicationBase", "There must be only one instance of BApplicationBase");
 }
@@ -148,23 +310,34 @@ BApplicationBase::LocaleSupportInfo BApplicationBasePrivate::createLocaleSupport
 
 /*============================== Public methods ============================*/
 
-void BApplicationBasePrivate::init()
+void BApplicationBasePrivate::init(BApplicationBase::Portability portability)
 {
     destructorCalled = false;
 #if defined(BEQT_BUILTIN_RESOURCES)
     Q_INIT_RESOURCE(beqtcore);
     Q_INIT_RESOURCE(beqt_translations);
 #endif
-    bTest(QCoreApplication::instance(), "BApplicationBase", "Missing QCoreApplication instance");
-    initSettings();
+    appName = QCoreApplication::applicationName();
+    if (!bTest(!appName.isEmpty(), "BApplicationBase", "Application name not specified"))
+        appName = DefaultAppName;
+    orgName = QCoreApplication::organizationName();
+    if (!bTest(!orgName.isEmpty(), "BApplicationBase", "Organization name not specified"))
+        orgName = DefaultOrgName;
+    if (BApplicationBase::AutoDetect == portability) {
+        portable = QFileInfo(confFileName(QCoreApplication::applicationDirPath() + "/..", appName)).isFile();
+    } else {
+        portable = (BApplicationBase::Portable == portability);
+    }
+    internalLocationProvider = new BInternalLocationProvider(appName, orgName, portable);
+    locationProviders << internalLocationProvider;
+    QString fn = confFileName(location("settings", BApplicationBase::UserResource), appName);
+    settings = new QSettings(fn, QSettings::IniFormat);
+    settings->setIniCodec("UTF-8");
     QCoreApplication::instance()->installEventFilter(this);
     //infos
     QStringList locs;
-    locs << getSharedPrefix();
-#if defined(Q_OS_MAC)
-    locs << getBundlePrefix();
-#endif
-    locs << ":";
+    locs << location("data", BApplicationBase::SharedResource);
+    locs << location("data", BApplicationBase::BuiltinResource);
     locs.removeAll("");
     QString spref = "beqt/infos/";
     beqtAuthors = new BPersonInfoProvider(BDirTools::findResource(spref + "authors.beqt-info", locs), this);
@@ -189,246 +362,69 @@ bool BApplicationBasePrivate::eventFilter(QObject *o, QEvent *e)
     return true;
 }
 
-QString BApplicationBasePrivate::getAppName() const
+QString BApplicationBasePrivate::location(const QString &name, BApplicationBase::ResourceType type) const
 {
-    if ( !appName.isEmpty() )
-        return appName;
-    QString an = QCoreApplication::applicationName();
-    if ( !bTest(!an.isEmpty(), "BApplicationBase", "missing application name") )
-        return "";
-    appName = an;
-    return an;
-}
-
-QString BApplicationBasePrivate::getOrgName() const
-{
-    if ( !orgName.isEmpty() )
-        return orgName;
-    QString on = QCoreApplication::organizationName();
-    if ( !bTest(!on.isEmpty(), "BApplicationBase", "Missing organization name") )
-        return "";
-    orgName = on;
-    return on;
-}
-
-QString BApplicationBasePrivate::getAppPath() const
-{
-    if ( !appPath.isEmpty() )
-        return appPath;
-    QString ap = QCoreApplication::applicationDirPath().remove( QRegExp("/(b|B)(i|I)(n|N)$") );
-    if ( !bTest(QFileInfo(ap).isDir(), "BApplicationBasePrivate", "Unable to get application directory") )
-        return "";
-    appPath = ap;
-    return ap;
-}
-
-QString BApplicationBasePrivate::getUserPrefix() const
-{
-    getIsPortable();
-    if ( !userPrefix.isEmpty() )
-        return userPrefix;
-    QString an = getAppName();
-    if ( an.isEmpty() )
-        return "";
-#if defined(Q_OS_MAC)
-    QString on = getOrgName();
-    if ( on.isEmpty() )
-        return "";
-    userPrefix = QDir::homePath() + "/Library/Application Support/" + on + "/" + an;
-#elif defined (Q_OS_LINUX)
-    userPrefix = QDir::homePath() + "/." + toLowerNoSpaces(an);
-#elif defined(Q_OS_WIN)
-    QString on = getOrgName();
-    if ( on.isEmpty() )
-        return "";
-    if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
-        userPrefix = QDir::homePath() + "/Application Data/" + on + "/" + an;
-    else
-        userPrefix = QDir::homePath() + "/AppData/Roaming/" + on + "/" + an;
-#endif
-    return userPrefix;
-}
-
-QString BApplicationBasePrivate::getSharedPrefix(bool forPlugins) const
-{
-#if defined(Q_OS_LINUX)
-    if (forPlugins)
-        return getSharedPrefixPlugins();
-#endif
-    getIsPortable();
-    if (!sharedPrefix.isEmpty())
-        return sharedPrefix;
-#if defined(Q_OS_MAC)
-    QString an = getAppName();
-    QString on = getOrgName();
-    if (an.isEmpty() || on.isEmpty())
-        return "";
-    sharedPrefix = "/Library/Application Support/" + on + "/" + an;
-#elif defined (Q_OS_LINUX)
-    QString an = getAppName();
-    if (an.isEmpty())
-        return "";
-    sharedPrefix = "/usr/share/" + toLowerNoSpaces(an);
-#elif defined(Q_OS_WIN)
-    QString ap = getAppPath();
-    if (ap.isEmpty())
-        return "";
-    sharedPrefix = ap;
-#endif
-    return sharedPrefix;
-}
-
-#if defined(Q_OS_LINUX)
-QString BApplicationBasePrivate::getSharedPrefixPlugins() const
-{
-    getIsPortable();
-    if (!sharedPrefixPlugins.isEmpty())
-        return sharedPrefixPlugins;
-    QString an = getAppName();
-    if (an.isEmpty())
-        return "";
-    sharedPrefixPlugins = "/usr/lib/" + toLowerNoSpaces(an);
-    return sharedPrefixPlugins;
-}
-#endif
-
-#if defined(Q_OS_MAC)
-QString BApplicationBasePrivate::getBundlePrefix() const
-{
-    getIsPortable();
-    if ( !bundlePrefix.isEmpty() )
-        return bundlePrefix;
-    QString ap = getAppPath();
-    if ( ap.isEmpty() )
-        return "";
-    bundlePrefix = QDir(ap + "/../Resources").absolutePath();
-    return bundlePrefix;
-}
-#endif
-
-bool BApplicationBasePrivate::getIsPortable() const
-{
-    QString ap = getAppPath();
-    QString an = getAppName();
-    if ( ap.isEmpty() || an.isEmpty() )
-        return false;
-    bool b = QFileInfo(confFileName(ap, an)).isFile();
-    if (b)
-    {
-        userPrefix = ap;
-        sharedPrefix = ap;
-#if defined(Q_OS_LINUX)
-        sharedPrefixPlugins = ap;
-#endif
-    #if defined(Q_OS_MAC)
-        bundlePrefix = ap;
-    #endif
+    foreach (BAbstractLocationProvider *p, locationProviders) {
+        QString s = p->locationPath(name, type);
+        if (s.isEmpty())
+            continue;
+        if (QDir(s).exists())
+            return s;
+        return p->createLocationPath(name, type) ? s : QString();
     }
-    else
-    {
-        if (ap == userPrefix)
-            userPrefix.clear();
-        if (ap == sharedPrefix)
-            sharedPrefix.clear();
-#if defined(Q_OS_LINUX)
-        if (ap == sharedPrefixPlugins)
-            sharedPrefixPlugins.clear();
-#endif
-#if defined(Q_OS_MAC)
-        if (ap == bundlePrefix)
-            bundlePrefix.clear();
-#endif
-    }
-    return b;
+    return QString();
+}
+
+QStringList BApplicationBasePrivate::locations(const QString &name) const
+{
+    QStringList sl;
+    QString s = location(name, BApplicationBase::UserResource);
+    if (!s.isEmpty())
+        sl << s;
+    s = location(name, BApplicationBase::SharedResource);
+    if (!s.isEmpty())
+        sl << s;
+    s = location(name, BApplicationBase::BuiltinResource);
+    if (!s.isEmpty())
+        sl << s;
+    return sl;
 }
 
 QLocale BApplicationBasePrivate::getLocale() const
 {
-    return settings->value("BeQt/Core/locale", QLocale::system()).toLocale();
+    return !settings.isNull() ? settings->value("BeQt/Core/locale", QLocale::system()).toLocale() : QLocale::system();
 }
 
 void BApplicationBasePrivate::setLocale(const QLocale &l)
 {
     foreach (BTranslator *t, translators)
         t->setLocale(l);
-    settings->setValue("BeQt/Core/locale", l);
+    if (!settings.isNull())
+        settings->setValue("BeQt/Core/locale", l);
     languageChangeProxy->trigger();
 }
 
-QStringList BApplicationBasePrivate::getDeactivatedPlugins() const
+bool BApplicationBasePrivate::isPluginActivated(const QString &pluginName) const
 {
-    return settings->value("BeQt/Core/deactivated_plugins").toStringList();
+    if (pluginName.isEmpty())
+        return false;
+    if (settings.isNull())
+        return true;
+    return settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginName);
 }
 
-void BApplicationBasePrivate::setDeactivatedPlugins(const QStringList &list)
+void BApplicationBasePrivate::setPluginActivated(const QString &pluginName, bool activated)
 {
-    QStringList nlist = list;
-    nlist.removeAll("");
-    nlist.removeDuplicates();
-    settings->setValue("BeQt/Core/deactivated_plugins", nlist);
-}
-
-void BApplicationBasePrivate::addDeactivatedPlugin(const QString &pluginName)
-{
-    if ( pluginName.isEmpty() )
+    if (pluginName.isEmpty())
         return;
-    QStringList list = getDeactivatedPlugins();
-    if ( list.contains(pluginName) )
+    if (settings.isNull())
         return;
-    list << pluginName;
-    setDeactivatedPlugins(list);
-}
-
-QSettings *BApplicationBasePrivate::createSettingsInstance(const QString &fileName) const
-{
-    QSettings *s = new QSettings(confFileName(getUserPrefix(), fileName), QSettings::IniFormat);
-    s->setIniCodec("UTF-8");
-    return s;
-}
-
-QString BApplicationBasePrivate::confFileName(const QString &path, const QString &name) const
-{
-    if ( path.isEmpty() || name.isEmpty() )
-        return QString();
-    QString bfn = name;
-#if defined(Q_OS_UNIX)
-    bfn = toLowerNoSpaces(bfn);
-#endif
-    return path + "/settings/" + bfn + ".conf";
-}
-
-QString BApplicationBasePrivate::prefix(BApplicationBase::ResourcesType type, bool forPlugins) const
-{
-    switch (type)
-    {
-    case BApplicationBase::UserResources :
-        return getUserPrefix();
-    case BApplicationBase::SharedResources :
-        return getSharedPrefix(forPlugins);
-#if defined(Q_OS_MAC)
-    case BApplicationBase::BundleResources :
-        return getBundlePrefix();
-#endif
-    case BApplicationBase::BuiltinResources:
-        return ":";
-    default:
-        return "";
-    }
-}
-
-void BApplicationBasePrivate::pluginActivated(BPluginWrapper *pluginWrapper)
-{
-    QStringList list = getDeactivatedPlugins();
-    list.removeAll(pluginWrapper->name());
-    setDeactivatedPlugins(list);
-    emitPluginActivated(pluginWrapper);
-}
-
-void BApplicationBasePrivate::pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
-{
-    if (!destructorCalled)
-        addDeactivatedPlugin(pluginWrapper->name());
-    emitPluginAboutToBeDeactivated(pluginWrapper);
+    QStringList list = settings->value("BeQt/Core/deactivated_plugins").toStringList();
+    if (activated)
+        list.removeAll(pluginName);
+    else if (!list.contains(pluginName))
+        list << pluginName;
+    settings->setValue("BeQt/Core/deactivated_plugins", list);
 }
 
 void BApplicationBasePrivate::installTranslator(BTranslator *translator)
@@ -451,30 +447,32 @@ void BApplicationBasePrivate::removeTranslator(BTranslator *translator)
     languageChangeProxy->trigger();
 }
 
-void BApplicationBasePrivate::loadSettings()
+void BApplicationBasePrivate::installPlugin(BPluginWrapper *plugin)
 {
-    if ( settings.isNull() )
+    if (!plugin)
         return;
-    emitSettingsLoaded(settings.data());
+    if (plugins.contains(plugin))
+        return;
+    plugins.insert(plugin, plugin);
+    connect(plugin, SIGNAL(activated()), this, SLOT(pluginActivated()));
+    connect(plugin, SIGNAL(aboutToBeDeactivated()), this, SLOT(pluginAboutToBeDeactivated()));
+    connect(plugin, SIGNAL(destroyed(QObject*)), this, SLOT(pluginDestroyed(QObject*)));
 }
 
-void BApplicationBasePrivate::saveSettings()
+void BApplicationBasePrivate::removePlugin(QObject *plugin)
 {
-    if ( settings.isNull() )
+    if (!plugin)
         return;
-    emitSettingsSaved(settings.data());
-    if ( !settings.isNull() )
-        settings->sync();
+    if (!plugins.contains(plugin))
+        return;
+    disconnect(plugin, SIGNAL(activated()), this, SLOT(pluginActivated()));
+    disconnect(plugin, SIGNAL(aboutToBeDeactivated()), this, SLOT(pluginAboutToBeDeactivated()));
+    disconnect(plugin, SIGNAL(destroyed(QObject*)), this, SLOT(pluginDestroyed(QObject*)));
+    plugins.remove(plugin);
 }
 
 /*============================== Public slots ==============================*/
 
-void BApplicationBasePrivate::initSettings()
-{
-    settings = createSettingsInstance( getAppName() );
-    if ( !settings.isNull() )
-        connect( settings.data(), SIGNAL( destroyed() ), this, SLOT( initSettings() ) );
-}
 
 void BApplicationBasePrivate::sendLanguageChangeEvent()
 {
@@ -487,6 +485,33 @@ void BApplicationBasePrivate::sendLanguageChangeEvent()
 void BApplicationBasePrivate::languageChanged()
 {
     emitLanguageChanged();
+}
+
+void BApplicationBasePrivate::pluginActivated()
+{
+    BPluginWrapper *pw = qobject_cast<BPluginWrapper *>(sender());
+    if (!pw)
+        return;
+    if (!plugins.contains(pw))
+        return;
+    emitPluginActivated(pw);
+    setPluginActivated(pw->name(), true);
+}
+
+void BApplicationBasePrivate::pluginAboutToBeDeactivated()
+{
+    BPluginWrapper *pw = qobject_cast<BPluginWrapper *>(sender());
+    if (!pw)
+        return;
+    if (!plugins.contains(pw))
+        return;
+    emitPluginAboutToBeDeactivated(pw);
+    setPluginActivated(pw->name(), false);
+}
+
+void BApplicationBasePrivate::pluginDestroyed(QObject *obj)
+{
+    removePlugin(obj);
 }
 
 /*============================================================================
@@ -507,13 +532,16 @@ BApplicationBase::~BApplicationBase()
 
 /*============================== Protected constructors ====================*/
 
-BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName) :
+BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName,
+                                   const QString &organizationName) :
     BBaseObject(d)
 {
     if (!applicationName.isEmpty())
         QCoreApplication::setApplicationName(applicationName);
+    if (!organizationName.isEmpty())
+        QCoreApplication::setOrganizationName(organizationName);
     d_func()->init();
-    BApplicationBasePrivate::testCoreUnique();
+    BApplicationBasePrivate::testUnique();
     _m_self = this;
 }
 
@@ -524,12 +552,8 @@ BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const InitialSett
         QCoreApplication::setApplicationName(s.applicationName);
     if (!s.organizationName.isEmpty())
         QCoreApplication::setOrganizationName(s.organizationName);
-    if (s.organizationDomain.isValid())
-        QCoreApplication::setOrganizationDomain(s.organizationDomain.toString());
-    if (s.applicationVersion.isValid())
-        QCoreApplication::setApplicationVersion(s.applicationVersion.toString());
-    d_func()->init();
-    BApplicationBasePrivate::testCoreUnique();
+    d_func()->init(s.portability);
+    BApplicationBasePrivate::testUnique();
     _m_self = this;
 }
 
@@ -540,39 +564,90 @@ BApplicationBase *BApplicationBase::binstance()
     return _m_self;
 }
 
-QString BApplicationBase::location(Location loc, ResourcesType type)
+void BApplicationBase::installLocationProvider(BAbstractLocationProvider *p)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
-        return "";
-    QDir d(ds_func()->prefix(type, PluginsPath == loc) + "/" + BApplicationBasePrivate::subdir(loc));
-    return d.exists() ? d.absolutePath() : "";
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    if (!p)
+        return;
+    if (ds_func()->locationProviders.contains(p))
+        return;
+    ds_func()->locationProviders << p;
 }
 
-QString BApplicationBase::location(const QString &subdir, ResourcesType type)
+void BApplicationBase::installLocationProviders(const QList<BAbstractLocationProvider *> &list)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
-        return "";
+    foreach (BAbstractLocationProvider *p, list)
+        installLocationProvider(p);
+}
+
+void BApplicationBase::removeLocationProvider(BAbstractLocationProvider *p)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    if (!p)
+        return;
+    if (!ds_func()->locationProviders.contains(p))
+        return;
+    ds_func()->locationProviders.removeAll(p);
+}
+
+void BApplicationBase::removeLocationProviders(const QList<BAbstractLocationProvider *> &list)
+{
+    foreach (BAbstractLocationProvider *p, list)
+        removeLocationProvider(p);
+}
+
+QString BApplicationBase::location(Location loc, ResourceType type)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    QString name;
+    switch (loc)
+    {
+    case DataPath:
+        name = "data";
+        break;
+    case DocumentationPath:
+        name = "documentation";
+        break;
+    case PluginsPath:
+        name = "plugins";
+        break;
+    case SettingsPath:
+        name = "settings";
+        break;
+    case TranslationsPath:
+        name = "translations";
+        break;
+    case BeqtPath:
+        name = "beqt";
+        break;
+    default:
+        break;
+    }
+    if (name.isEmpty())
+        return QString();
+    return ds_func()->location(name, type);
+}
+
+QString BApplicationBase::location(const QString &subdir, ResourceType type)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
     if (subdir.isEmpty())
-        return "";
-    bool forPlugins = false;
-#if defined(Q_OS_LINUX)
-    forPlugins = !subdir.compare("plugins", Qt::CaseSensitive);
-#endif
-    QDir d(ds_func()->prefix(type, forPlugins) + "/" + subdir);
-    return d.exists() ? d.absolutePath() : "";
+        return QString();
+    return ds_func()->location(subdir, type);
 }
 
 QStringList BApplicationBase::locations(Location loc)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return QStringList();
     QStringList sl;
-    sl << location(loc, UserResources);
-    sl << location(loc, SharedResources);
-#if defined(Q_OS_MAC)
-    sl << location(loc, BundleResources);
-#endif
-    sl << location(loc, BuiltinResources);
+    sl << location(loc, UserResource);
+    sl << location(loc, SharedResource);
+    sl << location(loc, BuiltinResource);
     sl.removeAll("");
     sl.removeDuplicates();
     return sl;
@@ -580,15 +655,12 @@ QStringList BApplicationBase::locations(Location loc)
 
 QStringList BApplicationBase::locations(const QString &subdir)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return QStringList();
     QStringList sl;
-    sl << location(subdir, UserResources);
-    sl << location(subdir, SharedResources);
-#if defined(Q_OS_MAC)
-    sl << location(subdir, BundleResources);
-#endif
-    sl << location(subdir, BuiltinResources);
+    sl << location(subdir, UserResource);
+    sl << location(subdir, SharedResource);
+    sl << location(subdir, BuiltinResource);
     sl.removeAll("");
     sl.removeDuplicates();
     return sl;
@@ -596,75 +668,86 @@ QStringList BApplicationBase::locations(const QString &subdir)
 
 QSettings *BApplicationBase::settingsInstance()
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return 0;
     return ds_func()->settings.data();
 }
 
 bool BApplicationBase::isPortable()
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return false;
-    return ds_func()->getIsPortable();
+    return ds_func()->portable;
 }
 
-void BApplicationBase::registerPluginWrapper(BPluginWrapper *plugin)
+void BApplicationBase::installPlugin(BPluginWrapper *plugin)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return;
-    if (!plugin)
-        return;
-    B_DS(BApplicationBase);
-    if ( ds->plugins.contains(plugin) )
-        return;
-    ds->plugins << plugin;
+    ds_func()->installPlugin(plugin);
 }
 
-void BApplicationBase::unregisterPluginWrapper(BPluginWrapper *plugin)
+void BApplicationBase::removePlugin(BPluginWrapper *plugin)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return;
-    if (!plugin)
-        return;
-    ds_func()->plugins.removeAll(plugin);
+    ds_func()->removePlugin(plugin);
+}
+
+void BApplicationBase::loadPlugins()
+{
+    loadPlugins(BPluginWrapper::acceptableTypes(), BPluginWrapper::interfaceTestFunction());
+}
+
+void BApplicationBase::loadPlugins(const QStringList &acceptableTypes)
+{
+    loadPlugins(acceptableTypes, BPluginWrapper::interfaceTestFunction());
 }
 
 void BApplicationBase::loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
-    B_DS(BApplicationBase);
+    QStringList prevAcceptableTypes = BPluginWrapper::acceptableTypes();
+    InterfaceTestFunction prevFunction = BPluginWrapper::interfaceTestFunction();
     BPluginWrapper::setAcceptableTypes(acceptableTypes);
     BPluginWrapper::setInterfaceTestFunction(function);
-    //loading plugins
-    //TODO: No means to determine from which dir the plugin is loaded.
-    //Plugins from user dir should replace plugins from other dirs, even if they are already loaded
-    //For now it's only possible to reload ALL plugins, so ones located in user dir are loaded first
-    QStringList dirs = locations(PluginsPath);
-    foreach (QString dirName, dirs)
+    foreach (QString dir, locations(PluginsPath))
     {
-        QDir dir(dirName);
-        QStringList files = dir.entryList(BApplicationBasePrivate::PluginSuffixes, QDir::Files);
-        foreach (QString file, files)
+        foreach (QString file, BDirTools::entryList(dir, BApplicationBasePrivate::PluginSuffixes, QDir::Files))
         {
-            BPluginWrapper *pw = new BPluginWrapper(dir.absoluteFilePath(file));
+            BPluginWrapper *pw = new BPluginWrapper(file);
             if (!pw->load())
             {
                 pw->deleteLater();
                 continue;
             }
-            ds->plugins << pw;
-            if (ds->getDeactivatedPlugins().contains(pw->name()))
-                pw->unload();
-            else
+            installPlugin(pw);
+            if (ds_func()->isPluginActivated(pw->name()))
                 pw->activate();
+            else
+                pw->unload();
         }
+    }
+    BPluginWrapper::setAcceptableTypes(prevAcceptableTypes);
+    BPluginWrapper::setInterfaceTestFunction(prevFunction);
+}
+
+void BApplicationBase::unloadPlugins(bool remove)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    foreach (BPluginWrapper *pw, ds_func()->plugins) {
+        if (pw->isLoaded())
+            pw->unload();
+        if (remove)
+            ds_func()->removePlugin(pw);
     }
 }
 
 QList<BPluginWrapper *> BApplicationBase::pluginWrappers(const QString &type)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return QList<BPluginWrapper *>();
     QList<BPluginWrapper *> list;
     foreach (BPluginWrapper *pw, ds_func()->plugins)
@@ -675,14 +758,14 @@ QList<BPluginWrapper *> BApplicationBase::pluginWrappers(const QString &type)
 
 void BApplicationBase::installBeqtTranslator(BTranslator *translator)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->installTranslator(translator);
 }
 
 void BApplicationBase::installBeqtTranslator(const QString &id)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     if (id.isEmpty())
         return;
@@ -693,14 +776,14 @@ void BApplicationBase::installBeqtTranslator(const QString &id)
 
 void BApplicationBase::removeBeqtTranslator(BTranslator *translator)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->removeTranslator(translator);
 }
 
 void BApplicationBase::removeBeqtTranslator(const QString &id)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     if (id.isEmpty())
         return;
@@ -711,21 +794,21 @@ void BApplicationBase::removeBeqtTranslator(const QString &id)
 
 QList<BTranslator *> BApplicationBase::beqtTranslators()
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if ( !BApplicationBasePrivate::testInit() )
         return QList<BTranslator *>();
     return ds_func()->translators.values();
 }
 
 BTranslator *BApplicationBase::beqtTranslator(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return 0;
     return ds_func()->translators.value(fileName);
 }
 
 void BApplicationBase::setLocale(const QLocale &l)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     if (l == locale())
         return;
@@ -734,14 +817,14 @@ void BApplicationBase::setLocale(const QLocale &l)
 
 QLocale BApplicationBase::locale()
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return QLocale::system();
     return ds_func()->getLocale();
 }
 
 QList<BApplicationBase::LocaleSupportInfo> BApplicationBase::availableLocales(bool alwaysIncludeEnglish)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if ( !BApplicationBasePrivate::testInit() )
         return QList<BApplicationBase::LocaleSupportInfo>();
     B_DS(BApplicationBase);
     QList< QList<QLocale> > lll;
@@ -784,30 +867,16 @@ QList<BApplicationBase::LocaleSupportInfo> BApplicationBase::availableLocales(bo
     return list;
 }
 
-void BApplicationBase::loadSettings()
-{
-    if ( !BApplicationBasePrivate::testCoreInit() )
-        return;
-    ds_func()->loadSettings();
-}
-
-void BApplicationBase::saveSettings()
-{
-    if (!BApplicationBasePrivate::testCoreInit())
-        return;
-    ds_func()->saveSettings();
-}
-
 void BApplicationBase::setApplicationCopyrightPeriod(const QString &s)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appCopyrightYears = s;
 }
 
 void BApplicationBase::setApplicationDescription(const QString &s)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appDescription = s;
     ds_func()->appDescriptionFileName.clear();
@@ -815,7 +884,7 @@ void BApplicationBase::setApplicationDescription(const QString &s)
 
 void BApplicationBase::setApplicationDescriptionFile(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appDescriptionFileName = fileName;
     ds_func()->appDescription.clear();
@@ -823,7 +892,7 @@ void BApplicationBase::setApplicationDescriptionFile(const QString &fileName)
 
 void BApplicationBase::setApplicationChangeLog(const QString &s)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appChangeLog = s;
     ds_func()->appChangeLogFileName.clear();
@@ -831,7 +900,7 @@ void BApplicationBase::setApplicationChangeLog(const QString &s)
 
 void BApplicationBase::setApplicationChangeLogFile(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appChangeLogFileName = fileName;
     ds_func()->appChangeLog.clear();
@@ -839,7 +908,7 @@ void BApplicationBase::setApplicationChangeLogFile(const QString &fileName)
 
 void BApplicationBase::setApplicationLicense(const QString &s)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appLicense = s;
     ds_func()->appLicenseFileName.clear();
@@ -847,7 +916,7 @@ void BApplicationBase::setApplicationLicense(const QString &s)
 
 void BApplicationBase::setApplicationLicenseFile(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appLicenseFileName = fileName;
     ds_func()->appLicense.clear();
@@ -855,7 +924,7 @@ void BApplicationBase::setApplicationLicenseFile(const QString &fileName)
 
 void BApplicationBase::setApplicationAuthors(const BPersonInfoList &list)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appAuthorsList = list;
     ds_func()->appAuthors->setFileName("");
@@ -863,7 +932,7 @@ void BApplicationBase::setApplicationAuthors(const BPersonInfoList &list)
 
 void BApplicationBase::setApplicationAuthorsFile(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appAuthors->setFileName(fileName);
     ds_func()->appAuthorsList.clear();
@@ -871,7 +940,7 @@ void BApplicationBase::setApplicationAuthorsFile(const QString &fileName)
 
 void BApplicationBase::setApplicationTranslations(const BPersonInfoList &list)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appTranslationsList = list;
     ds_func()->appTranslations->setFileName("");
@@ -879,7 +948,7 @@ void BApplicationBase::setApplicationTranslations(const BPersonInfoList &list)
 
 void BApplicationBase::setApplicationTranslationsFile(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appTranslations->setFileName(fileName);
     ds_func()->appTranslationsList.clear();
@@ -887,7 +956,7 @@ void BApplicationBase::setApplicationTranslationsFile(const QString &fileName)
 
 void BApplicationBase::setApplicationThanksTo(const BPersonInfoList &list)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appThanksToList = list;
     ds_func()->appThanksTo->setFileName("");
@@ -895,7 +964,7 @@ void BApplicationBase::setApplicationThanksTo(const BPersonInfoList &list)
 
 void BApplicationBase::setApplicationThanksToFile(const QString &fileName)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     ds_func()->appThanksTo->setFileName(fileName);
     ds_func()->appThanksToList.clear();
@@ -903,7 +972,7 @@ void BApplicationBase::setApplicationThanksToFile(const QString &fileName)
 
 QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return "";
     QString fn;
     switch (type)
@@ -961,7 +1030,7 @@ QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
 
 QString BApplicationBase::beqtInfo(About type, const QLocale &loc)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return "";
     QString bfn;
     switch (type)
@@ -986,26 +1055,19 @@ QString BApplicationBase::beqtInfo(About type, const QLocale &loc)
     default:
         return "";
     }
-    QString dir = location(BeqtPath, SharedResources) + "/";
+    QString dir = location(BeqtPath, SharedResource) + "/";
     QString fn = BDirTools::localeBasedFileName(dir + bfn, loc);
     if (fn.isEmpty())
     {
-        dir = location(BeqtPath, BuiltinResources) + "/";
+        dir = location(BeqtPath, BuiltinResource) + "/";
         fn = BDirTools::localeBasedFileName(dir + bfn, loc);
     }
-#if defined(Q_OS_MAC)
-    if (fn.isEmpty())
-    {
-        dir = location(BeqtPath, BundleResources) + "/";
-        fn = BDirTools::localeBasedFileName(dir + bfn, loc);
-    }
-#endif
     return BDirTools::readTextFile(fn, "UTF-8");
 }
 
 void BApplicationBase::setLogger(BLogger *l)
 {
-    if (!BApplicationBasePrivate::testCoreInit())
+    if (!BApplicationBasePrivate::testInit())
         return;
     B_DS(BApplicationBase);
     if (ds->logger && (!ds->logger->parent() || ds->logger->parent() == ds_func()))
@@ -1017,14 +1079,14 @@ void BApplicationBase::setLogger(BLogger *l)
 
 BLogger *BApplicationBase::logger()
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if ( !BApplicationBasePrivate::testInit() )
         return 0;
     return ds_func()->logger;
 }
 
 void BApplicationBase::log(const QString &text, BLogger::Level lvl)
 {
-    if ( !BApplicationBasePrivate::testCoreInit() )
+    if (!BApplicationBasePrivate::testInit())
         return;
     B_DS(BApplicationBase);
     if (!ds->logger)

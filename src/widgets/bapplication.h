@@ -76,13 +76,14 @@ public:
         AboutAction
     };
 public:
-    explicit BApplication(int &argc, char **argv, const QString &applicationName);
-    explicit BApplication(int &argc, char **argv, const InitialSettings &s = InitialSettings());
+    explicit BApplication(int &argc, char **argv, const QString &applicationName = QString(),
+                          const QString &organizationName = QString());
+    explicit BApplication(int &argc, char **argv, const InitialSettings &s);
     ~BApplication();
 protected:
-    explicit BApplication(BApplicationPrivate &d, int &argc, char **argv, const QString &applicationName);
-    explicit BApplication(BApplicationPrivate &d, int &argc, char **argv,
-                          const InitialSettings &s = InitialSettings());
+    explicit BApplication(BApplicationPrivate &d, int &argc, char **argv, const QString &applicationName = QString(),
+                          const QString &organizationName = QString());
+    explicit BApplication(BApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s);
 public:
     static QIcon icon( const QString &name, const QIcon &fallback = QIcon() );
     static QIcon beqtIcon(const QString &name);

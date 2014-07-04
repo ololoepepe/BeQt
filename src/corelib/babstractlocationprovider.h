@@ -39,7 +39,9 @@ public:
     virtual ~BAbstractLocationProvider();
 public:
     virtual QStringList locationNames() const = 0;
-    virtual QStringList locationPaths(const QString &locationName, BApplicationBase::ResourcesType type) const = 0;
+    virtual QString locationPath(const QString &locationName, BApplicationBase::ResourceType type) const = 0;
+    virtual bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    virtual bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
 private:
     Q_DISABLE_COPY(BAbstractLocationProvider)
 };

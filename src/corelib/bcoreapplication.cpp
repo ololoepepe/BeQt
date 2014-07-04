@@ -74,24 +74,16 @@ void BCoreApplicationPrivate::emitLanguageChanged()
     QMetaObject::invokeMethod(q_func(), "languageChanged");
 }
 
-void BCoreApplicationPrivate::emitSettingsLoaded(QSettings *s)
-{
-    QMetaObject::invokeMethod(q_func(), "settingsLoaded", Q_ARG(QSettings *, s));
-}
-
-void BCoreApplicationPrivate::emitSettingsSaved(QSettings *s)
-{
-    QMetaObject::invokeMethod(q_func(), "settingsSaved", Q_ARG(QSettings *, s));
-}
-
 /*============================================================================
 ================================ BCoreApplication ============================
 ============================================================================*/
 
 /*============================== Public constructors =======================*/
 
-BCoreApplication::BCoreApplication(int &argc, char **argv, const QString &applicationName) :
-    QCoreApplication(argc, argv), BApplicationBase(*new BCoreApplicationPrivate(this), applicationName)
+BCoreApplication::BCoreApplication(int &argc, char **argv, const QString &applicationName,
+                                   const QString &organizationName) :
+    QCoreApplication(argc, argv),
+    BApplicationBase(*new BCoreApplicationPrivate(this), applicationName, organizationName)
 {
     d_func()->init();
 }
@@ -109,9 +101,9 @@ BCoreApplication::~BCoreApplication()
 
 /*============================== Protected constructors ====================*/
 
-BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv,
-                                   const QString &applicationName) :
-    QCoreApplication(argc, argv), BApplicationBase(d, applicationName)
+BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const QString &applicationName,
+                                   const QString &organizationName) :
+    QCoreApplication(argc, argv), BApplicationBase(d, applicationName, organizationName)
 {
     d_func()->init();
 }

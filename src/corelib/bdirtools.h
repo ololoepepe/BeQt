@@ -89,9 +89,6 @@ B_CORE_EXPORT bool appendTextFile(const QString &fileName, const QString &text, 
 B_CORE_EXPORT bool appendTextFile(const QString &fileName, const QString &text, const QString &codecName);
 B_CORE_EXPORT QString findResource(const QString &subpath, ResourceLookupMode mode = AllResources);
 B_CORE_EXPORT QString findResource(const QString &subpath, const QStringList &locations);
-B_CORE_EXPORT bool createUserLocation(BCoreApplication::Location loc);
-B_CORE_EXPORT bool createUserLocation(const QString &subdir);
-B_CORE_EXPORT bool createUserLocations(const QStringList &subdirs);
 
 }
 

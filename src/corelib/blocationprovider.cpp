@@ -23,6 +23,7 @@
 
 #include "bbase_p.h"
 #include "bapplicationbase.h"
+#include "bdirtools.h"
 
 #include <QMap>
 #include <QString>
@@ -42,6 +43,7 @@ public:
     void init();
 public:
     BLocationProvider::LocationMap locations;
+    bool autoCreate;
 private:
     Q_DISABLE_COPY(BLocationProviderPrivate)
 };
@@ -67,7 +69,7 @@ BLocationProviderPrivate::~BLocationProviderPrivate()
 
 void BLocationProviderPrivate::init()
 {
-    //
+    autoCreate = true;
 }
 
 /*============================================================================
@@ -104,12 +106,49 @@ BLocationProvider::BLocationProvider(BLocationProviderPrivate &d) :
 
 /*============================== Public methods ============================*/
 
+QStringList BLocationProvider::locationNames() const
+{
+    return d_func()->locations.keys();
+}
+
+QString BLocationProvider::locationPath(const QString &locationName, BApplicationBase::ResourceType type) const
+{
+    if (locationName.isEmpty())
+        return QString();
+    if (!d_func()->locations.contains(locationName))
+        return QString();
+    const PathMap &m = d_func()->locations[locationName];
+    if (!m.contains(type))
+        return QString();
+    return m.value(type);
+}
+
+bool BLocationProvider::canCreateLocationPath(const QString &, BApplicationBase::ResourceType) const
+{
+    return d_func()->autoCreate;
+}
+
+bool BLocationProvider::createLocationPath(const QString &locationName, BApplicationBase::ResourceType type)
+{
+    if (locationName.isEmpty())
+        return false;
+    if (!d_func()->autoCreate)
+        return false;
+    if (!d_func()->locations.contains(locationName))
+        return false;
+    const PathMap &m = d_func()->locations[locationName];
+    if (!m.contains(type))
+        return false;
+    const QString &s = m.value(type);
+    return !s.isEmpty() && BDirTools::mkpath(s);
+}
+
 void BLocationProvider::setLocations(const LocationMap &locations)
 {
     d_func()->locations = locations;
 }
 
-void BLocationProvider::addLocation(const QString &name, const PathsMap &paths)
+void BLocationProvider::addLocation(const QString &name, const PathMap &paths)
 {
     if (name.isEmpty())
         return;
@@ -125,27 +164,27 @@ void BLocationProvider::removeLocation(const QString &name)
     d_func()->locations.remove(name);
 }
 
-void BLocationProvider::setLocationPaths(const QString &locationName, const PathsMap &paths)
+void BLocationProvider::setLocationPaths(const QString &locationName, const PathMap &paths)
 {
     if (locationName.isEmpty())
         return;
     d_func()->locations[locationName] = paths;
 }
 
-void BLocationProvider::addLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type,
-                                         const QStringList &paths)
+void BLocationProvider::addLocationPath(const QString &locationName, BApplicationBase::ResourceType type,
+                                        const QString &path)
 {
     if (locationName.isEmpty())
         return;
     if (!d_func()->locations.contains(locationName))
         return;
-    PathsMap &m = d_func()->locations[locationName];
+    PathMap &m = d_func()->locations[locationName];
     if (m.contains(type))
         return;
-    m.insert(type, paths);
+    m.insert(type, path);
 }
 
-void BLocationProvider::removeLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type)
+void BLocationProvider::removeLocationPath(const QString &locationName, BApplicationBase::ResourceType type)
 {
     if (locationName.isEmpty())
         return;
@@ -154,14 +193,24 @@ void BLocationProvider::removeLocationPaths(const QString &locationName, BApplic
     d_func()->locations[locationName].remove(type);
 }
 
-void BLocationProvider::setLocationPaths(const QString &locationName, BApplicationBase::ResourcesType type,
-                                         const QStringList &paths)
+void BLocationProvider::setLocationPath(const QString &locationName, BApplicationBase::ResourceType type,
+                                        const QString &path)
 {
     if (locationName.isEmpty())
         return;
     if (!d_func()->locations.contains(locationName))
         return;
-    d_func()->locations[locationName][type] = paths;
+    d_func()->locations[locationName][type] = path;
+}
+
+void BLocationProvider::setAutoCreatePaths(bool enabled)
+{
+    d_func()->autoCreate = enabled;
+}
+
+bool BLocationProvider::autoCreatePaths() const
+{
+    return d_func()->autoCreate;
 }
 
 bool BLocationProvider::isEmpty() const
@@ -174,12 +223,13 @@ bool BLocationProvider::isEmpty() const
 BLocationProvider &BLocationProvider::operator=(const BLocationProvider &other)
 {
     d_func()->locations = other.d_func()->locations;
+    d_func()->autoCreate = other.d_func()->autoCreate;
     return *this;
 }
 
 bool BLocationProvider::operator==(const BLocationProvider &other) const
 {
-    return d_func()->locations == other.d_func()->locations;
+    return d_func()->autoCreate == other.d_func()->autoCreate && d_func()->locations == other.d_func()->locations;
 }
 
 bool BLocationProvider::operator!=(const BLocationProvider &other) const

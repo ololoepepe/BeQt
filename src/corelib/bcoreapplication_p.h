@@ -49,8 +49,6 @@ public:
     void emitPluginActivated(BPluginWrapper *pluginWrapper);
     void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void emitLanguageChanged();
-    void emitSettingsLoaded(QSettings *s);
-    void emitSettingsSaved(QSettings *s);
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
 };

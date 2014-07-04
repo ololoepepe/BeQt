@@ -29,7 +29,7 @@ class QPluginLoader;
 #include "bpluginwrapper.h"
 #include "bglobal.h"
 #include "bplugininterface.h"
-#include "bbaseobject_p.h"
+#include "bbase_p.h"
 #include "bversion.h"
 
 #include <QList>
@@ -43,9 +43,8 @@ class QPluginLoader;
 ================================ BPluginWrapperPrivate =======================
 ============================================================================*/
 
-class B_CORE_EXPORT BPluginWrapperPrivate : public BBaseObjectPrivate
+class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
-    Q_OBJECT
     B_DECLARE_PUBLIC(BPluginWrapper)
 public:
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
@@ -58,8 +57,6 @@ public:
     void deactivate();
     void createLoader();
     void deleteLoader();
-public Q_SLOTS:
-    void initSettings();
 public:
     static QMap<QString, BPluginWrapper *> globalMap;
     static QStringList acctptableTypes;
@@ -80,7 +77,6 @@ public:
     BPluginInterface::StaticPluginInfo staticInfo;
 private:
     Q_DISABLE_COPY(BPluginWrapperPrivate)
-    friend class BCoreApplicationPrivate;
 };
 
 #endif // BPLUGINWRAPPER_P_H

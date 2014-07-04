@@ -32,13 +32,11 @@ class BAbstractLocationProvider;
 
 class QLocale;
 class QSettings;
-class QTextCodec;
 
 #include "bglobal.h"
 #include "bbaseobject.h"
 #include "blogger.h"
 #include "bpersoninfo.h"
-#include "bversion.h"
 
 #include <QLocale>
 #include <QList>
@@ -46,7 +44,6 @@ class QTextCodec;
 #include <QStringList>
 #include <QVariantMap>
 #include <QCoreApplication>
-#include <QUrl>
 
 #if !defined(bSettings)
 #   define bSettings BApplicationBase::settingsInstance()
@@ -77,14 +74,11 @@ public:
         TranslationsPath,
         BeqtPath
     };
-    enum ResourcesType
+    enum ResourceType
     {
-        UserResources,
-        SharedResources,
-#if defined(Q_OS_MAC)
-        BundleResources,
-#endif
-        BuiltinResources
+        UserResource,
+        SharedResource,
+        BuiltinResource
     };
     enum About
     {
@@ -95,6 +89,12 @@ public:
         Authors,
         Translators,
         ThanksTo
+    };
+    enum Portability
+    {
+        AutoDetect,
+        Portable,
+        NotPortable
     };
 public:
     struct LocaleSupportInfo
@@ -107,27 +107,34 @@ public:
     {
         QString applicationName;
         QString organizationName;
-        QUrl organizationDomain;
-        BVersion applicationVersion;
+        Portability portability;
     };
 public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
 public:
     ~BApplicationBase() = 0;
 protected:
-    explicit BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName);
-    explicit BApplicationBase(BApplicationBasePrivate &d, const InitialSettings &s = InitialSettings());
+    explicit BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName = QString(),
+                              const QString &organizationName = QString());
+    explicit BApplicationBase(BApplicationBasePrivate &d, const InitialSettings &s);
 public:
     static BApplicationBase *binstance();
-    static QString location(Location loc, ResourcesType type);
-    static QString location(const QString &subdir, ResourcesType type);
+    static void installLocationProvider(BAbstractLocationProvider *p);
+    static void installLocationProviders(const QList<BAbstractLocationProvider *> &list);
+    static void removeLocationProvider(BAbstractLocationProvider *p);
+    static void removeLocationProviders(const QList<BAbstractLocationProvider *> &list);
+    static QString location(Location loc, ResourceType type);
+    static QString location(const QString &subdir, ResourceType type);
     static QStringList locations(Location loc);
     static QStringList locations(const QString &subdir);
     static QSettings *settingsInstance();
     static bool isPortable();
-    static void registerPluginWrapper(BPluginWrapper *plugin);
-    static void unregisterPluginWrapper(BPluginWrapper *plugin);
-    static void loadPlugins(const QStringList &acceptableTypes = QStringList(), InterfaceTestFunction function = 0);
+    static void installPlugin(BPluginWrapper *plugin);
+    static void removePlugin(BPluginWrapper *plugin);
+    static void loadPlugins();
+    static void loadPlugins(const QStringList &acceptableTypes);
+    static void loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function);
+    static void unloadPlugins(bool remove = false);
     static QList<BTranslator *> beqtTranslators();
     static BTranslator *beqtTranslator(const QString &fileName);
     static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
@@ -138,8 +145,6 @@ public:
     static void setLocale(const QLocale &l);
     static QLocale locale();
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
-    static void loadSettings();
-    static void saveSettings();
     static void setApplicationCopyrightPeriod(const QString &s);
     static void setApplicationDescription(const QString &s);
     static void setApplicationDescriptionFile(const QString &fileName);
@@ -162,9 +167,6 @@ protected:
     static BApplicationBase *_m_self;
 private:
     Q_DISABLE_COPY(BApplicationBase)
-    friend class BTranslatorPrivate;
-    friend class BPluginWrapperPrivate;
-    friend class BDirToolsPrivate;
 };
 
 #endif // BAPPLICATIONBASE_H

@@ -125,19 +125,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="579"/>
+        <location filename="../src/widgets/bapplication.cpp" line="570"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="581"/>
+        <location filename="../src/widgets/bapplication.cpp" line="572"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="582"/>
+        <location filename="../src/widgets/bapplication.cpp" line="573"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -146,8 +146,8 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="914"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="970"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="983"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1039"/>
         <source>Copyright</source>
         <translation type="unfinished">Авторские права</translation>
     </message>
