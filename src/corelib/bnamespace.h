@@ -76,11 +76,12 @@ enum FileSizeFormat
 
 enum OSType
 {
-    UnknownOS,
-    LinuxOS,
-    MacOS,
-    WindowsOS,
-    UnixOS
+    UnknownOS = 0x00,       //0 0 0 0 0 0 0 0
+    UnixOS = 0x01,          //0 0 0 0 0 0 0 1
+    WindowsOS = 0x02,       //0 0 0 0 0 0 1 0
+    LinuxOS = UnixOS | 0x04,//0 0 0 0 0 1 0 1
+    MacOS = UnixOS | 0x08   //0 0 0 0 1 0 0 1
+
 };
 
 typedef QPair<const QObject *, const char *> Until;

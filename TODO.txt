@@ -7,6 +7,11 @@
 * Sort includes, class members, etc.
 * Use Qt coding style
 * Add PDCurses binding
+* Make BPersonInfo and BPersonInfoList serializable
+* Add serialization of data classes
+* Use enum_cast wherever it makes sense
+* Implement native settings dialogs
+* Improve BTextTools::toHtml
 
 === PATCH ===
 
@@ -28,7 +33,6 @@
 [done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
 
-* Use enum_cast wherever it makes sense
 * Use BUuid class instead of QUuid
 * Move some methods to separate namespaces
 * Implement locking of global object instances
@@ -67,10 +71,8 @@
 [done] Add ability to add extra locations
 [done] Add ability to set multiple copyright owners
 [done] Implement terminal modes
-* Fix BeQt::OSType enum values
-* Make BPersonInfo and BPersonInfoList serializable
-* Improve ChangeLog files displaying
-* Add serialization of data classes
+[done] Fix BeQt::OSType enum values
+[done] Improve ChangeLog files displaying
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer
@@ -85,11 +87,9 @@
 [done] Add Help information to plugin BGuiPluginInterface
 [done] Overload BAboutDuialog::setAppVersion method
 [done] Add pointSize parameter to BApplication::createMonospaceFont
+[done] Add ability to set user About dialog for plugins
 * Improve BLocaleComboBox (implement custom mode)
-* Implement native settings dialogs
-* Improve BLineNumberWidget: add virtual functions
 * Show plugin Help
-* Add ability to set user About dialog for plugins
 
 [done] Move setBlockComment method from BCodeEdit to BTextBlockUserData
 [done] Add BAbstractCodeEditorDocument::clear method
@@ -103,5 +103,6 @@
 * Add overloaded moveCursor method to BAbstractCodeEditorDocument
 * Add public function for handling events to BAbstractCodeEditorDocument
 * Add methods to navigate through BAbstractCodeEditorDocument
+* Improve BLineNumberWidget: add virtual functions
 * Implement autocompletion
 * Implement Katepart-compatible file type definition using XML files

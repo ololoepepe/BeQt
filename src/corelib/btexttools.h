@@ -75,6 +75,7 @@ B_CORE_EXPORT QStringList removeAll(const QStringList &list, const QString &what
 B_CORE_EXPORT int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 B_CORE_EXPORT QStringList sortComprising(const QStringList &list, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 B_CORE_EXPORT void sortComprising(QStringList *list, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+B_CORE_EXPORT QString toHtml(const QString &text);
 B_CORE_EXPORT BTextMatchList match(const QString &text, const QRegExp &what, const QRegExp &prefixedBy = QRegExp(),
                                   const QRegExp &postfixedBy = QRegExp());
 B_CORE_EXPORT bool intersects(const QStringList &list1, const QStringList &list2,

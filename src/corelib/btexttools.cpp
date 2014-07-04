@@ -343,6 +343,27 @@ void sortComprising(QStringList *list, Qt::CaseSensitivity cs)
     *list += nlist;
 }
 
+QString toHtml(const QString &text)
+{
+    typedef QMap<QChar, QString> KeywordMap;
+    init_once(KeywordMap, keywords, KeywordMap()) {
+        keywords.insert('&', "&amp;");
+        keywords.insert('<', "&lt;");
+        keywords.insert('>', "&gt;");
+        keywords.insert(' ', "&nbsp;");
+        keywords.insert('\"', "&quot;");
+    }
+    if (text.isEmpty())
+        return text;
+    QString html = text;
+    foreach (int i, bRangeR(html.length() - 1, 0)) {
+        const QChar &c = html.at(i);
+        if (keywords.contains(c))
+            html.replace(i, 1, keywords.value(c));
+    }
+    return html;
+}
+
 BTextMatchList match(const QString &text, const QRegExp &what, const QRegExp &prefixedBy, const QRegExp &postfixedBy)
 {
     BTextMatchList list;

@@ -143,6 +143,14 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
 void BPluginsSettingsTabPrivate::btnAboutClicked()
 {
     BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
+    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
+    if (gpi) {
+        BAboutDialog *ad = gpi->createAboutDialog();
+        if (ad) {
+            ad->exec();
+            return;
+        }
+    }
     BAboutDialog ad(q_func(), pw->name(), pw->version());
     ad.setWindowTitle(pw->name());
     if (pw->prefereStaticInfo())
@@ -169,7 +177,8 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         ad.setTranslatorsFile(inf.translatorsFileName);
         ad.setThanksToFile(inf.thanksToFileName);
     }
-    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
+    if (gpi)
+        gpi->processStandardAboutDialog(&ad);
     QPixmap pm;
     if (gpi)
         pm = gpi->pixmap();

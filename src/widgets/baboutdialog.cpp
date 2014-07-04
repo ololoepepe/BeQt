@@ -34,6 +34,7 @@ class QWidget;
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BVersion>
+#include <BeQtCore/BTextTools>
 
 #include <QDialog>
 #include <QVBoxLayout>
@@ -72,8 +73,9 @@ const QString BAboutDialogPrivate::HtmlSpace = "&nbsp;";
 const QString BAboutDialogPrivate::HtmlSpaceDouble = BAboutDialogPrivate::HtmlSpace + BAboutDialogPrivate::HtmlSpace;
 const QString BAboutDialogPrivate::HtmlSpaceQuadruple =
         BAboutDialogPrivate::HtmlSpaceDouble + BAboutDialogPrivate::HtmlSpaceDouble;
-const QString BAboutDialogPrivate::HtmlLT = "&lt;";
-const QString BAboutDialogPrivate::HtmlGT = "&gt;";
+//const QString BAboutDialogPrivate::HtmlLt = "&lt;";
+//const QString BAboutDialogPrivate::HtmlGt = "&gt;";
+//const QString BAboutDialogPrivate::HtmlAmp = "&gt;";
 
 /*============================== Public constructors =======================*/
 
@@ -92,58 +94,36 @@ BAboutDialogPrivate::~BAboutDialogPrivate()
 
 QString BAboutDialogPrivate::processChangeLog(const QString &text)
 {
+    QString ntext = text;
+    ntext.remove('\r');
     QString s;
-    QStringList sl = text.split('\n');
-    for (int i = 0; i < sl.size(); ++i)
+    foreach (QString line, ntext.split('\n'))
     {
-        QString l = sl.at(i);
-        int len = l.length();
-        l.replace('<', HtmlLT);
-        l.replace('>', HtmlGT);
-        if (len > 1)
-        {
-            if (l.at(0) == '=' && l.at(len - 1) == '=')
-            {
-                l.prepend("<font color='dark red'>").append("</font>");
-            }
-            else
-            {
-                for (int j = 0; j < len; ++j)
-                {
-                    if (l.at(j) == '*')
-                    {
-                        l.insert(j + 1, "</font><font color=blue>");
-                        l.insert(j, "<font color='dark green'>");
-                        bool b = false;
-                        for (int k = j + 1; k < l.length(); ++k)
-                        {
-                            if (l.at(k) == ':' && k < l.length() - 1 && l.at(k + 1) != ':'
-                                    && k > 0 && l.at(k -1) != ':')
-                            {
-                                l.insert(k + 1, "</font>");
-                                b = true;
-                                break;
-                            }
-                        }
-                        if (!b)
-                            l.append("</font>");
-                        QString r;
-                        for (int k = 0; k < j; ++k)
-                            r += HtmlSpace;
-                        l.replace(0, j, r);
-                        break;
-                    }
-                    else if (l.at(j) != ' ' && l.at(j) != '\t')
-                    {
-                        break;
-                    }
-                }
-            }
+        if (QRegExp("^\\s*==.*$").exactMatch(line) || QRegExp("^\\s*=.*=\\s*$").exactMatch(line)) {
+            s += ("<font color=\"darkred\">" + BTextTools::toHtml(line) + "</font>");
         }
-        s += l;
-        if (i < sl.size() - 1)
-            s += "<br>";
+        else if (QRegExp("^\\s+\\*\\s+#\\d+:.*$").exactMatch(line)) {
+            line = BTextTools::toHtml(line);
+            int ind = line.indexOf(':');
+            line.insert(ind + 1, "</font>");
+            ind = line.indexOf('#');
+            line.insert(ind, "</font><font color=\"blue\">");
+            ind = line.indexOf('*');
+            line.insert(ind, "<font color=\"darkgreen\">");
+            s += line;
+        }
+        else if (QRegExp("^\\s+\\*.*$").exactMatch(line)) {
+            line = BTextTools::toHtml(line);
+            int ind = line.indexOf('*');
+            line.insert(ind + 1, "</font><font color=\"blue\">");
+            line.insert(ind, "<font color=\"darkgreen\">");
+            line.append("</font>");
+            s += line;
+        }
+        s += "<br>";
     }
+    if (!s.isEmpty())
+        s.remove(s.length() - 1, 4);
     return s;
 }
 
