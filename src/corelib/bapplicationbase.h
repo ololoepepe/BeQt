@@ -137,6 +137,8 @@ public:
     static QStringList locations(const QString &subdir);
     static QSettings *settingsInstance();
     static bool isPortable();
+    static void setDisabledPlugins(const QStringList &list);
+    static QStringList disabledPlugins();
     static void installPlugin(BPluginWrapper *plugin);
     static void removePlugin(BPluginWrapper *plugin);
     static void loadPlugins();

@@ -410,7 +410,7 @@ bool BApplicationBasePrivate::isPluginActivated(const QString &pluginName) const
         return false;
     if (settings.isNull())
         return true;
-    return settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginName);
+    return !settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginName);
 }
 
 void BApplicationBasePrivate::setPluginActivated(const QString &pluginName, bool activated)
@@ -677,6 +677,26 @@ bool BApplicationBase::isPortable()
     if (!BApplicationBasePrivate::testInit())
         return false;
     return ds_func()->portable;
+}
+
+void BApplicationBase::setDisabledPlugins(const QStringList &list)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    if (ds_func()->settings.isNull())
+        return;
+    QStringList nlist = bWithoutDuplicates(list);
+    nlist.removeAll("");
+    ds_func()->settings->setValue("BeQt/Core/deactivated_plugins", nlist);
+}
+
+QStringList BApplicationBase::disabledPlugins()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QStringList();
+    if (ds_func()->settings.isNull())
+        return QStringList();
+    return ds_func()->settings->value("BeQt/Core/deactivated_plugins").toStringList();
 }
 
 void BApplicationBase::installPlugin(BPluginWrapper *plugin)

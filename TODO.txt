@@ -71,9 +71,9 @@
 [done] Add ability to add extra locations
 [done] Add ability to set multiple copyright owners
 [done] Add BTextTools:toHtml function
+[done] Add BCoreApplication deactivatedPlugins and setDeactivatedPlugins methods
 [done] Implement terminal modes
 [done] Change BeQt::OSType enum values
-[done] Improve ChangeLog files displaying
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer
@@ -85,12 +85,12 @@
 [done] Rename BGuiPluginInterface settingsTab method into createSettingsTab
 [done] Merge similar GUI method pairs into templates
 [done] Fix BPluginsSettingsTab About dialog version
+[done] Improve ChangeLog files displaying
 [done] Add Help information to plugin BGuiPluginInterface
 [done] Show plugin Help
 [done] Overload BAboutDuialog::setAppVersion method
 [done] Add pointSize parameter to BApplication::createMonospaceFont
 [done] Add ability to set user About dialog for plugins
-* Improve BLocaleComboBox (implement custom mode)
 
 [done] Move setBlockComment method from BCodeEdit to BTextBlockUserData
 [done] Add BAbstractCodeEditorDocument::clear method
