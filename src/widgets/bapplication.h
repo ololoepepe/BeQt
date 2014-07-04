@@ -118,7 +118,6 @@ protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:
     Q_DISABLE_COPY(BApplication)
-    friend class BAboutDialogPrivate;
 };
 
 #endif // BAPPLICATION_H

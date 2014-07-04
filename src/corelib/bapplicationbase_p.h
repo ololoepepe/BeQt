@@ -107,6 +107,7 @@ public:
     BPersonInfoProvider *beqtTranslations;
     BPersonInfoProvider *beqtThanksTo;
     QString appCopyrightYears;
+    QList<BApplicationBase::CopyrightInfo> copyrightInfos;
     QString appDescription;
     QString appChangeLog;
     QString appLicense;

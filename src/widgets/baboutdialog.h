@@ -36,6 +36,7 @@ class QSize;
 #include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BVersion>
+#include <BeQtCore/BApplicationBase>
 
 #include <QDialog>
 #include <QList>
@@ -53,7 +54,7 @@ class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBaseObject
     B_DECLARE_PRIVATE(BAboutDialog)
 public:
     explicit BAboutDialog(QWidget *parent = 0);
-    explicit BAboutDialog( QWidget *parent, const QString &appName, const QString &appVersion = QString() );
+    explicit BAboutDialog(QWidget *parent, const QString &appName, const QString &appVersion = QString());
     ~BAboutDialog();
 protected:
     explicit BAboutDialog(BAboutDialogPrivate &d, QWidget *parent = 0);
@@ -65,7 +66,8 @@ public:
     void setAppVersion(const QString &version);
     void setAppVersion(const BVersion &version, BVersion::StatusRepresentation r = BVersion::ShortLowercase,
                        QChar versionSeparator = '.', QChar statusSeparator = '-');
-    void setOrganization( const QString &organization, const QString &copyrightPeriod = QString() );
+    void setOrganization(const QString &organization, const QString &copyrightPeriod = QString());
+    void setExtendedCopyrightInfo(const QList<BApplicationBase::CopyrightInfo> &list);
     void setWebsite(const QString &site);
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);

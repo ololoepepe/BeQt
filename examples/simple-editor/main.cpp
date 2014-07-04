@@ -32,6 +32,7 @@
 #include <BPersonInfoProvider>
 #include <BAboutDialog>
 #include <BTranslator>
+#include <BTerminal>
 
 #include <QApplication>
 #include <QString>
@@ -59,6 +60,7 @@ int main(int argc, char **argv)
     BApplication app(argc, argv, settings);
     BCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
     BCoreApplication::setApplicationVersion("0.1.0");
+    BTerminal::setMode(BTerminal::StandardMode);
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);
@@ -153,5 +155,6 @@ int main(int argc, char **argv)
     //Deleting objects
     delete mw;
     //Returning from main
+    BTerminal::destroy();
     return ret;
 }

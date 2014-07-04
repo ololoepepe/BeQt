@@ -874,6 +874,18 @@ void BApplicationBase::setApplicationCopyrightPeriod(const QString &s)
     ds_func()->appCopyrightYears = s;
 }
 
+void BApplicationBase::setApplicationExtendedCopyrightInfo(const QList<CopyrightInfo> &list)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    ds_func()->copyrightInfos = list;
+    foreach (int i, bRangeR(ds_func()->copyrightInfos.size() - 1, 0)) {
+        const BApplicationBase::CopyrightInfo &ci = ds_func()->copyrightInfos.at(i);
+        if (ci.owner.isEmpty() || ci.period.isEmpty())
+            ds_func()->copyrightInfos.removeAt(i);
+    }
+}
+
 void BApplicationBase::setApplicationDescription(const QString &s)
 {
     if (!BApplicationBasePrivate::testInit())
@@ -970,6 +982,146 @@ void BApplicationBase::setApplicationThanksToFile(const QString &fileName)
     ds_func()->appThanksToList.clear();
 }
 
+QString BApplicationBase::applicationCopyrightPeriod()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appCopyrightYears;
+}
+
+QList<BApplicationBase::CopyrightInfo> BApplicationBase::applicationExtendedCopyrightInfo()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QList<BApplicationBase::CopyrightInfo>();
+    return ds_func()->copyrightInfos;
+}
+
+QString BApplicationBase::applicationDescription()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appDescription;
+}
+
+QString BApplicationBase::applicationDescriptionFile()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appDescriptionFileName;
+}
+
+QString BApplicationBase::applicationChangeLog()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appChangeLog;
+}
+
+QString BApplicationBase::applicationChangeLogFile()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appChangeLogFileName;
+}
+
+QString BApplicationBase::applicationLicense()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appLicense;
+}
+
+QString BApplicationBase::applicationLicenseFile()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appLicenseFileName;
+}
+
+BPersonInfoList BApplicationBase::applicationAuthors()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return BPersonInfoList();
+    return ds_func()->appAuthorsList;
+}
+
+BPersonInfoProvider *BApplicationBase::applicationAuthorsProvider()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    return ds_func()->appAuthors;
+}
+
+QString BApplicationBase::applicationAuthorsFile()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appAuthors ? ds_func()->appAuthors->fileName() : QString();;
+}
+
+BPersonInfoList BApplicationBase::applicationTranslations()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return BPersonInfoList();
+    return ds_func()->appTranslationsList;
+}
+
+BPersonInfoProvider *BApplicationBase::applicationTranslationsProvider()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    return ds_func()->appTranslations;
+}
+
+QString BApplicationBase::applicationTranslationsFile()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appTranslations ? ds_func()->appTranslations->fileName() : QString();
+}
+
+BPersonInfoList BApplicationBase::applicationThanksTo()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return BPersonInfoList();
+    return ds_func()->appThanksToList;
+}
+
+BPersonInfoProvider *BApplicationBase::applicationThanksToProvider()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    return ds_func()->appThanksTo;
+}
+
+QString BApplicationBase::applicationThanksToFile()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return QString();
+    return ds_func()->appThanksTo ? ds_func()->appThanksTo->fileName() : QString();
+}
+
+BPersonInfoProvider *BApplicationBase::beqtAuthorsProvider()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    return ds_func()->beqtAuthors;
+}
+
+BPersonInfoProvider *BApplicationBase::beqtTranslationsProvider()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    return ds_func()->beqtTranslations;
+}
+
+BPersonInfoProvider *BApplicationBase::beqtThanksToProvider()
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    return ds_func()->beqtThanksTo;
+}
+
 QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
 {
     if (!BApplicationBasePrivate::testInit())
@@ -979,9 +1131,27 @@ QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
     {
     case Copyringt:
     {
-        QString crp = (!ds_func()->appCopyrightYears.isEmpty() ? (ds_func()->appCopyrightYears + " ") :QString());
-        return tr("Copyright") + " (C) " + crp + QCoreApplication::organizationName()
-                + " [" + QCoreApplication::organizationDomain() + "]";
+        QString crp = (!ds_func()->appCopyrightYears.isEmpty() ? (ds_func()->appCopyrightYears + " ") : QString());
+        QString domain = QCoreApplication::organizationDomain();
+        if (!domain.isEmpty())
+            domain.prepend(" [").append("]");
+        return tr("Copyright") + " (C) " + crp + ds_func()->orgName + domain;
+    }
+    case ExtendedCopyright:
+    {
+        QString s;
+        foreach (const CopyrightInfo &ci, ds_func()->copyrightInfos)
+        {
+            if (ci.owner.isEmpty() || ci.period.isEmpty())
+                continue;
+            s += tr("Copyright") + " (C) " + ci.period + " " + ci.owner;
+            if (!ci.email.isEmpty())
+                s += " (" + ci.email + ")";
+            s += "\n";
+        }
+        if (!s.isEmpty())
+            s.remove(s.length() - 1, 1);
+        return s;
     }
     case Description:
         if (!ds_func()->appDescription.isEmpty())

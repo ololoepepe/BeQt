@@ -25,6 +25,7 @@ class QWidget;
 #include "baboutdialog_p.h"
 #include "bapplication.h"
 #include "bapplication_p.h"
+#include "bdialog.h"
 
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BPluginInterface>
@@ -174,6 +175,11 @@ void BAboutDialogPrivate::init()
               lblCopyright->setTextFormat(Qt::RichText);
               lblCopyright->setVisible(false);
             hltCRWebsite->addWidget(lblCopyright);
+            lblCopyrightInfos = new QLabel(q);
+              lblCopyrightInfos->setTextFormat(Qt::RichText);
+              lblCopyrightInfos->setVisible(false);
+              connect(lblCopyrightInfos, SIGNAL(linkActivated(QString)), this, SLOT(showCopyrightInfos()));
+            hltCRWebsite->addWidget(lblCopyrightInfos);
             lblWebsite = new QLabel(q);
               lblWebsite->setAlignment(Qt::AlignVCenter | Qt::AlignRight);
               lblWebsite->setTextFormat(Qt::RichText);
@@ -201,12 +207,12 @@ void BAboutDialogPrivate::init()
         QObject::connect( dlgbbox, SIGNAL( rejected() ), q, SLOT( reject() ) );
       vlt->addWidget(dlgbbox);
     //
-    q->setAppName( QApplication::applicationName() );
-    q->setAppVersion( QApplication::applicationVersion() );
-    q->setOrganization( QApplication::organizationName() );
-    q->setWebsite( QApplication::organizationDomain() );
+    q->setAppName(QApplication::applicationName());
+    q->setAppVersion(QApplication::applicationVersion());
+    q->setOrganization(QApplication::organizationName());
+    q->setWebsite(QApplication::organizationDomain());
     retranslateUi();
-    connect( BCoreApplication::instance(), SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    connect(BCoreApplication::instance(), SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 void BAboutDialogPrivate::initAboutBeqtDialog()
@@ -215,9 +221,9 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
     aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012-2014");
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap( BApplication::beqtPixmap("beqt_logo") );
-    aboutBeqtDlg->setAuthorsProvider(BApplication::ds_func()->beqtAuthors);
-    aboutBeqtDlg->setTranslatorsProvider(BApplication::ds_func()->beqtTranslations);
-    aboutBeqtDlg->setThanksToProvider(BApplication::ds_func()->beqtThanksTo);
+    aboutBeqtDlg->setAuthorsProvider(BApplication::beqtAuthorsProvider());
+    aboutBeqtDlg->setTranslatorsProvider(BApplication::beqtTranslationsProvider());
+    aboutBeqtDlg->setThanksToProvider(BApplication::beqtThanksToProvider());
     retranslateAboutBeqtDialog();
 }
 
@@ -461,35 +467,32 @@ void BAboutDialogPrivate::resetLicense()
 void BAboutDialogPrivate::setupFromApplicationData()
 {
     B_Q(BAboutDialog);
-    BApplicationBasePrivate *dd = BApplication::ds_func();
-    if (!dd)
-        return;
-    q->setOrganization(QApplication::organizationName(), dd->appCopyrightYears);
+    q->setOrganization(QApplication::organizationName(), BApplication::applicationCopyrightPeriod());
     q->setWebsite(QApplication::organizationDomain());
-    if (!dd->appDescription.isEmpty())
-        q->setDescription(dd->appDescription);
+    if (!BApplication::applicationDescription().isEmpty())
+        q->setDescription(BApplication::applicationDescription());
     else
-        q->setDescriptionFile(dd->appDescriptionFileName);
-    if (!dd->appChangeLog.isEmpty())
-        q->setDescription(dd->appChangeLog);
+        q->setDescriptionFile(BApplication::applicationDescriptionFile());
+    if (!BApplication::applicationChangeLog().isEmpty())
+        q->setChangeLog(BApplication::applicationChangeLog());
     else
-        q->setChangeLogFile(dd->appChangeLogFileName);
-    if (!dd->appLicense.isEmpty())
-        q->setLicense(dd->appLicense);
+        q->setChangeLogFile(BApplication::applicationChangeLogFile());
+    if (!BApplication::applicationLicense().isEmpty())
+        q->setLicense(BApplication::applicationLicense());
     else
-        q->setLicenseFile(dd->appLicenseFileName);
-    if (!dd->appAuthorsList.isEmpty())
-        q->setAuthors(dd->appAuthorsList);
+        q->setLicenseFile(BApplication::applicationLicenseFile());
+    if (!BApplication::applicationAuthors().isEmpty())
+        q->setAuthors(BApplication::applicationAuthors());
     else
-        q->setAuthorsProvider(dd->appAuthors);
-    if (!dd->appTranslationsList.isEmpty())
-        q->setTranslators(dd->appTranslationsList);
+        q->setAuthorsProvider(BApplication::applicationAuthorsProvider());
+    if (!BApplication::applicationTranslations().isEmpty())
+        q->setTranslators(BApplication::applicationTranslations());
     else
-        q->setTranslatorsProvider(dd->appTranslations);
-    if (!dd->appThanksToList.isEmpty())
-        q->setThanksTo(dd->appThanksToList);
+        q->setTranslatorsProvider(BApplication::applicationTranslationsProvider());
+    if (!BApplication::applicationThanksTo().isEmpty())
+        q->setThanksTo(BApplication::applicationThanksTo());
     else
-        q->setThanksToProvider(dd->appThanksTo);
+        q->setThanksToProvider(BApplication::applicationThanksToProvider());
     q->setPixmap(QApplication::windowIcon().pixmap(100000)); //Using such an extent to get the largest pixmap
 }
 
@@ -499,6 +502,8 @@ void BAboutDialogPrivate::retranslateUi()
 {
     updateWindowTitle();
     updateCopyright();
+    lblCopyrightInfos->setText("(<a href=\"fake\">" + tr("more...", "lbl text") + "</a>)");
+    lblCopyrightInfos->setToolTip(tr("Show extended copyrights information", "lbl text"));
     updateWebsite();
     foreach ( DialogTab t, tbrsrs.keys() )
         twgt->setTabText( tabIndex(t), tabTitle(t) );
@@ -518,6 +523,31 @@ void BAboutDialogPrivate::retranslateUi()
             return;
         twgt->setTabText(i, customTabTitles.value(tab));
     }
+}
+
+void BAboutDialogPrivate::showCopyrightInfos()
+{
+    BDialog dlg(q_func());
+    dlg.setMinimumSize(400, 200);
+    dlg.setWindowTitle(tr("Copyrights information", "dlg windowTitle"));
+    QTextBrowser *bsr = new QTextBrowser;
+    bsr->setLineWrapMode(QTextBrowser::NoWrap);
+    bsr->setOpenExternalLinks(true);
+    bsr->setReadOnly(true);
+    QString s;
+    foreach (const BApplicationBase::CopyrightInfo &ci, copyrightInfos)
+    {
+        if (!s.isEmpty())
+            s += "<br><br>";
+        s += tr("Copyright", "tbsr text") + " &copy; " + ci.period + " " + ci.owner;
+        if (!ci.email.isEmpty())
+            s += "<br>" + HtmlSpaceDouble + tr("E-mail:", "tbsr text")
+                    + " <a href=\"mailto:" + ci.email + "\">" + ci.email + "</a>";
+    }
+    bsr->setHtml(s);
+    dlg.setWidget(bsr);
+    dlg.addButton(QDialogButtonBox::Close, SLOT(close()));
+    dlg.exec();
 }
 
 void BAboutDialogPrivate::resetAuthors()
@@ -630,7 +660,7 @@ void BAboutDialog::setAppVersion(const BVersion &version, BVersion::StatusRepres
 
 void BAboutDialog::setOrganization(const QString &organization, const QString &copyrightPeriod)
 {
-    if ( organization.isEmpty() )
+    if (organization.isEmpty())
         return;
     B_D(BAboutDialog);
     d->organization = organization;
@@ -639,9 +669,21 @@ void BAboutDialog::setOrganization(const QString &organization, const QString &c
     d->updateCopyright();
 }
 
+void BAboutDialog::setExtendedCopyrightInfo(const QList<BApplicationBase::CopyrightInfo> &list)
+{
+    B_D(BAboutDialog);
+    d->copyrightInfos = list;
+    foreach (int i, bRangeR(d->copyrightInfos.size() - 1, 0)) {
+        const BApplicationBase::CopyrightInfo &ci = d->copyrightInfos.at(i);
+        if (ci.owner.isEmpty() || ci.period.isEmpty())
+            d->copyrightInfos.removeAt(i);
+    }
+    d->lblCopyrightInfos->setVisible(!list.isEmpty());
+}
+
 void BAboutDialog::setWebsite(const QString &site)
 {
-    if ( site.isEmpty() )
+    if (site.isEmpty())
         return;
     B_D(BAboutDialog);
     d->website = site;

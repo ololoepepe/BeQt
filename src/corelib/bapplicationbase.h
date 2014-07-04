@@ -29,6 +29,7 @@ class BPluginWrapperPrivate;
 class BDirToolsPrivate;
 class BPluginWrapper;
 class BAbstractLocationProvider;
+class BPersonInfoProvider;
 
 class QLocale;
 class QSettings;
@@ -83,6 +84,7 @@ public:
     enum About
     {
         Copyringt,
+        ExtendedCopyright,
         Description,
         ChangeLog,
         License,
@@ -108,6 +110,12 @@ public:
         QString applicationName;
         QString organizationName;
         Portability portability;
+    };
+    struct CopyrightInfo
+    {
+        QString owner;
+        QString period;
+        QString email;
     };
 public:
     typedef bool (*InterfaceTestFunction)(const QObject *);
@@ -146,6 +154,7 @@ public:
     static QLocale locale();
     static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
     static void setApplicationCopyrightPeriod(const QString &s);
+    static void setApplicationExtendedCopyrightInfo(const QList<CopyrightInfo> &list);
     static void setApplicationDescription(const QString &s);
     static void setApplicationDescriptionFile(const QString &fileName);
     static void setApplicationChangeLog(const QString &s);
@@ -158,6 +167,26 @@ public:
     static void setApplicationTranslationsFile(const QString &fileName);
     static void setApplicationThanksTo(const BPersonInfoList &list);
     static void setApplicationThanksToFile(const QString &fileName);
+    static QString applicationCopyrightPeriod();
+    static QList<CopyrightInfo> applicationExtendedCopyrightInfo();
+    static QString applicationDescription();
+    static QString applicationDescriptionFile();
+    static QString applicationChangeLog();
+    static QString applicationChangeLogFile();
+    static QString applicationLicense();
+    static QString applicationLicenseFile();
+    static BPersonInfoList applicationAuthors();
+    static BPersonInfoProvider *applicationAuthorsProvider();
+    static QString applicationAuthorsFile();
+    static BPersonInfoList applicationTranslations();
+    static BPersonInfoProvider *applicationTranslationsProvider();
+    static QString applicationTranslationsFile();
+    static BPersonInfoList applicationThanksTo();
+    static BPersonInfoProvider *applicationThanksToProvider();
+    static QString applicationThanksToFile();
+    static BPersonInfoProvider *beqtAuthorsProvider();
+    static BPersonInfoProvider *beqtTranslationsProvider();
+    static BPersonInfoProvider *beqtThanksToProvider();
     static QString applicationInfo(About type, const QLocale &loc = locale());
     static QString beqtInfo(About type, const QLocale &loc = locale());
     static void setLogger(BLogger *l);

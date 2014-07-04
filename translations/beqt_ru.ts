@@ -4,93 +4,123 @@
 <context>
     <name>BAboutDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="236"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="242"/>
         <source>About</source>
         <comment>windowTitle</comment>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="247"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="253"/>
         <source>Website</source>
         <comment>lbl text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="242"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="248"/>
         <source>Copyright</source>
         <comment>lbl text</comment>
         <translation>Авторские права</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="228"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="234"/>
         <source>About BeQt</source>
         <comment>adlg windowTitle</comment>
         <translation>О библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="256"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="262"/>
         <source>Description</source>
         <comment>twgt tabText</comment>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="258"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="264"/>
         <source>Change log</source>
         <comment>twgt tabText</comment>
         <translation>История изменений</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="260"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="266"/>
         <source>Authors</source>
         <comment>twgt tabText</comment>
         <translation>Авторы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="262"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="268"/>
         <source>Translators</source>
         <comment>twgt tabText</comment>
         <translation>Переводчики</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="264"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="270"/>
         <source>Thanks to</source>
         <comment>twgt tabText</comment>
         <translation>Благодарности</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="266"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="272"/>
         <source>License</source>
         <comment>twgt tabText</comment>
         <translation>Лицензия</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="345"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="351"/>
         <source>No image available</source>
         <translation>Изображение отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="351"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="357"/>
         <source>Website</source>
         <comment>personInfo text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="354"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="360"/>
         <source>E-mail</source>
         <comment>personInfo text</comment>
         <translation>Электронная почта</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="511"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="505"/>
+        <source>more...</source>
+        <comment>lbl text</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/baboutdialog.cpp" line="506"/>
+        <source>Show extended copyrights information</source>
+        <comment>lbl text</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/baboutdialog.cpp" line="516"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="512"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="517"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/baboutdialog.cpp" line="532"/>
+        <source>Copyrights information</source>
+        <comment>dlg windowTitle</comment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/baboutdialog.cpp" line="542"/>
+        <source>Copyright</source>
+        <comment>tbsr text</comment>
+        <translation type="unfinished">Авторские права</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/baboutdialog.cpp" line="544"/>
+        <source>E-mail:</source>
+        <comment>tbsr text</comment>
+        <translation type="unfinished">Электронная почта:</translation>
     </message>
 </context>
 <context>
@@ -146,8 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="983"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1039"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1138"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1147"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1209"/>
         <source>Copyright</source>
         <translation type="unfinished">Авторские права</translation>
     </message>

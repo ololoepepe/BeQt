@@ -41,6 +41,7 @@ class QWidget;
 #include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPersonInfo>
 #include <BeQtCore/BTranslation>
+#include <BeQtCore/BApplicationBase>
 
 #include <QObject>
 #include <QList>
@@ -106,6 +107,7 @@ public:
     void setupFromApplicationData();
 public Q_SLOTS:
    void retranslateUi();
+   void showCopyrightInfos();
    void resetAuthors();
    void resetTranslations();
    void resetThanksTo();
@@ -117,6 +119,7 @@ public:
     QString appVersion;
     QString organization;
     QString copyrightPeriod;
+    QList<BApplicationBase::CopyrightInfo> copyrightInfos;
     QString website;
     QString descriptionFileName;
     QString changeLogFileName;
@@ -138,6 +141,7 @@ public:
           QHBoxLayout *hltCRWebsite;
             QLabel *lblCopyright;
             QLabel *lblWebsite;
+            QLabel *lblCopyrightInfos;
         //stretch
         QToolButton *tbtnAboutQt;
         QToolButton *tbtnAboutBeqt;

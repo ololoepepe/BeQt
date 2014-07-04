@@ -33,7 +33,6 @@
 * Move some methods to separate namespaces
 * Implement locking of global object instances
 * Show plugin version information
-* Add ability to set multiple copyright owners
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
@@ -66,6 +65,7 @@
 [done] Add version information to BPluginInterface
 [done] Add BAbstractLocationProvider and BLocationProvider classes
 [done] Add ability to add extra locations
+[done] Add ability to set multiple copyright owners
 [done] Implement terminal modes
 * Fix BeQt::OSType enum values
 * Make BPersonInfo and BPersonInfoList serializable
