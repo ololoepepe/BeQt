@@ -56,7 +56,7 @@ public:
     explicit BNetworkServerWorker(BNetworkServerPrivate *sp, BNetworkServerThread *thread);
     ~BNetworkServerWorker();
 public Q_SLOTS:
-    void addConnection(int socketDescriptor);
+    void addConnection(int socketDescriptor, const QString &serverAddress, quint16 serverPort);
     void disconnected();
 Q_SIGNALS:
     void connectionAdded(QObject *obj);
@@ -79,7 +79,7 @@ public:
     explicit BNetworkServerThread(BNetworkServerPrivate *serverPrivate);
     ~BNetworkServerThread();
 public:
-    void addConnection(int socketDescriptor);
+    void addConnection(int socketDescriptor, const QString &serverAddress, quint16 serverPort);
     int connectionCount() const;
 public:
     BNetworkServerWorker *const Worker;
@@ -98,14 +98,16 @@ class B_NETWORK_EXPORT BNetworkServerPrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC(BNetworkServer)
     Q_OBJECT
 public:
-    explicit BNetworkServerPrivate(BNetworkServer *q);
+    explicit BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type);
     ~BNetworkServerPrivate();
 public:
     void init();
-    BNetworkConnection *createConnection(BGenericSocket *socket);
+    BNetworkConnection *createConnection(BGenericSocket *socket, const QString &serverAddress, quint16 serverPort);
     BGenericSocket *createSocket();
     BNetworkServerThread *getOptimalThread();
     int connectionCount() const;
+    bool listen(const QString &address, quint16 port = 0);
+    void close();
 public Q_SLOTS:
     void emitConnectionAdded(BNetworkConnection *connection);
     void emitConnectionAboutToBeRemoved(BNetworkConnection *connection);
@@ -113,10 +115,13 @@ public Q_SLOTS:
     void finished();
     void spammed();
 public:
-    QPointer<BGenericServer> server;
+    const BGenericServer::ServerType Type;
+public:
+    QList<BGenericServer *> servers;
     QList<BNetworkServerThread *> threads;
     int maxConnectionCount;
     int maxThreadCount;
+    int maxPendingConnections;
     BSpamNotifier *spamNotifier;
     QSet<QString> banned;
     mutable QMutex *connectionMutex;

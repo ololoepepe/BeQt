@@ -53,7 +53,7 @@ public:
     bool testServer() const;
     bool listen();
     bool sendMessage(int &argc, char **argv);
-    bool sendMessage( const QStringList &arguments = QStringList() );
+    bool sendMessage(const QStringList &arguments = QStringList());
 protected:
     virtual void handleMessage(const QStringList &arguments);
 private:

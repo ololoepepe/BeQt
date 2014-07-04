@@ -39,6 +39,7 @@
 #include <QMutexLocker>
 #include <QMap>
 #include <QStringList>
+#include <QTcpServer>
 
 #include <QDebug>
 
@@ -61,7 +62,7 @@ BNetworkServerWorker::~BNetworkServerWorker()
 
 /*============================== Public slots ==============================*/
 
-void BNetworkServerWorker::addConnection(int socketDescriptor)
+void BNetworkServerWorker::addConnection(int socketDescriptor, const QString &serverAddress, quint16 serverPort)
 {
     BGenericSocket *s = ServerPrivate->createSocket();
     if (!s)
@@ -78,7 +79,7 @@ void BNetworkServerWorker::addConnection(int socketDescriptor)
         delete s;
         return;
     }
-    BNetworkConnection *c = ServerPrivate->createConnection(s);
+    BNetworkConnection *c = ServerPrivate->createConnection(s, serverAddress, serverPort);
     if (!c)
         return;
     if (!c->isValid())
@@ -130,9 +131,10 @@ BNetworkServerThread::~BNetworkServerThread()
 
 /*============================== Public methods ============================*/
 
-void BNetworkServerThread::addConnection(int socketDescriptor)
+void BNetworkServerThread::addConnection(int socketDescriptor, const QString &serverAddress, quint16 serverPort)
 {
-    QMetaObject::invokeMethod(Worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor));
+    QMetaObject::invokeMethod(Worker, "addConnection", Qt::QueuedConnection, Q_ARG(int, socketDescriptor),
+                              Q_ARG(QString, serverAddress), Q_ARG(quint16, serverPort));
 }
 
 int BNetworkServerThread::connectionCount() const
@@ -146,8 +148,8 @@ int BNetworkServerThread::connectionCount() const
 
 /*============================== Public constructors =======================*/
 
-BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q) :
-    BBaseObjectPrivate(q)
+BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type) :
+    BBaseObjectPrivate(q), Type(type)
 {
     //
 }
@@ -170,14 +172,16 @@ void BNetworkServerPrivate::init()
     connectionMutex = new QMutex(QMutex::Recursive);
     maxConnectionCount = 0;
     maxThreadCount = 0;
+    maxPendingConnections = 0;
     spamNotifier = new BSpamNotifier(this);
     spamNotifier->setEnabled(false);
     connect(spamNotifier, SIGNAL(spammed(int)), this, SLOT(spammed()));
 }
 
-BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket)
+BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket, const QString &serverAddress,
+                                                            quint16 serverPort)
 {
-    return q_func()->createConnection(socket);
+    return q_func()->createConnection(socket, serverAddress, serverPort);
 }
 
 BGenericSocket *BNetworkServerPrivate::createSocket()
@@ -244,14 +248,40 @@ void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(BNetworkConnection *c
                               Q_ARG(BNetworkConnection *, connection));
 }
 
+bool BNetworkServerPrivate::listen(const QString &address, quint16 port)
+{
+    if (BGenericServer::NoServer == Type)
+        return false;
+    BGenericServer *server = new BGenericServer(Type, this);
+    server->setMaxPendingConnections(maxPendingConnections);
+    connect(server, SIGNAL(newConnection(int)), this, SLOT(newConnection(int)));
+    bool b = server->listen(address, port);
+    if (!b)
+        delete server;
+    else
+        servers << server;
+    return b;
+}
+
+void BNetworkServerPrivate::close()
+{
+    foreach (BGenericServer *s, servers)
+        s->close();
+    servers.clear();
+}
+
 /*============================== Public slots ==============================*/
 
 void BNetworkServerPrivate::newConnection(int socketDescriptor)
 {
+    BGenericServer *server = qobject_cast<BGenericServer *>(sender());
+    if (!server)
+        return;
     BNetworkServerThread *t = getOptimalThread();
     if (t)
     {
-        t->addConnection(socketDescriptor);
+        quint16 port = (server->serverType() != BGenericServer::LocalServer) ? server->tcpServer()->serverPort() : 0;
+        t->addConnection(socketDescriptor, server->serverAddress(), port);
     }
     else
     {
@@ -288,16 +318,9 @@ void BNetworkServerPrivate::spammed()
 /*============================== Public constructors =======================*/
 
 BNetworkServer::BNetworkServer(BGenericServer::ServerType type, QObject *parent) :
-    QObject(parent), BBaseObject( *new BNetworkServerPrivate(this) )
+    QObject(parent), BBaseObject(*new BNetworkServerPrivate(this, type))
 {
     d_func()->init();
-    B_D(BNetworkServer);
-    if (BGenericServer::NoServer != type)
-    {
-        d->server = new BGenericServer(type, this);
-        d->server->setMaxPendingConnections(0);
-        connect(d->server.data(), SIGNAL(newConnection(int)), d, SLOT(newConnection(int)));
-    }
 }
 
 BNetworkServer::~BNetworkServer()
@@ -342,26 +365,54 @@ bool BNetworkServer::tryLock()
 
 bool BNetworkServer::isValid() const
 {
-    const B_D(BNetworkServer);
-    return d->server.isNull() && d->server->isServerSet();
+    return d_func()->Type != BGenericServer::NoServer;
 }
 
 bool BNetworkServer::isListening() const
 {
-    const B_D(BNetworkServer);
-    return !d->server.isNull() && d->server->isListening();
+    return !d_func()->servers.isEmpty();
+}
+
+bool BNetworkServer::listen(const QString &address)
+{
+    return listen(QStringList() << address) > 0;
 }
 
 bool BNetworkServer::listen(const QString &address, quint16 port)
 {
-    B_D(BNetworkServer);
-    return !d->server.isNull() && d->server->listen(address, port);
+    return listen(address + ":" + QString::number(port)) > 0;
+}
+
+int BNetworkServer::listen(const QStringList &addresses)
+{
+    if (isListening())
+        return false;
+    int count = 0;
+    foreach (const QString &address, addresses) {
+        if (address.isEmpty())
+            continue;
+        QStringList sl = address.split(':');
+        if (sl.size() > 2)
+            continue;
+        if (sl.first().isEmpty())
+            continue;
+        quint16 port = 0;
+        if (sl.size() == 2) {
+            bool ok = false;
+            port = sl.last().toUInt(&ok);
+            if (!ok)
+                continue;
+        }
+        if (!d_func()->listen(sl.first(), port))
+            continue;
+        ++count;
+    }
+    return count;
 }
 
 BGenericServer::ServerType BNetworkServer::serverType() const
 {
-    const B_D(BNetworkServer);
-    return !d->server.isNull() ? d->server->serverType() : BGenericServer::NoServer;
+    return d_func()->Type;
 }
 
 int BNetworkServer::maxConnectionCount() const
@@ -409,10 +460,7 @@ QStringList BNetworkServer::banned() const
 
 void BNetworkServer::close()
 {
-    B_D(BNetworkServer);
-    if (d->server.isNull())
-        return;
-    d->server->close();
+    d_func()->close();
 }
 
 void BNetworkServer::ban(const QString &address)
@@ -450,7 +498,7 @@ void BNetworkServer::clearBanList()
 
 /*============================== Protected methods =========================*/
 
-BNetworkConnection *BNetworkServer::createConnection(BGenericSocket *socket)
+BNetworkConnection *BNetworkServer::createConnection(BGenericSocket *socket, const QString &, quint16)
 {
     return new BNetworkConnection(this, socket);
 }

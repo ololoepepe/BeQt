@@ -59,7 +59,9 @@ public:
     bool tryLock();
     bool isValid() const;
     bool isListening() const;
-    bool listen(const QString &address, quint16 port = 0);
+    bool listen(const QString &address);
+    bool listen(const QString &address, quint16 port);
+    int listen(const QStringList &addresses);
     BGenericServer::ServerType serverType() const;
     int maxConnectionCount() const;
     int currentConnectionCount() const;
@@ -76,7 +78,8 @@ public Q_SLOTS:
     void unban(const QStringList &addresses);
     void clearBanList();
 protected:
-    virtual BNetworkConnection *createConnection(BGenericSocket *socket);
+    virtual BNetworkConnection *createConnection(BGenericSocket *socket, const QString &serverAddress,
+                                                 quint16 serverPort);
     virtual BGenericSocket *createSocket();
 Q_SIGNALS:
     void connectionAdded(BNetworkConnection *connection);

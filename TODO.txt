@@ -73,7 +73,7 @@
 * Implement terminal modes (standard mode and PDCurses mode)
 
 [done] Add ability to set compression for every network operation independently
-* Add ability to listen on several ports/hosts to BNetworkServer
+[done] Add ability to listen on several ports/hosts to BNetworkServer
 
 [done] Remove some static methods from BApplication
 [done] Remove some template methods from BApplication and BAbstractSettingsTab
