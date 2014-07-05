@@ -4,7 +4,9 @@
 
 * Add PDCurses binding
 * Implement Katepart-compatible file type definition using XML files
+* Improve SQL schema parsing
 * Add method for setting terminal window size to BTerminal
+* Implement BTerminalWidget history
 
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Implement native settings dialogs
@@ -31,7 +33,6 @@
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
 
 * Sort includes, class members, etc.
-* Improve BTextTools::toHtml function
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions

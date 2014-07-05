@@ -1352,7 +1352,6 @@ void BCodeEditPrivate::handleLeft(bool shift)
     else
     {
         QTextBlock tb = tc.block().previous();
-        //TODO: Maybe block validity should be checked
         QString text = tb.text();
         int i = text.length() - 1;
         while (i >= 0 && text.at(i) == ' ')

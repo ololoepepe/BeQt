@@ -170,7 +170,6 @@ QString BInternalLocationProvider::locationPath(const QString &locationName, BAp
 bool BInternalLocationProvider::canCreateLocationPath(const QString &locationName,
                                                       BApplicationBase::ResourceType type) const
 {
-    //TODO: For some locations there may not exist shared or user component
     if (!Names.contains(locationName))
         return false;
     if (BApplicationBase::UserResource == type)

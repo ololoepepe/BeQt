@@ -194,9 +194,6 @@ QStringList splitCommand(const QString &cmd, QString &command, bool *ok)
 
 QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
 {
-    //TODO: implement single quote support
-    //+1 - double quote
-    //-1 - single quote
     QStringList args;
     QString arg;
     int quot = 0;
@@ -398,7 +395,7 @@ void sortComprising(QStringList *list, Qt::CaseSensitivity cs)
     *list += nlist;
 }
 
-QString toHtml(const QString &text)
+QString toHtml(const QString &text, bool replaceSpaces)
 {
     typedef QMap<QChar, QString> KeywordMap;
     init_once(KeywordMap, keywords, KeywordMap()) {
@@ -413,6 +410,8 @@ QString toHtml(const QString &text)
     QString html = text;
     foreach (int i, bRangeR(html.length() - 1, 0)) {
         const QChar &c = html.at(i);
+        if (!replaceSpaces && ' ' == c)
+            continue;
         if (keywords.contains(c))
             html.replace(i, 1, keywords.value(c));
     }

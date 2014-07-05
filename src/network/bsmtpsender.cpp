@@ -114,7 +114,7 @@ void BSmtpSenderPrivate::handleData(QTextStream &stream)
 
 void BSmtpSenderPrivate::handleMail(QTextStream &stream)
 {
-    QString s = "Content-Type: text/plain; charset=UTF-8;\n"; //TODO
+    QString s = "Content-Type: text/plain; charset=UTF-8;\n";
     s += "Content-Transfer-Encoding: 8bit\n"; //TODO
     s += "FROM: " + (!email.sender().isEmpty() ? email.sender() : login) + "\n";
     s += "TO: " + email.receiver() + "\n";
