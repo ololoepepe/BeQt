@@ -176,6 +176,7 @@ protected:
     virtual int cursorPositionForRowColumn(const QPoint &pos) const = 0;
     virtual void highlightBrackets();
     virtual QTextCursor textCursor(bool *ok = 0) const;
+    virtual QRect cursorRect(bool *ok = 0) const;
     virtual QMenu *createContextMenu();
     virtual TextProcessingFunction textPreprocessingFunction() const;
     virtual QVariantMap preprocessingUserData();

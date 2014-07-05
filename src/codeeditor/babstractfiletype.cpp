@@ -36,6 +36,8 @@ class QFont;
 #include <QTextBlockUserData>
 #include <QTextBlock>
 #include <QTextCharFormat>
+#include <QPoint>
+#include <QMenu>
 
 #include <BeQtCore/private/bbase_p.h>
 
@@ -62,8 +64,6 @@ public:
     BracketPairList brackets() const;
 protected:
     static BDefaultFileType *_m_self;
-protected:
-    void highlightBlock(const QString &text);
 };
 
 /*============================================================================
@@ -121,13 +121,6 @@ bool BDefaultFileType::matchesFileName(const QString &) const
 BAbstractFileType::BracketPairList BDefaultFileType::brackets() const
 {
     return BracketPairList();
-}
-
-/*============================== Protected methods =========================*/
-
-void BDefaultFileType::highlightBlock(const QString &)
-{
-    //
 }
 
 /*============================== Static protected variables ================*/
@@ -204,6 +197,13 @@ bool BAbstractFileType::areEqual(const BracketPairList &l1, const BracketPairLis
 
 /*============================== Public methods ============================*/
 
+BAbstractCodeEditorDocument *BAbstractFileType::currentDocument() const
+{
+    if (!d_func()->highlighter)
+        return 0;
+    return d_func()->highlighter->EditorDocument;
+}
+
 int BAbstractFileType::indentation(const QTextBlock &previousBlock) const
 {
     if (!previousBlock.isValid())
@@ -247,6 +247,18 @@ BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QStrin
     return bp;
 }
 
+BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionItem(const QString &text,
+                                                                                  const QString &toolTip, const QIcon &icon)
+{
+    if (text.isEmpty())
+        return AutocompletionItem();
+    AutocompletionItem item;
+    item.text = text;
+    item.toolTip = toolTip;
+    item.icon = icon;
+    return item;
+}
+
 void BAbstractFileType::setBlockSkipIntervals(QTextBlock block, const QList<BTextBlockUserData::SkipInterval> &list)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
@@ -281,6 +293,50 @@ void BAbstractFileType::addBlockSkipInterval(QTextBlock block, int start, int en
 }
 
 /*============================== Protected methods =========================*/
+
+void BAbstractFileType::highlightBlock(const QString &)
+{
+    //
+}
+
+void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+                                               const QPoint &globalPos)
+{
+    QList<AutocompletionItem> list = createAutocompletionItemList(doc, block, posInBlock);
+    if (list.isEmpty())
+        return;
+    QMenu *mnu = new QMenu;
+    foreach (const AutocompletionItem &aci, list) {
+        if (aci.text.isEmpty())
+            continue;
+        mnu->addAction(aci.icon, aci.text)->setToolTip(aci.toolTip);
+    }
+    if (mnu->isEmpty()) {
+        delete mnu;
+        return;
+    }
+    mnu->setActiveAction(mnu->actions().first());
+    QAction *act = mnu->exec(globalPos);
+    if (!act) {
+        delete mnu;
+        return;
+    }
+    QString text = act->text();
+    delete mnu;
+    QString btext = block.text();
+    int start = block.position() + posInBlock - 1;
+    int end = start + 1;
+    while (start > 0 && start < btext.length() && btext.at(start) != ' ')
+        --start;
+    doc->selectText(start + 1, end);
+    doc->insertText(text);
+}
+
+QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocompletionItemList(
+        BAbstractCodeEditorDocument *, QTextBlock, int)
+{
+    return QList<AutocompletionItem>();
+}
 
 QTextBlock BAbstractFileType::currentBlock() const
 {

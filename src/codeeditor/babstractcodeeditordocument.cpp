@@ -69,6 +69,8 @@
 #include <QFuture>
 #include <QFutureWatcher>
 #include <QtConcurrentRun>
+#include <QApplication>
+#include <QTimer>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -271,6 +273,9 @@ void BAbstractCodeEditorDocumentPrivate::init()
     redoAvailable = false;
     buisy = false;
     cursorPosition = 0;
+    autocompletionTimer.setSingleShot(true);
+    autocompletionTimer.setInterval(500);
+    connect(&autocompletionTimer, SIGNAL(timeout()), this, SLOT(showAutocompletionMenu()));
 }
 
 bool BAbstractCodeEditorDocumentPrivate::createEdit()
@@ -481,8 +486,6 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
         }
         tb = tb.previous();
         posInBlock = tb.length();
-        //int skipFrom = BTextBlockUserData::blockSkipFrom(tb);
-        //posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
     }
     return res;
 }
@@ -750,6 +753,13 @@ void BAbstractCodeEditorDocumentPrivate::preprocessingFinished()
     q_func()->moveCursor(QPoint(0, 0));
     setBuisy(false);
     q_func()->afterPreprocessing(res.userData);
+}
+
+void BAbstractCodeEditorDocumentPrivate::showAutocompletionMenu()
+{
+    if (!fileType)
+        return;
+    fileType->showAutocompletionMenu(q_func(), autocompletionBlock, autocompletionPosInBlock, autocompletionGlobalPos);
 }
 
 /*============================================================================
@@ -1173,6 +1183,23 @@ QTextCursor BAbstractCodeEditorDocument::textCursor(bool *ok) const
         return bRet(ok, false, QTextCursor());
 }
 
+QRect BAbstractCodeEditorDocument::cursorRect(bool *ok) const
+{
+    if (ok)
+        *ok = true;
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
+    if (tedt)
+        return tedt->cursorRect();
+    else if (ptedt)
+        return ptedt->cursorRect();
+    else if (cedt)
+        return cedt->innerEdit()->cursorRect();
+    else
+        return bRet(ok, false, QRect());
+}
+
 QMenu *BAbstractCodeEditorDocument::createContextMenu()
 {
     QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
@@ -1318,6 +1345,7 @@ void BAbstractCodeEditorDocument::setCursorPosition(int pos)
 {
     if (pos == d_func()->cursorPosition)
         return;
+    d_func()->autocompletionTimer.stop();
     d_func()->cursorPosition = pos;
     QPoint rc = cursorPositionRowColumnImplementation();
     bool b = rc != d_func()->cursorPositionRowColumn;
@@ -1326,6 +1354,23 @@ void BAbstractCodeEditorDocument::setCursorPosition(int pos)
     Q_EMIT cursorPositionChanged(pos);
     if (b)
         Q_EMIT cursorPositionChanged(rc);
+    bool ok = false;
+    QTextCursor tc = textCursor(&ok);
+    if (!ok)
+        return;
+    d_func()->autocompletionBlock = tc.block();
+    if (!d_func()->autocompletionBlock.isValid())
+        return;
+    ok = false;
+    QRect r = cursorRect(&ok);
+    if (!ok)
+        return;
+    QWidget *edt = innerEdit();
+    if (!edt)
+        return;
+    d_func()->autocompletionPosInBlock = tc.positionInBlock();
+    d_func()->autocompletionGlobalPos = edt->mapToGlobal(r.bottomRight());
+    d_func()->autocompletionTimer.start();
 }
 
 void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)

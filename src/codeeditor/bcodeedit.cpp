@@ -513,6 +513,7 @@ void BCodeEditPrivate::init()
         ptedt->setWordWrapMode(QTextOption::NoWrap);
         ptedt->setDragEnabled(false);
         ptedt->installEventFilter(this);
+        ptedt->viewport()->installEventFilter(this);
         ptedt->setFont(BGuiTools::createMonospaceFont());
         setTextToEmptyLine();
         ptedt->document()->setModified(false);
@@ -539,6 +540,11 @@ bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
         return mouseDoubleClickEvent(static_cast<QMouseEvent *>(e));
     case QEvent::MouseButtonPress:
         return mousePressEvent(static_cast<QMouseEvent *>(e));
+    case QEvent::DragEnter:
+    case QEvent::DragMove:
+    case QEvent::DragLeave:
+    case QEvent::Drop:
+        return true;
     default:
         return QObject::eventFilter(obj, e);
     }

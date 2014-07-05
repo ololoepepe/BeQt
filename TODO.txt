@@ -103,4 +103,4 @@
 [done] Add overloaded moveCursor method to BAbstractCodeEditorDocument
 [done] Implement BSimpleCodeEditorDocument textPreprocessingFunction and preprocessingUserData methods
 [done] Add public function for handling events to BAbstractCodeEditorDocument
-* Implement autocompletion
+[done] Implement autocompletion

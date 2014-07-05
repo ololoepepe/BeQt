@@ -25,12 +25,14 @@
 class BSyntaxHighlighter;
 class BAbstractFileTypePrivate;
 class BAbstractCodeEditorDocument;
+class BAbstractCodeEditorDocumentPrivate;
 
 class QStringList;
 class QTextBlock;
 class QTextCharFormat;
 class QColor;
 class QFont;
+class QPoint;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
@@ -39,6 +41,7 @@ class QFont;
 
 #include <QString>
 #include <QList>
+#include <QIcon>
 
 /*============================================================================
 ================================ BAbstractFileType ===========================
@@ -74,13 +77,27 @@ public:
     virtual int indentation(const QTextBlock &previousBlock) const;
     QString createFileDialogFilter() const;
 protected:
+    struct AutocompletionItem
+    {
+        QString text;
+        QString toolTip;
+        QIcon icon;
+    };
+protected:
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
+    static AutocompletionItem createAutocompletionItem(const QString &text, const QString &toolTip = QString(),
+                                                       const QIcon &icon = QIcon());
     static void setBlockSkipIntervals(QTextBlock block, const QList<BTextBlockUserData::SkipInterval> &list
                                       = QList<BTextBlockUserData::SkipInterval>());
     static void addBlockSkipInterval(QTextBlock block, const BTextBlockUserData::SkipInterval &si);
     static void addBlockSkipInterval(QTextBlock block, int start, int end = -1);
 protected:
-    virtual void highlightBlock(const QString &text) = 0;
+    virtual void highlightBlock(const QString &text);
+    virtual void showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+                                        const QPoint &globalPos);
+    virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc, QTextBlock block,
+                                                                   int posInBlock);
+    BAbstractCodeEditorDocument *currentDocument() const;
     QTextBlock currentBlock() const;
     int currentBlockState() const;
     BTextBlockUserData *currentBlockUserData() const;
@@ -93,6 +110,7 @@ protected:
     void setFormat(int start, int count, const QFont &font);
 private:
     friend class BSyntaxHighlighter;
+    friend class BAbstractCodeEditorDocumentPrivate;
 };
 
 #endif // BABSTRACTFILETYPE_H

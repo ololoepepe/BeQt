@@ -25,6 +25,7 @@
 class BCodeEditor;
 class BTextBlockUserData;
 class BSpellChecker;
+class BSignalDelayProxy;
 
 class QWidget;
 class QTextCodec;
@@ -52,6 +53,7 @@ class QMenu;
 #include <QPair>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QTimer>
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -141,6 +143,7 @@ public Q_SLOTS:
     void dontIgnoreWord();
     void customContextMenuRequested(const QPoint &pos);
     void preprocessingFinished();
+    void showAutocompletionMenu();
 public:
     BCodeEditor *const Editor;
 public:
@@ -167,6 +170,10 @@ public:
     QPoint cursorPositionRowColumn;
     bool buisy;
     mutable QPair<int, int> wordToReplace;
+    QTextBlock autocompletionBlock;
+    int autocompletionPosInBlock;
+    QPoint autocompletionGlobalPos;
+    QTimer autocompletionTimer;
 private:
     Q_DISABLE_COPY(BAbstractCodeEditorDocumentPrivate)
 };
