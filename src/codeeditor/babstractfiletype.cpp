@@ -19,13 +19,14 @@
 **
 ****************************************************************************/
 
+class BTextBlockUserData;
+
 class QColor;
 class QFont;
 
 #include "babstractfiletype.h"
 #include "babstractfiletype_p.h"
 #include "bcodeedit.h"
-#include "btextblockuserdata.h"
 #include "babstractcodeeditordocument_p.h"
 
 #include <QApplication>
@@ -259,39 +260,6 @@ BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionIte
     return item;
 }
 
-void BAbstractFileType::setBlockSkipIntervals(QTextBlock block, const QList<BTextBlockUserData::SkipInterval> &list)
-{
-    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
-    if (!ud) {
-        ud = new BTextBlockUserData(list);
-        block.setUserData(ud);
-    }
-    ud->setSkipIntervals(list);
-}
-
-void BAbstractFileType::addBlockSkipInterval(QTextBlock block, const BTextBlockUserData::SkipInterval &si)
-{
-    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
-    QList<BTextBlockUserData::SkipInterval> list;
-    list << si;
-    if (ud) {
-        list << ud->skipIntervals();
-        ud->setSkipIntervals(list);
-    } else {
-        ud = new BTextBlockUserData(list);
-        block.setUserData(ud);
-    }
-
-}
-
-void BAbstractFileType::addBlockSkipInterval(QTextBlock block, int start, int end)
-{
-    BTextBlockUserData::SkipInterval si;
-    si.start = start;
-    si.end = (end >= 0) ? end : (block.text().length() - 1);
-    addBlockSkipInterval(block, si);
-}
-
 /*============================== Protected methods =========================*/
 
 void BAbstractFileType::highlightBlock(const QString &)
@@ -338,6 +306,26 @@ QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocomple
     return QList<AutocompletionItem>();
 }
 
+void BAbstractFileType::setBlockSkipIntervals(const QList<SkipInterval> &list)
+{
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), list);
+}
+
+void BAbstractFileType::clearBlockSkipIntervals()
+{
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), QList<SkipInterval>());
+}
+
+void BAbstractFileType::addBlockSkipInterval(const SkipInterval &si)
+{
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), si);
+}
+
+void BAbstractFileType::addBlockSkipInterval(int start, int end)
+{
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), start, end);
+}
+
 QTextBlock BAbstractFileType::currentBlock() const
 {
     return d_func()->highlighter ? d_func()->highlighter->currentBlock() : QTextBlock();
@@ -348,9 +336,9 @@ int BAbstractFileType::currentBlockState() const
     return d_func()->highlighter ? d_func()->highlighter->currentBlockState() : -1;
 }
 
-BTextBlockUserData *BAbstractFileType::currentBlockUserData() const
+BTextBlockExtraData *BAbstractFileType::currentBlockExtraData() const
 {
-    return d_func()->highlighter ? d_func()->highlighter->currentBlockUserData() : 0;
+    return d_func()->highlighter ? d_func()->highlighter->currentBlockExtraData() : 0;
 }
 
 QTextCharFormat BAbstractFileType::format(int position) const
@@ -370,11 +358,11 @@ void BAbstractFileType::setCurrentBlockState(int newState)
     d_func()->highlighter->setCurrentBlockState(newState);
 }
 
-void BAbstractFileType::setCurrentBlockUserData(BTextBlockUserData *data)
+void BAbstractFileType::setCurrentBlockExtraData(BTextBlockExtraData *data)
 {
     if (!d_func()->highlighter)
         return;
-    d_func()->highlighter->setCurrentBlockUserData(data);
+    d_func()->highlighter->setCurrentBlockExtraData(data);
 }
 
 void BAbstractFileType::setFormat(int start, int count, const QTextCharFormat &format)

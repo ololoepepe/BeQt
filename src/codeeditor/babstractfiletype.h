@@ -26,6 +26,7 @@ class BSyntaxHighlighter;
 class BAbstractFileTypePrivate;
 class BAbstractCodeEditorDocument;
 class BAbstractCodeEditorDocumentPrivate;
+class BTextBlockExtraData;
 
 class QStringList;
 class QTextBlock;
@@ -36,8 +37,6 @@ class QPoint;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
-
-#include "btextblockuserdata.h"
 
 #include <QString>
 #include <QList>
@@ -56,6 +55,17 @@ public:
         QString opening;
         QString closing;
         QString escape;
+    };
+    struct SkipInterval
+    {
+        int start;
+        int end;
+    };
+    struct AutocompletionItem
+    {
+        QString text;
+        QString toolTip;
+        QIcon icon;
     };
 public:
     typedef QList<BracketPair> BracketPairList;
@@ -77,34 +87,27 @@ public:
     virtual int indentation(const QTextBlock &previousBlock) const;
     QString createFileDialogFilter() const;
 protected:
-    struct AutocompletionItem
-    {
-        QString text;
-        QString toolTip;
-        QIcon icon;
-    };
-protected:
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
     static AutocompletionItem createAutocompletionItem(const QString &text, const QString &toolTip = QString(),
                                                        const QIcon &icon = QIcon());
-    static void setBlockSkipIntervals(QTextBlock block, const QList<BTextBlockUserData::SkipInterval> &list
-                                      = QList<BTextBlockUserData::SkipInterval>());
-    static void addBlockSkipInterval(QTextBlock block, const BTextBlockUserData::SkipInterval &si);
-    static void addBlockSkipInterval(QTextBlock block, int start, int end = -1);
 protected:
     virtual void highlightBlock(const QString &text);
     virtual void showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
                                         const QPoint &globalPos);
     virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc, QTextBlock block,
                                                                    int posInBlock);
+    void setBlockSkipIntervals(const QList<SkipInterval> &list = QList<SkipInterval>());
+    void clearBlockSkipIntervals();
+    void addBlockSkipInterval(const SkipInterval &si);
+    void addBlockSkipInterval(int start, int end = -1);
     BAbstractCodeEditorDocument *currentDocument() const;
     QTextBlock currentBlock() const;
     int currentBlockState() const;
-    BTextBlockUserData *currentBlockUserData() const;
+    BTextBlockExtraData *currentBlockExtraData() const;
+    void setCurrentBlockExtraData(BTextBlockExtraData *data);
     QTextCharFormat format(int position) const;
     int previousBlockState() const;
     void setCurrentBlockState(int newState);
-    void setCurrentBlockUserData(BTextBlockUserData *data);
     void setFormat(int start, int count, const QTextCharFormat &format);
     void setFormat(int start, int count, const QColor &color);
     void setFormat(int start, int count, const QFont &font);

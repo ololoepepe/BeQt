@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1040"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1236"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -134,19 +134,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="619"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="815"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="630"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="826"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="633"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="829"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -324,43 +324,43 @@
 <context>
     <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2193"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2192"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2199"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2198"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2206"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2205"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2212"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2211"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2218"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2217"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2224"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2223"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2231"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2230"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -369,7 +369,7 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="853"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="852"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
@@ -483,13 +483,13 @@
 <context>
     <name>BDefaultFileType</name>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="103"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="104"/>
         <source>Text</source>
         <comment>name</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="108"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="109"/>
         <source>All files</source>
         <comment>description</comment>
         <translation>Все файлы</translation>

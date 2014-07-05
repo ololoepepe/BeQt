@@ -24,7 +24,7 @@
 #include "babstractdocumentdriver.h"
 #include "babstractfiletype.h"
 #include "bcodeeditor.h"
-#include "btextblockuserdata.h"
+#include "btextblockextradata.h"
 #include "bcodeedit.h"
 #include "bspellchecker.h"
 #include "babstractfiletype_p.h"
@@ -71,6 +71,157 @@
 #include <QtConcurrentRun>
 #include <QApplication>
 #include <QTimer>
+#include <QtAlgorithms>
+
+/*============================================================================
+================================ BTextBlockUserDataPrivate ===================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BTextBlockUserDataPrivate::BTextBlockUserDataPrivate(BTextBlockUserData *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BTextBlockUserDataPrivate::~BTextBlockUserDataPrivate()
+{
+    delete data;
+}
+
+/*============================== Static public methods =====================*/
+
+QList<BAbstractFileType::SkipInterval> BTextBlockUserDataPrivate::processList(
+        const QList<BAbstractFileType::SkipInterval> &list)
+{
+    if (list.isEmpty())
+        return list;
+    QList<BAbstractFileType::SkipInterval> nlist = list;
+    foreach (int i, bRangeR(nlist.size() - 1, 0)) {
+        const BAbstractFileType::SkipInterval &si = nlist.at(i);
+        if (si.start < 0 || si.end < 0 || si.start > si.end)
+            nlist.removeAt(i);
+    }
+    if (nlist.isEmpty())
+        return nlist;
+    qSort(nlist.begin(), nlist.end(), &lessThan);
+    foreach (int i, bRangeR(nlist.size() - 1, 1)) {
+        BAbstractFileType::SkipInterval &si1 = nlist[i - 1];
+        const BAbstractFileType::SkipInterval &si2 = nlist.at(i);
+        if (si1.end >= si2.start)
+            si1.end = si2.end;
+        nlist.removeAt(i);
+    }
+    return nlist;
+}
+
+bool BTextBlockUserDataPrivate::lessThan(const BAbstractFileType::SkipInterval &si1,
+                                         const BAbstractFileType::SkipInterval &si2)
+{
+    return si1.start < si2.start;
+}
+
+/*============================== Public methods ============================*/
+
+void BTextBlockUserDataPrivate::init()
+{
+    data = 0;
+}
+
+/*============================================================================
+================================ BTextBlockUserData ==========================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BTextBlockUserData::BTextBlockUserData(const QList<BAbstractFileType::SkipInterval> &list) :
+    BBase(*new BTextBlockUserDataPrivate(this))
+{
+    d_func()->init();
+    setSkipIntervals(list);
+}
+
+BTextBlockUserData::~BTextBlockUserData()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
+
+QString BTextBlockUserData::textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer)
+{
+    if (!ud)
+        return text;
+    QString ntext = text;
+    foreach (int i, bRangeR(ud->d_func()->skipIntervals.size() - 1, 0)) {
+        const BAbstractFileType::SkipInterval &si = ud->d_func()->skipIntervals.at(i);
+        if (si.start >= ntext.length() || si.end >= ntext.length())
+            continue;
+        int len = si.end - si.start + 1;
+        if ('\0' != replacer)
+            ntext.replace(si.start, len, replacer);
+        else
+            ntext.remove(si.start, len);
+    }
+    return ntext;
+}
+
+QString BTextBlockUserData::textWithoutSkipIntervals(const QTextBlock &block, char replacer)
+{
+    return textWithoutSkipIntervals(static_cast<BTextBlockUserData *>(block.userData()), block.text(), replacer);
+}
+
+QList<BAbstractFileType::SkipInterval> BTextBlockUserData::skipIntervals(const QTextBlock &block)
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    return ud ? ud->d_func()->skipIntervals : QList<BAbstractFileType::SkipInterval>();
+}
+
+bool BTextBlockUserData::shouldSkip(const BTextBlockUserData *ud, int pos)
+{
+    if (!ud || pos < 0)
+        return false;
+    foreach (const BAbstractFileType::SkipInterval &si, ud->d_func()->skipIntervals) {
+        if (si.start <= pos && si.end >= pos)
+            return true;
+    }
+    return false;
+}
+
+bool BTextBlockUserData::shouldSkip(const QTextBlock &block, int pos)
+{
+    if (pos < 0 || pos >= block.length())
+        return false;
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    if (!ud)
+        return false;
+    return shouldSkip(ud, pos);
+}
+
+/*============================== Public methods ============================*/
+
+void BTextBlockUserData::setSkipIntervals(const QList<BAbstractFileType::SkipInterval> &list)
+{
+    d_func()->skipIntervals = BTextBlockUserDataPrivate::processList(list);
+}
+
+QList<BAbstractFileType::SkipInterval> BTextBlockUserData::skipIntervals() const
+{
+    return d_func()->skipIntervals;
+}
+
+void BTextBlockUserData::setExtraData(BTextBlockExtraData *data)
+{
+    if (data != d_func()->data)
+        delete d_func()->data;
+    d_func()->data = data;
+}
+
+BTextBlockExtraData *BTextBlockUserData::extraData() const
+{
+    return d_func()->data;
+}
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -91,9 +242,14 @@ void BSyntaxHighlighter::setCurrentBlockState(int newState)
     QSyntaxHighlighter::setCurrentBlockState(newState);
 }
 
-void BSyntaxHighlighter::setCurrentBlockUserData(BTextBlockUserData *data)
+void BSyntaxHighlighter::setCurrentBlockExtraData(BTextBlockExtraData *data)
 {
-    QSyntaxHighlighter::setCurrentBlockUserData(data);
+    BTextBlockUserData *ud = currentBlockUserData();
+    if (!ud) {
+        ud = new BTextBlockUserData;
+        setCurrentBlockUserData(ud);
+    }
+    ud->setExtraData(data);
 }
 
 void BSyntaxHighlighter::setFormat(int start, int count, const QTextCharFormat &format)
@@ -124,6 +280,12 @@ int BSyntaxHighlighter::currentBlockState() const
 BTextBlockUserData *BSyntaxHighlighter::currentBlockUserData() const
 {
     return static_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
+}
+
+BTextBlockExtraData *BSyntaxHighlighter::currentBlockExtraData() const
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
+    return ud ? ud->extraData() : 0;
 }
 
 QTextCharFormat BSyntaxHighlighter::format(int position) const
@@ -232,6 +394,40 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     r.startBr = 0;
     r.endBr = 0;
     return r;
+}
+
+void BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(QTextBlock block,
+                                                               const QList<BAbstractFileType::SkipInterval> &list)
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    if (!ud) {
+        ud = new BTextBlockUserData(list);
+        block.setUserData(ud);
+    }
+    ud->setSkipIntervals(list);
+}
+
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(QTextBlock block,
+                                                              const BAbstractFileType::SkipInterval &si)
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    QList<BAbstractFileType::SkipInterval> list;
+    list << si;
+    if (ud) {
+        list << ud->skipIntervals();
+        ud->setSkipIntervals(list);
+    } else {
+        ud = new BTextBlockUserData(list);
+        block.setUserData(ud);
+    }
+}
+
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(QTextBlock block, int start, int end)
+{
+    BAbstractFileType::SkipInterval si;
+    si.start = start;
+    si.end = (end >= 0) ? end : (block.text().length() - 1);
+    addBlockSkipInterval(block, si);
 }
 
 /*============================== Public constructors =======================*/

@@ -16,6 +16,6 @@
 #include "bopensaveeditormodule.h"
 #include "bsearcheditormodule.h"
 #include "bsimplecodeeditordocument.h"
-#include "btextblockuserdata.h"
+#include "btextblockextradata.h"
 
 #endif //BEQT_BEQTCODEEDITOR_MODULE_H

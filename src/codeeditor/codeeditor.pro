@@ -39,7 +39,7 @@ HEADERS += \
     bsearcheditormodule_p.h \
     bsimplecodeeditordocument.h \
     bsimplecodeeditordocument_p.h \
-    btextblockuserdata.h
+    btextblockextradata.h
 
 SOURCES += \
     babstractcodeeditordocument.cpp \
@@ -57,7 +57,7 @@ SOURCES += \
     bopensaveeditormodule.cpp \
     bsearcheditormodule.cpp \
     bsimplecodeeditordocument.cpp \
-    btextblockuserdata.cpp
+    btextblockextradata.cpp
 
 !contains(BEQT_CONFIG, no_install) {
 

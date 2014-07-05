@@ -23,9 +23,10 @@
 #define BABSTRACTCODEEDITORDOCUMENT_P_H
 
 class BCodeEditor;
-class BTextBlockUserData;
+class BTextBlockUserDataPrivate;
 class BSpellChecker;
 class BSignalDelayProxy;
+class BTextBlockExtraData;
 
 class QWidget;
 class QTextCodec;
@@ -40,9 +41,11 @@ class QMenu;
 
 #include "babstractcodeeditordocument.h"
 #include "babstractdocumentdriver.h"
+#include "babstractfiletype.h"
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbaseobject_p.h>
+#include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
 #include <QString>
@@ -56,6 +59,50 @@ class QMenu;
 #include <QTimer>
 
 /*============================================================================
+================================ BTextBlockUserData ==========================
+============================================================================*/
+
+class BTextBlockUserData : public QTextBlockUserData, public BBase
+{
+    B_DECLARE_PRIVATE(BTextBlockUserData)
+public:
+    explicit BTextBlockUserData(const QList<BAbstractFileType::SkipInterval> &list
+                                = QList<BAbstractFileType::SkipInterval>());
+    ~BTextBlockUserData();
+public:
+    static QString textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer = '\0');
+    static QString textWithoutSkipIntervals(const QTextBlock &block, char replacer = '\0');
+    static QList<BAbstractFileType::SkipInterval> skipIntervals(const QTextBlock &block);
+    static bool shouldSkip(const BTextBlockUserData *ud, int pos);
+    static bool shouldSkip(const QTextBlock &block, int pos);
+public:
+    void setSkipIntervals(const QList<BAbstractFileType::SkipInterval> &list);
+    QList<BAbstractFileType::SkipInterval> skipIntervals() const;
+    void setExtraData(BTextBlockExtraData *data);
+    BTextBlockExtraData *extraData() const;
+};
+
+/*============================================================================
+================================ BTextBlockUserDataPrivate ===================
+============================================================================*/
+
+class BTextBlockUserDataPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BTextBlockUserData)
+public:
+    explicit BTextBlockUserDataPrivate(BTextBlockUserData *q);
+    ~BTextBlockUserDataPrivate();
+public:
+    static QList<BAbstractFileType::SkipInterval> processList(const QList<BAbstractFileType::SkipInterval> &list);
+    static bool lessThan(const BAbstractFileType::SkipInterval &si1, const BAbstractFileType::SkipInterval &si2);
+public:
+    void init();
+public:
+    QList<BAbstractFileType::SkipInterval> skipIntervals;
+    BTextBlockExtraData *data;
+};
+
+/*============================================================================
 ================================ BSyntaxHighlighter ==========================
 ============================================================================*/
 
@@ -65,13 +112,14 @@ public:
     explicit BSyntaxHighlighter(BAbstractCodeEditorDocument *doc, QTextDocument *parent);
 public:
     void setCurrentBlockState(int newState);
-    void setCurrentBlockUserData(BTextBlockUserData *data);
+    void setCurrentBlockExtraData(BTextBlockExtraData *data);
     void setFormat(int start, int count, const QTextCharFormat &format);
     void setFormat(int start, int count, const QColor &color);
     void setFormat(int start, int count, const QFont &font);
     QTextBlock currentBlock() const;
     int currentBlockState() const;
     BTextBlockUserData *currentBlockUserData() const;
+    BTextBlockExtraData *currentBlockExtraData() const;
     QTextCharFormat format(int position) const;
     int previousBlockState() const;
     BAbstractCodeEditorDocument *editorDocument() const;
@@ -116,6 +164,10 @@ public:
     static ExtraSelection createExtraSelection(const QPlainTextEdit *edt,
                                                const QTextCharFormat &format = QTextCharFormat());
     static FindBracketPairResult createFindBracketPairResult();
+    static void setBlockSkipIntervals(QTextBlock block, const QList<BAbstractFileType::SkipInterval> &list
+                                      = QList<BAbstractFileType::SkipInterval>());
+    static void addBlockSkipInterval(QTextBlock block, const BAbstractFileType::SkipInterval &si);
+    static void addBlockSkipInterval(QTextBlock block, int start, int end = -1);
 public:
     explicit BAbstractCodeEditorDocumentPrivate(BAbstractCodeEditorDocument *q, BCodeEditor *editor);
     ~BAbstractCodeEditorDocumentPrivate();

@@ -26,7 +26,6 @@ class QFont;
 #include "bcodeedit.h"
 #include "bcodeedit_p.h"
 #include "babstractfiletype.h"
-#include "btextblockuserdata.h"
 #include "babstractcodeeditordocument.h"
 #include "btexttools.h"
 
