@@ -45,14 +45,14 @@
 
 #include <QDebug>
 
-/*static BAbstractCodeEditorDocument::TextProcessingResult procFunc(const QString &text, const QVariantMap &m)
+static BAbstractCodeEditorDocument::TextProcessingResult procFunc(const QString &text, const QVariantMap &m)
 {
     BAbstractCodeEditorDocument::TextProcessingResult r;
-    r.text = text;
-    //r.text.remove();
-    BTextTools::replaceTabs(&r.text, static_cast<BeQt::TabWidth>(m.value("tab_width").toInt()));
+    r.text = BTextTools::withoutUnsuppottedSymbols(text);
+    BeQt::TabWidth tw = enum_cast<BeQt::TabWidth>(m.value("tab_width"), BeQt::TabWidth2, BeQt::TabWidth8);
+    BTextTools::replaceTabs(&r.text, static_cast<BeQt::TabWidth>(tw));
     return r;
-}*/
+}
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocumentPrivate ============
@@ -457,6 +457,16 @@ int BSimpleCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const 
     return count;
 }
 
+void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
+{
+    d_func()->ptedt->installEventFilter(filter);
+}
+
+void BSimpleCodeEditorDocument::removeInnerEventFilter(QObject *filter)
+{
+    d_func()->ptedt->removeEventFilter(filter);
+}
+
 QFont BSimpleCodeEditorDocument::editFont() const
 {
     return d_func()->ptedt->font();
@@ -673,11 +683,6 @@ void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)
     d_func()->ptedt->viewport()->installEventFilter(handler);
 }
 
-void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
-{
-    d_func()->ptedt->installEventFilter(filter);
-}
-
 QPoint BSimpleCodeEditorDocument::cursorPositionRowColumnImplementation() const
 {
     QTextCursor tc = d_func()->ptedt->textCursor();
@@ -697,7 +702,7 @@ int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) con
     return tb.position() + pos.x();
 }
 
-/*BAbstractCodeEditorDocument::TextProcessingFunction BSimpleCodeEditorDocument::textPreprocessingFunction() const
+BAbstractCodeEditorDocument::TextProcessingFunction BSimpleCodeEditorDocument::textPreprocessingFunction() const
 {
     return &procFunc;
 }
@@ -705,6 +710,6 @@ int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) con
 QVariantMap BSimpleCodeEditorDocument::preprocessingUserData()
 {
     QVariantMap m;
-    m.insert("tab_width", editTabWidth());
+    m.insert("tab_width", (int) editTabWidth());
     return m;
-}*/
+}

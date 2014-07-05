@@ -302,6 +302,30 @@ int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs)
     return count;
 }
 
+void removeUnsuppottedSymbols(QString &s)
+{
+    typedef QList<QChar> CharList;
+    init_once(CharList, list, CharList()) {
+        list << QChar(1) << QChar(2) << QChar(3) << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8);
+        list << QChar(11) << QChar(12) << QChar(13) << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18);
+        list << QChar(19) << QChar(20) << QChar(21) << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26);
+        list << QChar(27) << QChar(28) << QChar(29) << QChar(30) << QChar(31);
+    }
+    if (s.isEmpty())
+        return;
+    foreach (const QChar &c, list)
+        s.remove(c);
+}
+
+QString withoutUnsuppottedSymbols(const QString &s)
+{
+    if (s.isEmpty())
+        return s;
+    QString ns = s;
+    removeUnsuppottedSymbols(ns);
+    return ns;
+}
+
 QStringList sortComprising(const QStringList &list, Qt::CaseSensitivity cs)
 {
     QStringList nlist = list;

@@ -73,6 +73,8 @@ B_CORE_EXPORT int removeDuplicates(QStringList *list, Qt::CaseSensitivity cs = Q
 B_CORE_EXPORT QStringList removeAll(const QStringList &list, const QString &what,
                                     Qt::CaseSensitivity cs = Qt::CaseSensitive, int *count  = 0);
 B_CORE_EXPORT int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs = Qt::CaseSensitive);
+B_CORE_EXPORT void removeUnsuppottedSymbols(QString &s);
+B_CORE_EXPORT QString withoutUnsuppottedSymbols(const QString &s);
 B_CORE_EXPORT QStringList sortComprising(const QStringList &list, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 B_CORE_EXPORT void sortComprising(QStringList *list, Qt::CaseSensitivity cs = Qt::CaseSensitive);
 B_CORE_EXPORT QString toHtml(const QString &text);

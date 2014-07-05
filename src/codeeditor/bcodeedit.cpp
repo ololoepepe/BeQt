@@ -33,6 +33,7 @@ class QFont;
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/private/bbaseobject_p.h>
+#include <BeQtCore/BTextTools>
 #include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BPlainTextEdit>
 #include <BeQtWidgets/BClipboardNotifier>
@@ -415,7 +416,7 @@ QStringList BCodeEditPrivate::processLine(const QString &line, int ll, BeQt::Tab
 BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString &text, int ll, BeQt::TabWidth tw)
 {
     ProcessTextResult res;
-    QStringList sl = removeUnsupportedSymbols(text).split('\n');
+    QStringList sl = BTextTools::withoutUnsuppottedSymbols(text).split('\n');
     QStringList sln;
     for (int i = 0; i < sl.size(); ++i)
     {
@@ -435,31 +436,6 @@ BCodeEditPrivate::ProcessTextResult BCodeEditPrivate::processText(const QString 
     }
     res.newText = sln.join("\n");
     return res;
-}
-
-QString BCodeEditPrivate::removeUnsupportedSymbols(const QString &s)
-{
-    QString ns = s;
-    removeUnsupportedSymbols(&ns);
-    return ns;
-}
-
-void BCodeEditPrivate::removeUnsupportedSymbols(QString *text)
-{
-    if (!text)
-        return;
-    foreach ( const QChar &c, createUnsupportedSymbols() )
-        text->remove(c);
-}
-
-QList<QChar> BCodeEditPrivate::createUnsupportedSymbols()
-{
-    QList<QChar> list;
-    list << QChar(1) << QChar(2) << QChar(3) << QChar(4) << QChar(5) << QChar(6) << QChar(7) << QChar(8);
-    list << QChar(11) << QChar(12) << QChar(13) << QChar(14) << QChar(15) << QChar(16) << QChar(17) << QChar(18);
-    list << QChar(19) << QChar(20) << QChar(21) << QChar(22) << QChar(23)  << QChar(24) << QChar(25) << QChar(26);
-    list << QChar(27) << QChar(28) << QChar(29) << QChar(30) << QChar(31);
-    return list;
 }
 
 BCodeEdit::SplittedLinesRange BCodeEditPrivate::createSplittedLinesRange()
@@ -918,7 +894,7 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     int tcpos = (lind >= posb && (lineLength - lind) >= txt.length()) ? (tc.position() + txt.length()) : -1;
     QString ltext = btext.left(posb);
     QString rtext = BTextTools::removeTrailingSpaces(btext.right(btext.length() - posb));
-    QStringList sl = BTextTools::replaceTabs(removeUnsupportedSymbols(txt), tabWidth).split('\n');
+    QStringList sl = BTextTools::replaceTabs(BTextTools::withoutUnsuppottedSymbols(txt), tabWidth).split('\n');
     int blen = 0;
     bool b = blockMode && !asKeyPress && testBlock(sl, &blen);
     if (b)

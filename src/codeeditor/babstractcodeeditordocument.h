@@ -94,6 +94,8 @@ public:
     virtual int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText) = 0;
     virtual int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0) = 0;
     virtual int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText) = 0;
+    virtual void installInnerEventFilter(QObject *filter) = 0;
+    virtual void removeInnerEventFilter(QObject *filter) = 0;
     void init();
     void setFileType(BAbstractFileType *ft);
     void setRecognizedBrackets(const BracketPairList &list);
@@ -170,7 +172,6 @@ protected:
     virtual void undoImplementation() = 0;
     virtual void redoImplementation() = 0;
     virtual void installDropHandler(QObject *handler) = 0;
-    virtual void installInnerEventFilter(QObject *filter) = 0;
     virtual QPoint cursorPositionRowColumnImplementation() const = 0;
     virtual int cursorPositionForRowColumn(const QPoint &pos) const = 0;
     virtual void highlightBrackets();

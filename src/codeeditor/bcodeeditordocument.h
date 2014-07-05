@@ -70,6 +70,8 @@ public:
     int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
     int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
     int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
+    void installInnerEventFilter(QObject *filter);
+    void removeInnerEventFilter(QObject *filter);
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
     bool isEditAutoIndentationEnabled() const;
@@ -110,7 +112,6 @@ protected:
     void redoImplementation();
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void installDropHandler(QObject *handler);
-    void installInnerEventFilter(QObject *filter);
     QPoint cursorPositionRowColumnImplementation() const;
     int cursorPositionForRowColumn(const QPoint &pos) const;
 Q_SIGNALS:

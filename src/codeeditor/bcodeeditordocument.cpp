@@ -191,6 +191,16 @@ int BCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const QStrin
     return d_func()->cedt->replaceInDocumentRegexp(rx, newText);
 }
 
+void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
+{
+    d_func()->cedt->innerEdit()->installEventFilter(filter);
+}
+
+void BCodeEditorDocument::removeInnerEventFilter(QObject *filter)
+{
+    d_func()->cedt->innerEdit()->removeEventFilter(filter);
+}
+
 QFont BCodeEditorDocument::editFont() const
 {
     return d_func()->cedt->editFont();
@@ -378,11 +388,6 @@ void BCodeEditorDocument::redoImplementation()
 void BCodeEditorDocument::installDropHandler(QObject *handler)
 {
     d_func()->cedt->innerEdit()->viewport()->installEventFilter(handler);
-}
-
-void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
-{
-    d_func()->cedt->innerEdit()->installEventFilter(filter);
 }
 
 QPoint BCodeEditorDocument::cursorPositionRowColumnImplementation() const

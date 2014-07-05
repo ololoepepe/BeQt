@@ -68,6 +68,8 @@ public:
     int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
     int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
     int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
+    void installInnerEventFilter(QObject *filter);
+    void removeInnerEventFilter(QObject *filter);
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
     bool isEditAutoIndentationEnabled() const;
@@ -99,11 +101,10 @@ protected:
     void undoImplementation();
     void redoImplementation();
     void installDropHandler(QObject *handler);
-    void installInnerEventFilter(QObject *filter);
     QPoint cursorPositionRowColumnImplementation() const;
     int cursorPositionForRowColumn(const QPoint &pos) const;
-    //TextProcessingFunction textPreprocessingFunction() const;
-    //QVariantMap preprocessingUserData();
+    TextProcessingFunction textPreprocessingFunction() const;
+    QVariantMap preprocessingUserData();
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocument)
 };

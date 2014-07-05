@@ -150,9 +150,6 @@ public:
 public:
     static QStringList processLine(const QString &line, int ll, BeQt::TabWidth tw);
     static ProcessTextResult processText(const QString &text, int ll, BeQt::TabWidth tw);
-    static QString removeUnsupportedSymbols(const QString &text);
-    static void removeUnsupportedSymbols(QString *text);
-    static QList<QChar> createUnsupportedSymbols();
     static BCodeEdit::SplittedLinesRange createSplittedLinesRange();
     static QString makeBlock(const QString &text, int *length = 0);
     static void makeBlock(QString *text, int *length = 0);
