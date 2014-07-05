@@ -520,6 +520,7 @@ void BCodeEditPrivate::init()
     lineLength = 120;
     tmpLineLength = -1;
     tabWidth = BeQt::TabWidth4;
+    autoIndentation = true;
     hasSelection = false;
     hasBookmarks = false;
     copyAvailable = false;
@@ -1085,7 +1086,7 @@ void BCodeEditPrivate::handleReturn()
     tc.insertBlock();
     tc.insertText(rtext);
     tc.movePosition(QTextCursor::StartOfBlock);
-    tc.setPosition(tc.position() + i);
+    tc.setPosition(tc.position() + (autoIndentation ? i : 0));
     ptedt->setTextCursor(tc);
     tc.endEditBlock();
     requestRehighlightBlock(tbp); //Not sure if this is necessary
@@ -1744,6 +1745,11 @@ void BCodeEdit::setEditTabWidth(BeQt::TabWidth tw)
     d->tabWidth = tw;
 }
 
+void BCodeEdit::setEditAutoIndentationEnabled(bool enabled)
+{
+    d_func()->autoIndentation = enabled;
+}
+
 void BCodeEdit::setLineNumberWidgetVisible(bool b)
 {
     d_func()->lnwgt->setVisible(b);
@@ -1941,7 +1947,12 @@ BeQt::TabWidth BCodeEdit::editTabWidth() const
     return d_func()->tabWidth;
 }
 
-bool BCodeEdit::lineNumberWidgetVisible() const
+bool BCodeEdit::isEditAutoIndentationEnabled() const
+{
+    return d_func()->autoIndentation;
+}
+
+bool BCodeEdit::isLineNumberWidgetVisible() const
 {
     return d_func()->lnwgt->isVisible();
 }

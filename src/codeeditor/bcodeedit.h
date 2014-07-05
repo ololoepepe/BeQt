@@ -77,6 +77,7 @@ public:
     void setEditMode(EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
+    void setEditAutoIndentationEnabled(bool enabled);
     void setLineNumberWidgetVisible(bool b);
     void setExtraSelections(const ExtraSelectionList &list);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
@@ -96,7 +97,8 @@ public:
     EditMode editMode() const;
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
-    bool lineNumberWidgetVisible() const;
+    bool isEditAutoIndentationEnabled() const;
+    bool isLineNumberWidgetVisible() const;
     ExtraSelectionList extraSelections() const;
     QPoint cursorPosition() const;
     QString text(bool full = false) const;

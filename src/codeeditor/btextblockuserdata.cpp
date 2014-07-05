@@ -22,12 +22,90 @@
 #include "btextblockuserdata.h"
 
 #include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbase_p.h>
 
 #include <QTextBlockUserData>
 #include <QString>
 #include <QTextBlock>
+#include <QList>
+#include <QtAlgorithms>
 
 #include <QDebug>
+
+/*============================================================================
+================================ BTextBlockUserDataPrivate ===================
+============================================================================*/
+
+class BTextBlockUserDataPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BTextBlockUserData)
+public:
+    explicit BTextBlockUserDataPrivate(BTextBlockUserData *q);
+    ~BTextBlockUserDataPrivate();
+public:
+    static QList<BTextBlockUserData::SkipInterval> processList(const QList<BTextBlockUserData::SkipInterval> &list);
+    static bool lessThan(const BTextBlockUserData::SkipInterval &si1, const BTextBlockUserData::SkipInterval &si2);
+public:
+    void init();
+public:
+    QList<BTextBlockUserData::SkipInterval> skipIntervals;
+};
+
+/*============================================================================
+================================ BTextBlockUserDataPrivate ===================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BTextBlockUserDataPrivate::BTextBlockUserDataPrivate(BTextBlockUserData *q) :
+    BBasePrivate(q)
+{
+    //
+}
+
+BTextBlockUserDataPrivate::~BTextBlockUserDataPrivate()
+{
+    //
+}
+
+/*============================== Static public methods =====================*/
+
+QList<BTextBlockUserData::SkipInterval> BTextBlockUserDataPrivate::processList(
+        const QList<BTextBlockUserData::SkipInterval> &list)
+{
+    if (list.isEmpty())
+        return list;
+    QList<BTextBlockUserData::SkipInterval> nlist = list;
+    foreach (int i, bRangeR(nlist.size() - 1, 0)) {
+        const BTextBlockUserData::SkipInterval &si = nlist.at(i);
+        if (si.start < 0 || si.end < 0 || si.start > si.end)
+            nlist.removeAt(i);
+    }
+    if (nlist.isEmpty())
+        return nlist;
+    qSort(nlist.begin(), nlist.end(), &lessThan);
+    foreach (int i, bRangeR(nlist.size() - 1, 1)) {
+        BTextBlockUserData::SkipInterval &si1 = nlist[i - 1];
+        const BTextBlockUserData::SkipInterval &si2 = nlist.at(i);
+        if (si1.end >= si2.start)
+            si1.end = si2.end;
+        nlist.removeAt(i);
+    }
+    return nlist;
+}
+
+bool BTextBlockUserDataPrivate::lessThan(const BTextBlockUserData::SkipInterval &si1,
+                                         const BTextBlockUserData::SkipInterval &si2)
+{
+    return si1.start < si2.start;
+}
+
+/*============================== Public methods ============================*/
+
+void BTextBlockUserDataPrivate::init()
+{
+    //
+}
 
 /*============================================================================
 ================================ BTextBlockUserData ==========================
@@ -35,10 +113,11 @@
 
 /*============================== Public constructors =======================*/
 
-BTextBlockUserData::BTextBlockUserData(int sf, int st)
+BTextBlockUserData::BTextBlockUserData(const QList<SkipInterval> &list) :
+    BBase(*new BTextBlockUserDataPrivate(this))
 {
-    skipFrom = sf;
-    skipTo = st;
+    d_func()->init();
+    setSkipIntervals(list);
 }
 
 BTextBlockUserData::~BTextBlockUserData()
@@ -48,40 +127,64 @@ BTextBlockUserData::~BTextBlockUserData()
 
 /*============================== Static public methods =====================*/
 
-QString BTextBlockUserData::textWithoutComments(const BTextBlockUserData *ud, const QString &text)
+QString BTextBlockUserData::textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer)
 {
-    if (!ud || ud->skipFrom < 0)
+    if (!ud)
         return text;
     QString ntext = text;
-    int len = ( ud->skipTo >= 0 ? ud->skipTo : text.length() ) - ud->skipFrom;
-    ntext.replace( ud->skipFrom, len, QString().fill(' ', len) );
+    foreach (int i, bRangeR(ud->d_func()->skipIntervals.size() - 1, 0)) {
+        const SkipInterval &si = ud->d_func()->skipIntervals.at(i);
+        if (si.start >= ntext.length() || si.end >= ntext.length())
+            continue;
+        int len = si.end - si.start + 1;
+        if ('\0' != replacer)
+            ntext.replace(si.start, len, replacer);
+        else
+            ntext.remove(si.start, len);
+    }
     return ntext;
 }
 
-QString BTextBlockUserData::textWithoutComments(const QTextBlock &block)
+QString BTextBlockUserData::textWithoutSkipIntervals(const QTextBlock &block, char replacer)
 {
-    return textWithoutComments( static_cast<BTextBlockUserData *>( block.userData() ), block.text() );
+    return textWithoutSkipIntervals(static_cast<BTextBlockUserData *>(block.userData()), block.text(), replacer);
 }
 
-int BTextBlockUserData::blockSkipFrom(const QTextBlock &block)
+QList<BTextBlockUserData::SkipInterval> BTextBlockUserData::skipIntervals(const QTextBlock &block)
 {
-    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>( block.userData() );
-    return ud ? ud->skipFrom : -1;
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    return ud ? ud->d_func()->skipIntervals : QList<SkipInterval>();
 }
 
-void BTextBlockUserData::setBlockComment(QTextBlock block, int start, int end)
+bool BTextBlockUserData::shouldSkip(const BTextBlockUserData *ud, int pos)
 {
-    BTextBlockUserData *ud = dynamic_cast<BTextBlockUserData *>(block.userData());
+    if (!ud || pos < 0)
+        return false;
+    foreach (const SkipInterval &si, ud->d_func()->skipIntervals) {
+        if (si.start <= pos && si.end >= pos)
+            return true;
+    }
+    return false;
+}
+
+bool BTextBlockUserData::shouldSkip(const QTextBlock &block, int pos)
+{
+    if (pos < 0 || pos >= block.length())
+        return false;
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
     if (!ud)
-    {
-        if (start < 0)
-            return;
-        ud = new BTextBlockUserData(start, end);
-    }
-    else
-    {
-        ud->skipFrom = start;
-        ud->skipTo = end;
-    }
-    block.setUserData(ud);
+        return false;
+    return shouldSkip(ud, pos);
+}
+
+/*============================== Public methods ============================*/
+
+void BTextBlockUserData::setSkipIntervals(const QList<SkipInterval> &list)
+{
+    d_func()->skipIntervals = BTextBlockUserDataPrivate::processList(list);
+}
+
+QList<BTextBlockUserData::SkipInterval> BTextBlockUserData::skipIntervals() const
+{
+    return d_func()->skipIntervals;
 }

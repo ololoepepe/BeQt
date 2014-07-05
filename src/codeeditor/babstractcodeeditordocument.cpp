@@ -121,7 +121,7 @@ int BSyntaxHighlighter::currentBlockState() const
 
 BTextBlockUserData *BSyntaxHighlighter::currentBlockUserData() const
 {
-    return dynamic_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
+    return static_cast<BTextBlockUserData *>(QSyntaxHighlighter::currentBlockUserData());
 }
 
 QTextCharFormat BSyntaxHighlighter::format(int position) const
@@ -437,7 +437,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
     const BracketPair *bracket = 0;
-    if (!testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, false, bracket))
+    if (!testBracket(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '), posInBlock, false, bracket))
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
@@ -445,7 +445,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     const BracketPair *br = 0;
     while (tb.isValid())
     {
-        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
+        QString text = BTextBlockUserData::textWithoutSkipIntervals(tb, ' ');
         while (posInBlock >= 0)
         {
             if (testBracket(text, posInBlock, true, br))
@@ -479,8 +479,9 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
             }
         }
         tb = tb.previous();
-        int skipFrom = BTextBlockUserData::blockSkipFrom(tb);
-        posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
+        posInBlock = tb.length();
+        //int skipFrom = BTextBlockUserData::blockSkipFrom(tb);
+        //posInBlock = (skipFrom >= 0) ? (skipFrom - 1) : tb.length();
     }
     return res;
 }
@@ -495,7 +496,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
     const BracketPair *bracket = 0;
-    if (!testBracket(BTextBlockUserData::textWithoutComments(tb), posInBlock, true, bracket))
+    if (!testBracket(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '), posInBlock, true, bracket))
         return res;
     res.start = tb.position() + posInBlock;
     posInBlock += bracket->opening.length();
@@ -503,7 +504,7 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     const BracketPair *br = 0;
     while ( tb.isValid() )
     {
-        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutComments(tb));
+        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '));
         while (posInBlock <= text.length())
         {
             if (testBracket(text, posInBlock, false, br))

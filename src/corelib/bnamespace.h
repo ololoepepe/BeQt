@@ -96,6 +96,13 @@ const int Megabyte = 1024 * Kilobyte;
 const int Gigabyte = 1024 * Megabyte;
 const QDataStream::Version DataStreamVersion = QDataStream::Qt_4_8;
 
+const int ContorlShiftModifier = ((int) Qt::ControlModifier | (int) Qt::ShiftModifier);
+const int KeypadControlModifier = ((int) Qt::KeypadModifier | (int) Qt::ControlModifier);
+const int KeypadShiftModifier = ((int) Qt::KeypadModifier | (int) Qt::ShiftModifier);
+const int KeypadAltModifier = ((int) Qt::KeypadModifier | (int) Qt::AltModifier);
+const int KeypadControlShiftModifier = ((int) Qt::KeypadModifier | ContorlShiftModifier);
+const int KeypadControlAltModifier = (KeypadAltModifier | (int) Qt::ControlModifier);
+
 B_CORE_EXPORT int area(const QRect &r);
 B_CORE_EXPORT qreal area(const QRectF &r);
 B_CORE_EXPORT void msleep(unsigned long msecs);

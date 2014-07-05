@@ -146,6 +146,11 @@ void BCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
     d_func()->cedt->setEditTabWidth(tw);
 }
 
+void BCodeEditorDocument::setEditAutoIndentationEnabled(bool enabled)
+{
+    d_func()->cedt->setEditAutoIndentationEnabled(enabled);
+}
+
 void BCodeEditorDocument::setLineNumberWidgetVisible(bool b)
 {
     d_func()->cedt->setLineNumberWidgetVisible(b);
@@ -181,9 +186,14 @@ BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
     return d_func()->cedt->editTabWidth();
 }
 
-bool BCodeEditorDocument::lineNumberWidgetVisible() const
+bool BCodeEditorDocument::isEditAutoIndentationEnabled() const
 {
-    return d_func()->cedt->lineNumberWidgetVisible();
+    return d_func()->cedt->isEditAutoIndentationEnabled();
+}
+
+bool BCodeEditorDocument::isLineNumberWidgetVisible() const
+{
+    return d_func()->cedt->isLineNumberWidgetVisible();
 }
 
 QString BCodeEditorDocument::text(bool full) const

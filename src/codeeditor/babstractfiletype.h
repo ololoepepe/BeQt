@@ -23,8 +23,8 @@
 #define BABSTRACTFILETYPE_H
 
 class BSyntaxHighlighter;
-class BTextBlockUserData;
 class BAbstractFileTypePrivate;
+class BAbstractCodeEditorDocument;
 
 class QStringList;
 class QTextBlock;
@@ -34,6 +34,8 @@ class QFont;
 
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+
+#include "btextblockuserdata.h"
 
 #include <QString>
 #include <QList>
@@ -69,9 +71,14 @@ public:
     virtual QStringList suffixes() const = 0;
     virtual bool matchesFileName(const QString &fileName) const = 0;
     virtual BracketPairList brackets() const = 0;
+    virtual int indentation(const QTextBlock &previousBlock) const;
     QString createFileDialogFilter() const;
 protected:
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
+    static void setBlockSkipIntervals(QTextBlock block, const QList<BTextBlockUserData::SkipInterval> &list
+                                      = QList<BTextBlockUserData::SkipInterval>());
+    static void addBlockSkipInterval(QTextBlock block, const BTextBlockUserData::SkipInterval &si);
+    static void addBlockSkipInterval(QTextBlock block, int start, int end = -1);
 protected:
     virtual void highlightBlock(const QString &text) = 0;
     QTextBlock currentBlock() const;

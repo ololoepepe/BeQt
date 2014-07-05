@@ -59,6 +59,7 @@ public:
     void setModification(bool modified);
     void setEditFont(const QFont &fnt);
     void setEditTabWidth(BeQt::TabWidth tw);
+    void setEditAutoIndentationEnabled(bool enabled);
     void setLineNumberWidgetVisible(bool b);
     void setCurrentLineHighlightingEnabled(bool b);
     void setHighlightedLineColor(const QColor &c);
@@ -68,7 +69,8 @@ public:
     int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
-    bool lineNumberWidgetVisible() const;
+    bool isEditAutoIndentationEnabled() const;
+    bool isLineNumberWidgetVisible() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
     QPoint selectionStart() const;

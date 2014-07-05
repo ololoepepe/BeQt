@@ -74,10 +74,12 @@ public:
     virtual void setModification(bool modified) = 0;
     virtual void setEditFont(const QFont &fnt) = 0;
     virtual void setEditTabWidth(BeQt::TabWidth tw) = 0;
+    virtual void setEditAutoIndentationEnabled(bool enabled) = 0;
     virtual void setLineNumberWidgetVisible(bool b) = 0;
     virtual QFont editFont() const = 0;
     virtual BeQt::TabWidth editTabWidth() const = 0;
-    virtual bool lineNumberWidgetVisible() const = 0;
+    virtual bool isEditAutoIndentationEnabled() const = 0;
+    virtual bool isLineNumberWidgetVisible() const = 0;
     virtual QString text(bool full = false) const = 0;
     virtual QString selectedText(bool full = false) const = 0;
     virtual QPoint selectionStart() const = 0;

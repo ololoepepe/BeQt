@@ -13,6 +13,8 @@
 * Implement native settings dialogs
 * Improve BTextTools::toHtml function
 * Implement locking of global object instances
+* Add method for setting terminal window size to BTerminal
+* Move some methods to separate namespaces
 
 === PATCH ===
 
@@ -20,21 +22,17 @@
 
 === MINOR ===
 
-* Add function for removing old plugin settings
+[done] Add function for removing old plugin settings
 * Add ability to remember entered commands in BTerminalIOHandler
-* Add ability to set auto-indentation in code editor
+[done] Add ability to set auto-indentation in code editor
 [done] Add overloaded BCoreApplication installTranslator and removeTranslator methods
 [done] Add template methods for secure casting int and QVariant to enum (enum_cast)
-
-* Add method for setting terminal window size to BTerminal
 
 === MAJOR ===
 
 [done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
 [done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
-
-* Move some methods to separate namespaces
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
@@ -95,8 +93,9 @@
 
 [done] Move setBlockComment method from BCodeEdit to BTextBlockUserData
 [done] Add BAbstractCodeEditorDocument::clear method
-* Disable changing parent editor of code editor modules (not sure)
-* Improve BTextBlockUserData (implement multiple skip intervals)
+* Disable changing parent editor of code editor modules
+* Do not use QPointer for in editor modules
+[done] Improve BTextBlockUserData (implement multiple skip intervals)
 * Improve code editor search (use regular expressions)
 * Improve document-wide and selection-wide replacing
 * Fix insertion of spaces and tabulations in code editor documents

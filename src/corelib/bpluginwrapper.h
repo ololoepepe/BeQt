@@ -58,6 +58,7 @@ public:
     static QStringList acceptableTypes();
     static InterfaceTestFunction interfaceTestFunction();
     static BPluginWrapper *parentWrapper(const BPluginInterface *i);
+    static bool removeSettings(const QString &pluginName);
 public:
     void setFileName(const QString &fn);
     void install();

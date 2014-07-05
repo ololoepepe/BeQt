@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1023"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1024"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -134,19 +134,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="614"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="615"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="625"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="626"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="628"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="629"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1157"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1166"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="1228"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1158"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1167"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="1229"/>
         <source>Copyright</source>
         <translation type="unfinished">Авторские права</translation>
     </message>
@@ -324,43 +324,43 @@
 <context>
     <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2024"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2035"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2030"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2041"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2037"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2048"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2043"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2054"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2049"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2060"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2055"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2066"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2062"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2073"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -369,7 +369,7 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="869"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="870"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
@@ -378,13 +378,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2071"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2101"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2073"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2103"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -393,81 +393,81 @@
 <context>
     <name>BCodeEditorPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="445"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="461"/>
         <source>New document</source>
         <comment>fileName</comment>
         <translation>Новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="653"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="671"/>
         <source>The file is too large</source>
         <comment>msgbox informativeText</comment>
         <translation>Файл слишком большой</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="878"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="896"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="880"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="895"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="898"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="913"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="893"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="897"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="915"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="909"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="927"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="929"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="920"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="938"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="922"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="934"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="940"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="952"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="923"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="941"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="932"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="950"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="935"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="953"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
@@ -1303,19 +1303,19 @@
 <context>
     <name>BSelectDocumentsDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="116"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="117"/>
         <source>Some documents are modified. Do you want to save them before closing?</source>
         <comment>lbl text</comment>
         <translation>Некоторые документы изменены. Хотите сохранить их перед закрытием?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="120"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="121"/>
         <source>Choose documents that you want to save:</source>
         <comment>lbl text</comment>
         <translation>Выберите документы, которые хотите сохранить:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="135"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="136"/>
         <source>If you don&apos;t save the documents, all changes will be lost</source>
         <comment>lbl text</comment>
         <translation>Если вы не сохраните документы, все изменения будут потеряны</translation>
@@ -1396,43 +1396,43 @@
 <context>
     <name>BSplittedLinesDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="237"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="238"/>
         <source>Lines:</source>
         <comment>lstwgti text</comment>
         <translation>Строки:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="238"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="239"/>
         <source>total:</source>
         <comment>lstwgti text</comment>
         <translation>всего:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="248"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="249"/>
         <source>Splitted lines</source>
         <comment>windowTitle</comment>
         <translation>Разделённые строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="253"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="254"/>
         <source>Some lines in this document were too long, so they were splitted into several lines</source>
         <comment>lbl text</comment>
         <translation>Некоторые строки в этом документе оказались слишком длинными, поэтому они были разделены на несколько строк</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="259"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="260"/>
         <source>Doubleclick an item to go to the corresponding line</source>
         <comment>lstwgt toolTip</comment>
         <translation>Используйте двойной щелчок для перехода к соответствующей строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="265"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="266"/>
         <source>Select text when going to line</source>
         <comment>cbox text</comment>
         <translation>Выделять текст при переходе к строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="272"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="273"/>
         <source>Go to line</source>
         <comment>btn text</comment>
         <translation>Перейти к строке</translation>

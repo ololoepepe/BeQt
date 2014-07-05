@@ -27,6 +27,7 @@
 #include "bapplicationbase_p.h"
 #include "bpluginwrapper_p.h"
 #include "bversion.h"
+#include "bdirtools.h"
 
 #include <QtGlobal>
 #include <QObject>
@@ -102,9 +103,12 @@ bool BPluginWrapperPrivate::load()
     staticInfo = interface->staticInfo();
     info = interface->info();
     loaded = true;
-    globalMap.insert( nm, q_func() );
-    //TODO
-    //settings = BApplicationBase::ds_func()->createSettingsInstance( interface->name() );
+    globalMap.insert(nm, q_func());
+    QString fn = BDirTools::createConfFileName(interface->name());
+    if (!fn.isEmpty()) {
+        settings = new QSettings(fn, QSettings::IniFormat);
+        settings->setIniCodec("UTF-8");
+    }
     return true;
 }
 
@@ -227,6 +231,16 @@ BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
     if (!i)
         return 0;
     return BPluginWrapperPrivate::globalMap.value(i->name());
+}
+
+bool BPluginWrapper::removeSettings(const QString &pluginName)
+{
+    if (pluginName.isEmpty())
+        return false;
+    QString fn = BDirTools::createConfFileName(pluginName);
+    if (fn.isEmpty())
+        return false;
+    return QFile::remove(fn);
 }
 
 /*============================== Public methods ============================*/

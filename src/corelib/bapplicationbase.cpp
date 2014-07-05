@@ -324,7 +324,8 @@ void BApplicationBasePrivate::init(BApplicationBase::Portability portability)
     if (!bTest(!orgName.isEmpty(), "BApplicationBase", "Organization name not specified"))
         orgName = DefaultOrgName;
     if (BApplicationBase::AutoDetect == portability) {
-        portable = QFileInfo(confFileName(QCoreApplication::applicationDirPath() + "/..", appName)).isFile();
+        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/..");
+        portable = QFileInfo(confFileName(path, appName)).isFile();
     } else {
         portable = (BApplicationBase::Portable == portability);
     }

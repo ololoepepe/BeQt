@@ -83,6 +83,7 @@ public:
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
     void setEditTabWidth(BeQt::TabWidth tw);
+    void setEditAutoIndentationEnabled(bool enabled);
     void setLineNumberWidgetVisible(bool b);
     void setBracketHighlightingEnabled(bool b);
     void setSpellChecker(BSpellChecker *sc);
@@ -117,7 +118,8 @@ public:
     BCodeEdit::EditMode editMode() const;
     int editLineLength() const;
     BeQt::TabWidth editTabWidth() const;
-    bool lineNumberWidgetVisible() const;
+    bool isEditAutoIndentationEnabled() const;
+    bool isLineNumberWidgetVisible() const;
     bool isBracketHighlightingEnabled() const;
     BSpellChecker *spellChecker() const;
     QTextCodec *defaultCodec() const;

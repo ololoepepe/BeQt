@@ -204,6 +204,17 @@ bool BAbstractFileType::areEqual(const BracketPairList &l1, const BracketPairLis
 
 /*============================== Public methods ============================*/
 
+int BAbstractFileType::indentation(const QTextBlock &previousBlock) const
+{
+    if (!previousBlock.isValid())
+        return 0;
+    QString text = previousBlock.text();
+    int i = 0;
+    while (i < text.length() && text.at(i) == ' ')
+        ++i;
+    return i;
+}
+
 QString BAbstractFileType::createFileDialogFilter() const
 {
     QString desc = description();
@@ -234,6 +245,39 @@ BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QStrin
     bp.closing = cl;
     bp.escape = esc;
     return bp;
+}
+
+void BAbstractFileType::setBlockSkipIntervals(QTextBlock block, const QList<BTextBlockUserData::SkipInterval> &list)
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    if (!ud) {
+        ud = new BTextBlockUserData(list);
+        block.setUserData(ud);
+    }
+    ud->setSkipIntervals(list);
+}
+
+void BAbstractFileType::addBlockSkipInterval(QTextBlock block, const BTextBlockUserData::SkipInterval &si)
+{
+    BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
+    QList<BTextBlockUserData::SkipInterval> list;
+    list << si;
+    if (ud) {
+        list << ud->skipIntervals();
+        ud->setSkipIntervals(list);
+    } else {
+        ud = new BTextBlockUserData(list);
+        block.setUserData(ud);
+    }
+
+}
+
+void BAbstractFileType::addBlockSkipInterval(QTextBlock block, int start, int end)
+{
+    BTextBlockUserData::SkipInterval si;
+    si.start = start;
+    si.end = (end >= 0) ? end : (block.text().length() - 1);
+    addBlockSkipInterval(block, si);
 }
 
 /*============================== Protected methods =========================*/

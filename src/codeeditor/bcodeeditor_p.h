@@ -308,6 +308,7 @@ public:
     BCodeEdit::EditMode editMode;
     int editLineLength;
     BeQt::TabWidth editTabWidth;
+    bool editAutoIndentation;
     bool lineNumberVisible;
     bool bracketsHighlighting;
     BSpellChecker *spellChecker;

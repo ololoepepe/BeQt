@@ -41,6 +41,7 @@
 #include <QTextBlock>
 #include <QVariant>
 #include <QVariantMap>
+#include <QApplication>
 
 #include <QDebug>
 
@@ -75,6 +76,8 @@ BSimpleCodeEditorDocumentPrivate::~BSimpleCodeEditorDocumentPrivate()
 void BSimpleCodeEditorDocumentPrivate::init()
 {
     ptedt = 0;
+    autoIndentation = true;
+    blockFilter = false;
 }
 
 QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
@@ -115,6 +118,8 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
 
 bool BSimpleCodeEditorDocumentPrivate::eventFilter(QObject *obj, QEvent *e)
 {
+    if (blockFilter)
+        return QObject::eventFilter(obj, e);
     switch (e->type())
     {
     case QEvent::KeyPress:
@@ -136,6 +141,30 @@ bool BSimpleCodeEditorDocumentPrivate::keyPressEvent(QKeyEvent *e)
         case Qt::Key_Tab:
             handleTab();
             return true;
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            handleReturn(e);
+            return true;
+        }
+        break;
+    case Qt::ControlModifier:
+    case Qt::ShiftModifier:
+    case Qt::AltModifier:
+    case BeQt::ContorlShiftModifier:
+    case BeQt::KeypadShiftModifier:
+    case BeQt::KeypadAltModifier:
+    case BeQt::KeypadControlShiftModifier:
+    case BeQt::KeypadControlAltModifier:
+    case Qt::KeypadModifier:
+    case BeQt::KeypadControlModifier:
+        switch (key)
+        {
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+            handleReturn(e);
+            return true;
+        default:
+            break;
         }
         break;
     default:
@@ -155,6 +184,23 @@ void BSimpleCodeEditorDocumentPrivate::handleTab()
     if (!spcount)
         spcount = tabWidth;
     q_func()->insertText(QString().fill(' ', spcount));
+}
+
+void BSimpleCodeEditorDocumentPrivate::handleReturn(QKeyEvent *e)
+{
+    if (ptedt->isReadOnly())
+        return;
+    QTextCursor tc = ptedt->textCursor();
+    int indent = (autoIndentation && q_func()->fileType()) ? q_func()->fileType()->indentation(tc.block()) : 0;
+    blockFilter = true;
+    QApplication::sendEvent(ptedt, e);
+    blockFilter = false;
+    if (indent <= 0)
+        return;
+    tc = ptedt->textCursor();
+    tc.beginEditBlock();
+    tc.insertText(QString().fill(' ', indent));
+    tc.endEditBlock();
 }
 
 /*============================== Public slots ==============================*/
@@ -226,6 +272,11 @@ void BSimpleCodeEditorDocument::setEditFont(const QFont &fnt)
 void BSimpleCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
 {
     d_func()->tabWidth = tw;
+}
+
+void BSimpleCodeEditorDocument::setEditAutoIndentationEnabled(bool enabled)
+{
+    d_func()->autoIndentation = enabled;
 }
 
 void BSimpleCodeEditorDocument::setLineNumberWidgetVisible(bool b)
@@ -312,7 +363,12 @@ BeQt::TabWidth BSimpleCodeEditorDocument::editTabWidth() const
     return d_func()->tabWidth;
 }
 
-bool BSimpleCodeEditorDocument::lineNumberWidgetVisible() const
+bool BSimpleCodeEditorDocument::isEditAutoIndentationEnabled() const
+{
+    return d_func()->autoIndentation;
+}
+
+bool BSimpleCodeEditorDocument::isLineNumberWidgetVisible() const
 {
     return d_func()->lnwgt->isVisible();
 }

@@ -23,6 +23,7 @@
 #define BABSTRACTFILETYPE_P_H
 
 class BSyntaxHighlighter;
+class BAbstractCodeEditorDocument;
 
 #include "babstractfiletype.h"
 
@@ -40,6 +41,7 @@ public:
     ~BAbstractFileTypePrivate();
 public:
     void init();
+    void setDocument(BAbstractCodeEditorDocument *doc);
 public:
     BSyntaxHighlighter *highlighter;
 private:

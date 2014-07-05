@@ -57,6 +57,7 @@ public:
     bool eventFilter(QObject *obj, QEvent *e);
     bool keyPressEvent(QKeyEvent *e);
     void handleTab();
+    void handleReturn(QKeyEvent *e);
 public Q_SLOTS:
     void cursorPositionChanged();
     void selectionChanged();
@@ -65,6 +66,8 @@ public:
     QPlainTextEdit *ptedt;
     BLineNumberWidget *lnwgt;
     BeQt::TabWidth tabWidth;
+    bool autoIndentation;
+    bool blockFilter;
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocumentPrivate)
 };

@@ -439,4 +439,19 @@ QString findResource(const QString &subpath, const QStringList &locations)
     return QString();
 }
 
+QString createConfFileName(const QString &name)
+{
+    if (name.isEmpty())
+        return QString();
+    QString path = BApplicationBase::location(BApplicationBase::SettingsPath, BApplicationBase::UserResource);
+    if (path.isEmpty())
+        return QString();
+#if defined(Q_OS_UNIX)
+    QString nname = name.toLower().replace(QRegExp("\\s"), "-");
+#else
+    QString nname = name;
+#endif
+    return path + "/settings/" + nname + ".conf";
+}
+
 }

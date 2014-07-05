@@ -205,6 +205,7 @@ public:
     int lineLength;
     int tmpLineLength;
     BeQt::TabWidth tabWidth;
+    bool autoIndentation;
     QPoint cursorPosition;
     bool hasSelection;
     bool hasBookmarks;

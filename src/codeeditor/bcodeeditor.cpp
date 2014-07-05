@@ -37,6 +37,7 @@ class BSpellChecker;
 #include "bcodeedit_p.h"
 #include "bcodeeditordocument.h"
 #include "bsimplecodeeditordocument.h"
+#include "babstractfiletype_p.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BBaseObject>
@@ -345,18 +346,33 @@ bool BDropHandler::eventFilter(QObject *o, QEvent *e)
     switch ( e->type() )
     {
     case QEvent::DragEnter:
-        static_cast<QDragEnterEvent *>(e)->acceptProposedAction();
+    {
+        QDragEnterEvent *de = static_cast<QDragEnterEvent *>(e);
+        const QMimeData *md = de->mimeData();
+        if (!md || !md->hasUrls())
+            return QObject::eventFilter(o, e);
+        de->acceptProposedAction();
         return true;
+    }
     case QEvent::DragMove:
-        static_cast<QDragMoveEvent *>(e)->acceptProposedAction();
+    {
+        QDragMoveEvent *de = static_cast<QDragMoveEvent *>(e);
+        const QMimeData *md = de->mimeData();
+        if (!md || !md->hasUrls())
+            return QObject::eventFilter(o, e);
+        de->acceptProposedAction();
         return true;
+    }
     case QEvent::DragLeave:
-        static_cast<QDragLeaveEvent *>(e)->accept();
+        e->accept();
         return true;
     case QEvent::Drop:
     {
+        const QMimeData *md = static_cast<QDropEvent *>(e)->mimeData();
+        if (!md || !md->hasUrls())
+            return QObject::eventFilter(o, e);
         QStringList list;
-        foreach ( const QUrl &url, static_cast<QDropEvent *>(e)->mimeData()->urls() )
+        foreach (const QUrl &url, md->urls())
             list << url.toLocalFile();
         Editor->q_func()->openDocuments(list);
         return true;
@@ -472,6 +488,7 @@ void BCodeEditorPrivate::init()
     editMode = BCodeEdit::NormalMode;
     editLineLength = 120;
     editTabWidth = BeQt::TabWidth4;
+    editAutoIndentation = true;
     lineNumberVisible = true;
     bracketsHighlighting = true;
     spellChecker = 0;
@@ -580,12 +597,13 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
         ddoc->setEditLineLength(editLineLength);
     }
     doc->setEditTabWidth(editTabWidth);
+    doc->setEditAutoIndentationEnabled(editAutoIndentation);
     doc->setLineNumberWidgetVisible(lineNumberVisible);
     doc->setBracketHighlightingEnabled(bracketsHighlighting);
     doc->setSpellChecker(spellChecker);
     doc->setCodec(defaultCodec);
     doc->setAsyncProcessingMinimumLength(asyncMin);
-    doc->setFileType( selectDocumentFileType(doc) );
+    doc->setFileType(selectDocumentFileType(doc));
     if (ddoc)
     {
         connect(ddoc, SIGNAL(lineSplitted(BCodeEdit::SplittedLinesRange)),
@@ -593,11 +611,11 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
         connect(ddoc, SIGNAL(linesSplitted(QList<BCodeEdit::SplittedLinesRange>)),
                 this, SLOT(documentLinesSplitted(QList<BCodeEdit::SplittedLinesRange>)));
     }
-    connect( doc, SIGNAL( modificationChanged(bool) ), this, SLOT( documentModificationChanged(bool) ) );
-    connect( doc, SIGNAL( fileNameChanged(QString) ), this, SLOT( documentFileNameChanged(QString) ) );
-    connect( doc, SIGNAL( loadingFinished(bool) ), this, SLOT( documentLoadingFinished(bool) ) );
-    connect( doc, SIGNAL( savingFinished(bool) ), this, SLOT( documentSavingFinished(bool) ) );
-    connect( doc, SIGNAL( buisyChanged(bool) ), this, SLOT( documentBuisyChanged(bool) ) );
+    connect(doc, SIGNAL(modificationChanged(bool)), this, SLOT(documentModificationChanged(bool)));
+    connect(doc, SIGNAL(fileNameChanged(QString)), this, SLOT(documentFileNameChanged(QString)));
+    connect(doc, SIGNAL(loadingFinished(bool)), this, SLOT(documentLoadingFinished(bool)));
+    connect(doc, SIGNAL(savingFinished(bool)), this, SLOT(documentSavingFinished(bool)));
+    connect(doc, SIGNAL(buisyChanged(bool)), this, SLOT(documentBuisyChanged(bool)));
     if (!text.isEmpty())
         doc->setText(text);
     return doc;
@@ -1076,49 +1094,46 @@ void BCodeEditorPrivate::twgtCurrentChanged(int index)
         return;
     if (document)
     {
-        disconnect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
-        disconnect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
-        disconnect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
-        disconnect( document, SIGNAL( cutAvailableChanged(bool) ), this, SLOT( documentCutAvailableChanged(bool) ) );
-        disconnect( document, SIGNAL( copyAvailableChanged(bool) ), this, SLOT( documentCopyAvailableChanged(bool) ) );
-        disconnect( document, SIGNAL( pasteAvailableChanged(bool) ),
-                    this, SLOT( documentPasteAvailableChanged(bool) ) );
-        disconnect( document, SIGNAL( undoAvailableChanged(bool) ), this, SLOT( documentUndoAvailableChanged(bool) ) );
-        disconnect( document, SIGNAL( redoAvailableChanged(bool) ), this, SLOT( documentRedoAvailableChanged(bool) ) );
+        disconnect(document, SIGNAL(readOnlyChanged(bool)), this, SLOT(documentReadOnlyChanged(bool)));
+        disconnect(document, SIGNAL(selectionChanged()), this, SLOT(documentSelectionChanged()));
+        disconnect(document, SIGNAL(hasSelectionChanged(bool)), this, SLOT(documentHasSelectionChanged(bool)));
+        disconnect(document, SIGNAL(cutAvailableChanged(bool)), this, SLOT(documentCutAvailableChanged(bool)));
+        disconnect(document, SIGNAL(copyAvailableChanged(bool)), this, SLOT(documentCopyAvailableChanged(bool)));
+        disconnect(document, SIGNAL(pasteAvailableChanged(bool)), this, SLOT(documentPasteAvailableChanged(bool)));
+        disconnect(document, SIGNAL(undoAvailableChanged(bool)), this, SLOT(documentUndoAvailableChanged(bool)));
+        disconnect(document, SIGNAL(redoAvailableChanged(bool)), this, SLOT(documentRedoAvailableChanged(bool)));
         BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(document);
         if (ddoc)
             disconnect(document, SIGNAL(editModeChanged(BCodeEdit::EditMode)),
                        this, SLOT(documentEditModeChanged(BCodeEdit::EditMode)));
-        disconnect( document, SIGNAL( cursorPositionChanged(QPoint) ),
-                    this, SLOT( documentCursorPositionChanged(QPoint) ) );
-        disconnect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
-        disconnect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
-                    this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
+        disconnect(document, SIGNAL(cursorPositionChanged(QPoint)), this, SLOT(documentCursorPositionChanged(QPoint)));
+        disconnect(document, SIGNAL(codecChanged(QString)), this, SLOT(documentCodecChanged(QString)));
+        disconnect(document, SIGNAL(fileTypeChanged(BAbstractFileType *)),
+                   this, SLOT(documentFileTypeChanged(BAbstractFileType *)));
     }
     document = doc;
     if (document)
     {
-        connect( document, SIGNAL( readOnlyChanged(bool) ), this, SLOT( documentReadOnlyChanged(bool) ) );
-        connect( document, SIGNAL( selectionChanged() ), this, SLOT( documentSelectionChanged() ) );
-        connect( document, SIGNAL( hasSelectionChanged(bool) ), this, SLOT( documentHasSelectionChanged(bool) ) );
-        connect( document, SIGNAL( cutAvailableChanged(bool) ), this, SLOT( documentCutAvailableChanged(bool) ) );
-        connect( document, SIGNAL( copyAvailableChanged(bool) ), this, SLOT( documentCopyAvailableChanged(bool) ) );
-        connect( document, SIGNAL( pasteAvailableChanged(bool) ), this, SLOT( documentPasteAvailableChanged(bool) ) );
-        connect( document, SIGNAL( undoAvailableChanged(bool) ), this, SLOT( documentUndoAvailableChanged(bool) ) );
-        connect( document, SIGNAL( redoAvailableChanged(bool) ), this, SLOT( documentRedoAvailableChanged(bool) ) );
+        connect(document, SIGNAL(readOnlyChanged(bool)), this, SLOT(documentReadOnlyChanged(bool)));
+        connect(document, SIGNAL(selectionChanged()), this, SLOT(documentSelectionChanged()));
+        connect(document, SIGNAL(hasSelectionChanged(bool)), this, SLOT(documentHasSelectionChanged(bool)));
+        connect(document, SIGNAL(cutAvailableChanged(bool)), this, SLOT(documentCutAvailableChanged(bool)));
+        connect(document, SIGNAL(copyAvailableChanged(bool)), this, SLOT(documentCopyAvailableChanged(bool)));
+        connect(document, SIGNAL(pasteAvailableChanged(bool)), this, SLOT(documentPasteAvailableChanged(bool)));
+        connect(document, SIGNAL(undoAvailableChanged(bool)), this, SLOT(documentUndoAvailableChanged(bool)));
+        connect(document, SIGNAL(redoAvailableChanged(bool)), this, SLOT(documentRedoAvailableChanged(bool)));
         BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(document);
         if (ddoc)
-            connect(document, SIGNAL( editModeChanged(BCodeEdit::EditMode)),
+            connect(document, SIGNAL(editModeChanged(BCodeEdit::EditMode)),
                     this, SLOT(documentEditModeChanged(BCodeEdit::EditMode)));
-        connect( document, SIGNAL( cursorPositionChanged(QPoint) ),
-                 this, SLOT( documentCursorPositionChanged(QPoint) ) );
-        connect( document, SIGNAL( codecChanged(QString) ), this, SLOT( documentCodecChanged(QString) ) );
-        connect( document, SIGNAL( fileTypeChanged(BAbstractFileType *) ),
-                 this, SLOT( documentFileTypeChanged(BAbstractFileType *) ) );
+        connect(document, SIGNAL(cursorPositionChanged(QPoint)), this, SLOT(documentCursorPositionChanged(QPoint)));
+        connect(document, SIGNAL(codecChanged(QString)), this, SLOT(documentCodecChanged(QString)));
+        connect(document, SIGNAL(fileTypeChanged(BAbstractFileType *)),
+                this, SLOT(documentFileTypeChanged(BAbstractFileType *)));
         document->setFocus();
     }
     emitCurrentDocumentChanged(document);
-    emitCurrentDocumentFileNameChanged( document ? document->fileName() : QString() );
+    emitCurrentDocumentFileNameChanged(document ? document->fileName() : QString());
 }
 
 void BCodeEditorPrivate::twgtTabCloseRequested(int index)
@@ -1489,6 +1504,16 @@ void BCodeEditor::setEditTabWidth(BeQt::TabWidth tw)
         doc->setEditTabWidth(tw);
 }
 
+void BCodeEditor::setEditAutoIndentationEnabled(bool enabled)
+{
+    B_D(BCodeEditor);
+    if (d->editAutoIndentation == enabled)
+        return;
+    d->editAutoIndentation = enabled;
+    foreach (BAbstractCodeEditorDocument *doc, documents())
+        doc->setEditAutoIndentationEnabled(enabled);
+}
+
 void BCodeEditor::setLineNumberWidgetVisible(bool b)
 {
     B_D(BCodeEditor);
@@ -1779,7 +1804,12 @@ BeQt::TabWidth BCodeEditor::editTabWidth() const
     return d_func()->editTabWidth;
 }
 
-bool BCodeEditor::lineNumberWidgetVisible() const
+bool BCodeEditor::isEditAutoIndentationEnabled() const
+{
+    return d_func()->editAutoIndentation;
+}
+
+bool BCodeEditor::isLineNumberWidgetVisible() const
 {
     return d_func()->lineNumberVisible;
 }
