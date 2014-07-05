@@ -56,7 +56,8 @@ public:
     {
         QuitCommand,
         SetCommand,
-        HelpCommand
+        HelpCommand,
+        LastCommand
     };
     enum Color
     {
@@ -126,6 +127,8 @@ public:
     static QString lastCommand(QStringList *args = 0);
     static void setRootSettingsNode(BSettingsNode *root);
     static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
+    static void setCommandHistory(const QStringList &list);
+    static QStringList commandHistory();
     static void setTranslationsEnabled(bool enabled);
     static void setHelpDescription(const BTranslation &t);
     static void setCommandHelp(const QString &command, const CommandHelp &help);
@@ -136,6 +139,7 @@ protected:
     bool handleQuit(const QString &command, const QStringList &arguments);
     bool handleSet(const QString &command, const QStringList &arguments);
     bool handleHelp(const QString &command, const QStringList &arguments);
+    bool handleLast(const QString &command, const QStringList &arguments);
 Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
 protected:

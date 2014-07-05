@@ -26,7 +26,7 @@
 === MINOR ===
 
 [done] Add function for removing old plugin settings
-* Add ability to remember entered commands in BTerminalIOHandler
+[done] Add ability to remember entered commands in BTerminalIOHandler
 [done] Add ability to set auto-indentation in code editor
 [done] Add overloaded BCoreApplication installTranslator and removeTranslator methods
 [done] Add template methods for secure casting int and QVariant to enum (enum_cast)

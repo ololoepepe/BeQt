@@ -105,10 +105,10 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
 
 /*============================== Public constructors =======================*/
 
-BTerminalThread::BTerminalThread() :
-    QThread(0), readStream(stdin, QIODevice::ReadOnly)
+BTerminalThread::BTerminalThread(BTerminalPrivate *tp) :
+    QThread(0), TerminalPrivate(tp), readStream(stdin, QIODevice::ReadOnly)
 {
-    //
+    loop = 0;
 }
 
 BTerminalThread::~BTerminalThread()
@@ -123,15 +123,12 @@ void BTerminalThread::run()
     forever
     {
         QString l = readStream.readLine();
-        bool b = readLoop.isRunning();
-        if (b)
-        {
+        if (loop) {
             lastLine = l;
-            readLoop.quit();
+            QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
         }
-        else
-        {
-            Q_EMIT lineRead(l);
+        else {
+            QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, l));
         }
     }
 }
@@ -150,11 +147,14 @@ BTerminalPrivate::BTerminalPrivate(BTerminal *q, BTerminal::Mode m) :
 
 BTerminalPrivate::~BTerminalPrivate()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex); //Note: Not sure that needed
     switch (Mode)
     {
     case BTerminal::StandardMode:
         delete root;
-        removeThread();
+        readThread->terminate();
+        readThread->wait();
+        delete readThread;
         break;
     default:
         break;
@@ -168,38 +168,6 @@ bool BTerminalPrivate::testInit(const char *where)
     const char *w = where ? where : "BTerminal";
     B_QS(BTerminal);
     return bTest(qs, w, "There must be a BTerminal instance");
-}
-
-BTerminalThread *BTerminalPrivate::initThread(bool silent)
-{
-    if (readThread)
-        return readThread;
-    QMutexLocker locker(&threadMutex);
-    if (readThread)
-        return readThread;
-    if (silent && !QCoreApplication::instance())
-        return 0;
-    if (!silent && !bTest(QCoreApplication::instance(), "BTerminalPrivate",
-                          "There must be a QCoreApplication instance"))
-        return 0;
-    readThread = new BTerminalThread;
-    readThread->start();
-    return readThread;
-}
-
-void BTerminalPrivate::removeThread()
-{
-    if (!readThread)
-        return;
-    threadMutex.lock();
-    if (readThread)
-    {
-        readThread->terminate();
-        readThread->wait();
-        delete readThread;
-        readThread = 0;
-    }
-    threadMutex.unlock();
 }
 
 void BTerminalPrivate::resetColor()
@@ -306,11 +274,8 @@ void BTerminalPrivate::init()
     {
     case BTerminal::StandardMode:
     {
-        BTerminalThread *t = initThread();
-        if (!t)
-            return;
-        t->disconnect(SIGNAL(lineRead(QString)));
-        connect(t, SIGNAL(lineRead(QString)), this, SLOT(lineRead(QString)), Qt::QueuedConnection);
+        readThread = new BTerminalThread(this);
+        readThread->start();
         break;
     }
     default:
@@ -334,20 +299,15 @@ void BTerminalPrivate::lineRead(const QString &text)
         externalHandlers.value(lastCommand)(q, lastCommand, lastArgs);
     else
         q->writeLine(translations ? tr("Unknown command") : QString("Unknown command"));
+    if (lastCommand != "last" && !lastCommand.startsWith("last "))
+        commandHistory.prepend(lastCommand);
 }
 
 /*============================== Static public variables ===================*/
 
-QMutex BTerminalPrivate::colorMutex;
-QMutex BTerminalPrivate::echoMutex;
-QMutex BTerminalPrivate::titleMutex;
-QMutex BTerminalPrivate::readMutex;
-QMutex BTerminalPrivate::writeMutex;
-QMutex BTerminalPrivate::writeErrMutex;
+QMutex BTerminalPrivate::mutex(QMutex::Recursive);
 QTextStream BTerminalPrivate::writeStream(stdout, QIODevice::WriteOnly);
 QTextStream BTerminalPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
-BTerminalThread *BTerminalPrivate::readThread = 0;
-QMutex BTerminalPrivate::threadMutex;
 BTerminal::Color BTerminalPrivate::textColor = BTerminal::DefaultColor;
 BTerminal::Color BTerminalPrivate::backgroundColor = BTerminal::DefaultColor;
 BTerminal::Mode BTerminalPrivate::mode = BTerminal::NoMode;
@@ -379,6 +339,7 @@ BTerminal::~BTerminal()
 
 void BTerminal::setMode(Mode mode)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (mode == BTerminalPrivate::mode)
         return;
     if (_m_self)
@@ -390,11 +351,13 @@ void BTerminal::setMode(Mode mode)
 
 BTerminal::Mode BTerminal::mode()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     return BTerminalPrivate::mode;
 }
 
 void BTerminal::destroy()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     delete _m_self;
     _m_self = 0;
 }
@@ -418,6 +381,9 @@ QStringList BTerminal::commands(StandardCommand cmd)
         break;
     case HelpCommand:
         sl << "help";
+        break;
+    case LastCommand:
+        sl << "last";
         break;
     default:
         break;
@@ -471,6 +437,14 @@ BTerminal::CommandHelpList BTerminal::commandHelpList(StandardCommand cmd)
         h.description = BTranslation::translate("BTerminal", "Show information about BeQt libraries");
         l << h;
         break;
+    case LastCommand:
+        h.usage = "last [n]";
+        h.description = BTranslation::translate("BTerminal", "Reenter last n-th command (the very last by default)");
+        l << h;
+        h.usage = "last --show [n]";
+        h.description = BTranslation::translate("BTerminal", "Show n last commands (10 by default)");
+        l << h;
+        break;
     default:
         break;
     }
@@ -487,6 +461,8 @@ BTerminal::InternalHandler BTerminal::handler(StandardCommand cmd)
         return &BTerminal::handleSet;
     case HelpCommand:
         return &BTerminal::handleHelp;
+    case LastCommand:
+        return &BTerminal::handleLast;
     default:
         return 0;
     }
@@ -494,6 +470,7 @@ BTerminal::InternalHandler BTerminal::handler(StandardCommand cmd)
 
 void BTerminal::connectToCommandEntered(QObject *receiver, const char *method)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -505,6 +482,7 @@ void BTerminal::connectToCommandEntered(QObject *receiver, const char *method)
 
 void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *method)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -516,30 +494,24 @@ void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *meth
 
 QString BTerminal::readLine(const QString &text)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return QString();
     if (StandardMode != ds_func()->Mode)
         return QString();
     if (!text.isEmpty())
         write(text);
-    BTerminalThread *t = BTerminalPrivate::initThread(true);
-    QMutexLocker locker(&BTerminalPrivate::readMutex);
-    QString line;
-    if (t)
-    {
-        t->readLoop.exec();
-        line = t->lastLine;
-    }
-    else
-    {
-        static QTextStream in(stdin, QIODevice::ReadOnly);
-        line = in.readLine();
-    }
+    QEventLoop loop;
+    ds_func()->readThread->loop = &loop;
+    loop.exec();
+    QString line = ds_func()->readThread->lastLine;
+    ds_func()->readThread->loop = 0;
     return line;
 }
 
 QString BTerminal::readLineSecure(const QString &text)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return QString();
     if (StandardMode != ds_func()->Mode)
@@ -553,13 +525,13 @@ QString BTerminal::readLineSecure(const QString &text)
 
 void BTerminal::write(const QString &text)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
         return;
     if (text.isEmpty())
         return;
-    QMutexLocker locker(&BTerminalPrivate::writeMutex);
     BTerminalPrivate::writeStream << text;
     BTerminalPrivate::writeStream.flush();
 }
@@ -571,11 +543,11 @@ void BTerminal::writeLine(const QString &text)
 
 void BTerminal::writeErr(const QString &text)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
         return;
-    QMutexLocker locker(&BTerminalPrivate::writeErrMutex);
     BTerminalPrivate::writeErrStream << text;
     BTerminalPrivate::writeErrStream.flush();
 }
@@ -587,6 +559,7 @@ void BTerminal::writeLineErr(const QString &text)
 
 void BTerminal::writeHelpLine(const QString &usage, const QString &description)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -621,11 +594,11 @@ void BTerminal::writeHelpLines(const CommandHelpList &list, bool translate)
 
 void BTerminal::setStdinEchoEnabled(bool enabled)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
         return;
-    QMutexLocker locker(&BTerminalPrivate::echoMutex);
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
@@ -648,13 +621,12 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
 
 void BTerminal::setTitle(const QString &title)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
         return;
-    QMutexLocker locker1(&BTerminalPrivate::titleMutex);
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
-    QMutexLocker locker2(&BTerminalPrivate::writeMutex);
     BTerminalPrivate::writeStream << QString("%1]0;%3%2").arg("\033", "\007", title);
     BTerminalPrivate::writeStream.flush();
 #elif defined(Q_OS_WIN)
@@ -672,48 +644,49 @@ void BTerminal::setTitle(const QString &title)
 
 void BTerminal::setTextColor(Color color)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
         return;
-    QMutexLocker locker(&BTerminalPrivate::colorMutex);
     BTerminalPrivate::textColor = color;
     BTerminalPrivate::resetColor();
 }
 
 void BTerminal::setBackgroundColor(Color color)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
         return;
-    QMutexLocker locker(&BTerminalPrivate::colorMutex);
     BTerminalPrivate::backgroundColor = color;
     BTerminalPrivate::resetColor();
 }
 
 BTerminal::Color BTerminal::textColor()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return DefaultColor;
     if (StandardMode != ds_func()->Mode)
         return DefaultColor;
-    QMutexLocker locker(&BTerminalPrivate::colorMutex);
     return BTerminalPrivate::textColor;
 }
 
 BTerminal::Color BTerminal::backgroundColor()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return DefaultColor;
     if (StandardMode != ds_func()->Mode)
         return DefaultColor;
-    QMutexLocker locker(&BTerminalPrivate::colorMutex);
     return BTerminalPrivate::backgroundColor;
 }
 
 QSize BTerminal::size()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return QSize();
     if (StandardMode != ds_func()->Mode)
@@ -731,6 +704,7 @@ QSize BTerminal::size()
 
 int BTerminal::columnCount()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return 0;
     if (StandardMode != ds_func()->Mode)
@@ -748,6 +722,7 @@ int BTerminal::columnCount()
 
 int BTerminal::rowCount()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return 0;
     if (StandardMode != ds_func()->Mode)
@@ -765,6 +740,7 @@ int BTerminal::rowCount()
 
 void BTerminal::installHandler(const QString &command, InternalHandler handler)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -779,6 +755,7 @@ void BTerminal::installHandler(const QString &command, InternalHandler handler)
 
 void BTerminal::installHandler(const QString &command, ExternalHandler handler)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -793,6 +770,7 @@ void BTerminal::installHandler(const QString &command, ExternalHandler handler)
 
 void BTerminal::installHandler(StandardCommand cmd)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -820,6 +798,7 @@ void BTerminal::installHandler(StandardCommand cmd, ExternalHandler handler)
 
 QString BTerminal::lastCommand(QStringList *args)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return QString();
     if (StandardMode != ds_func()->Mode)
@@ -829,6 +808,7 @@ QString BTerminal::lastCommand(QStringList *args)
 
 void BTerminal::setRootSettingsNode(BSettingsNode *root)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -852,8 +832,29 @@ BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
     return n;
 }
 
+void BTerminal::setCommandHistory(const QStringList &list)
+{
+    QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!BTerminalPrivate::testInit("BTerminal"))
+        return;
+    if (StandardMode != ds_func()->Mode)
+        return;
+    ds_func()->commandHistory = list;
+}
+
+QStringList BTerminal::commandHistory()
+{
+    QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!BTerminalPrivate::testInit("BTerminal"))
+        return QStringList();
+    if (StandardMode != ds_func()->Mode)
+        return QStringList();
+    return ds_func()->commandHistory;
+}
+
 void BTerminal::setHelpDescription(const BTranslation &t)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -868,6 +869,7 @@ void BTerminal::setCommandHelp(const QString &command, const CommandHelp &help)
 
 void BTerminal::setCommandHelp(const QString &command, const CommandHelpList &list)
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return;
     if (StandardMode != ds_func()->Mode)
@@ -879,6 +881,7 @@ void BTerminal::setCommandHelp(const QString &command, const CommandHelpList &li
 
 BSettingsNode *BTerminal::rootSettingsNode()
 {
+    QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return 0;
     if (StandardMode != ds_func()->Mode)
@@ -1119,6 +1122,84 @@ bool BTerminal::handleHelp(const QString &, const QStringList &args)
     {
         writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
         return false;
+    }
+    return true;
+}
+
+bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
+{
+    if (!BTerminalPrivate::testInit("BTerminal"))
+        return false;
+    if (StandardMode != ds_func()->Mode)
+        return false;
+    if (args.size() > 2) {
+        writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+        return false;
+    }
+    if (args.isEmpty()) {
+        if (ds_func()->commandHistory.isEmpty()) {
+            writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+            return true;
+        }
+        QString s = ds_func()->commandHistory.first();
+        if (s == cmd || s.startsWith(cmd + " "))
+            return true;
+        writeLine(s);
+        QMetaObject::invokeMethod(ds_func(), "lineRead", Qt::QueuedConnection, Q_ARG(QString, s));
+    } else if (args.size() == 1) {
+        if (args.first() == "--show") {
+            if (ds_func()->commandHistory.isEmpty()) {
+                writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+                return true;
+            }
+            int n = 10;
+            if (n > ds_func()->commandHistory.size())
+                n = ds_func()->commandHistory.size();
+            foreach (int i, bRangeD(0, n - 1))
+                writeLine(ds_func()->commandHistory.at(i));
+        } else {
+            bool ok = false;
+            int n = args.first().toInt(&ok);
+            if (!ok) {
+                writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+                return false;
+            }
+            if (ds_func()->commandHistory.isEmpty()) {
+                writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+                return true;
+            }
+            if (n < 1 || n > ds_func()->commandHistory.size()) {
+                writeLine(d_func()->translations ? tr("Invalid index") : QString("Invalid index"));
+                return false;
+            }
+            QString s = ds_func()->commandHistory.at(n - 1);
+            if (s.startsWith(cmd + " "))
+                return true;
+            writeLine(s);
+            QMetaObject::invokeMethod(ds_func(), "lineRead", Qt::QueuedConnection, Q_ARG(QString, s));
+        }
+    } else if (args.size() == 2) {
+        if (args.first() == "--show") {
+            bool ok = false;
+            int n = args.last().toInt(&ok);
+            if (!ok) {
+                writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+                return false;
+            }
+            if (ds_func()->commandHistory.isEmpty()) {
+                writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+                return true;
+            }
+            if (n < 1)
+                n = 10;
+            if (n > ds_func()->commandHistory.size())
+                n = ds_func()->commandHistory.size();
+            foreach (int i, bRangeD(0, n - 1))
+                writeLine(ds_func()->commandHistory.at(i));
+        } else {
+            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            return false;
+        }
     }
     return true;
 }

@@ -48,16 +48,16 @@ class BTerminalThread : public QThread
 {
     Q_OBJECT
 public:
-    explicit BTerminalThread();
+    explicit BTerminalThread(BTerminalPrivate *tp);
     ~BTerminalThread();
 protected:
     void run();
-signals:
-    void lineRead(const QString &text);
+public:
+    BTerminalPrivate *const TerminalPrivate;
 public:
     QTextStream readStream;
-    QEventLoop readLoop;
     QString lastLine;
+    QEventLoop *loop;
 private:
     Q_DISABLE_COPY(BTerminalThread)
 };
@@ -76,34 +76,27 @@ public:
     ~BTerminalPrivate();
 public:
     static bool testInit(const char *where = 0);
-    static BTerminalThread *initThread(bool silent = false);
-    static void removeThread();
     static void resetColor();
 public:
     void init();
 public Q_SLOTS:
     void lineRead(const QString &text);
 public:
-    static QMutex colorMutex;
-    static QMutex echoMutex;
-    static QMutex titleMutex;
-    static QMutex readMutex;
-    static QMutex writeMutex;
-    static QMutex writeErrMutex;
+    static QMutex mutex;
     static QTextStream writeStream;
     static QTextStream writeErrStream;
-    static BTerminalThread *readThread;
-    static QMutex threadMutex;
     static BTerminal::Color textColor;
     static BTerminal::Color backgroundColor;
     static BTerminal::Mode mode;
 public:
     const BTerminal::Mode Mode;
 public:
+    BTerminalThread *readThread;
     QMap<QString, BTerminal::InternalHandler> internalHandlers;
     QMap<QString, BTerminal::ExternalHandler> externalHandlers;
     QString lastCommand;
     QStringList lastArgs;
+    QStringList commandHistory;
     BSettingsNode *root;
     bool translations;
     BTranslation help;
