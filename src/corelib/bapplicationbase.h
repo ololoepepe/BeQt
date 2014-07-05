@@ -38,6 +38,7 @@ class QSettings;
 #include "bbaseobject.h"
 #include "blogger.h"
 #include "bpersoninfo.h"
+#include "bpersoninfolist.h"
 
 #include <QLocale>
 #include <QList>

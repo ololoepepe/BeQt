@@ -26,6 +26,7 @@ class BVersion;
 
 #include "bglobal.h"
 #include "bpersoninfo.h"
+#include "bpersoninfolist.h"
 
 #include <QString>
 #include <QtPlugin>

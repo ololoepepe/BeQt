@@ -310,12 +310,12 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoList &infos)
     for (int i = 0; i < infos.size(); ++i)
     {
         const BPersonInfo &inf = infos.at(i);
-        if ( inf.name.isEmpty() || inf.role.isEmpty() )
+        if ( inf.name().isEmpty() || inf.role().isEmpty() )
             continue;
         QString sp = "";
         QString dsp = HtmlSpaceDouble;
         s += "<div>";
-        QString img = BDirTools::findResource(inf.image);
+        QString img = BDirTools::findResource(inf.image());
         QPixmap pm(img);
         if (pm.isNull())
         {
@@ -328,17 +328,17 @@ void BAboutDialogPrivate::fillTab(DialogTab t, const BPersonInfoList &infos)
             QString h = QString::number((int) (k * (double) pm.height()));
             QString w = QString::number((int) (k * (double) pm.width()));
             s += "<img height=" + h + " width=" + w + " style=\"float: left\" src=\"" + img + "\""
-                    + (inf.image.isEmpty() ? (" title=\"" + tr("No image available") + "\"") : QString("")) + ">";
+                    + (inf.image().isEmpty() ? (" title=\"" + tr("No image available") + "\"") : QString("")) + ">";
             sp = HtmlSpaceDouble;
             dsp = HtmlSpaceQuadruple;
         }
-        s += sp + "<b>" + inf.name + "</b><br>" + dsp + inf.role;
-        if ( !inf.site.isEmpty() )
+        s += sp + "<b>" + inf.name() + "</b><br>" + dsp + inf.role();
+        if ( !inf.site().isEmpty() )
             s += "<br>" + dsp + "<i>" + tr("Website", "personInfo text") +
-                 "</i>: <a href = \"" + inf.site + "\">" + inf.site + "</a>";
-        if ( !inf.mail.isEmpty() )
+                 "</i>: <a href = \"" + inf.site() + "\">" + inf.site() + "</a>";
+        if ( !inf.mail().isEmpty() )
             s += "<br>" + dsp + "<i>" + tr("E-mail", "personInfo text") +
-                 "</i>: <a href=\"mailto:" + inf.mail + "\">" + inf.mail + "</a>";
+                 "</i>: <a href=\"mailto:" + inf.mail() + "\">" + inf.mail() + "</a>";
         s += "</div>";
         if (i < infos.size() - 1)
             s += "<br>";

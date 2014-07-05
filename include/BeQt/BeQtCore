@@ -13,6 +13,7 @@
 #include "bnamespace.h"
 #include "bpassword.h"
 #include "bpersoninfo.h"
+#include "bpersoninfolist.h"
 #include "bpersoninfoprovider.h"
 #include "bplugininterface.h"
 #include "bpluginwrapper.h"

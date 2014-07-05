@@ -30,6 +30,7 @@ HEADERS += \
     bnamespace.h \
     bpassword.h \
     bpersoninfo.h \
+    bpersoninfolist.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \
     bplugininterface.h \
@@ -66,6 +67,8 @@ SOURCES += \
     blogger.cpp \
     bnamespace.cpp \
     bpassword.cpp \
+    bpersoninfo.cpp \
+    bpersoninfolist.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
     bsettingsnode.cpp \

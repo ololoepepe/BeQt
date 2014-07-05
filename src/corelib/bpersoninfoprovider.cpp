@@ -77,17 +77,17 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     if ( what.isEmpty() )
         return;
     QStringList keys = what.keys();
-    QString defName = what.value("en").name;
-    QString defSite = what.value("en").site;
-    QString defMail = what.value("en").mail;
-    QString defImage = what.value("en").image;
+    QString defName = what.value("en").name();
+    QString defSite = what.value("en").site();
+    QString defMail = what.value("en").mail();
+    QString defImage = what.value("en").image();
     if ( defSite.isEmpty() )
     {
         foreach (const QString &key, keys)
         {
-            if ( !what.value(key).site.isEmpty() )
+            if ( !what.value(key).site().isEmpty() )
             {
-                defSite = what.value(key).site;
+                defSite = what.value(key).site();
                 break;
             }
         }
@@ -96,9 +96,9 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     {
         foreach (const QString &key, keys)
         {
-            if ( !what.value(key).mail.isEmpty() )
+            if ( !what.value(key).mail().isEmpty() )
             {
-                defMail = what.value(key).mail;
+                defMail = what.value(key).mail();
                 break;
             }
         }
@@ -107,26 +107,26 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     {
         foreach (const QString &key, keys)
         {
-            if (!what.value(key).image.isEmpty())
+            if (!what.value(key).image().isEmpty())
             {
-                defImage = what.value(key).image;
+                defImage = what.value(key).image();
                 break;
             }
         }
     }
     for (int i = 0; i < keys.size(); ++i)
     {
-        if ( what.value( keys.at(i) ).name.isEmpty() )
-            what[keys.at(i)].name = defName;
-        if ( what.value( keys.at(i) ).site.isEmpty() )
-            what[keys.at(i)].site = defSite;
-        if ( what.value( keys.at(i) ).mail.isEmpty() )
-            what[keys.at(i)].mail = defMail;
-        if (what.value(keys.at(i)).image.isEmpty())
-            what[keys.at(i)].image = defImage;
+        if ( what.value( keys.at(i) ).name().isEmpty() )
+            what[keys.at(i)].setName(defName);
+        if ( what.value( keys.at(i) ).site().isEmpty() )
+            what[keys.at(i)].setSite(defSite);
+        if ( what.value( keys.at(i) ).mail().isEmpty() )
+            what[keys.at(i)].setMail(defMail);
+        if (what.value(keys.at(i)).image().isEmpty())
+            what[keys.at(i)].setImage(defImage);
     }
     foreach ( const QString &key, what.keys() )
-        if ( what.value(key).name.isEmpty() )
+        if ( what.value(key).name().isEmpty() )
             what.remove(key);
     if ( what.isEmpty() )
         return;
@@ -172,18 +172,18 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
                 ln = "en";
             if (!id.left(5).compare("image", Qt::CaseInsensitive))
             {
-                info[ln].image = val;
+                info[ln].setImage(val);
                 continue;
             }
             id = id.left(4);
             if ( !id.compare("name", Qt::CaseInsensitive) )
-                info[ln].name = val;
+                info[ln].setName(val);
             else if ( !id.compare("role", Qt::CaseInsensitive) )
-                info[ln].role = val;
+                info[ln].setRole(val);
             else if ( !id.compare("site", Qt::CaseInsensitive) )
-                info[ln].site = val;
+                info[ln].setSite(val);
             else if ( !id.compare("mail", Qt::CaseInsensitive) )
-                info[ln].mail = val;
+                info[ln].setMail(val);
         }
         else
         {
@@ -207,15 +207,15 @@ QString BPersonInfoProvider::infoListToString(const BPersonInfoList &list)
     QString s;
     foreach (const BPersonInfo &info, list)
     {
-        if (info.name.isEmpty())
+        if (!info.isValid())
             continue;
-        s += tr("Name:", "info") + " " + info.name + "\n";
-        if (!info.role.isEmpty())
-            s += tr("Role:", "info") + " " + info.role + "\n";
-        if (!info.site.isEmpty())
-            s += tr("Website:", "info") + " " + info.site + "\n";
-        if (!info.mail.isEmpty())
-            s += tr("E-mail:", "info") + " " + info.mail + "\n";
+        s += tr("Name:", "info") + " " + info.name() + "\n";
+        if (!info.role().isEmpty())
+            s += tr("Role:", "info") + " " + info.role() + "\n";
+        if (!info.site().isEmpty())
+            s += tr("Website:", "info") + " " + info.site() + "\n";
+        if (!info.mail().isEmpty())
+            s += tr("E-mail:", "info") + " " + info.mail() + "\n";
     }
     if (!s.isEmpty())
         s.remove(s.length() - 1, 1);
@@ -290,7 +290,7 @@ BPersonInfoList BPersonInfoProvider::infos(const QLocale &locale, bool noDefault
     foreach (const BPersonInfoProviderPrivate::PersonInfoMap &map, d_func()->infos)
     {
         BPersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, locale.name(), noDefault);
-        if (!info.name.isEmpty())
+        if (info.isValid())
             list << info;
     }
     return list;

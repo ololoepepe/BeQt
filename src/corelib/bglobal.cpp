@@ -24,6 +24,8 @@
 #include "btranslation.h"
 #include "bversion.h"
 #include "buuid.h"
+#include "bpersoninfo.h"
+#include "bpersoninfolist.h"
 
 #include <QString>
 #include <QList>
@@ -50,6 +52,10 @@ void bRegister()
         return;
     qRegisterMetaType<BPassword>();
     qRegisterMetaTypeStreamOperators<BPassword>();
+    qRegisterMetaType<BPersonInfo>();
+    qRegisterMetaTypeStreamOperators<BPersonInfo>();
+    qRegisterMetaType<BPersonInfoList>();
+    qRegisterMetaTypeStreamOperators<BPersonInfoList>();
     qRegisterMetaType<BTranslation>();
     qRegisterMetaTypeStreamOperators<BTranslation>();
     qRegisterMetaType<BTr>("BTr");

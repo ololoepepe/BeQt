@@ -22,18 +22,56 @@
 #ifndef BPERSONINFO_H
 #define BPERSONINFO_H
 
-#include <QString>
-#include <QList>
+class BPersonInfoPrivate;
 
-struct BPersonInfo
+class QDataStream;
+class QDebug;
+class QVariant;
+
+#include "bglobal.h"
+#include "bbase.h"
+
+#include <QString>
+#include <QMetaType>
+
+/*============================================================================
+================================ BPersonInfo =================================
+============================================================================*/
+
+class B_CORE_EXPORT BPersonInfo : BBase
 {
-    QString name;
-    QString role;
-    QString site;
-    QString mail;
-    QString image;
+    B_DECLARE_PRIVATE(BPersonInfo)
+public:
+    explicit BPersonInfo(const QString &name = QString(), const QString &role = QString(),
+                         const QString &site = QString(), const QString &mail = QString(),
+                         const QString &image = QString());
+    BPersonInfo(const BPersonInfo &other);
+    ~BPersonInfo();
+protected:
+    explicit BPersonInfo(BPersonInfoPrivate &d);
+public:
+    void setName(const QString &name);
+    void setRole(const QString &role);
+    void setSite(const QString &site);
+    void setMail(const QString &mail);
+    void setImage(const QString &image);
+    QString name() const;
+    QString role() const;
+    QString site() const;
+    QString mail() const;
+    QString image() const;
+    bool isValid() const;
+public:
+    BPersonInfo &operator=(const BPersonInfo &other);
+    bool operator==(const BPersonInfo &other) const;
+    bool operator!=(const BPersonInfo &other) const;
+    operator QVariant() const;
+public:
+    friend QDataStream &operator<<(QDataStream &stream, const BPersonInfo &info);
+    friend QDataStream &operator>>(QDataStream &stream, BPersonInfo &info);
+    friend QDebug operator<<(QDebug dbg, const BPersonInfo &info);
 };
 
-typedef QList<BPersonInfo> BPersonInfoList;
+Q_DECLARE_METATYPE(BPersonInfo)
 
 #endif // BPERSONINFO_H

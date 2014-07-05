@@ -1,23 +1,16 @@
-* Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
-* Fix code editor document modification on setText
-* Implement multi-cursor in code editor
-* Implement code folding in code editor
-* Add function for unzipping Hunspell dictionaries
-* Sort includes, class members, etc.
 * Use Qt coding style
-* Add PDCurses binding
-* Make BPersonInfo and BPersonInfoList serializable
-* Add serialization of data classes
 * Use enum_cast wherever it makes sense
-* Implement native settings dialogs
-* Improve BTextTools::toHtml function
-* Implement locking of global object instances
-* Add method for setting terminal window size to BTerminal
-* Move some methods to separate namespaces
-* Fix insertion of spaces and tabulations in code editor documents
-* Improve BLineNumberWidget: add virtual functions
+
+* Add PDCurses binding
 * Implement Katepart-compatible file type definition using XML files
+* Add method for setting terminal window size to BTerminal
+
+* Fix dragging from BPlainTextEdit. Note: not sure if needed
+* Implement native settings dialogs
+* Add function for unzipping Hunspell dictionaries
+* Implement code folding in code editor
+* Improve BLineNumberWidget: add virtual functions
 
 === PATCH ===
 
@@ -37,6 +30,9 @@
 [done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
 
+* Sort includes, class members, etc.
+* Improve BTextTools::toHtml function
+
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
 [done] Remove BCoreApplication saveSettings and loadSettings methods
@@ -55,6 +51,7 @@
 [done] Rename BTerminalIOHandler::terminalColumnCount method into columnCount
 [done] Rename BTerminalIOHandler::terminalRowCount method into rowCount
 [done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
+[done] Make BPersonInfo and BPersonInfoList serializable
 [done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
 [done] Reimplement resource lookup system
 [done] Use UNIX resouce structure for all types of applications
