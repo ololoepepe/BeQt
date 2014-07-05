@@ -195,9 +195,11 @@ QStringList splitCommand(const QString &cmd, QString &command, bool *ok)
 QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
 {
     //TODO: implement single quote support
+    //+1 - double quote
+    //-1 - single quote
     QStringList args;
     QString arg;
-    bool quot = false;
+    int quot = 0;
     for (int i = 0; i < cmd.length(); ++i)
     {
         const QChar &c = cmd.at(i);
@@ -215,10 +217,39 @@ QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
         }
         else
         {
-            if (c == '\"' && (i < 1 || cmd.at(i - 1) != '\\'))
-                quot = !quot;
-            else
+            if (c == '\"' && (i < 1 || cmd.at(i - 1) != '\\')) {
+                switch (quot)
+                {
+                case 1:
+                    quot = 0;
+                    break;
+                case -1:
+                    arg.append(c);
+                    break;
+                case 0:
+                default:
+                    quot = 1;
+                    break;
+                }
+            }
+            else if (c == '\'' && (i < 1 || cmd.at(i - 1) != '\\')) {
+                switch (quot)
+                {
+                case 1:
+                    arg.append(c);
+                    break;
+                case -1:
+                    quot = 0;
+                    break;
+                case 0:
+                default:
+                    quot = -1;
+                    break;
+                }
+            }
+            else {
                 arg.append(c);
+            }
         }
     }
     if (!arg.isEmpty())

@@ -21,7 +21,7 @@
 
 === PATCH ===
 
-* Implement single quote support for BTextTools::splitCommand function
+
 
 === MINOR ===
 
