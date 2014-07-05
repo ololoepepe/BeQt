@@ -426,6 +426,65 @@ bool intersects(const QStringList &list1, const QStringList &list2, Qt::CaseSens
     return false;
 }
 
+int indexOf(const QString &where, const QString &what, int from, Qt::CaseSensitivity cs, bool wholeWords)
+{
+    if (where.isEmpty() || what.isEmpty() || where.length() < what.length() || from < 0)
+        return -1;
+    int ind = where.indexOf(what, from, cs);
+    while (ind >= 0) {
+        if (!wholeWords)
+            return ind;
+        if (ind > 0 && where.at(ind - 1).isLetterOrNumber() && !where.at(ind - 1).isNumber()) {
+            ind = where.indexOf(what, ind + what.length(), cs);
+            continue;
+        }
+        if (ind + what.length() < where.length() - 1 && where.at(ind + what.length()).isLetterOrNumber()
+                && !where.at(ind + what.length()).isNumber()) {
+            ind = where.indexOf(what, ind + what.length(), cs);
+            continue;
+        }
+        return ind;
+    }
+    return -1;
+}
+
+int lastIndexOf(const QString &where, const QString &what, int from, Qt::CaseSensitivity cs, bool wholeWords)
+{
+    if (where.isEmpty() || what.isEmpty() || where.length() < what.length() || from > 0)
+        return -1;
+    int ind = where.lastIndexOf(what, from, cs);
+    while (ind >= 0) {
+        if (!wholeWords)
+            return ind;
+        if (ind > 0 && where.at(ind - 1).isLetterOrNumber() && !where.at(ind - 1).isNumber()) {
+            ind = where.lastIndexOf(what, ind - where.length() - 1, cs);
+            continue;
+        }
+        if (ind + what.length() < where.length() - 1 && where.at(ind + what.length()).isLetterOrNumber()
+                && !where.at(ind + what.length()).isNumber()) {
+            ind = where.lastIndexOf(what, ind - where.length() - 1, cs);
+            continue;
+        }
+        return ind;
+    }
+    return -1;
+}
+
+//ololo epepe sdvdsv ololo epepe sdvsdv ololo epepeggg
+
+QString &replace(QString &where, const QString &oldText, const QString &newText, Qt::CaseSensitivity cs,
+                 bool wholeWords)
+{
+    if (where.isEmpty() || oldText.isEmpty() || where.length() < oldText.length())
+        return where;
+    int ind = indexOf(where, oldText, 0, cs, wholeWords);
+    while (ind >= 0) {
+        where.replace(ind, oldText.length(), newText);
+        ind = indexOf(where, oldText, ind + newText.length(), cs, wholeWords);
+    }
+    return where;
+}
+
 int termFrequency(const QString &term, const QString &document)
 {
     if (term.isEmpty() || document.isEmpty())

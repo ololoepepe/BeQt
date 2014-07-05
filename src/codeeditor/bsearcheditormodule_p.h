@@ -52,7 +52,6 @@ class QEvent;
 #include <QObject>
 #include <QDialog>
 #include <QTextDocument>
-#include <QPointer>
 
 /*============================================================================
 ================================ BSearchDialog ===============================
@@ -69,6 +68,7 @@ public:
 protected:
     explicit BSearchDialog(BSearchDialogPrivate &d, QWidget *parent = 0);
 public:
+    void setRegexp(bool b);
     void setCaseSensitivity(Qt::CaseSensitivity cs);
     void setMatchWholeWords(bool enabled);
     void setBackwardOrder(bool enabled);
@@ -79,6 +79,7 @@ public:
     void setReplaceEnabled(bool enabled);
     void setDocument(BAbstractCodeEditorDocument *doc);
     void restoreState(const QByteArray &ba);
+    bool regexp() const;
     Qt::CaseSensitivity caseSensitivity() const;
     bool matchWholeWords() const;
     bool backwardOrder() const;
@@ -139,6 +140,7 @@ public:
         QComboBox *cmboxReplace;
       QGroupBox *gboxOptions;
         QVBoxLayout *vltOptions;
+          QCheckBox *cboxRegexp;
           QCheckBox *cboxCaseSensitive;
           QCheckBox *cboxWholeWords;
           QCheckBox *cboxBackwardOrder;
@@ -177,8 +179,8 @@ public Q_SLOTS:
     void textReplaced(int count, const QString &oldText, const QString &newText);
 public:
     BSearchDialog *sdlg;
-    QPointer<QAction> actFind;
-    QPointer<QAction> actFindNext;
+    QAction *actFind;
+    QAction *actFindNext;
 private:
     Q_DISABLE_COPY(BSearchEditorModulePrivate)
 };

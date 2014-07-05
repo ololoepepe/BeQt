@@ -34,7 +34,6 @@ class QAction;
 
 #include <QObject>
 #include <QList>
-#include <QPointer>
 
 /*============================================================================
 ================================ BEditEditorModulePrivate ====================
@@ -58,12 +57,12 @@ public Q_SLOTS:
     void actSwitchModeTriggered();
 public:
     BAbstractCodeEditorDocument *document;
-    QPointer<QAction> actCut;
-    QPointer<QAction> actCopy;
-    QPointer<QAction> actPaste;
-    QPointer<QAction> actUndo;
-    QPointer<QAction> actRedo;
-    QPointer<QAction> actSwitchMode;
+    QAction *actCut;
+    QAction *actCopy;
+    QAction *actPaste;
+    QAction *actUndo;
+    QAction *actRedo;
+    QAction *actSwitchMode;
 private:
     Q_DISABLE_COPY(BEditEditorModulePrivate)
 };

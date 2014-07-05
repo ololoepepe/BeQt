@@ -270,6 +270,7 @@ void BAbstractCodeEditorDocumentPrivate::init()
     undoAvailable = false;
     redoAvailable = false;
     buisy = false;
+    cursorPosition = 0;
 }
 
 bool BAbstractCodeEditorDocumentPrivate::createEdit()
@@ -938,9 +939,14 @@ bool BAbstractCodeEditorDocument::isRedoAvailable() const
     return d_func()->redoAvailable;
 }
 
-QPoint BAbstractCodeEditorDocument::cursorPosition() const
+int BAbstractCodeEditorDocument::cursorPosition() const
 {
     return d_func()->cursorPosition;
+}
+
+QPoint BAbstractCodeEditorDocument::cursorPositionRowColumn() const
+{
+    return d_func()->cursorPositionRowColumn;
 }
 
 BAbstractFileType *BAbstractCodeEditorDocument::fileType() const
@@ -1055,6 +1061,12 @@ void BAbstractCodeEditorDocument::insertText(const QString &txt)
 void BAbstractCodeEditorDocument::clear()
 {
     clearImplementation();
+}
+
+void BAbstractCodeEditorDocument::moveCursor(int pos)
+{
+    moveCursorImplementation(pos);
+    setFocusImplementation();
 }
 
 void BAbstractCodeEditorDocument::moveCursor(const QPoint &pos)
@@ -1302,13 +1314,23 @@ void BAbstractCodeEditorDocument::setRedoAvailable(bool available)
     Q_EMIT redoAvailableChanged(available);
 }
 
-void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)
+void BAbstractCodeEditorDocument::setCursorPosition(int pos)
 {
     if (pos == d_func()->cursorPosition)
         return;
     d_func()->cursorPosition = pos;
+    QPoint rc = cursorPositionRowColumnImplementation();
+    bool b = rc != d_func()->cursorPositionRowColumn;
+    d_func()->cursorPositionRowColumn = rc;
     highlightBrackets();
     Q_EMIT cursorPositionChanged(pos);
+    if (b)
+        Q_EMIT cursorPositionChanged(rc);
+}
+
+void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)
+{
+    setCursorPosition(cursorPositionForRowColumn(pos));
 }
 
 void BAbstractCodeEditorDocument::setBuisy(bool buisy)

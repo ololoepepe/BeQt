@@ -64,17 +64,22 @@ public:
     void setCurrentLineHighlightingEnabled(bool b);
     void setHighlightedLineColor(const QColor &c);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
-    int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-    int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
+    int replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
+    int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
     bool isEditAutoIndentationEnabled() const;
     bool isLineNumberWidgetVisible() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
-    QPoint selectionStart() const;
-    QPoint selectionEnd() const;
+    int selectionStart() const;
+    int selectionEnd() const;
+    QPoint selectionStartRowColumn() const;
+    QPoint selectionEndRowColumn() const;
     void setEditMode(BCodeEdit::EditMode mode);
     void setEditLineLength(int ll);
     void setSplittedLinesDialog(BSplittedLinesDialog *dlg);
@@ -90,6 +95,7 @@ protected:
     void setTextImplementation(const QString &txt);
     void insertTextImplementation(const QString &txt);
     void clearImplementation();
+    void moveCursorImplementation(int pos);
     void moveCursorImplementation(const QPoint &pos);
     void selectTextImplementation(const QPoint &start, const QPoint &end);
     void selectTextImplementation(int start, int end);
@@ -105,6 +111,8 @@ protected:
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     void installDropHandler(QObject *handler);
     void installInnerEventFilter(QObject *filter);
+    QPoint cursorPositionRowColumnImplementation() const;
+    int cursorPositionForRowColumn(const QPoint &pos) const;
 Q_SIGNALS:
     void editModeChanged(BCodeEdit::EditMode mode);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);

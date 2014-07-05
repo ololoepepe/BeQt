@@ -82,9 +82,12 @@ public:
     void setExtraSelections(const ExtraSelectionList &list);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
-    int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-    int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
+    int replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
+    int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
     bool isReadOnly() const;
     bool isModified() const;
     bool hasSelection() const;
@@ -100,11 +103,15 @@ public:
     bool isEditAutoIndentationEnabled() const;
     bool isLineNumberWidgetVisible() const;
     ExtraSelectionList extraSelections() const;
-    QPoint cursorPosition() const;
+    int cursorPosition() const;
+    QPoint cursorPositionRowColumn() const;
+    int cursorPositionForRowColumn(const QPoint &pos) const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
-    QPoint selectionStart() const;
-    QPoint selectionEnd() const;
+    int selectionStart() const;
+    int selectionEnd() const;
+    QPoint selectionStartRowColumn() const;
+    QPoint selectionEndRowColumn() const;
     QMenu *createContextMenu();
     bool isBuisy() const;
 public Q_SLOTS:
@@ -114,6 +121,7 @@ public Q_SLOTS:
     void switchMode();
     void insertText(const QString &txt);
     void clear();
+    void moveCursor(int pos);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
     void selectText(int start, int end);
@@ -141,6 +149,7 @@ Q_SIGNALS:
     void undoAvailableChanged(bool available);
     void redoAvailableChanged(bool available);
     void editModeChanged(BCodeEdit::EditMode mode);
+    void cursorPositionChanged(int pos);
     void cursorPositionChanged(const QPoint &pos);
     void buisyChanged(bool buisy);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);

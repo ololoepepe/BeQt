@@ -74,6 +74,7 @@ int main(int argc, char **argv)
                                                         + ">homepage</a></center>");
     //Creating code editor and loading related settings
     BCodeEditor *cedtr = new BCodeEditor;
+    //cedtr->setDocumentType(BCodeEditor::SimpleDocument);
     QSettings *s = BApplication::settingsInstance();
     cedtr->driver()->restoreState( s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray() );
     BAbstractEditorModule *osmdl = cedtr->module(BCodeEditor::OpenSaveModule);

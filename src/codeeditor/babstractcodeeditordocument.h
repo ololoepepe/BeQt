@@ -33,6 +33,7 @@ class QFont;
 class QPoint;
 class QMenu;
 class QVariant;
+class QRegExp;
 
 #include "babstractfiletype.h"
 
@@ -82,12 +83,17 @@ public:
     virtual bool isLineNumberWidgetVisible() const = 0;
     virtual QString text(bool full = false) const = 0;
     virtual QString selectedText(bool full = false) const = 0;
-    virtual QPoint selectionStart() const = 0;
-    virtual QPoint selectionEnd() const = 0;
+    virtual int selectionStart() const = 0;
+    virtual int selectionEnd() const = 0;
+    virtual QPoint selectionStartRowColumn() const = 0;
+    virtual QPoint selectionEndRowColumn() const = 0;
     virtual bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true) = 0;
+    virtual bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true) = 0;
     virtual bool replaceNext(const QString &newText) = 0;
-    virtual int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs) = 0;
-    virtual int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs) = 0;
+    virtual int replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0) = 0;
+    virtual int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText) = 0;
+    virtual int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0) = 0;
+    virtual int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText) = 0;
     void init();
     void setFileType(BAbstractFileType *ft);
     void setRecognizedBrackets(const BracketPairList &list);
@@ -109,7 +115,8 @@ public:
     bool isPasteAvailable() const;
     bool isUndoAvailable() const;
     bool isRedoAvailable() const;
-    QPoint cursorPosition() const;
+    int cursorPosition() const;
+    QPoint cursorPositionRowColumn() const;
     BAbstractFileType *fileType() const;
     QString fileTypeId() const;
     BracketPairList recognizedBrackets() const;
@@ -127,6 +134,7 @@ public Q_SLOTS:
     void setText(const QString &txt);
     void insertText(const QString &txt);
     void clear();
+    void moveCursor(int pos);
     void moveCursor(const QPoint &pos);
     void selectText(const QPoint &start, const QPoint &end);
     void selectText(int start, int end);
@@ -148,6 +156,7 @@ protected:
     virtual void setTextImplementation(const QString &txt) = 0;
     virtual void insertTextImplementation(const QString &txt) = 0;
     virtual void clearImplementation() = 0;
+    virtual void moveCursorImplementation(int pos) = 0;
     virtual void moveCursorImplementation(const QPoint &pos) = 0;
     virtual void selectTextImplementation(const QPoint &start, const QPoint &end) = 0;
     virtual void selectTextImplementation(int start, int end) = 0;
@@ -162,6 +171,8 @@ protected:
     virtual void redoImplementation() = 0;
     virtual void installDropHandler(QObject *handler) = 0;
     virtual void installInnerEventFilter(QObject *filter) = 0;
+    virtual QPoint cursorPositionRowColumnImplementation() const = 0;
+    virtual int cursorPositionForRowColumn(const QPoint &pos) const = 0;
     virtual void highlightBrackets();
     virtual QTextCursor textCursor(bool *ok = 0) const;
     virtual QMenu *createContextMenu();
@@ -184,6 +195,7 @@ protected Q_SLOTS:
     void setPasteAvailable(bool available);
     void setUndoAvailable(bool available);
     void setRedoAvailable(bool available);
+    void setCursorPosition(int pos);
     void setCursorPosition(const QPoint &pos);
     void setBuisy(bool buisy);
 Q_SIGNALS:
@@ -197,6 +209,7 @@ Q_SIGNALS:
     void pasteAvailableChanged(bool available);
     void undoAvailableChanged(bool available);
     void redoAvailableChanged(bool available);
+    void cursorPositionChanged(int pos);
     void cursorPositionChanged(const QPoint &pos);
     void buisyChanged(bool buisy);
     void allProcessingFinished();

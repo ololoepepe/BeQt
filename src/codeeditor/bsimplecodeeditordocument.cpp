@@ -208,7 +208,7 @@ void BSimpleCodeEditorDocumentPrivate::handleReturn(QKeyEvent *e)
 void BSimpleCodeEditorDocumentPrivate::cursorPositionChanged()
 {
     QTextCursor tc = ptedt->textCursor();
-    q_func()->setCursorPosition(QPoint(tc.positionInBlock(), tc.blockNumber()));
+    q_func()->setCursorPosition(tc.position());
 }
 
 void BSimpleCodeEditorDocumentPrivate::selectionChanged()
@@ -286,6 +286,8 @@ void BSimpleCodeEditorDocument::setLineNumberWidgetVisible(bool b)
 
 bool BSimpleCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
+    if (txt.isEmpty())
+        return false;
     bool b = d_func()->ptedt->find(txt, flags);
     if (!b && cyclic)
     {
@@ -298,6 +300,27 @@ bool BSimpleCodeEditorDocument::findNext(const QString &txt, QTextDocument::Find
     return b;
 }
 
+bool BSimpleCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
+{
+    if (!rx.isValid() || rx.isEmpty())
+        return false;
+    QTextDocument *doc = d_func()->ptedt->document();
+    QTextCursor tc = doc->find(rx, d_func()->ptedt->textCursor());
+    bool b = !tc.isNull();
+    if (!b && cyclic)
+    {
+        if (flags & QTextDocument::FindBackward)
+            d_func()->ptedt->moveCursor(QTextCursor::End);
+        else
+            d_func()->ptedt->moveCursor(QTextCursor::Start);
+        tc = doc->find(rx, d_func()->ptedt->textCursor());
+        b = !tc.isNull();
+    }
+    if (b)
+        d_func()->ptedt->setTextCursor(tc);
+    return b;
+}
+
 bool BSimpleCodeEditorDocument::replaceNext(const QString &newText)
 {
     if (isReadOnly() || !hasSelection())
@@ -306,13 +329,22 @@ bool BSimpleCodeEditorDocument::replaceNext(const QString &newText)
     return true;
 }
 
-int BSimpleCodeEditorDocument::replaceInSelection(const QString &text, const QString &newText, Qt::CaseSensitivity cs)
+int BSimpleCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText,
+                                                  QTextDocument::FindFlags flags)
 {
-    if (isReadOnly() || !hasSelection() || text.isEmpty() || text == newText)
+    if (isReadOnly() || !hasSelection() || txt.isEmpty() || txt == newText)
         return -1;
     B_D(BSimpleCodeEditorDocument);
     QString ntext = selectedText(true);
-    int count = ntext.count(text, cs);
+    Qt::CaseSensitivity cs = (QTextDocument::FindCaseSensitively & flags) ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    bool w = (QTextDocument::FindWholeWords & flags);
+    int count = 0;
+    int ind = BTextTools::indexOf(ntext, txt, 0, cs, w);
+    while (ind >= 0)
+    {
+        ++count;
+        ind = BTextTools::indexOf(ntext, txt, ind + txt.length(), cs, w);
+    }
     if (!count)
         return 0;
     QTextCursor tc = d->ptedt->textCursor();
@@ -320,8 +352,8 @@ int BSimpleCodeEditorDocument::replaceInSelection(const QString &text, const QSt
     int start = tc.selectionStart();
     int end = tc.selectionEnd();
     int len = ntext.length();
-    ntext.replace(text, newText, cs);
-    insertText(ntext);
+    BTextTools::replace(ntext, txt, newText, cs, w);
+    tc.insertText(ntext);
     if (start < end)
         end += (ntext.length() - len);
     else
@@ -338,18 +370,90 @@ int BSimpleCodeEditorDocument::replaceInSelection(const QString &text, const QSt
     return count;
 }
 
-int BSimpleCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+int BSimpleCodeEditorDocument::replaceInSelectionRegexp(const QRegExp &rx, const QString &newText)
+{
+    if (isReadOnly() || !hasSelection() || !rx.isValid() || rx.isEmpty())
+        return -1;
+    B_D(BSimpleCodeEditorDocument);
+    QString ntext = selectedText(true);
+    int count = 0;
+    int ind = rx.indexIn(ntext);
+    while (ind >= 0)
+    {
+        ++count;
+        ind = rx.indexIn(ntext, ind + rx.matchedLength());
+    }
+    if (!count)
+        return 0;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.beginEditBlock();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    int len = ntext.length();
+    ntext.replace(rx, newText);
+    tc.insertText(ntext);
+    if (start < end)
+        end += (ntext.length() - len);
+    else
+        start += (ntext.length() - len);
+    selectText(start, end);
+    tc.endEditBlock();
+    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
+    {
+        rehighlightBlock(tb);
+        tb = tb.next();
+    }
+    return count;
+}
+
+int BSimpleCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText,
+                                                 QTextDocument::FindFlags flags)
 {
     if (isReadOnly() || txt.isEmpty() || txt == newText)
         return -1;
+    Qt::CaseSensitivity cs = (QTextDocument::FindCaseSensitively & flags) ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    bool w = (QTextDocument::FindWholeWords & flags);
     QString ptext = text(true);
-    int count = ptext.count(txt, cs);
+    int count = 0;
+    int ind = BTextTools::indexOf(ptext, txt, 0, cs, w);
+    while (ind >= 0)
+    {
+        ++count;
+        ind = BTextTools::indexOf(ptext, txt, ind + txt.length(), cs, w);
+    }
     if (!count)
         return 0;
-    int find = ptext.indexOf(txt, 0, cs);
-    int lind = ptext.lastIndexOf(txt, -1, cs) + txt.length();
+    int find = BTextTools::indexOf(ptext, txt, 0, cs, w);
+    int lind = BTextTools::lastIndexOf(ptext, txt, -1, cs, w) + txt.length();
     selectText(find, lind);
-    insertText(ptext.mid(find, lind - find).replace(txt, newText, cs));
+    QString ntext = ptext.mid(find, lind - find);
+    BTextTools::replace(ntext, txt, newText, cs, w);
+    insertText(ntext);
+    return count;
+}
+
+int BSimpleCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const QString &newText)
+{
+    if (isReadOnly() || !rx.isValid() || rx.isEmpty())
+        return -1;
+    QString ptext = text(true);
+    int count = 0;
+    int ind = rx.indexIn(ptext);
+    while (ind >= 0)
+    {
+        ++count;
+        ind = rx.indexIn(ptext, ind + rx.matchedLength());
+    }
+    if (!count)
+        return 0;
+    int find = rx.indexIn(ptext);
+    int lind = rx.lastIndexIn(ptext) + rx.matchedLength();
+    selectText(find, lind);
+    QString ntext = ptext.mid(find, lind - find);
+    ntext.replace(rx, newText);
+    insertText(ntext);
     return count;
 }
 
@@ -383,20 +487,38 @@ QString BSimpleCodeEditorDocument::selectedText(bool) const
     return d_func()->ptedt->textCursor().selectedText().replace(QChar::ParagraphSeparator, '\n');
 }
 
-QPoint BSimpleCodeEditorDocument::selectionStart() const
+int BSimpleCodeEditorDocument::selectionStart() const
 {
     if (!hasSelection())
         return cursorPosition();
+    const B_D(BSimpleCodeEditorDocument);
+    QTextCursor tc = d->ptedt->textCursor();
+    return tc.selectionStart();
+}
+
+int BSimpleCodeEditorDocument::selectionEnd() const
+{
+    if (!hasSelection())
+        return cursorPosition();
+    const B_D(BSimpleCodeEditorDocument);
+    QTextCursor tc = d->ptedt->textCursor();
+    return tc.selectionEnd();
+}
+
+QPoint BSimpleCodeEditorDocument::selectionStartRowColumn() const
+{
+    if (!hasSelection())
+        return cursorPositionRowColumn();
     const B_D(BSimpleCodeEditorDocument);
     QTextCursor tc = d->ptedt->textCursor();
     QTextBlock tb = d->ptedt->document()->findBlock(tc.selectionStart());
     return QPoint(tc.selectionStart() - tb.position(), tb.blockNumber());
 }
 
-QPoint BSimpleCodeEditorDocument::selectionEnd() const
+QPoint BSimpleCodeEditorDocument::selectionEndRowColumn() const
 {
     if (!hasSelection())
-        return cursorPosition();
+        return cursorPositionRowColumn();
     const B_D(BSimpleCodeEditorDocument);
     QTextCursor tc = d->ptedt->textCursor();
     QTextBlock tb = d->ptedt->document()->findBlock(tc.selectionEnd());
@@ -433,6 +555,17 @@ void BSimpleCodeEditorDocument::insertTextImplementation(const QString &txt)
 void BSimpleCodeEditorDocument::clearImplementation()
 {
     d_func()->ptedt->clear();
+}
+
+void BSimpleCodeEditorDocument::moveCursorImplementation(int pos)
+{
+    B_D(BSimpleCodeEditorDocument);
+    QTextBlock tb = d->ptedt->document()->findBlock(pos);
+    if (!tb.isValid())
+        return;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.setPosition(pos);
+    d->ptedt->setTextCursor(tc);
 }
 
 void BSimpleCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
@@ -543,6 +676,25 @@ void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)
 void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
 {
     d_func()->ptedt->installEventFilter(filter);
+}
+
+QPoint BSimpleCodeEditorDocument::cursorPositionRowColumnImplementation() const
+{
+    QTextCursor tc = d_func()->ptedt->textCursor();
+    return QPoint(tc.positionInBlock(), tc.blockNumber());
+}
+
+int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
+{
+    if (pos.x() < 0 || pos.y() < 0)
+        return -1;
+    const B_D(BSimpleCodeEditorDocument);
+    QTextBlock tb = d->ptedt->document()->findBlockByLineNumber(pos.y());
+    if (!tb.isValid())
+        return -1;
+    if (pos.x() >= tb.length())
+        return -1;
+    return tb.position() + pos.x();
 }
 
 /*BAbstractCodeEditorDocument::TextProcessingFunction BSimpleCodeEditorDocument::textPreprocessingFunction() const

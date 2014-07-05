@@ -35,7 +35,6 @@ class QAction;
 #include <QObject>
 #include <QList>
 #include <QPoint>
-#include <QPointer>
 
 /*============================================================================
 ================================ BBookmarksEditorModulePrivate ===============
@@ -58,8 +57,8 @@ public:
     void checkBookmarks();
 public:
     int maxBookmarks;
-    QPointer<QAction> actMakeBookmark;
-    QPointer<QAction> actGotoNextBookmark;
+    QAction *actMakeBookmark;
+    QAction *actGotoNextBookmark;
 public Q_SLOTS:
     void retranslateUi();
 private:

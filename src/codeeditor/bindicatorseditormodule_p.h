@@ -37,7 +37,6 @@ class QComboBox;
 #include <QObject>
 #include <QMap>
 #include <QList>
-#include <QPointer>
 
 /*============================================================================
 ================================ BIndicatorsEditorModulePrivate ==============
@@ -65,9 +64,9 @@ public Q_SLOTS:
     void retranslateUi();
     void cmboxFileTypeCurrentIndexChanged(int index);
 public:
-    QPointer<QLabel> lblCursorPos;
-    QPointer<QLabel> lblEncoding;
-    QPointer<QComboBox> cmboxFileType;
+    QLabel *lblCursorPos;
+    QLabel *lblEncoding;
+    QComboBox *cmboxFileType;
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModulePrivate)
 };

@@ -37,7 +37,6 @@
 #include <QPoint>
 #include <QVariant>
 #include <QVariantList>
-#include <QPointer>
 #include <QKeySequence>
 
 #include <QDebug>
@@ -107,11 +106,11 @@ void BBookmarksEditorModulePrivate::init()
     actMakeBookmark = new QAction(q);
       actMakeBookmark->setIcon( BApplication::icon("bookmark_add") );
       actMakeBookmark->setShortcut(QKeySequence("Ctrl+Shift+K"));
-      QObject::connect( actMakeBookmark.data(), SIGNAL( triggered() ), q, SLOT( makeBookmark() ) );
+      QObject::connect(actMakeBookmark, SIGNAL(triggered()), q, SLOT(makeBookmark()));
     actGotoNextBookmark = new QAction(q);
-      actGotoNextBookmark->setIcon( BApplication::icon("bookmark") );
+      actGotoNextBookmark->setIcon(BApplication::icon("bookmark"));
       actGotoNextBookmark->setShortcut(QKeySequence("Ctrl+K"));
-      QObject::connect( actGotoNextBookmark.data(), SIGNAL( triggered() ), q, SLOT( gotoNextBookmark() ) );
+      QObject::connect(actGotoNextBookmark, SIGNAL(triggered()), q, SLOT(gotoNextBookmark()));
     //
     checkBookmarks();
     retranslateUi();
@@ -122,30 +121,22 @@ void BBookmarksEditorModulePrivate::checkBookmarks()
 {
     BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
     bool bm = !bookmarks(doc).isEmpty();
-    if ( !actMakeBookmark.isNull() )
-        actMakeBookmark->setEnabled(doc);
-    if ( !actGotoNextBookmark.isNull() )
-        actGotoNextBookmark->setEnabled(bm);
+    actMakeBookmark->setEnabled(doc);
+    actGotoNextBookmark->setEnabled(bm);
 }
 
 /*============================== Public slots ==============================*/
 
 void BBookmarksEditorModulePrivate::retranslateUi()
 {
-    if ( !actMakeBookmark.isNull() )
-    {
-        actMakeBookmark->setText( tr("Make bookmark", "act text") );
-        actMakeBookmark->setToolTip( tr("Make a bookmark at cursor position", "act toolTip") );
-        actMakeBookmark->setWhatsThis( tr("Use this action to make a bookmark at the current cursor position",
-                                          "act whatsThis") );
-    }
-    if ( !actGotoNextBookmark.isNull() )
-    {
-        actGotoNextBookmark->setText( tr("Next bookmark", "act text") );
-        actGotoNextBookmark->setToolTip( tr("Go to next bookmark", "act toolTip") );
-        actGotoNextBookmark->setWhatsThis( tr("Use this action to go to next bookmark in current document",
-                                              "act whatsThis") );
-    }
+    actMakeBookmark->setText(tr("Make bookmark", "act text"));
+    actMakeBookmark->setToolTip(tr("Make a bookmark at cursor position", "act toolTip"));
+    actMakeBookmark->setWhatsThis(tr("Use this action to make a bookmark at the current cursor position",
+                                     "act whatsThis"));
+    actGotoNextBookmark->setText(tr("Next bookmark", "act text"));
+    actGotoNextBookmark->setToolTip(tr("Go to next bookmark", "act toolTip"));
+    actGotoNextBookmark->setWhatsThis(tr("Use this action to go to next bookmark in current document",
+                                         "act whatsThis"));
 }
 
 
@@ -223,9 +214,9 @@ QAction *BBookmarksEditorModule::action(int type)
     switch (type)
     {
     case MakeBookmarkAction:
-        return d_func()->actMakeBookmark.data();
+        return d_func()->actMakeBookmark;
     case GotoNextBookmarkAction:
-        return d_func()->actGotoNextBookmark.data();
+        return d_func()->actGotoNextBookmark;
     default:
         return 0;
     }
@@ -235,10 +226,8 @@ QList<QAction *> BBookmarksEditorModule::actions(bool)
 {
     const B_D(BBookmarksEditorModule);
     QList<QAction *> list;
-    if ( !d->actMakeBookmark.isNull() )
-        list << d->actMakeBookmark.data();
-    if ( !d->actGotoNextBookmark.isNull() )
-        list << d->actGotoNextBookmark.data();
+    list << d->actMakeBookmark;
+    list << d->actGotoNextBookmark;
     return list;
 }
 
@@ -249,7 +238,7 @@ void BBookmarksEditorModule::makeBookmark()
     if ( !currentDocument() )
         return;
     B_D(BBookmarksEditorModule);
-    QPoint pos = currentDocument()->cursorPosition();
+    QPoint pos = currentDocument()->cursorPositionRowColumn();
     QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
     if ( list.contains(pos) )
         list.removeAll(pos);

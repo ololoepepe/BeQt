@@ -80,6 +80,12 @@ B_CORE_EXPORT BTextMatchList match(const QString &text, const QRegExp &what, con
                                   const QRegExp &postfixedBy = QRegExp());
 B_CORE_EXPORT bool intersects(const QStringList &list1, const QStringList &list2,
                               Qt::CaseSensitivity cs = Qt::CaseSensitive);
+B_CORE_EXPORT int indexOf(const QString &where, const QString &what, int from = 0,
+                          Qt::CaseSensitivity cs = Qt::CaseSensitive, bool wholeWords = false);
+B_CORE_EXPORT int lastIndexOf(const QString &where, const QString &what, int from = -1,
+                              Qt::CaseSensitivity cs = Qt::CaseSensitive, bool wholeWords = false);
+B_CORE_EXPORT QString &replace(QString &where, const QString &oldText, const QString &newText,
+                               Qt::CaseSensitivity cs = Qt::CaseSensitive, bool wholeWords = false);
 B_CORE_EXPORT int termFrequency(const QString &term, const QString &document);
 B_CORE_EXPORT double inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs = 0);
 B_CORE_EXPORT QList<double> tfidf(const QString &term, const QStringList &documents);

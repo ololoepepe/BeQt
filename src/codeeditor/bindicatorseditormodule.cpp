@@ -36,7 +36,6 @@
 #include <QWidget>
 #include <QList>
 #include <QLabel>
-#include <QPoint>
 #include <QFont>
 #include <QComboBox>
 #include <QStringList>
@@ -58,12 +57,12 @@ BIndicatorsEditorModulePrivate::BIndicatorsEditorModulePrivate(BIndicatorsEditor
 
 BIndicatorsEditorModulePrivate::~BIndicatorsEditorModulePrivate()
 {
-    if ( !lblCursorPos.isNull() && !lblCursorPos->parent() )
-        lblCursorPos->deleteLater();
-    if ( !lblEncoding.isNull() && !lblEncoding->parent() )
-        lblEncoding->deleteLater();
-    if ( !cmboxFileType.isNull() && !cmboxFileType->parent() )
-        cmboxFileType->deleteLater();
+    if (!lblCursorPos->parent())
+        delete lblCursorPos;
+    if (!lblEncoding->parent())
+        delete lblEncoding;
+    if (!cmboxFileType->parent())
+        delete cmboxFileType;
 }
 
 /*============================== Public methods ============================*/
@@ -78,7 +77,7 @@ void BIndicatorsEditorModulePrivate::init()
     updateEncodingIndicator();
     cmboxFileType = new QComboBox;
     cmboxFileType->setMinimumWidth(150);
-    connect(cmboxFileType.data(), SIGNAL(currentIndexChanged(int)), this, SLOT(cmboxFileTypeCurrentIndexChanged(int)));
+    connect(cmboxFileType, SIGNAL(currentIndexChanged(int)), this, SLOT(cmboxFileTypeCurrentIndexChanged(int)));
     updateFileTypeIndicator();
     //
     connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
@@ -86,9 +85,7 @@ void BIndicatorsEditorModulePrivate::init()
 
 void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
 {
-    if ( lblCursorPos.isNull() )
-        return;
-    QPoint pos = q_func()->currentDocument() ? q_func()->currentDocument()->cursorPosition() : QPoint(-1, -1);
+    QPoint pos = q_func()->currentDocument() ? q_func()->currentDocument()->cursorPositionRowColumn() : QPoint(-1, -1);
     QString rowVal = (pos.x() >= 0) ? QString::number(pos.x() + 1) : QString();
     QString columnVal = (pos.y() >= 0) ? QString::number(pos.y() + 1) : QString();
     int len = qMax(rowVal.length(), columnVal.length());
@@ -110,8 +107,6 @@ void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
 
 void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
 {
-    if ( lblEncoding.isNull() )
-        return;
     if (!editor)
         return lblEncoding->setText("----------");
     QString cn = q_func()->currentDocument() ? q_func()->currentDocument()->codecName() : editor->defaultCodecName();
@@ -123,8 +118,6 @@ void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
 
 void BIndicatorsEditorModulePrivate::updateFileTypeIndicator()
 {
-    if ( cmboxFileType.isNull() )
-        return;
     QList<FileTypeInfo> ftilist;
     int ind = -1;
     if (editor)
@@ -171,8 +164,7 @@ void BIndicatorsEditorModulePrivate::retranslateUi()
 
 void BIndicatorsEditorModulePrivate::cmboxFileTypeCurrentIndexChanged(int index)
 {
-    if ( !editor || cmboxFileType.isNull() || index < 0 || index >= cmboxFileType->count() ||
-         !q_func()->currentDocument() )
+    if ( !editor || index < 0 || index >= cmboxFileType->count() || !q_func()->currentDocument() )
         return;
     q_func()->currentDocument()->blockSignals(true);
     QString id = cmboxFileType->itemData(index).toString();
@@ -225,11 +217,11 @@ QWidget *BIndicatorsEditorModule::widget(int type)
     switch (type)
     {
     case CursorPositionIndicator:
-        return d_func()->lblCursorPos.data();
+        return d_func()->lblCursorPos;
     case EncodingIndicator:
-        return d_func()->lblEncoding.data();
+        return d_func()->lblEncoding;
     case FileTypeIndicator:
-        return d_func()->cmboxFileType.data();
+        return d_func()->cmboxFileType;
     default:
         return 0;
     }
@@ -239,12 +231,9 @@ QList<QWidget *> BIndicatorsEditorModule::widgets(bool)
 {
     B_D(BIndicatorsEditorModule);
     QList<QWidget *> list;
-    if ( !d->lblCursorPos.isNull() )
-        list << d->lblCursorPos.data();
-    if ( !d->lblEncoding.isNull() )
-        list << d->lblEncoding.data();
-    if ( !d->cmboxFileType.isNull() )
-        list << d->cmboxFileType.data();
+    list << d->lblCursorPos;
+    list << d->lblEncoding;
+    list << d->cmboxFileType;
     return list;
 }
 

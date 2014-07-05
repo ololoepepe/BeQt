@@ -29,6 +29,7 @@ class QWidget;
 class QPoint;
 class QFont;
 class QString;
+class QRegExp;
 
 #include "babstractcodeeditordocument.h"
 
@@ -61,17 +62,22 @@ public:
     void setEditAutoIndentationEnabled(bool enabled);
     void setLineNumberWidgetVisible(bool b);
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool replaceNext(const QString &newText);
-    int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-    int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
+    int replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
+    int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
     bool isEditAutoIndentationEnabled() const;
     bool isLineNumberWidgetVisible() const;
     QString text(bool full = false) const;
     QString selectedText(bool full = false) const;
-    QPoint selectionStart() const;
-    QPoint selectionEnd() const;
+    int selectionStart() const;
+    int selectionEnd() const;
+    QPoint selectionStartRowColumn() const;
+    QPoint selectionEndRowColumn() const;
 protected:
     QWidget *createEdit(QTextDocument **doc = 0);
     void setFocusImplementation();
@@ -79,6 +85,7 @@ protected:
     void setTextImplementation(const QString &txt);
     void insertTextImplementation(const QString &txt);
     void clearImplementation();
+    void moveCursorImplementation(int pos);
     void moveCursorImplementation(const QPoint &pos);
     void selectTextImplementation(const QPoint &start, const QPoint &end);
     void selectTextImplementation(int start, int end);
@@ -93,6 +100,8 @@ protected:
     void redoImplementation();
     void installDropHandler(QObject *handler);
     void installInnerEventFilter(QObject *filter);
+    QPoint cursorPositionRowColumnImplementation() const;
+    int cursorPositionForRowColumn(const QPoint &pos) const;
     //TextProcessingFunction textPreprocessingFunction() const;
     //QVariantMap preprocessingUserData();
 private:

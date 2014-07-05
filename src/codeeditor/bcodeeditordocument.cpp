@@ -161,19 +161,34 @@ bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags 
     return d_func()->cedt->findNext(txt, flags, cyclic);
 }
 
+bool BCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
+{
+    return d_func()->cedt->findNextRegexp(rx, flags, cyclic);
+}
+
 bool BCodeEditorDocument::replaceNext(const QString &newText)
 {
     return d_func()->cedt->replaceNext(newText);
 }
 
-int BCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+int BCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags)
 {
-    return d_func()->cedt->replaceInSelection(txt, newText, cs);
+    return d_func()->cedt->replaceInSelection(txt, newText, flags);
 }
 
-int BCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
+int BCodeEditorDocument::replaceInSelectionRegexp(const QRegExp &rx, const QString &newText)
 {
-    return d_func()->cedt->replaceInDocument(txt, newText, cs);
+    return d_func()->cedt->replaceInSelectionRegexp(rx, newText);
+}
+
+int BCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags)
+{
+    return d_func()->cedt->replaceInDocument(txt, newText, flags);
+}
+
+int BCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const QString &newText)
+{
+    return d_func()->cedt->replaceInDocumentRegexp(rx, newText);
 }
 
 QFont BCodeEditorDocument::editFont() const
@@ -206,14 +221,24 @@ QString BCodeEditorDocument::selectedText(bool full) const
     return d_func()->cedt->selectedText(full);
 }
 
-QPoint BCodeEditorDocument::selectionStart() const
+int BCodeEditorDocument::selectionStart() const
 {
     return d_func()->cedt->selectionStart();
 }
 
-QPoint BCodeEditorDocument::selectionEnd() const
+int BCodeEditorDocument::selectionEnd() const
 {
     return d_func()->cedt->selectionEnd();
+}
+
+QPoint BCodeEditorDocument::selectionStartRowColumn() const
+{
+    return d_func()->cedt->selectionStartRowColumn();
+}
+
+QPoint BCodeEditorDocument::selectionEndRowColumn() const
+{
+    return d_func()->cedt->selectionEndRowColumn();
 }
 
 void BCodeEditorDocument::setEditMode(BCodeEdit::EditMode mode)
@@ -285,6 +310,11 @@ void BCodeEditorDocument::clearImplementation()
     d_func()->cedt->clear();
 }
 
+void BCodeEditorDocument::moveCursorImplementation(int pos)
+{
+    d_func()->cedt->moveCursor(pos);
+}
+
 void BCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
 {
     d_func()->cedt->moveCursor(pos);
@@ -353,4 +383,14 @@ void BCodeEditorDocument::installDropHandler(QObject *handler)
 void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
 {
     d_func()->cedt->innerEdit()->installEventFilter(filter);
+}
+
+QPoint BCodeEditorDocument::cursorPositionRowColumnImplementation() const
+{
+    return d_func()->cedt->cursorPositionRowColumn();
+}
+
+int BCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
+{
+    return d_func()->cedt->cursorPositionForRowColumn(pos);
 }

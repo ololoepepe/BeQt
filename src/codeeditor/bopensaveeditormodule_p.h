@@ -36,7 +36,6 @@ class QMenu;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QObject>
-#include <QPointer>
 #include <QList>
 #include <QStringList>
 
@@ -61,15 +60,15 @@ public Q_SLOTS:
     void fileTriggered();
     void resetFileHistoryMenuToolTip();
 public:
-    QPointer<QAction> actNewFile;
-    QPointer<QAction> actOpenFiles;
-    QPointer<QAction> actReopenFile;
-    QPointer<QAction> actSaveFile;
-    QPointer<QAction> actSaveFileAs;
-    QPointer<QAction> actSaveAllFiles;
-    QPointer<QAction> actCloseFile;
-    QPointer<QAction> actCloseAllFiles;
-    QPointer<QMenu> mnuFileHistory;
+    QAction *actNewFile;
+    QAction *actOpenFiles;
+    QAction *actReopenFile;
+    QAction *actSaveFile;
+    QAction *actSaveFileAs;
+    QAction *actSaveAllFiles;
+    QAction *actCloseFile;
+    QAction *actCloseAllFiles;
+    QMenu *mnuFileHistory;
 private:
     Q_DISABLE_COPY(BOpenSaveEditorModulePrivate)
 };

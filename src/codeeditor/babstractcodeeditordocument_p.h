@@ -163,7 +163,8 @@ public:
     bool pasteAvailable;
     bool undoAvailable;
     bool redoAvailable;
-    QPoint cursorPosition;
+    int cursorPosition;
+    QPoint cursorPositionRowColumn;
     bool buisy;
     mutable QPair<int, int> wordToReplace;
 private:

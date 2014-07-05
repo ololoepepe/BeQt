@@ -62,12 +62,14 @@ public:
     QList<QAction *> actions(bool extended = false);
     QByteArray saveState() const;
     void restoreState(const QByteArray &state);
+    void setRegexp(bool b);
     void setCaseSensitivity(Qt::CaseSensitivity cs);
     void setMatchWholeWords(bool enabled);
     void setBackwardOrder(bool enabled);
     void setCyclicSearch(bool enabled);
     void setMaximumHistorySize(int sz);
     void setReplaceEnabled(bool enabled);
+    bool regexp() const;
     Qt::CaseSensitivity caseSensitivity() const;
     bool matchWholeWords() const;
     bool backwardOrder() const;
