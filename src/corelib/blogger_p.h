@@ -22,16 +22,15 @@
 #ifndef BLOGGER_P_H
 #define BLOGGER_P_H
 
-class QTimer;
-
 #include "blogger.h"
-#include "bglobal.h"
+
 #include "bbaseobject_p.h"
 
-#include <QString>
 #include <QFile>
-#include <QTextStream>
 #include <QMutex>
+#include <QString>
+#include <QTextStream>
+#include <QTimer>
 
 /*============================================================================
 ================================ BLoggerPrivate ==============================
@@ -45,11 +44,11 @@ public:
     explicit BLoggerPrivate(BLogger *q);
     ~BLoggerPrivate();
 public:
+    QString constructMessage(const QString &text, BLogger::Level lvl) const;
     void init();
+    void resetFileFlushTimer();
     void tryLogToConsole(const QString &text, bool stderrLevel);
     void tryLogToFile(const QString &text);
-    QString constructMessage(const QString &text, BLogger::Level lvl) const;
-    void resetFileFlushTimer();
 public Q_SLOTS:
     void timeout();
 public:
@@ -61,11 +60,11 @@ public:
     bool logToFile;
     QFile file;
     int fileFlushInterval;
-    QTimer *fileFlushTimer;
+    QTimer fileFlushTimer;
     QTextStream fileStream;
-    mutable QMutex *formatMutex;
-    mutable QMutex *consoleMutex;
-    mutable QMutex *fileMutex;
+    mutable QMutex formatMutex;
+    mutable QMutex consoleMutex;
+    mutable QMutex fileMutex;
 private:
     Q_DISABLE_COPY(BLoggerPrivate)
 };

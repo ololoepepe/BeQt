@@ -24,10 +24,8 @@
 
 class BPluginWrapper;
 
-class QSettings;
-
 #include "bcoreapplication.h"
-#include "bglobal.h"
+
 #include "bapplicationbase_p.h"
 
 #include <QtGlobal>
@@ -45,10 +43,10 @@ public:
     explicit BCoreApplicationPrivate(BCoreApplication *q);
     ~BCoreApplicationPrivate();
 public:
-    void init();
-    void emitPluginActivated(BPluginWrapper *pluginWrapper);
-    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void emitLanguageChanged();
+    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void emitPluginActivated(BPluginWrapper *pluginWrapper);
+    void init();
 private:
     Q_DISABLE_COPY(BCoreApplicationPrivate)
 };

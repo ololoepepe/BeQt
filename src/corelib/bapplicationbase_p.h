@@ -22,32 +22,56 @@
 #ifndef BAPPLICATIONBASE_P_H
 #define BAPPLICATIONBASE_P_H
 
-class BPluginWrapper;
-class BTranslator;
-class BPluginWrapperPrivate;
-class BTranslatorPrivate;
 class BLogger;
-class BSignalDelayProxy;
 class BPersonInfoProvider;
-class BAbstractLocationProvider;
-class BInternalLocationProvider;
+class BPluginWrapper;
+class BSignalDelayProxy;
+class BTranslator;
 
-class QString;
-class QLocale;
 class QEvent;
+class QLocale;
 
 #include "bapplicationbase.h"
-#include "bglobal.h"
-#include "bbaseobject_p.h"
-#include "bpersoninfo.h"
 
-#include <QtGlobal>
+#include "babstractlocationprovider.h"
+#include "bbaseobject_p.h"
+#include "bpersoninfolist.h"
+
 #include <QList>
 #include <QMap>
-#include <QStringList>
-#include <QVariantMap>
+#include <QObject>
 #include <QPointer>
 #include <QSettings>
+#include <QString>
+#include <QStringList>
+
+/*============================================================================
+================================ BInternalLocationProvider ===================
+============================================================================*/
+
+class BInternalLocationProvider : public BAbstractLocationProvider
+{
+private:
+    const QString AppName;
+    const QStringList Names;
+    const QString OrgName;
+    const bool Portable;
+    const QString SharedPrefix;
+    const QString UserPrefix;
+public:
+    explicit BInternalLocationProvider(const QString &appName, const QString &orgName, bool portable);
+    ~BInternalLocationProvider();
+private:
+    static QStringList createNames();
+    static QString createSharedPrefix();
+    static QString createUserPrefix(const QString &appName, const QString &orgName);
+    static QString sharedPrefix(const QString &sharedPrefix, bool plugins = false);
+public:
+    bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
+    QStringList locationNames() const;
+    QString locationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+};
 
 /*============================================================================
 ================================ BApplicationBasePrivate =====================
@@ -59,72 +83,73 @@ class B_CORE_EXPORT BApplicationBasePrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC(BApplicationBase)
     B_DECLARE_PUBLIC_S(BApplicationBase)
 public:
+    static const QString DefaultAppName;
+    static const QString DefaultOrgName;
     static const QStringList PluginSuffixes;
+public:
+    BPersonInfoProvider *appAuthors;
+    BPersonInfoList appAuthorsList;
+    QString appChangeLog;
+    QString appChangeLogFileName;
+    QString appCopyrightYears;
+    QString appDescription;
+    QString appDescriptionFileName;
+    QString appLicense;
+    QString appLicenseFileName;
+    QString appName;
+    BPersonInfoProvider *appThanksTo;
+    BPersonInfoList appThanksToList;
+    BPersonInfoList appTranslationsList;
+    BPersonInfoProvider *appTranslations;
+    BPersonInfoProvider *beqtThanksTo;
+    BPersonInfoProvider *beqtAuthors;
+    BPersonInfoProvider *beqtTranslations;
+    bool blockLanguageChangeEvent;
+    QList<BApplicationBase::CopyrightInfo> copyrightInfos;
+    bool destructorCalled;
+    BInternalLocationProvider *internalLocationProvider;
+    BSignalDelayProxy *languageChangeEventProxy;
+    BSignalDelayProxy *languageChangeProxy;
+    QList<BAbstractLocationProvider *> locationProviders;
+    BLogger *logger;
+    QString orgName;
+    QMap<QObject *, BPluginWrapper *> plugins;
+    bool portable;
+    QPointer<QSettings> settings;
+    QMap<QString, BTranslator *> translators;
 public:
     explicit BApplicationBasePrivate(BApplicationBase *q);
     ~BApplicationBasePrivate();
 public:
+    static QString confFileName(const QString &path, const QString &appName);
+    static BApplicationBase::LocaleSupportInfo createLocaleSupportInfo();
     static BApplicationBasePrivate *instance();
+    static QString platformSpecificAppName(const QString &appName);
     static bool testInit(const char *where = 0);
     static bool testUnique();
-    static BApplicationBase::LocaleSupportInfo createLocaleSupportInfo();
+    static QString toLowerNoSpaces(const QString &string);
 public:
-    virtual void emitPluginActivated(BPluginWrapper *pluginWrapper) = 0;
-    virtual void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper) = 0;
     virtual void emitLanguageChanged() = 0;
-public:
-    void init(BApplicationBase::Portability portability = BApplicationBase::AutoDetect);
+    virtual void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper) = 0;
+    virtual void emitPluginActivated(BPluginWrapper *pluginWrapper) = 0;
     bool eventFilter(QObject *o, QEvent *e);
+    QLocale getLocale() const;
+    void init(BApplicationBase::Portability portability = BApplicationBase::AutoDetect);
+    void installPlugin(BPluginWrapper *plugin);
+    void installTranslator(BTranslator *translator);
+    bool isPluginActivated(const QString &pluginName) const;
     QString location(const QString &name, BApplicationBase::ResourceType type) const;
     QStringList locations(const QString &name) const;
-    QLocale getLocale() const;
-    void setLocale(const QLocale &l);
-    bool isPluginActivated(const QString &pluginName) const;
-    void setPluginActivated(const QString &pluginName, bool activated);
-    void installTranslator(BTranslator *translator);
-    void removeTranslator(BTranslator *translator);
-    void installPlugin(BPluginWrapper *plugin);
     void removePlugin(QObject *plugin);
+    void removeTranslator(BTranslator *translator);
+    void setLocale(const QLocale &l);
+    void setPluginActivated(const QString &pluginName, bool activated);
 public Q_SLOTS:
-    void sendLanguageChangeEvent();
     void languageChanged();
-    void pluginActivated();
     void pluginAboutToBeDeactivated();
+    void pluginActivated();
     void pluginDestroyed(QObject *obj);
-public:
-    static const QString DefaultAppName;
-    static const QString DefaultOrgName;
-public:
-    QString appName;
-    QString orgName;
-    bool portable;
-    BInternalLocationProvider *internalLocationProvider;
-    QList<BAbstractLocationProvider *> locationProviders;
-    QPointer<QSettings> settings;
-    QMap<QString, BTranslator *> translators;
-    QMap<QObject *, BPluginWrapper *> plugins;
-    BPersonInfoProvider *beqtAuthors;
-    BPersonInfoProvider *beqtTranslations;
-    BPersonInfoProvider *beqtThanksTo;
-    QString appCopyrightYears;
-    QList<BApplicationBase::CopyrightInfo> copyrightInfos;
-    QString appDescription;
-    QString appChangeLog;
-    QString appLicense;
-    QString appDescriptionFileName;
-    QString appChangeLogFileName;
-    QString appLicenseFileName;
-    BPersonInfoList appAuthorsList;
-    BPersonInfoList appTranslationsList;
-    BPersonInfoList appThanksToList;
-    BPersonInfoProvider *appAuthors;
-    BPersonInfoProvider *appTranslations;
-    BPersonInfoProvider *appThanksTo;
-    BLogger *logger;
-    BSignalDelayProxy *languageChangeProxy;
-    BSignalDelayProxy *languageChangeEventProxy;
-    bool blockLanguageChangeEvent;
-    bool destructorCalled;
+    void sendLanguageChangeEvent();
 private:
     Q_DISABLE_COPY(BApplicationBasePrivate)
 };

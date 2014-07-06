@@ -22,17 +22,12 @@
 #ifndef BGLOBAL_H
 #define BGLOBAL_H
 
-#include <QtGlobal>
+#include <QCoreApplication>
 #include <QList>
-#include <QString>
 #include <QObject>
 #include <QSignalMapper>
+#include <QString>
 #include <QVariant>
-#include <QCoreApplication>
-#include <QMetaType>
-#include <QSet>
-
-#include <typeinfo>
 
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
@@ -270,7 +265,7 @@ if (!_b_##name##Init && (_b_##name##Init = true))
 #       define BEQT_ARCH_SPARC_SPARC_V9_ULTRASPARC
 #   endif
 #elif defined(__sh__)
-#   define BEQT_ARCH_HUPERH
+#   define BEQT_ARCH_SUPERH
 #elif defined(__370__) || defined(__THW_370__) || defined(__s390__) || defined(__s390x__) || defined(__zarch__) \
     || defined(__SYSC_ZARCH__)
 #   define BEQT_ARCH_SYSTEMZ
@@ -281,13 +276,10 @@ if (!_b_##name##Init && (_b_##name##Init = true))
 #   define BEQT_ARCH_TMS470
 #endif
 
-B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
-B_CORE_EXPORT const char *bVersion();
-B_CORE_EXPORT void bRegister();
-B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
-B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
-B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
-B_CORE_EXPORT QList<int> bRangeM(int lb, int ub, unsigned multiplier = 10);
+template <typename T> T* bPointer(const QVariant &v)
+{
+    return (T *) v.value<void *>();
+}
 
 template<typename T> void bRemoveDuplicates(QList<T> &list)
 {
@@ -313,74 +305,6 @@ template<typename T> void bRemoveDuplicates(QList<T> &list, bool (*areEqual)(con
                 list.removeAt(j);
         }
     }
-}
-
-template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list)
-{
-    QList<T> nlist = list;
-    bRemoveDuplicates(nlist);
-    return nlist;
-}
-
-template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list, bool (*areEqual)(const T &, const T &))
-{
-    if (!areEqual)
-        return list;
-    QList<T> nlist = list;
-    bRemoveDuplicates(nlist, areEqual);
-    return nlist;
-}
-
-template<typename T> bool bSetMapping(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
-{
-    if (!mapper || !sender || !signal)
-        return false;
-    mapper->setMapping(sender, t);
-    QObject::connect(sender, signal, mapper, SLOT(map()));
-    return true;
-}
-
-template<typename T> bool bSetMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
-{
-    if (!mapper || !sender || !signal)
-        return false;
-    mapper->setMapping(sender, t);
-    QObject::connect(sender, signal, mapper, SLOT(map(QObject *)));
-    return true;
-}
-
-template <typename T> T* bPointer(const QVariant &v)
-{
-    return (T *) v.value<void *>();
-}
-
-template <typename T> QVariant bVariant(T *ptr)
-{
-    return QVariant::fromValue((void *) ptr);
-}
-
-template <typename T> T enum_cast(int i, const QList<T> &enumMembers, T defaultEnumMember)
-{
-    return (enumMembers.contains(i)) ? static_cast<T>(i) : defaultEnumMember;
-}
-
-template <typename T> T enum_cast(int i, T firstEnumMember, T lastEnumMember)
-{
-    return bRangeD(firstEnumMember, lastEnumMember).contains(i) ? static_cast<T>(i) : firstEnumMember;
-}
-
-template <typename T> T enum_cast(const QVariant &v, const QList<T> &enumMembers, T defaultEnumMember)
-{
-    bool ok = false;
-    int i = v.toInt(&ok);
-    return ok ? enum_cast(i, enumMembers, defaultEnumMember) : defaultEnumMember;
-}
-
-template <typename T> T enum_cast(const QVariant &v, T firstEnumMember, T lastEnumMember)
-{
-    bool ok = false;
-    int i = v.toInt(&ok);
-    return (ok && bRangeD(firstEnumMember, lastEnumMember).contains(i)) ? static_cast<T>(i) : firstEnumMember;
 }
 
 template<typename T> void bRet(const T &)
@@ -472,6 +396,21 @@ template<typename T, typename U, typename V, typename W, typename X> X bRet(T *t
     return xx;
 }
 
+template <typename T> void bReverse(QList<T> &list)
+{
+    const int sz = list.size();
+    for (int i = 0; i < (list.size() / 2); ++i)
+        list.swap(i, sz - i - 1);
+}
+
+template <typename T> QList<T> bReversed(const QList<T> &list)
+{
+    QList<T> nlist;
+    for (int i = list.size() - 1; i >= 0; --i)
+        nlist << list.at(i);
+    return nlist;
+}
+
 template<typename T> void bSet(T *t, const T &tt)
 {
     if (t)
@@ -508,5 +447,76 @@ template<typename T, typename U, typename V, typename W> void bSet(T *t, const T
     if (w)
         *w = ww;
 }
+
+template<typename T> bool bSetMapping(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
+{
+    if (!mapper || !sender || !signal)
+        return false;
+    mapper->setMapping(sender, t);
+    QObject::connect(sender, signal, mapper, SLOT(map()));
+    return true;
+}
+
+template<typename T> bool bSetMappingSender(QSignalMapper *mapper, QObject *sender, const char *signal, const T &t)
+{
+    if (!mapper || !sender || !signal)
+        return false;
+    mapper->setMapping(sender, t);
+    QObject::connect(sender, signal, mapper, SLOT(map(QObject *)));
+    return true;
+}
+
+template <typename T> QVariant bVariant(T *ptr)
+{
+    return QVariant::fromValue((void *) ptr);
+}
+
+template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list)
+{
+    QList<T> nlist = list;
+    bRemoveDuplicates(nlist);
+    return nlist;
+}
+
+template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list, bool (*areEqual)(const T &, const T &))
+{
+    if (!areEqual)
+        return list;
+    QList<T> nlist = list;
+    bRemoveDuplicates(nlist, areEqual);
+    return nlist;
+}
+
+template <typename T> T enum_cast(int i, const QList<T> &enumMembers, T defaultEnumMember)
+{
+    return (enumMembers.contains(i)) ? static_cast<T>(i) : defaultEnumMember;
+}
+
+template <typename T> T enum_cast(int i, T firstEnumMember, T lastEnumMember)
+{
+    return bRangeD(firstEnumMember, lastEnumMember).contains(i) ? static_cast<T>(i) : firstEnumMember;
+}
+
+template <typename T> T enum_cast(const QVariant &v, const QList<T> &enumMembers, T defaultEnumMember)
+{
+    bool ok = false;
+    int i = v.toInt(&ok);
+    return ok ? enum_cast(i, enumMembers, defaultEnumMember) : defaultEnumMember;
+}
+
+template <typename T> T enum_cast(const QVariant &v, T firstEnumMember, T lastEnumMember)
+{
+    bool ok = false;
+    int i = v.toInt(&ok);
+    return (ok && bRangeD(firstEnumMember, lastEnumMember).contains(i)) ? static_cast<T>(i) : firstEnumMember;
+}
+
+B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
+B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT QList<int> bRangeM(int lb, int ub, unsigned multiplier = 10);
+B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT void bRegister();
+B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
+B_CORE_EXPORT const char *bVersion();
 
 #endif // BGLOBAL_H

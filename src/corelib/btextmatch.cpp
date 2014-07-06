@@ -20,14 +20,13 @@
 ****************************************************************************/
 
 #include "btextmatch.h"
-#include "bglobal.h"
+
 #include "bbase.h"
 #include "bbase_p.h"
-#include "bnamespace.h"
 
+#include <QDebug>
 #include <QObject>
 #include <QString>
-#include <QDebug>
 
 /*============================================================================
 ================================ BTextMatchPrivate ===========================
@@ -37,14 +36,14 @@ class BTextMatchPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTextMatch)
 public:
+    int len;
+    int pos;
+    const QString *txt;
+public:
     explicit BTextMatchPrivate(BTextMatch *q);
     ~BTextMatchPrivate();
 public:
     void init();
-public:
-    const QString *txt;
-    int pos;
-    int len;
 private:
     Q_DISABLE_COPY(BTextMatchPrivate)
 };
@@ -113,15 +112,10 @@ BTextMatch::BTextMatch(const QString *const text, int position, int length) :
 
 /*============================== Public methods ============================*/
 
-QString BTextMatch::text() const
+bool BTextMatch::isValid() const
 {
     const B_D(BTextMatch);
-    return d->txt ? d->txt->mid(d->pos, d->len) : QString();
-}
-
-int BTextMatch::position() const
-{
-    return d_func()->pos;
+    return d->txt && d->pos >= 0 && d->len >= 0;
 }
 
 int BTextMatch::length() const
@@ -129,10 +123,15 @@ int BTextMatch::length() const
     return d_func()->len;
 }
 
-bool BTextMatch::isValid() const
+int BTextMatch::position() const
+{
+    return d_func()->pos;
+}
+
+QString BTextMatch::text() const
 {
     const B_D(BTextMatch);
-    return d->txt && d->pos >= 0 && d->len >= 0;
+    return d->txt ? d->txt->mid(d->pos, d->len) : QString();
 }
 
 /*============================== Public operators ==========================*/

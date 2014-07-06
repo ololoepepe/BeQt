@@ -23,25 +23,22 @@
 #define BSPELLCHECKER_H
 
 class BSpellCheckerPrivate;
+
 class BSpellCheckerDictionary;
 
-class QTextCodec;
 class QLocale;
 class QRegExp;
+class QStringList;
 
-#include <QtGlobal>
-
-#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-class QRegularExpression;
-#endif
-
-#include "bglobal.h"
 #include "bbaseobject.h"
 
-#include <QStringList>
-#include <QString>
 #include <QList>
 #include <QObject>
+#include <QString>
+
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+class QRegularExpression; //It is here because Qt headers containing the wrapping macros must be included first
+#endif
 
 /*============================================================================
 ================================ BSpellChecker ===============================
@@ -64,32 +61,32 @@ public:
     void addDictionary(const QString &path);
     void addDictionary(const QByteArray &affixData, const QByteArray &dictionaryData, const QString &locale);
     void addDictionary(const QByteArray &affixData, const QByteArray &dictionaryData, const QLocale &locale);
-    void removeDictionary(const QLocale &locale);
-    void removeDictionary(const QString &localeName);
-    void setUserDictionary(const QString &path);
+    void clearIgnored();
+    void clearIgnoredImplicitly();
+    void clearIgnoredImplicitlyRegExp();
+    void considerLeftSurrounding(int charCount);
+    void considerRightSurrounding(int charCount);
+    QList<BSpellCheckerDictionary *> dictionaries() const;
+    BSpellCheckerDictionary *dictionary(const QLocale &locale) const;
+    BSpellCheckerDictionary *dictionary(const QString &localeName) const;
     QStringList dictionaryPaths() const;
-    QString userDictionaryPath() const;
-    bool spell(const QString &word, const QString &surrLeft = QString(), const QString &surrRight = QString()) const;
-    QStringList suggest(const QString &word) const;
-    void ignoreWord(const QString &word, bool ignore = true);
-    void ignoreWords(const QStringList &words, bool ignore = true);
-    void ignoreWordImplicitly(const QString &word, bool ignore = true);
-    void ignoreWordsImplicitly(const QStringList &words, bool ignore = true);
     void ignoreImplicitlyRegExp(const QRegExp &rx, bool ignore = true);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     void ignoreImplicitlyRegExp(const QRegularExpression &rx, bool ignore = true);
 #endif
-    void considerLeftSurrounding(int charCount);
-    void considerRightSurrounding(int charCount);
-    void clearIgnored();
-    void clearIgnoredImplicitly();
-    void clearIgnoredImplicitlyRegExp();
+    void ignoreWord(const QString &word, bool ignore = true);
+    void ignoreWordImplicitly(const QString &word, bool ignore = true);
+    void ignoreWords(const QStringList &words, bool ignore = true);
+    void ignoreWordsImplicitly(const QStringList &words, bool ignore = true);
     bool isIgnored(const QString &word, bool *implicitly = 0) const;
     bool isIgnored(bool *implicitly, const QString &word, const QString &surrLeft = QString(),
                    const QString &surrRight = QString()) const;
-    QList<BSpellCheckerDictionary *> dictionaries() const;
-    BSpellCheckerDictionary *dictionary(const QLocale &locale) const;
-    BSpellCheckerDictionary *dictionary(const QString &localeName) const;
+    void removeDictionary(const QLocale &locale);
+    void removeDictionary(const QString &localeName);
+    void setUserDictionary(const QString &path);
+    bool spell(const QString &word, const QString &surrLeft = QString(), const QString &surrRight = QString()) const;
+    QStringList suggest(const QString &word) const;
+    QString userDictionaryPath() const;
 Q_SIGNALS:
     void changed();
 private:

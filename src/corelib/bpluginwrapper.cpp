@@ -20,30 +20,33 @@
 ****************************************************************************/
 
 #include "bpluginwrapper.h"
-#include "bplugininterface.h"
-#include "bcoreapplication.h"
-#include "bcoreapplication_p.h"
-#include "bapplicationbase.h"
-#include "bapplicationbase_p.h"
 #include "bpluginwrapper_p.h"
-#include "bversion.h"
-#include "bdirtools.h"
 
-#include <QtGlobal>
-#include <QObject>
-#include <QString>
-#include <QList>
-#include <QPluginLoader>
-#include <QMetaObject>
-#include <QMap>
-#include <QObject>
-#include <QSettings>
+#include "bplugininterface.h"
+#include "bapplicationbase.h"
+
+#include "bdirtools.h"
+#include "bversion.h"
 
 #include <QDebug>
+#include <QList>
+#include <QMap>
+#include <QMetaObject>
+#include <QObject>
+#include <QObject>
+#include <QPluginLoader>
+#include <QSettings>
+#include <QString>
 
 /*============================================================================
 ================================ BPluginWrapperPrivate =======================
 ============================================================================*/
+
+/*============================== Static public variables ===================*/
+
+QStringList BPluginWrapperPrivate::acctptableTypes;
+QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalMap;
+BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
 
 /*============================== Public constructors =======================*/
 
@@ -59,6 +62,46 @@ BPluginWrapperPrivate::~BPluginWrapperPrivate()
 }
 
 /*============================== Public methods ============================*/
+
+bool BPluginWrapperPrivate::activate()
+{
+    if (activated)
+        return true;
+    if (!loaded && !load())
+        return false;
+    interface->activate();
+    activated = true;
+    B_Q(BPluginWrapper);
+    QMetaObject::invokeMethod(q, "activated");
+    return true;
+}
+
+void BPluginWrapperPrivate::createLoader()
+{
+    if (!loader.isNull())
+        return;
+    loader = new QPluginLoader;
+    loader->setFileName(fileName);
+}
+
+void BPluginWrapperPrivate::deactivate()
+{
+    if (!activated)
+        return;
+    B_Q(BPluginWrapper);
+    QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
+    interface->deactivate();
+    activated = false;
+}
+
+void BPluginWrapperPrivate::deleteLoader()
+{
+    if (loader.isNull())
+        return;
+    if (loader->isLoaded())
+        loader->unload();
+    loader->deleteLater();
+}
 
 void BPluginWrapperPrivate::init()
 {
@@ -126,52 +169,6 @@ void BPluginWrapperPrivate::unload()
     delete settings;
 }
 
-bool BPluginWrapperPrivate::activate()
-{
-    if (activated)
-        return true;
-    if (!loaded && !load())
-        return false;
-    interface->activate();
-    activated = true;
-    B_Q(BPluginWrapper);
-    QMetaObject::invokeMethod(q, "activated");
-    return true;
-}
-
-void BPluginWrapperPrivate::deactivate()
-{
-    if (!activated)
-        return;
-    B_Q(BPluginWrapper);
-    QMetaObject::invokeMethod(q, "aboutToBeDeactivated");
-    interface->deactivate();
-    activated = false;
-}
-
-void BPluginWrapperPrivate::createLoader()
-{
-    if (!loader.isNull())
-        return;
-    loader = new QPluginLoader;
-    loader->setFileName(fileName);
-}
-
-void BPluginWrapperPrivate::deleteLoader()
-{
-    if (loader.isNull())
-        return;
-    if (loader->isLoaded())
-        loader->unload();
-    loader->deleteLater();
-}
-
-/*============================== Static public variables ===================*/
-
-QMap<QString, BPluginWrapper *> BPluginWrapperPrivate::globalMap;
-QStringList BPluginWrapperPrivate::acctptableTypes;
-BPluginWrapper::InterfaceTestFunction BPluginWrapperPrivate::testFunction;
-
 /*============================================================================
 ================================ BPluginWrapper ==============================
 ============================================================================*/
@@ -206,16 +203,6 @@ BPluginWrapper::BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent) :
 
 /*============================== Static public methods =====================*/
 
-void BPluginWrapper::setAcceptableTypes(const QStringList &list)
-{
-    BPluginWrapperPrivate::acctptableTypes = list;
-}
-
-void BPluginWrapper::setInterfaceTestFunction(InterfaceTestFunction function)
-{
-    BPluginWrapperPrivate::testFunction = function;
-}
-
 QStringList BPluginWrapper::acceptableTypes()
 {
     return BPluginWrapperPrivate::acctptableTypes;
@@ -243,7 +230,77 @@ bool BPluginWrapper::removeSettings(const QString &pluginName)
     return QFile::remove(fn);
 }
 
+void BPluginWrapper::setAcceptableTypes(const QStringList &list)
+{
+    BPluginWrapperPrivate::acctptableTypes = list;
+}
+
+void BPluginWrapper::setInterfaceTestFunction(InterfaceTestFunction function)
+{
+    BPluginWrapperPrivate::testFunction = function;
+}
+
 /*============================== Public methods ============================*/
+
+QString BPluginWrapper::fileName() const
+{
+    return d_func()->fileName;
+}
+
+BPluginInterface::PluginInfo BPluginWrapper::info() const
+{
+    return d_func()->info;
+}
+
+void BPluginWrapper::install()
+{
+    BApplicationBase::installPlugin(this);
+}
+
+QObject *BPluginWrapper::instance() const
+{
+    return d_func()->instance;
+}
+
+BPluginInterface *BPluginWrapper::interface() const
+{
+    return d_func()->interface;
+}
+
+bool BPluginWrapper::isActivated() const
+{
+    return d_func()->activated;
+}
+
+bool BPluginWrapper::isLoaded() const
+{
+    return d_func()->loaded;
+}
+
+QString BPluginWrapper::name() const
+{
+    return d_func()->name;
+}
+
+bool BPluginWrapper::prefereStaticInfo() const
+{
+    return d_func()->prefereStaticInfo;
+}
+
+void BPluginWrapper::remove()
+{
+    BApplicationBase::removePlugin(this);
+}
+
+QSettings *BPluginWrapper::settings() const
+{
+    return d_func()->settings.data();
+}
+
+BPluginInterface::StaticPluginInfo BPluginWrapper::staticInfo() const
+{
+    return d_func()->staticInfo;
+}
 
 void BPluginWrapper::setFileName(const QString &fn)
 {
@@ -259,39 +316,9 @@ void BPluginWrapper::setFileName(const QString &fn)
     d->info = BPluginInterface::PluginInfo();
 }
 
-void BPluginWrapper::install()
-{
-    BApplicationBase::installPlugin(this);
-}
-
-void BPluginWrapper::remove()
-{
-    BApplicationBase::removePlugin(this);
-}
-
-bool BPluginWrapper::isLoaded() const
-{
-    return d_func()->loaded;
-}
-
-bool BPluginWrapper::isActivated() const
-{
-    return d_func()->activated;
-}
-
-QString BPluginWrapper::fileName() const
-{
-    return d_func()->fileName;
-}
-
 QString BPluginWrapper::type() const
 {
     return d_func()->type;
-}
-
-QString BPluginWrapper::name() const
-{
-    return d_func()->name;
 }
 
 BVersion BPluginWrapper::version() const
@@ -299,47 +326,7 @@ BVersion BPluginWrapper::version() const
     return d_func()->version;
 }
 
-bool BPluginWrapper::prefereStaticInfo() const
-{
-    return d_func()->prefereStaticInfo;
-}
-
-BPluginInterface::PluginInfo BPluginWrapper::info() const
-{
-    return d_func()->info;
-}
-
-BPluginInterface::StaticPluginInfo BPluginWrapper::staticInfo() const
-{
-    return d_func()->staticInfo;
-}
-
-QObject *BPluginWrapper::instance() const
-{
-    return d_func()->instance;
-}
-
-BPluginInterface *BPluginWrapper::interface() const
-{
-    return d_func()->interface;
-}
-
-QSettings *BPluginWrapper::settings() const
-{
-    return d_func()->settings.data();
-}
-
 /*============================== Public slots ==============================*/
-
-bool BPluginWrapper::load()
-{
-    return d_func()->load();
-}
-
-void BPluginWrapper::unload()
-{
-    d_func()->unload();
-}
 
 bool BPluginWrapper::activate()
 {
@@ -351,12 +338,9 @@ void BPluginWrapper::deactivate()
     d_func()->deactivate();
 }
 
-void BPluginWrapper::setLoaded(bool b)
+bool BPluginWrapper::load()
 {
-    if (b)
-        load();
-    else
-        unload();
+    return d_func()->load();
 }
 
 void BPluginWrapper::setActivated(bool b)
@@ -365,4 +349,17 @@ void BPluginWrapper::setActivated(bool b)
         activate();
     else
         deactivate();
+}
+
+void BPluginWrapper::setLoaded(bool b)
+{
+    if (b)
+        load();
+    else
+        unload();
+}
+
+void BPluginWrapper::unload()
+{
+    d_func()->unload();
 }

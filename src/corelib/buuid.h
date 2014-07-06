@@ -1,17 +1,36 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the BeQtCore module of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
 #ifndef BUUID_H
 #define BUUID_H
 
 class BUuidPrivate;
 
-class QDebug;
-class QDataStream;
 class QByteArray;
+class QDataStream;
+class QDebug;
 class QString;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QtGlobal>
 #include <QUuid>
 #include <QMetaType>
 
@@ -36,6 +55,11 @@ class B_CORE_EXPORT BUuid : public BBase
 {
     B_DECLARE_PRIVATE(BUuid)
 public:
+    uint &data1;
+    ushort &data2;
+    ushort &data3;
+    uchar (&data4)[8];
+public:
     explicit BUuid(const QUuid &uuid = QUuid());
     explicit BUuid(uint l, ushort w1, ushort w2, uchar b1, uchar b2, uchar b3, uchar b4, uchar b5, uchar b6, uchar b7,
                    uchar b8);
@@ -49,24 +73,19 @@ public:
     ~BUuid();
 public:
     static BUuid createUuid();
-    static BUuid fromRfc4122(const QByteArray & bytes);
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     static BUuid createUuidV3(const BUuid &ns, const QByteArray &baseData);
     static BUuid createUuidV3(const BUuid &ns, const QString &baseData);
     static BUuid createUuidV5(const BUuid &ns, const QByteArray &baseData);
     static BUuid createUuidV5(const BUuid &ns, const QString &baseData);
 #endif
-public:
-    uint &data1;
-    ushort &data2;
-    ushort &data3;
-    uchar (&data4)[8];
+    static BUuid fromRfc4122(const QByteArray & bytes);
 public:
     bool isNull() const;
-    QUuid toUuid() const;
+    QByteArray toByteArray() const;
     QByteArray toRfc4122() const;
     QString toString() const;
-    QByteArray toByteArray() const;
+    QUuid toUuid() const;
     QUuid::Variant variant() const;
     QUuid::Version version() const;
 public:

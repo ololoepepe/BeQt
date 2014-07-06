@@ -24,10 +24,10 @@
 #include "bbase.h"
 #include "bbase_p.h"
 
-#include <QString>
-#include <QVariant>
 #include <QDataStream>
 #include <QDebug>
+#include <QString>
+#include <QVariant>
 #include <QVariantMap>
 
 /*============================================================================
@@ -43,11 +43,11 @@ public:
 public:
     void init();
 public:
+    QString image;
+    QString mail;
     QString name;
     QString role;
     QString site;
-    QString mail;
-    QString image;
 private:
     Q_DISABLE_COPY(BPersonInfoPrivate)
 };
@@ -86,7 +86,13 @@ BPersonInfo::BPersonInfo(const QString &name, const QString &role, const QString
                          const QString &image) :
     BBase(*new BPersonInfoPrivate(this))
 {
-    d_func()->init();
+    B_D(BPersonInfo);
+    d->init();
+    d->name = name;
+    d->role = role;
+    d->site = site;
+    d->mail = mail;
+    d->image = image;
 }
 
 BPersonInfo::BPersonInfo(const BPersonInfo &other) :
@@ -110,6 +116,41 @@ BPersonInfo::BPersonInfo(BPersonInfoPrivate &d) :
 
 /*============================== Public methods ============================*/
 
+QString BPersonInfo::image() const
+{
+    return d_func()->image;
+}
+
+bool BPersonInfo::isValid() const
+{
+    return !d_func()->name.isEmpty();
+}
+
+QString BPersonInfo::mail() const
+{
+    return d_func()->mail;
+}
+
+QString BPersonInfo::name() const
+{
+    return d_func()->name;
+}
+
+QString BPersonInfo::role() const
+{
+    return d_func()->role;
+}
+
+void BPersonInfo::setImage(const QString &image)
+{
+    d_func()->image = image;
+}
+
+void BPersonInfo::setMail(const QString &mail)
+{
+    d_func()->mail = mail;
+}
+
 void BPersonInfo::setName(const QString &name)
 {
     d_func()->name = name;
@@ -125,49 +166,14 @@ void BPersonInfo::setSite(const QString &site)
     d_func()->site = site;
 }
 
-void BPersonInfo::setMail(const QString &mail)
-{
-    d_func()->mail = mail;
-}
-
-void BPersonInfo::setImage(const QString &image)
-{
-    d_func()->image = image;
-}
-
-QString BPersonInfo::name() const
-{
-    return d_func()->name;
-}
-
-QString BPersonInfo::role() const
-{
-    return d_func()->role;
-}
-
 QString BPersonInfo::site() const
 {
     return d_func()->site;
 }
 
-QString BPersonInfo::mail() const
-{
-    return d_func()->mail;
-}
-
-QString BPersonInfo::image() const
-{
-    return d_func()->image;
-}
-
-bool BPersonInfo::isValid() const
-{
-    return !d_func()->name.isEmpty();
-}
-
 /*============================== Public operators ==========================*/
 
-BPersonInfo &BPersonInfo::operator=(const BPersonInfo &other)
+BPersonInfo &BPersonInfo::operator =(const BPersonInfo &other)
 {
     B_D(BPersonInfo);
     const BPersonInfoPrivate *dd = other.d_func();
@@ -179,7 +185,7 @@ BPersonInfo &BPersonInfo::operator=(const BPersonInfo &other)
     return *this;
 }
 
-bool BPersonInfo::operator==(const BPersonInfo &other) const
+bool BPersonInfo::operator ==(const BPersonInfo &other) const
 {
     const B_D(BPersonInfo);
     const BPersonInfoPrivate *dd = other.d_func();

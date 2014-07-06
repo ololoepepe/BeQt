@@ -21,19 +21,13 @@
 
 class BPluginWrapper;
 
-class QWidget;
-class QSettings;
-
 #include "bcoreapplication.h"
-#include "bglobal.h"
 #include "bcoreapplication_p.h"
 
-#include <QObject>
 #include <QCoreApplication>
-#include <QtGlobal>
-#include <QMetaObject>
-
 #include <QDebug>
+#include <QMetaObject>
+#include <QObject>
 
 /*============================================================================
 ================================ BCoreApplicationPrivate =====================
@@ -54,14 +48,9 @@ BCoreApplicationPrivate::~BCoreApplicationPrivate()
 
 /*============================== Public methods ============================*/
 
-void BCoreApplicationPrivate::init()
+void BCoreApplicationPrivate::emitLanguageChanged()
 {
-    //
-}
-
-void BCoreApplicationPrivate::emitPluginActivated(BPluginWrapper *pluginWrapper)
-{
-    QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper));
+    QMetaObject::invokeMethod(q_func(), "languageChanged");
 }
 
 void BCoreApplicationPrivate::emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
@@ -69,9 +58,14 @@ void BCoreApplicationPrivate::emitPluginAboutToBeDeactivated(BPluginWrapper *plu
     QMetaObject::invokeMethod(q_func(), "pluginAboutToBeDeactivated", Q_ARG(BPluginWrapper *, pluginWrapper));
 }
 
-void BCoreApplicationPrivate::emitLanguageChanged()
+void BCoreApplicationPrivate::emitPluginActivated(BPluginWrapper *pluginWrapper)
 {
-    QMetaObject::invokeMethod(q_func(), "languageChanged");
+    QMetaObject::invokeMethod(q_func(), "pluginActivated", Q_ARG(BPluginWrapper *, pluginWrapper));
+}
+
+void BCoreApplicationPrivate::init()
+{
+    //
 }
 
 /*============================================================================

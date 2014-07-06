@@ -20,7 +20,6 @@
 ****************************************************************************/
 
 #include "btextmatchlist.h"
-#include "bglobal.h"
 
 #include <QStringList>
 

@@ -24,17 +24,17 @@
 
 class BPluginWrapperPrivate;
 
-class QStringList;
-class QSettings;
+class BVersion;
 
-#include "bglobal.h"
+class QSettings;
+class QString;
+class QStringList;
+
 #include "bplugininterface.h"
 #include "bbase.h"
-#include "bversion.h"
 
 #include <QObject>
 #include <QList>
-#include <QString>
 
 /*============================================================================
 ================================ BPluginWrapper ==============================
@@ -53,38 +53,38 @@ public:
 protected:
     explicit BPluginWrapper(BPluginWrapperPrivate &d, QObject *parent = 0);
 public:
-    static void setAcceptableTypes(const QStringList &list);
-    static void setInterfaceTestFunction(InterfaceTestFunction function);
     static QStringList acceptableTypes();
     static InterfaceTestFunction interfaceTestFunction();
     static BPluginWrapper *parentWrapper(const BPluginInterface *i);
     static bool removeSettings(const QString &pluginName);
+    static void setAcceptableTypes(const QStringList &list);
+    static void setInterfaceTestFunction(InterfaceTestFunction function);
 public:
-    void setFileName(const QString &fn);
-    void install();
-    void remove();
-    bool isLoaded() const;
-    bool isActivated() const;
     QString fileName() const;
-    QString type() const;
-    QString name() const;
-    BVersion version() const;
-    bool prefereStaticInfo() const;
     BPluginInterface::PluginInfo info() const;
-    BPluginInterface::StaticPluginInfo staticInfo() const;
+    void install();
     QObject *instance() const;
     BPluginInterface *interface() const;
+    bool isActivated() const;
+    bool isLoaded() const;
+    QString name() const;
+    bool prefereStaticInfo() const;
+    void remove();
+    void setFileName(const QString &fn);
     QSettings *settings() const;
+    BPluginInterface::StaticPluginInfo staticInfo() const;
+    QString type() const;
+    BVersion version() const;
 public Q_SLOTS:
-    bool load();
-    void unload();
     bool activate();
     void deactivate();
-    void setLoaded(bool b);
+    bool load();
     void setActivated(bool b);
+    void setLoaded(bool b);
+    void unload();
 Q_SIGNALS:
-    void activated();
     void aboutToBeDeactivated();
+    void activated();
 private:
     Q_DISABLE_COPY(BPluginWrapper)
 };

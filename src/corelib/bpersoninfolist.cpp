@@ -21,8 +21,12 @@
 
 #include "bpersoninfolist.h"
 
+#include "bpersoninfo.h"
+
+#include <QDataStream>
 #include <QList>
 #include <QVariant>
+#include <QVariantList>
 
 /*============================================================================
 ================================ BPersonInfoList =============================
@@ -33,4 +37,25 @@
 BPersonInfoList::operator QVariant() const
 {
     return QVariant::fromValue(*this);
+}
+
+/*============================== Public friend operators ===================*/
+
+QDataStream &operator <<(QDataStream &stream, const BPersonInfoList &list)
+{
+    QVariantList vlist;
+    foreach (const BPersonInfo &info, list)
+        vlist << info;
+    stream << vlist;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, BPersonInfoList &list)
+{
+    list.clear();
+    QVariantList vlist;
+    stream >> vlist;
+    foreach (const QVariant &v, vlist)
+        list << v.value<BPersonInfo>();
+    return stream;
 }

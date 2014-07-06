@@ -25,7 +25,6 @@
 class QStringList;
 
 #include "btextmatch.h"
-#include "bglobal.h"
 
 #include <QList>
 

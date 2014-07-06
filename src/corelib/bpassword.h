@@ -26,12 +26,11 @@ class BPasswordPrivate;
 
 class QDataStream;
 class QDebug;
+class QString;
 class QVariant;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QString>
 #include <QByteArray>
 #include <QCryptographicHash>
 #include <QMetaType>
@@ -59,20 +58,20 @@ public:
 protected:
     explicit BPassword(BPasswordPrivate &d);
 public:
+    QCryptographicHash::Algorithm algorithm() const;
+    int charCountHint(Mode m = FlexibleMode) const;
+    void clear();
+    void encrypt(QCryptographicHash::Algorithm a = QCryptographicHash::Sha1);
+    QByteArray encryptedPassword(int *hint = 0) const;
+    QByteArray encryptedPassword(QCryptographicHash::Algorithm a, int *hint = 0) const;
+    bool isEncrypted() const;
+    Mode mode() const;
+    QString openPassword() const;
+    void restore(const QByteArray &data);
+    QByteArray save(Mode m = FlexibleMode) const;
     void setMode(Mode m);
     void setPassword(const QString &s, QCryptographicHash::Algorithm a = QCryptographicHash::Sha1);
     void setPassword(QCryptographicHash::Algorithm a, const QByteArray &ba, int charCountHint = 0);
-    void encrypt(QCryptographicHash::Algorithm a = QCryptographicHash::Sha1);
-    void clear();
-    void restore(const QByteArray &data);
-    Mode mode() const;
-    QString openPassword() const;
-    QByteArray encryptedPassword(int *hint = 0) const;
-    QByteArray encryptedPassword(QCryptographicHash::Algorithm a, int *hint = 0) const;
-    int charCountHint(Mode m = FlexibleMode) const;
-    QCryptographicHash::Algorithm algorithm() const;
-    QByteArray save(Mode m = FlexibleMode) const;
-    bool isEncrypted() const;
 public:
     BPassword &operator =(const BPassword &other);
     bool operator ==(const BPassword &other) const;

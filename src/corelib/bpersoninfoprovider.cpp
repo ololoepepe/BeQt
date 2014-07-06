@@ -22,23 +22,22 @@
 #include "bpersoninfoprovider.h"
 #include "bpersoninfoprovider_p.h"
 
-#include "bglobal.h"
 #include "bbase.h"
 #include "bbase_p.h"
 #include "bcoreapplication.h"
 #include "bpersoninfo.h"
-
-#include <QObject>
-#include <QString>
-#include <QLocale>
-#include <QMap>
-#include <QFile>
-#include <QTextStream>
-#include <QStringList>
-#include <QList>
-#include <QMetaObject>
+#include "bpersoninfolist.h"
 
 #include <QDebug>
+#include <QFile>
+#include <QList>
+#include <QLocale>
+#include <QMap>
+#include <QMetaObject>
+#include <QObject>
+#include <QString>
+#include <QStringList>
+#include <QTextStream>
 
 /*============================================================================
 ================================ BPersonInfoProviderPrivate ==================
@@ -66,38 +65,32 @@ BPersonInfo BPersonInfoProviderPrivate::infoForLocale(const PersonInfoMap &map, 
         return BPersonInfo();
     if (map.contains(localeName))
         return map.value(localeName);
-    if (localeName != "en")
-        return infoForLocale(map, (localeName.length() > 2) ? localeName.left(2) :
-                                                              QString(!noDefault ? "en" : ""), noDefault);
-    return BPersonInfo();
+    if (localeName == "en")
+        return BPersonInfo();
+    QString s = (localeName.length() > 2) ? localeName.left(2) : QString(!noDefault ? "en" : "");
+    return infoForLocale(map, s, noDefault);
 }
 
 void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, PersonInfoMap what)
 {
-    if ( what.isEmpty() )
+    if (what.isEmpty())
         return;
     QStringList keys = what.keys();
     QString defName = what.value("en").name();
     QString defSite = what.value("en").site();
     QString defMail = what.value("en").mail();
     QString defImage = what.value("en").image();
-    if ( defSite.isEmpty() )
-    {
-        foreach (const QString &key, keys)
-        {
-            if ( !what.value(key).site().isEmpty() )
-            {
+    if (defSite.isEmpty()) {
+        foreach (const QString &key, keys) {
+            if (!what.value(key).site().isEmpty()) {
                 defSite = what.value(key).site();
                 break;
             }
         }
     }
-    if ( defMail.isEmpty() )
-    {
-        foreach (const QString &key, keys)
-        {
-            if ( !what.value(key).mail().isEmpty() )
-            {
+    if (defMail.isEmpty()) {
+        foreach (const QString &key, keys) {
+            if (!what.value(key).mail().isEmpty()) {
                 defMail = what.value(key).mail();
                 break;
             }
@@ -105,30 +98,28 @@ void BPersonInfoProviderPrivate::tryAppendInfo(QList<PersonInfoMap> &where, Pers
     }
     if (defImage.isEmpty())
     {
-        foreach (const QString &key, keys)
-        {
-            if (!what.value(key).image().isEmpty())
-            {
+        foreach (const QString &key, keys) {
+            if (!what.value(key).image().isEmpty()) {
                 defImage = what.value(key).image();
                 break;
             }
         }
     }
-    for (int i = 0; i < keys.size(); ++i)
-    {
-        if ( what.value( keys.at(i) ).name().isEmpty() )
+    for (int i = 0; i < keys.size(); ++i) {
+        if (what.value(keys.at(i)).name().isEmpty())
             what[keys.at(i)].setName(defName);
-        if ( what.value( keys.at(i) ).site().isEmpty() )
+        if (what.value(keys.at(i)).site().isEmpty())
             what[keys.at(i)].setSite(defSite);
-        if ( what.value( keys.at(i) ).mail().isEmpty() )
+        if (what.value(keys.at(i)).mail().isEmpty())
             what[keys.at(i)].setMail(defMail);
         if (what.value(keys.at(i)).image().isEmpty())
             what[keys.at(i)].setImage(defImage);
     }
-    foreach ( const QString &key, what.keys() )
-        if ( what.value(key).name().isEmpty() )
+    foreach (const QString &key, what.keys()) {
+        if (what.value(key).name().isEmpty())
             what.remove(key);
-    if ( what.isEmpty() )
+    }
+    if (what.isEmpty())
         return;
     where << what;
 }
@@ -143,50 +134,44 @@ void BPersonInfoProviderPrivate::init()
 void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
 {
     QFile f(fileName);
-    if ( !f.open(QFile::ReadOnly) )
+    if (!f.open(QFile::ReadOnly))
         return;
     QTextStream in(&f);
     in.setCodec("UTF-8");
     infos.clear();
     PersonInfoMap info;
-    while ( !in.atEnd() )
-    {
+    while (!in.atEnd()) {
         QString line = in.readLine();
-        if ( !line.isEmpty() )
-        {
+        if (!line.isEmpty()) {
             QStringList sl = line.split('=');
             if (sl.size() < 2)
                 continue;
             QString id = sl.takeFirst();
             QString val = sl.join("=");
-            if ( id.isEmpty() || id.length() < 4 || val.isEmpty() )
+            if (id.isEmpty() || id.length() < 4 || val.isEmpty())
                 continue;
             QString ln;
-            if (id.at(id.length() - 1) == ']')
-            {
+            if (id.at(id.length() - 1) == ']') {
                 int i = id.length() - 2;
                 while (i >= 0 && id.at(i) != '[')
                     ln.prepend( id.at(i--) );
             }
-            if ( ln.isEmpty() || (QLocale(ln).name() != ln && QLocale(ln).name().left(2) != ln) )
+            if (ln.isEmpty() || (QLocale(ln).name() != ln && QLocale(ln).name().left(2) != ln))
                 ln = "en";
-            if (!id.left(5).compare("image", Qt::CaseInsensitive))
-            {
+            if (!id.left(5).compare("image", Qt::CaseInsensitive)) {
                 info[ln].setImage(val);
                 continue;
             }
             id = id.left(4);
-            if ( !id.compare("name", Qt::CaseInsensitive) )
+            if (!id.compare("name", Qt::CaseInsensitive))
                 info[ln].setName(val);
-            else if ( !id.compare("role", Qt::CaseInsensitive) )
+            else if (!id.compare("role", Qt::CaseInsensitive))
                 info[ln].setRole(val);
-            else if ( !id.compare("site", Qt::CaseInsensitive) )
+            else if (!id.compare("site", Qt::CaseInsensitive))
                 info[ln].setSite(val);
-            else if ( !id.compare("mail", Qt::CaseInsensitive) )
+            else if (!id.compare("mail", Qt::CaseInsensitive))
                 info[ln].setMail(val);
-        }
-        else
-        {
+        } else {
             tryAppendInfo(infos, info);
             info.clear();
         }
@@ -200,13 +185,40 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
 ================================ BPersonInfoProvider =========================
 ============================================================================*/
 
+/*============================== Public constructors =======================*/
+
+BPersonInfoProvider::BPersonInfoProvider(QObject *parent) :
+    QObject(parent), BBase(*new BPersonInfoProviderPrivate(this))
+{
+    d_func()->init();
+}
+
+BPersonInfoProvider::BPersonInfoProvider(const QString &fileName, QObject *parent) :
+    QObject(parent), BBase(*new BPersonInfoProviderPrivate(this))
+{
+    d_func()->init();
+    setFileName(fileName);
+}
+
+BPersonInfoProvider::~BPersonInfoProvider()
+{
+    //
+}
+
+/*============================== Protected constructors ====================*/
+
+BPersonInfoProvider::BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent) :
+    QObject(parent), BBase(d)
+{
+    d_func()->init();
+}
+
 /*============================== Static public methods =====================*/
 
 QString BPersonInfoProvider::infoListToString(const BPersonInfoList &list)
 {
     QString s;
-    foreach (const BPersonInfo &info, list)
-    {
+    foreach (const BPersonInfo &info, list) {
         if (!info.isValid())
             continue;
         s += tr("Name:", "info") + " " + info.name() + "\n";
@@ -236,43 +248,7 @@ QString BPersonInfoProvider::infosString(const BPersonInfoProvider *prov, const 
     return prov->infosString(locale, noDefault);
 }
 
-/*============================== Public constructors =======================*/
-
-BPersonInfoProvider::BPersonInfoProvider(QObject *parent) :
-    QObject(parent), BBase( *new BPersonInfoProviderPrivate(this) )
-{
-    d_func()->init();
-}
-
-BPersonInfoProvider::BPersonInfoProvider(const QString &fileName, QObject *parent) :
-    QObject(parent), BBase( *new BPersonInfoProviderPrivate(this) )
-{
-    d_func()->init();
-    setFileName(fileName);
-}
-
-BPersonInfoProvider::~BPersonInfoProvider()
-{
-    //
-}
-
-/*============================== Protected constructors ====================*/
-
-BPersonInfoProvider::BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
-{
-    d_func()->init();
-}
-
 /*============================== Public methods ============================*/
-
-void BPersonInfoProvider::setFileName(const QString &fileName)
-{
-    B_D(BPersonInfoProvider);
-    if (fileName.isEmpty() || fileName == d->fileName)
-        return;
-    d->setFileName(fileName);
-}
 
 QString BPersonInfoProvider::fileName() const
 {
@@ -287,8 +263,7 @@ BPersonInfoList BPersonInfoProvider::infos(bool noDefault, const QLocale &locale
 BPersonInfoList BPersonInfoProvider::infos(const QLocale &locale, bool noDefault) const
 {
     BPersonInfoList list;
-    foreach (const BPersonInfoProviderPrivate::PersonInfoMap &map, d_func()->infos)
-    {
+    foreach (const BPersonInfoProviderPrivate::PersonInfoMap &map, d_func()->infos) {
         BPersonInfo info = BPersonInfoProviderPrivate::infoForLocale(map, locale.name(), noDefault);
         if (info.isValid())
             list << info;
@@ -304,6 +279,14 @@ QString BPersonInfoProvider::infosString(bool noDefault, const QLocale &locale) 
 QString BPersonInfoProvider::infosString(const QLocale &locale, bool noDefault) const
 {
     return infoListToString(infos(locale, noDefault));
+}
+
+void BPersonInfoProvider::setFileName(const QString &fileName)
+{
+    B_D(BPersonInfoProvider);
+    if (fileName.isEmpty() || fileName == d->fileName)
+        return;
+    d->setFileName(fileName);
 }
 
 /*============================== Public slots ==============================*/

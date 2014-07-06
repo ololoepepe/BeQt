@@ -28,11 +28,10 @@ class QDataStream;
 class QDebug;
 class QVariant;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QString>
 #include <QMetaType>
+#include <QString>
 
 /*============================================================================
 ================================ BPersonInfo =================================
@@ -50,26 +49,26 @@ public:
 protected:
     explicit BPersonInfo(BPersonInfoPrivate &d);
 public:
+    QString image() const;
+    bool isValid() const;
+    QString mail() const;
+    QString name() const;
+    QString role() const;
+    void setImage(const QString &image);
+    void setMail(const QString &mail);
     void setName(const QString &name);
     void setRole(const QString &role);
     void setSite(const QString &site);
-    void setMail(const QString &mail);
-    void setImage(const QString &image);
-    QString name() const;
-    QString role() const;
     QString site() const;
-    QString mail() const;
-    QString image() const;
-    bool isValid() const;
 public:
-    BPersonInfo &operator=(const BPersonInfo &other);
-    bool operator==(const BPersonInfo &other) const;
-    bool operator!=(const BPersonInfo &other) const;
+    BPersonInfo &operator =(const BPersonInfo &other);
+    bool operator ==(const BPersonInfo &other) const;
+    bool operator !=(const BPersonInfo &other) const;
     operator QVariant() const;
 public:
-    friend QDataStream &operator<<(QDataStream &stream, const BPersonInfo &info);
-    friend QDataStream &operator>>(QDataStream &stream, BPersonInfo &info);
-    friend QDebug operator<<(QDebug dbg, const BPersonInfo &info);
+    friend QDataStream &operator <<(QDataStream &stream, const BPersonInfo &info);
+    friend QDataStream &operator >>(QDataStream &stream, BPersonInfo &info);
+    friend QDebug operator <<(QDebug dbg, const BPersonInfo &info);
 };
 
 Q_DECLARE_METATYPE(BPersonInfo)

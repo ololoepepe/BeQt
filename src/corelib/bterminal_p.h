@@ -23,22 +23,23 @@
 #define BTERMINAL_P_H
 
 class BTerminalPrivate;
+
 class BSettingsNode;
 
+class QEventLoop;
+
 #include "bterminal.h"
-#include "bglobal.h"
+
 #include "bbaseobject_p.h"
 #include "btranslation.h"
 
-#include <QObject>
-#include <QThread>
-#include <QMutex>
-#include <QTextStream>
-#include <QFile>
-#include <QEventLoop>
 #include <QMap>
+#include <QMutex>
+#include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QTextStream>
+#include <QThread>
 
 /*============================================================================
 ================================ BTerminalThread =============================
@@ -48,16 +49,16 @@ class BTerminalThread : public QThread
 {
     Q_OBJECT
 public:
+    BTerminalPrivate * const TerminalPrivate;
+public:
+    QString lastLine;
+    QEventLoop *loop;
+    QTextStream readStream;
+public:
     explicit BTerminalThread(BTerminalPrivate *tp);
     ~BTerminalThread();
 protected:
     void run();
-public:
-    BTerminalPrivate *const TerminalPrivate;
-public:
-    QTextStream readStream;
-    QString lastLine;
-    QEventLoop *loop;
 private:
     Q_DISABLE_COPY(BTerminalThread)
 };
@@ -72,38 +73,37 @@ class B_CORE_EXPORT BTerminalPrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC(BTerminal)
     B_DECLARE_PUBLIC_S(BTerminal)
 public:
+    static BTerminal::Color backgroundColor;
+    static BTerminal::Mode mode;
+    static QMutex mutex;
+    static BTerminal::Color textColor;
+    static QTextStream writeErrStream;
+    static QTextStream writeStream;
+public:
+    const BTerminal::Mode Mode;
+public:
+    QMap<QString, BTerminal::CommandHelpList> commandHelp;
+    QStringList commandHistory;
+    QMap<QString, BTerminal::ExternalHandler> externalHandlers;
+    BTranslation help;
+    QMap<QString, BTerminal::InternalHandler> internalHandlers;
+    QStringList lastArgs;
+    QString lastCommand;
+    BTerminalThread *readThread;
+    BSettingsNode *root;
+    bool translations;
+public:
     explicit BTerminalPrivate(BTerminal *q, BTerminal::Mode m);
     ~BTerminalPrivate();
 public:
-    static bool testInit(const char *where = 0);
     static void resetColor();
+    static bool testInit(const char *where = 0);
 public:
     void init();
 public Q_SLOTS:
     void lineRead(const QString &text);
-public:
-    static QMutex mutex;
-    static QTextStream writeStream;
-    static QTextStream writeErrStream;
-    static BTerminal::Color textColor;
-    static BTerminal::Color backgroundColor;
-    static BTerminal::Mode mode;
-public:
-    const BTerminal::Mode Mode;
-public:
-    BTerminalThread *readThread;
-    QMap<QString, BTerminal::InternalHandler> internalHandlers;
-    QMap<QString, BTerminal::ExternalHandler> externalHandlers;
-    QString lastCommand;
-    QStringList lastArgs;
-    QStringList commandHistory;
-    BSettingsNode *root;
-    bool translations;
-    BTranslation help;
-    QMap<QString, BTerminal::CommandHelpList> commandHelp;
 private:
     Q_DISABLE_COPY(BTerminalPrivate)
-    friend class BTerminalThread;
 };
 
 #endif // BTERMINAL_P_H

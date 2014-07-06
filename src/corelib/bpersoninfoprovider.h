@@ -26,14 +26,13 @@ class BPersonInfoProviderPrivate;
 
 class QString;
 
-#include "bglobal.h"
+#include "bapplicationbase.h"
 #include "bbase.h"
-#include "bpersoninfo.h"
-#include "bcoreapplication.h"
+#include "bpersoninfolist.h"
 
-#include <QObject>
-#include <QLocale>
 #include <QList>
+#include <QLocale>
+#include <QObject>
 
 /*============================================================================
 ================================BPersonInfoProvider ==========================
@@ -44,23 +43,23 @@ class B_CORE_EXPORT BPersonInfoProvider : public QObject, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BPersonInfoProvider)
 public:
-    static QString infoListToString(const BPersonInfoList &list);
-    static QString infosString(const BPersonInfoProvider *prov, bool noDefault = false,
-                               const QLocale &locale = BCoreApplication::locale());
-    static QString infosString(const BPersonInfoProvider *prov, const QLocale &locale, bool noDefault = false);
-public:
     explicit BPersonInfoProvider(QObject *parent = 0);
     explicit BPersonInfoProvider(const QString &fileName, QObject *parent = 0);
     ~BPersonInfoProvider();
 protected:
     explicit BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent = 0);
 public:
-    void setFileName(const QString &fileName);
+    static QString infoListToString(const BPersonInfoList &list);
+    static QString infosString(const BPersonInfoProvider *prov, bool noDefault = false,
+                               const QLocale &locale = BApplicationBase::locale());
+    static QString infosString(const BPersonInfoProvider *prov, const QLocale &locale, bool noDefault = false);
+public:
     QString fileName() const;
-    BPersonInfoList infos(bool noDefault = false, const QLocale &locale = BCoreApplication::locale()) const;
+    BPersonInfoList infos(bool noDefault = false, const QLocale &locale = BApplicationBase::locale()) const;
     BPersonInfoList infos(const QLocale &locale, bool noDefault = false) const;
-    QString infosString(bool noDefault = false, const QLocale &locale = BCoreApplication::locale()) const;
+    QString infosString(bool noDefault = false, const QLocale &locale = BApplicationBase::locale()) const;
     QString infosString(const QLocale &locale, bool noDefault = false) const;
+    void setFileName(const QString &fileName);
 public Q_SLOTS:
     void reload();
 Q_SIGNALS:

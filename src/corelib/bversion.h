@@ -26,12 +26,11 @@ class BVersionPrivate;
 
 class QDataStream;
 class QDebug;
+class QString;
 class QVariant;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QString>
 #include <QChar>
 #include <QMetaType>
 
@@ -53,15 +52,10 @@ public:
     };
     enum StatusRepresentation
     {
+        Full = 1,
         ShortLowercase,
-        ShortUppercase,
-        Full
+        ShortUppercase
     };
-public:
-    static QString statusToString(Status vs, StatusRepresentation r = ShortLowercase);
-    static int compare(const BVersion &v1, const BVersion &v2);
-    static BVersion fromString(const QString &s, QChar versionSeparator = QChar('.'),
-                               QChar statusSeparator = QChar('-'));
 public:
     explicit BVersion(qint8 vmajor = -1, qint8 vminor = -1, qint8 vpatch = -1, Status vs = NoStatus,
                       qint8 vextra = -1);
@@ -71,18 +65,23 @@ public:
 protected:
     explicit BVersion(BVersionPrivate &d);
 public:
+    static int compare(const BVersion &v1, const BVersion &v2);
+    static BVersion fromString(const QString &s, QChar versionSeparator = QChar('.'),
+                               QChar statusSeparator = QChar('-'));
+    static QString statusToString(Status vs, StatusRepresentation r = ShortLowercase);
+public:
+    void clear();
+    int compare(const BVersion &other) const;
+    bool isValid() const;
     void setVersion(qint8 vmajor, qint8 vminor = -1, qint8 vpatch = -1, Status vs = NoStatus, qint8 vextra = -1);
     void setVersion(const QString &s, QChar versionSeparator = QChar('.'), QChar statusSeparator = QChar('-'));
-    void clear();
+    QString toString(StatusRepresentation r = ShortLowercase, QChar versionSeparator = QChar('.'),
+                     QChar statusSeparator = QChar('-')) const;
+    qint8 vextra() const;
     qint8 vmajor() const;
     qint8 vminor() const;
     qint8 vpatch() const;
     Status vstatus() const;
-    qint8 vextra() const;
-    QString toString(StatusRepresentation r = ShortLowercase, QChar versionSeparator = QChar('.'),
-                     QChar statusSeparator = QChar('-')) const;
-    int compare(const BVersion &other) const;
-    bool isValid() const;
 public:
     BVersion &operator =(const BVersion &other);
     bool operator ==(const BVersion &other) const;

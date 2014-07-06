@@ -24,15 +24,16 @@
 
 class BSettingsNodePrivate;
 
-#include "bglobal.h"
-#include "bbase.h"
-#include "btranslation.h"
+class BTranslation;
 
-#include <QString>
-#include <QList>
-#include <QVariant>
+class QString;
+
+#include "bbase.h"
+
 #include <QChar>
 #include <QCoreApplication>
+#include <QList>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSettingsNode ===============================
@@ -54,32 +55,32 @@ public:
     static QVariant stringToVariant(const QString &s, QVariant::Type t, bool *ok = 0);
     static QString variantToString(QVariant v, bool *ok = 0);
 public:
-    void setParent(BSettingsNode *parent);
-    void setKey(const QString &key);
-    void setType(QVariant::Type type);
-    void setSecureInput(bool b);
-    void setDescription(const BTranslation &t);
-    void setUserSetFunction(SetFunction f);
-    void setUserShowFunction(ShowFunction f);
     void addChild(BSettingsNode *node);
     void addChild(const QString &key, QVariant::Type type = QVariant::String);
-    void removeChild(BSettingsNode *node);
-    void showTree(int indentStep = 2, int initialIndent = 0) const;
+    int childCount() const;
+    QList<BSettingsNode *> childNodes() const;
+    BSettingsNode *clone(BSettingsNode *parent = 0) const;
+    BTranslation description() const;
     BSettingsNode *find(const QString &path, QChar separator = QChar('.'));
     const BSettingsNode *find(const QString &path, QChar separator = QChar('.')) const;
+    QString key() const;
+    BSettingsNode *parent() const;
+    void removeChild(BSettingsNode *node);
+    bool secureInput() const;
     bool set(QString path, QChar separator = QChar('.')) const;
     bool set(QString path, QString text, QChar separator = QChar('.')) const; //%k - key
     bool set(QString path, QVariant value, QChar separator = QChar('.')) const;
+    void setDescription(const BTranslation &t);
+    void setKey(const QString &key);
+    void setParent(BSettingsNode *parent);
+    void setSecureInput(bool b);
+    void setType(QVariant::Type type);
+    void setUserSetFunction(SetFunction f);
+    void setUserShowFunction(ShowFunction f);
     bool show(QString path, QChar separator = QChar('.')) const;
     bool show(QString path, QString text, QChar separator = QChar('.')) const; //%k - key, %v - value
-    BSettingsNode *clone(BSettingsNode *parent = 0) const;
-    BSettingsNode *parent() const;
-    QList<BSettingsNode *> childNodes() const;
-    int childCount() const;
-    QString key() const;
+    void showTree(int indentStep = 2, int initialIndent = 0) const;
     QVariant::Type type() const;
-    bool secureInput() const;
-    BTranslation description() const;
     SetFunction userSetFunction() const;
     ShowFunction userShowFunction() const;
 private:

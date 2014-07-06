@@ -25,20 +25,17 @@
 class BSpellCheckerDictionary;
 
 #include "bspellchecker.h"
-#include "bglobal.h"
+
 #include "bbaseobject_p.h"
 
-#include <QObject>
-#include <QString>
-#include <QMap>
-#include <QVariant>
-#include <QtGlobal>
-#include <QRegExp>
 #include <QList>
-
+#include <QMap>
+#include <QObject>
+#include <QRegExp>
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 #include <QRegularExpression>
 #endif
+#include <QString>
 
 /*============================================================================
 ================================ BSpellCheckerPrivate ========================
@@ -49,25 +46,25 @@ class B_CORE_EXPORT BSpellCheckerPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BSpellChecker)
 public:
-    static void flush(const QString &fileName, const QStringList &words);
-public:
-    explicit BSpellCheckerPrivate(BSpellChecker *q);
-    ~BSpellCheckerPrivate();
-public:
-    void init();
-public Q_SLOTS:
-    void flush();
-public:
+    int considerLeft;
+    int considerRight;
     QMap<QString, BSpellCheckerDictionary *> dicts;
-    QString userDictPath;
     QMap<QString, bool> ignored;
     QMap<QString, bool> ignoredImplicitly;
     QList<QRegExp> ignoredRx4;
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     QList<QRegularExpression> ignoredRx5;
 #endif
-    int considerLeft;
-    int considerRight;
+    QString userDictPath;
+public:
+    explicit BSpellCheckerPrivate(BSpellChecker *q);
+    ~BSpellCheckerPrivate();
+public:
+    static void flush(const QString &fileName, const QStringList &words);
+public:
+    void init();
+public Q_SLOTS:
+    void flush();
 private:
     Q_DISABLE_COPY(BSpellCheckerPrivate)
 };

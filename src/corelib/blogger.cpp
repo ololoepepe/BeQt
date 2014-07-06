@@ -21,20 +21,20 @@
 
 #include "blogger.h"
 #include "blogger_p.h"
-#include "bglobal.h"
+
 #include "bbase.h"
 #include "bbase_p.h"
-#include "bterminal.h"
 #include "bdirtools.h"
 #include "bnamespace.h"
+#include "bterminal.h"
 
-#include <QObject>
-#include <QString>
+#include <QDateTime>
+#include <QFile>
 #include <QMutex>
 #include <QMutexLocker>
-#include <QFile>
+#include <QObject>
+#include <QString>
 #include <QTextStream>
-#include <QDateTime>
 #include <QTimer>
 
 /*============================================================================
@@ -46,19 +46,31 @@
 BLoggerPrivate::BLoggerPrivate(BLogger *q) :
     BBaseObjectPrivate(q)
 {
-    formatMutex = new QMutex(QMutex::Recursive);
-    consoleMutex = new QMutex(QMutex::Recursive);
-    fileMutex = new QMutex(QMutex::Recursive);
+    //
 }
 
 BLoggerPrivate::~BLoggerPrivate()
 {
-    if ( file.isOpen() )
+    if (file.isOpen())
         file.close();
-    delete fileFlushTimer;
 }
 
 /*============================== Public methods ============================*/
+
+QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl) const
+{
+    QMutexLocker locker(&formatMutex);
+    QString msg;
+    if (includeDateTime && !format.isEmpty())
+        msg += QDateTime::currentDateTime().toString(format) + " ";
+    if (includeLevel) {
+        QString level = BLogger::levelToString(lvl);
+        if (!level.isEmpty())
+            msg += level + ": ";
+    }
+    msg += text + "\n";
+    return msg;
+}
 
 void BLoggerPrivate::init()
 {
@@ -69,14 +81,20 @@ void BLoggerPrivate::init()
     logToConsole = true;
     logToFile = true;
     fileFlushInterval = 10 * BeQt::Second; // < 0 - instant; == 0 -never; > 0 - periodically
-    fileFlushTimer = new QTimer(this);
-    connect( fileFlushTimer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
+    connect(&fileFlushTimer, SIGNAL(timeout()), this, SLOT(timeout()));
     resetFileFlushTimer();
+}
+
+void BLoggerPrivate::resetFileFlushTimer()
+{
+    fileFlushTimer.stop();
+    if (fileFlushInterval > 0)
+        fileFlushTimer.start(fileFlushInterval);
 }
 
 void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
 {
-    QMutexLocker locker(consoleMutex);
+    QMutexLocker locker(&consoleMutex);
     if (!logToConsole)
         return;
     if (stderrLevel && useStderr)
@@ -87,42 +105,19 @@ void BLoggerPrivate::tryLogToConsole(const QString &text, bool stderrLevel)
 
 void BLoggerPrivate::tryLogToFile(const QString &text)
 {
-    QMutexLocker locker(fileMutex);
-    if ( !logToFile || !file.isOpen() )
+    QMutexLocker locker(&fileMutex);
+    if (!logToFile || !file.isOpen())
         return;
     fileStream << text;
     if (fileFlushInterval < 0)
         fileStream.flush();
 }
 
-QString BLoggerPrivate::constructMessage(const QString &text, BLogger::Level lvl) const
-{
-    QMutexLocker locker(formatMutex);
-    QString msg;
-    if ( includeDateTime && !format.isEmpty() )
-        msg += QDateTime::currentDateTime().toString(format) + " ";
-    if (includeLevel)
-    {
-        QString level = BLogger::levelToString(lvl);
-        if ( !level.isEmpty() )
-            msg += level + ": ";
-    }
-    msg += text + "\n";
-    return msg;
-}
-
-void BLoggerPrivate::resetFileFlushTimer()
-{
-    fileFlushTimer->stop();
-    if (fileFlushInterval > 0)
-        fileFlushTimer->start(fileFlushInterval);
-}
-
 /*============================== Public slots ==============================*/
 
 void BLoggerPrivate::timeout()
 {
-    if ( file.isOpen() )
+    if (file.isOpen())
         fileStream.flush();
 }
 
@@ -133,13 +128,13 @@ void BLoggerPrivate::timeout()
 /*============================== Public constructors =======================*/
 
 BLogger::BLogger(QObject *parent) :
-    QObject(parent), BBaseObject( *new BLoggerPrivate(this) )
+    QObject(parent), BBaseObject(*new BLoggerPrivate(this))
 {
     d_func()->init();
 }
 
 BLogger::BLogger(const QString &fileName, QObject *parent) :
-    QObject(parent), BBaseObject( *new BLoggerPrivate(this) )
+    QObject(parent), BBaseObject(*new BLoggerPrivate(this))
 {
     d_func()->init();
     setFileName(fileName);
@@ -167,8 +162,7 @@ bool BLogger::isStderrLevel(Level lvl)
 
 QString BLogger::levelToString(Level lvl)
 {
-    switch (lvl)
-    {
+    switch (lvl) {
     case InfoLevel:
         return "INFO";
     case TraceLevel:
@@ -188,61 +182,74 @@ QString BLogger::levelToString(Level lvl)
 
 /*============================== Public methods ============================*/
 
-void BLogger::setUseStderr(bool b)
+QString BLogger::dateTimeFormat() const
 {
-    B_D(BLogger);
-    QMutexLocker locker(d->consoleMutex);
-    d->useStderr = b;
+    const B_D(BLogger);
+    QMutexLocker locker(&d->formatMutex);
+    return d->format;
 }
 
-void BLogger::setIncludeLevel(bool b)
+int BLogger::fileFlushInterval() const
 {
-    B_D(BLogger);
-    QMutexLocker locker(d->formatMutex);
-    d->includeLevel = b;
+    return d_func()->fileFlushInterval;
 }
 
-void BLogger::setIncludeDateTime(bool b)
+QString BLogger::fileName() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->fileMutex);
+    return d->file.fileName();
+}
+
+bool BLogger::isDateTimeIncluded() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->formatMutex);
+    return d->includeDateTime;
+}
+
+bool BLogger::isLevelIncluded() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->formatMutex);
+    return d->includeLevel;
+}
+
+bool BLogger::isLogToConsoleEnabled() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->consoleMutex);
+    return d->logToConsole;
+}
+
+bool BLogger::isLogToFileEnabled() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->fileMutex);
+    return d->logToFile;
+}
+
+bool BLogger::isStderrUsed() const
+{
+    const B_D(BLogger);
+    QMutexLocker locker(&d->consoleMutex);
+    return d->useStderr;
+}
+
+void BLogger::log(const QString &text, Level lvl)
 {
     B_D(BLogger);
-    QMutexLocker locker(d->formatMutex);
-    d->includeDateTime = b;
+    QString msg = d->constructMessage(text, lvl);
+    d->tryLogToConsole(msg, isStderrLevel(lvl));
+    d->tryLogToFile(msg);
+    userLog(msg, lvl);
 }
 
 void BLogger::setDateTimeFormat(const QString &format)
 {
     B_D(BLogger);
-    QMutexLocker locker(d->formatMutex);
+    QMutexLocker locker(&d->formatMutex);
     d->format = format;
-}
-
-void BLogger::setLogToConsoleEnabled(bool enabled)
-{
-    B_D(BLogger);
-    QMutexLocker locker(d->consoleMutex);
-    d->logToConsole = enabled;
-}
-
-void BLogger::setLogToFileEnabled(bool enabled)
-{
-    B_D(BLogger);
-    QMutexLocker locker(d->fileMutex);
-    d->logToFile = enabled;
-}
-
-void BLogger::setFileName(const QString &fileName)
-{
-    B_D(BLogger);
-    QMutexLocker locker(d->fileMutex);
-    if ( d->file.isOpen() )
-        d->file.close();
-    d->file.setFileName(fileName);
-    d->fileStream.setDevice(0);
-    if ( fileName.isEmpty() )
-        return;
-    if ( !BDirTools::touch(fileName) || !d->file.open(QFile::WriteOnly | QFile::Append) )
-        return d->file.setFileName("");
-    d->fileStream.setDevice(&d->file);
 }
 
 void BLogger::setFileFlushInterval(int msecs)
@@ -256,74 +263,85 @@ void BLogger::setFileFlushInterval(int msecs)
     d->resetFileFlushTimer();
 }
 
-bool BLogger::isStderrUsed() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->consoleMutex);
-    return d->useStderr;
-}
-
-bool BLogger::isLevelIncluded() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->formatMutex);
-    return d->includeLevel;
-}
-
-bool BLogger::isDateTimeIncluded() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->formatMutex);
-    return d->includeDateTime;
-}
-
-QString BLogger::dateTimeFormat() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->formatMutex);
-    return d->format;
-}
-
-bool BLogger::isLogToConsoleEnabled() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->consoleMutex);
-    return d->logToConsole;
-}
-
-bool BLogger::isLogToFileEnabled() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->fileMutex);
-    return d->logToFile;
-}
-
-QString BLogger::fileName() const
-{
-    const B_D(BLogger);
-    QMutexLocker locker(d->fileMutex);
-    return d->file.fileName();
-}
-
-int BLogger::fileFlushInterval() const
-{
-    return d_func()->fileFlushInterval;
-}
-
-void BLogger::log(const QString &text, Level lvl)
+void BLogger::setFileName(const QString &fileName)
 {
     B_D(BLogger);
-    QString msg = d->constructMessage(text, lvl);
-    d->tryLogToConsole(msg, isStderrLevel(lvl));
-    d->tryLogToFile(msg);
-    userLog(msg, lvl);
+    QMutexLocker locker(&d->fileMutex);
+    if (d->file.isOpen())
+        d->file.close();
+    d->file.setFileName(fileName);
+    d->fileStream.setDevice(0);
+    if (fileName.isEmpty())
+        return;
+    if (!BDirTools::touch(fileName) || !d->file.open(QFile::WriteOnly | QFile::Append))
+        return d->file.setFileName("");
+    d->fileStream.setDevice(&d->file);
+}
+
+void BLogger::setIncludeDateTime(bool b)
+{
+    B_D(BLogger);
+    QMutexLocker locker(&d->formatMutex);
+    d->includeDateTime = b;
+}
+
+void BLogger::setIncludeLevel(bool b)
+{
+    B_D(BLogger);
+    QMutexLocker locker(&d->formatMutex);
+    d->includeLevel = b;
+}
+
+void BLogger::setLogToConsoleEnabled(bool enabled)
+{
+    B_D(BLogger);
+    QMutexLocker locker(&d->consoleMutex);
+    d->logToConsole = enabled;
+}
+
+void BLogger::setLogToFileEnabled(bool enabled)
+{
+    B_D(BLogger);
+    QMutexLocker locker(&d->fileMutex);
+    d->logToFile = enabled;
+}
+
+void BLogger::setUseStderr(bool b)
+{
+    B_D(BLogger);
+    QMutexLocker locker(&d->consoleMutex);
+    d->useStderr = b;
 }
 
 /*============================== Public slots ==============================*/
 
+void BLogger::flushFile()
+{
+    B_D(BLogger);
+    if (!d->file.isOpen())
+        return;
+    d->fileStream.flush();
+    d->resetFileFlushTimer();
+}
+
 void BLogger::log(const QString &text)
 {
     log(text, NoLevel);
+}
+
+void BLogger::logCritical(const QString &text)
+{
+    log(text, CriticalLevel);
+}
+
+void BLogger::logDebug(const QString &text)
+{
+    log(text, DebugLevel);
+}
+
+void BLogger::logFatal(const QString &text)
+{
+    log(text, FatalLevel);
 }
 
 void BLogger::logInfo(const QString &text)
@@ -336,33 +354,9 @@ void BLogger::logTrace(const QString &text)
     log(text, TraceLevel);
 }
 
-void BLogger::logDebug(const QString &text)
-{
-    log(text, DebugLevel);
-}
-
 void BLogger::logWarning(const QString &text)
 {
     log(text, WarningLevel);
-}
-
-void BLogger::logCritical(const QString &text)
-{
-    log(text, CriticalLevel);
-}
-
-void BLogger::logFatal(const QString &text)
-{
-    log(text, FatalLevel);
-}
-
-void BLogger::flushFile()
-{
-    B_D(BLogger);
-    if ( !d->file.isOpen() )
-        return;
-    d->fileStream.flush();
-    d->resetFileFlushTimer();
 }
 
 /*============================== Protected methods =========================*/

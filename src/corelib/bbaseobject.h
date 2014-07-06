@@ -35,13 +35,13 @@ class BBaseObjectPrivate;
 class B_CORE_EXPORT BBaseObject
 {
     B_DECLARE_PRIVATE(BBaseObject)
+protected:
+    BBaseObjectPrivate *const _m_d;
 public:
     explicit BBaseObject();
     virtual ~BBaseObject();
 protected:
     explicit BBaseObject(BBaseObjectPrivate &d);
-protected:
-    BBaseObjectPrivate *const _m_d;
 private:
     Q_DISABLE_COPY(BBaseObject)
 };

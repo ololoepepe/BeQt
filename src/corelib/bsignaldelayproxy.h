@@ -26,9 +26,8 @@ class BSignalDelayProxyPrivate;
 
 class QString;
 
-#include "bglobal.h"
-#include "bnamespace.h"
 #include "bbaseobject.h"
+#include "bnamespace.h"
 
 #include <QObject>
 
@@ -47,12 +46,12 @@ public:
 protected:
     explicit BSignalDelayProxy(BSignalDelayProxyPrivate &d, QObject *parent = 0);
 public:
-    void setIntermediateDelay(int msecs);
-    void setMaximumDelay(int msecs);
     int intermediateDelay() const;
     int maximumDelay() const;
     void setConnection(QObject *sender, const char *signal, QObject *receiver, const char *method);
     void setIntConnection(QObject *sender, const char *signal, QObject *receiver, const char *method);
+    void setIntermediateDelay(int msecs);
+    void setMaximumDelay(int msecs);
     void setStringConnection(QObject *sender, const char *signal, QObject *receiver, const char *method);
 public Q_SLOTS:
     void trigger();

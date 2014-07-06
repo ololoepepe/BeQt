@@ -113,8 +113,6 @@ Q_SIGNALS:
     void pluginActivated(BPluginWrapper *pluginWrapper);
     void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();
-    void settingsLoaded(QSettings *s);
-    void settingsSaved(QSettings *s);
 protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:

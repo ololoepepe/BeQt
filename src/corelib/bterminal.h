@@ -23,17 +23,17 @@
 #define BTERMINAL_H
 
 class BTerminalPrivate;
+
 class BSettingsNode;
 
-class QString;
-class QStringLit;
+class QStringList;
 class QSize;
 
-#include "bglobal.h"
 #include "bbaseobject.h"
 #include "btranslation.h"
 
 #include <QObject>
+#include <QString>
 
 #define bReadLine BTerminal::readLine
 #define bReadLineSecure BTerminal::readLineSecure
@@ -52,13 +52,6 @@ class B_CORE_EXPORT BTerminal : public QObject, public BBaseObject
     B_DECLARE_PRIVATE(BTerminal)
     B_DECLARE_PRIVATE_S(BTerminal)
 public:
-    enum StandardCommand
-    {
-        QuitCommand,
-        SetCommand,
-        HelpCommand,
-        LastCommand
-    };
     enum Color
     {
         DefaultColor = -1,
@@ -76,74 +69,81 @@ public:
         NoMode = 0,
         StandardMode
     };
+    enum StandardCommand
+    {
+        HelpCommand,
+        LastCommand,
+        QuitCommand,
+        SetCommand
+    };
 public:
     struct CommandHelp
     {
-        QString usage;
         BTranslation description;
+        QString usage;
     };
 public:
     typedef QList<CommandHelp> CommandHelpList;
-    typedef bool (BTerminal::*InternalHandler)(const QString &cmd, const QStringList &args);
     typedef bool (*ExternalHandler)(BTerminal *, const QString &cmd, const QStringList &args);
+    typedef bool (BTerminal::*InternalHandler)(const QString &cmd, const QStringList &args);
+protected:
+    static BTerminal *_m_self;
 protected:
     explicit BTerminal(Mode mode);
     explicit BTerminal(BTerminalPrivate &d);
     ~BTerminal();
 public:
-    static void setMode(Mode mode);
-    static Mode mode();
-    static void destroy();
+    static Color backgroundColor();
+    static int columnCount();
     static QString command(StandardCommand cmd);
-    static QStringList commands(StandardCommand cmd);
     static CommandHelp commandHelp(StandardCommand cmd);
     static CommandHelpList commandHelpList(StandardCommand cmd);
-    static InternalHandler handler(StandardCommand cmd);
+    static QStringList commandHistory();
+    static QStringList commands(StandardCommand cmd);
     static void connectToCommandEntered(QObject *receiver, const char *method);
+    static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
+    static void destroy();
     static void disconnectFromCommandEntered(QObject *receiver, const char *method);
-    static QString readLine(const QString &text = QString());
-    static QString readLineSecure(const QString &text = QString());
-    static void write(const QString &text);
-    static void writeLine( const QString &text = QString() );
-    static void writeErr(const QString &text);
-    static void writeLineErr( const QString &text = QString() );
-    static void writeHelpLine(const QString &usage, const QString &description);
-    static void writeHelpLine(const QString &usage, const BTranslation &description, bool translate = true);
-    static void writeHelpLines(const CommandHelpList &list, bool translate = true);
-    static void setStdinEchoEnabled(bool enabled = true);
-    static void setTitle(const QString &title);
-    static void setTextColor(Color color);
-    static void setBackgroundColor(Color color);
-    static Color textColor();
-    static Color backgroundColor();
-    static QSize size();
-    static int columnCount();
-    static int rowCount();
+    static InternalHandler handler(StandardCommand cmd);
     static void installHandler(const QString &command, InternalHandler handler);
     static void installHandler(const QString &command, ExternalHandler handler);
     static void installHandler(StandardCommand cmd);
     static void installHandler(StandardCommand cmd, InternalHandler handler);
     static void installHandler(StandardCommand cmd, ExternalHandler handler);
     static QString lastCommand(QStringList *args = 0);
-    static void setRootSettingsNode(BSettingsNode *root);
-    static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
-    static void setCommandHistory(const QStringList &list);
-    static QStringList commandHistory();
-    static void setTranslationsEnabled(bool enabled);
-    static void setHelpDescription(const BTranslation &t);
+    static Mode mode();
+    static QString readLine(const QString &text = QString());
+    static QString readLineSecure(const QString &text = QString());
+    static BSettingsNode *rootSettingsNode();
+    static int rowCount();
+    static void setBackgroundColor(Color color);
     static void setCommandHelp(const QString &command, const CommandHelp &help);
     static void setCommandHelp(const QString &command, const CommandHelpList &list);
-    static BSettingsNode *rootSettingsNode();
+    static void setCommandHistory(const QStringList &list);
+    static void setHelpDescription(const BTranslation &t);
+    static void setMode(Mode mode);
+    static void setRootSettingsNode(BSettingsNode *root);
+    static void setStdinEchoEnabled(bool enabled = true);
+    static void setTextColor(Color color);
+    static void setTitle(const QString &title);
+    static void setTranslationsEnabled(bool enabled);
+    static QSize size();
+    static Color textColor();
     static bool translationsEnabled();
+    static void write(const QString &text);
+    static void writeErr(const QString &text);
+    static void writeHelpLine(const QString &usage, const QString &description);
+    static void writeHelpLine(const QString &usage, const BTranslation &description, bool translate = true);
+    static void writeHelpLines(const CommandHelpList &list, bool translate = true);
+    static void writeLine( const QString &text = QString() );
+    static void writeLineErr( const QString &text = QString() );
 protected:
-    bool handleQuit(const QString &command, const QStringList &arguments);
-    bool handleSet(const QString &command, const QStringList &arguments);
     bool handleHelp(const QString &command, const QStringList &arguments);
     bool handleLast(const QString &command, const QStringList &arguments);
+    bool handleQuit(const QString &command, const QStringList &arguments);
+    bool handleSet(const QString &command, const QStringList &arguments);
 Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
-protected:
-    static BTerminal *_m_self;
 private:
     Q_DISABLE_COPY(BTerminal)
 };

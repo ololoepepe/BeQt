@@ -22,22 +22,20 @@
 #ifndef BPLUGINWRAPPER_P_H
 #define BPLUGINWRAPPER_P_H
 
-class BPluginWrapper;
-
 class QPluginLoader;
 
 #include "bpluginwrapper.h"
-#include "bglobal.h"
-#include "bplugininterface.h"
+
 #include "bbase_p.h"
+#include "bplugininterface.h"
 #include "bversion.h"
 
 #include <QList>
-#include <QString>
-#include <QStringList>
 #include <QMap>
 #include <QPointer>
 #include <QSettings>
+#include <QString>
+#include <QStringList>
 
 /*============================================================================
 ================================ BPluginWrapperPrivate =======================
@@ -47,34 +45,34 @@ class B_CORE_EXPORT BPluginWrapperPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPluginWrapper)
 public:
+    static QStringList acctptableTypes;
+    static QMap<QString, BPluginWrapper *> globalMap;
+    static BPluginWrapper::InterfaceTestFunction testFunction;
+public:
+    bool activated;
+    QString fileName;
+    BPluginInterface::PluginInfo info;
+    QObject *instance;
+    BPluginInterface *interface;
+    bool loaded;
+    QPointer<QPluginLoader> loader;
+    QString name;
+    bool prefereStaticInfo;
+    QPointer<QSettings> settings;
+    BPluginInterface::StaticPluginInfo staticInfo;
+    QString type;
+    BVersion version;
+public:
     explicit BPluginWrapperPrivate(BPluginWrapper *q);
     ~BPluginWrapperPrivate();
 public:
+    bool activate();
+    void createLoader();
+    void deactivate();
+    void deleteLoader();
     void init();
     bool load();
     void unload();
-    bool activate();
-    void deactivate();
-    void createLoader();
-    void deleteLoader();
-public:
-    static QMap<QString, BPluginWrapper *> globalMap;
-    static QStringList acctptableTypes;
-    static BPluginWrapper::InterfaceTestFunction testFunction;
-public:
-    QString fileName;
-    QPointer<QPluginLoader> loader;
-    QObject *instance;
-    BPluginInterface *interface;
-    QPointer<QSettings> settings;
-    bool loaded;
-    bool activated;
-    QString type;
-    QString name;
-    BVersion version;
-    bool prefereStaticInfo;
-    BPluginInterface::PluginInfo info;
-    BPluginInterface::StaticPluginInfo staticInfo;
 private:
     Q_DISABLE_COPY(BPluginWrapperPrivate)
 };

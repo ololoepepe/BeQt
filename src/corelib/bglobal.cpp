@@ -20,29 +20,65 @@
 ****************************************************************************/
 
 #include "bglobal.h"
+
 #include "bpassword.h"
-#include "btranslation.h"
-#include "bversion.h"
-#include "buuid.h"
 #include "bpersoninfo.h"
 #include "bpersoninfolist.h"
-
-#include <QString>
-#include <QList>
-#include <QMetaType>
+#include "btranslation.h"
+#include "buuid.h"
+#include "bversion.h"
 
 #include <QDebug>
+#include <QList>
+#include <QMetaType>
+#include <QString>
 
-bool bTest(bool condition, const char *where, const char *what)
+QList<int> bRange(int lb, int ub, int step)
 {
-    if (!condition)
-        qCritical() << qPrintable(QString(where) + ": " + QString(what));
-    return condition;
+    if (lb == ub)
+        return QList<int>() << lb;
+    if (!step)
+        step = (lb < ub) ? 1 : -1;
+    if ((lb < ub && step < 0) || (lb > ub && step > 0))
+        return QList<int>();
+    QList<int> r;
+    if (lb < ub) {
+        for (int i = lb; i <= ub; i += step)
+            r << i;
+    } else {
+        for (int i = lb; i >= ub; i += step)
+            r << i;
+    }
+    return r;
 }
 
-const char *bVersion()
+QList<int> bRangeD(int lb, int ub, unsigned step)
 {
-    return "3.2.3";
+    return bRange(lb, ub, (step ? step : 1));
+}
+
+QList<int> bRangeM(int lb, int ub, unsigned multiplier)
+{
+    if (!lb || !ub || !multiplier || (lb < 0 && ub > 0) || (lb > 0 && ub < 0))
+        return QList<int>();
+    if (lb == ub)
+        return QList<int>() << lb;
+    if (1 == multiplier)
+        return QList<int>();
+    QList<int> r;
+    if (lb < ub) {
+        for (int i = lb; i <= ub; i *= multiplier)
+            r << i;
+    } else {
+        for (int i = lb; i >= ub; i /= multiplier)
+            r << i;
+    }
+    return r;
+}
+
+QList<int> bRangeR(int lb, int ub, unsigned step)
+{
+    return bRange(lb, ub, -1 * (step ? step : 1));
 }
 
 void bRegister()
@@ -67,48 +103,14 @@ void bRegister()
     registered = true;
 }
 
-QList<int> bRange(int lb, int ub, int step)
+bool bTest(bool condition, const char *where, const char *what)
 {
-    if (lb == ub)
-        return QList<int>() << lb;
-    if (!step)
-        step = (lb < ub) ? 1 : -1;
-    if ((lb < ub && step < 0) || (lb > ub && step > 0))
-        return QList<int>();
-    QList<int> r;
-    if (lb < ub)
-        for (int i = lb; i <= ub; i += step)
-            r << i;
-    else
-        for (int i = lb; i >= ub; i += step)
-            r << i;
-    return r;
+    if (!condition)
+        qCritical() << qPrintable(QString(where) + ": " + QString(what));
+    return condition;
 }
 
-QList<int> bRangeD(int lb, int ub, unsigned step)
+const char *bVersion()
 {
-    return bRange(lb, ub, (step ? step : 1));
-}
-
-QList<int> bRangeR(int lb, int ub, unsigned step)
-{
-    return bRange(lb, ub, -1 * (step ? step : 1));
-}
-
-QList<int> bRangeM(int lb, int ub, unsigned multiplier)
-{
-    if (!lb || !ub || !multiplier || (lb < 0 && ub > 0) || (lb > 0 && ub < 0))
-        return QList<int>();
-    if (lb == ub)
-        return QList<int>() << lb;
-    if (1 == multiplier)
-        return QList<int>();
-    QList<int> r;
-    if (lb < ub)
-        for (int i = lb; i <= ub; i *= multiplier)
-            r << i;
-    else
-        for (int i = lb; i >= ub; i /= multiplier)
-            r << i;
-    return r;
+    return "3.2.3";
 }

@@ -1,8 +1,9 @@
 * Add comments to the code and make docs; write detailed user manual
-* Use Qt coding style
 * Use enum_cast wherever it makes sense
 
+* Test Hunspell dictionary validity for other languages
 * Add PDCurses binding
+* Implement spam notification in network server
 * Implement Katepart-compatible file type definition using XML files
 * Improve SQL schema parsing
 * Add method for setting terminal window size to BTerminal
@@ -32,7 +33,7 @@
 [done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
 
-* Sort includes, class members, etc.
+* Use Qt coding style, sort includes, class members, etc.
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions

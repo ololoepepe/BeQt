@@ -23,15 +23,14 @@
 #define BCOREAPPLICATION_H
 
 class BCoreApplicationPrivate;
+
 class BPluginWrapper;
 
-class QSettings;
-
-#include "bglobal.h"
 #include "bapplicationbase.h"
 
-#include <QObject>
 #include <QCoreApplication>
+#include <QObject>
+#include <QString>
 
 #if !defined(bApp)
 #   define bApp (static_cast<BCoreApplication *>(BApplicationBase::binstance()))
@@ -56,14 +55,10 @@ protected:
                               const QString &applicationName = QString(),
                               const QString &organizationName = QString());
     explicit BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s);
-public:
-    static BCoreApplication *binstance();
 Q_SIGNALS:
-    void pluginActivated(BPluginWrapper *pluginWrapper);
-    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();
-    void settingsLoaded(QSettings *s);
-    void settingsSaved(QSettings *s);
+    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void pluginActivated(BPluginWrapper *pluginWrapper);
 private:
     Q_DISABLE_COPY(BCoreApplication)
 };

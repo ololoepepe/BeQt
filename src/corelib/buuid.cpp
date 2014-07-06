@@ -1,5 +1,26 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the BeQtCore module of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
 #include "buuid.h"
-#include "bglobal.h"
+
 #include "bbase.h"
 #include "bbase_p.h"
 
@@ -8,9 +29,7 @@
 #include <QByteArray>
 #include <QDataStream>
 #include <QDebug>
-#include <QtGlobal>
 #include <QUuid>
-#include <QIODevice>
 #include <QtEndian>
 
 /*============================================================================
@@ -21,12 +40,12 @@ class BUuidPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BUuid)
 public:
+    QUuid muuid;
+public:
     explicit BUuidPrivate(BUuid *q);
     ~BUuidPrivate();
 public:
     void init();
-public:
-    QUuid muuid;
 private:
     Q_DISABLE_COPY(BUuidPrivate)
 };
@@ -132,11 +151,6 @@ BUuid BUuid::createUuid()
     return BUuid(QUuid::createUuid());
 }
 
-BUuid BUuid::fromRfc4122(const QByteArray &bytes)
-{
-    return BUuid(QUuid::fromRfc4122(bytes));
-}
-
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
 BUuid BUuid::createUuidV3(const BUuid &ns, const QByteArray &baseData)
 {
@@ -159,6 +173,11 @@ BUuid BUuid::createUuidV5(const BUuid &ns, const QString &baseData)
 }
 #endif
 
+BUuid BUuid::fromRfc4122(const QByteArray &bytes)
+{
+    return BUuid(QUuid::fromRfc4122(bytes));
+}
+
 /*============================== Public methods ============================*/
 
 bool BUuid::isNull() const
@@ -166,9 +185,9 @@ bool BUuid::isNull() const
     return d_func()->muuid.isNull();
 }
 
-QUuid BUuid::toUuid() const
+QByteArray BUuid::toByteArray() const
 {
-    return d_func()->muuid;
+    return d_func()->muuid.toByteArray();
 }
 
 QByteArray BUuid::toRfc4122() const
@@ -181,9 +200,9 @@ QString BUuid::toString() const
     return d_func()->muuid.toString();
 }
 
-QByteArray BUuid::toByteArray() const
+QUuid BUuid::toUuid() const
 {
-    return d_func()->muuid.toByteArray();
+    return d_func()->muuid;
 }
 
 QUuid::Variant BUuid::variant() const

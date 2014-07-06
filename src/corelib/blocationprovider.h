@@ -24,14 +24,14 @@
 
 class BLocationProviderPrivate;
 
-#include "bglobal.h"
-#include "bbase.h"
-#include "bapplicationbase.h"
-#include "babstractlocationprovider.h"
+class QStringList;
 
-#include <QString>
-#include <QStringList>
+#include "babstractlocationprovider.h"
+#include "bapplicationbase.h"
+#include "bbase.h"
+
 #include <QMap>
+#include <QString>
 
 /*============================================================================
 ================================ BLocationProvider ===========================
@@ -48,26 +48,26 @@ public:
     BLocationProvider(const BLocationProvider &other);
     ~BLocationProvider();
 protected:
-    BLocationProvider(BLocationProviderPrivate &d);
+    explicit BLocationProvider(BLocationProviderPrivate &d);
 public:
-    QStringList locationNames() const;
-    QString locationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    void addLocation(const QString &name, const PathMap &paths);
+    void addLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
+    bool autoCreatePaths() const;
     bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
     bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
-    void setLocations(const LocationMap &locations);
-    void addLocation(const QString &name, const PathMap &paths);
-    void removeLocation(const QString &name);
-    void setLocationPaths(const QString &locationName, const PathMap &paths);
-    void addLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
-    void removeLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
-    void setLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
-    void setAutoCreatePaths(bool enabled);
-    bool autoCreatePaths() const;
     bool isEmpty() const;
+    QStringList locationNames() const;
+    QString locationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
+    void removeLocation(const QString &name);
+    void removeLocationPath(const QString &locationName, BApplicationBase::ResourceType type);
+    void setAutoCreatePaths(bool enabled);
+    void setLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
+    void setLocationPaths(const QString &locationName, const PathMap &paths);
+    void setLocations(const LocationMap &locations);
 public:
-    BLocationProvider &operator=(const BLocationProvider &other);
-    bool operator==(const BLocationProvider &other) const;
-    bool operator!=(const BLocationProvider &other) const;
+    BLocationProvider &operator =(const BLocationProvider &other);
+    bool operator ==(const BLocationProvider &other) const;
+    bool operator !=(const BLocationProvider &other) const;
 };
 
 #endif // BABSTRACTLOCATIONPROVIDER_H

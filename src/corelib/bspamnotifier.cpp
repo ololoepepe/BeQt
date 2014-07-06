@@ -26,13 +26,10 @@
 #include "bbaseobject.h"
 #include "bbaseobject_p.h"
 
+#include <QElapsedTimer>
+#include <QMetaObject>
 #include <QObject>
 #include <QTimer>
-#include <QMetaObject>
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-#include <QElapsedTimer>
-#endif
 
 /*============================================================================
 ================================ BSpamNotifierPrivate ========================
@@ -48,25 +45,42 @@ BSpamNotifierPrivate::BSpamNotifierPrivate(BSpamNotifier *q) :
 
 BSpamNotifierPrivate::~BSpamNotifierPrivate()
 {
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     delete etimer;
-#endif
 }
 
 /*============================== Public methods ============================*/
 
 void BSpamNotifierPrivate::init()
 {
-    timer = new QTimer(this);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     etimer = 0;
-#endif
-    connect( timer, SIGNAL( timeout() ), this, SLOT( timeout() ) );
+    connect(&timer, SIGNAL(timeout()), this, SLOT(timeout()));
     interval = 0;
     limit = 0;
     count = 0;
     elapsed = 0;
     enabled = true;
+}
+
+void BSpamNotifierPrivate::testSpam(int dcount)
+{
+    if (dcount <= 0)
+        return;
+    count += dcount;
+    if (count >= limit) {
+        elapsed = timeElapsed();
+        timer.stop();
+        if (etimer)
+            etimer->invalidate();
+        delete etimer;
+        etimer = 0;
+        QMetaObject::invokeMethod(q_func(), "spammed", Q_ARG(int, elapsed));
+    }
+}
+
+int BSpamNotifierPrivate::timeElapsed() const
+{
+    return (timer.isActive() && etimer) ? etimer->elapsed() : elapsed;
+
 }
 
 /*============================== Public slots ==============================*/
@@ -76,35 +90,6 @@ void BSpamNotifierPrivate::timeout()
     count = 0;
 }
 
-void BSpamNotifierPrivate::testSpam(int dcount)
-{
-    if (dcount <= 0)
-        return;
-    count += dcount;
-    if (count >= limit)
-    {
-        elapsed = timeElapsed();
-        timer->stop();
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-        if (etimer)
-            etimer->invalidate();
-        delete etimer;
-        etimer = 0;
-#endif
-        QMetaObject::invokeMethod( q_func(), "spammed", Q_ARG(int, elapsed) );
-    }
-}
-
-int BSpamNotifierPrivate::timeElapsed() const
-{
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    return (timer->isActive() && etimer) ? etimer->elapsed() : elapsed;
-#else
-    return timer->isActive() ? ( timer->interval() - timer->remainingTime() ) : elapsed;
-#endif
-
-}
-
 /*============================================================================
 ================================ BSpamNotifier ===============================
 ============================================================================*/
@@ -112,13 +97,13 @@ int BSpamNotifierPrivate::timeElapsed() const
 /*============================== Public constructors =======================*/
 
 BSpamNotifier::BSpamNotifier(QObject *parent) :
-    QObject(parent), BBaseObject( *new BSpamNotifierPrivate(this) )
+    QObject(parent), BBaseObject(*new BSpamNotifierPrivate(this))
 {
     d_func()->init();
 }
 
 BSpamNotifier::BSpamNotifier(QObject *parent, int checkInterval, int eventLimit) :
-    QObject(parent), BBaseObject( *new BSpamNotifierPrivate(this) )
+    QObject(parent), BBaseObject(*new BSpamNotifierPrivate(this))
 {
     d_func()->init();
     setCheckInterval(checkInterval);
@@ -140,30 +125,9 @@ BSpamNotifier::BSpamNotifier(BSpamNotifierPrivate &d, QObject *parent) :
 
 /*============================== Public methods ============================*/
 
-void BSpamNotifier::setCheckInterval(int msecs)
-{
-    B_D(BSpamNotifier);
-    if ( msecs < 0 || d->timer->isActive() )
-        return;
-    d->interval = msecs;
-}
-
-void BSpamNotifier::setEventLimit(int count)
-{
-    B_D(BSpamNotifier);
-    if ( count < 0 || d->timer->isActive() )
-        return;
-    d->limit = count;
-}
-
 int BSpamNotifier::checkInterval() const
 {
     return d_func()->interval;
-}
-
-int BSpamNotifier::eventLimit() const
-{
-    return d_func()->limit;
 }
 
 int BSpamNotifier::eventCount() const
@@ -171,9 +135,14 @@ int BSpamNotifier::eventCount() const
     return d_func()->count;
 }
 
-int BSpamNotifier::timeElapsed() const
+int BSpamNotifier::eventLimit() const
 {
-    return d_func()->timeElapsed();
+    return d_func()->limit;
+}
+
+bool BSpamNotifier::isActive() const
+{
+    return d_func()->timer.isActive();
 }
 
 bool BSpamNotifier::isEnabled() const
@@ -181,9 +150,25 @@ bool BSpamNotifier::isEnabled() const
     return d_func()->enabled;
 }
 
-bool BSpamNotifier::isActive() const
+void BSpamNotifier::setCheckInterval(int msecs)
 {
-    return d_func()->timer->isActive();
+    B_D(BSpamNotifier);
+    if (msecs < 0 || d->timer.isActive())
+        return;
+    d->interval = msecs;
+}
+
+void BSpamNotifier::setEventLimit(int count)
+{
+    B_D(BSpamNotifier);
+    if (count < 0 || d->timer.isActive())
+        return;
+    d->limit = count;
+}
+
+int BSpamNotifier::timeElapsed() const
+{
+    return d_func()->timeElapsed();
 }
 
 /*============================== Public slots ==============================*/
@@ -200,13 +185,11 @@ void BSpamNotifier::spam(int eventWeight)
     B_D(BSpamNotifier);
     if (!d->enabled)
         return;
-    if ( !d->timer->isActive() )
+    if (!d->timer.isActive())
     {
-        d->timer->start(d->interval);
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+        d->timer.start(d->interval);
         d->etimer = new QElapsedTimer;
         d->etimer->start();
-#endif
     }
     d_func()->testSpam(eventWeight);
 }

@@ -21,20 +21,18 @@
 
 #include "btranslator.h"
 #include "btranslator_p.h"
-#include "bcoreapplication.h"
-#include "bcoreapplication_p.h"
-#include "bnamespace.h"
 
+#include "bapplicationbase.h"
+
+#include <QCoreApplication>
+#include <QDebug>
+#include <QDir>
+#include <QList>
+#include <QLocale>
 #include <QObject>
 #include <QString>
-#include <QLocale>
 #include <QStringList>
 #include <QTranslator>
-#include <QList>
-#include <QCoreApplication>
-#include <QDir>
-
-#include <QDebug>
 
 /*============================================================================
 ================================ BTranslatorPrivate ==========================
@@ -59,7 +57,7 @@ void BTranslatorPrivate::init()
 {
     installed = false;
     loaded = false;
-    locale = BCoreApplication::locale();
+    locale = BApplicationBase::locale();
 }
 
 bool BTranslatorPrivate::install()
@@ -90,20 +88,20 @@ void BTranslatorPrivate::remove()
 /*============================== Public constructors =======================*/
 
 BTranslator::BTranslator(QObject *parent) :
-    QObject(parent), BBase( *new BTranslatorPrivate(this) )
+    QObject(parent), BBase(*new BTranslatorPrivate(this))
 {
     d_func()->init();
 }
 
 BTranslator::BTranslator(const QString &fileName, QObject *parent) :
-    QObject(parent), BBase( *new BTranslatorPrivate(this) )
+    QObject(parent), BBase(*new BTranslatorPrivate(this))
 {
     d_func()->init();
     d_func()->fileName = fileName;
 }
 
 BTranslator::BTranslator(const QLocale &locale, const QString &fileName, QObject *parent) :
-    QObject(parent), BBase( *new BTranslatorPrivate(this) )
+    QObject(parent), BBase(*new BTranslatorPrivate(this))
 {
     d_func()->init();
     d_func()->fileName = fileName;
@@ -124,6 +122,103 @@ BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
 }
 
 /*============================== Public methods ============================*/
+
+QList<QLocale> BTranslator::availableLocales() const
+{
+    if (!isValid())
+        return QList<QLocale>();
+    const B_D(BTranslator);
+    QList<QLocale> list;
+    QStringList validFiles;
+    int fnLen = d->fileName.length();
+    QStringList paths = BApplicationBase::locations(BApplicationBase::TranslationsPath);
+    foreach (const QString &path, paths) {
+        QDir dir(path);
+        QStringList files = dir.entryList(QStringList() << "*.qm", QDir::Files);
+        foreach (const QString &file, files) {
+            if (file.left(fnLen) == d->fileName && !validFiles.contains(file))
+                validFiles << file;
+        }
+    }
+    foreach (const QString &validFile, validFiles) {
+        int lx = d->fileName.length() + 1;
+        QString lName = validFile.mid(lx, validFile.length() - lx - 3);
+        QLocale l(lName);
+        if (QLocale::c() != l)
+            list << l;
+    }
+    return list;
+}
+
+QString BTranslator::fileName() const
+{
+    return d_func()->fileName;
+}
+
+void BTranslator::install()
+{
+    if (d_func()->installed)
+        return;
+    d_func()->install();
+    BApplicationBase::installBeqtTranslator(this);
+}
+
+bool BTranslator::isInstalled() const
+{
+    return d_func()->installed;
+}
+
+bool BTranslator::isLoaded() const
+{
+    return d_func()->loaded;
+}
+
+bool BTranslator::isValid() const
+{
+    return !fileName().isEmpty();
+}
+
+bool BTranslator::load(const QString &fileName)
+{
+    B_D(BTranslator);
+    if (d->loaded)
+        return true;
+    if (!fileName.isEmpty())
+        d->fileName = fileName;
+    if (!isValid())
+        return false;
+    QStringList dirs = BApplicationBase::locations(BApplicationBase::TranslationsPath);
+    for (int i = dirs.size() - 1; i >= 0; --i) { //User translators come last, having higher priority
+        QTranslator *t = new QTranslator;
+        if (t->load(d->locale, d->fileName, "_", dirs.at(i), ".qm"))
+            d->translators << t;
+        else
+            delete t;
+    }
+    d->loaded = true;
+    return true;
+}
+
+bool BTranslator::load(const QLocale &locale, const QString &fileName)
+{
+    if (isLoaded())
+        return true;
+    d_func()->locale = locale;
+    return load(fileName);
+}
+
+QLocale BTranslator::locale() const
+{
+    return d_func()->locale;
+}
+
+void BTranslator::remove()
+{
+    if (!d_func()->installed)
+        return;
+    d_func()->remove();
+    BApplicationBase::removeBeqtTranslator(this);
+}
 
 void BTranslator::setFileName(const QString &fileName)
 {
@@ -159,49 +254,19 @@ void BTranslator::setLocale(const QLocale &locale)
       d->install();
 }
 
-void BTranslator::install()
+QString BTranslator::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
 {
-    if (d_func()->installed)
-        return;
-    d_func()->install();
-    BApplicationBase::installBeqtTranslator(this);
-}
-
-void BTranslator::remove()
-{
-    if (!d_func()->installed)
-        return;
-    d_func()->remove();
-    BApplicationBase::removeBeqtTranslator(this);
-}
-
-bool BTranslator::load(const QString &fileName)
-{
-    B_D(BTranslator);
-    if (d->loaded)
-        return true;
-    if (!fileName.isEmpty())
-        d->fileName = fileName;
-    if (!isValid())
-        return false;
-    QStringList dirs = BCoreApplication::locations(BCoreApplication::TranslationsPath);
-    for (int i = dirs.size() - 1; i >= 0; --i) { //User translators come last, having higher priority
-        QTranslator *t = new QTranslator;
-        if (t->load(d->locale, d->fileName, "_", dirs.at(i), ".qm"))
-            d->translators << t;
-        else
-            delete t;
+    foreach (QTranslator *t, d_func()->translators) {
+        QString s = t->translate(context, sourceText, disambiguation, n);
+        if (!s.isEmpty())
+            return s;
     }
-    d->loaded = true;
-    return true;
+    return sourceText;
 }
 
-bool BTranslator::load(const QLocale &locale, const QString &fileName)
+QList<QTranslator *> BTranslator::translators() const
 {
-    if (isLoaded())
-        return true;
-    d_func()->locale = locale;
-    return load(fileName);
+    return d_func()->translators;
 }
 
 void BTranslator::unload()
@@ -215,71 +280,4 @@ void BTranslator::unload()
         delete t;
     d->translators.clear();
     d->loaded = false;
-}
-
-bool BTranslator::isValid() const
-{
-    return !fileName().isEmpty();
-}
-
-bool BTranslator::isLoaded() const
-{
-    return d_func()->loaded;
-}
-
-bool BTranslator::isInstalled() const
-{
-    return d_func()->installed;
-}
-
-QString BTranslator::fileName() const
-{
-    return d_func()->fileName;
-}
-
-QLocale BTranslator::locale() const
-{
-    return d_func()->locale;
-}
-
-QList<QLocale> BTranslator::availableLocales() const
-{
-    if (!isValid())
-        return QList<QLocale>();
-    const B_D(BTranslator);
-    QList<QLocale> list;
-    QStringList validFiles;
-    int fnLen = d->fileName.length();
-    QStringList paths = BCoreApplication::locations(BCoreApplication::TranslationsPath);
-    foreach (const QString &path, paths) {
-        QDir dir(path);
-        QStringList files = dir.entryList(QStringList() << "*.qm", QDir::Files);
-        foreach (const QString &file, files) {
-            if (file.left(fnLen) == d->fileName && !validFiles.contains(file))
-                validFiles << file;
-        }
-    }
-    foreach (const QString &validFile, validFiles) {
-        int lx = d->fileName.length() + 1;
-        QString lName = validFile.mid(lx, validFile.length() - lx - 3);
-        QLocale l(lName);
-        if (QLocale::c() != l)
-            list << l;
-    }
-    return list;
-}
-
-QList<QTranslator *> BTranslator::translators() const
-{
-    return d_func()->translators;
-}
-
-QString BTranslator::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
-{
-    foreach (QTranslator *t, d_func()->translators) {
-        QString s = t->translate(context, sourceText, disambiguation, n);
-        if (!s.isEmpty())
-            return s;
-    }
-    return sourceText;
 }

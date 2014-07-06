@@ -23,29 +23,23 @@
 #define BAPPLICATIONBASE_H
 
 class BApplicationBasePrivate;
-class BTranslator;
-class BTranslatorPrivate;
-class BPluginWrapperPrivate;
-class BDirToolsPrivate;
-class BPluginWrapper;
+
 class BAbstractLocationProvider;
 class BPersonInfoProvider;
+class BTranslator;
 
-class QLocale;
 class QSettings;
+class QStringList;
 
-#include "bglobal.h"
 #include "bbaseobject.h"
 #include "blogger.h"
-#include "bpersoninfo.h"
 #include "bpersoninfolist.h"
+#include "bpluginwrapper.h"
 
-#include <QLocale>
-#include <QList>
-#include <QString>
-#include <QStringList>
-#include <QVariantMap>
 #include <QCoreApplication>
+#include <QList>
+#include <QLocale>
+#include <QString>
 
 #if !defined(bSettings)
 #   define bSettings BApplicationBase::settingsInstance()
@@ -67,44 +61,44 @@ class B_CORE_EXPORT BApplicationBase : public BBaseObject
     B_DECLARE_PRIVATE_S(BApplicationBase)
     Q_DECLARE_TR_FUNCTIONS(BApplicationBase)
 public:
+    enum About
+    {
+        Authors = 1,
+        ChangeLog,
+        Copyringt,
+        Description,
+        ExtendedCopyright,
+        License,
+        ThanksTo,
+        Translators
+    };
     enum Location
     {
+        BeqtPath = 1,
         DataPath,
         DocumentationPath,
         PluginsPath,
         SettingsPath,
-        TranslationsPath,
-        BeqtPath
-    };
-    enum ResourceType
-    {
-        UserResource,
-        SharedResource,
-        BuiltinResource
-    };
-    enum About
-    {
-        Copyringt,
-        ExtendedCopyright,
-        Description,
-        ChangeLog,
-        License,
-        Authors,
-        Translators,
-        ThanksTo
+        TranslationsPath
     };
     enum Portability
     {
-        AutoDetect,
-        Portable,
-        NotPortable
+        AutoDetect = 0,
+        NotPortable,
+        Portable
+    };
+    enum ResourceType
+    {
+        BuiltinResource = 1,
+        SharedResource,
+        UserResource
     };
 public:
-    struct LocaleSupportInfo
+    struct CopyrightInfo
     {
-        QLocale locale;
-        int supports;
-        int total;
+        QString email;
+        QString owner;
+        QString period;
     };
     struct InitialSettings
     {
@@ -112,91 +106,89 @@ public:
         QString organizationName;
         Portability portability;
     };
-    struct CopyrightInfo
+    struct LocaleSupportInfo
     {
-        QString owner;
-        QString period;
-        QString email;
+        QLocale locale;
+        int supports;
+        int total;
     };
-public:
-    typedef bool (*InterfaceTestFunction)(const QObject *);
-public:
-    ~BApplicationBase() = 0;
+protected:
+    static BApplicationBase *_m_self;
 protected:
     explicit BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName = QString(),
                               const QString &organizationName = QString());
     explicit BApplicationBase(BApplicationBasePrivate &d, const InitialSettings &s);
 public:
+    ~BApplicationBase() = 0;
+public:
+    static BPersonInfoList applicationAuthors();
+    static QString applicationAuthorsFile();
+    static BPersonInfoProvider *applicationAuthorsProvider();
+    static QString applicationChangeLog();
+    static QString applicationChangeLogFile();
+    static QString applicationCopyrightPeriod();
+    static QString applicationDescription();
+    static QString applicationDescriptionFile();
+    static QList<CopyrightInfo> applicationExtendedCopyrightInfo();
+    static QString applicationInfo(About type, const QLocale &loc = locale());
+    static QString applicationLicense();
+    static QString applicationLicenseFile();
+    static BPersonInfoList applicationThanksTo();
+    static QString applicationThanksToFile();
+    static BPersonInfoProvider *applicationThanksToProvider();
+    static BPersonInfoList applicationTranslations();
+    static QString applicationTranslationsFile();
+    static BPersonInfoProvider *applicationTranslationsProvider();
+    static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
+    static BPersonInfoProvider *beqtAuthorsProvider();
+    static QString beqtInfo(About type, const QLocale &loc = locale());
+    static BPersonInfoProvider *beqtThanksToProvider();
+    static BPersonInfoProvider *beqtTranslationsProvider();
+    static BTranslator *beqtTranslator(const QString &fileName);
+    static QList<BTranslator *> beqtTranslators();
     static BApplicationBase *binstance();
+    static QStringList disabledPlugins();
+    static void installBeqtTranslator(BTranslator *translator);
+    static void installBeqtTranslator(const QString &id);
     static void installLocationProvider(BAbstractLocationProvider *p);
     static void installLocationProviders(const QList<BAbstractLocationProvider *> &list);
-    static void removeLocationProvider(BAbstractLocationProvider *p);
-    static void removeLocationProviders(const QList<BAbstractLocationProvider *> &list);
+    static void installPlugin(BPluginWrapper *plugin);
+    static bool isPortable();
+    static void loadPlugins();
+    static void loadPlugins(const QStringList &acceptableTypes);
+    static void loadPlugins(const QStringList &acceptableTypes, BPluginWrapper::InterfaceTestFunction function);
+    static QLocale locale();
     static QString location(Location loc, ResourceType type);
     static QString location(const QString &subdir, ResourceType type);
     static QStringList locations(Location loc);
     static QStringList locations(const QString &subdir);
-    static QSettings *settingsInstance();
-    static bool isPortable();
-    static void setDisabledPlugins(const QStringList &list);
-    static QStringList disabledPlugins();
-    static void installPlugin(BPluginWrapper *plugin);
-    static void removePlugin(BPluginWrapper *plugin);
-    static void loadPlugins();
-    static void loadPlugins(const QStringList &acceptableTypes);
-    static void loadPlugins(const QStringList &acceptableTypes, InterfaceTestFunction function);
-    static void unloadPlugins(bool remove = false);
-    static QList<BTranslator *> beqtTranslators();
-    static BTranslator *beqtTranslator(const QString &fileName);
-    static QList<BPluginWrapper *> pluginWrappers( const QString &type = QString() );
-    static void installBeqtTranslator(BTranslator *translator);
-    static void installBeqtTranslator(const QString &id);
+    static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
+    static BLogger *logger();
+    static QList<BPluginWrapper *> pluginWrappers(const QString &type = QString());
     static void removeBeqtTranslator(BTranslator *translator);
     static void removeBeqtTranslator(const QString &id);
-    static void setLocale(const QLocale &l);
-    static QLocale locale();
-    static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
-    static void setApplicationCopyrightPeriod(const QString &s);
-    static void setApplicationExtendedCopyrightInfo(const QList<CopyrightInfo> &list);
-    static void setApplicationDescription(const QString &s);
-    static void setApplicationDescriptionFile(const QString &fileName);
-    static void setApplicationChangeLog(const QString &s);
-    static void setApplicationChangeLogFile(const QString &fileName);
-    static void setApplicationLicense(const QString &s);
-    static void setApplicationLicenseFile(const QString &fileName);
+    static void removeLocationProvider(BAbstractLocationProvider *p);
+    static void removeLocationProviders(const QList<BAbstractLocationProvider *> &list);
+    static void removePlugin(BPluginWrapper *plugin);
     static void setApplicationAuthors(const BPersonInfoList &list);
     static void setApplicationAuthorsFile(const QString &fileName);
-    static void setApplicationTranslations(const BPersonInfoList &list);
-    static void setApplicationTranslationsFile(const QString &fileName);
+    static void setApplicationChangeLog(const QString &s);
+    static void setApplicationChangeLogFile(const QString &fileName);
+    static void setApplicationCopyrightPeriod(const QString &s);
+    static void setApplicationDescription(const QString &s);
+    static void setApplicationDescriptionFile(const QString &fileName);
+    static void setApplicationExtendedCopyrightInfo(const QList<CopyrightInfo> &list);
+    static void setApplicationLicense(const QString &s);
+    static void setApplicationLicenseFile(const QString &fileName);
     static void setApplicationThanksTo(const BPersonInfoList &list);
     static void setApplicationThanksToFile(const QString &fileName);
-    static QString applicationCopyrightPeriod();
-    static QList<CopyrightInfo> applicationExtendedCopyrightInfo();
-    static QString applicationDescription();
-    static QString applicationDescriptionFile();
-    static QString applicationChangeLog();
-    static QString applicationChangeLogFile();
-    static QString applicationLicense();
-    static QString applicationLicenseFile();
-    static BPersonInfoList applicationAuthors();
-    static BPersonInfoProvider *applicationAuthorsProvider();
-    static QString applicationAuthorsFile();
-    static BPersonInfoList applicationTranslations();
-    static BPersonInfoProvider *applicationTranslationsProvider();
-    static QString applicationTranslationsFile();
-    static BPersonInfoList applicationThanksTo();
-    static BPersonInfoProvider *applicationThanksToProvider();
-    static QString applicationThanksToFile();
-    static BPersonInfoProvider *beqtAuthorsProvider();
-    static BPersonInfoProvider *beqtTranslationsProvider();
-    static BPersonInfoProvider *beqtThanksToProvider();
-    static QString applicationInfo(About type, const QLocale &loc = locale());
-    static QString beqtInfo(About type, const QLocale &loc = locale());
+    static void setApplicationTranslations(const BPersonInfoList &list);
+    static void setApplicationTranslationsFile(const QString &fileName);
+    static void setDisabledPlugins(const QStringList &list);
+    static void setLocale(const QLocale &l);
     static void setLogger(BLogger *l);
-    static BLogger *logger();
-    static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
-protected:
-    static BApplicationBase *_m_self;
+    static QSettings *settingsInstance();
+    static void unloadPlugins(bool remove = false);
 private:
     Q_DISABLE_COPY(BApplicationBase)
 };
