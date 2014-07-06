@@ -20,28 +20,27 @@
 ****************************************************************************/
 
 #include "bnetworkserver.h"
-#include "bnetworkconnection.h"
 #include "bnetworkserver_p.h"
+
+#include "bnetworkconnection.h"
 #include "bgenericserver.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbaseobject_p.h>
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BSpamNotifier>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BSignalDelayProxy>
+#include <BeQtCore/BTextTools>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
+#include <QDebug>
 #include <QList>
-#include <QThread>
-#include <QString>
+#include <QMap>
 #include <QMetaObject>
 #include <QMutex>
 #include <QMutexLocker>
-#include <QMap>
+#include <QObject>
+#include <QString>
 #include <QStringList>
 #include <QTcpServer>
-
-#include <QDebug>
+#include <QThread>
 
 /*============================================================================
 ================================ BNetworkServerWorker ========================
@@ -67,23 +66,22 @@ void BNetworkServerWorker::addConnection(int socketDescriptor, const QString &se
     BGenericSocket *s = ServerPrivate->createSocket();
     if (!s)
         return;
-    if (!s->setSocketDescriptor(socketDescriptor) || !s->isValid())
-    {
+    if (!s->setSocketDescriptor(socketDescriptor) || !s->isValid()) {
         delete s;
         return;
     }
     QMutexLocker locker(ServerPrivate->connectionMutex);
-    if (ServerPrivate->banned.contains(s->peerAddress()))
-    {
-        s->disconnectFromHost();
-        delete s;
+    if (ServerPrivate->handleIncomingConnection(s))
+        return;
+    QString addr = s->peerAddress();
+    if (ServerPrivate->isBanned(addr) && ServerPrivate->handleBanned(s)) {
+        ServerPrivate->emitBannedUserConnectionDenied(addr);
         return;
     }
     BNetworkConnection *c = ServerPrivate->createConnection(s, serverAddress, serverPort);
     if (!c)
         return;
-    if (!c->isValid())
-    {
+    if (!c->isValid()) {
         delete c;
         return;
     }
@@ -156,26 +154,31 @@ BNetworkServerPrivate::BNetworkServerPrivate(BNetworkServer *q, BGenericServer::
 
 BNetworkServerPrivate::~BNetworkServerPrivate()
 {
-    foreach (BNetworkServerThread *t, threads)
-    {
+    foreach (BNetworkServerThread *t, threads) {
         disconnect(t, SIGNAL(finished()), this, SLOT(finished()));
         t->quit();
-        t->wait(1000);
+        t->wait();
     }
     delete connectionMutex;
 }
 
 /*============================== Public methods ============================*/
 
-void BNetworkServerPrivate::init()
+void BNetworkServerPrivate::close()
 {
-    connectionMutex = new QMutex(QMutex::Recursive);
-    maxConnectionCount = 0;
-    maxThreadCount = 0;
-    maxPendingConnections = 0;
-    spamNotifier = new BSpamNotifier(this);
-    spamNotifier->setEnabled(false);
-    connect(spamNotifier, SIGNAL(spammed(int)), this, SLOT(spammed()));
+    foreach (BGenericServer *s, servers)
+        s->close();
+    servers.clear();
+}
+
+int BNetworkServerPrivate::connectionCount() const
+{
+    QMutexLocker locker(connectionMutex);
+    Q_UNUSED(locker)
+    int count = 0;
+    foreach (BNetworkServerThread *t, threads)
+        count += t->connectionCount();
+    return count;
 }
 
 BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *socket, const QString &serverAddress,
@@ -186,50 +189,15 @@ BNetworkConnection *BNetworkServerPrivate::createConnection(BGenericSocket *sock
 
 BGenericSocket *BNetworkServerPrivate::createSocket()
 {
-    BGenericSocket *s = q_func()->createSocket();
-    if (s)
-        spamNotifier->spam();
-    return s;
+    return q_func()->createSocket();
 }
 
-BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
+void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(BNetworkConnection *connection)
 {
-    QMutexLocker locker(connectionMutex);
-    int ccount = connectionCount();
-    if (maxConnectionCount > 0 && ccount == maxConnectionCount)
-        return 0;
-    if (maxThreadCount > 0 && ccount == maxThreadCount)
-    {
-        int cc = threads.first()->connectionCount();
-        int ind = 0;
-        for (int i = 0; i < threads.size(); ++i)
-        {
-            int ccc = threads.at(i)->connectionCount();
-            if (ccc < cc)
-            {
-                cc = ccc;
-                ind = i;
-            }
-        }
-        return threads[ind];
-    }
-    else
-    {
-        BNetworkServerThread *t = new BNetworkServerThread(this);
-        QObject::connect(t, SIGNAL(finished()), this, SLOT(finished()));
-        t->start();
-        threads << t;
-        return t;
-    }
-}
-
-int BNetworkServerPrivate::connectionCount() const
-{
-    //Must lock
-    int count = 0;
-    foreach (BNetworkServerThread *t, threads)
-        count += t->connectionCount();
-    return count;
+    //The signal is invoked in the connection thread, not in the server thread
+    //You must connect the slots using Qt::DirectConnection
+    QMetaObject::invokeMethod(q_func(), "connectionAboutToBeRemoved", Qt::DirectConnection,
+                              Q_ARG(BNetworkConnection *, connection));
 }
 
 void BNetworkServerPrivate::emitConnectionAdded(BNetworkConnection *connection)
@@ -240,12 +208,61 @@ void BNetworkServerPrivate::emitConnectionAdded(BNetworkConnection *connection)
                               Q_ARG(BNetworkConnection *, connection));
 }
 
-void BNetworkServerPrivate::emitConnectionAboutToBeRemoved(BNetworkConnection *connection)
+void BNetworkServerPrivate::emitBannedUserConnectionDenied(const QString &address)
 {
     //The signal is invoked in the connection thread, not in the server thread
     //You must connect the slots using Qt::DirectConnection
-    QMetaObject::invokeMethod(q_func(), "connectionAboutToBeRemoved", Qt::DirectConnection,
-                              Q_ARG(BNetworkConnection *, connection));
+    QMetaObject::invokeMethod(q_func(), "bannedUserConnectionDenied", Qt::QueuedConnection, Q_ARG(QString, address));
+}
+
+BNetworkServerThread *BNetworkServerPrivate::getOptimalThread()
+{
+    QMutexLocker locker(connectionMutex);
+    Q_UNUSED(locker)
+    int ccount = connectionCount();
+    if (maxConnectionCount > 0 && ccount == maxConnectionCount)
+        return 0;
+    if (maxThreadCount > 0 && ccount == maxThreadCount) {
+        int cc = threads.first()->connectionCount();
+        int ind = 0;
+        for (int i = 0; i < threads.size(); ++i) {
+            int ccc = threads.at(i)->connectionCount();
+            if (ccc < cc) {
+                cc = ccc;
+                ind = i;
+            }
+        }
+        return threads[ind];
+    } else {
+        BNetworkServerThread *t = new BNetworkServerThread(this);
+        QObject::connect(t, SIGNAL(finished()), this, SLOT(finished()));
+        t->start();
+        threads << t;
+        return t;
+    }
+}
+
+bool BNetworkServerPrivate::handleBanned(BGenericSocket *socket)
+{
+    return q_func()->handleBanned(socket);
+}
+
+bool BNetworkServerPrivate::handleIncomingConnection(BGenericSocket *socket)
+{
+    return q_func()->handleIncomingConnection(socket);
+}
+
+void BNetworkServerPrivate::init()
+{
+    connectionMutex = new QMutex(QMutex::Recursive);
+    maxConnectionCount = 0;
+    maxThreadCount = 0;
+    maxPendingConnections = 0;
+}
+
+bool BNetworkServerPrivate::isBanned(const QString &address) const
+{
+    return q_func()->isBanned(address);
 }
 
 bool BNetworkServerPrivate::listen(const QString &address, quint16 port)
@@ -263,14 +280,16 @@ bool BNetworkServerPrivate::listen(const QString &address, quint16 port)
     return b;
 }
 
-void BNetworkServerPrivate::close()
-{
-    foreach (BGenericServer *s, servers)
-        s->close();
-    servers.clear();
-}
-
 /*============================== Public slots ==============================*/
+
+void BNetworkServerPrivate::finished()
+{
+    BNetworkServerThread *t = qobject_cast<BNetworkServerThread *>(sender());
+    if (!t)
+        return;
+    threads.removeAll(t);
+    t->deleteLater();
+}
 
 void BNetworkServerPrivate::newConnection(int socketDescriptor)
 {
@@ -295,20 +314,6 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
         s->disconnectFromHost();
         delete s;
     }
-}
-
-void BNetworkServerPrivate::finished()
-{
-    BNetworkServerThread *t = qobject_cast<BNetworkServerThread *>(sender());
-    if (!t)
-        return;
-    threads.removeAll(t);
-    t->deleteLater();
-}
-
-void BNetworkServerPrivate::spammed()
-{
-    //
 }
 
 /*============================================================================
@@ -338,39 +343,39 @@ BNetworkServer::BNetworkServer(BNetworkServerPrivate &d, QObject *parent) :
 
 /*============================== Public methods ============================*/
 
-void BNetworkServer::setMaxConnectionCount(int count)
+QStringList BNetworkServer::banList() const
 {
-    d_func()->maxConnectionCount = count > 0 ? count : 0;
+    QMutexLocker locker(d_func()->connectionMutex);
+    return d_func()->banned;
 }
 
-void BNetworkServer::setMaxThreadCount(int count)
+QList<BNetworkConnection *> BNetworkServer::connections() const
 {
-    d_func()->maxThreadCount = count > 0 ? count : 0;
+    QMutexLocker locker(d_func()->connectionMutex);
+    QList<BNetworkConnection *> list;
+    foreach (BNetworkServerThread *t, d_func()->threads)
+        list << t->connections;
+    return list;
 }
 
-void BNetworkServer::lock()
+int BNetworkServer::currentConnectionCount() const
 {
-    d_func()->connectionMutex->lock();
+    return d_func()->connectionCount();
 }
 
-void BNetworkServer::unlock()
+int BNetworkServer::currentThreadCount() const
 {
-    d_func()->connectionMutex->unlock();
-}
-
-bool BNetworkServer::tryLock()
-{
-    return d_func()->connectionMutex->tryLock();
-}
-
-bool BNetworkServer::isValid() const
-{
-    return d_func()->Type != BGenericServer::NoServer;
+    return d_func()->threads.size();
 }
 
 bool BNetworkServer::isListening() const
 {
     return !d_func()->servers.isEmpty();
+}
+
+bool BNetworkServer::isValid() const
+{
+    return d_func()->Type != BGenericServer::NoServer;
 }
 
 bool BNetworkServer::listen(const QString &address)
@@ -410,9 +415,9 @@ int BNetworkServer::listen(const QStringList &addresses)
     return count;
 }
 
-BGenericServer::ServerType BNetworkServer::serverType() const
+void BNetworkServer::lock()
 {
-    return d_func()->Type;
+    d_func()->connectionMutex->lock();
 }
 
 int BNetworkServer::maxConnectionCount() const
@@ -420,48 +425,37 @@ int BNetworkServer::maxConnectionCount() const
     return d_func()->maxConnectionCount;
 }
 
-int BNetworkServer::currentConnectionCount() const
-{
-    return d_func()->connectionCount();
-}
-
 int BNetworkServer::maxThreadCount() const
 {
     return d_func()->maxThreadCount;
 }
 
-int BNetworkServer::currentThreadCount() const
+BGenericServer::ServerType BNetworkServer::serverType() const
 {
-    return d_func()->threads.size();
+    return d_func()->Type;
 }
 
-BSpamNotifier *BNetworkServer::spamNotifier() const
+void BNetworkServer::setMaxConnectionCount(int count)
 {
-    return d_func()->spamNotifier;
+    d_func()->maxConnectionCount = count > 0 ? count : 0;
 }
 
-QList<BNetworkConnection *> BNetworkServer::connections() const
+void BNetworkServer::setMaxThreadCount(int count)
 {
-    //Must lock
-    QList<BNetworkConnection *> list;
-    foreach (BNetworkServerThread *t, d_func()->threads)
-        list << t->connections;
-    return list;
+    d_func()->maxThreadCount = count > 0 ? count : 0;
 }
 
-QStringList BNetworkServer::banned() const
+bool BNetworkServer::tryLock()
 {
-    //Must lock
-    QStringList list = d_func()->banned.toList();
-    return list;
+    return d_func()->connectionMutex->tryLock();
+}
+
+void BNetworkServer::unlock()
+{
+    d_func()->connectionMutex->unlock();
 }
 
 /*============================== Public slots ==============================*/
-
-void BNetworkServer::close()
-{
-    d_func()->close();
-}
 
 void BNetworkServer::ban(const QString &address)
 {
@@ -470,10 +464,29 @@ void BNetworkServer::ban(const QString &address)
 
 void BNetworkServer::ban(const QStringList &addresses)
 {
-    lock();
-    foreach (const QString &s, addresses)
-        d_func()->banned.insert(s);
-    unlock();
+    QMutexLocker locker(d_func()->connectionMutex);
+    foreach (const QString &s, addresses) {
+        if (!d_func()->banned.contains(s))
+            d_func()->banned << s;
+    }
+}
+
+void BNetworkServer::clearBanList()
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    d_func()->banned.clear();
+}
+
+void BNetworkServer::close()
+{
+    d_func()->close();
+}
+
+void BNetworkServer::setBanList(const QStringList &addresses)
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    d_func()->banned = BTextTools::removeDuplicates(addresses, Qt::CaseInsensitive);
+    d_func()->banned.removeAll("");
 }
 
 void BNetworkServer::unban(const QString &address)
@@ -483,17 +496,9 @@ void BNetworkServer::unban(const QString &address)
 
 void BNetworkServer::unban(const QStringList &addresses)
 {
-    lock();
+    QMutexLocker locker(d_func()->connectionMutex);
     foreach (const QString &s, addresses)
-        d_func()->banned.remove(s);
-    unlock();
-}
-
-void BNetworkServer::clearBanList()
-{
-    lock();
-    d_func()->banned.clear();
-    unlock();
+        d_func()->banned.removeAll(s);
 }
 
 /*============================== Protected methods =========================*/
@@ -506,4 +511,24 @@ BNetworkConnection *BNetworkServer::createConnection(BGenericSocket *socket, con
 BGenericSocket *BNetworkServer::createSocket()
 {
     return new BGenericSocket(BGenericSocket::TcpSocket);
+}
+
+bool BNetworkServer::handleBanned(BGenericSocket *socket)
+{
+    if (!socket)
+        return false;
+    socket->disconnectFromHost();
+    delete socket;
+    return true;
+}
+
+bool BNetworkServer::handleIncomingConnection(BGenericSocket *)
+{
+    return false;
+}
+
+bool BNetworkServer::isBanned(const QString &address) const
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    return d_func()->banned.contains(address);
 }

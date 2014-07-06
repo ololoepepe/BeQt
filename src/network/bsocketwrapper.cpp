@@ -20,22 +20,21 @@
 ****************************************************************************/
 
 #include "bsocketwrapper.h"
-#include "bgenericsocket.h"
 #include "bsocketwrapper_p.h"
+
+#include "bgenericsocket.h"
 
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BUuid>
 
-#include <QDataStream>
-#include <QObject>
 #include <QAbstractSocket>
-#include <QLocalSocket>
 #include <QByteArray>
+#include <QDataStream>
 #include <QIODevice>
+#include <QMetaObject>
+#include <QObject>
 #include <QThread>
-#include <QMetaObject>
 #include <QVariant>
-#include <QMetaObject>
 
 /*============================================================================
 ================================ BSocketWrapperPrivate =======================
@@ -90,8 +89,7 @@ bool BSocketWrapperPrivate::sendData(const QByteArray &data, int compressionLeve
         return false;
     if (!metaData.isValid() && data.isEmpty())
         return true;
-    if (metaData.isValid())
-    {
+    if (metaData.isValid()) {
         metaOut = metaData;
         QByteArray bam;
         QDataStream outm(&bam, QIODevice::WriteOnly);
@@ -125,9 +123,10 @@ bool BSocketWrapperPrivate::sendData(const QByteArray &data, int compressionLeve
     if (bo < 0)
         return false;
     bytesOutTotal += bo;
-    if (metaOut.isValid())
+    if (metaOut.isValid()) {
         QMetaObject::invokeMethod(q_func(), "uploadProgress", Q_ARG(BNetworkOperationMetaData, metaOut),
                                   Q_ARG(qint64, bytesOutReady), Q_ARG(qint64, bytesOutReady));
+    }
     socket->flush();
     return true;
 }
@@ -138,12 +137,12 @@ void BSocketWrapperPrivate::bytesWritten(qint64 bytes)
 {
     B_Q(BSocketWrapper);
     bytesOutReady += bytes;
-    if ( metaOut.isValid() )
-        QMetaObject::invokeMethod( q, "uploadProgress", Q_ARG(BNetworkOperationMetaData, metaOut),
-                                   Q_ARG(qint64, bytesOutReady), Q_ARG(qint64, bytesOutTotal) );
-    if (bytesOutReady == bytesOutTotal)
-    {
-        QMetaObject::invokeMethod( q, "dataSent", Q_ARG(BNetworkOperationMetaData, metaOut) );
+    if (metaOut.isValid()) {
+        QMetaObject::invokeMethod(q, "uploadProgress", Q_ARG(BNetworkOperationMetaData, metaOut),
+                                  Q_ARG(qint64, bytesOutReady), Q_ARG(qint64, bytesOutTotal));
+    }
+    if (bytesOutReady == bytesOutTotal) {
+        QMetaObject::invokeMethod(q, "dataSent", Q_ARG(BNetworkOperationMetaData, metaOut));
         resetOut();
     }
 }
@@ -164,31 +163,28 @@ void BSocketWrapperPrivate::readyRead()
     B_Q(BSocketWrapper);
     QDataStream in(socket->ioDevice());
     in.setVersion(BeQt::DataStreamVersion);
-    forever
-    {
-        if (criticalBufferSize > 0 && socket->bytesAvailable() >= criticalBufferSize)
-        {
+    forever {
+        if (criticalBufferSize > 0 && socket->bytesAvailable() >= criticalBufferSize) {
             if (closeOnCriticalBufferSize)
                 socket->close();
             QMetaObject::invokeMethod(q, "criticalBufferSizeReached");
             break;
         }
-        if (0 == bytesInTotal)
-        {
+        if (0 == bytesInTotal) {
             if ( socket->bytesAvailable() < sizeof(qint64) )
                 break;
             in >> bytesInTotal;
         }
         qint64 bytes = socket->bytesAvailable();
-        if (metaIn.isValid())
+        if (metaIn.isValid()) {
             QMetaObject::invokeMethod(q, "downloadProgress", Q_ARG(BNetworkOperationMetaData, metaIn),
                                       Q_ARG(qint64, bytes), Q_ARG(qint64, bytesInTotal));
+        }
         if (bytes < bytesInTotal)
             break;
         bool meta = false;
         in >> meta;
-        if (meta)
-        {
+        if (meta) {
             BUuid id;
             bool req;
             QString op;
@@ -199,9 +195,7 @@ void BSocketWrapperPrivate::readyRead()
             metaIn.setIsRequest(req);
             metaIn.setOperation(op);
             bytesInTotal = 0;
-        }
-        else
-        {
+        } else {
             QByteArray ba;
             in >> ba;
             QMetaObject::invokeMethod(q, "dataReceived", Q_ARG( QByteArray, qUncompress(ba)),
@@ -218,20 +212,20 @@ void BSocketWrapperPrivate::readyRead()
 /*============================== Public constructors =======================*/
 
 BSocketWrapper::BSocketWrapper(QObject *parent) :
-    QObject(parent), BBaseObject( *new BSocketWrapperPrivate(this) )
+    QObject(parent), BBaseObject(*new BSocketWrapperPrivate(this))
 {
     d_func()->init();
 }
 
 BSocketWrapper::BSocketWrapper(BGenericSocket *socket, QObject *parent) :
-    QObject(parent), BBaseObject( *new BSocketWrapperPrivate(this) )
+    QObject(parent), BBaseObject(*new BSocketWrapperPrivate(this))
 {
     d_func()->init();
     setSocket(socket);
 }
 
 BSocketWrapper::BSocketWrapper(BGenericSocket::SocketType type, QObject *parent) :
-    QObject(parent), BBaseObject( *new BSocketWrapperPrivate(this) )
+    QObject(parent), BBaseObject(*new BSocketWrapperPrivate(this))
 {
     d_func()->init();
     setSocket( new BGenericSocket(type) );
@@ -252,59 +246,9 @@ BSocketWrapper::BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent) :
 
 /*============================== Public methods ============================*/
 
-void BSocketWrapper::setSocket(BGenericSocket *socket)
+bool BSocketWrapper::closeOnCriticalBufferSize() const
 {
-    B_D(BSocketWrapper);
-    if ( !socket || socket->thread() != thread() || !socket->isSocketSet() || !unsetSocket() )
-        return;
-    d->socket = socket;
-    connect( socket, SIGNAL( bytesWritten(qint64) ), d, SLOT( bytesWritten(qint64) ) );
-    connect( socket, SIGNAL( disconnected() ), d, SLOT( disconnected() ) );
-    connect( socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-             d, SLOT( error(QAbstractSocket::SocketError) ) );
-    connect( socket, SIGNAL( readyRead() ), d, SLOT( readyRead() ) );
-}
-
-void BSocketWrapper::setCompressionLevel(int level)
-{
-    if (level < 0)
-        level = -1;
-    else if (level > 9)
-        level = 9;
-    d_func()->comprLvl = level;
-}
-
-void BSocketWrapper::setCriticalBufferSize(qint64 size)
-{
-    d_func()->criticalBufferSize = size;
-}
-
-void BSocketWrapper::setCloseOnCriticalBufferSize(bool close)
-{
-    d_func()->closeOnCriticalBufferSize = close;
-}
-
-bool BSocketWrapper::unsetSocket()
-{
-    B_D(BSocketWrapper);
-    if (!d->socket)
-        return true;
-    if ( isBuisy() )
-        return false;
-    disconnect( d->socket, SIGNAL( bytesWritten(qint64) ), d, SLOT( bytesWritten(qint64) ) );
-    disconnect( d->socket, SIGNAL( disconnected() ), this, SLOT( disconnected() ) );
-    disconnect( d->socket, SIGNAL( error(QAbstractSocket::SocketError) ),
-                d, SLOT( error(QAbstractSocket::SocketError) ) );
-    disconnect( d->socket, SIGNAL( readyRead() ), d, SLOT( readyRead() ) );
-    d->socket = 0;
-    d->resetIn();
-    d->resetOut();
-    return true;
-}
-
-BGenericSocket *BSocketWrapper::socket() const
-{
-    return d_func()->socket.data();
+    return d_func()->closeOnCriticalBufferSize;
 }
 
 int BSocketWrapper::compressionLevel() const
@@ -315,11 +259,6 @@ int BSocketWrapper::compressionLevel() const
 qint64 BSocketWrapper::criticalBufferSize() const
 {
     return d_func()->criticalBufferSize;
-}
-
-bool BSocketWrapper::closeOnCriticalBufferSize() const
-{
-    return d_func()->closeOnCriticalBufferSize;
 }
 
 bool BSocketWrapper::isBuisy() const
@@ -345,4 +284,57 @@ bool BSocketWrapper::sendData(const QByteArray &data, int compressionLevel, cons
 bool BSocketWrapper::sendData(const QVariant &variant, int compressionLevel, const BNetworkOperationMetaData &metaData)
 {
     return d_func()->sendData(BeQt::serialize(variant), compressionLevel, metaData);
+}
+
+void BSocketWrapper::setCloseOnCriticalBufferSize(bool close)
+{
+    d_func()->closeOnCriticalBufferSize = close;
+}
+
+void BSocketWrapper::setCompressionLevel(int level)
+{
+    if (level < 0)
+        level = -1;
+    else if (level > 9)
+        level = 9;
+    d_func()->comprLvl = level;
+}
+
+void BSocketWrapper::setCriticalBufferSize(qint64 size)
+{
+    d_func()->criticalBufferSize = size;
+}
+
+void BSocketWrapper::setSocket(BGenericSocket *socket)
+{
+    B_D(BSocketWrapper);
+    if (!socket || (socket->thread() != thread()) || !socket->isSocketSet() || !unsetSocket())
+        return;
+    d->socket = socket;
+    connect(socket, SIGNAL(bytesWritten(qint64)), d, SLOT(bytesWritten(qint64)));
+    connect(socket, SIGNAL(disconnected()), d, SLOT(disconnected()));
+    connect(socket, SIGNAL(error(QAbstractSocket::SocketError)), d, SLOT(error(QAbstractSocket::SocketError)));
+    connect(socket, SIGNAL(readyRead()), d, SLOT(readyRead()));
+}
+
+BGenericSocket *BSocketWrapper::socket() const
+{
+    return d_func()->socket.data();
+}
+
+bool BSocketWrapper::unsetSocket()
+{
+    B_D(BSocketWrapper);
+    if (!d->socket)
+        return true;
+    if (isBuisy())
+        return false;
+    disconnect(d->socket, SIGNAL(bytesWritten(qint64)), d, SLOT(bytesWritten(qint64)));
+    disconnect(d->socket, SIGNAL(disconnected()), this, SLOT(disconnected()));
+    disconnect(d->socket, SIGNAL(error(QAbstractSocket::SocketError)), d, SLOT(error(QAbstractSocket::SocketError)));
+    disconnect(d->socket, SIGNAL(readyRead()), d, SLOT(readyRead()));
+    d->socket = 0;
+    d->resetIn();
+    d->resetOut();
+    return true;
 }

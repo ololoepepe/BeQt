@@ -3,7 +3,6 @@
 
 * Test Hunspell dictionary validity for other languages
 * Add PDCurses binding
-* Implement spam notification in network server
 * Implement Katepart-compatible file type definition using XML files
 * Improve SQL schema parsing
 * Add method for setting terminal window size to BTerminal
@@ -59,6 +58,7 @@
 [done] Use UNIX resouce structure for all types of applications
 [done] Improve plugin loading system
 [done] Make BTerminalIOHandler a singleton
+[done] Add bReverse and bReversed template functions
 [done] Add BApplicationBase class
 [done] Add working directory argument to BeQt::startProcessDetached function
 [done] Add InitialSettings class to BApplicationBase
@@ -74,6 +74,8 @@
 [done] Change BeQt::OSType enum values
 [done] Improve BUuid serialization
 [done] Use BUuid class instead of QUuid
+[done] Implement spam notification in network server
+[done] Improve banned user handling in network server
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer

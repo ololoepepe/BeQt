@@ -26,7 +26,6 @@ class BEmailPrivate;
 
 class QString;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
 #include <QStringList>
@@ -45,18 +44,18 @@ public:
 protected:
     explicit BEmail(BEmailPrivate &d);
 public:
-    void setSender(const QString &sender);
-    void setReceiver(const QString &receiver);
-    void setReceivers(const QStringList &list);
-    void setSubject(const QString &subject);
-    void setBody(const QString &body);
-    QString sender() const;
+    QString body() const;
+    bool isValid() const;
     QString receiver(int index = 0) const;
     QStringList receivers() const;
     int receiversCount() const;
+    QString sender() const;
+    void setBody(const QString &body);
+    void setReceiver(const QString &receiver);
+    void setReceivers(const QStringList &list);
+    void setSender(const QString &sender);
+    void setSubject(const QString &subject);
     QString subject() const;
-    QString body() const;
-    bool isValid() const;
 public:
     BEmail &operator =(const BEmail &other);
     bool operator ==(const BEmail &other) const;

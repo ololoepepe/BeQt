@@ -23,27 +23,22 @@
 #define BNETWORKSERVER_P_H
 
 class BNetworkConnection;
-class BNetworkServerWorker;
 class BNetworkServerThread;
 class BNetworkServerPrivate;
-class BNetworkServer;
 class BGenericSocket;
-class BSpamNotifier;
 
 #include "bnetworkserver.h"
+
 #include "bgenericserver.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbaseobject_p.h>
-#include <BeQtCore/BeQtGlobal>
 
-#include <QObject>
 #include <QList>
-#include <QPointer>
-#include <QString>
-#include <QThread>
 #include <QMutex>
-#include <QSet>
+#include <QObject>
+#include <QString>
+#include <QStringList>
+#include <QThread>
 
 /*============================================================================
 ================================ BNetworkServerWorker ========================
@@ -53,6 +48,9 @@ class B_NETWORK_EXPORT BNetworkServerWorker : public QObject
 {
     Q_OBJECT
 public:
+    BNetworkServerPrivate * const ServerPrivate;
+    BNetworkServerThread * const Thread;
+public:
     explicit BNetworkServerWorker(BNetworkServerPrivate *sp, BNetworkServerThread *thread);
     ~BNetworkServerWorker();
 public Q_SLOTS:
@@ -61,9 +59,6 @@ public Q_SLOTS:
 Q_SIGNALS:
     void connectionAdded(QObject *obj);
     void disconnected(QObject *obj);
-public:
-    BNetworkServerPrivate *const ServerPrivate;
-    BNetworkServerThread *const Thread;
 private:
     Q_DISABLE_COPY(BNetworkServerWorker)
 };
@@ -76,15 +71,15 @@ class B_NETWORK_EXPORT BNetworkServerThread : public QThread
 {
     Q_OBJECT
 public:
+    BNetworkServerWorker * const Worker;
+public:
+    QList<BNetworkConnection *> connections;
+public:
     explicit BNetworkServerThread(BNetworkServerPrivate *serverPrivate);
     ~BNetworkServerThread();
 public:
     void addConnection(int socketDescriptor, const QString &serverAddress, quint16 serverPort);
     int connectionCount() const;
-public:
-    BNetworkServerWorker *const Worker;
-public:
-    QList<BNetworkConnection *> connections;
 private:
     Q_DISABLE_COPY(BNetworkServerThread)
 };
@@ -98,33 +93,35 @@ class B_NETWORK_EXPORT BNetworkServerPrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC(BNetworkServer)
     Q_OBJECT
 public:
+    const BGenericServer::ServerType Type;
+public:
+    QStringList banned;
+    mutable QMutex *connectionMutex;
+    int maxConnectionCount;
+    int maxPendingConnections;
+    int maxThreadCount;
+    QList<BGenericServer *> servers;
+    QList<BNetworkServerThread *> threads;
+public:
     explicit BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type);
     ~BNetworkServerPrivate();
 public:
-    void init();
+    void close();
+    int connectionCount() const;
     BNetworkConnection *createConnection(BGenericSocket *socket, const QString &serverAddress, quint16 serverPort);
     BGenericSocket *createSocket();
-    BNetworkServerThread *getOptimalThread();
-    int connectionCount() const;
-    bool listen(const QString &address, quint16 port = 0);
-    void close();
-public Q_SLOTS:
-    void emitConnectionAdded(BNetworkConnection *connection);
     void emitConnectionAboutToBeRemoved(BNetworkConnection *connection);
-    void newConnection(int socketDescriptor);
+    void emitConnectionAdded(BNetworkConnection *connection);
+    void emitBannedUserConnectionDenied(const QString &address);
+    BNetworkServerThread *getOptimalThread();
+    bool handleBanned(BGenericSocket *socket);
+    bool handleIncomingConnection(BGenericSocket *socket);
+    void init();
+    bool isBanned(const QString &address) const;
+    bool listen(const QString &address, quint16 port = 0);
+public Q_SLOTS:
     void finished();
-    void spammed();
-public:
-    const BGenericServer::ServerType Type;
-public:
-    QList<BGenericServer *> servers;
-    QList<BNetworkServerThread *> threads;
-    int maxConnectionCount;
-    int maxThreadCount;
-    int maxPendingConnections;
-    BSpamNotifier *spamNotifier;
-    QSet<QString> banned;
-    mutable QMutex *connectionMutex;
+    void newConnection(int socketDescriptor);
 private:
     Q_DISABLE_COPY(BNetworkServerPrivate)
     friend class BNetworkServerWorkerPrivate;

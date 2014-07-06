@@ -30,7 +30,6 @@ class QVariant;
 #include "bgenericsocket.h"
 #include "bnetworkoperationmetadata.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
 #include <QObject>
@@ -51,15 +50,9 @@ public:
 protected:
     explicit BSocketWrapper(BSocketWrapperPrivate &d, QObject *parent = 0);
 public:
-    void setSocket(BGenericSocket *socket);
-    void setCompressionLevel(int level);
-    void setCriticalBufferSize(qint64 size);
-    void setCloseOnCriticalBufferSize(bool close);
-    bool unsetSocket();
-    BGenericSocket *socket() const;
+    bool closeOnCriticalBufferSize() const;
     int compressionLevel() const;
     qint64 criticalBufferSize() const;
-    bool closeOnCriticalBufferSize() const;
     bool isBuisy() const;
     bool sendData(const QByteArray &data, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
     bool sendData(const QVariant &variant, const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
@@ -67,12 +60,18 @@ public:
                   const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
     bool sendData(const QVariant &variant, int compressionLevel,
                   const BNetworkOperationMetaData &metaData = BNetworkOperationMetaData());
+    void setCloseOnCriticalBufferSize(bool close);
+    void setCompressionLevel(int level);
+    void setCriticalBufferSize(qint64 size);
+    void setSocket(BGenericSocket *socket);
+    BGenericSocket *socket() const;
+    bool unsetSocket();
 Q_SIGNALS:
+    void criticalBufferSizeReached();
+    void dataSent(const BNetworkOperationMetaData &metaData);
+    void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
     void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
-    void dataReceived(const QByteArray &data, const BNetworkOperationMetaData &metaData);
-    void dataSent(const BNetworkOperationMetaData &metaData);
-    void criticalBufferSizeReached();
 private:
     Q_DISABLE_COPY(BSocketWrapper)
 };

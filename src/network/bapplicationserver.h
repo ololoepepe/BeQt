@@ -24,11 +24,11 @@
 
 class BApplicationServerPrivate;
 
-#include <BeQtCore/BeQtGlobal>
+class QString;
+
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
-#include <QString>
 #include <QStringList>
 
 /*============================================================================
@@ -50,8 +50,8 @@ protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);
 public:
     bool isValid() const;
-    bool testServer() const;
     bool listen();
+    bool testServer() const;
     bool sendMessage(int &argc, char **argv);
     bool sendMessage(const QStringList &arguments = QStringList());
 protected:

@@ -23,11 +23,11 @@
 #define BNETWORKOPERATIONMETADATA_H
 
 class BNetworkOperationMetaDataPrivate;
+
 class BUuid;
 
 class QString;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 /*============================================================================
@@ -39,19 +39,19 @@ class B_NETWORK_EXPORT BNetworkOperationMetaData : public BBase
     B_DECLARE_PRIVATE(BNetworkOperationMetaData)
 public:
     explicit BNetworkOperationMetaData();
-    BNetworkOperationMetaData(const BNetworkOperationMetaData &other); //Should not be explicit
+    BNetworkOperationMetaData(const BNetworkOperationMetaData &other);
     explicit BNetworkOperationMetaData(const BUuid &id, bool request, const QString &operation);
 protected:
     explicit BNetworkOperationMetaData(BNetworkOperationMetaDataPrivate &d);
 public:
+    const BUuid id() const;
+    void invalidate();
+    bool isRequest() const;
+    bool isValid() const;
+    const QString operation() const;
     void setId(const BUuid &id);
     void setIsRequest(bool request);
     void setOperation(const QString &operation);
-    void invalidate();
-    const BUuid id() const;
-    bool isRequest() const;
-    const QString operation() const;
-    bool isValid() const;
 public:
     BNetworkOperationMetaData &operator=(const BNetworkOperationMetaData &other);
     bool operator==(const BNetworkOperationMetaData &other) const;

@@ -23,16 +23,17 @@
 #define BREMOTELOGGER_H
 
 class BRemoteLoggerPrivate;
+
 class BGenericSocket;
 class BNetworkConnection;
 class BNetworkServer;
 
-#include <BeQtCore/BLogger>
-#include <BeQtCore/BeQtGlobal>
+class QString;
 
-#include <QObject>
-#include <QString>
+#include <BeQtCore/BLogger>
+
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BRemoteLogger ===============================
@@ -53,6 +54,12 @@ public:
 protected:
     explicit BRemoteLogger(BRemoteLoggerPrivate &d);
 public:
+    QList<BNetworkConnection *> connections() const;
+    QString hostName() const;
+    bool isLogToRemoteEnabled() const;
+    quint16 port() const;
+    int remoteTimeout() const;
+    BNetworkServer *server() const;
     void setLogToRemoteEnabled(bool enabled);
     void setRemote(BGenericSocket *socket);
     void setRemote(const QString &hostName, quint16 port);
@@ -60,13 +67,7 @@ public:
     void setRemote(const QList<BNetworkConnection *> &list);
     void setRemote(BNetworkServer *server);
     void setRemoteTimeout(int msecs);
-    bool isLogToRemoteEnabled() const;
     BGenericSocket *socket() const;
-    QString hostName() const;
-    quint16 port() const;
-    QList<BNetworkConnection *> connections() const;
-    BNetworkServer *server() const;
-    int remoteTimeout() const;
 protected:
     void userLog(const QString &text, Level level);
 private:

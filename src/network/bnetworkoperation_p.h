@@ -22,13 +22,12 @@
 #ifndef BNETWORKOPERATION_P_H
 #define BNETWORKOPERATION_P_H
 
-class BNetworkConnectionPrivate;
 class BNetworkConnection;
 
 #include "bnetworkoperation.h"
+
 #include "bnetworkoperationmetadata.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QByteArray>
@@ -42,39 +41,38 @@ class B_NETWORK_EXPORT BNetworkOperationPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BNetworkOperation)
 public:
+    BNetworkConnection * const Connection;
+    const BNetworkOperationMetaData MetaData;
+public:
+    bool autoDelete;
+    qint64 bytesInReady;
+    qint64 bytesInTotal;
+    qint64 bytesOutReady;
+    qint64 bytesOutTotal;
+    QByteArray data;
+    int finishedTimeoutMsecs;
+    bool isError;
+    bool isFinished;
+    bool isStarted;
+public:
     explicit BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md,
                                       BNetworkConnection *connection);
     ~BNetworkOperationPrivate();
 public:
     void init();
-    void setStarted();
-    void setError();
     void setDownloadProgress(qint64 bytesReady, qint64 bytesTotal);
+    void setError();
+    void setFinished(const QByteArray &dt = QByteArray());
+    void setStarted();
     void setUploadProgress(qint64 bytesReady, qint64 bytesTotal);
-    void setFinished( const QByteArray &dt = QByteArray() );
 public Q_SLOTS:
-    void testStarted();
     void testFinished();
+    void testStarted();
 Q_SIGNALS:
-    void startedTimeout();
     void finishedTimeout();
-public:
-    const BNetworkOperationMetaData MetaData;
-    BNetworkConnection *const Connection;
-public:
-    bool autoDelete;
-    int finishedTimeoutMsecs;
-    bool isStarted;
-    bool isError;
-    qint64 bytesInReady;
-    qint64 bytesInTotal;
-    qint64 bytesOutReady;
-    qint64 bytesOutTotal;
-    bool isFinished;
-    QByteArray data;
+    void startedTimeout();
 private:
     Q_DISABLE_COPY(BNetworkOperationPrivate)
-    friend class BNetworkConnectionPrivate;
 };
 
 #endif // BNETWORKOPERATION_P_H

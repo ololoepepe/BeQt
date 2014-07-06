@@ -23,20 +23,19 @@
 #define BNETWORKSERVER_H
 
 class BNetworkServerPrivate;
-class BNetworkConnection;
+
 class BGenericSocket;
-class BSpamNotifier;
+class BNetworkConnection;
 
 class QString;
 class QStringList;
 
 #include "bgenericserver.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BNetworkServer ==============================
@@ -52,38 +51,42 @@ public:
 protected:
     explicit BNetworkServer(BNetworkServerPrivate &d, QObject *parent = 0);
 public:
-    void setMaxConnectionCount(int count);
-    void setMaxThreadCount(int count);
-    void lock();
-    void unlock();
-    bool tryLock();
-    bool isValid() const;
+    QStringList banList() const;
+    QList<BNetworkConnection *> connections() const;
+    int currentConnectionCount() const;
+    int currentThreadCount() const;
     bool isListening() const;
+    bool isValid() const;
     bool listen(const QString &address);
     bool listen(const QString &address, quint16 port);
     int listen(const QStringList &addresses);
-    BGenericServer::ServerType serverType() const;
+    void lock();
     int maxConnectionCount() const;
-    int currentConnectionCount() const;
     int maxThreadCount() const;
-    int currentThreadCount() const;
-    QList<BNetworkConnection *> connections() const;
-    BSpamNotifier *spamNotifier() const;
-    QStringList banned() const;
+    BGenericServer::ServerType serverType() const;
+    void setMaxConnectionCount(int count);
+    void setMaxThreadCount(int count);
+    void unlock();
+    bool tryLock();
 public Q_SLOTS:
-    void close();
     void ban(const QString &address);
     void ban(const QStringList &addresses);
+    void clearBanList();
+    void close();
+    void setBanList(const QStringList &addresses);
     void unban(const QString &address);
     void unban(const QStringList &addresses);
-    void clearBanList();
 protected:
     virtual BNetworkConnection *createConnection(BGenericSocket *socket, const QString &serverAddress,
                                                  quint16 serverPort);
     virtual BGenericSocket *createSocket();
+    virtual bool handleBanned(BGenericSocket *socket);
+    virtual bool handleIncomingConnection(BGenericSocket *socket);
+    virtual bool isBanned(const QString &address) const;
 Q_SIGNALS:
-    void connectionAdded(BNetworkConnection *connection);
     void connectionAboutToBeRemoved(BNetworkConnection *connection);
+    void connectionAdded(BNetworkConnection *connection);
+    void bannedUserConnectionDenied(const QString &address);
 private:
     Q_DISABLE_COPY(BNetworkServer)
 };

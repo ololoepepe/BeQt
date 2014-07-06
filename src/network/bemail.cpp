@@ -22,8 +22,6 @@
 #include "bemail.h"
 
 #include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QString>
@@ -37,15 +35,15 @@ class BEmailPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BEmail)
 public:
+    QString body;
+    QStringList receivers;
+    QString sender;
+    QString subject;
+public:
     explicit BEmailPrivate(BEmail *q);
     ~BEmailPrivate();
 public:
     void init();
-public:
-    QString sender;
-    QStringList receivers;
-    QString subject;
-    QString body;
 private:
     Q_DISABLE_COPY(BEmailPrivate)
 };
@@ -108,38 +106,15 @@ BEmail::BEmail(BEmailPrivate &d) :
 
 /*============================== Public methods ============================*/
 
-void BEmail::setSender(const QString &sender)
+QString BEmail::body() const
 {
-    d_func()->sender = sender;
+    return d_func()->body;
 }
 
-void BEmail::setReceiver(const QString &receiver)
+bool BEmail::isValid() const
 {
-    setReceivers(QStringList() << receiver);
-}
-
-void BEmail::setReceivers(const QStringList &list)
-{
-    B_D(BEmail);
-    d->receivers.clear();
-    foreach (const QString &r, list)
-        if (!r.isEmpty())
-            d->receivers << r;
-}
-
-void BEmail::setSubject(const QString &subject)
-{
-    d_func()->subject = subject;
-}
-
-void BEmail::setBody(const QString &body)
-{
-    d_func()->body = body;
-}
-
-QString BEmail::sender() const
-{
-    return d_func()->sender;
+    const B_D(BEmail);
+    return !d->receivers.isEmpty();
 }
 
 QString BEmail::receiver(int index) const
@@ -158,20 +133,44 @@ int BEmail::receiversCount() const
     return d_func()->receivers.size();
 }
 
+QString BEmail::sender() const
+{
+    return d_func()->sender;
+}
+
+void BEmail::setBody(const QString &body)
+{
+    d_func()->body = body;
+}
+
+void BEmail::setReceiver(const QString &receiver)
+{
+    setReceivers(QStringList() << receiver);
+}
+
+void BEmail::setReceivers(const QStringList &list)
+{
+    B_D(BEmail);
+    d->receivers.clear();
+    foreach (const QString &r, list) {
+        if (!r.isEmpty())
+            d->receivers << r;
+    }
+}
+
+void BEmail::setSender(const QString &sender)
+{
+    d_func()->sender = sender;
+}
+
+void BEmail::setSubject(const QString &subject)
+{
+    d_func()->subject = subject;
+}
+
 QString BEmail::subject() const
 {
     return d_func()->subject;
-}
-
-QString BEmail::body() const
-{
-    return d_func()->body;
-}
-
-bool BEmail::isValid() const
-{
-    const B_D(BEmail);
-    return !d->receivers.isEmpty();
 }
 
 /*============================== Public operators ==========================*/

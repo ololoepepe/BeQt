@@ -24,20 +24,19 @@
 
 class BGenericSocketPrivate;
 
-class QTcpSocket;
+class QByteArray;
+class QLocalSocket;
 class QSslSocket;
+class QString;
+class QTcpSocket;
 class QUdpSocket;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
-#include <QObject>
 #include <QAbstractSocket>
-#include <QLocalSocket>
 #include <QIODevice>
-#include <QString>
-#include <QByteArray>
+#include <QObject>
 
 /*============================================================================
 ================================ BGenericSocket ==============================
@@ -65,13 +64,8 @@ public:
 protected:
     explicit BGenericSocket(BGenericSocketPrivate &d, QObject *parent = 0);
 public:
-    QIODevice *ioDevice() const;
-    QAbstractSocket *abstractSocket() const;
-    QTcpSocket *tcpSocket() const;
-    QSslSocket *sslSocket() const;
-    QUdpSocket *udpSocket() const;
-    QLocalSocket *localSocket() const;
     void abort();
+    QAbstractSocket *abstractSocket() const;
     qint64 bytesAvailable() const;
     qint64 bytesToWrite() const;
     bool canReadLine() const;
@@ -81,6 +75,7 @@ public:
     QAbstractSocket::SocketError error() const;
     QString errorString() const;
     bool flush();
+    QIODevice *ioDevice() const;
     bool isOpen() const;
     bool isReadable() const;
     bool isSequential() const;
@@ -88,6 +83,7 @@ public:
     bool isTextModeEnabled() const;
     bool isValid() const;
     bool isWritable() const;
+    QLocalSocket *localSocket() const;
     QIODevice::OpenMode openMode() const;
     QString peerAddress() const;
     quint16 peerPort() const;
@@ -100,7 +96,10 @@ public:
     void setTextModeEnabled(bool enabled);
     int socketDescriptor() const;
     SocketType socketType() const;
+    QSslSocket *sslSocket() const;
     QAbstractSocket::SocketState state() const;
+    QTcpSocket *tcpSocket() const;
+    QUdpSocket *udpSocket() const;
     bool waitForBytesWritten(int msecs);
     bool waitForConnected(int msecs = 30 * BeQt::Second);
     bool waitForDisconnected(int msecs = 30 * BeQt::Second);
@@ -108,8 +107,8 @@ public:
     qint64 write(const QByteArray &byteArray);
 Q_SIGNALS:
     void aboutToClose();
-    void connected();
     void bytesWritten(qint64 bytes);
+    void connected();
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);
     void readChannelFinished();

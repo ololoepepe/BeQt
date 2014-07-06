@@ -20,21 +20,21 @@
 ****************************************************************************/
 
 #include "bremotelogger.h"
+
 #include "bgenericsocket.h"
 #include "bnetworkconnection.h"
-#include "bnetworkserver.h"
 #include "bnetworkoperation.h"
+#include "bnetworkserver.h"
 
-#include <BeQtCore/BLogger>
-#include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/private/blogger_p.h>
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BLogger>
+#include <BeQtCore/private/blogger_p.h>
 
-#include <QObject>
-#include <QString>
-#include <QPointer>
 #include <QByteArray>
 #include <QList>
+#include <QObject>
+#include <QPointer>
+#include <QString>
 #include <QThread>
 #include <QVariant>
 #include <QVariantMap>
@@ -47,20 +47,20 @@ class BRemoteLoggerPrivate : public BLoggerPrivate
 {
     B_DECLARE_PUBLIC(BRemoteLogger)
 public:
+    mutable QList< QPointer<BNetworkConnection> > connections;
+    bool logToRemote;
+    mutable QMutex remoteMutex;
+    QPointer<BNetworkServer> server;
+    QPointer<BGenericSocket> socket;
+    int timeout;
+public:
     explicit BRemoteLoggerPrivate(BRemoteLogger *q);
     ~BRemoteLoggerPrivate();
 public:
-    void init();
-    void tryLogToRemote(const QString &text, BLogger::Level lvl);
-    void removeSocket();
     QList<BNetworkConnection *> getConnections() const;
-public:
-    QPointer<BGenericSocket> socket;
-    mutable QList< QPointer<BNetworkConnection> > connections;
-    QPointer<BNetworkServer> server;
-    bool logToRemote;
-    int timeout;
-    mutable QMutex remoteMutex;
+    void init();
+    void removeSocket();
+    void tryLogToRemote(const QString &text, BLogger::Level lvl);
 private:
     Q_DISABLE_COPY(BRemoteLoggerPrivate)
 };
@@ -84,10 +84,28 @@ BRemoteLoggerPrivate::~BRemoteLoggerPrivate()
 
 /*============================== Public methods ============================*/
 
+QList<BNetworkConnection *> BRemoteLoggerPrivate::getConnections() const
+{
+    QList<BNetworkConnection *> list;
+    for (int i = connections.size() - 1; i >= 0; --i) {
+        if (connections.at(i).isNull())
+            connections.removeAt(i);
+        else
+            list << connections.at(i).data();
+    }
+    return list;
+}
+
 void BRemoteLoggerPrivate::init()
 {
     logToRemote = true;
     timeout = 10 * BeQt::Second;
+}
+
+void BRemoteLoggerPrivate::removeSocket()
+{
+    if (!socket.isNull() && (!socket->parent() || socket->parent() == this))
+        socket->deleteLater();
 }
 
 void BRemoteLoggerPrivate::tryLogToRemote(const QString &text, BLogger::Level lvl)
@@ -95,8 +113,7 @@ void BRemoteLoggerPrivate::tryLogToRemote(const QString &text, BLogger::Level lv
     QMutexLocker locker(&remoteMutex);
     if (!logToRemote)
         return;
-    if (!socket.isNull() && socket->isWritable())
-    {
+    if (!socket.isNull() && socket->isWritable()) {
         socket->write( text.toUtf8() );
         socket->flush();
         socket->waitForBytesWritten(timeout);
@@ -105,8 +122,7 @@ void BRemoteLoggerPrivate::tryLogToRemote(const QString &text, BLogger::Level lv
     if (!server.isNull())
         list << server.data()->connections();
     QThread *t = thread();
-    foreach (BNetworkConnection *c, list)
-    {
+    foreach (BNetworkConnection *c, list) {
         if (c->thread() != t)
             continue;
         QVariantMap m;
@@ -117,25 +133,6 @@ void BRemoteLoggerPrivate::tryLogToRemote(const QString &text, BLogger::Level lv
         op->setStartTimeout();
         op->setFinishTimeout();
     }
-}
-
-void BRemoteLoggerPrivate::removeSocket()
-{
-    if ( !socket.isNull() && (!socket->parent() || socket->parent() == this) )
-        socket->deleteLater();
-}
-
-QList<BNetworkConnection *> BRemoteLoggerPrivate::getConnections() const
-{
-    QList<BNetworkConnection *> list;
-    for (int i = connections.size() - 1; i >= 0; --i)
-    {
-        if (connections.at(i).isNull())
-            connections.removeAt(i);
-        else
-            list << connections.at(i).data();
-    }
-    return list;
 }
 
 /*============================================================================
@@ -200,6 +197,44 @@ BRemoteLogger::BRemoteLogger(BRemoteLoggerPrivate &d) :
 
 /*============================== Public methods ============================*/
 
+QList<BNetworkConnection *> BRemoteLogger::connections() const
+{
+    return d_func()->getConnections();
+}
+
+QString BRemoteLogger::hostName() const
+{
+    const B_D(BRemoteLogger);
+    QMutexLocker locker(&d->remoteMutex);
+    return !d->socket.isNull() ? d->socket->peerAddress() : QString();
+}
+
+bool BRemoteLogger::isLogToRemoteEnabled() const
+{
+    const B_D(BRemoteLogger);
+    QMutexLocker locker(&d->remoteMutex);
+    return d->logToRemote;
+}
+
+quint16 BRemoteLogger::port() const
+{
+    const B_D(BRemoteLogger);
+    QMutexLocker locker(&d->remoteMutex);
+    return !d->socket.isNull() ? d->socket->peerPort() : 0;
+}
+
+int BRemoteLogger::remoteTimeout() const
+{
+    const B_D(BRemoteLogger);
+    QMutexLocker locker(&d->remoteMutex);
+    return d->timeout;
+}
+
+BNetworkServer *BRemoteLogger::server() const
+{
+    return d_func()->server;
+}
+
 void BRemoteLogger::setLogToRemoteEnabled(bool enabled)
 {
     B_D(BRemoteLogger);
@@ -212,10 +247,10 @@ void BRemoteLogger::setRemote(BGenericSocket *socket)
     B_D(BRemoteLogger);
     QMutexLocker locker(&d->remoteMutex);
     d->removeSocket();
-    if ( !socket || !socket->isWritable() )
+    if (!socket || !socket->isWritable())
         return;
     d->socket = socket;
-    if ( !socket->parent() )
+    if (!socket->parent())
         socket->setParent(this);
 }
 
@@ -227,8 +262,7 @@ void BRemoteLogger::setRemote(const QString &hostName, quint16 port)
         return setRemote((BGenericSocket *) 0);
     BGenericSocket *s = new BGenericSocket(BGenericSocket::TcpSocket, this);
     s->connectToHost(hostName, port);
-    if ( !s->waitForConnected(d->timeout) )
-    {
+    if (!s->waitForConnected(d->timeout)) {
         s->deleteLater();
         s = 0;
     }
@@ -264,47 +298,9 @@ void BRemoteLogger::setRemoteTimeout(int msecs)
     d->timeout = msecs;
 }
 
-bool BRemoteLogger::isLogToRemoteEnabled() const
-{
-    const B_D(BRemoteLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return d->logToRemote;
-}
-
 BGenericSocket *BRemoteLogger::socket() const
 {
     return d_func()->socket.data();
-}
-
-QString BRemoteLogger::hostName() const
-{
-    const B_D(BRemoteLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return !d->socket.isNull() ? d->socket->peerAddress() : QString();
-}
-
-quint16 BRemoteLogger::port() const
-{
-    const B_D(BRemoteLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return !d->socket.isNull() ? d->socket->peerPort() : 0;
-}
-
-QList<BNetworkConnection *> BRemoteLogger::connections() const
-{
-    return d_func()->getConnections();
-}
-
-BNetworkServer *BRemoteLogger::server() const
-{
-    return d_func()->server;
-}
-
-int BRemoteLogger::remoteTimeout() const
-{
-    const B_D(BRemoteLogger);
-    QMutexLocker locker(&d->remoteMutex);
-    return d->timeout;
 }
 
 /*============================== Protected methods =========================*/

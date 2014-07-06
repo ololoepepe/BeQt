@@ -27,11 +27,11 @@ class BSmtpSenderPrivate;
 #include "bemail.h"
 #include "bgenericsocket.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
 #include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BSmtpSender =================================
@@ -42,33 +42,33 @@ class B_NETWORK_EXPORT BSmtpSender : public QObject, public BBaseObject
     Q_OBJECT
     B_DECLARE_PRIVATE(BSmtpSender)
 public:
-    static bool send(const QString &address, const BEmail &email, int timeout = 30 * BeQt::Second,
-                     const QString &userName = QString(), const QString &userPassword = QString(), quint16 port = 25,
-                     BGenericSocket::SocketType type = BGenericSocket::SslSocket,
-                     const QString &localHostName = QString(), QString *error = 0, bool translationsEnabled = false);
-public:
     explicit BSmtpSender(QObject *parent = 0);
     ~BSmtpSender();
 protected:
     explicit BSmtpSender(BSmtpSenderPrivate &d, QObject *parent = 0);
 public:
-    void setServer(const QString &address, quint16 port = 25);
-    void setSocketType(BGenericSocket::SocketType type);
-    void setLocalHostName(const QString &hostName);
-    void setUser(const QString &name, const QString &password = QString());
-    void setEmail(const BEmail &email);
+    static bool send(const QString &address, const BEmail &email, int timeout = 30 * BeQt::Second,
+                     const QString &userName = QString(), const QString &userPassword = QString(), quint16 port = 25,
+                     BGenericSocket::SocketType type = BGenericSocket::SslSocket,
+                     const QString &localHostName = QString(), QString *error = 0, bool translationsEnabled = false);
+public:
+    BEmail email() const;
+    bool isBuisy() const;
+    bool isValid() const;
+    QString lastTransferError() const;
+    bool lastTransferSuccess() const;
+    QString localHostName() const;
     QString serverAddress() const;
     quint16 serverPort() const;
+    void setEmail(const BEmail &email);
+    void setLocalHostName(const QString &hostName);
+    void setServer(const QString &address, quint16 port = 25);
+    void setSocketType(BGenericSocket::SocketType type);
+    void setUser(const QString &name, const QString &password = QString());
     BGenericSocket::SocketType socketType() const;
-    QString localHostName() const;
     QString userName() const;
     QString userPassword() const;
-    BEmail email() const;
-    bool isValid() const;
-    bool isBuisy() const;
     bool waitForFinished(int msecs = 30 * BeQt::Second);
-    bool lastTransferSuccess() const;
-    QString lastTransferError() const;
 public Q_SLOTS:
     void send(const BEmail &email = BEmail());
 Q_SIGNALS:

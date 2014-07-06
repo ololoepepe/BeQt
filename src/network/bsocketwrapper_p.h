@@ -22,19 +22,17 @@
 #ifndef BSOCKETWRAPPER_P_H
 #define BSOCKETWRAPPER_P_H
 
-class BSocketWrapperPrivate;
-
 class QByteArray;
 
-#include "bgenericsocket.h"
 #include "bsocketwrapper.h"
+
+#include "bgenericsocket.h"
 #include "bnetworkoperationmetadata.h"
 
 #include <BeQtCore/private/bbaseobject_p.h>
-#include <BeQtCore/BeQtGlobal>
 
-#include <QObject>
 #include <QAbstractSocket>
+#include <QObject>
 #include <QPointer>
 
 /*============================================================================
@@ -45,6 +43,16 @@ class B_NETWORK_EXPORT BSocketWrapperPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSocketWrapper)
+public:
+    qint64 bytesInTotal;
+    qint64 bytesOutReady;
+    qint64 bytesOutTotal;
+    bool closeOnCriticalBufferSize;
+    int comprLvl;
+    qint64 criticalBufferSize;
+    BNetworkOperationMetaData metaIn;
+    BNetworkOperationMetaData metaOut;
+    QPointer<BGenericSocket> socket;
 public:
     explicit BSocketWrapperPrivate(BSocketWrapper *q);
     ~BSocketWrapperPrivate();
@@ -60,16 +68,6 @@ public Q_SLOTS:
     void disconnected();
     void error(QAbstractSocket::SocketError socketError);
     void readyRead();
-public:
-    QPointer<BGenericSocket> socket;
-    qint64 bytesInTotal;
-    BNetworkOperationMetaData metaIn;
-    qint64 bytesOutTotal;
-    qint64 bytesOutReady;
-    BNetworkOperationMetaData metaOut;
-    int comprLvl;
-    qint64 criticalBufferSize;
-    bool closeOnCriticalBufferSize;
 private:
     Q_DISABLE_COPY(BSocketWrapperPrivate)
 };

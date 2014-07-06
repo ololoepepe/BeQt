@@ -22,20 +22,18 @@
 #ifndef BSMTPSENDER_P_H
 #define BSMTPSENDER_P_H
 
-class BSmtpSenderPrivate;
-
 class QTextStream;
 
 #include "bsmtpsender.h"
+
 #include "bemail.h"
 #include "bgenericsocket.h"
 
 #include <BeQtCore/private/bbaseobject_p.h>
-#include <BeQtCore/BeQtGlobal>
 
+#include <QAbstractSocket>
 #include <QObject>
 #include <QString>
-#include <QAbstractSocket>
 
 /*============================================================================
 ================================ BSmtpSenderPrivate ==========================
@@ -59,39 +57,39 @@ public:
         Quit
     };
 public:
+    QString address;
+    bool buisy;
+    BEmail email;
+    QString err;
+    QString hostName;
+    QString login;
+    QString password;
+    quint16 port;
+    int receiver;
+    BGenericSocket *socket;
+    BGenericSocket::SocketType socketType;
+    int stage;
+    bool success;
+public:
     explicit BSmtpSenderPrivate(BSmtpSender *q);
     ~BSmtpSenderPrivate();
 public:
-    void init();
-    void send(QTextStream &stream, const QString &what);
-    void handleInitial(QTextStream &stream);
     void handleAuth(QTextStream &stream);
     void handleAuthLogin(QTextStream &stream);
     void handleAuthPassword(QTextStream &stream);
-    void handleSender(QTextStream &stream);
-    void handleReceiver(QTextStream &stream);
     void handleData(QTextStream &stream);
+    void handleInitial(QTextStream &stream);
     void handleMail(QTextStream &stream);
     void handleQuit(QTextStream &stream);
+    void handleReceiver(QTextStream &stream);
+    void handleSender(QTextStream &stream);
+    void init();
+    void send(QTextStream &stream, const QString &what);
 public Q_SLOTS:
     void connected();
     void disconnected();
     void error(QAbstractSocket::SocketError e);
     void readyRead();
-public:
-    QString address;
-    quint16 port;
-    BGenericSocket::SocketType socketType;
-    QString hostName;
-    QString login;
-    QString password;
-    BEmail email;
-    bool buisy;
-    bool success;
-    QString err;
-    BGenericSocket *socket;
-    int stage;
-    int receiver;
 private:
     Q_DISABLE_COPY(BSmtpSenderPrivate)
 };

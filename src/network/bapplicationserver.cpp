@@ -21,6 +21,7 @@
 
 #include "bapplicationserver.h"
 #include "bapplicationserver_p.h"
+
 #include "bgenericserver.h"
 #include "bgenericsocket.h"
 
@@ -28,15 +29,15 @@
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
-#include <QString>
-#include <QStringList>
-#include <QCoreApplication>
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QDataStream>
 #include <QIODevice>
 #include <QLocalServer>
+#include <QObject>
 #include <QScopedPointer>
+#include <QString>
+#include <QStringList>
 
 /*============================================================================
 ================================ BApplicationServerPrivate ===================
@@ -46,13 +47,13 @@
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, quint16 port, int timeout) :
-    BBaseObjectPrivate(q), ServerName(QString()), Port(port), OperationTimeout(timeout)
+    BBaseObjectPrivate(q), OperationTimeout(timeout), Port(port), ServerName(QString())
 {
     //
 }
 #else
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, int timeout) :
-    BBaseObjectPrivate(q), ServerName(serverName), Port(0), OperationTimeout(timeout)
+    BBaseObjectPrivate(q), OperationTimeout(timeout), Port(0), ServerName(serverName)
 {
         //
 }
@@ -60,14 +61,14 @@ BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, cons
 
 BApplicationServerPrivate::BApplicationServerPrivate(BApplicationServer *q, const QString &serverName, quint16 port,
                                                      int timeout) :
-    BBaseObjectPrivate(q), ServerName(serverName), Port(port), OperationTimeout(timeout)
+    BBaseObjectPrivate(q), OperationTimeout(timeout), Port(port), ServerName(serverName)
 {
         //
 }
 
 BApplicationServerPrivate::~BApplicationServerPrivate()
 {
-    if ( server->isListening() )
+    if (server->isListening())
         server->close();
     server->deleteLater();
 }
@@ -83,14 +84,14 @@ void BApplicationServerPrivate::init()
     server = new BGenericServer(BGenericServer::LocalServer);
     server->localServer()->setSocketOptions(QLocalServer::WorldAccessOption);
 #endif
-    connect( server, SIGNAL( newPendingConnection() ), this, SLOT( newPendingConnection() ) );
+    connect(server, SIGNAL(newPendingConnection()), this, SLOT(newPendingConnection()));
 }
 
 /*============================== Public slots ==============================*/
 
 void BApplicationServerPrivate::newPendingConnection()
 {
-    QScopedPointer<BGenericSocket> s ( server->nextPendingConnection() );
+    QScopedPointer<BGenericSocket> s (server->nextPendingConnection());
     if (s.isNull())
         return;
     if (!s->waitForReadyRead(OperationTimeout))
@@ -101,13 +102,10 @@ void BApplicationServerPrivate::newPendingConnection()
     bool message = false;
     QStringList args;
     in >> message;
-    if (message)
-    {
+    if (message) {
         in >> args;
         q_func()->handleMessage(args);
-    }
-    else
-    {
+    } else {
         QByteArray data;
         QDataStream out(&data, QIODevice::WriteOnly);
         out.setVersion(BeQt::DataStreamVersion);
@@ -126,20 +124,20 @@ void BApplicationServerPrivate::newPendingConnection()
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 BApplicationServer::BApplicationServer(quint16 port, int operationTimeout) :
-    BBaseObject( *new BApplicationServerPrivate(this, port, operationTimeout) )
+    BBaseObject(*new BApplicationServerPrivate(this, port, operationTimeout))
 {
     d_func()->init();
 }
 #else
 BApplicationServer::BApplicationServer(const QString &serverName, int operationTimeout) :
-    BBaseObject( *new BApplicationServerPrivate(this, serverName, operationTimeout) )
+    BBaseObject(*new BApplicationServerPrivate(this, serverName, operationTimeout))
 {
     d_func()->init();
 }
 #endif
 
 BApplicationServer::BApplicationServer(quint16 port, const QString &serverName, int operationTimeout) :
-    BBaseObject( *new BApplicationServerPrivate(this, serverName, port, operationTimeout) )
+    BBaseObject(*new BApplicationServerPrivate(this, serverName, port, operationTimeout))
 {
     d_func()->init();
 }
@@ -168,6 +166,20 @@ bool BApplicationServer::isValid() const
 #endif
 }
 
+bool BApplicationServer::listen()
+{
+    if (!QCoreApplication::instance() || !isValid())
+        return false;
+    B_D(BApplicationServer);
+    if (d->server->isListening())
+        return true;
+#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
+    return d->server->listen("127.0.0.1", d->Port);
+#else
+    return d->server->listen(d->ServerName);
+#endif
+}
+
 bool BApplicationServer::testServer() const
 {
     if (!isValid())
@@ -193,20 +205,6 @@ bool BApplicationServer::testServer() const
     return b;
 }
 
-bool BApplicationServer::listen()
-{
-    if (!QCoreApplication::instance() || !isValid())
-        return false;
-    B_D(BApplicationServer);
-    if ( d->server->isListening() )
-        return true;
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    return d->server->listen("127.0.0.1", d->Port);
-#else
-    return d->server->listen(d->ServerName);
-#endif
-}
-
 bool BApplicationServer::sendMessage(int &argc, char **argv)
 {
     if (argc < 1 || !argv || !isValid())
@@ -222,8 +220,8 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
     B_D(BApplicationServer);
     if (d->server->isListening() || !isValid())
         return false;
-    QStringList args = !arguments.isEmpty() ? arguments : QStringList( QCoreApplication::arguments().mid(1) );
-    if ( args.isEmpty() )
+    QStringList args = !arguments.isEmpty() ? arguments : QStringList(QCoreApplication::arguments().mid(1));
+    if (args.isEmpty())
         return false;
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
@@ -237,9 +235,9 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
     BGenericSocket s(BGenericSocket::LocalSocket);
     s.connectToHost(d->ServerName);
 #endif
-    if ( !s.waitForConnected(d->OperationTimeout) )
+    if (!s.waitForConnected(d->OperationTimeout))
         return false;
-    if ( !s.write(ba) )
+    if (!s.write(ba))
         return false;
     return s.waitForBytesWritten(d->OperationTimeout);
 }
