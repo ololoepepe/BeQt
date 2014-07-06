@@ -24,7 +24,6 @@
 
 class BSqlWherePrivate;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
 #include <QString>
@@ -46,13 +45,13 @@ public:
     BSqlWhere(const BSqlWhere &other);
     ~BSqlWhere();
 public:
-    void setString(const QString &s);
+    QVariantMap boundValues() const;
+    bool isValid() const;
     void setBoundValues(const QVariantMap &values);
     void setBoundValues(const QString &placeholder1, const QVariant &boundValue1,
                         const QString &placeholder2 = QString(), const QVariant &boundValue2 = QVariant());
+    void setString(const QString &s);
     QString string() const;
-    QVariantMap boundValues() const;
-    bool isValid() const;
 public:
     BSqlWhere &operator =(const BSqlWhere &other);
     bool operator ==(const BSqlWhere &other) const;

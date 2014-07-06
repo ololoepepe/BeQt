@@ -22,16 +22,14 @@
 #include "bsqlquery.h"
 
 #include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BeQt>
 
 #include <QObject>
+#include <QSqlDatabase>
+#include <QSqlQuery>
 #include <QString>
 #include <QVariant>
-#include <QVariantMap>
 #include <QVariantList>
-#include <QSqlQuery>
-#include <QSqlDatabase>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BSqlQueryPrivate ============================
@@ -41,16 +39,17 @@ class BSqlQueryPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSqlQuery)
 public:
+
+    QVariantMap bv;
+    bool forward;
+    QSql::NumericalPrecisionPolicy precisionPolicy;
+    QString qs;
+    BSqlQuery::BindingType type;
+public:
     explicit BSqlQueryPrivate(BSqlQuery *q);
     ~BSqlQueryPrivate();
 public:
     void init();
-public:
-    QString qs;
-    QVariantMap bv;
-    BSqlQuery::BindingType type;
-    bool forward;
-    QSql::NumericalPrecisionPolicy precisionPolicy;
 private:
     Q_DISABLE_COPY(BSqlQueryPrivate)
 };
@@ -117,14 +116,26 @@ BSqlQuery::~BSqlQuery()
 
 /*============================== Public methods ============================*/
 
-void BSqlQuery::setQueryString(const QString &qs)
-{
-    d_func()->qs = qs;
-}
-
 void BSqlQuery::addBindValue(const QVariant &val)
 {
     bindValue(d_func()->bv.size(), val);
+}
+
+void BSqlQuery::addBoundValues(const QVariantMap &vals)
+{
+    if (vals.isEmpty())
+        return;
+    B_D(BSqlQuery);
+    if (NamedBinding != d->type) {
+        d->type = NamedBinding;
+        d->bv.clear();
+    }
+    d->bv.unite(vals);
+}
+
+BSqlQuery::BindingType BSqlQuery::bindingType() const
+{
+    return d_func()->type;
 }
 
 void BSqlQuery::bindValue(const QString &placeholder, const QVariant &val)
@@ -132,8 +143,7 @@ void BSqlQuery::bindValue(const QString &placeholder, const QVariant &val)
     if (placeholder.isEmpty())
         return;
     B_D(BSqlQuery);
-    if (PositionalBinding == d->type)
-    {
+    if (PositionalBinding == d->type) {
         d->bv.clear();
         d->type = NamedBinding;
     }
@@ -145,25 +155,67 @@ void BSqlQuery::bindValue(int pos, const QVariant &val)
     if (pos < 0)
         return;
     B_D(BSqlQuery);
-    if (NamedBinding == d->type)
-    {
+    if (NamedBinding == d->type) {
         d->bv.clear();
         d->type = PositionalBinding;
     }
     d->bv.insert(QString::number(pos), val);
 }
 
-void BSqlQuery::addBoundValues(const QVariantMap &vals)
+QVariant BSqlQuery::boundValue(const QString &placeholder) const
 {
-    if (vals.isEmpty())
-        return;
-    B_D(BSqlQuery);
-    if (NamedBinding != d->type)
-    {
-        d->type = NamedBinding;
-        d->bv.clear();
+    if (placeholder.isEmpty() || NamedBinding != d_func()->type)
+        return QVariant();
+    return d_func()->bv.value(placeholder);
+}
+
+QVariant BSqlQuery::boundValue(int pos) const
+{
+    if (pos < 0 || PositionalBinding != d_func()->type)
+        return QVariant();
+    return d_func()->bv.value(QString::number(pos));
+}
+
+QVariantMap BSqlQuery::boundValues() const
+{
+    return d_func()->bv;
+}
+
+QSqlQuery *BSqlQuery::createQuery(const QSqlDatabase &db) const
+{
+    if (!isValid() || !db.isValid())
+        return 0;
+    const B_D(BSqlQuery);
+    QSqlQuery *q = new QSqlQuery(db);
+    q->prepare(d->qs);
+    if (bindingType() == NamedBinding) {
+        foreach (const QString &p, d->bv.keys())
+            q->bindValue(p, d->bv.value(p), QSql::InOut);
+    } else {
+        foreach (const QVariant &v, d->bv.values())
+            q->addBindValue(v, QSql::InOut);
     }
-    d->bv.unite(vals);
+    return q;
+}
+
+bool BSqlQuery::isForwardOnly() const
+{
+    return d_func()->forward;
+}
+
+bool BSqlQuery::isValid() const
+{
+    return !d_func()->qs.isEmpty();
+}
+
+QSql::NumericalPrecisionPolicy BSqlQuery::numericalPrecisionPolicy() const
+{
+    return d_func()->precisionPolicy;
+}
+
+QString BSqlQuery::queryString() const
+{
+    return d_func()->qs;
 }
 
 void BSqlQuery::setBoundValues(const QVariantMap &vals)
@@ -196,68 +248,9 @@ void BSqlQuery::setNumericalPrecisionPolicy(QSql::NumericalPrecisionPolicy preci
     d_func()->precisionPolicy = precisionPolicy;
 }
 
-const QString BSqlQuery::queryString() const
+void BSqlQuery::setQueryString(const QString &qs)
 {
-    return d_func()->qs;
-}
-
-QVariant BSqlQuery::boundValue(const QString &placeholder) const
-{
-    if (placeholder.isEmpty() || NamedBinding != d_func()->type)
-        return QVariant();
-    return d_func()->bv.value(placeholder);
-}
-
-QVariant BSqlQuery::boundValue(int pos) const
-{
-    if (pos < 0 || PositionalBinding != d_func()->type)
-        return QVariant();
-    return d_func()->bv.value(QString::number(pos));
-}
-
-QVariantMap BSqlQuery::boundValues() const
-{
-    return d_func()->bv;
-}
-
-BSqlQuery::BindingType BSqlQuery::bindingType() const
-{
-    return d_func()->type;
-}
-
-bool BSqlQuery::isForwardOnly() const
-{
-    return d_func()->forward;
-}
-
-QSql::NumericalPrecisionPolicy BSqlQuery::numericalPrecisionPolicy() const
-{
-    return d_func()->precisionPolicy;
-}
-
-bool BSqlQuery::isValid() const
-{
-    return !d_func()->qs.isEmpty();
-}
-
-QSqlQuery *BSqlQuery::createQuery(const QSqlDatabase &db) const
-{
-    if (!isValid() || !db.isValid())
-        return 0;
-    const B_D(BSqlQuery);
-    QSqlQuery *q = new QSqlQuery(db);
-    q->prepare(d->qs);
-    if (bindingType() == NamedBinding)
-    {
-        foreach (const QString &p, d->bv.keys())
-            q->bindValue(p, d->bv.value(p), QSql::InOut);
-    }
-    else
-    {
-        foreach (const QVariant &v, d->bv.values())
-            q->addBindValue(v, QSql::InOut);
-    }
-    return q;
+    d_func()->qs = qs;
 }
 
 /*============================== Public operators ==========================*/

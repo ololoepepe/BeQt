@@ -1447,23 +1447,23 @@
 <context>
     <name>BSqlDatabase</name>
     <message>
+        <location filename="../src/sql/bsqldatabase.cpp" line="207"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="232"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="327"/>
         <location filename="../src/sql/bsqldatabase.cpp" line="432"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="486"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="503"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="534"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="565"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="571"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="434"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="234"/>
         <source>Database is not opened</source>
         <comment>errorString</comment>
         <translation>База данных не открыта</translation>
     </message>
     <message>
-        <location filename="../src/sql/bsqldatabase.cpp" line="437"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="237"/>
         <source>Failed to create query</source>
         <comment>errorString</comment>
         <translation>Не удалось создать запрос</translation>

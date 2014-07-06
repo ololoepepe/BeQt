@@ -22,15 +22,13 @@
 #include "bsqlresult.h"
 
 #include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BeQt>
 
+#include <QList>
 #include <QObject>
+#include <QSqlError>
+#include <QString>
 #include <QVariant>
 #include <QVariantMap>
-#include <QSqlError>
-#include <QList>
-#include <QString>
 
 /*============================================================================
 ================================ BSqlResultPrivate ===========================
@@ -40,15 +38,15 @@ class BSqlResultPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSqlResult)
 public:
+    QSqlError error;
+    QVariant insertId;
+    bool success;
+    BSqlResult::VariantMapList values;
+public:
     explicit BSqlResultPrivate(BSqlResult *q);
     ~BSqlResultPrivate();
 public:
     void init();
-public:
-    bool success;
-    BSqlResult::BVariantMapList values;
-    QVariant insertId;
-    QSqlError error;
 private:
     Q_DISABLE_COPY(BSqlResultPrivate)
 };
@@ -113,44 +111,9 @@ BSqlResult::~BSqlResult()
 
 /*============================== Public methods ============================*/
 
-void BSqlResult::setSuccess(bool b)
+QSqlError BSqlResult::lastError() const
 {
-    d_func()->success = b;
-}
-
-void BSqlResult::setValues(const BVariantMapList &list)
-{
-    d_func()->values = list;
-}
-
-void BSqlResult::setLastInsertId(const QVariant &id)
-{
-    d_func()->insertId = id;
-}
-
-void BSqlResult::setLastError(const QSqlError &e)
-{
-    d_func()->error = e;
-}
-
-bool BSqlResult::success() const
-{
-    return d_func()->success;
-}
-
-BSqlResult::BVariantMapList BSqlResult::values() const
-{
-    return d_func()->values;
-}
-
-QVariantMap BSqlResult::value() const
-{
-    return !d_func()->values.isEmpty() ? d_func()->values.first() : QVariantMap();
-}
-
-QVariant BSqlResult::value(const QString &key, const QVariant &defValue) const
-{
-    return (!key.isEmpty() && !d_func()->values.isEmpty()) ? d_func()->values.first().value(key, defValue) : defValue;
+    return d_func()->error;
 }
 
 QVariant BSqlResult::lastInsertId(QVariant::Type t) const
@@ -163,9 +126,44 @@ QVariant BSqlResult::lastInsertId(QVariant::Type t) const
     return id;
 }
 
-QSqlError BSqlResult::lastError() const
+void BSqlResult::setLastError(const QSqlError &e)
 {
-    return d_func()->error;
+    d_func()->error = e;
+}
+
+void BSqlResult::setLastInsertId(const QVariant &id)
+{
+    d_func()->insertId = id;
+}
+
+void BSqlResult::setSuccess(bool b)
+{
+    d_func()->success = b;
+}
+
+void BSqlResult::setValues(const VariantMapList &list)
+{
+    d_func()->values = list;
+}
+
+bool BSqlResult::success() const
+{
+    return d_func()->success;
+}
+
+QVariantMap BSqlResult::value() const
+{
+    return !d_func()->values.isEmpty() ? d_func()->values.first() : QVariantMap();
+}
+
+QVariant BSqlResult::value(const QString &key, const QVariant &defValue) const
+{
+    return (!key.isEmpty() && !d_func()->values.isEmpty()) ? d_func()->values.first().value(key, defValue) : defValue;
+}
+
+BSqlResult::VariantMapList BSqlResult::values() const
+{
+    return d_func()->values;
 }
 
 /*============================== Public operators ==========================*/
