@@ -6,7 +6,6 @@
 * Implement Katepart-compatible file type definition using XML files
 * Improve SQL schema parsing
 * Add method for setting terminal window size to BTerminal
-* Implement BTerminalWidget history
 
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Implement native settings dialogs
@@ -80,12 +79,14 @@
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer
 
+[done] Remove BApplication::createStandardAction method
 [done] Remove some static methods from BApplication
 [done] Remove some template methods from BApplication and BAbstractSettingsTab
 [done] Remove BGuiPluginInterface::handleSettings method
 [done] Remove old methods from BPluginsSettingsTab
 [done] Rename BGuiPluginInterface settingsTab method into createSettingsTab
 [done] Merge similar GUI method pairs into templates
+[done] Move BApplication::SettingsTabNavigation enum to BSettingsDialog (change related methods)
 [done] Fix BPluginsSettingsTab About dialog version
 [done] Improve ChangeLog files displaying
 [done] Add Help information to plugin BGuiPluginInterface
@@ -93,6 +94,12 @@
 [done] Overload BAboutDuialog::setAppVersion method
 [done] Add pointSize parameter to BApplication::createMonospaceFont
 [done] Add ability to set user About dialog for plugins
+[done] Add new methods to BAboutDialog
+[done] Add new methods to BPasswordWidget and BLoginWidget
+[done] Implement BTerminalWidget history
+[done] Improve BTerminalWidget event handling
+[done] Improve BLocalTerminalDriver builtin commands handling ("cd")
+[done] Reimplement BClipboardNotifier
 
 [done] Add BAbstractCodeEditorDocument::clear method
 [done] Do not use QPointer for in editor modules

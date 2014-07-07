@@ -24,17 +24,16 @@
 
 #include <BeQtCore/BeQt>
 
-#include <QObject>
-#include <QDialog>
-#include <QWidget>
-#include <QVBoxLayout>
-#include <QDialogButtonBox>
 #include <QAbstractButton>
+#include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QList>
+#include <QObject>
 #include <QPushButton>
 #include <QString>
-#include <QList>
-
-#include <QDebug>
+#include <QVBoxLayout>
+#include <QWidget>
 
 /*============================================================================
 ================================ BDialogPrivate ==============================
@@ -65,15 +64,13 @@ void BDialogPrivate::init()
 
 void BDialogPrivate::resetWidget(QWidget *w)
 {
-    if (wgt)
-    {
+    if (wgt) {
         vlt->removeWidget(wgt);
         wgt->deleteLater();
         wgt = 0;
     }
     wgt = w;
-    if (wgt)
-    {
+    if (wgt) {
         wgt->setParent(q_func());
         vlt->insertWidget(0, wgt);
     }
@@ -113,28 +110,6 @@ BDialog::BDialog(BDialogPrivate &d, QWidget *parent) :
 
 /*============================== Public methods ============================*/
 
-void BDialog::setWidget(QWidget *w)
-{
-    d_func()->resetWidget(w);
-}
-
-void BDialog::setStretchEnabled(bool b)
-{
-    if (stretchEnabled() == b)
-        return;
-    d_func()->vlt->insertStretch(d_func()->vlt->count() - 1);
-}
-
-void BDialog::setCenterButtons(bool center)
-{
-    d_func()->dlgbbox->setCenterButtons(center);
-}
-
-void BDialog::setStandardButtons(QDialogButtonBox::StandardButtons buttons)
-{
-    d_func()->dlgbbox->setStandardButtons(buttons);
-}
-
 void BDialog::addButton(QAbstractButton *button, QDialogButtonBox::ButtonRole role, const char *method)
 {
     addButton(button, role, this, method);
@@ -149,13 +124,11 @@ void BDialog::addButton(QAbstractButton *button, QDialogButtonBox::ButtonRole ro
 void BDialog::addButton(QAbstractButton *button, QDialogButtonBox::ButtonRole role, const QList<BeQt::Target> &targets)
 {
     d_func()->dlgbbox->addButton(button, role);
-    if (button)
-    {
-        foreach (const BeQt::Target &t, targets)
-        {
-            if (t.first && t.second)
-                connect(button, SIGNAL(clicked()), t.first, t.second);
-        }
+    if (!button)
+        return;
+    foreach (const BeQt::Target &t, targets) {
+        if (t.first && t.second)
+            connect(button, SIGNAL(clicked()), t.first, t.second);
     }
 }
 
@@ -174,10 +147,8 @@ QPushButton *BDialog::addButton(const QString &text, QDialogButtonBox::ButtonRol
                                 const QList<BeQt::Target> &targets)
 {
     QPushButton *btn = d_func()->dlgbbox->addButton(text, role);
-    if (btn)
-    {
-        foreach (const BeQt::Target &t, targets)
-        {
+    if (btn) {
+        foreach (const BeQt::Target &t, targets) {
             if (t.first && t.second)
                 connect(btn, SIGNAL(clicked()), t.first, t.second);
         }
@@ -198,15 +169,38 @@ QPushButton *BDialog::addButton(QDialogButtonBox::StandardButton button, const Q
 QPushButton *BDialog::addButton(QDialogButtonBox::StandardButton button, const QList<BeQt::Target> &targets)
 {
     QPushButton *btn = d_func()->dlgbbox->addButton(button);
-    if (btn)
-    {
-        foreach (const BeQt::Target &t, targets)
-        {
+    if (btn) {
+        foreach (const BeQt::Target &t, targets) {
             if (t.first && t.second)
                 connect(btn, SIGNAL(clicked()), t.first, t.second);
         }
     }
     return btn;
+}
+
+QPushButton *BDialog::button(QDialogButtonBox::StandardButton which) const
+{
+    return d_func()->dlgbbox->button(which);
+}
+
+QDialogButtonBox *BDialog::buttonBox() const
+{
+    return d_func()->dlgbbox;
+}
+
+QDialogButtonBox::ButtonRole BDialog::buttonRole(QAbstractButton *button) const
+{
+    return d_func()->dlgbbox->buttonRole(button);
+}
+
+QList<QAbstractButton *> BDialog::buttons() const
+{
+    return d_func()->dlgbbox->buttons();
+}
+
+bool BDialog::centerButtons() const
+{
+    return d_func()->dlgbbox->centerButtons();
 }
 
 void BDialog::removeButton(QAbstractButton *button)
@@ -216,24 +210,21 @@ void BDialog::removeButton(QAbstractButton *button)
         button->disconnect(SIGNAL(clicked()));
 }
 
-QWidget *BDialog::widget() const
+void BDialog::setCenterButtons(bool center)
 {
-    return d_func()->wgt;
+    d_func()->dlgbbox->setCenterButtons(center);
 }
 
-bool BDialog::stretchEnabled() const
+void BDialog::setStandardButtons(QDialogButtonBox::StandardButtons buttons)
 {
-    return d_func()->vlt->count() == (d_func()->wgt ? 3 : 2);
+    d_func()->dlgbbox->setStandardButtons(buttons);
 }
 
-QDialogButtonBox *BDialog::buttonBox() const
+void BDialog::setStretchEnabled(bool b)
 {
-    return d_func()->dlgbbox;
-}
-
-bool BDialog::centerButtons() const
-{
-    return d_func()->dlgbbox->centerButtons();
+    if (stretchEnabled() == b)
+        return;
+    d_func()->vlt->insertStretch(d_func()->vlt->count() - 1);
 }
 
 QDialogButtonBox::StandardButton BDialog::standardButton(QAbstractButton *button) const
@@ -246,17 +237,17 @@ QDialogButtonBox::StandardButtons BDialog::standardButtons() const
     return d_func()->dlgbbox->standardButtons();
 }
 
-QPushButton *BDialog::button(QDialogButtonBox::StandardButton which) const
+void BDialog::setWidget(QWidget *w)
 {
-    return d_func()->dlgbbox->button(which);
+    d_func()->resetWidget(w);
 }
 
-QDialogButtonBox::ButtonRole BDialog::buttonRole(QAbstractButton *button) const
+bool BDialog::stretchEnabled() const
 {
-    return d_func()->dlgbbox->buttonRole(button);
+    return d_func()->vlt->count() == (d_func()->wgt ? 3 : 2);
 }
 
-QList<QAbstractButton *> BDialog::buttons() const
+QWidget *BDialog::widget() const
 {
-    return d_func()->dlgbbox->buttons();
+    return d_func()->wgt;
 }

@@ -21,19 +21,18 @@
 
 #include "bpasswordgroup.h"
 #include "bpasswordgroup_p.h"
+
 #include "bpasswordwidget.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
-#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPassword>
-
-#include <QObject>
-#include <QMap>
-#include <QList>
-#include <QMetaObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QDebug>
+#include <QList>
+#include <QMap>
+#include <QMetaObject>
+#include <QObject>
 
 /*============================================================================
 ================================ BPasswordGroupPrivate =======================
@@ -61,23 +60,14 @@ void BPasswordGroupPrivate::init()
 
 /*============================== Public slots ==============================*/
 
-void BPasswordGroupPrivate::pwdwgtDestroyed(QObject *object)
-{
-    wgtMap.remove(object);
-    passwordChanged();
-}
-
 void BPasswordGroupPrivate::passwordChanged()
 {
     QList<BPasswordWidget *> list = wgtMap.values();
     bool nmatch = !list.isEmpty();
-    if (nmatch)
-    {
+    if (nmatch) {
         BPassword pwd = list.first()->password();
-        foreach (int i, bRangeD(1, list.size() - 1))
-        {
-            if (list.at(i)->password() != pwd)
-            {
+        foreach (int i, bRangeD(1, list.size() - 1)) {
+            if (list.at(i)->password() != pwd) {
                 nmatch = false;
                 break;
             }
@@ -87,6 +77,12 @@ void BPasswordGroupPrivate::passwordChanged()
     match = nmatch;
     if (b)
         QMetaObject::invokeMethod(q_func(), "passwordsMatchChanged", Q_ARG(bool, match));
+}
+
+void BPasswordGroupPrivate::pwdwgtDestroyed(QObject *object)
+{
+    wgtMap.remove(object);
+    passwordChanged();
 }
 
 /*============================================================================
@@ -126,12 +122,12 @@ void BPasswordGroup::addPasswordWidget(BPasswordWidget *pwdwgt)
     d_func()->passwordChanged();
 }
 
-bool BPasswordGroup::passwordsMatch() const
-{
-    return d_func()->match;
-}
-
 BPassword BPasswordGroup::password() const
 {
     return d_func()->match ? d_func()->wgtMap.values().first()->password() : BPassword();
+}
+
+bool BPasswordGroup::passwordsMatch() const
+{
+    return d_func()->match;
 }

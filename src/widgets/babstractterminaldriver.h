@@ -41,26 +41,26 @@ public:
     explicit BAbstractTerminalDriver(QObject *parent = 0);
     ~BAbstractTerminalDriver();
 public:
-    virtual bool isActive() const = 0;
-    virtual QString read() = 0;
     virtual void close() = 0;
-    virtual void terminate();
+    virtual bool isActive() const = 0;
     virtual void kill();
+    virtual bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     virtual QString prompt() const;
+    virtual QString read() = 0;
+    virtual void setWorkingDirectory(const QString &path);
     virtual bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
     virtual bool terminalCommand(const QVariant &data, QString &error);
-    virtual bool processCommand(const QString &command, const QStringList &arguments, QString &error);
-    virtual void setWorkingDirectory(const QString &path);
+    virtual void terminate();
     virtual QString workingDirectory() const;
 protected Q_SLOTS:
-    void emitReadyRead();
-    void emitFinished(int exitCode);
     void emitBlockTerminal();
+    void emitFinished(int exitCode);
+    void emitReadyRead();
     void emitUnblockTerminal();
 Q_SIGNALS:
-    void readyRead();
-    void finished(int exitCode);
     void blockTerminal();
+    void finished(int exitCode);
+    void readyRead();
     void unblockTerminal();
 private:
     Q_DISABLE_COPY(BAbstractTerminalDriver)

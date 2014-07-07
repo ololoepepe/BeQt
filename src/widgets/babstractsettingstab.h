@@ -22,16 +22,12 @@
 #ifndef BABSTRACTSETTINGSTAB_H
 #define BABSTRACTSETTINGSTAB_H
 
-class QString;
 class QIcon;
-class QFormLayout;
-class QLayout;
+class QString;
 
 #include <BeQtCore/BeQtGlobal>
-#include "bapplication.h"
 
 #include <QWidget>
-#include <QtGlobal>
 
 /*============================================================================
 ================================ BAbstractSettingsTab ========================

@@ -74,9 +74,11 @@ public:
     };
     enum Location
     {
-        BeqtPath = 1,
+        BeqtIconsPath = 1,
+        BeqtPath,
         DataPath,
         DocumentationPath,
+        IconsPath,
         PluginsPath,
         SettingsPath,
         TranslationsPath

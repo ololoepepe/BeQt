@@ -21,23 +21,22 @@
 
 #include "bimagewidget.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QWidget>
-#include <QPixmap>
-#include <QPicture>
-#include <QImage>
-#include <QIcon>
-#include <QString>
-#include <QLabel>
-#include <QMovie>
-#include <QVBoxLayout>
-#include <QImageReader>
-#include <QList>
 #include <QByteArray>
+#include <QIcon>
+#include <QImage>
+#include <QImageReader>
+#include <QLabel>
+#include <QList>
+#include <QMovie>
+#include <QObject>
+#include <QPicture>
+#include <QPixmap>
+#include <QString>
+#include <QVBoxLayout>
+#include <QWidget>
 
 /*============================================================================
 ================================ BImageWidgetPrivate =========================
@@ -47,15 +46,15 @@ class BImageWidgetPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BImageWidget)
 public:
+    QString fileName;
+    QLabel *lbl;
+    QMovie *mov;
+public:
     explicit BImageWidgetPrivate(BImageWidget *q);
     ~BImageWidgetPrivate();
 public:
     void init();
     void reset(bool animated);
-public:
-    QLabel *lbl;
-    QMovie *mov;
-    QString fileName;
 private:
     Q_DISABLE_COPY(BImageWidgetPrivate)
 };
@@ -91,14 +90,11 @@ void BImageWidgetPrivate::init()
 
 void BImageWidgetPrivate::reset(bool animated)
 {
-    if (animated)
-    {
+    if (animated) {
         lbl->setPixmap(QPixmap());
         lbl->setMovie(mov);
         mov->start();
-    }
-    else
-    {
+    } else {
         mov->stop();
         mov->setFileName("");
         lbl->setMovie(0);
@@ -172,6 +168,27 @@ bool BImageWidget::hasScaledContents() const
     return d_func()->lbl->hasScaledContents();
 }
 
+QIcon BImageWidget::icon() const
+{
+    if (d_func()->mov->isValid())
+        return QIcon(d_func()->mov->currentPixmap());
+    else
+        return QIcon(*d_func()->lbl->pixmap());
+}
+
+QImage BImageWidget::image() const
+{
+    if (d_func()->mov->isValid())
+        return d_func()->mov->currentImage();
+    else
+        return d_func()->lbl->pixmap()->toImage();
+}
+
+QString BImageWidget::imageFileName() const
+{
+    return d_func()->fileName;
+}
+
 QPicture BImageWidget::picture() const
 {
     if (d_func()->mov->isValid())
@@ -188,41 +205,12 @@ QPixmap BImageWidget::pixmap() const
         return *d_func()->lbl->pixmap();
 }
 
-QImage BImageWidget::image() const
-{
-    if (d_func()->mov->isValid())
-        return d_func()->mov->currentImage();
-    else
-        return d_func()->lbl->pixmap()->toImage();
-}
-
-QIcon BImageWidget::icon() const
-{
-    if (d_func()->mov->isValid())
-        return QIcon(d_func()->mov->currentPixmap());
-    else
-        return QIcon(*d_func()->lbl->pixmap());
-}
-
-QString BImageWidget::imageFileName() const
-{
-    return d_func()->fileName;
-}
-
-
 /*============================== Public slots ==============================*/
 
-void BImageWidget::setPixmap(const QPixmap &p)
+void BImageWidget::setIcon(const QIcon &icn)
 {
     d_func()->reset(false);
-    d_func()->lbl->setPixmap(p);
-    d_func()->fileName.clear();
-}
-
-void BImageWidget::setPicture(const QPicture &p)
-{
-    d_func()->reset(false);
-    d_func()->lbl->setPicture(p);
+    d_func()->lbl->setPixmap(icn.pixmap(100000)); //Getting the largest image possible
     d_func()->fileName.clear();
 }
 
@@ -233,27 +221,32 @@ void BImageWidget::setImage(const QImage &img)
     d_func()->fileName.clear();
 }
 
-void BImageWidget::setIcon(const QIcon &icn)
-{
-    d_func()->reset(false);
-    d_func()->lbl->setPixmap(icn.pixmap(100000)); //Getting the largest image possible
-    d_func()->fileName.clear();
-}
-
 void BImageWidget::setImage(const QString &fileName)
 {
     d_func()->fileName = fileName;
-    static QList<QByteArray> AnimatedFormats = QList<QByteArray>() << "gif" << "mng"; //apng is not supported by Qt
-    if (AnimatedFormats.contains(QImageReader::imageFormat(fileName)))
-    {
+    //Note: apng is not supported by Qt
+    static QList<QByteArray> AnimatedFormats = QList<QByteArray>() << "gif" << "mng";
+    if (AnimatedFormats.contains(QImageReader::imageFormat(fileName))) {
         d_func()->mov->setFileName(fileName);
         d_func()->reset(true);
-    }
-    else
-    {
+    } else {
         d_func()->reset(false);
         d_func()->lbl->setPixmap(QPixmap(fileName));
     }
+}
+
+void BImageWidget::setPicture(const QPicture &p)
+{
+    d_func()->reset(false);
+    d_func()->lbl->setPicture(p);
+    d_func()->fileName.clear();
+}
+
+void BImageWidget::setPixmap(const QPixmap &p)
+{
+    d_func()->reset(false);
+    d_func()->lbl->setPixmap(p);
+    d_func()->fileName.clear();
 }
 
 void BImageWidget::setScaledContents(bool b)

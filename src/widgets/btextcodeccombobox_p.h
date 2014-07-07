@@ -23,9 +23,9 @@
 #define BTEXTCODECCOMBOBOX_P_H
 
 #include "btextcodeccombobox.h"
+
 #include "btextcodecmenu.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
@@ -40,19 +40,19 @@ class B_WIDGETS_EXPORT BTextCodecComboBoxPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BTextCodecComboBox)
 public:
+    const BTextCodecMenu::Style Style;
+public:
+    QString codecName;
+    BTextCodecMenu *mnu;
+public:
     explicit BTextCodecComboBoxPrivate(BTextCodecComboBox *q, BTextCodecMenu::Style s);
     ~BTextCodecComboBoxPrivate();
 public:
     void init();
 public Q_SLOTS:
+    void currentIndexChanged(int index);
     void retranslateUi();
     void setCodecName(const QString &cn);
-    void currentIndexChanged(int index);
-public:
-    const BTextCodecMenu::Style Style;
-public:
-    QString codecName;
-    BTextCodecMenu *mnu;
 private:
     Q_DISABLE_COPY(BTextCodecComboBoxPrivate)
 };

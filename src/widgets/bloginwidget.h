@@ -23,20 +23,19 @@
 #define BLOGINWIDGET_H
 
 class BLoginWidgetPrivate;
+
 class BPassword;
 class BTranslation;
 
+class QByteArray;
 class QString;
 class QStringList;
 class QValidator;
-class QByteArray;
 
 #include "bpasswordwidget.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
-#include <QObject>
 #include <QWidget>
 
 /*============================================================================
@@ -51,15 +50,15 @@ public:
     enum AddressType
     {
         NoAddress = 0,
+        EditableComboAddress,
         SimpleAddress,
-        StaticComboAddress,
-        EditableComboAddress
+        StaticComboAddress
     };
     enum PasswordType
     {
         NoPassword = 0,
-        SimplePassword,
-        SecurePassword
+        SecurePassword,
+        SimplePassword
     };
 public:
     explicit BLoginWidget(QWidget *parent = 0);
@@ -67,55 +66,92 @@ public:
 protected:
     explicit BLoginWidget(BLoginWidgetPrivate &d, QWidget *parent = 0);
 public:
-    void setAddressType(AddressType t, bool required = true);
-    void setPortEnabled(bool b, bool required = true);
-    void setLoginEnabled(bool b, bool required = true);
-    void setPasswordType(PasswordType t, bool required = true);
-    void setAddressRequired(bool b);
-    void setPortRequired(bool b);
-    void setLoginRequired(bool b);
-    void setPasswordRequired(bool b);
+    QString address() const;
+    QString addressInputMask() const;
+    BTranslation addressLabel() const;
+    BTranslation addressPlaceholderText() const;
+    bool addressRequired() const;
+    AddressType addressType() const;
+    const QValidator *addressValidator() const;
+    QStringList availableAddresses() const;
+    int generatedPasswordLength() const;
+    BPasswordWidget::GeneratePasswordFunction generatePasswordFunction() const;
+    bool generatePasswordVisible() const;
+    bool hasValidInput() const;
+    QString login() const;
+    bool loginEnabled() const;
+    QString loginInputMask() const;
+    BTranslation loginLabel() const;
+    BTranslation loginPlaceholderText() const;
+    bool loginRequired() const;
+    const QValidator *loginValidator() const;
+    QString passwordInputMask() const;
+    BTranslation passwordLabel() const;
+    BTranslation passwordPlaceholderText() const;
+    bool passwordRequired() const;
+    PasswordType passwordType() const;
+    const QValidator *passwordValidator() const;
+    QStringList persistentAddresses() const;
+    int port() const;
+    bool portEnabled() const;
+    QString portInputMask() const;
+    BTranslation portLabel() const;
+    BTranslation portPlaceholderText() const;
+    bool portRequired() const;
+    const QValidator *portValidator() const;
+    void restorePasswordWidgetState(const QByteArray &state);
+    bool savePasswordVisible() const;
+    QByteArray savePasswordWidgetState() const;
+    BPassword securePassword() const;
+    void setAddressInputMask(const QString &mask);
     void setAddressLabel(const BTranslation &t);
-    void setPortLabel(const BTranslation &t);
-    void setLoginLabel(const BTranslation &t);
-    void setPasswordLabelconst (BTranslation &t);
-    void setAvailableAddresses(const QStringList &list);
+    void setAddressPlaceholderText(const BTranslation &t);
+    void setAddressType(AddressType t, bool required = true);
+    void setAddressValidator(const QValidator *v);
+    void setGeneratedPasswordLength(int len);
+    void setGeneratePasswordFunction(BPasswordWidget::GeneratePasswordFunction f);
+    void setPasswordInputMask(const QString &mask);
+    void setPasswordLabel(BTranslation &t);
+    void setPasswordPlaceholderText(const BTranslation &t);
+    void setPasswordType(PasswordType t, bool required = true);
+    void setPasswordValidator(const QValidator *v);
     void setPersistentAddress(const QString &a);
     void setPersistentAddresses(const QStringList &list);
-    void setAddressInputMask(const QString &mask);
-    void setAddressValidator(QValidator *v);
-    void setAddressPlaceholderText(const BTranslation &t);
-    void setAddress(const QString &a);
+    void setPortEnabled(bool b, bool required = true);
     void setPortInputMask(const QString &mask);
+    void setPortLabel(const BTranslation &t);
     void setPortPlaceholderText(const BTranslation &t);
-    void setPort(int port);
+    void setPortValidator(const QValidator *v);
+    void setLoginEnabled(bool b, bool required = true);
     void setLoginInputMask(const QString &mask);
-    void setLoginValidator(QValidator *v);
+    void setLoginLabel(const BTranslation &t);
     void setLoginPlaceholderText(const BTranslation &t);
+    void setLoginValidator(const QValidator *v);
+    bool showPasswordVisible() const;
+    QString simplePassword() const;
+public Q_SLOTS:
+    void setAddress(const QString &a);
+    void setAddressRequired(bool b);
+    void setAvailableAddresses(const QStringList &list);
+    void setGeneratePasswordVisible(bool visible);
     void setLogin(const QString &l);
-    void setPasswordPlaceholderText(const BTranslation &t);
+    void setLoginRequired(bool b);
     void setPassword(const QString &pwd);
     void setPassword(const BPassword &pwd);
+    void setPasswordRequired(bool b);
+    void setPort(int port);
+    void setPortRequired(bool b);
     void setSavePasswordVisible(bool visible);
     void setShowPasswordVisible(bool visible);
-    void setGeneratePasswordVisible(bool visible);
-    void setGeneratePasswordFunction(BPasswordWidget::GeneratePasswordFunction f);
-    void setGeneratedPasswordLength(int len);
-    void restorePasswordWidgetState(const QByteArray &state);
-    QByteArray savePasswordWidgetState() const;
-    AddressType addressType() const;
-    bool portEnabled() const;
-    bool loginEnabled() const;
-    PasswordType passwordType() const;
-    QStringList availableAddresses() const;
-    QString address() const;
-    int port() const;
-    QString login() const;
-    QString simplePassword() const;
-    BPassword securePassword() const;
-    bool hasValidInput() const;
 Q_SIGNALS:
+    void addressChanged(const QString &address);
     void inputValidityChanged(bool b);
+    void loginChanged(const QString &login);
+    void passwordChanged();
+    void passwordChanged(const QString &password);
+    void passwordChanged(const QByteArray &encryptedPassword);
+    void passwordEdited(const QString &password);
+    void portChanged(int port);
 private:
     Q_DISABLE_COPY(BLoginWidget)
 };

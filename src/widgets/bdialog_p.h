@@ -22,13 +22,12 @@
 #ifndef BDIALOG_P_H
 #define BDIALOG_P_H
 
-class QVBoxLayout;
 class QDialogButtonBox;
+class QVBoxLayout;
 class QWidget;
 
 #include "bdialog.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
@@ -42,15 +41,15 @@ class B_WIDGETS_EXPORT BDialogPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BDialog)
 public:
+    QDialogButtonBox *dlgbbox;
+    QVBoxLayout *vlt;
+    QWidget *wgt;
+public:
     explicit BDialogPrivate(BDialog *q);
     ~BDialogPrivate();
 public:
     void init();
     void resetWidget(QWidget *w = 0);
-public:
-    QVBoxLayout *vlt;
-    QDialogButtonBox *dlgbbox;
-    QWidget *wgt;
 private:
     Q_DISABLE_COPY(BDialogPrivate)
 };

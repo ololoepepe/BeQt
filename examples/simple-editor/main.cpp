@@ -33,6 +33,7 @@
 #include <BAboutDialog>
 #include <BTranslator>
 #include <BTerminal>
+#include <BGuiTools>
 
 #include <QApplication>
 #include <QString>
@@ -58,8 +59,8 @@ int main(int argc, char **argv)
     settings.applicationName = "Simple Editor";
     settings.organizationName = "Andrey Bogdanov";
     BApplication app(argc, argv, settings);
-    BCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
-    BCoreApplication::setApplicationVersion("0.1.0");
+    BApplication::setOrganizationDomain("https://github.com/the-dark-angel");
+    BApplication::setApplicationVersion("0.1.0");
     BTerminal::setMode(BTerminal::StandardMode);
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
@@ -114,11 +115,11 @@ int main(int argc, char **argv)
     mnu->addSeparator();
     mnu->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
     mnu = mw->menuBar()->addMenu("Help");
-    mnu->addAction( BApplication::createStandardAction(BApplication::HomepageAction) );
+    mnu->addAction(BGuiTools::createStandardAction(BGuiTools::HomepageAction));
     mnu->addSeparator();
-    mnu->addAction( BApplication::createStandardAction(BApplication::WhatsThisAction) );
+    mnu->addAction(BGuiTools::createStandardAction(BGuiTools::WhatsThisAction));
     mnu->addSeparator();
-    mnu->addAction( BApplication::createStandardAction(BApplication::AboutAction) );
+    mnu->addAction(BGuiTools::createStandardAction(BGuiTools::AboutAction));
     //Creating toolbars
     QToolBar *tbar = mw->addToolBar("Open");
     tbar->setObjectName("ToolBarOpen");

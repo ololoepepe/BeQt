@@ -486,10 +486,7 @@ bool BCodeEditPrivate::testBlock(const QStringList &lines, int *length)
 
 void BCodeEditPrivate::init()
 {
-    if (!BClipboardNotifier::instance())
-        new BClipboardNotifier;
-    connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
-            this, SLOT(updatePasteAvailable(bool)));
+    connect(BClipboardNotifier::instance(), SIGNAL(hasTextChanged(bool)), this, SLOT(updatePasteAvailable(bool)));
     onceEdited = false;
     blockMode = false;
     lineLength = 120;
@@ -499,7 +496,7 @@ void BCodeEditPrivate::init()
     hasSelection = false;
     hasBookmarks = false;
     copyAvailable = false;
-    pasteAvailable = BClipboardNotifier::instance()->textDataAvailable();
+    pasteAvailable = BClipboardNotifier::hasText();
     undoAvailable = false;
     redoAvailable = false;
     buisy = false;
@@ -551,12 +548,6 @@ bool BCodeEditPrivate::eventFilter(QObject *obj, QEvent *e)
 
 bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
 {
-    static const int ContorlShiftModifier = ((int) Qt::ControlModifier | (int) Qt::ShiftModifier);
-    static const int KeypadControlModifier = ((int) Qt::KeypadModifier | (int) Qt::ControlModifier);
-    static const int KeypadShiftModifier = ((int) Qt::KeypadModifier | (int) Qt::ShiftModifier);
-    static const int KeypadAltModifier = ((int) Qt::KeypadModifier | (int) Qt::AltModifier);
-    static const int KeypadControlShiftModifier = ((int) Qt::KeypadModifier | ContorlShiftModifier);
-    static const int KeypadControlAltModifier = (KeypadAltModifier | (int) Qt::ControlModifier);
     int modifiers = e->modifiers();
     int key = e->key();
     switch (modifiers)
@@ -674,7 +665,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             break;
         }
         break;
-    case ContorlShiftModifier:
+    case BeQt::ContorlShiftModifier:
         switch (key)
         {
         case Qt::Key_Z:
@@ -688,10 +679,10 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             break;
         }
         break;
-    case KeypadShiftModifier:
-    case KeypadAltModifier:
-    case KeypadControlShiftModifier:
-    case KeypadControlAltModifier:
+    case BeQt::KeypadShiftModifier:
+    case BeQt::KeypadAltModifier:
+    case BeQt::KeypadControlShiftModifier:
+    case BeQt::KeypadControlAltModifier:
         switch (key)
         {
         case Qt::Key_Return:
@@ -716,7 +707,7 @@ bool BCodeEditPrivate::keyPressEvent(QKeyEvent *e)
             break;
         }
         break;
-    case KeypadControlModifier:
+    case BeQt::KeypadControlModifier:
         switch (key)
         {
         case Qt::Key_End:

@@ -22,16 +22,16 @@
 #ifndef BGUIPLUGININTERFACE_H
 #define BGUIPLUGININTERFACE_H
 
-class BAbstractSettingsTab;
 class BAboutDialog;
+class BAbstractSettingsTab;
 
 class QPixmap;
+class QString;
+class QStringList;
 
-#include <BeQtCore/BeQt>
+#include <BeQtCore/BeQtGlobal>
 
 #include <QtPlugin>
-#include <QVariantMap>
-#include <QStringList>
 
 /*============================================================================
 ================================ BGuiPluginInterface =========================

@@ -82,10 +82,7 @@ void BSimpleCodeEditorDocumentPrivate::init()
 
 QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
 {
-    if (!BClipboardNotifier::instance())
-        new BClipboardNotifier;
-    connect(BClipboardNotifier::instance(), SIGNAL(textDataAvailableChanged(bool)),
-            this, SLOT(updatePasteAvailable(bool)));
+    connect(BClipboardNotifier::instance(), SIGNAL(hasTextChanged(bool)), this, SLOT(updatePasteAvailable(bool)));
     B_Q(BSimpleCodeEditorDocument);
     tabWidth = BeQt::TabWidth4;
     ptedt = new QPlainTextEdit;
@@ -99,7 +96,7 @@ QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     q->setHasSelection(hasSel);
     q->setCutAvailable(hasSel && !ptedt->isReadOnly());
     q->setCopyAvailable(hasSel);
-    q->setPasteAvailable(!ptedt->isReadOnly() && BClipboardNotifier::instance()->textDataAvailable());
+    q->setPasteAvailable(!ptedt->isReadOnly() && BClipboardNotifier::hasText());
     q->setUndoAvailable(ptedt->document()->isUndoAvailable());
     q->setRedoAvailable(ptedt->document()->isRedoAvailable());
     q->setCursorPosition(QPoint());

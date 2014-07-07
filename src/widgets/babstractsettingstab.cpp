@@ -20,12 +20,12 @@
 ****************************************************************************/
 
 #include "babstractsettingstab.h"
+
 #include "bapplication.h"
 
-#include <QWidget>
-#include <QFormLayout>
-#include <QList>
 #include <QIcon>
+#include <QString>
+#include <QWidget>
 
 /*============================================================================
 ================================ BAbstractSettingsTab ========================

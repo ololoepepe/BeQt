@@ -1,37 +1,65 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the BeQtWidgets module of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
 
 class QObject;
-class QWidget;
-class QFont;
-class QVBoxLayout;
-class QString;
-class QLayout;
-class QFormLayout;
 
 #include "bguitools.h"
-#include "bapplication.h"
+
+#include "bapplication_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 
-#include <QFrame>
 #include <QAction>
-#include <QToolButton>
-#include <QToolBar>
+#include <QFont>
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
+#include <QLayout>
+#include <QString>
+#include <QToolBar>
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QWidget>
 
 namespace BGuiTools
 {
 
-QAction *createStandardAction(BApplication::StandardAction type, QObject *parent)
+void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)
 {
-    return BApplication::createStandardAction(type, parent);
+    if (!vlt || !field)
+        return;
+    QHBoxLayout *hlt = new QHBoxLayout;
+    hlt->addWidget(new QLabel(label));
+    hlt->addWidget(field);
+    vlt->addLayout(hlt);
 }
 
-QAction *createSeparator(QObject *parent)
+void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field)
 {
-    QAction *act = new QAction(parent);
-    act->setSeparator(true);
-    return act;
+    if (!vlt || !field)
+        return;
+    QHBoxLayout *hlt = new QHBoxLayout;
+    hlt->addWidget(new QLabel(label));
+    hlt->addLayout(field);
+    vlt->addLayout(hlt);
 }
 
 QFrame *createFrame(QFrame::Shape shape, QWidget *parent)
@@ -61,31 +89,16 @@ QFont createMonospaceFont(int pointSize)
     return fnt;
 }
 
-QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action)
+QAction *createSeparator(QObject *parent)
 {
-    if (!toolBar || !action)
-        return 0;
-    return static_cast<QToolButton *>(toolBar->widgetForAction(action));
+    QAction *act = new QAction(parent);
+    act->setSeparator(true);
+    return act;
 }
 
-void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)
+QAction *createStandardAction(StandardAction type, QObject *parent)
 {
-    if (!vlt || !field)
-        return;
-    QHBoxLayout *hlt = new QHBoxLayout;
-    hlt->addWidget(new QLabel(label));
-    hlt->addWidget(field);
-    vlt->addLayout(hlt);
-}
-
-void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field)
-{
-    if (!vlt || !field)
-        return;
-    QHBoxLayout *hlt = new QHBoxLayout;
-    hlt->addWidget(new QLabel(label));
-    hlt->addLayout(field);
-    vlt->addLayout(hlt);
+    return BApplicationPrivate::createStandardAction(type, parent);
 }
 
 void removeRow(QVBoxLayout *vlt, QWidget *field)
@@ -108,38 +121,6 @@ void removeRow(QVBoxLayout *vlt, QLayout *field)
         label->deleteLater();
 }
 
-void setRowVisible(QWidget *field, bool visible)
-{
-    QWidget *w = labelForField<QWidget>(field);
-    if (!field || !w)
-        return;
-    w->setVisible(visible);
-    field->setVisible(visible);
-}
-
-void setRowVisible(QLayout *field, bool visible)
-{
-    QWidget *w = labelForField<QWidget>(field);
-    if (!field || !w)
-        return;
-    w->setVisible(visible);
-    QStack<QLayout *> s;
-    s.push(field);
-    while (!s.isEmpty())
-    {
-        QLayout *lt = s.pop();
-        if (!lt)
-            continue;
-        foreach (int i, bRangeD(0, lt->count() - 1))
-        {
-            s.push(lt->itemAt(i)->layout());
-            QWidget *w = lt->itemAt(i)->widget();
-            if (w)
-                w->setVisible(visible);
-        }
-    }
-}
-
 void setRowEnabled(QWidget *field, bool enabled)
 {
     QWidget *w = labelForField<QWidget>(field);
@@ -157,19 +138,54 @@ void setRowEnabled(QLayout *field, bool enabled)
     w->setEnabled(enabled);
     QStack<QLayout *> s;
     s.push(field);
-    while (!s.isEmpty())
-    {
+    while (!s.isEmpty()) {
         QLayout *lt = s.pop();
         if (!lt)
             continue;
-        foreach (int i, bRangeD(0, lt->count() - 1))
-        {
+        foreach (int i, bRangeD(0, lt->count() - 1)) {
             s.push(lt->itemAt(i)->layout());
             QWidget *w = lt->itemAt(i)->widget();
             if (w)
                 w->setEnabled(enabled);
         }
     }
+}
+
+void setRowVisible(QWidget *field, bool visible)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setVisible(visible);
+    field->setVisible(visible);
+}
+
+void setRowVisible(QLayout *field, bool visible)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setVisible(visible);
+    QStack<QLayout *> s;
+    s.push(field);
+    while (!s.isEmpty()) {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        foreach (int i, bRangeD(0, lt->count() - 1)) {
+            s.push(lt->itemAt(i)->layout());
+            QWidget *w = lt->itemAt(i)->widget();
+            if (w)
+                w->setVisible(visible);
+        }
+    }
+}
+
+QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action)
+{
+    if (!toolBar || !action)
+        return 0;
+    return static_cast<QToolButton *>(toolBar->widgetForAction(action));
 }
 
 }

@@ -24,18 +24,17 @@
 
 class BFileDialogPrivate;
 
+class QByteArray;
 class QString;
 class QTextCodec;
-class QByteArray;
 
 #include "btextcodecmenu.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
-#include <QObject>
 #include <QFileDialog>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BFileDialog =================================
@@ -54,18 +53,18 @@ public:
 protected:
     explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
-    void setMaxHistorySize(int sz);
-    void restoreState(const QByteArray &ba);
     bool codecSelectionEnabled() const;
     int maxHistorySize() const;
-    QString topDir() const;
+    void restoreState(const QByteArray &ba);
+    QByteArray saveState() const;
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
-    QByteArray saveState() const;
+    void setMaxHistorySize(int sz);
+    QString topDir() const;
 public Q_SLOTS:
-    void setCodecSelectionEnabled(bool b);
     void selectCodec(QTextCodec *codec);
     void selectCodec(const QString &codecName);
+    void setCodecSelectionEnabled(bool b);
 Q_SIGNALS:
     void codecChanged(QTextCodec *codec);
     void codecNameChanged(const QString &codecName);

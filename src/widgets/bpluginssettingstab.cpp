@@ -21,31 +21,29 @@
 
 #include "bpluginssettingstab.h"
 #include "bpluginssettingstab_p.h"
+
+#include "baboutdialog.h"
+#include "babstractsettingstab.h"
 #include "bapplication.h"
 #include "bguiplugininterface.h"
-#include "baboutdialog.h"
-#include "bsettingsdialog.h"
-#include "babstractsettingstab.h"
 #include "bhelpbrowser.h"
+#include "bsettingsdialog.h"
 
-#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BPluginWrapper>
-
-#include <QString>
-#include <QVariantMap>
-#include <QHBoxLayout>
-#include <QListWidget>
-#include <QVBoxLayout>
-#include <QPushButton>
-#include <QApplication>
-#include <QList>
-#include <QObject>
-#include <QMessageBox>
-#include <QListWidgetItem>
-#include <QIcon>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QDebug>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QList>
+#include <QListWidget>
+#include <QListWidgetItem>
+#include <QMessageBox>
+#include <QObject>
+#include <QPushButton>
+#include <QString>
+#include <QVBoxLayout>
 
 /*============================================================================
 ================================ BPluginsSettingsTabPrivate ==================
@@ -71,10 +69,9 @@ void BPluginsSettingsTabPrivate::init()
     B_Q(BPluginsSettingsTab);
     plugins = BApplication::pluginWrappers();
     //
-    hlt = new QHBoxLayout(q);
+    QHBoxLayout *hlt = new QHBoxLayout(q);
       lstwgt = new QListWidget(q);
-        foreach (BPluginWrapper *pw, plugins)
-        {
+        foreach (BPluginWrapper *pw, plugins) {
             QListWidgetItem *lwi = new QListWidgetItem;
             lwi->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
             lwi->setCheckState(pw->isActivated() ? Qt::Checked : Qt::Unchecked);
@@ -87,7 +84,7 @@ void BPluginsSettingsTabPrivate::init()
         connect(lstwgt, SIGNAL(currentRowChanged(int)), this, SLOT(lstwgtCurrentRowChanged(int)));
         connect(lstwgt, SIGNAL(itemChanged(QListWidgetItem *)), this, SLOT(lstwgtItemChanged(QListWidgetItem *)));
       hlt->addWidget(lstwgt);
-      vlt = new QVBoxLayout;
+      QVBoxLayout *vlt = new QVBoxLayout;
         btnSettings = new QPushButton(q);
           btnSettings->setIcon(BApplication::icon("configure"));
           btnSettings->setText(tr("Configure plugin", "btn text"));
@@ -106,48 +103,10 @@ void BPluginsSettingsTabPrivate::init()
         vlt->addStretch();
       hlt->addLayout(vlt);
     //
-    lstwgtCurrentRowChanged( lstwgt->currentRow() );
+    lstwgtCurrentRowChanged(lstwgt->currentRow());
 }
 
 /*============================== Public slots ==============================*/
-
-void BPluginsSettingsTabPrivate::lstwgtCurrentRowChanged(int currentRow)
-{
-    bool b = (currentRow >= 0);
-    btnSettings->setEnabled(b && plugins.at(currentRow)->isActivated());
-    btnAbout->setEnabled(b);
-    BGuiPluginInterface *gpi = b ? qobject_cast<BGuiPluginInterface *>(plugins.at(currentRow)->instance()) : 0;
-    btnHelp->setEnabled(gpi && !gpi->helpSearchPaths().isEmpty() && !gpi->helpIndex().isEmpty());
-}
-
-void BPluginsSettingsTabPrivate::lstwgtItemChanged(QListWidgetItem *item)
-{
-    bool b = (item->checkState() == Qt::Checked);
-    plugins.at(lstwgt->row(item))->setActivated(b);
-    btnSettings->setEnabled(b);
-}
-
-void BPluginsSettingsTabPrivate::btnSettingsClicked()
-{
-    BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
-    if (!pw)
-        return;
-    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
-    BAbstractSettingsTab *ast = gpi ? gpi->createSettingsTab() : 0;
-    if (ast)
-    {
-        QList<BAbstractSettingsTab *> tabs;
-        tabs << ast;
-        BSettingsDialog sd( tabs, q_func() );
-        sd.exec();
-    }
-    else
-    {
-        QString title = tr("No settings", "msgbox title");
-        QString text = tr("This plugin does not have any settings", "msgbox text");
-        QMessageBox::information(q_func(), title, text, QMessageBox::Ok, QMessageBox::Ok);
-    }
-}
 
 void BPluginsSettingsTabPrivate::btnAboutClicked()
 {
@@ -157,15 +116,12 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
     BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
     if (gpi) {
         BAboutDialog *ad = gpi->createAboutDialog();
-        if (ad) {
-            ad->exec();
-            return;
-        }
+        if (ad)
+            return bRet(ad->exec());
     }
     BAboutDialog ad(q_func(), pw->name(), pw->version());
     ad.setWindowTitle(pw->name());
-    if (pw->prefereStaticInfo())
-    {
+    if (pw->prefereStaticInfo()) {
         BPluginInterface::StaticPluginInfo sinf = pw->staticInfo();
         ad.setOrganization(sinf.organization, sinf.copyrightYears);
         ad.setWebsite(sinf.website);
@@ -175,9 +131,7 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         ad.setAuthors(sinf.authors);
         ad.setTranslators(sinf.translators);
         ad.setThanksTo(sinf.thanksTo);
-    }
-    else
-    {
+    } else {
         BPluginInterface::PluginInfo inf = pw->info();
         ad.setOrganization(inf.organization, inf.copyrightYears);
         ad.setWebsite(inf.website);
@@ -213,6 +167,41 @@ void BPluginsSettingsTabPrivate::btnHelpClicked()
     hb->show();
 }
 
+void BPluginsSettingsTabPrivate::btnSettingsClicked()
+{
+    BPluginWrapper *pw = plugins.at(lstwgt->currentRow());
+    if (!pw)
+        return;
+    BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
+    BAbstractSettingsTab *ast = gpi ? gpi->createSettingsTab() : 0;
+    if (ast) {
+        QList<BAbstractSettingsTab *> tabs;
+        tabs << ast;
+        BSettingsDialog sd( tabs, q_func() );
+        sd.exec();
+    } else {
+        QString title = tr("No settings", "msgbox title");
+        QString text = tr("This plugin does not have any settings", "msgbox text");
+        QMessageBox::information(q_func(), title, text, QMessageBox::Ok, QMessageBox::Ok);
+    }
+}
+
+void BPluginsSettingsTabPrivate::lstwgtCurrentRowChanged(int currentRow)
+{
+    bool b = (currentRow >= 0);
+    btnSettings->setEnabled(b && plugins.at(currentRow)->isActivated());
+    btnAbout->setEnabled(b);
+    BGuiPluginInterface *gpi = b ? qobject_cast<BGuiPluginInterface *>(plugins.at(currentRow)->instance()) : 0;
+    btnHelp->setEnabled(gpi && !gpi->helpSearchPaths().isEmpty() && !gpi->helpIndex().isEmpty());
+}
+
+void BPluginsSettingsTabPrivate::lstwgtItemChanged(QListWidgetItem *item)
+{
+    bool b = (item->checkState() == Qt::Checked);
+    plugins.at(lstwgt->row(item))->setActivated(b);
+    btnSettings->setEnabled(b);
+}
+
 /*============================================================================
 ================================ BPluginsSettingsTab =========================
 ============================================================================*/
@@ -220,7 +209,7 @@ void BPluginsSettingsTabPrivate::btnHelpClicked()
 /*============================== Public constructors =======================*/
 
 BPluginsSettingsTab::BPluginsSettingsTab() :
-    BBaseObject( *new BPluginsSettingsTabPrivate(this) )
+    BBaseObject(*new BPluginsSettingsTabPrivate(this))
 {
     d_func()->init();
 }
@@ -240,12 +229,12 @@ BPluginsSettingsTab::BPluginsSettingsTab(BPluginsSettingsTabPrivate &d) :
 
 /*============================== Public methods ============================*/
 
-QString BPluginsSettingsTab::title() const
-{
-    return tr("Plugins", "title");
-}
-
 QIcon BPluginsSettingsTab::icon() const
 {
     return BApplication::icon("binary");
+}
+
+QString BPluginsSettingsTab::title() const
+{
+    return tr("Plugins", "title");
 }

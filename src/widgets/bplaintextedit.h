@@ -24,10 +24,9 @@
 
 class BPlainTextEditPrivate;
 
-class QWidget;
 class QMimeData;
+class QWidget;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
 #include <QPlainTextEdit>
@@ -46,8 +45,8 @@ public:
 protected:
     explicit BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent = 0);
 public:
-    void setDragEnabled(bool b);
     bool dragEnabled() const;
+    void setDragEnabled(bool b);
 protected:
     QMimeData *createMimeDataFromSelection() const;
 private:

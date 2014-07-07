@@ -24,18 +24,14 @@
 
 class BPluginWrapper;
 
-class QHBoxLayout;
 class QListWidget;
-class QVBoxLayout;
-class QPushButton;
 class QListWidgetItem;
+class QPushButton;
 
 #include "bpluginssettingstab.h"
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QApplication>
 #include <QList>
 #include <QObject>
 
@@ -48,24 +44,22 @@ class B_WIDGETS_EXPORT BPluginsSettingsTabPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BPluginsSettingsTab)
 public:
+    QPushButton *btnAbout;
+    QPushButton *btnHelp;
+    QPushButton *btnSettings;
+    QListWidget *lstwgt;
+    QList<BPluginWrapper *> plugins;
+public:
     explicit BPluginsSettingsTabPrivate(BPluginsSettingsTab *q);
     ~BPluginsSettingsTabPrivate();
 public:
     void init();
 public Q_SLOTS:
-    void lstwgtCurrentRowChanged(int currentRow);
-    void lstwgtItemChanged(QListWidgetItem *item);
-    void btnSettingsClicked();
     void btnAboutClicked();
     void btnHelpClicked();
-public:
-    QList<BPluginWrapper *> plugins;
-    QHBoxLayout *hlt;
-      QListWidget *lstwgt;
-      QVBoxLayout *vlt;
-        QPushButton *btnSettings;
-        QPushButton *btnAbout;
-        QPushButton *btnHelp;
+    void btnSettingsClicked();
+    void lstwgtCurrentRowChanged(int currentRow);
+    void lstwgtItemChanged(QListWidgetItem *item);
 private:
     Q_DISABLE_COPY(BPluginsSettingsTabPrivate)
 };

@@ -72,8 +72,10 @@ BInternalLocationProvider::~BInternalLocationProvider()
 QStringList BInternalLocationProvider::createNames()
 {
     QStringList names;
+    names << "beqt/icons";
     names << "data";
     names << "documentation";
+    names << "icons";
     names << "plugins";
     names << "settings";
     names << "translations";
@@ -166,10 +168,14 @@ QString BInternalLocationProvider::locationPath(const QString &locationName, BAp
         return QString();
     if (plugins)
         return prefix + "/lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins";
+    else if ("beqt/icons" == locationName)
+        return prefix + "/beqt/icons";
     else if ("data" == locationName)
         return prefix;
     else if ("documentation" == locationName)
         return prefix + "/doc";
+    else if ("icons" == locationName)
+        return prefix + "icons";
     else if ("settings" == locationName)
         return prefix + "/settings";
     else if ("translations" == locationName)

@@ -24,7 +24,6 @@
 
 #include "bclipboardnotifier.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
@@ -37,16 +36,20 @@ class B_WIDGETS_EXPORT BClipboardNotifierPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BClipboardNotifier)
+    B_DECLARE_PUBLIC_S(BClipboardNotifier)
+public:
+    bool colorAvailable;
+    bool htmlAvailable;
+    bool imageAvailable;
+    bool textAvailable;
+    bool urlsAvailable;
 public:
     explicit BClipboardNotifierPrivate(BClipboardNotifier *q);
     ~BClipboardNotifierPrivate();
 public:
     void init();
-    void detach();
 public Q_SLOTS:
     void dataChanged();
-public:
-    bool textDataAvailable;
 private:
     Q_DISABLE_COPY(BClipboardNotifierPrivate)
 };

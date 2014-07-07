@@ -23,10 +23,10 @@
 #define BPASSWORDGROUP_H
 
 class BPasswordGroupPrivate;
+
 class BPasswordWidget;
 class BPassword;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
 #include <QObject>
@@ -46,8 +46,8 @@ protected:
     explicit BPasswordGroup(BPasswordGroupPrivate &d, QObject *parent = 0);
 public:
     void addPasswordWidget(BPasswordWidget *pwdwgt);
-    bool passwordsMatch() const;
     BPassword password() const;
+    bool passwordsMatch() const;
 Q_SIGNALS:
     void passwordsMatchChanged(bool match);
 private:

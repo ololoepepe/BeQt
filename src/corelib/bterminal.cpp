@@ -258,6 +258,7 @@ bool BTerminalPrivate::testInit(const char *where)
 
 void BTerminalPrivate::init()
 {
+    qAddPostRoutine(&BTerminal::destroy);
     root = 0;
     translations = true;
     switch (Mode) {

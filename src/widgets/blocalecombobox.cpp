@@ -20,20 +20,18 @@
 ****************************************************************************/
 
 #include "blocalecombobox.h"
+
 #include "bapplication.h"
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QCoreApplication>
-#include <QLocale>
-#include <QIcon>
-#include <QString>
-#include <QList>
-#include <QVariant>
-#include <QMetaObject>
-
 #include <QDebug>
+#include <QIcon>
+#include <QList>
+#include <QLocale>
+#include <QMetaObject>
+#include <QString>
+#include <QVariant>
 
 /*============================================================================
 ================================ BLocaleComboBoxPrivate ======================
@@ -43,16 +41,16 @@ class BLocaleComboBoxPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocaleComboBox)
 public:
+    const bool AlwaysIncludeEnglish;
+public:
     explicit BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
     ~BLocaleComboBoxPrivate();
 public:
-    static QString localeToString(const BApplication::LocaleSupportInfo &info);
     static QIcon iconForLocale(const BApplication::LocaleSupportInfo &info);
+    static QString localeToString(const BApplication::LocaleSupportInfo &info);
 public:
     void init();
     void updateAvailableLocales();
-public:
-    const bool AlwaysIncludeEnglish;
 private:
     Q_DISABLE_COPY(BLocaleComboBoxPrivate)
 };
@@ -76,17 +74,17 @@ BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
 
 /*============================== Static public methods =====================*/
 
+QIcon BLocaleComboBoxPrivate::iconForLocale(const BApplication::LocaleSupportInfo &info)
+{
+    return (info.supports == info.total) ? BApplication::icon("ok") : BApplication::icon("messagebox_warning");
+}
+
 QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupportInfo &info)
 {
     QString language = info.locale.nativeLanguageName();
     QString country = (info.locale.country() != QLocale::AnyCountry) ? info.locale.nativeCountryName(): QString("");
     QString name = info.locale.name();
     return language + (!country.isEmpty() ? " (" + country + ")" : "") + " [" + name + "]";
-}
-
-QIcon BLocaleComboBoxPrivate::iconForLocale(const BApplication::LocaleSupportInfo &info)
-{
-    return (info.supports == info.total) ? BApplication::icon("ok") : BApplication::icon("messagebox_warning");
 }
 
 /*============================== Public methods ============================*/
@@ -104,10 +102,8 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
     q->clear();
     QList<BApplication::LocaleSupportInfo> list = BApplication::availableLocales(AlwaysIncludeEnglish);
     bool b = false;
-    foreach (const BApplication::LocaleSupportInfo &info, list)
-    {
-        if (info.locale == l)
-        {
+    foreach (const BApplication::LocaleSupportInfo &info, list) {
+        if (info.locale == l) {
             b = true;
             break;
         }
@@ -115,7 +111,7 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
     if (!b)
         q->blockSignals(false);
     foreach (const BApplication::LocaleSupportInfo &info, list)
-        q->addItem( iconForLocale(info), localeToString(info), info.locale.name() );
+        q->addItem(iconForLocale(info), localeToString(info), info.locale.name());
     q->setCurrentLocale(l);
     q->blockSignals(false);
 }
@@ -127,13 +123,13 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
 /*============================== Public constructors =======================*/
 
 BLocaleComboBox::BLocaleComboBox(bool alwaysIncludeEnglish, QWidget *parent) :
-    QComboBox(parent), BBase( *new BLocaleComboBoxPrivate(this, alwaysIncludeEnglish) )
+    QComboBox(parent), BBase(*new BLocaleComboBoxPrivate(this, alwaysIncludeEnglish))
 {
     d_func()->init();
 }
 
 BLocaleComboBox::BLocaleComboBox(QWidget *parent) :
-    QComboBox(parent), BBase( *new BLocaleComboBoxPrivate(this, false) )
+    QComboBox(parent), BBase(*new BLocaleComboBoxPrivate(this, false))
 {
     d_func()->init();
 }
@@ -155,14 +151,14 @@ BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
 
 QLocale BLocaleComboBox::currentLocale() const
 {
-    return (currentIndex() >= 0) ? QLocale( itemData( currentIndex() ).toString() ) : QLocale(QLocale::English);
+    return (currentIndex() >= 0) ? QLocale(itemData(currentIndex()).toString()) : QLocale(QLocale::English);
 }
 
 /*============================== Public slots ==============================*/
 
 void BLocaleComboBox::setCurrentLocale(const QLocale &locale)
 {
-    int ind = findData( locale.name() );
+    int ind = findData(locale.name());
     if (ind < 0)
         return;
     setCurrentIndex(ind);

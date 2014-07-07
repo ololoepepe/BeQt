@@ -22,14 +22,12 @@
 #include "bplaintextedit.h"
 #include "bplaintextedit_p.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/private/bbaseobject_p.h>
 
+#include <QMimeData>
 #include <QObject>
 #include <QPlainTextEdit>
-#include <QWidget>
-#include <QMimeData>
 
 #include <QDebug>
 
@@ -64,7 +62,7 @@ void BPlainTextEditPrivate::init()
 /*============================== Public constructors =======================*/
 
 BPlainTextEdit::BPlainTextEdit(QWidget *parent) :
-    QPlainTextEdit(parent), BBaseObject( *new BPlainTextEditPrivate(this) )
+    QPlainTextEdit(parent), BBaseObject(*new BPlainTextEditPrivate(this))
 {
     d_func()->init();
 }

@@ -27,7 +27,6 @@ class BEditGroupPrivate;
 class QLineEdit;
 class QString;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
 #include <QObject>
@@ -47,8 +46,8 @@ protected:
     explicit BEditGroup(BEditGroupPrivate &d, QObject *parent = 0);
 public:
     void addEdit(QLineEdit *ledt);
-    bool textsMatch() const;
     QString text() const;
+    bool textsMatch() const;
 Q_SIGNALS:
     void textsMatchChanged(bool match);
 private:

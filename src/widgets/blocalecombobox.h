@@ -24,10 +24,9 @@
 
 class BLocaleComboBoxPrivate;
 
-class QWidget;
 class QLocale;
+class QWidget;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
 #include <QComboBox>

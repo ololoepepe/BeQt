@@ -28,7 +28,6 @@ class QString;
 class QStringList;
 class QTextCodec;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBaseObject>
 
 #include <QWidget>
@@ -53,10 +52,10 @@ protected:
 public:
     static void clearSearchCache();
 public:
-    void setSearchPaths(const QStringList &paths);
-    void setFile(const QString &file);
     void setCodec(QTextCodec *codec);
     void setCodec(const char *codecName);
+    void setFile(const QString &file);
+    void setSearchPaths(const QStringList &paths);
 private:
     Q_DISABLE_COPY(BHelpBrowser)
 };

@@ -22,24 +22,26 @@
 #ifndef BAPPLICATION_P_H
 #define BAPPLICATION_P_H
 
-class BApplicationPrivate;
 class BPluginWrapper;
 
 class QAction;
-class QRect;
 class QSystemTrayIcon;
-class QSettings;
+class QWidget;
 
 #include "bapplication.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include "baboutdialog.h"
+#include "bguitools.h"
+#include "bsettingsdialog.h"
+
 #include <BeQtCore/private/bapplicationbase_p.h>
 
-#include <QObject>
-#include <QString>
-#include <QMap>
 #include <QIcon>
+#include <QMap>
+#include <QObject>
 #include <QPointer>
+#include <QRect>
+#include <QString>
 #include <QStringList>
 
 /*============================================================================
@@ -50,41 +52,43 @@ class B_WIDGETS_EXPORT BApplicationPrivate : public BApplicationBasePrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BApplication)
+    B_DECLARE_PUBLIC_S(BApplication)
+public:
+    QPointer<BAboutDialog> aboutDlg;
+    QMap<QObject *, QAction *> actions;
+    QRect helpBrowserGeometry;
+    QString helpIndex;
+    QString homepage;
+    QMap<QString, QIcon> iconCache;
+    bool iconCaching;
+    BSettingsDialog::TabNavigation navigation;
+    QStringList preferredIconFormats;
+    bool themedIcons;
+    QSystemTrayIcon *trayIcon;
 public:
     explicit BApplicationPrivate(BApplication *q);
     ~BApplicationPrivate();
 public:
-    static void retranslateStandardAction(QAction *act);
-    static QString findImage( const QString &subdir, const QString &name,
-                              const QStringList &preferredFormats = QStringList() );
+    static QAction *createStandardAction(BGuiTools::StandardAction type, QObject *parent = 0);
+    static QString findImage(const QString &subdir, const QString &name,
+                             const QStringList &preferredFormats = QStringList());
     static QIcon iconFromTheme(const QString &name);
+    static void retranslateStandardAction(QAction *act);
 public:
-    void init();
-    void emitPluginActivated(BPluginWrapper *pluginWrapper);
-    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    QIcon cacheIcon(const QIcon &icon, const QString &name);
     void emitLanguageChanged();
+    void emitPluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void emitPluginActivated(BPluginWrapper *pluginWrapper);
+    QString getHelpIndex() const;
+    QString helpContext(QWidget *widget = 0) const;
+    QStringList helpSearchPaths() const;
+    void init();
     void initAboutDlg();
     void showAbout();
-    QString helpContext(QWidget *widget = 0) const;
-    QString getHelpIndex() const;
-    QStringList helpSearchPaths() const;
-    void showHelp( const QString &file = QString() );
-    QIcon cacheIcon(const QIcon &icon, const QString &name);
+    void showHelp(const QString &file = QString());
 public Q_SLOTS:
-    void retranslateUi();
     void actionDestroyed(QObject *act);
-public:
-    QString homepage;
-    QPointer<BAboutDialog> aboutDlg;
-    BApplication::SettingsTabNavigation navigation;
-    QString helpIndex;
-    QMap<QString, QIcon> iconCache;
-    bool iconCaching;
-    QMap<QObject *, QAction *> actions;
-    QRect helpBrowserGeometry;
-    bool themedIcons;
-    QStringList preferredIconFormats;
-    QSystemTrayIcon *trayIcon;
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BApplicationPrivate)
 };

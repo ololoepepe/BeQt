@@ -22,7 +22,7 @@
 #include "babstractterminaldriver.h"
 
 #include <QObject>
-#include <QMetaObject>
+#include <QString>
 
 /*============================================================================
 ================================ BAbstractTerminalDriver =====================
@@ -43,19 +43,24 @@ BAbstractTerminalDriver::~BAbstractTerminalDriver()
 
 /*============================== Public methods ============================*/
 
-void BAbstractTerminalDriver::terminate()
-{
-    close();
-}
-
 void BAbstractTerminalDriver::kill()
 {
     terminate();
 }
 
+bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &)
+{
+    return true;
+}
+
 QString BAbstractTerminalDriver::prompt() const
 {
     return "$";
+}
+
+void BAbstractTerminalDriver::setWorkingDirectory(const QString &)
+{
+    //
 }
 
 bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &)
@@ -70,14 +75,9 @@ bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &)
     return true;
 }
 
-bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &)
+void BAbstractTerminalDriver::terminate()
 {
-    return true;
-}
-
-void BAbstractTerminalDriver::setWorkingDirectory(const QString &)
-{
-    //
+    close();
 }
 
 QString BAbstractTerminalDriver::workingDirectory() const
@@ -87,9 +87,9 @@ QString BAbstractTerminalDriver::workingDirectory() const
 
 /*============================== Protected slots ===========================*/
 
-void BAbstractTerminalDriver::emitReadyRead()
+void BAbstractTerminalDriver::emitBlockTerminal()
 {
-    Q_EMIT readyRead();
+    Q_EMIT blockTerminal();
 }
 
 void BAbstractTerminalDriver::emitFinished(int exitCode)
@@ -97,9 +97,9 @@ void BAbstractTerminalDriver::emitFinished(int exitCode)
     Q_EMIT finished(exitCode);
 }
 
-void BAbstractTerminalDriver::emitBlockTerminal()
+void BAbstractTerminalDriver::emitReadyRead()
 {
-    Q_EMIT blockTerminal();
+    Q_EMIT readyRead();
 }
 
 void BAbstractTerminalDriver::emitUnblockTerminal()

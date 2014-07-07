@@ -24,9 +24,8 @@
 
 class BClipboardNotifierPrivate;
 
-class QWidget;
+class QString;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBaseObject>
 
 #include <QObject>
@@ -39,17 +38,27 @@ class B_WIDGETS_EXPORT BClipboardNotifier : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BClipboardNotifier)
-public:
+    B_DECLARE_PRIVATE_S(BClipboardNotifier)
+protected:
+    static BClipboardNotifier *_m_self;
+protected:
     explicit BClipboardNotifier();
     ~BClipboardNotifier();
 public:
+    static void destroy();
     static BClipboardNotifier *instance();
-public:
-    bool textDataAvailable() const;
+    static bool hasColor();
+    static bool hasFormat(const QString &mimeType);
+    static bool hasHtml();
+    static bool hasImage();
+    static bool hasText();
+    static bool hasUrls();
 Q_SIGNALS:
-    void textDataAvailableChanged(bool available);
-protected:
-    static BClipboardNotifier *_m_self;
+    void hasColorChanged(bool available);
+    void hasHtmlChanged(bool available);
+    void hasImageChanged(bool available);
+    void hasTextChanged(bool available);
+    void hasUrlsChanged(bool available);
 private:
     Q_DISABLE_COPY(BClipboardNotifier)
 };

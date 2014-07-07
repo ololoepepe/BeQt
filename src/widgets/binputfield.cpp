@@ -20,21 +20,20 @@
 ****************************************************************************/
 
 #include "binputfield.h"
+
 #include "bapplication.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QLabel>
-#include <QPixmap>
-#include <QIcon>
-#include <QSize>
-
 #include <QDebug>
+#include <QHBoxLayout>
+#include <QIcon>
+#include <QLabel>
+#include <QObject>
+#include <QPixmap>
+#include <QSize>
+#include <QWidget>
 
 /*============================================================================
 ================================ BInputFieldPrivate ==========================
@@ -44,16 +43,16 @@ class BInputFieldPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BInputField)
 public:
+    QHBoxLayout *hlt;
+    QLabel *lbl;
+    BInputField::ShowStyle style;
+    bool valid;
+public:
     explicit BInputFieldPrivate(BInputField *q);
     ~BInputFieldPrivate();
 public:
     void init();
     void setValid(bool b);
-public:
-    BInputField::ShowStyle style;
-    bool valid;
-    QHBoxLayout *hlt;
-    QLabel *lbl;
 private:
     Q_DISABLE_COPY(BInputFieldPrivate)
 };
@@ -100,8 +99,7 @@ void BInputFieldPrivate::setValid(bool b)
         return;
     valid = b;
     lbl->setPixmap(QPixmap(BApplication::icon(b ? "ok" : "stop").pixmap(128)));
-    switch (style)
-    {
+    switch (style) {
     case BInputField::ShowIfValid:
         lbl->setVisible(b);
         break;
@@ -144,11 +142,24 @@ BInputField::~BInputField()
 
 /*============================== Public methods ============================*/
 
-QSize BInputField::sizeHint() const
+void BInputField::addWidget(QWidget *w)
 {
-    QSize sh = d_func()->hlt->sizeHint();
-    d_func()->lbl->setFixedSize(sh.height(), sh.height());
-    return d_func()->hlt->sizeHint();
+    d_func()->hlt->addWidget(w);
+}
+
+void BInputField::insertWidget(int index, QWidget *w)
+{
+    d_func()->hlt->insertWidget(index, w);
+}
+
+bool BInputField::isValid() const
+{
+    return d_func()->valid;
+}
+
+void BInputField::removeWidget(QWidget *w)
+{
+    d_func()->hlt->removeWidget(w);
 }
 
 void BInputField::setShowStyle(ShowStyle s)
@@ -161,29 +172,16 @@ void BInputField::setShowStyle(ShowStyle s)
     d_func()->setValid(b);
 }
 
-void BInputField::addWidget(QWidget *w)
-{
-    d_func()->hlt->addWidget(w);
-}
-
-void BInputField::insertWidget(int index, QWidget *w)
-{
-    d_func()->hlt->insertWidget(index, w);
-}
-
-void BInputField::removeWidget(QWidget *w)
-{
-    d_func()->hlt->removeWidget(w);
-}
-
 BInputField::ShowStyle BInputField::showStyle() const
 {
     return d_func()->style;
 }
 
-bool BInputField::isValid() const
+QSize BInputField::sizeHint() const
 {
-    return d_func()->valid;
+    QSize sh = d_func()->hlt->sizeHint();
+    d_func()->lbl->setFixedSize(sh.height(), sh.height());
+    return d_func()->hlt->sizeHint();
 }
 
 /*============================== Public slots ==============================*/

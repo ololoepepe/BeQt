@@ -25,14 +25,12 @@
 class BLineNumberWidgetPrivate;
 
 class QPaintEvent;
-class QSize;
 class QPlainTextEdit;
+class QSize;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBaseObject>
 
 #include <QWidget>
-#include <QObject>
 
 /*============================================================================
 ================================ BLineNumberWidget ===========================

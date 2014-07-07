@@ -24,16 +24,14 @@
 
 class BImageWidgetPrivate;
 
-class QPixmap;
-class QPicture;
-class QImage;
 class QIcon;
+class QImage;
+class QPicture;
+class QPixmap;
 class QString;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
-#include <QObject>
 #include <QWidget>
 
 /*============================================================================
@@ -56,17 +54,17 @@ protected:
     explicit BImageWidget(BImageWidgetPrivate &d, QWidget *parent = 0);
 public:
     bool hasScaledContents() const;
+    QIcon icon() const;
+    QImage image() const;
+    QString imageFileName() const;
     QPicture picture() const;
     QPixmap pixmap() const;
-    QImage image() const;
-    QIcon icon() const;
-    QString imageFileName() const;
 public Q_SLOTS:
-    void setPixmap(const QPixmap &p);
-    void setPicture(const QPicture &p);
-    void setImage(const QImage &img);
     void setIcon(const QIcon &icn);
+    void setImage(const QImage &img);
     void setImage(const QString &fileName);
+    void setPicture(const QPicture &p);
+    void setPixmap(const QPixmap &p);
     void setScaledContents(bool b);
 private:
     Q_DISABLE_COPY(BImageWidget)

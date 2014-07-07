@@ -22,20 +22,22 @@
 #ifndef BTERMINALWIDGET_P_H
 #define BTERMINALWIDGET_P_H
 
-class BTerminalWidgetPrivate;
 class BAbstractTerminalDriver;
 class BPlainTextEdit;
 
+class QAction;
 class QEvent;
-class QString;
-class QVBoxLayout;
+class QKeyEvent;
+class QMenu;
+class QPoint;
 
 #include "bterminalwidget.h"
 
 #include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
-#include <QCoreApplication>
+#include <QString>
+#include <QStringList>
 #include <QTextCharFormat>
 
 /*============================================================================
@@ -47,34 +49,49 @@ class B_WIDGETS_EXPORT BTerminalWidgetPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BTerminalWidget)
 public:
+    const bool NormalMode;
+public:
+    QAction *actCopy;
+    QAction *actPaste;
+    int currentHistory;
+    int currentProcessHistory;
+    BAbstractTerminalDriver *driver;
+    QStringList history;
+    bool historyEnabled;
+    int lastLineLength;
+    QMenu *mnu;
+    QStringList processHistory;
+    bool processHistoryEnabled;
+    BPlainTextEdit *ptedt;
+    int terminatingKey;
+    int terminatingModifiers;
+    QString terminatingSymbols;
+public:
     explicit BTerminalWidgetPrivate(BTerminalWidget *q, bool nmode);
     ~BTerminalWidgetPrivate();
 public:
     static QTextCharFormat createStandardFormat(BTerminalWidget::StandardFormat format);
 public:
-    void init();
-    bool eventFilter(QObject *object, QEvent *event);
-    void setDriver(BAbstractTerminalDriver *drv);
-    bool handleKeyPress(int key, int modifiers);
-    void scrollDown();
-    void appendText( const QString &text, const QTextCharFormat &format = QTextCharFormat() );
-    void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
+    void appendLine(const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat());
+    void appendText(const QString &text, const QTextCharFormat &format = QTextCharFormat());
     QString constructErrorString(const QString &error) const;
+    bool eventFilter(QObject *o, QEvent *e);
+    bool handleKeyPress(QKeyEvent *e);
+    void handleReturn();
+    void handleUpDown(bool up);
+    void init();
+    bool pasteAvailable() const;
+    void scrollDown();
+    void setDriver(BAbstractTerminalDriver *drv);
 public Q_SLOTS:
-    void read();
-    void finished(int exitCode);
+    void actCopyTriggered();
+    void actPasteTriggered();
     void blockTerminal();
+    void customContextMenuRequested(const QPoint &pos);
+    void finished(int exitCode);
+    void read();
+    void retranslateUi();
     void unblockTerminal();
-public:
-    const bool NormalMode;
-public:
-    BAbstractTerminalDriver *driver;
-    int terminatingKey;
-    int terminatingModifiers;
-    QString terminatingSymbols;
-    int len;
-    QVBoxLayout *vlt;
-      BPlainTextEdit *ptedt;
 private:
     Q_DISABLE_COPY(BTerminalWidgetPrivate)
 };

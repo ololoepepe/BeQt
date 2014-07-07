@@ -23,27 +23,25 @@
 #define BAPPLICATION_H
 
 class BApplicationPrivate;
-class BAboutDialogPrivate;
-class BPersonInfoProvider;
+
 class BAboutDialog;
-class BAbstractSettingsTab;
+class BPluginWrapper;
 
 class QPixmap;
-class QAction;
+class QRect;
 class QStringList;
-class QObject;
 class QSystemTrayIcon;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BApplicationBase>
-#include <BeQtCore/BPersonInfoProvider>
+#include "bsettingsdialog.h"
 
+#include <BeQtCore/BApplicationBase>
+
+#include <QApplication>
+#include <QIcon>
+#include <QList>
 #include <QObject>
 #include <QSize>
 #include <QString>
-#include <QIcon>
-#include <QWidget>
-#include <QApplication>
 
 #if defined(bApp)
 #   undef bApp
@@ -60,22 +58,6 @@ class B_WIDGETS_EXPORT BApplication : public QApplication, public BApplicationBa
     B_DECLARE_PRIVATE(BApplication)
     B_DECLARE_PRIVATE_S(BApplication)
 public:
-    enum SettingsTabNavigation
-    {
-        DefaultNavigation,
-        ListNavigation,
-        TabbedNavigation
-    };
-    enum StandardAction
-    {
-        SettingsAction,
-        HomepageAction,
-        HelpContentsAction,
-        ContextualHelpAction,
-        WhatsThisAction,
-        AboutAction
-    };
-public:
     explicit BApplication(int &argc, char **argv, const QString &applicationName = QString(),
                           const QString &organizationName = QString());
     explicit BApplication(int &argc, char **argv, const InitialSettings &s);
@@ -85,34 +67,33 @@ protected:
                           const QString &organizationName = QString());
     explicit BApplication(BApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s);
 public:
-    static QIcon icon( const QString &name, const QIcon &fallback = QIcon() );
-    static QIcon beqtIcon(const QString &name);
-    static QPixmap beqtPixmap( const QString &name, const QSize &scale = QSize() );
-    static void setIconCachingEnabled(bool enabled);
-    static void clearIconCache();
-    static void setThemedIconsEnabled(bool enabled);
-    static bool themedIconsEnabled();
-    static void setPreferredIconFormats(const QStringList &suffixes);
-    static QStringList preferredIconFormats();
     static BAboutDialog *aboutDialogInstance();
-    static void setSettingsTabDefaultNavigation(SettingsTabNavigation navigation);
-    static void setHelpIndex(const QString &index);
-    static void setHelpBrowserDefaultGeometry(const QRect &geometry);
+    static QIcon beqtIcon(const QString &name);
+    static QPixmap beqtPixmap(const QString &name, const QSize &scale = QSize());
+    static void clearIconCache();
     static QRect helpBrowserDefaultGeometry();
-    static QAction *createStandardAction(StandardAction type, QObject *parent = 0);
+    static QIcon icon(const QString &name, const QIcon &fallback = QIcon());
+    static QStringList preferredIconFormats();
+    static void setHelpBrowserDefaultGeometry(const QRect &geometry);
+    static void setHelpIndex(const QString &index);
+    static void setIconCachingEnabled(bool enabled);
+    static void setPreferredIconFormats(const QStringList &suffixes);
+    static void setThemedIconsEnabled(bool enabled);
+    static void setSettingsTabDefaultNavigation(BSettingsDialog::TabNavigation navigation);
+    static bool themedIconsEnabled();
     static QSystemTrayIcon *trayIcon();
 public Q_SLOTS:
-    void showAboutDialog();
-    void showSettingsDialog();
-    void showSettingsDialog(SettingsTabNavigation navigation);
-    void showHelpContents();
-    void showContextualHelp();
     void openHomepage();
     bool openLocalFile(const QString &fileName);
+    void showAboutDialog();
+    void showContextualHelp();
+    void showHelpContents();
+    void showSettingsDialog();
+    void showSettingsDialog(BSettingsDialog::TabNavigation navigation);
 Q_SIGNALS:
-    void pluginActivated(BPluginWrapper *pluginWrapper);
-    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
     void languageChanged();
+    void pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper);
+    void pluginActivated(BPluginWrapper *pluginWrapper);
 protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:
