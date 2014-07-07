@@ -49,8 +49,14 @@ protected:
 public:
     int autoCloseInterval() const;
     bool canCancel() const;
+    QString failureText() const;
     bool isValid() const;
     BNetworkOperation *operation() const;
+    QString processingRequestText() const;
+    QString receivingReplyText() const;
+    QString receivingRequestText() const;
+    QString sendingReplyText() const;
+    QString sendingRequestText() const;
     void setAutoCloseInterval(int msecs);
     void setCanCancel(bool b);
     void setFailureText(const QString &text);
@@ -63,7 +69,10 @@ public:
     void setUpdateInterval(int msecs);
     void setWaitingForReplyText(const QString &text);
     void setWaitingForStartText(const QString &text);
+    QString successText() const;
     int updateInterval() const;
+    QString waitingForReplyText() const;
+    QString waitingForStartText() const;
 private:
     Q_DISABLE_COPY(BOperationProgressDialog)
 };

@@ -212,6 +212,11 @@ bool BOperationProgressDialog::canCancel() const
     return d_func()->canCancel;
 }
 
+QString BOperationProgressDialog::failureText() const
+{
+    return d_func()->failureText;
+}
+
 bool BOperationProgressDialog::isValid() const
 {
     return d_func()->Operation;
@@ -220,6 +225,31 @@ bool BOperationProgressDialog::isValid() const
 BNetworkOperation *BOperationProgressDialog::operation() const
 {
     return d_func()->Operation;
+}
+
+QString BOperationProgressDialog::processingRequestText() const
+{
+    return d_func()->processingRequestText;
+}
+
+QString BOperationProgressDialog::receivingReplyText() const
+{
+    return d_func()->receivingReplyText;
+}
+
+QString BOperationProgressDialog::receivingRequestText() const
+{
+    return d_func()->receivingRequestText;
+}
+
+QString BOperationProgressDialog::sendingReplyText() const
+{
+    return d_func()->sendingReplyText;
+}
+
+QString BOperationProgressDialog::sendingRequestText() const
+{
+    return d_func()->sendingRequestText;
 }
 
 void BOperationProgressDialog::setAutoCloseInterval(int msecs)
@@ -299,7 +329,22 @@ void BOperationProgressDialog::setWaitingForStartText(const QString &text)
     d_func()->update();
 }
 
+QString BOperationProgressDialog::successText() const
+{
+    return d_func()->successText;
+}
+
 int BOperationProgressDialog::updateInterval() const
 {
     return d_func()->proxy->maximumDelay();
+}
+
+QString BOperationProgressDialog::waitingForReplyText() const
+{
+    return d_func()->waitingForReplyText;
+}
+
+QString BOperationProgressDialog::waitingForStartText() const
+{
+    return d_func()->waitingForStartText;
 }
