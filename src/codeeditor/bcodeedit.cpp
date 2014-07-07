@@ -895,7 +895,6 @@ void BCodeEditPrivate::insertText(const QString &txt, bool asKeyPress)
     bool b = blockMode && !asKeyPress && testBlock(sl, &blen);
     if (b)
     {
-        //TODO: Improve text insertion in block mode
         int offset = ltext.length();
         QTextBlock tb = tc.block();
         int  i = 0;
@@ -1822,7 +1821,6 @@ int BCodeEdit::replaceInSelection(const QString &txt, const QString &newText, QT
     int end = tc.selectionEnd();
     if (d->blockMode)
     {
-        //TODO: Improve replacing
         BPlainTextEditExtended::SelectionRange r = d->ptedt->selectionRanges().first();
         int plen = r.end - r.start;
         int min = r.start;
@@ -1891,7 +1889,6 @@ int BCodeEdit::replaceInSelectionRegexp(const QRegExp &rx, const QString &newTex
     int end = tc.selectionEnd();
     if (d->blockMode)
     {
-        //TODO: Improve replacing
         BPlainTextEditExtended::SelectionRange r = d->ptedt->selectionRanges().first();
         int plen = r.end - r.start;
         int min = r.start;

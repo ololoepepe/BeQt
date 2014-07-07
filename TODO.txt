@@ -73,11 +73,13 @@
 [done] Change BeQt::OSType enum values
 [done] Improve BUuid serialization
 [done] Use BUuid class instead of QUuid
-[done] Implement spam notification in network server
-[done] Improve banned user handling in network server
+[done] Add ability to set test words in BSpellCheckerDictionary
+[done] Add ability to set replaced letters in BSpellCheckerDictionary
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer
+[done] Implement spam notification in network server
+[done] Improve banned user handling in network server
 
 [done] Remove BApplication::createStandardAction method
 [done] Remove some static methods from BApplication
@@ -100,6 +102,8 @@
 [done] Improve BTerminalWidget event handling
 [done] Improve BLocalTerminalDriver builtin commands handling ("cd")
 [done] Reimplement BClipboardNotifier
+
+[done] Add new methods to BOperationProgressDialog
 
 [done] Add BAbstractCodeEditorDocument::clear method
 [done] Do not use QPointer for in editor modules

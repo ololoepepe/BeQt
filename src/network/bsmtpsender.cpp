@@ -86,7 +86,7 @@ void BSmtpSenderPrivate::handleInitial(QTextStream &stream)
 void BSmtpSenderPrivate::handleMail(QTextStream &stream)
 {
     QString s = "Content-Type: text/plain; charset=UTF-8;\n";
-    s += "Content-Transfer-Encoding: 8bit\n"; //TODO
+    s += "Content-Transfer-Encoding: 8bit\n"; //TODO: Make sure that 8bit encoding is appropriate for all cases
     s += "FROM: " + (!email.sender().isEmpty() ? email.sender() : login) + "\n";
     s += "TO: " + email.receiver() + "\n";
     if (!email.subject().isEmpty())

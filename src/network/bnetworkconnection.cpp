@@ -697,7 +697,7 @@ bool BNetworkConnection::handleLogRequest(BNetworkOperation *op)
 {
     QVariantMap m = op->variantData().toMap();
     QString text = m.value("text").toString();
-    BLogger::Level lvl = static_cast<BLogger::Level>(m.value("level").toInt()); //TODO: enum_cast
+    BLogger::Level lvl = enum_cast<BLogger::Level>(m.value("level"), BLogger::NoLevel, BLogger::FatalLevel);
     log(text, lvl);
     op->reply();
     op->setAutoDelete(true);

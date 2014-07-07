@@ -25,9 +25,11 @@
 #include "bdirtools.h"
 
 #include <QByteArray>
+#include <QChar>
 #include <QDebug>
 #include <QFileInfo>
 #include <QLocale>
+#include <QMap>
 #include <QString>
 #include <QStringList>
 #include <QTextCodec>
@@ -46,6 +48,9 @@ class BSpellCheckerDictionaryPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSpellCheckerDictionary)
 public:
+    static QMap<QChar, QChar> replacedLetters;
+    static QMap<QString, QString> testWords;
+public:
     const QByteArray AffixData;
     const QByteArray DictionaryData;
     const QLocale Locale;
@@ -60,6 +65,8 @@ public:
                                             const QString &locale = QString());
     ~BSpellCheckerDictionaryPrivate();
 public:
+    static QString replaceSpecialLetters(QString w);
+public:
     void init();
     bool testValidity();
 private:
@@ -67,17 +74,12 @@ private:
 };
 
 /*============================================================================
-================================ Global static functions =====================
-============================================================================*/
-
-static QString replaceSpecialLetters(QString w)
-{
-    return w.replace(L'\u0451', L'\u0435').replace(L'\u0401', L'\u0415');
-}
-
-/*============================================================================
 ================================ BSpellCheckerDictionaryPrivate ==============
 ============================================================================*/
+
+/*============================== Static public variables ===================*/
+
+QMap<QString, QString> BSpellCheckerDictionaryPrivate::testWords;
 
 /*============================== Public constructors =======================*/
 
@@ -94,6 +96,16 @@ BSpellCheckerDictionaryPrivate::BSpellCheckerDictionaryPrivate(BSpellCheckerDict
 BSpellCheckerDictionaryPrivate::~BSpellCheckerDictionaryPrivate()
 {
     delete hunspell;
+}
+
+/*============================== Static public methods =====================*/
+
+QString BSpellCheckerDictionaryPrivate::replaceSpecialLetters(QString w)
+{
+    w.replace(L'\u0451', L'\u0435').replace(L'\u0401', L'\u0415'); //Russian 'ё' and 'Ё' are treated as 'е' and 'Е'
+    foreach (const QChar &key, replacedLetters.keys())
+        w.replace(key, replacedLetters.value(key));
+    return w;
 }
 
 /*============================== Public methods ============================*/
@@ -131,10 +143,11 @@ bool BSpellCheckerDictionaryPrivate::testValidity()
     //Testing Hunspell instance using the word "test" in corresponding language
     if (Locale.name().startsWith("en"))
         return q_func()->spell("test");
-    else if (Locale.name().startsWith("ru"))
+    if (Locale.name().startsWith("ru"))
         return q_func()->spell(QString::fromWCharArray(L"\u0442\u0435\u0441\u0442"));
-    else
-        return true; //TODO: Actually, returning true hers is not cool; test other languages
+    if (testWords.contains(Locale.name()))
+        return q_func()->spell(testWords.value(Locale.name()));
+    return true; //NOTE: If no test word is provided, any dictionary is considered valid (even if it is invalid)
 }
 
 /*============================================================================
@@ -168,13 +181,50 @@ BSpellCheckerDictionary::~BSpellCheckerDictionary()
     //
 }
 
+/*============================== Static public methods =====================*/
+
+QMap<QChar, QChar> BSpellCheckerDictionary::replacedLetters()
+{
+    return BSpellCheckerDictionaryPrivate::replacedLetters;
+}
+
+void BSpellCheckerDictionary::setReplacedLetters(const QMap<QChar, QChar> &m)
+{
+    BSpellCheckerDictionaryPrivate::replacedLetters = m;
+}
+
+void BSpellCheckerDictionary::setTestWordForLocale(const QLocale &locale, const QString &word)
+{
+    if (locale.name().startsWith("en"))
+        return;
+    BSpellCheckerDictionaryPrivate::testWords.insert(locale.name(), word);
+}
+
+void BSpellCheckerDictionary::setTestWordForLocale(const QString &localeName, const QString &word)
+{
+    setTestWordForLocale(QLocale(localeName), word);
+}
+
+QString BSpellCheckerDictionary::testWordForLocale(const QLocale &locale)
+{
+    if (locale.name().startsWith("en"))
+        return "test";
+    return BSpellCheckerDictionaryPrivate::testWords.value(locale.name());
+}
+
+QString BSpellCheckerDictionary::testWordForLocale(const QString &localeName)
+{
+    return testWordForLocale(QLocale(localeName));
+}
+
 /*============================== Public methods ============================*/
 
 void BSpellCheckerDictionary::addWord(const QString &word)
 {
     if (!isValid())
         return;
-     d_func()->hunspell->add(codec()->fromUnicode(replaceSpecialLetters(word)).constData());
+    const char *w = codec()->fromUnicode(BSpellCheckerDictionaryPrivate::replaceSpecialLetters(word)).constData();
+     d_func()->hunspell->add(w);
 }
 
 QByteArray BSpellCheckerDictionary::affixData() const
@@ -221,14 +271,16 @@ void BSpellCheckerDictionary::removeWord(const QString &word)
 {
     if (!isValid())
         return;
-     d_func()->hunspell->remove(codec()->fromUnicode(replaceSpecialLetters(word)).constData());
+    const char *w = codec()->fromUnicode(BSpellCheckerDictionaryPrivate::replaceSpecialLetters(word)).constData();
+     d_func()->hunspell->remove(w);
 }
 
 bool BSpellCheckerDictionary::spell(const QString &word) const
 {
     if (!isValid())
         return false;
-    return d_func()->hunspell->spell(codec()->fromUnicode(replaceSpecialLetters(word)).constData());
+    const char *w = codec()->fromUnicode(BSpellCheckerDictionaryPrivate::replaceSpecialLetters(word)).constData();
+    return d_func()->hunspell->spell(w);
 }
 
 QStringList BSpellCheckerDictionary::suggest(const QString &word) const
@@ -236,8 +288,8 @@ QStringList BSpellCheckerDictionary::suggest(const QString &word) const
     if (!isValid())
         return QStringList();
     char ***list = new char **;
-    const char *w = d_func()->codec->fromUnicode(replaceSpecialLetters(word)).constData();
-    int count = d_func()->hunspell->suggest(list, w);
+    QString w = BSpellCheckerDictionaryPrivate::replaceSpecialLetters(word);
+    int count = d_func()->hunspell->suggest(list, d_func()->codec->fromUnicode(w).constData());
     QStringList sl;
     foreach (int i, bRangeD(0, count - 1))
         sl << d_func()->codec->toUnicode((*list)[i]);

@@ -324,43 +324,43 @@
 <context>
     <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2182"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2179"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2188"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2185"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2195"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2192"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2201"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2198"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2207"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2204"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2213"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2210"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2220"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="2217"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
