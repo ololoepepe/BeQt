@@ -100,6 +100,7 @@
 [done] Add new methods to BPasswordWidget and BLoginWidget
 [done] Implement BTerminalWidget history
 [done] Improve BTerminalWidget event handling
+[done] Improve BTerminalWidget codec system
 [done] Improve BLocalTerminalDriver builtin commands handling ("cd")
 [done] Reimplement BClipboardNotifier
 

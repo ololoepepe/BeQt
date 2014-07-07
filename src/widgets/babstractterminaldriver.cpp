@@ -48,7 +48,7 @@ void BAbstractTerminalDriver::kill()
     terminate();
 }
 
-bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &)
+bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &, QTextCodec *)
 {
     return true;
 }
@@ -63,13 +63,13 @@ void BAbstractTerminalDriver::setWorkingDirectory(const QString &)
     //
 }
 
-bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &)
+bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &, QTextCodec *)
 {
     emitFinished(0);
     return true;
 }
 
-bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &)
+bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &, QTextCodec *)
 {
     emitFinished(0);
     return true;

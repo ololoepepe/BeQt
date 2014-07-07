@@ -50,6 +50,7 @@
 #include <QStringList>
 #include <QTextBlock>
 #include <QTextCharFormat>
+#include <QTextCodec>
 #include <QTextCursor>
 #include <QTextDocument>
 #include <QVBoxLayout>
@@ -256,6 +257,7 @@ void BTerminalWidgetPrivate::init()
     processHistoryEnabled = true;
     currentHistory = -1;
     currentProcessHistory = -1;
+    codec = QTextCodec::codecForLocale();
     //
     QVBoxLayout *vlt = new QVBoxLayout(q);
       vlt->setContentsMargins(0, 0, 0, 0);
@@ -375,7 +377,7 @@ void BTerminalWidgetPrivate::read()
     scrollDown();
     QTextCursor tc = ptedt->textCursor();
     tc.movePosition(QTextCursor::End);
-    tc.insertText( driver->read() );
+    tc.insertText(driver->read(codec));
     ptedt->setTextCursor(tc);
     lastLineLength = tc.block().length() - 1;
 }
@@ -425,6 +427,16 @@ BTerminalWidget::BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent) :
 
 /*============================== Public methods ============================*/
 
+QTextCodec *BTerminalWidget::codec() const
+{
+    return d_func()->codec;
+}
+
+QString BTerminalWidget::codecName() const
+{
+    return QString::fromLatin1(d_func()->codec->name());
+}
+
 BAbstractTerminalDriver *BTerminalWidget::driver() const
 {
     return d_func()->driver;
@@ -464,6 +476,16 @@ QStringList BTerminalWidget::processHistory() const
 bool BTerminalWidget::processHistoryEnabled() const
 {
     return d_func()->processHistoryEnabled;
+}
+
+void BTerminalWidget::setCodec(QTextCodec *codec)
+{
+    d_func()->codec = codec ? codec : QTextCodec::codecForLocale();
+}
+
+void BTerminalWidget::setCodec(const QString &codecName)
+{
+    setCodec(QTextCodec::codecForName(codecName.toLatin1()));
 }
 
 void BTerminalWidget::setDriver(BAbstractTerminalDriver *driver)
@@ -587,7 +609,7 @@ void BTerminalWidget::processCommand(const QString &command, const QStringList &
     if (command.isEmpty())
         return ;
     QString error;
-    if (!d->driver->processCommand(command, arguments, error))
+    if (!d->driver->processCommand(command, arguments, error, d_func()->codec))
         d->appendText(d->constructErrorString(error));
 
 }
@@ -611,8 +633,8 @@ void BTerminalWidget::terminalCommand(const QString &command, const QStringList 
     }
     d->appendLine();
     QString error;
-    if (!d->driver->terminalCommand(command, arguments, error)) {
-        d->appendText( d->constructErrorString(error) );
+    if (!d->driver->terminalCommand(command, arguments, error, d_func()->codec)) {
+        d->appendText(d->constructErrorString(error));
         if (d->NormalMode)
             d->appendLine(d->driver->prompt() + " ");
         return;
@@ -626,7 +648,7 @@ void BTerminalWidget::terminalCommand(const QVariant &data)
         return;
     d->appendLine();
     QString error;
-    if (!d->driver->terminalCommand(data, error)) {
+    if (!d->driver->terminalCommand(data, error, d_func()->codec)) {
         d->appendText(d->constructErrorString(error));
         if (d->NormalMode)
             d->appendLine(d->driver->prompt() + " ");

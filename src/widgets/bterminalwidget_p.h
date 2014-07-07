@@ -30,6 +30,7 @@ class QEvent;
 class QKeyEvent;
 class QMenu;
 class QPoint;
+class QTextCodec;
 
 #include "bterminalwidget.h"
 
@@ -53,6 +54,7 @@ public:
 public:
     QAction *actCopy;
     QAction *actPaste;
+    QTextCodec *codec;
     int currentHistory;
     int currentProcessHistory;
     BAbstractTerminalDriver *driver;

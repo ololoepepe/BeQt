@@ -708,31 +708,31 @@
 <context>
     <name>BLocalTerminalDriver</name>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="104"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="103"/>
         <source>Too many arguments</source>
         <comment>terminalCommand return</comment>
         <translation>Слишком много аргументов</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="112"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="111"/>
         <source>No such directory</source>
         <comment>terminalCommand return</comment>
         <translation>Нет такой папки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="193"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="181"/>
         <source>No process is running</source>
         <comment>processCommand return</comment>
         <translation>Отсутствуют запущенные процессы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="232"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="210"/>
         <source>Another process is running</source>
         <comment>terminalCommand return</comment>
         <translation>Выполняется другой процесс</translation>
     </message>
     <message>
-        <location filename="../src/widgets/blocalterminaldriver.cpp" line="245"/>
+        <location filename="../src/widgets/blocalterminaldriver.cpp" line="223"/>
         <source>Could not find or start programm</source>
         <comment>terminalCommand return</comment>
         <translation>Не удалось найти или запустить программу</translation>
@@ -1731,25 +1731,25 @@
 <context>
     <name>BTerminalWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bterminalwidget.cpp" line="124"/>
+        <location filename="../src/widgets/bterminalwidget.cpp" line="125"/>
         <source>Error:</source>
         <comment>text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bterminalwidget.cpp" line="124"/>
+        <location filename="../src/widgets/bterminalwidget.cpp" line="125"/>
         <source>Unknown error</source>
         <comment>text</comment>
         <translation>Неизвестная ошибка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bterminalwidget.cpp" line="385"/>
+        <location filename="../src/widgets/bterminalwidget.cpp" line="387"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bterminalwidget.cpp" line="386"/>
+        <location filename="../src/widgets/bterminalwidget.cpp" line="388"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>

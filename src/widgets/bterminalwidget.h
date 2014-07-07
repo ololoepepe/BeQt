@@ -27,6 +27,7 @@ class BTerminalWidgetPrivate;
 class BAbstractTerminalDriver;
 
 class QStringList;
+class QTextCodec;
 class QVariant;
 
 #include <BeQtCore/BBaseObject>
@@ -63,6 +64,8 @@ public:
 protected:
     explicit BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent = 0);
 public:
+    QTextCodec *codec() const;
+    QString codecName() const;
     BAbstractTerminalDriver *driver() const;
     QStringList history() const;
     bool historyEnabled() const;
@@ -71,6 +74,8 @@ public:
     TerminalMode mode() const;
     QStringList processHistory() const;
     bool processHistoryEnabled() const;
+    void setCodec(QTextCodec *codec);
+    void setCodec(const QString &codecName);
     void setDriver(BAbstractTerminalDriver *driver);
     void setHistory(const QStringList &list);
     void setHistoryEnabled(bool enabled);

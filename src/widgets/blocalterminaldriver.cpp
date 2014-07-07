@@ -46,7 +46,6 @@ class BLocalTerminalDriverPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BLocalTerminalDriver)
     Q_DECLARE_TR_FUNCTIONS(BLocalTerminalDriver)
 public:
-    QTextCodec *codec;
     QProcess *process;
     QString workingDirectory;
 public:
@@ -122,7 +121,6 @@ void BLocalTerminalDriverPrivate::init()
     process = new QProcess(q);
     workingDirectory = QDir::homePath();
     process->setProcessChannelMode(QProcess::MergedChannels);
-    codec = QTextCodec::codecForLocale();
     QObject::connect(process, SIGNAL(finished(int)), q, SLOT(emitFinished(int)));
     QObject::connect(process, SIGNAL(readyRead()), q, SLOT(emitReadyRead()));
 }
@@ -159,16 +157,6 @@ void BLocalTerminalDriver::close()
     d_func()->process->close();
 }
 
-QTextCodec *BLocalTerminalDriver::codec() const
-{
-    return d_func()->codec;
-}
-
-QString BLocalTerminalDriver::codecName() const
-{
-    return QString::fromLatin1(d_func()->codec->name());
-}
-
 bool BLocalTerminalDriver::isActive() const
 {
     return d_func()->process->isOpen();
@@ -179,23 +167,22 @@ void BLocalTerminalDriver::kill()
     d_func()->process->kill();
 }
 
-QString BLocalTerminalDriver::read()
+QString BLocalTerminalDriver::read(QTextCodec *codec)
 {
     QTextStream in(d_func()->process);
-    if (d_func()->codec)
-        in.setCodec(d_func()->codec);
+    in.setCodec(codec ? codec : QTextCodec::codecForLocale());
     return in.readAll();
 }
 
-bool BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments, QString &error)
+bool BLocalTerminalDriver::processCommand(const QString &command, const QStringList &arguments, QString &error,
+                                          QTextCodec *codec)
 {
     if (!isActive()) {
         error = tr("No process is running", "processCommand return");
         return false;
     }
     QTextStream out(d_func()->process);
-    if (d_func()->codec)
-        out.setCodec(d_func()->codec);
+    out.setCodec(codec ? codec : QTextCodec::codecForLocale());
     QString cmd = command;
     foreach (const QString &arg, arguments)
         cmd += " " + (arg.contains(" ") ? ("\"" + arg + "\"") : arg);
@@ -209,16 +196,6 @@ QString BLocalTerminalDriver::prompt() const
     return d_func()->workingDirectory + "$";
 }
 
-void BLocalTerminalDriver::setCodec(QTextCodec *codec)
-{
-    d_func()->codec = codec;
-}
-
-void BLocalTerminalDriver::setCodec(const QString &codecName)
-{
-    d_func()->codec = QTextCodec::codecForName(codecName.toLatin1());
-}
-
 void BLocalTerminalDriver::setWorkingDirectory(const QString &path)
 {
     if (isActive())
@@ -226,7 +203,8 @@ void BLocalTerminalDriver::setWorkingDirectory(const QString &path)
     d_func()->workingDirectory = !path.isEmpty() ? path : QDir::homePath();
 }
 
-bool BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments, QString &error)
+bool BLocalTerminalDriver::terminalCommand(const QString &command, const QStringList &arguments, QString &error,
+                                           QTextCodec *)
 {
     if (isActive()) {
         error = tr("Another process is running", "terminalCommand return");
