@@ -52,10 +52,6 @@ public:
 public:
     static QMap<QChar, QChar> replacedLetters();
     static void setReplacedLetters(const QMap<QChar, QChar> &m);
-    static void setTestWordForLocale(const QLocale &locale, const QString &word);
-    static void setTestWordForLocale(const QString &localeName, const QString &word);
-    static QString testWordForLocale(const QLocale &locale);
-    static QString testWordForLocale(const QString &localeName);
 public:
     void addWord(const QString &word);
     QByteArray affixData() const;

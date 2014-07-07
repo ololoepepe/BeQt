@@ -49,7 +49,6 @@ class BSpellCheckerDictionaryPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BSpellCheckerDictionary)
 public:
     static QMap<QChar, QChar> replacedLetters;
-    static QMap<QString, QString> testWords;
 public:
     const QByteArray AffixData;
     const QByteArray DictionaryData;
@@ -79,7 +78,7 @@ private:
 
 /*============================== Static public variables ===================*/
 
-QMap<QString, QString> BSpellCheckerDictionaryPrivate::testWords;
+QMap<QChar, QChar> BSpellCheckerDictionaryPrivate::replacedLetters;
 
 /*============================== Public constructors =======================*/
 
@@ -140,14 +139,7 @@ void BSpellCheckerDictionaryPrivate::init()
 
 bool BSpellCheckerDictionaryPrivate::testValidity()
 {
-    //Testing Hunspell instance using the word "test" in corresponding language
-    if (Locale.name().startsWith("en"))
-        return q_func()->spell("test");
-    if (Locale.name().startsWith("ru"))
-        return q_func()->spell(QString::fromWCharArray(L"\u0442\u0435\u0441\u0442"));
-    if (testWords.contains(Locale.name()))
-        return q_func()->spell(testWords.value(Locale.name()));
-    return true; //NOTE: If no test word is provided, any dictionary is considered valid (even if it is invalid)
+    return q_func()->spell(Locale.nativeLanguageName());
 }
 
 /*============================================================================
@@ -191,30 +183,6 @@ QMap<QChar, QChar> BSpellCheckerDictionary::replacedLetters()
 void BSpellCheckerDictionary::setReplacedLetters(const QMap<QChar, QChar> &m)
 {
     BSpellCheckerDictionaryPrivate::replacedLetters = m;
-}
-
-void BSpellCheckerDictionary::setTestWordForLocale(const QLocale &locale, const QString &word)
-{
-    if (locale.name().startsWith("en"))
-        return;
-    BSpellCheckerDictionaryPrivate::testWords.insert(locale.name(), word);
-}
-
-void BSpellCheckerDictionary::setTestWordForLocale(const QString &localeName, const QString &word)
-{
-    setTestWordForLocale(QLocale(localeName), word);
-}
-
-QString BSpellCheckerDictionary::testWordForLocale(const QLocale &locale)
-{
-    if (locale.name().startsWith("en"))
-        return "test";
-    return BSpellCheckerDictionaryPrivate::testWords.value(locale.name());
-}
-
-QString BSpellCheckerDictionary::testWordForLocale(const QString &localeName)
-{
-    return testWordForLocale(QLocale(localeName));
 }
 
 /*============================== Public methods ============================*/

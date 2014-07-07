@@ -73,8 +73,8 @@
 [done] Change BeQt::OSType enum values
 [done] Improve BUuid serialization
 [done] Use BUuid class instead of QUuid
-[done] Add ability to set test words in BSpellCheckerDictionary
 [done] Add ability to set replaced letters in BSpellCheckerDictionary
+[done] Fix BSpellCheckerDictionary validity testing
 
 [done] Add ability to set compression for every network operation independently
 [done] Add ability to listen on several ports/hosts to BNetworkServer
