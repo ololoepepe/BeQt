@@ -112,7 +112,7 @@ QString createConfFileName(const QString &name)
 #else
     QString nname = name;
 #endif
-    return path + "/settings/" + nname + ".conf";
+    return path + "/" + nname + ".conf";
 }
 
 bool dirExists(const QString &dirName)

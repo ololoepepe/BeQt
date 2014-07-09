@@ -99,7 +99,7 @@ void BPluginsSettingsTabPrivate::init()
           btnHelp->setIcon( BApplication::icon("help_contents") );
           btnHelp->setText( tr("Plugin Help", "btn text") );
           connect(btnHelp, SIGNAL(clicked()), this, SLOT(btnHelpClicked()));
-        vlt->addWidget(btnAbout);
+        vlt->addWidget(btnHelp);
         vlt->addStretch();
       hlt->addLayout(vlt);
     //
