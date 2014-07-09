@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1236"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1267"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -134,19 +134,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="815"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="506"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="826"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="517"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="829"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="520"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -324,43 +324,43 @@
 <context>
     <name>BCodeEdit</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2179"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1535"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2185"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1541"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2192"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1548"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2198"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1554"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2204"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1560"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2210"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1566"/>
         <source>Delete</source>
         <comment>act text</comment>
         <translation>Удалить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="2217"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1573"/>
         <source>Select all</source>
         <comment>act text</comment>
         <translation>Выделить всё</translation>
@@ -369,7 +369,7 @@
 <context>
     <name>BCodeEditPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeedit.cpp" line="843"/>
+        <location filename="../src/codeeditor/bcodeedit.cpp" line="1369"/>
         <source>Processing content, please wait...</source>
         <comment>ptedt text</comment>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
@@ -378,13 +378,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2101"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2040"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2103"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2042"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -399,97 +399,90 @@
         <translation>Новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="671"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="857"/>
         <source>The file is too large</source>
         <comment>msgbox informativeText</comment>
         <translation>Файл слишком большой</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="896"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="750"/>
         <source>Failed to open file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось открыть файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="898"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="913"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="752"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="767"/>
         <source>Failed to open file:</source>
         <comment>msgbox text</comment>
         <translation>Не удалось открыть файл:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="911"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="765"/>
         <source>Failed to save file</source>
         <comment>msgbox windowTitle</comment>
         <translation>Не удалось сохранить файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="915"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="769"/>
         <source>as:</source>
         <comment>msgbox text</comment>
         <translation>как:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="927"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="482"/>
         <source>File already opened</source>
         <comment>msgbox windowTitle</comment>
         <translation>Файл уже открыт</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="929"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="484"/>
         <source>The file is already opened:</source>
         <comment>msgbox text</comment>
         <translation>Этот файл уже открыт:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="938"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="899"/>
         <source>Reopening modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Повторное открытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="940"/>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="952"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="586"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="901"/>
         <source>Document is modified:</source>
         <comment>msgbox text</comment>
         <translation>Документ изменён:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="941"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="902"/>
         <source>Do you want to reopen it anyway?</source>
         <comment>msgbox informativeText</comment>
         <translation>Всё равно хотите открыть его заново?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="950"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="584"/>
         <source>Closing modified document</source>
         <comment>msgbox windowTitle</comment>
         <translation>Закрытие изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="953"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="587"/>
         <source>Do you want to save it before closing?</source>
         <comment>msgbox informativeText</comment>
         <translation>Хотите сохранить его перед закрытием?</translation>
     </message>
 </context>
 <context>
-    <name>BCoreApplication</name>
-    <message>
-        <source>Copyright</source>
-        <translation type="obsolete">Авторские права</translation>
-    </message>
-</context>
-<context>
     <name>BDefaultFileType</name>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="104"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="95"/>
         <source>Text</source>
         <comment>name</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="109"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="80"/>
         <source>All files</source>
         <comment>description</comment>
         <translation>Все файлы</translation>
@@ -498,121 +491,121 @@
 <context>
     <name>BEditEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="132"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="111"/>
         <source>Mode: blocks</source>
         <comment>act text</comment>
         <translation>Режим: блоки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="132"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="111"/>
         <source>Mode: lines</source>
         <comment>act text</comment>
         <translation>Режим: строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="133"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="112"/>
         <source>Edit mode: blocks</source>
         <comment>act toolTip</comment>
         <translation>Режим редактирования: блоки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="133"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="112"/>
         <source>Edit mode: lines</source>
         <comment>act toolTip</comment>
         <translation>Режим редактирования: строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="134"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="113"/>
         <source>Use this action to switch between normal and block edit modes</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы переключаться между обычным режимом редактирования и режимом блоков</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="141"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="139"/>
         <source>Cut</source>
         <comment>act text</comment>
         <translation>Вырезать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="142"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="140"/>
         <source>Cut selected text</source>
         <comment>act toolTip</comment>
         <translation>Вырезать выделенный текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="143"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="141"/>
         <source>Use this action to delete current selected text and move it to clipboard</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы удалить текущий выделенный текст и переместить его в буфер обмена</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="145"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="143"/>
         <source>Copy</source>
         <comment>act text</comment>
         <translation>Копировать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="146"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="144"/>
         <source>Copy selected text</source>
         <comment>act toolTip</comment>
         <translation>Копировать выделенный текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="147"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="145"/>
         <source>Use this action to copy current selected text to clipboard</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы копировать текущий выделенный текст в буфер обмена</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="148"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="146"/>
         <source>Paste</source>
         <comment>act text</comment>
         <translation>Вставить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="149"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="147"/>
         <source>Paste text from clipboard</source>
         <comment>act toolTip</comment>
         <translation>Вставить из буфера обмена</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="150"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="148"/>
         <source>Paste text from clipboard to current cursor position</source>
         <comment>act whatsThis</comment>
         <translation>Вставить текст из буфера обмена в текущее местоположение курсора</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="151"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="149"/>
         <source>Undo</source>
         <comment>act text</comment>
         <translation>Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="152"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="150"/>
         <source>Undo last action</source>
         <comment>act toolTip</comment>
         <translation>Отменить последнее действие</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="153"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="151"/>
         <source>Use this action to undo last operation (text insertion, selection deletion, etc.)</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы отменить последнюю операцию (вставку текста, удаление выделения и т.д.)</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="157"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="155"/>
         <source>Use this action to repeat last operation, cancelled using the Undo action</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы повторить последнюю операцию, отменённую при помощи действия Отменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="155"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="153"/>
         <source>Redo</source>
         <comment>act text</comment>
         <translation>Повторить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bediteditormodule.cpp" line="156"/>
+        <location filename="../src/codeeditor/bediteditormodule.cpp" line="154"/>
         <source>Redo canceled action</source>
         <comment>act toolTip</comment>
         <translation>Повторить отменённое действие</translation>
@@ -687,19 +680,19 @@
 <context>
     <name>BIndicatorsEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bindicatorseditormodule.cpp" line="105"/>
+        <location filename="../src/codeeditor/bindicatorseditormodule.cpp" line="101"/>
         <source>Row:</source>
         <comment>lbl text</comment>
         <translation>Столбец:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bindicatorseditormodule.cpp" line="105"/>
+        <location filename="../src/codeeditor/bindicatorseditormodule.cpp" line="101"/>
         <source>Column:</source>
         <comment>lbl text</comment>
         <translation>Строка:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bindicatorseditormodule.cpp" line="115"/>
+        <location filename="../src/codeeditor/bindicatorseditormodule.cpp" line="111"/>
         <source>Unknown encoding</source>
         <comment>lbl text</comment>
         <translation>Неизвестная кодировка</translation>
@@ -847,157 +840,157 @@
 <context>
     <name>BOpenSaveEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="151"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="166"/>
         <source>Create</source>
         <comment>act text</comment>
         <translation>Создать</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="152"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="167"/>
         <source>Create new document</source>
         <comment>act toolTip</comment>
         <translation>Создать новый документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="153"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="168"/>
         <source>Use this action to create a new document. No file will be created on your drive</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы создать новый документ. Файл на диске создан не будет</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="155"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="170"/>
         <source>Open...</source>
         <comment>act text</comment>
         <translation>Открыть...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="156"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="171"/>
         <source>Open existing files</source>
         <comment>act toolTip</comment>
         <translation>Открыть существующие файлы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="157"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="172"/>
         <source>Use this action to open one or more files existing on your drive</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть один или несколько файлов, имеющихся на диске</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="160"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="175"/>
         <source>Reopen current file</source>
         <comment>act toolTip</comment>
         <translation>Повторно открыть текущий файл</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="161"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="176"/>
         <source>Use this file to reload current document. Use the down arrow to reopen the document using another encoding</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы перезагрузить текущий файл. Воспользуйтесь символом стрелки чтобы открыть документ с использованием другой кодировки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="165"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="180"/>
         <source>Save current document</source>
         <comment>act toolTip</comment>
         <translation>Сохранить текущий документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="166"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="181"/>
         <source>Use this action to save the current document on your drive. If the corresponding file doesn&apos;t exist, you will be proposed to select it&apos;s location</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы сохранить текущий документ на диске. Если соответствующий файл не существует, будет предложено выбрать его расположение</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="171"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="186"/>
         <source>Use this action to save the current document on your drive. You will be proposed to select file location and encoding</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы сохранить текущий документ на диске. Будет предложено выбрать расположение файла и кодировку</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="174"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="189"/>
         <source>Save all opened documents</source>
         <comment>act toolTip</comment>
         <translation>Сохранить все открытые документы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="175"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="190"/>
         <source>Use this action to save all modified documents. This is the same as using the Save action at every modified document</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы сохранить все изменённые документы. Это то же самое, что использовать действие Сохранить для каждого изменённого документа</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="179"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="194"/>
         <source>Close current document</source>
         <comment>act toolTip</comment>
         <translation>Закрыть текущий документ</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="180"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="195"/>
         <source>Use this action to close the current document. If the document is modified, you will be asked to save it before closing</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы закрыть текущий документ. Если документ был изменён, будет предложено сохранить его перед закрытием</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="159"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="174"/>
         <source>Reopen</source>
         <comment>act text</comment>
         <translation>Открыть заново</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="164"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="179"/>
         <source>Save</source>
         <comment>act text</comment>
         <translation>Сохранить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="169"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="184"/>
         <source>Save as...</source>
         <comment>act text</comment>
         <translation>Сохранить как...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="170"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="185"/>
         <source>Save current document as...</source>
         <comment>act toolTip</comment>
         <translation>Сохранить текущий документ как...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="173"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="188"/>
         <source>Save all</source>
         <comment>act text</comment>
         <translation>Сохранить все</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="178"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="193"/>
         <source>Close</source>
         <comment>act text</comment>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="183"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="198"/>
         <source>Close all</source>
         <comment>act text</comment>
         <translation>Закрыть все</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="184"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="199"/>
         <source>Close all opened documents</source>
         <comment>act toolTip</comment>
         <translation>Закрыть все открытые документы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="185"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="200"/>
         <source>Use this action to close all opened documents. If any documents are modified, you will be asked to save them before closing</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы закрыть все открытые документы. Если какие-то документы были изменены, будет предложено сохранить их перед закрытием</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="188"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="203"/>
         <source>Recent files</source>
         <comment>mnu title</comment>
         <translation>Недавние файлы</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="189"/>
+        <location filename="../src/codeeditor/bopensaveeditormodule.cpp" line="204"/>
         <source>Use this action to open one of the recently opened files</source>
         <comment>mnu whatsThis</comment>
         <translation>Используйте это действие чтобы снова открыть один из недавно открытых документов</translation>
@@ -1165,91 +1158,91 @@
 <context>
     <name>BSearchDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="209"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="203"/>
         <source>Find and replace</source>
         <comment>windowTitle</comment>
         <translation>Найти и заменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="209"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="203"/>
         <source>Find</source>
         <comment>windowTitle</comment>
         <translation>Найти</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="217"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="257"/>
         <source>Find:</source>
         <comment>lbl text</comment>
         <translation>Найти:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="218"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="258"/>
         <source>Replace with:</source>
         <comment>lbl text</comment>
         <translation>Заменить на:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="219"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="259"/>
         <source>Options</source>
         <comment>gbox title</comment>
         <translation>Опции</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="220"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="260"/>
         <source>Treat as RegExp</source>
         <comment>cbox text</comment>
         <translation>Воспринимать как RegExp</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="221"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="261"/>
         <source>Case sensitive</source>
         <comment>cbox text</comment>
         <translation>Учитывать регистр</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="222"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="262"/>
         <source>Whole words only</source>
         <comment>cbox text</comment>
         <translation>Только слова целиком</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="223"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="263"/>
         <source>Reverse search</source>
         <comment>cbox text</comment>
         <translation>Обратный поиск</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="224"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="264"/>
         <source>Cyclic search</source>
         <comment>cbox text</comment>
         <translation>Циклический поиск</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="225"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="265"/>
         <source>Replace all</source>
         <comment>btn text</comment>
         <translation>Заменить все</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="226"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="266"/>
         <source>in selection</source>
         <comment>act text</comment>
         <translation>в выделении</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="227"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="267"/>
         <source>in document</source>
         <comment>act text</comment>
         <translation>в документе</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="228"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="268"/>
         <source>Replace</source>
         <comment>btn text</comment>
         <translation>Заменить</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="229"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="269"/>
         <source>Find</source>
         <comment>btn text</comment>
         <translation>Найти</translation>
@@ -1258,61 +1251,61 @@
 <context>
     <name>BSearchEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="569"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="529"/>
         <source>Text</source>
         <comment>msg text</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="569"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="529"/>
         <source>not found</source>
         <comment>msg text</comment>
         <translation>не найден</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="576"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="566"/>
         <source>Find and replace...</source>
         <comment>act text</comment>
         <translation>Найти и заменить...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="577"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="567"/>
         <source>Find and replace text</source>
         <comment>act toolTip</comment>
         <translation>Найти и заменить текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="578"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="568"/>
         <source>Use this action to open a find and replace dialog</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть диалог поиска и замены</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="579"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="569"/>
         <source>Find next</source>
         <comment>act text</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="580"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="570"/>
         <source>Find next</source>
         <comment>act toolTip</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="581"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="571"/>
         <source>Use this action to find next occurrence of the text</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы найти следующее вхождение текста</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="607"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="592"/>
         <source>Found and replaced</source>
         <comment>msg text</comment>
         <translation>Найдено и заменено</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="608"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="593"/>
         <source>entries</source>
         <comment>msg text</comment>
         <translation>вхождений</translation>
@@ -1321,19 +1314,19 @@
 <context>
     <name>BSelectDocumentsDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="117"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="113"/>
         <source>Some documents are modified. Do you want to save them before closing?</source>
         <comment>lbl text</comment>
         <translation>Некоторые документы изменены. Хотите сохранить их перед закрытием?</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="121"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="117"/>
         <source>Choose documents that you want to save:</source>
         <comment>lbl text</comment>
         <translation>Выберите документы, которые хотите сохранить:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="136"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="131"/>
         <source>If you don&apos;t save the documents, all changes will be lost</source>
         <comment>lbl text</comment>
         <translation>Если вы не сохраните документы, все изменения будут потеряны</translation>
@@ -1414,43 +1407,43 @@
 <context>
     <name>BSplittedLinesDialogPrivate</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="238"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="229"/>
         <source>Lines:</source>
         <comment>lstwgti text</comment>
         <translation>Строки:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="239"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="230"/>
         <source>total:</source>
         <comment>lstwgti text</comment>
         <translation>всего:</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="249"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="240"/>
         <source>Splitted lines</source>
         <comment>windowTitle</comment>
         <translation>Разделённые строки</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="254"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="245"/>
         <source>Some lines in this document were too long, so they were splitted into several lines</source>
         <comment>lbl text</comment>
         <translation>Некоторые строки в этом документе оказались слишком длинными, поэтому они были разделены на несколько строк</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="260"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="251"/>
         <source>Doubleclick an item to go to the corresponding line</source>
         <comment>lstwgt toolTip</comment>
         <translation>Используйте двойной щелчок для перехода к соответствующей строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="266"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="257"/>
         <source>Select text when going to line</source>
         <comment>cbox text</comment>
         <translation>Выделять текст при переходе к строке</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="273"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="264"/>
         <source>Go to line</source>
         <comment>btn text</comment>
         <translation>Перейти к строке</translation>
@@ -1533,10 +1526,6 @@
         <location filename="../src/corelib/bterminal.cpp" line="393"/>
         <source>Show information about BeQt libraries</source>
         <translation>Показать информацию о библиотеках BeQt</translation>
-    </message>
-    <message>
-        <source>Unknown command</source>
-        <translation type="obsolete">Неизвестная команда</translation>
     </message>
     <message>
         <location filename="../src/corelib/bterminal.cpp" line="398"/>
@@ -1629,95 +1618,6 @@
         <location filename="../src/corelib/bterminal.cpp" line="1004"/>
         <source>Invalid index</source>
         <translation>Некорректный индекс</translation>
-    </message>
-</context>
-<context>
-    <name>BTerminalIOHandler</name>
-    <message>
-        <source>Unknown command</source>
-        <translation type="obsolete">Неизвестная команда</translation>
-    </message>
-    <message>
-        <source>Quit the application</source>
-        <translation type="obsolete">Выйти из приложения</translation>
-    </message>
-    <message>
-        <source>Enter locale:</source>
-        <translation type="obsolete">Введите локаль:</translation>
-    </message>
-    <message>
-        <source>Show list of all available settings</source>
-        <translation type="obsolete">Показать список всех доступных настроек</translation>
-    </message>
-    <message>
-        <source>Show the value for &lt;key&gt; or it&apos;s description</source>
-        <translation type="obsolete">Показать значение для ключа &lt;key&gt; или его описание</translation>
-    </message>
-    <message>
-        <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
-        <translation type="obsolete">Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
-    </message>
-    <message>
-        <source>Show description of &lt;command&gt;</source>
-        <translation type="obsolete">Показать описание команды &lt;command&gt;</translation>
-    </message>
-    <message>
-        <source>Show basic help, or:
-  --commands - list of all available commands
-  --settings - list of all available settings
-  --all - all of the above (including basic help)</source>
-        <translation type="obsolete">Показать основную справку, или:
-  --commands - список всех доступных команд
-  --settings - список всех доступных настроек
-  --all - всё вышеперечисленное (включая основную справку)</translation>
-    </message>
-    <message>
-        <source>Show information about this application</source>
-        <translation type="obsolete">Показать информацию об это приложении</translation>
-    </message>
-    <message>
-        <source>Show information about BeQt libraries</source>
-        <translation type="obsolete">Показать информацию о библиотеках BeQt</translation>
-    </message>
-    <message>
-        <source>Invalid parameters</source>
-        <translation type="obsolete">Некорректные параметры</translation>
-    </message>
-    <message>
-        <source>Settings structure not set</source>
-        <translation type="obsolete">Не задана структура настроек</translation>
-    </message>
-    <message>
-        <source>Failed to show value</source>
-        <translation type="obsolete">Не удалось показать значение</translation>
-    </message>
-    <message>
-        <source>No such option</source>
-        <translation type="obsolete">Нет такой опции</translation>
-    </message>
-    <message>
-        <source>No description</source>
-        <translation type="obsolete">Описание отсутствует</translation>
-    </message>
-    <message>
-        <source>Invalid value</source>
-        <translation type="obsolete">Недейтсивтельное значение</translation>
-    </message>
-    <message>
-        <source>Failed to set value</source>
-        <translation type="obsolete">Не удалось установить значение</translation>
-    </message>
-    <message>
-        <source>OK</source>
-        <translation type="obsolete">ОК</translation>
-    </message>
-    <message>
-        <source>Nothing to display</source>
-        <translation type="obsolete">Нечего отобразить</translation>
-    </message>
-    <message>
-        <source>The following commands are available:</source>
-        <translation type="obsolete">Доступны следующие команды:</translation>
     </message>
 </context>
 <context>

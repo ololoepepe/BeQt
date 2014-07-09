@@ -21,34 +21,29 @@
 
 #include "bopensaveeditormodule.h"
 #include "bopensaveeditormodule_p.h"
+
+#include "babstractcodeeditordocument.h"
+#include "babstractdocumentdriver.h"
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
 #include "bcodeeditor.h"
-#include "bcodeeditordocument.h"
-#include "babstractfiletype.h"
-#include "babstractdocumentdriver.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
 #include <BeQtWidgets/BTextCodecMenu>
 
-#include <QObject>
-#include <QString>
-#include <QList>
 #include <QAction>
-#include <QTextCodec>
-#include <QMenu>
-#include <QList>
-#include <QVariant>
-#include <QStringList>
-#include <QByteArray>
+#include <QDebug>
 #include <QFileInfo>
 #include <QKeySequence>
-#include <QMetaObject>
-
-#include <QDebug>
+#include <QList>
+#include <QList>
+#include <QMenu>
+#include <QObject>
+#include <QString>
+#include <QStringList>
+#include <QVariant>
 
 /*============================================================================
 ================================ BOpenSaveEditorModulePrivate ================
@@ -70,40 +65,6 @@ BOpenSaveEditorModulePrivate::~BOpenSaveEditorModulePrivate()
 
 /*============================== Public methods ============================*/
 
-void BOpenSaveEditorModulePrivate::init()
-{
-    actNewFile = new QAction(this);
-      actNewFile->setIcon( BApplication::icon("filenew") );
-      actNewFile->setShortcut(QKeySequence::New);
-    actOpenFiles = new QAction(this);
-      actOpenFiles->setIcon( BApplication::icon("fileopen") );
-      actOpenFiles->setShortcut(QKeySequence::Open);
-    actReopenFile = new QAction(this);
-      actReopenFile->setIcon( BApplication::icon("reload") );
-      BTextCodecMenu *mnu = new BTextCodecMenu(BTextCodecMenu::StructuredStyle);
-      mnu->setMapping(this, SLOT(codecTriggered(QString)));
-      actReopenFile->setMenu(mnu);
-    actSaveFile = new QAction(this);
-      actSaveFile->setIcon( BApplication::icon("filesave") );
-      actSaveFile->setShortcut(QKeySequence::Save);
-    actSaveFileAs = new QAction(this);
-      actSaveFileAs->setIcon( BApplication::icon("filesaveas") );
-    actSaveAllFiles = new QAction(this);
-      actSaveAllFiles->setIcon( BApplication::icon("save_all") );
-      actSaveAllFiles->setShortcut( QKeySequence("Ctrl+Shift+S") );
-    actCloseFile = new QAction(this);
-      actCloseFile->setIcon( BApplication::icon("fileclose") );
-      actCloseFile->setShortcut(QKeySequence::Close);
-    actCloseAllFiles = new QAction(this);
-      actCloseAllFiles->setIcon( BApplication::icon("fileclose") );
-    mnuFileHistory = new QMenu;
-      mnuFileHistory->setIcon( BApplication::icon("history") );
-    //
-    checkActions();
-    retranslateUi();
-    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
-}
-
 void BOpenSaveEditorModulePrivate::checkActions()
 {
     BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
@@ -118,33 +79,87 @@ void BOpenSaveEditorModulePrivate::checkActions()
     mnuFileHistory->setEnabled(editor && !mnuFileHistory->isEmpty());
 }
 
+void BOpenSaveEditorModulePrivate::init()
+{
+    actNewFile = new QAction(this);
+      actNewFile->setIcon(BApplication::icon("filenew"));
+      actNewFile->setShortcut(QKeySequence::New);
+    actOpenFiles = new QAction(this);
+      actOpenFiles->setIcon(BApplication::icon("fileopen"));
+      actOpenFiles->setShortcut(QKeySequence::Open);
+    actReopenFile = new QAction(this);
+      actReopenFile->setIcon(BApplication::icon("reload"));
+      BTextCodecMenu *mnu = new BTextCodecMenu(BTextCodecMenu::StructuredStyle);
+      mnu->setMapping(this, SLOT(codecTriggered(QString)));
+      actReopenFile->setMenu(mnu);
+    actSaveFile = new QAction(this);
+      actSaveFile->setIcon(BApplication::icon("filesave"));
+      actSaveFile->setShortcut(QKeySequence::Save);
+    actSaveFileAs = new QAction(this);
+      actSaveFileAs->setIcon(BApplication::icon("filesaveas"));
+    actSaveAllFiles = new QAction(this);
+      actSaveAllFiles->setIcon(BApplication::icon("save_all"));
+      actSaveAllFiles->setShortcut(QKeySequence("Ctrl+Shift+S"));
+    actCloseFile = new QAction(this);
+      actCloseFile->setIcon(BApplication::icon("fileclose"));
+      actCloseFile->setShortcut(QKeySequence::Close);
+    actCloseAllFiles = new QAction(this);
+      actCloseAllFiles->setIcon(BApplication::icon("fileclose"));
+    mnuFileHistory = new QMenu;
+      mnuFileHistory->setIcon(BApplication::icon("history"));
+    //
+    checkActions();
+    retranslateUi();
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
+}
+
 void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
 {
     QList<QAction *> acts = mnuFileHistory->actions();
-    while (acts.size() > list.size())
-    {
+    while (acts.size() > list.size()) {
         QAction *act = acts.takeLast();
         mnuFileHistory->removeAction(act);
         act->deleteLater();
     }
-    while ( acts.size() < list.size() )
-    {
+    while (acts.size() < list.size()) {
         QAction *act = new QAction(mnuFileHistory);
         acts << act;
         mnuFileHistory->addAction(act);
     }
-    for (int i = 0; i < list.size(); ++i)
-    {
+    for (int i = 0; i < list.size(); ++i) {
         QAction *act = acts.at(i);
-        act->setProperty( "beqt/file_name", list.at(i) );
-        act->setText( QFileInfo( list.at(i) ).fileName() );
-        connect(act, SIGNAL( triggered() ), this, SLOT( fileTriggered() ), Qt::UniqueConnection);
+        act->setProperty("beqt/file_name", list.at(i));
+        act->setText(QFileInfo( list.at(i) ).fileName());
+        connect(act, SIGNAL(triggered()), this, SLOT(fileTriggered()), Qt::UniqueConnection);
         connect(act, SIGNAL(hovered()), this, SLOT(resetFileHistoryMenuToolTip()));
     }
-    mnuFileHistory->setEnabled( !mnuFileHistory->isEmpty() );
+    mnuFileHistory->setEnabled(!mnuFileHistory->isEmpty());
 }
 
 /*============================== Public slots ==============================*/
+
+void BOpenSaveEditorModulePrivate::codecTriggered(const QString &codecName)
+{
+    if (!editor)
+        return;
+    editor->reopenCurrentDocument(codecName);
+}
+
+void BOpenSaveEditorModulePrivate::fileTriggered()
+{
+    if (!editor)
+        return;
+    QString fn = sender()->property("beqt/file_name").toString();
+    if (fn.isEmpty())
+        return;
+    editor->openDocument(fn);
+}
+
+void BOpenSaveEditorModulePrivate::resetFileHistoryMenuToolTip()
+{
+    QObject *s = sender();
+    mnuFileHistory->setToolTip(s ? s->property("beqt/file_name").toString() : QString());
+}
 
 void BOpenSaveEditorModulePrivate::retranslateUi()
 {
@@ -189,29 +204,6 @@ void BOpenSaveEditorModulePrivate::retranslateUi()
     mnuFileHistory->setWhatsThis(tr("Use this action to open one of the recently opened files", "mnu whatsThis"));
 }
 
-void BOpenSaveEditorModulePrivate::codecTriggered(const QString &codecName)
-{
-    if (!editor)
-        return;
-    editor->reopenCurrentDocument(codecName);
-}
-
-void BOpenSaveEditorModulePrivate::fileTriggered()
-{
-    if (!editor)
-        return;
-    QString fn = sender()->property("beqt/file_name").toString();
-    if ( fn.isEmpty() )
-        return;
-    editor->openDocument(fn);
-}
-
-void BOpenSaveEditorModulePrivate::resetFileHistoryMenuToolTip()
-{
-    QObject *s = sender();
-    mnuFileHistory->setToolTip( s ? s->property("beqt/file_name").toString() : QString() );
-}
-
 /*============================================================================
 ================================ BOpenSaveEditorModule =======================
 ============================================================================*/
@@ -239,15 +231,9 @@ BOpenSaveEditorModule::BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QO
 
 /*============================== Public methods ============================*/
 
-QString BOpenSaveEditorModule::id() const
-{
-    return "beqt/open_save";
-}
-
 QAction *BOpenSaveEditorModule::action(int type)
 {
-    switch (type)
-    {
+    switch (type) {
     case NewFileAction:
         return d_func()->actNewFile;
     case OpenFilesAction:
@@ -273,8 +259,7 @@ QList<QAction *> BOpenSaveEditorModule::actions(int group, bool)
 {
     B_D(BOpenSaveEditorModule);
     QList<QAction *> list;
-    switch (group)
-    {
+    switch (group) {
     case OpenActionGroup:
         list << d->actNewFile;
         list << d->actOpenFiles;
@@ -304,23 +289,47 @@ QList<QAction *> BOpenSaveEditorModule::actions(bool extended)
     return list;
 }
 
-QMenu *BOpenSaveEditorModule::fileHistoryMenu()
-{
-    return d_func()->mnuFileHistory;
-}
-
 QList<QAction *> BOpenSaveEditorModule::fileHistoryActions()
 {
     return d_func()->mnuFileHistory->actions();
 }
 
+QMenu *BOpenSaveEditorModule::fileHistoryMenu()
+{
+    return d_func()->mnuFileHistory;
+}
+
+QString BOpenSaveEditorModule::id() const
+{
+    return "beqt/open_save";
+}
+
 /*============================== Protected methods =========================*/
+
+void BOpenSaveEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *)
+{
+    d_func()->checkActions();
+}
+
+void BOpenSaveEditorModule::documentBuisyChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BOpenSaveEditorModule::documentModificationChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BOpenSaveEditorModule::documentReadOnlyChanged(bool)
+{
+    d_func()->checkActions();
+}
 
 void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
 {
     B_D(BOpenSaveEditorModule);
-    if (edr)
-    {
+    if (edr) {
         connect(d->actNewFile, SIGNAL(triggered()), edr, SLOT(addDocument()));
         connect(d->actOpenFiles, SIGNAL(triggered()), edr, SLOT(openDocuments()));
         connect(d->actReopenFile, SIGNAL(triggered()), edr, SLOT(reopenCurrentDocument()));
@@ -331,14 +340,13 @@ void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
         connect(d->actCloseAllFiles, SIGNAL(triggered()), edr, SLOT(closeAllDocuments()));
     }
     d->checkActions();
-    d->resetFileHistory( edr ? edr->fileHistory() : QStringList() );
+    d->resetFileHistory(edr ? edr->fileHistory() : QStringList());
 }
 
 void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
 {
     B_D(BOpenSaveEditorModule);
-    if (edr)
-    {
+    if (edr) {
         disconnect(d->actNewFile, SIGNAL(triggered()), edr, SLOT(addDocument()));
         disconnect(d->actOpenFiles, SIGNAL(triggered()), edr, SLOT(openDocuments()));
         disconnect(d->actReopenFile, SIGNAL(triggered()), edr, SLOT(reopenCurrentDocument()));
@@ -350,26 +358,6 @@ void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
     }
     d->checkActions();
     d->resetFileHistory();
-}
-
-void BOpenSaveEditorModule::documentReadOnlyChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BOpenSaveEditorModule::documentModificationChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BOpenSaveEditorModule::documentBuisyChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BOpenSaveEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *)
-{
-    d_func()->checkActions();
 }
 
 void BOpenSaveEditorModule::fileHistoryChanged(const QStringList &list)

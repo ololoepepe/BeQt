@@ -30,8 +30,7 @@
 [done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
 [done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
 [done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
-
-* Use Qt coding style, sort includes, class members, etc.
+[done] Use Qt coding style, sort includes, class members, etc.
 
 [done] Remove BTranslateFunctor class
 [done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
@@ -118,3 +117,5 @@
 [done] Add public function for handling events to BAbstractCodeEditorDocument
 [done] Implement autocompletion
 [done] Hide BTextBlockUserData; add BTextBlockExtraData instead
+[done] Remove old function declarations from BeQtCodeEditor classes
+[done] Change BAbstractCodeEditorDocument preprocessing user data from QVariantMap to QVariant

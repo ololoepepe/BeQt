@@ -22,12 +22,40 @@
 #ifndef BABSTRACTFILETYPE_P_H
 #define BABSTRACTFILETYPE_P_H
 
-class BSyntaxHighlighter;
 class BAbstractCodeEditorDocument;
+class BSyntaxHighlighter;
+
+class QString;
+class QStringList;
 
 #include "babstractfiletype.h"
 
 #include <BeQtCore/private/bbase_p.h>
+
+#include <QCoreApplication>
+
+/*============================================================================
+================================ BDefaultFileType ============================
+============================================================================*/
+
+class BDefaultFileType : public BAbstractFileType
+{
+    Q_DECLARE_TR_FUNCTIONS(BDefaultFileType)
+protected:
+    static BDefaultFileType *_m_self;
+public:
+    explicit BDefaultFileType();
+    ~BDefaultFileType();
+public:
+    static BDefaultFileType *instance();
+public:
+    BracketPairList brackets() const;
+    QString description() const;
+    QString id() const;
+    bool matchesFileName(const QString &fileName) const;
+    QString name() const;
+    QStringList suffixes() const;
+};
 
 /*============================================================================
 ================================ BAbstractFileTypePrivate ====================
@@ -37,13 +65,13 @@ class B_CODEEDITOR_EXPORT BAbstractFileTypePrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BAbstractFileType)
 public:
+    BSyntaxHighlighter *highlighter;
+public:
     explicit BAbstractFileTypePrivate(BAbstractFileType *q);
     ~BAbstractFileTypePrivate();
 public:
     void init();
     void setDocument(BAbstractCodeEditorDocument *doc);
-public:
-    BSyntaxHighlighter *highlighter;
 private:
     Q_DISABLE_COPY(BAbstractFileTypePrivate)
 };

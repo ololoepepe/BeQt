@@ -22,21 +22,21 @@
 #ifndef BOPENSAVEEDITORMODULE_H
 #define BOPENSAVEEDITORMODULE_H
 
-#include "babstracteditormodule.h"
-
 class BOpenSaveEditorModulePrivate;
-class BCodeEditor;
-class BAbstractCodeEditorDocument;
 
-class QString;
+class BAbstractCodeEditorDocument;
+class BCodeEditor;
+
 class QAction;
 class QMenu;
+class QString;
 
-#include <BeQtCore/BeQtGlobal>
+#include "babstracteditormodule.h"
+
 #include <BeQtCore/BBase>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BOpenSaveEditorModule =======================
@@ -49,20 +49,20 @@ class B_CODEEDITOR_EXPORT BOpenSaveEditorModule : public BAbstractEditorModule
 public:
     enum Action
     {
+        CloseAllFilesAction = 1,
+        CloseFileAction,
         NewFileAction,
         OpenFilesAction,
         ReopenAction,
-        SaveFileAction,
-        SaveFileAsAction,
         SaveAllFilesAction,
-        CloseFileAction,
-        CloseAllFilesAction
+        SaveFileAction,
+        SaveFileAsAction
     };
     enum ActionGroup
     {
+        CloseActionGroup = 1,
         OpenActionGroup,
-        SaveActionGroup,
-        CloseActionGroup
+        SaveActionGroup
     };
 public:
     explicit BOpenSaveEditorModule(QObject *parent = 0);
@@ -70,19 +70,19 @@ public:
 protected:
     explicit BOpenSaveEditorModule(BOpenSaveEditorModulePrivate &d, QObject *parent = 0);
 public:
-    QString id() const;
     QAction *action(int type);
     QList<QAction *> actions(int group, bool extended = false);
     QList<QAction *> actions(bool extended = false);
-    QMenu *fileHistoryMenu();
     QList<QAction *> fileHistoryActions();
+    QMenu *fileHistoryMenu();
+    QString id() const;
 protected:
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
+    void documentBuisyChanged(bool buisy);
+    void documentModificationChanged(bool modified);
+    void documentReadOnlyChanged(bool ro);
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
-    void documentReadOnlyChanged(bool ro);
-    void documentModificationChanged(bool modified);
-    void documentBuisyChanged(bool buisy);
-    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void fileHistoryChanged(const QStringList &list);
 private:
     Q_DISABLE_COPY(BOpenSaveEditorModule)

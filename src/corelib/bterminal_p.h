@@ -45,7 +45,7 @@ class QEventLoop;
 ================================ BTerminalThread =============================
 ============================================================================*/
 
-class BTerminalThread : public QThread
+class B_CORE_EXPORT BTerminalThread : public QThread
 {
     Q_OBJECT
 public:

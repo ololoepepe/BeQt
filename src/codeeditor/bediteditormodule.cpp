@@ -21,23 +21,23 @@
 
 #include "bediteditormodule.h"
 #include "bediteditormodule_p.h"
+
+#include "babstractcodeeditordocument.h"
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
-#include "babstractcodeeditordocument.h"
-#include "bcodeeditor.h"
 #include "bcodeedit.h"
+#include "bcodeeditor.h"
 #include "bcodeeditordocument.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
 
-#include <QObject>
 #include <QAction>
-#include <QList>
-#include <QString>
 #include <QKeySequence>
+#include <QList>
+#include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BEditEditorModulePrivate ====================
@@ -58,55 +58,6 @@ BEditEditorModulePrivate::~BEditEditorModulePrivate()
 
 /*============================== Public methods ============================*/
 
-void BEditEditorModulePrivate::init()
-{
-    document = 0;
-    //
-    actCut = new QAction(this);
-      actCut->setIcon( BApplication::icon("editcut") );
-      actCut->setShortcut(QKeySequence::Cut);
-    actCopy = new QAction(this);
-      actCopy->setIcon( BApplication::icon("editcopy") );
-      actCopy->setShortcut(QKeySequence::Copy);
-    actPaste = new QAction(this);
-      actPaste->setIcon( BApplication::icon("editpaste") );
-      actPaste->setShortcut(QKeySequence::Paste);
-    actUndo = new QAction(this);
-      actUndo->setIcon( BApplication::icon("undo") );
-      actUndo->setShortcut(QKeySequence::Undo);
-    actRedo = new QAction(this);
-      actRedo->setIcon( BApplication::icon("redo") );
-      actRedo->setShortcut(QKeySequence::Redo);
-    actSwitchMode = new QAction(this);
-      connect(actSwitchMode, SIGNAL(triggered()), this, SLOT(actSwitchModeTriggered()));
-    //
-    resetSwitchModeAction(false);
-    checkActions();
-    retranslateUi();
-    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
-}
-
-void BEditEditorModulePrivate::setDocument(BAbstractCodeEditorDocument *doc)
-{
-    if (document)
-    {
-        disconnect(actCut, SIGNAL(triggered()), document, SLOT(cut()));
-        disconnect(actCopy, SIGNAL(triggered()), document, SLOT(copy()));
-        disconnect(actPaste, SIGNAL(triggered()), document, SLOT(paste()));
-        disconnect(actUndo, SIGNAL(triggered()), document, SLOT(undo()));
-        disconnect(actRedo, SIGNAL(triggered()), document, SLOT(redo()));
-    }
-    document = doc;
-    if (document)
-    {
-        connect(actCut, SIGNAL(triggered()), document, SLOT(cut()));
-        connect(actCopy, SIGNAL(triggered()), document, SLOT(copy()));
-        connect(actPaste, SIGNAL(triggered()), document, SLOT(paste()));
-        connect(actUndo, SIGNAL(triggered()), document, SLOT(undo()));
-        connect(actRedo, SIGNAL(triggered()), document, SLOT(redo()));
-    }
-}
-
 void BEditEditorModulePrivate::checkActions()
 {
     BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
@@ -126,12 +77,59 @@ void BEditEditorModulePrivate::checkSwitchModeAction()
         resetSwitchModeAction(doc->editMode() == BCodeEdit::BlockMode);
 }
 
+void BEditEditorModulePrivate::init()
+{
+    document = 0;
+    //
+    actCut = new QAction(this);
+      actCut->setIcon(BApplication::icon("editcut"));
+      actCut->setShortcut(QKeySequence::Cut);
+    actCopy = new QAction(this);
+      actCopy->setIcon(BApplication::icon("editcopy"));
+      actCopy->setShortcut(QKeySequence::Copy);
+    actPaste = new QAction(this);
+      actPaste->setIcon(BApplication::icon("editpaste"));
+      actPaste->setShortcut(QKeySequence::Paste);
+    actUndo = new QAction(this);
+      actUndo->setIcon(BApplication::icon("undo"));
+      actUndo->setShortcut(QKeySequence::Undo);
+    actRedo = new QAction(this);
+      actRedo->setIcon(BApplication::icon("redo"));
+      actRedo->setShortcut(QKeySequence::Redo);
+    actSwitchMode = new QAction(this);
+      connect(actSwitchMode, SIGNAL(triggered()), this, SLOT(actSwitchModeTriggered()));
+    //
+    resetSwitchModeAction(false);
+    checkActions();
+    retranslateUi();
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
+}
+
 void BEditEditorModulePrivate::resetSwitchModeAction(bool bm)
 {
     actSwitchMode->setIcon(BApplication::icon(bm ? "edit_mode_block" : "edit_mode_normal"));
     actSwitchMode->setText(bm ? tr("Mode: blocks", "act text") : tr("Mode: lines", "act text"));
     actSwitchMode->setToolTip(bm ? tr("Edit mode: blocks", "act toolTip") : tr("Edit mode: lines", "act toolTip"));
     actSwitchMode->setWhatsThis(tr("Use this action to switch between normal and block edit modes", "act whatsThis"));
+}
+
+void BEditEditorModulePrivate::setDocument(BAbstractCodeEditorDocument *doc)
+{
+    if (document) {
+        disconnect(actCut, SIGNAL(triggered()), document, SLOT(cut()));
+        disconnect(actCopy, SIGNAL(triggered()), document, SLOT(copy()));
+        disconnect(actPaste, SIGNAL(triggered()), document, SLOT(paste()));
+        disconnect(actUndo, SIGNAL(triggered()), document, SLOT(undo()));
+        disconnect(actRedo, SIGNAL(triggered()), document, SLOT(redo()));
+    }
+    document = doc;
+    if (document) {
+        connect(actCut, SIGNAL(triggered()), document, SLOT(cut()));
+        connect(actCopy, SIGNAL(triggered()), document, SLOT(copy()));
+        connect(actPaste, SIGNAL(triggered()), document, SLOT(paste()));
+        connect(actUndo, SIGNAL(triggered()), document, SLOT(undo()));
+        connect(actRedo, SIGNAL(triggered()), document, SLOT(redo()));
+    }
 }
 
 /*============================== Public slots ==============================*/
@@ -163,8 +161,7 @@ void BEditEditorModulePrivate::actSwitchModeTriggered()
 {
     if (!editor)
         return;
-    editor->setEditMode( (editor->editMode() == BCodeEdit::NormalMode) ? BCodeEdit::BlockMode :
-                                                                         BCodeEdit::NormalMode );
+    editor->setEditMode((editor->editMode() == BCodeEdit::NormalMode) ? BCodeEdit::BlockMode : BCodeEdit::NormalMode);
 }
 
 /*============================================================================
@@ -194,15 +191,9 @@ BEditEditorModule::BEditEditorModule(BEditEditorModulePrivate &d, QObject *paren
 
 /*============================== Public methods ============================*/
 
-QString BEditEditorModule::id() const
-{
-    return "beqt/edit";
-}
-
 QAction *BEditEditorModule::action(int type)
 {
-    switch (type)
-    {
+    switch (type) {
     case CutAction:
         return d_func()->actCut;
     case CopyAction:
@@ -224,8 +215,7 @@ QList<QAction *> BEditEditorModule::actions(int group, bool)
 {
     B_D(BEditEditorModule);
     QList<QAction *> list;
-    switch (group)
-    {
+    switch (group) {
     case ClipboardActionGroup:
         list << d->actCut;
         list << d->actCopy;
@@ -250,7 +240,48 @@ QList<QAction *> BEditEditorModule::actions(bool extended)
     return list;
 }
 
+QString BEditEditorModule::id() const
+{
+    return "beqt/edit";
+}
+
 /*============================== Protected methods =========================*/
+
+void BEditEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *doc)
+{
+    d_func()->setDocument(doc);
+    d_func()->checkActions();
+}
+
+void BEditEditorModule::documentCopyAvailableChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BEditEditorModule::documentCutAvailableChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BEditEditorModule::documentPasteAvailableChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BEditEditorModule::documentRedoAvailableChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BEditEditorModule::documentUndoAvailableChanged(bool)
+{
+    d_func()->checkActions();
+}
+
+void BEditEditorModule::editModeChanged(BCodeEdit::EditMode)
+{
+    d_func()->checkSwitchModeAction();
+}
 
 void BEditEditorModule::editorSet(BCodeEditor *edr)
 {
@@ -261,41 +292,5 @@ void BEditEditorModule::editorSet(BCodeEditor *edr)
 void BEditEditorModule::editorUnset(BCodeEditor *)
 {
     d_func()->setDocument(0);
-    d_func()->checkActions();
-}
-
-void BEditEditorModule::documentCutAvailableChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BEditEditorModule::documentCopyAvailableChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BEditEditorModule::documentPasteAvailableChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BEditEditorModule::documentUndoAvailableChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BEditEditorModule::documentRedoAvailableChanged(bool)
-{
-    d_func()->checkActions();
-}
-
-void BEditEditorModule::editModeChanged(BCodeEdit::EditMode)
-{
-    d_func()->checkSwitchModeAction();
-}
-
-void BEditEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *doc)
-{
-    d_func()->setDocument(doc);
     d_func()->checkActions();
 }

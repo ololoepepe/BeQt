@@ -29,11 +29,10 @@ class QAction;
 #include "bediteditormodule.h"
 #include "babstracteditormodule_p.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BEditEditorModulePrivate ====================
@@ -44,25 +43,25 @@ class B_CODEEDITOR_EXPORT BEditEditorModulePrivate : public BAbstractEditorModul
     Q_OBJECT
     B_DECLARE_PUBLIC(BEditEditorModule)
 public:
+    QAction *actCopy;
+    QAction *actCut;
+    QAction *actPaste;
+    QAction *actRedo;
+    QAction *actSwitchMode;
+    QAction *actUndo;
+    BAbstractCodeEditorDocument *document;
+public:
     explicit BEditEditorModulePrivate(BEditEditorModule *q);
     ~BEditEditorModulePrivate();
 public:
-    void init();
-    void setDocument(BAbstractCodeEditorDocument *doc);
     void checkActions();
     void checkSwitchModeAction();
+    void init();
     void resetSwitchModeAction(bool bm);
+    void setDocument(BAbstractCodeEditorDocument *doc);
 public Q_SLOTS:
-    void retranslateUi();
     void actSwitchModeTriggered();
-public:
-    BAbstractCodeEditorDocument *document;
-    QAction *actCut;
-    QAction *actCopy;
-    QAction *actPaste;
-    QAction *actUndo;
-    QAction *actRedo;
-    QAction *actSwitchMode;
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BEditEditorModulePrivate)
 };

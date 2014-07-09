@@ -25,20 +25,21 @@
 class BCodeEditor;
 class BLineNumberWidget;
 
-class QTextDocument;
-class QWidget;
-class QPlainTextEdit;
 class QEvent;
 class QKeyEvent;
+class QPlainTextEdit;
+class QString;
+class QTextDocument;
+class QWidget;
 
 #include "bsimplecodeeditordocument.h"
+
 #include "babstractcodeeditordocument_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 
 #include <QObject>
-#include <QColor>
-#include <QPoint>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocumentPrivate ============
@@ -49,25 +50,27 @@ class B_CODEEDITOR_EXPORT BSimpleCodeEditorDocumentPrivate : public BAbstractCod
     Q_OBJECT
     B_DECLARE_PUBLIC(BSimpleCodeEditorDocument)
 public:
+    bool autoIndentation;
+    bool blockFilter;
+    BLineNumberWidget *lnwgt;
+    QPlainTextEdit *ptedt;
+    BeQt::TabWidth tabWidth;
+public:
     explicit BSimpleCodeEditorDocumentPrivate(BSimpleCodeEditorDocument *q, BCodeEditor *editor);
     ~BSimpleCodeEditorDocumentPrivate();
 public:
-    void init();
+    static BAbstractCodeEditorDocument::TextProcessingResult procFunc(const QString &text, const QVariant &v);
+public:
     QWidget *createEdit(QTextDocument **doc);
     bool eventFilter(QObject *obj, QEvent *e);
-    bool keyPressEvent(QKeyEvent *e);
-    void handleTab();
     void handleReturn(QKeyEvent *e);
+    void handleTab();
+    void init();
+    bool keyPressEvent(QKeyEvent *e);
 public Q_SLOTS:
     void cursorPositionChanged();
     void selectionChanged();
     void updatePasteAvailable(bool available);
-public:
-    QPlainTextEdit *ptedt;
-    BLineNumberWidget *lnwgt;
-    BeQt::TabWidth tabWidth;
-    bool autoIndentation;
-    bool blockFilter;
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocumentPrivate)
 };

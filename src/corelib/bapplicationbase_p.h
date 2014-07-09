@@ -49,7 +49,7 @@ class QLocale;
 ================================ BInternalLocationProvider ===================
 ============================================================================*/
 
-class BInternalLocationProvider : public BAbstractLocationProvider
+class B_CORE_EXPORT BInternalLocationProvider : public BAbstractLocationProvider
 {
 private:
     const QString AppName;

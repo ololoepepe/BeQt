@@ -148,7 +148,7 @@ bool BTerminalWidgetPrivate::handleKeyPress(QKeyEvent *e)
 {
     int key = e->key();
     Qt::KeyboardModifiers modifiers = e->modifiers();
-    if (key == terminatingKey && modifiers == terminatingModifiers) {
+    if (key == terminatingKey && int(modifiers) == terminatingModifiers) {
         appendText(!terminatingSymbols.isEmpty() ? terminatingSymbols : QString("^D"));
         if (!driver || !driver->isActive())
             return true;

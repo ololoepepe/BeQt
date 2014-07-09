@@ -23,20 +23,20 @@
 #define BINDICATORSEDITORMODULE_H
 
 class BIndicatorsEditorModulePrivate;
-class BCodeEditor;
+
 class BAbstractCodeEditorDocument;
 class BAbstractFileType;
+class BCodeEditor;
 
 class QString;
 class QWidget;
 
 #include "babstracteditormodule.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BIndicatorsEditorModule =====================
@@ -49,7 +49,7 @@ class B_CODEEDITOR_EXPORT BIndicatorsEditorModule : public BAbstractEditorModule
 public:
     enum Indicator
     {
-        CursorPositionIndicator,
+        CursorPositionIndicator = 1,
         EncodingIndicator,
         FileTypeIndicator
     };
@@ -63,13 +63,13 @@ public:
     QWidget *widget(int type);
     QList<QWidget *> widgets(bool extended = false);
 protected:
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
+    void defaultCodecChanged(const QString &codecName);
+    void documentCodecChanged(const QString &codecName);
+    void documentCursorPositionChanged(const QPoint &pos);
+    void documentFileTypeChanged(BAbstractFileType *ft);
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
-    void documentCursorPositionChanged(const QPoint &pos);
-    void documentCodecChanged(const QString &codecName);
-    void documentFileTypeChanged(BAbstractFileType *ft);
-    void defaultCodecChanged(const QString &codecName);
-    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void fileTypesChanged();
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModule)

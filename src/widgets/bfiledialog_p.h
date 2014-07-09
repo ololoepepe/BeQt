@@ -42,7 +42,7 @@ class QModelIndex;
 ================================ BProxyModel =================================
 ============================================================================*/
 
-class BProxyModel : public QSortFilterProxyModel
+class B_WIDGETS_EXPORT BProxyModel : public QSortFilterProxyModel
 {
 private:
     bool prevent;

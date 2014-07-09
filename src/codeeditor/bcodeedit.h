@@ -23,23 +23,24 @@
 #define BCODEEDIT_H
 
 class BCodeEditPrivate;
-class BPlainTextEdit;
+
 class BAbstractCodeEditorDocumentPrivate;
 class BCodeEditorDocument;
 class BCodeEditorDocumentPrivate;
+class BPlainTextEdit;
 
-class QString;
-class QPoint;
 class QFont;
-class QTextBlock;
+class QPoint;
+class QRegExp;
+class QString;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BeQt>
 
-#include <QWidget>
 #include <QList>
 #include <QTextDocument>
 #include <QTextEdit>
+#include <QWidget>
 
 /*============================================================================
 ================================ BCodeEdit ===================================
@@ -53,8 +54,8 @@ class B_CODEEDITOR_EXPORT BCodeEdit : public QWidget, public BBaseObject
 public:
     enum EditMode
     {
-        NormalMode,
-        BlockMode
+        BlockMode = 1,
+        NormalMode
     };
 public:
     struct SplittedLinesRange
@@ -71,89 +72,89 @@ public:
 protected:
     explicit BCodeEdit(BCodeEditPrivate &d, QWidget *parent = 0);
 public:
-    void setReadOnly(bool ro);
-    void setModification(bool modified);
-    void setEditFont(const QFont &fnt);
-    void setEditMode(EditMode mode);
-    void setEditLineLength(int ll);
-    void setEditTabWidth(BeQt::TabWidth tw);
-    void setEditAutoIndentationEnabled(bool enabled);
-    void setLineNumberWidgetVisible(bool b);
-    void setExtraSelections(const ExtraSelectionList &list);
     void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
+    QMenu *createContextMenu();
+    int cursorPosition() const;
+    int cursorPositionForRowColumn(const QPoint &pos) const;
+    QPoint cursorPositionRowColumn() const;
+    QFont editFont() const;
+    int editLineLength() const;
+    EditMode editMode() const;
+    BeQt::TabWidth editTabWidth() const;
+    ExtraSelectionList extraSelections() const;
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
-    bool replaceNext(const QString &newText);
+    bool hasSelection() const;
+    bool isBuisy() const;
+    bool isCopyAvailable() const;
+    bool isCutAvailable() const;
+    bool isEditAutoIndentationEnabled() const;
+    bool isLineNumberWidgetVisible() const;
+    bool isModified() const;
+    bool isPasteAvailable() const;
+    bool isReadOnly() const;
+    bool isRedoAvailable() const;
+    bool isUndoAvailable() const;
     int replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
     int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
     int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
     int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
-    bool isReadOnly() const;
-    bool isModified() const;
-    bool hasSelection() const;
-    bool isCutAvailable() const;
-    bool isCopyAvailable() const;
-    bool isPasteAvailable() const;
-    bool isUndoAvailable() const;
-    bool isRedoAvailable() const;
-    QFont editFont() const;
-    EditMode editMode() const;
-    int editLineLength() const;
-    BeQt::TabWidth editTabWidth() const;
-    bool isEditAutoIndentationEnabled() const;
-    bool isLineNumberWidgetVisible() const;
-    ExtraSelectionList extraSelections() const;
-    int cursorPosition() const;
-    QPoint cursorPositionRowColumn() const;
-    int cursorPositionForRowColumn(const QPoint &pos) const;
-    QString text(bool full = false) const;
+    bool replaceNext(const QString &newText);
     QString selectedText(bool full = false) const;
-    int selectionStart() const;
     int selectionEnd() const;
-    QPoint selectionStartRowColumn() const;
     QPoint selectionEndRowColumn() const;
-    QMenu *createContextMenu();
-    bool isBuisy() const;
+    int selectionStart() const;
+    QPoint selectionStartRowColumn() const;
+    void setEditAutoIndentationEnabled(bool enabled);
+    void setEditFont(const QFont &fnt);
+    void setEditLineLength(int ll);
+    void setEditMode(EditMode mode);
+    void setEditTabWidth(BeQt::TabWidth tw);
+    void setExtraSelections(const ExtraSelectionList &list);
+    void setLineNumberWidgetVisible(bool b);
+    void setModification(bool modified);
+    void setReadOnly(bool ro);
+    QString text(bool full = false) const;
 public Q_SLOTS:
-    void setFocus();
     void activateWindow();
-    void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
-    void switchMode();
-    void insertText(const QString &txt);
     void clear();
+    void copy();
+    void cut();
+    void deleteSelection();
+    void deselectText();
+    void insertText(const QString &txt);
     void moveCursor(int pos);
     void moveCursor(const QPoint &pos);
+    void paste();
+    void redo();
+    void selectAll();
+    void selectLines(int firstLine, int lastLine);
     void selectText(const QPoint &start, const QPoint &end);
     void selectText(int start, int end);
-    void selectLines(int firstLine, int lastLine);
-    void selectAll();
-    void deselectText();
-    void cut();
-    void copy();
-    void paste();
-    void deleteSelection();
+    void setFocus();
+    void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
+    void switchMode();
     void undo();
-    void redo();
 protected:
-    BPlainTextEdit *innerEdit() const;
     QTextDocument *innerDocument() const;
+    BPlainTextEdit *innerEdit() const;
 Q_SIGNALS:
-    void textChanged();
-    void readOnlyChanged(bool ro);
-    void modificationChanged(bool modified);
-    void selectionChanged();
-    void hasSelectionChanged(bool hasSelection);
-    void cutAvailableChanged(bool available);
+    void buisyChanged(bool buisy);
     void copyAvailableChanged(bool available);
-    void pasteAvailableChanged(bool available);
-    void undoAvailableChanged(bool available);
-    void redoAvailableChanged(bool available);
-    void editModeChanged(BCodeEdit::EditMode mode);
     void cursorPositionChanged(int pos);
     void cursorPositionChanged(const QPoint &pos);
-    void buisyChanged(bool buisy);
+    void cutAvailableChanged(bool available);
+    void editModeChanged(BCodeEdit::EditMode mode);
+    void hasSelectionChanged(bool hasSelection);
     void lineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void linesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
+    void modificationChanged(bool modified);
+    void pasteAvailableChanged(bool available);
+    void readOnlyChanged(bool ro);
+    void redoAvailableChanged(bool available);
+    void selectionChanged();
+    void textChanged();
+    void undoAvailableChanged(bool available);
 private:
     friend class BAbstractCodeEditorDocument;
     friend class BAbstractCodeEditorDocumentPrivate;

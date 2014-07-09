@@ -27,13 +27,13 @@ class BAbstractCodeEditorDocument;
 class QAction;
 
 #include "bbookmarkseditormodule.h"
+
 #include "babstracteditormodule_p.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 #include <QPoint>
 
 /*============================================================================
@@ -45,20 +45,20 @@ class B_CODEEDITOR_EXPORT BBookmarksEditorModulePrivate : public BAbstractEditor
     Q_OBJECT
     B_DECLARE_PUBLIC(BBookmarksEditorModule)
 public:
+    QAction *actGotoNextBookmark;
+    QAction *actMakeBookmark;
+    int maxBookmarks;
+public:
     explicit BBookmarksEditorModulePrivate(BBookmarksEditorModule *q);
     ~BBookmarksEditorModulePrivate();
 public:
-    static void setBookmarks(BAbstractCodeEditorDocument *doc, const QList<QPoint> &list);
-    static void setCurrentBookmark(BAbstractCodeEditorDocument *doc, const QPoint &pos);
     static QList<QPoint> bookmarks(BAbstractCodeEditorDocument *doc);
     static QPoint currentBookmark(BAbstractCodeEditorDocument *doc);
+    static void setBookmarks(BAbstractCodeEditorDocument *doc, const QList<QPoint> &list);
+    static void setCurrentBookmark(BAbstractCodeEditorDocument *doc, const QPoint &pos);
 public:
-    void init();
     void checkBookmarks();
-public:
-    int maxBookmarks;
-    QAction *actMakeBookmark;
-    QAction *actGotoNextBookmark;
+    void init();
 public Q_SLOTS:
     void retranslateUi();
 private:

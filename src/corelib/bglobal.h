@@ -489,7 +489,8 @@ template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list, bool (*ar
 
 template <typename T> T enum_cast(int i, const QList<T> &enumMembers, T defaultEnumMember)
 {
-    return (enumMembers.contains(i)) ? static_cast<T>(i) : defaultEnumMember;
+    T t = static_cast<T>(i);
+    return (enumMembers.contains(t)) ? t : defaultEnumMember;
 }
 
 template <typename T> T enum_cast(int i, T firstEnumMember, T lastEnumMember)

@@ -21,38 +21,27 @@
 
 #include "bsimplecodeeditordocument.h"
 #include "bsimplecodeeditordocument_p.h"
+
 #include "bcodeeditor.h"
 
 #include <BeQtCore/BeQt>
+#include <BeQtCore/BTextTools>
 #include <BeQtWidgets/BClipboardNotifier>
 #include <BeQtWidgets/BLineNumberWidget>
-#include <BeQtCore/BTextTools>
 
-#include <QObject>
-#include <QString>
-#include <QTextCodec>
-#include <QTextDocument>
-#include <QColor>
-#include <QPlainTextEdit>
-#include <QTextCursor>
-#include <QList>
+#include <QApplication>
 #include <QChar>
+#include <QDebug>
+#include <QList>
+#include <QObject>
+#include <QPlainTextEdit>
 #include <QPoint>
+#include <QString>
 #include <QTextBlock>
+#include <QTextCursor>
+#include <QTextDocument>
 #include <QVariant>
 #include <QVariantMap>
-#include <QApplication>
-
-#include <QDebug>
-
-static BAbstractCodeEditorDocument::TextProcessingResult procFunc(const QString &text, const QVariantMap &m)
-{
-    BAbstractCodeEditorDocument::TextProcessingResult r;
-    r.text = BTextTools::withoutUnsuppottedSymbols(text);
-    BeQt::TabWidth tw = enum_cast<BeQt::TabWidth>(m.value("tab_width"), BeQt::TabWidth2, BeQt::TabWidth8);
-    BTextTools::replaceTabs(&r.text, static_cast<BeQt::TabWidth>(tw));
-    return r;
-}
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocumentPrivate ============
@@ -71,14 +60,21 @@ BSimpleCodeEditorDocumentPrivate::~BSimpleCodeEditorDocumentPrivate()
     //
 }
 
-/*============================== Public methods ============================*/
+/*============================== Static public methods =====================*/
 
-void BSimpleCodeEditorDocumentPrivate::init()
+BAbstractCodeEditorDocument::TextProcessingResult BSimpleCodeEditorDocumentPrivate::procFunc(const QString &text,
+                                                                                             const QVariant &v)
 {
-    ptedt = 0;
-    autoIndentation = true;
-    blockFilter = false;
+    static const QList<BeQt::TabWidth> WidthList = QList<BeQt::TabWidth>() << BeQt::TabWidth2 << BeQt::TabWidth4
+                                                                           << BeQt::TabWidth8;
+    BAbstractCodeEditorDocument::TextProcessingResult r;
+    r.text = BTextTools::withoutUnsuppottedSymbols(text);
+    BeQt::TabWidth tw = enum_cast<BeQt::TabWidth>(v, WidthList, BeQt::TabWidth4);
+    BTextTools::replaceTabs(&r.text, static_cast<BeQt::TabWidth>(tw));
+    return r;
 }
+
+/*============================== Public methods ============================*/
 
 QWidget *BSimpleCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
 {
@@ -117,8 +113,7 @@ bool BSimpleCodeEditorDocumentPrivate::eventFilter(QObject *obj, QEvent *e)
 {
     if (blockFilter)
         return QObject::eventFilter(obj, e);
-    switch (e->type())
-    {
+    switch (e->type()) {
     case QEvent::KeyPress:
         return keyPressEvent(static_cast<QKeyEvent *>(e));
     default:
@@ -126,15 +121,50 @@ bool BSimpleCodeEditorDocumentPrivate::eventFilter(QObject *obj, QEvent *e)
     }
 }
 
+void BSimpleCodeEditorDocumentPrivate::handleReturn(QKeyEvent *e)
+{
+    if (ptedt->isReadOnly())
+        return;
+    QTextCursor tc = ptedt->textCursor();
+    int indent = (autoIndentation && q_func()->fileType()) ? q_func()->fileType()->indentation(tc.block()) : 0;
+    blockFilter = true;
+    QApplication::sendEvent(ptedt, e);
+    blockFilter = false;
+    if (indent <= 0)
+        return;
+    tc = ptedt->textCursor();
+    tc.beginEditBlock();
+    tc.insertText(QString().fill(' ', indent));
+    tc.endEditBlock();
+}
+
+void BSimpleCodeEditorDocumentPrivate::handleTab()
+{
+    if (ptedt->isReadOnly())
+        return;
+    QTextCursor tc = ptedt->textCursor();
+    tc = ptedt->textCursor();
+    int posb = tc.positionInBlock();
+    int spcount = tabWidth - (posb < tabWidth ? posb : posb % tabWidth);
+    if (!spcount)
+        spcount = tabWidth;
+    q_func()->insertText(QString().fill(' ', spcount));
+}
+
+void BSimpleCodeEditorDocumentPrivate::init()
+{
+    ptedt = 0;
+    autoIndentation = true;
+    blockFilter = false;
+}
+
 bool BSimpleCodeEditorDocumentPrivate::keyPressEvent(QKeyEvent *e)
 {
     int modifiers = e->modifiers();
     int key = e->key();
-    switch (modifiers)
-    {
+    switch (modifiers) {
     case Qt::NoModifier:
-        switch (key)
-        {
+        switch (key) {
         case Qt::Key_Tab:
             handleTab();
             return true;
@@ -154,8 +184,7 @@ bool BSimpleCodeEditorDocumentPrivate::keyPressEvent(QKeyEvent *e)
     case BeQt::KeypadControlAltModifier:
     case Qt::KeypadModifier:
     case BeQt::KeypadControlModifier:
-        switch (key)
-        {
+        switch (key) {
         case Qt::Key_Return:
         case Qt::Key_Enter:
             handleReturn(e);
@@ -168,36 +197,6 @@ bool BSimpleCodeEditorDocumentPrivate::keyPressEvent(QKeyEvent *e)
         break;
     }
     return false;
-}
-
-void BSimpleCodeEditorDocumentPrivate::handleTab()
-{
-    if (ptedt->isReadOnly())
-        return;
-    QTextCursor tc = ptedt->textCursor();
-    tc = ptedt->textCursor();
-    int posb = tc.positionInBlock();
-    int spcount = tabWidth - (posb < tabWidth ? posb : posb % tabWidth);
-    if (!spcount)
-        spcount = tabWidth;
-    q_func()->insertText(QString().fill(' ', spcount));
-}
-
-void BSimpleCodeEditorDocumentPrivate::handleReturn(QKeyEvent *e)
-{
-    if (ptedt->isReadOnly())
-        return;
-    QTextCursor tc = ptedt->textCursor();
-    int indent = (autoIndentation && q_func()->fileType()) ? q_func()->fileType()->indentation(tc.block()) : 0;
-    blockFilter = true;
-    QApplication::sendEvent(ptedt, e);
-    blockFilter = false;
-    if (indent <= 0)
-        return;
-    tc = ptedt->textCursor();
-    tc.beginEditBlock();
-    tc.insertText(QString().fill(' ', indent));
-    tc.endEditBlock();
 }
 
 /*============================== Public slots ==============================*/
@@ -248,37 +247,14 @@ BSimpleCodeEditorDocument::BSimpleCodeEditorDocument(BSimpleCodeEditorDocumentPr
 
 /*============================== Public methods ============================*/
 
-void BSimpleCodeEditorDocument::setReadOnly(bool ro)
+QFont BSimpleCodeEditorDocument::editFont() const
 {
-    bool b = d_func()->ptedt->isReadOnly() != ro;
-    d_func()->ptedt->setReadOnly(ro);
-    if (b)
-        setReadOnlyInternal(ro);
+    return d_func()->ptedt->font();
 }
 
-void BSimpleCodeEditorDocument::setModification(bool modified)
+BeQt::TabWidth BSimpleCodeEditorDocument::editTabWidth() const
 {
-    d_func()->ptedt->document()->setModified(modified);
-}
-
-void BSimpleCodeEditorDocument::setEditFont(const QFont &fnt)
-{
-    d_func()->ptedt->setFont(fnt);
-}
-
-void BSimpleCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
-{
-    d_func()->tabWidth = tw;
-}
-
-void BSimpleCodeEditorDocument::setEditAutoIndentationEnabled(bool enabled)
-{
-    d_func()->autoIndentation = enabled;
-}
-
-void BSimpleCodeEditorDocument::setLineNumberWidgetVisible(bool b)
-{
-    d_func()->lnwgt->setVisible(b);
+    return d_func()->tabWidth;
 }
 
 bool BSimpleCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
@@ -286,8 +262,7 @@ bool BSimpleCodeEditorDocument::findNext(const QString &txt, QTextDocument::Find
     if (txt.isEmpty())
         return false;
     bool b = d_func()->ptedt->find(txt, flags);
-    if (!b && cyclic)
-    {
+    if (!b && cyclic) {
         if (flags & QTextDocument::FindBackward)
             d_func()->ptedt->moveCursor(QTextCursor::End);
         else
@@ -304,8 +279,7 @@ bool BSimpleCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument:
     QTextDocument *doc = d_func()->ptedt->document();
     QTextCursor tc = doc->find(rx, d_func()->ptedt->textCursor());
     bool b = !tc.isNull();
-    if (!b && cyclic)
-    {
+    if (!b && cyclic) {
         if (flags & QTextDocument::FindBackward)
             d_func()->ptedt->moveCursor(QTextCursor::End);
         else
@@ -318,91 +292,24 @@ bool BSimpleCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument:
     return b;
 }
 
-bool BSimpleCodeEditorDocument::replaceNext(const QString &newText)
+void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
 {
-    if (isReadOnly() || !hasSelection())
-        return false;
-    insertText(newText);
-    return true;
+    d_func()->ptedt->installEventFilter(filter);
 }
 
-int BSimpleCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText,
-                                                  QTextDocument::FindFlags flags)
+bool BSimpleCodeEditorDocument::isEditAutoIndentationEnabled() const
 {
-    if (isReadOnly() || !hasSelection() || txt.isEmpty() || txt == newText)
-        return -1;
-    B_D(BSimpleCodeEditorDocument);
-    QString ntext = selectedText(true);
-    Qt::CaseSensitivity cs = (QTextDocument::FindCaseSensitively & flags) ? Qt::CaseSensitive : Qt::CaseInsensitive;
-    bool w = (QTextDocument::FindWholeWords & flags);
-    int count = 0;
-    int ind = BTextTools::indexOf(ntext, txt, 0, cs, w);
-    while (ind >= 0)
-    {
-        ++count;
-        ind = BTextTools::indexOf(ntext, txt, ind + txt.length(), cs, w);
-    }
-    if (!count)
-        return 0;
-    QTextCursor tc = d->ptedt->textCursor();
-    tc.beginEditBlock();
-    int start = tc.selectionStart();
-    int end = tc.selectionEnd();
-    int len = ntext.length();
-    BTextTools::replace(ntext, txt, newText, cs, w);
-    tc.insertText(ntext);
-    if (start < end)
-        end += (ntext.length() - len);
-    else
-        start += (ntext.length() - len);
-    selectText(start, end);
-    tc.endEditBlock();
-    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
-    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
-    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
-    {
-        rehighlightBlock(tb);
-        tb = tb.next();
-    }
-    return count;
+    return d_func()->autoIndentation;
 }
 
-int BSimpleCodeEditorDocument::replaceInSelectionRegexp(const QRegExp &rx, const QString &newText)
+bool BSimpleCodeEditorDocument::isLineNumberWidgetVisible() const
 {
-    if (isReadOnly() || !hasSelection() || !rx.isValid() || rx.isEmpty())
-        return -1;
-    B_D(BSimpleCodeEditorDocument);
-    QString ntext = selectedText(true);
-    int count = 0;
-    int ind = rx.indexIn(ntext);
-    while (ind >= 0)
-    {
-        ++count;
-        ind = rx.indexIn(ntext, ind + rx.matchedLength());
-    }
-    if (!count)
-        return 0;
-    QTextCursor tc = d->ptedt->textCursor();
-    tc.beginEditBlock();
-    int start = tc.selectionStart();
-    int end = tc.selectionEnd();
-    int len = ntext.length();
-    ntext.replace(rx, newText);
-    tc.insertText(ntext);
-    if (start < end)
-        end += (ntext.length() - len);
-    else
-        start += (ntext.length() - len);
-    selectText(start, end);
-    tc.endEditBlock();
-    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
-    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
-    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber())
-    {
-        rehighlightBlock(tb);
-        tb = tb.next();
-    }
-    return count;
+    return d_func()->lnwgt->isVisible();
+}
+
+void BSimpleCodeEditorDocument::removeInnerEventFilter(QObject *filter)
+{
+    d_func()->ptedt->removeEventFilter(filter);
 }
 
 int BSimpleCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText,
@@ -415,8 +322,7 @@ int BSimpleCodeEditorDocument::replaceInDocument(const QString &txt, const QStri
     QString ptext = text(true);
     int count = 0;
     int ind = BTextTools::indexOf(ptext, txt, 0, cs, w);
-    while (ind >= 0)
-    {
+    while (ind >= 0) {
         ++count;
         ind = BTextTools::indexOf(ptext, txt, ind + txt.length(), cs, w);
     }
@@ -438,8 +344,7 @@ int BSimpleCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const 
     QString ptext = text(true);
     int count = 0;
     int ind = rx.indexIn(ptext);
-    while (ind >= 0)
-    {
+    while (ind >= 0) {
         ++count;
         ind = rx.indexIn(ptext, ind + rx.matchedLength());
     }
@@ -454,53 +359,92 @@ int BSimpleCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const 
     return count;
 }
 
-void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
+int BSimpleCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText,
+                                                  QTextDocument::FindFlags flags)
 {
-    d_func()->ptedt->installEventFilter(filter);
+    if (isReadOnly() || !hasSelection() || txt.isEmpty() || txt == newText)
+        return -1;
+    B_D(BSimpleCodeEditorDocument);
+    QString ntext = selectedText(true);
+    Qt::CaseSensitivity cs = (QTextDocument::FindCaseSensitively & flags) ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    bool w = (QTextDocument::FindWholeWords & flags);
+    int count = 0;
+    int ind = BTextTools::indexOf(ntext, txt, 0, cs, w);
+    while (ind >= 0) {
+        ++count;
+        ind = BTextTools::indexOf(ntext, txt, ind + txt.length(), cs, w);
+    }
+    if (!count)
+        return 0;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.beginEditBlock();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    int len = ntext.length();
+    BTextTools::replace(ntext, txt, newText, cs, w);
+    tc.insertText(ntext);
+    if (start < end)
+        end += (ntext.length() - len);
+    else
+        start += (ntext.length() - len);
+    selectText(start, end);
+    tc.endEditBlock();
+    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber()) {
+        rehighlightBlock(tb);
+        tb = tb.next();
+    }
+    return count;
 }
 
-void BSimpleCodeEditorDocument::removeInnerEventFilter(QObject *filter)
+int BSimpleCodeEditorDocument::replaceInSelectionRegexp(const QRegExp &rx, const QString &newText)
 {
-    d_func()->ptedt->removeEventFilter(filter);
+    if (isReadOnly() || !hasSelection() || !rx.isValid() || rx.isEmpty())
+        return -1;
+    B_D(BSimpleCodeEditorDocument);
+    QString ntext = selectedText(true);
+    int count = 0;
+    int ind = rx.indexIn(ntext);
+    while (ind >= 0) {
+        ++count;
+        ind = rx.indexIn(ntext, ind + rx.matchedLength());
+    }
+    if (!count)
+        return 0;
+    QTextCursor tc = d->ptedt->textCursor();
+    tc.beginEditBlock();
+    int start = tc.selectionStart();
+    int end = tc.selectionEnd();
+    int len = ntext.length();
+    ntext.replace(rx, newText);
+    tc.insertText(ntext);
+    if (start < end)
+        end += (ntext.length() - len);
+    else
+        start += (ntext.length() - len);
+    selectText(start, end);
+    tc.endEditBlock();
+    QTextBlock tb = d->ptedt->document()->findBlock(qMin<int>(start, end));
+    QTextBlock tbe = d->ptedt->document()->findBlock(qMax<int>(start, end));
+    while (tb.isValid() && tb.blockNumber() < tbe.blockNumber()) {
+        rehighlightBlock(tb);
+        tb = tb.next();
+    }
+    return count;
 }
 
-QFont BSimpleCodeEditorDocument::editFont() const
+bool BSimpleCodeEditorDocument::replaceNext(const QString &newText)
 {
-    return d_func()->ptedt->font();
-}
-
-BeQt::TabWidth BSimpleCodeEditorDocument::editTabWidth() const
-{
-    return d_func()->tabWidth;
-}
-
-bool BSimpleCodeEditorDocument::isEditAutoIndentationEnabled() const
-{
-    return d_func()->autoIndentation;
-}
-
-bool BSimpleCodeEditorDocument::isLineNumberWidgetVisible() const
-{
-    return d_func()->lnwgt->isVisible();
-}
-
-QString BSimpleCodeEditorDocument::text(bool) const
-{
-    return d_func()->ptedt->toPlainText().replace(QChar::ParagraphSeparator, '\n');
+    if (isReadOnly() || !hasSelection())
+        return false;
+    insertText(newText);
+    return true;
 }
 
 QString BSimpleCodeEditorDocument::selectedText(bool) const
 {
     return d_func()->ptedt->textCursor().selectedText().replace(QChar::ParagraphSeparator, '\n');
-}
-
-int BSimpleCodeEditorDocument::selectionStart() const
-{
-    if (!hasSelection())
-        return cursorPosition();
-    const B_D(BSimpleCodeEditorDocument);
-    QTextCursor tc = d->ptedt->textCursor();
-    return tc.selectionStart();
 }
 
 int BSimpleCodeEditorDocument::selectionEnd() const
@@ -510,16 +454,6 @@ int BSimpleCodeEditorDocument::selectionEnd() const
     const B_D(BSimpleCodeEditorDocument);
     QTextCursor tc = d->ptedt->textCursor();
     return tc.selectionEnd();
-}
-
-QPoint BSimpleCodeEditorDocument::selectionStartRowColumn() const
-{
-    if (!hasSelection())
-        return cursorPositionRowColumn();
-    const B_D(BSimpleCodeEditorDocument);
-    QTextCursor tc = d->ptedt->textCursor();
-    QTextBlock tb = d->ptedt->document()->findBlock(tc.selectionStart());
-    return QPoint(tc.selectionStart() - tb.position(), tb.blockNumber());
 }
 
 QPoint BSimpleCodeEditorDocument::selectionEndRowColumn() const
@@ -532,26 +466,126 @@ QPoint BSimpleCodeEditorDocument::selectionEndRowColumn() const
     return QPoint(tc.selectionEnd() - tb.position(), tb.blockNumber());
 }
 
+int BSimpleCodeEditorDocument::selectionStart() const
+{
+    if (!hasSelection())
+        return cursorPosition();
+    const B_D(BSimpleCodeEditorDocument);
+    QTextCursor tc = d->ptedt->textCursor();
+    return tc.selectionStart();
+}
+
+QPoint BSimpleCodeEditorDocument::selectionStartRowColumn() const
+{
+    if (!hasSelection())
+        return cursorPositionRowColumn();
+    const B_D(BSimpleCodeEditorDocument);
+    QTextCursor tc = d->ptedt->textCursor();
+    QTextBlock tb = d->ptedt->document()->findBlock(tc.selectionStart());
+    return QPoint(tc.selectionStart() - tb.position(), tb.blockNumber());
+}
+
+void BSimpleCodeEditorDocument::setEditAutoIndentationEnabled(bool enabled)
+{
+    d_func()->autoIndentation = enabled;
+}
+
+void BSimpleCodeEditorDocument::setEditFont(const QFont &fnt)
+{
+    d_func()->ptedt->setFont(fnt);
+}
+
+void BSimpleCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
+{
+    d_func()->tabWidth = tw;
+}
+
+void BSimpleCodeEditorDocument::setLineNumberWidgetVisible(bool b)
+{
+    d_func()->lnwgt->setVisible(b);
+}
+
+void BSimpleCodeEditorDocument::setModification(bool modified)
+{
+    d_func()->ptedt->document()->setModified(modified);
+}
+
+void BSimpleCodeEditorDocument::setReadOnly(bool ro)
+{
+    bool b = d_func()->ptedt->isReadOnly() != ro;
+    d_func()->ptedt->setReadOnly(ro);
+    if (b)
+        setReadOnlyInternal(ro);
+}
+
+QString BSimpleCodeEditorDocument::text(bool) const
+{
+    return d_func()->ptedt->toPlainText().replace(QChar::ParagraphSeparator, '\n');
+}
+
 /*============================== Protected methods =========================*/
-
-QWidget *BSimpleCodeEditorDocument::createEdit(QTextDocument **doc)
-{
-    return d_func()->createEdit(doc);
-}
-
-void BSimpleCodeEditorDocument::setFocusImplementation()
-{
-    d_func()->ptedt->setFocus();
-}
 
 void BSimpleCodeEditorDocument::activateWindowImplementation()
 {
     d_func()->ptedt->activateWindow();
 }
 
-void BSimpleCodeEditorDocument::setTextImplementation(const QString &txt)
+void BSimpleCodeEditorDocument::clearImplementation()
 {
-    d_func()->ptedt->setPlainText(txt);
+    d_func()->ptedt->clear();
+}
+
+void BSimpleCodeEditorDocument::copyImplementation()
+{
+    d_func()->ptedt->copy();
+}
+
+QWidget *BSimpleCodeEditorDocument::createEdit(QTextDocument **doc)
+{
+    return d_func()->createEdit(doc);
+}
+
+int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
+{
+    if (pos.x() < 0 || pos.y() < 0)
+        return -1;
+    const B_D(BSimpleCodeEditorDocument);
+    QTextBlock tb = d->ptedt->document()->findBlockByLineNumber(pos.y());
+    if (!tb.isValid())
+        return -1;
+    if (pos.x() >= tb.length())
+        return -1;
+    return tb.position() + pos.x();
+}
+
+QPoint BSimpleCodeEditorDocument::cursorPositionRowColumnImplementation() const
+{
+    QTextCursor tc = d_func()->ptedt->textCursor();
+    return QPoint(tc.positionInBlock(), tc.blockNumber());
+}
+
+void BSimpleCodeEditorDocument::cutImplementation()
+{
+    d_func()->ptedt->cut();
+}
+
+void BSimpleCodeEditorDocument::deleteSelectionImplementation()
+{
+    if (isReadOnly() || !hasSelection())
+        return;
+    QTextCursor tc = d_func()->ptedt->textCursor();
+    tc.beginEditBlock();
+    tc.removeSelectedText();
+    tc.endEditBlock();
+}
+
+void BSimpleCodeEditorDocument::deselectTextImplementation()
+{
+    QTextCursor tc = d_func()->ptedt->textCursor();
+    if (!tc.hasSelection())
+        return;
+    tc.setPosition(tc.selectionEnd());
+    d_func()->ptedt->setTextCursor(tc);
 }
 
 void BSimpleCodeEditorDocument::insertTextImplementation(const QString &txt)
@@ -559,9 +593,9 @@ void BSimpleCodeEditorDocument::insertTextImplementation(const QString &txt)
     d_func()->ptedt->insertPlainText(txt);
 }
 
-void BSimpleCodeEditorDocument::clearImplementation()
+void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)
 {
-    d_func()->ptedt->clear();
+    d_func()->ptedt->viewport()->installEventFilter(handler);
 }
 
 void BSimpleCodeEditorDocument::moveCursorImplementation(int pos)
@@ -584,6 +618,36 @@ void BSimpleCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
     QTextCursor tc = d->ptedt->textCursor();
     tc.setPosition(tb.position() + (pos.x() > 0 ? pos.x() : 0));
     d->ptedt->setTextCursor(tc);
+}
+
+void BSimpleCodeEditorDocument::pasteImplementation()
+{
+    d_func()->ptedt->paste();
+}
+
+void BSimpleCodeEditorDocument::redoImplementation()
+{
+    d_func()->ptedt->redo();
+}
+
+void BSimpleCodeEditorDocument::selectAllImplementation()
+{
+    d_func()->ptedt->selectAll();
+}
+
+void BSimpleCodeEditorDocument::selectLinesImplementation(int firstLine, int lastLine)
+{
+    int bc = d_func()->ptedt->blockCount();
+    if (firstLine < 0 || firstLine >= bc)
+        return;
+    QPoint start(0, firstLine);
+    QPoint end(0, firstLine);
+    if (lastLine > 0 && lastLine < bc)
+        end.setY(lastLine);
+    QTextBlock tb = d_func()->ptedt->document()->findBlockByNumber(lastLine);
+    if (tb.isValid())
+        end.setX(tb.length() - 1);
+    selectText(start, end);
 }
 
 void BSimpleCodeEditorDocument::selectTextImplementation(const QPoint &start, const QPoint &end)
@@ -611,58 +675,14 @@ void BSimpleCodeEditorDocument::selectTextImplementation(int start, int end)
     d_func()->ptedt->setTextCursor(tc);
 }
 
-void BSimpleCodeEditorDocument::selectLinesImplementation(int firstLine, int lastLine)
+void BSimpleCodeEditorDocument::setFocusImplementation()
 {
-    int bc = d_func()->ptedt->blockCount();
-    if (firstLine < 0 || firstLine >= bc)
-        return;
-    QPoint start(0, firstLine);
-    QPoint end(0, firstLine);
-    if (lastLine > 0 && lastLine < bc)
-        end.setY(lastLine);
-    QTextBlock tb = d_func()->ptedt->document()->findBlockByNumber(lastLine);
-    if (tb.isValid())
-        end.setX(tb.length() - 1);
-    selectText(start, end);
+    d_func()->ptedt->setFocus();
 }
 
-void BSimpleCodeEditorDocument::selectAllImplementation()
+void BSimpleCodeEditorDocument::setTextImplementation(const QString &txt)
 {
-    d_func()->ptedt->selectAll();
-}
-
-void BSimpleCodeEditorDocument::deselectTextImplementation()
-{
-    QTextCursor tc = d_func()->ptedt->textCursor();
-    if (!tc.hasSelection())
-        return;
-    tc.setPosition(tc.selectionEnd());
-    d_func()->ptedt->setTextCursor(tc);
-}
-
-void BSimpleCodeEditorDocument::cutImplementation()
-{
-    d_func()->ptedt->cut();
-}
-
-void BSimpleCodeEditorDocument::copyImplementation()
-{
-    d_func()->ptedt->copy();
-}
-
-void BSimpleCodeEditorDocument::pasteImplementation()
-{
-    d_func()->ptedt->paste();
-}
-
-void BSimpleCodeEditorDocument::deleteSelectionImplementation()
-{
-    if (isReadOnly() || !hasSelection())
-        return;
-    QTextCursor tc = d_func()->ptedt->textCursor();
-    tc.beginEditBlock();
-    tc.removeSelectedText();
-    tc.endEditBlock();
+    d_func()->ptedt->setPlainText(txt);
 }
 
 void BSimpleCodeEditorDocument::undoImplementation()
@@ -670,43 +690,12 @@ void BSimpleCodeEditorDocument::undoImplementation()
     d_func()->ptedt->undo();
 }
 
-void BSimpleCodeEditorDocument::redoImplementation()
-{
-    d_func()->ptedt->redo();
-}
-
-void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)
-{
-    d_func()->ptedt->viewport()->installEventFilter(handler);
-}
-
-QPoint BSimpleCodeEditorDocument::cursorPositionRowColumnImplementation() const
-{
-    QTextCursor tc = d_func()->ptedt->textCursor();
-    return QPoint(tc.positionInBlock(), tc.blockNumber());
-}
-
-int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
-{
-    if (pos.x() < 0 || pos.y() < 0)
-        return -1;
-    const B_D(BSimpleCodeEditorDocument);
-    QTextBlock tb = d->ptedt->document()->findBlockByLineNumber(pos.y());
-    if (!tb.isValid())
-        return -1;
-    if (pos.x() >= tb.length())
-        return -1;
-    return tb.position() + pos.x();
-}
-
 BAbstractCodeEditorDocument::TextProcessingFunction BSimpleCodeEditorDocument::textPreprocessingFunction() const
 {
-    return &procFunc;
+    return &BSimpleCodeEditorDocumentPrivate::procFunc;
 }
 
-QVariantMap BSimpleCodeEditorDocument::preprocessingUserData()
+QVariant BSimpleCodeEditorDocument::textPreprocessingUserData()
 {
-    QVariantMap m;
-    m.insert("tab_width", (int) editTabWidth());
-    return m;
+    return QVariant((int) editTabWidth());
 }

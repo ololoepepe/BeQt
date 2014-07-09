@@ -24,17 +24,15 @@
 
 class BLocalDocumentDriverPrivate;
 
-class QObject;
-class QWidget;
-class QTextCodec;
-class QStringList;
-class QString;
 class QByteArray;
+class QObject;
+class QString;
+class QStringList;
+class QTextCodec;
+class QWidget;
 
 #include "babstractdocumentdriver.h"
-#include "bextendedfiledialog.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtWidgets/BTextCodecMenu>
 
 /*============================================================================
@@ -51,20 +49,20 @@ public:
 protected:
     explicit BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 public:
-    QString id() const;
-    bool isBuisy() const;
-    bool testFileExistance(const QString &fileName);
-    bool testFileReadOnly(const QString &fileName);
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
     bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec);
-    QByteArray saveState() const;
+    QString id() const;
+    bool isBuisy() const;
     void restoreState(const QByteArray &state);
+    QByteArray saveState() const;
+    void setCodecsComboBoxStyle(BTextCodecMenu::Style style);
     void setDefaultDir(const QString &dir);
     void setNativeLineEnd(bool enabled);
-    void setCodecsComboBoxStyle(BTextCodecMenu::Style style);
+    bool testFileExistance(const QString &fileName);
+    bool testFileReadOnly(const QString &fileName);
 protected:
-    bool handleSaveOperation(const Operation &op);
     bool handleLoadOperation(const Operation &op);
+    bool handleSaveOperation(const Operation &op);
 private:
     Q_DISABLE_COPY(BLocalDocumentDriver)
 };

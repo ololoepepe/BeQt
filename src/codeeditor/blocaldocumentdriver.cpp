@@ -19,44 +19,57 @@
 **
 ****************************************************************************/
 
+class BAbstractFileType;
+
 #include "blocaldocumentdriver.h"
 #include "blocaldocumentdriver_p.h"
+
 #include "babstractdocumentdriver.h"
 #include "bcodeeditordocument.h"
 #include "bcodeeditor.h"
-#include "babstractfiletype.h"
 #include "bextendedfiledialog.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BCoreApplication>
+#include <BeQtCore/BDirTools>
 #include <BeQtCore/BeQt>
 #include <BeQtCore/BTextTools>
-#include <BeQtCore/BDirTools>
-#include <BeQtCore/BCoreApplication>
+#include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QString>
-#include <QFile>
-#include <QTextStream>
-#include <QTextCodec>
-#include <QFileInfo>
-#include <QWidget>
-#include <QStringList>
-#include <QDir>
-#include <QList>
-#include <QVariant>
 #include <QByteArray>
+#include <QDebug>
+#include <QDir>
+#include <QFile>
+#include <QFileInfo>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <QStringList>
 #include <QtConcurrentRun>
+#include <QTextCodec>
+#include <QTextStream>
+#include <QVariant>
 #include <QVariantMap>
-
-#include <QDebug>
+#include <QWidget>
 
 /*============================================================================
 ================================ BLocalDocumentDriverPrivate =================
 ============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BLocalDocumentDriverPrivate::BLocalDocumentDriverPrivate(BLocalDocumentDriver *q) :
+    BAbstractDocumentDriverPrivate(q)
+{
+    //
+}
+
+BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
+{
+    //
+}
 
 /*============================== Static public methods =====================*/
 
@@ -68,8 +81,7 @@ BLocalDocumentDriverPrivate::LoadResult BLocalDocumentDriverPrivate::loadFile(co
     res.operation = op;
     bool ok = false;
     QByteArray data = BDirTools::readFile(fn, -1, &ok);
-    if (!ok)
-    {
+    if (!ok) {
         res.success = false;
         return res;
     }
@@ -96,8 +108,7 @@ BLocalDocumentDriverPrivate::SaveResult BLocalDocumentDriverPrivate::saveFile(co
     QFile f(fn);
     SaveResult res;
     res.operation = op;
-    if (!f.open(QFile::WriteOnly))
-    {
+    if (!f.open(QFile::WriteOnly)) {
         res.success = false;
         return res;
     }
@@ -111,19 +122,6 @@ BLocalDocumentDriverPrivate::SaveResult BLocalDocumentDriverPrivate::saveFile(co
     f.close();
     res.success = true;
     return res;
-}
-
-/*============================== Public constructors =======================*/
-
-BLocalDocumentDriverPrivate::BLocalDocumentDriverPrivate(BLocalDocumentDriver *q) :
-    BAbstractDocumentDriverPrivate(q)
-{
-    //
-}
-
-BLocalDocumentDriverPrivate::~BLocalDocumentDriverPrivate()
-{
-    //
 }
 
 /*============================== Public methods ============================*/
@@ -185,29 +183,6 @@ BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObje
 
 /*============================== Public methods ============================*/
 
-QString BLocalDocumentDriver::id() const
-{
-    return "beqt/local";
-}
-
-bool BLocalDocumentDriver::isBuisy() const
-{
-    return false;
-}
-
-bool BLocalDocumentDriver::testFileExistance(const QString &fileName)
-{
-    return QFileInfo(fileName).isFile();
-}
-
-bool BLocalDocumentDriver::testFileReadOnly(const QString &fileName)
-{
-    QFile f(fileName);
-    bool b = !f.open(QFile::WriteOnly | QFile::Append);
-    f.close();
-    return b;
-}
-
 bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
 {
     if (!editor())
@@ -266,12 +241,14 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     return true;
 }
 
-QByteArray BLocalDocumentDriver::saveState() const
+QString BLocalDocumentDriver::id() const
 {
-    QVariantMap m;
-    m.insert("file_dialog_state", d_func()->fileDialogState);
-    m.insert("file_dialog_geometry", d_func()->fileDialogGeometry);
-    return BeQt::serialize(m);
+    return "beqt/local";
+}
+
+bool BLocalDocumentDriver::isBuisy() const
+{
+    return false;
 }
 
 void BLocalDocumentDriver::restoreState(const QByteArray &state)
@@ -281,9 +258,22 @@ void BLocalDocumentDriver::restoreState(const QByteArray &state)
     d_func()->fileDialogGeometry = m.value("file_dialog_geometry").toByteArray();
 }
 
+QByteArray BLocalDocumentDriver::saveState() const
+{
+    QVariantMap m;
+    m.insert("file_dialog_state", d_func()->fileDialogState);
+    m.insert("file_dialog_geometry", d_func()->fileDialogGeometry);
+    return BeQt::serialize(m);
+}
+
+void BLocalDocumentDriver::setCodecsComboBoxStyle(BTextCodecMenu::Style style)
+{
+    d_func()->codecsComboBoxStyle = style;
+}
+
 void BLocalDocumentDriver::setDefaultDir(const QString &dir)
 {
-    if ( dir.isEmpty() )
+    if (dir.isEmpty())
         return;
     d_func()->defaultDir = dir;
 }
@@ -293,9 +283,17 @@ void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
     d_func()->nativeLineEnd = enabled;
 }
 
-void BLocalDocumentDriver::setCodecsComboBoxStyle(BTextCodecMenu::Style style)
+bool BLocalDocumentDriver::testFileExistance(const QString &fileName)
 {
-    d_func()->codecsComboBoxStyle = style;
+    return QFileInfo(fileName).isFile();
+}
+
+bool BLocalDocumentDriver::testFileReadOnly(const QString &fileName)
+{
+    QFile f(fileName);
+    bool b = !f.open(QFile::WriteOnly | QFile::Append);
+    f.close();
+    return b;
 }
 
 /*============================== Protected methods =========================*/
