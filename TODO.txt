@@ -1,4 +1,5 @@
 * Add comments to the code and make docs; write detailed user manual
+* Add tests
 * Use enum_cast wherever it makes sense
 
 * Implement native settings dialogs

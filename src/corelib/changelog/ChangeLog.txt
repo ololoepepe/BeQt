@@ -1,3 +1,93 @@
+=== BeQt 4.0.0 (xx July 2014) ===
+==== BeQtCore ====
+    * Use UNIX-like resource structure for on all platforms
+    * Remove BDirTools methods: createUserLocation и createUserLocations
+    * Add template methods for secure casting of int and QVariant to enum type (enum_cast)
+    * Add bReverse and bReversed template functions
+    * Change BeQt::OSType enum values
+    * Remove BeQt::variantToData and BeQt::dataToVatiant functions
+    * Add working directory argument to BeQt::startProcessDetached function
+    * Add BTextTools:toHtml function
+    * Add alternative base class pair with non-QObject private base
+    * Fix BSpellCheckerDictionary validity testing
+    * Add ability to set replaced letters in BSpellCheckerDictionary
+    * Add BApplicationBase class
+    * Make BCoreApplication and BApplication inherit BApplicationBase and QCoreApplication (or QApplication)
+    * Remove some BCoreApplication members: instance -> binstance, translator -> beqtTranslator, etc.
+    * Remove BCoreApplication methods: saveSettings и loadSettings
+    * Add overloaded BApplicationBase methods: installTranslator and removeTranslator
+    * Add BApplicationBase methods: deactivatedPlugins and setDeactivatedPlugins
+    * Add ability to set multiple copyright owners in BApplicationBase
+    * Rename BTerminalIOHandler into BTerminal and make it a singleton
+    * Move splitCommand and mergeArguments from BTerminal to BTextTools
+    * Implement terminal modes
+    * Add ability to remember entered commands in BTerminal
+    * Rename BPluginWrapper::interfacetestFunction method into interfaceTestFunction
+    * Add method for removing old plugin settings to BPluginWrapper
+    * Add version information to BPluginInterface
+    * Rename PluginInfoStatic into StaticPluginInfo
+    * Remove BTranslateFunctor class
+    * Change BUuid serialization
+    * Use BUuid instead of QUuid
+    * Rename some BVersion members: minor -> vminor, major -> vmajor, etc.
+    * Add BVersion::clear method
+    * Make BPersonInfo and BPersonInfoList serializable
+    * Add BAbstractLocationProvider and BLocationProvider classes
+
+==== BeQtNetwork ====
+    * Add ability to set compression for every network operation independently
+    * Add ability to listen on several ports/hosts to BNetworkServer
+    * Add ability to pre-handle incoming connection to BNetworkServer
+    * Improve user ban system in BNetworkServer
+
+==== BeQtWidgets ====
+    * Merge similar GUI method pairs into templates
+    * Move BApplication::SettingsTabNavigation enum to BSettingsDialog (change related methods)
+    * Add pointSize parameter to BApplication::createMonospaceFont
+    * Remove some static methods from BApplication
+    * Remove some template methods from BApplication
+    * Fix BTerminalWidget event handling
+    * Improve BTerminalWidget codec system
+    * Implement BTerminalWidget command history
+    * Fix BLocalTerminalDriver builtin commands handling ("cd")
+    * Add new methods to BAboutDialog
+    * Fix ChangeLog files displaying
+    * Rename BGuiPluginInterface settingsTab method into createSettingsTab
+    * Remove BGuiPluginInterface::handleSettings method
+    * Add Help information to plugin BGuiPluginInterface
+    * Add ability to set user About dialog for plugins
+    * Remove some template methods from BAbstractSettingsTab
+    * Remove old methods from BPluginsSettingsTab
+    * Fix BPluginsSettingsTab About dialog version
+    * Show plugin Help
+    * Reimplement BClipboardNotifier
+    * Add new methods to BPasswordWidget and BLoginWidget
+
+==== BeQtNetworkWidgets ====
+    * Add new methods to BOperationProgressDialog
+
+==== BeQtCodeEditor ====
+    * Remove old function declarations without definitions from BeQtCodeEditor classes
+    * Do not use QPointer in editor modules
+    * Improve editor modules (de)serializing
+    * Improve BTextBlockUserData (implement multiple skip intervals)
+    * Hide BTextBlockUserData; add BTextBlockExtraData instead
+    * Add public method for handling events to BAbstractCodeEditorDocument
+    * Add method for converting point into absolute cursor position to BAbstractCodeEditorDocument
+    * Add method for retrieving absolute cursor position to BAbstractCodeEditorDocument
+    * Add overloaded moveCursor method to BAbstractCodeEditorDocument
+    * Add BAbstractCodeEditorDocument::clear method
+    * Add textPreprocessingFunction and textPreprocessingUserData methods to BSimpleCodeEditorDocument
+    * Add ability to set auto-indentation in editor
+    * Implement editor regular expression-based search
+    * Implement autocompletion
+
+==== Misc ====
+    * Add .pri files for 3rdparty libraries (Hunspell and Enca)
+    * Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
+    * Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
+    * Use Qt coding style, sort includes, class members, etc.
+
 === BeQt 3.2.3 (02 July 2014) ===
     * Add processor architecture defines
     * Fix getting global plugins path on Linux
