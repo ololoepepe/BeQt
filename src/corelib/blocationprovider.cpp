@@ -115,6 +115,29 @@ void BLocationProvider::addLocation(const QString &name, const PathMap &paths)
     d_func()->locations.insert(name, paths);
 }
 
+void BLocationProvider::addLocation(const QString &name, const QString &subdirName)
+{
+    typedef QList<BApplicationBase::ResourceType> ResTypeList;
+    init_once(ResTypeList, resTypes, ResTypeList()) {
+        resTypes << BApplicationBase::BuiltinResource;
+        resTypes << BApplicationBase::SharedResource;
+        resTypes << BApplicationBase::UserResource;
+    }
+    if (name.isEmpty())
+        return;
+    if (d_func()->locations.contains(name))
+        return;
+    QString s = !subdirName.isEmpty() ? subdirName : name;
+    PathMap m;
+    foreach (BApplicationBase::ResourceType r, resTypes) {
+        QString l = BApplicationBase::location(BApplicationBase::DataPath, r);
+        if (l.isEmpty())
+            continue;
+        m.insert(r, l + "/" + s);
+    }
+    d_func()->locations.insert(name, m);
+}
+
 void BLocationProvider::addLocationPath(const QString &locationName, BApplicationBase::ResourceType type,
                                         const QString &path)
 {

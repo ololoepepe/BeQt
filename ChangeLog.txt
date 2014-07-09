@@ -1,3 +1,108 @@
+=== BeQt 4.0.0 (xx July 2014) ===
+==== BeQtCore ====
+    * Remove BTranslateFunctor class
+    * Remove BeQt::variantToData and BeQt::dataToVatiant functions
+    * Remove BCoreApplication saveSettings and loadSettings methods
+    * Remove BDirTools createUserLocation and createUserLocations functions
+    * Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
+    * Rename PluginInfoStatic into StaticPluginInfo
+    * Rename BTerminalIOHandler into BTerminal
+    * Rename BVersion members: "minor", "major", etc.
+    * Rename BCoreApplication::instance method into binstance
+    * Rename BCoreApplication::translator method into beqtTranslator
+    * Rename BCoreApplication::translators method into beqtTranslators
+    * Rename BCoreApplication::installTranslator method into installBeqtTranslator
+    * Rename BCoreApplication::removeTranslator method into removeBeqtTranslator
+    * Rename BTerminalIOHandler::terminalTitle method into title
+    * Rename BTerminalIOHandler::terminalSize method into size
+    * Rename BTerminalIOHandler::terminalColumnCount method into columnCount
+    * Rename BTerminalIOHandler::terminalRowCount method into rowCount
+    * Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
+    * Make BPersonInfo and BPersonInfoList serializable
+    * Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
+    * Reimplement resource lookup system
+    * Use UNIX resouce structure for all types of applications
+    * Improve plugin loading system
+    * Make BTerminalIOHandler a singleton
+    * Add bReverse and bReversed template functions
+    * Add BApplicationBase class
+    * Add working directory argument to BeQt::startProcessDetached function
+    * Add InitialSettings class to BApplicationBase
+    * Add alternative base class pair with non-QObject private base
+    * Add BVersion::clear method
+    * Add version information to BPluginInterface
+    * Add BAbstractLocationProvider and BLocationProvider classes
+    * Add ability to add extra locations
+    * Add ability to set multiple copyright owners
+    * Add BTextTools:toHtml function
+    * Add BCoreApplication deactivatedPlugins and setDeactivatedPlugins methods
+    * Implement terminal modes
+    * Change BeQt::OSType enum values
+    * Improve BUuid serialization
+    * Use BUuid class instead of QUuid
+    * Add ability to set replaced letters in BSpellCheckerDictionary
+    * Fix BSpellCheckerDictionary validity testing
+    * Add function for removing old plugin settings
+    * Add ability to remember entered commands in BTerminalIOHandler
+    * Add template methods for secure casting int and QVariant to enum (enum_cast)
+    * Add overloaded BCoreApplication installTranslator and removeTranslator methods
+
+==== BeQtNetwork ====
+    * Add ability to set compression for every network operation independently
+    * Add ability to listen on several ports/hosts to BNetworkServer
+    * Implement spam notification in network server
+    * Improve banned user handling in network server
+
+==== BeQtWidgets ====
+    * Remove BApplication::createStandardAction method
+    * Remove some static methods from BApplication
+    * Remove some template methods from BApplication and BAbstractSettingsTab
+    * Remove BGuiPluginInterface::handleSettings method
+    * Remove old methods from BPluginsSettingsTab
+    * Rename BGuiPluginInterface settingsTab method into createSettingsTab
+    * Merge similar GUI method pairs into templates
+    * Move BApplication::SettingsTabNavigation enum to BSettingsDialog (change related methods)
+    * Fix BPluginsSettingsTab About dialog version
+    * Improve ChangeLog files displaying
+    * Add Help information to plugin BGuiPluginInterface
+    * Show plugin Help
+    * Overload BAboutDuialog::setAppVersion method
+    * Add pointSize parameter to BApplication::createMonospaceFont
+    * Add ability to set user About dialog for plugins
+    * Add new methods to BAboutDialog
+    * Add new methods to BPasswordWidget and BLoginWidget
+    * Implement BTerminalWidget history
+    * Improve BTerminalWidget event handling
+    * Improve BTerminalWidget codec system
+    * Improve BLocalTerminalDriver builtin commands handling ("cd")
+    * Reimplement BClipboardNotifier
+
+==== BeQtNetworkWidgets ====
+    * Add new methods to BOperationProgressDialog
+
+==== BeQtCodeEditor ====
+    * Add BAbstractCodeEditorDocument::clear method
+    * Do not use QPointer for in editor modules
+    * Improve code editor modules (de)serializing
+    * Improve BTextBlockUserData (implement multiple skip intervals)
+    * Implement code editor regexp-based search
+    * Add position to point conversion method to BAbstractCodeEditorDocument
+    * Add pure position retrieving method to BAbstractCodeEditorDocument
+    * Add overloaded moveCursor method to BAbstractCodeEditorDocument
+    * Implement BSimpleCodeEditorDocument textPreprocessingFunction and preprocessingUserData methods
+    * Add public function for handling events to BAbstractCodeEditorDocument
+    * Implement autocompletion
+    * Hide BTextBlockUserData; add BTextBlockExtraData instead
+    * Remove old function declarations from BeQtCodeEditor classes
+    * Change BAbstractCodeEditorDocument preprocessing user data from QVariantMap to QVariant
+    * Add ability to set auto-indentation in code editor
+
+==== Misc ====
+    * Add .pri files for 3rdparty libraries (Hunspell and Enca)
+    * Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
+    * Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
+    * Use Qt coding style, sort includes, class members, etc.
+
 === BeQt 3.2.3 (02 July 2014) ===
     * Add processor architecture defines
     * Fix getting global plugins path on Linux

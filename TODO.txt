@@ -1,121 +1,21 @@
 * Add comments to the code and make docs; write detailed user manual
 * Use enum_cast wherever it makes sense
 
-* Test Hunspell dictionary validity for other languages
-* Add PDCurses binding
-* Implement Katepart-compatible file type definition using XML files
-* Improve SQL schema parsing
-* Add method for setting terminal window size to BTerminal
-
-* Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Implement native settings dialogs
 * Add function for unzipping Hunspell dictionaries
 * Implement code folding in code editor
-* Improve BLineNumberWidget: add virtual functions
 
 === PATCH ===
 
-
+* Improve SQL schema parsing
+* Fix dragging from BPlainTextEdit. Note: not sure if needed
 
 === MINOR ===
 
-[done] Add function for removing old plugin settings
-[done] Add ability to remember entered commands in BTerminalIOHandler
-[done] Add ability to set auto-indentation in code editor
-[done] Add overloaded BCoreApplication installTranslator and removeTranslator methods
-[done] Add template methods for secure casting int and QVariant to enum (enum_cast)
+* Add PDCurses binding
+* Implement Katepart-compatible file type definition using XML files
+* Add method for setting terminal window size to BTerminal
 
 === MAJOR ===
 
-[done] Add .pri files for 3rdparty libraries (Hunspell and Enca)
-[done] Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
-[done] Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
-[done] Use Qt coding style, sort includes, class members, etc.
 
-[done] Remove BTranslateFunctor class
-[done] Remove BeQt::variantToData and BeQt::dataToVatiant functions
-[done] Remove BCoreApplication saveSettings and loadSettings methods
-[done] Remove BDirTools createUserLocation and createUserLocations functions
-[done] Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
-[done] Rename PluginInfoStatic into StaticPluginInfo
-[done] Rename BTerminalIOHandler into BTerminal
-[done] Rename BVersion members: "minor", "major", etc.
-[done] Rename BCoreApplication::instance method into binstance
-[done] Rename BCoreApplication::translator method into beqtTranslator
-[done] Rename BCoreApplication::translators method into beqtTranslators
-[done] Rename BCoreApplication::installTranslator method into installBeqtTranslator
-[done] Rename BCoreApplication::removeTranslator method into removeBeqtTranslator
-[done] Rename BTerminalIOHandler::terminalTitle method into title
-[done] Rename BTerminalIOHandler::terminalSize method into size
-[done] Rename BTerminalIOHandler::terminalColumnCount method into columnCount
-[done] Rename BTerminalIOHandler::terminalRowCount method into rowCount
-[done] Move splitCommand and mergeArguments methods from BTerminalIOHandler to BTextTools
-[done] Make BPersonInfo and BPersonInfoList serializable
-[done] Make BCoreApplication and BApplication inherit QCoreApplication and QApplication
-[done] Reimplement resource lookup system
-[done] Use UNIX resouce structure for all types of applications
-[done] Improve plugin loading system
-[done] Make BTerminalIOHandler a singleton
-[done] Add bReverse and bReversed template functions
-[done] Add BApplicationBase class
-[done] Add working directory argument to BeQt::startProcessDetached function
-[done] Add InitialSettings class to BApplicationBase
-[done] Add alternative base class pair with non-QObject private base
-[done] Add BVersion::clear method
-[done] Add version information to BPluginInterface
-[done] Add BAbstractLocationProvider and BLocationProvider classes
-[done] Add ability to add extra locations
-[done] Add ability to set multiple copyright owners
-[done] Add BTextTools:toHtml function
-[done] Add BCoreApplication deactivatedPlugins and setDeactivatedPlugins methods
-[done] Implement terminal modes
-[done] Change BeQt::OSType enum values
-[done] Improve BUuid serialization
-[done] Use BUuid class instead of QUuid
-[done] Add ability to set replaced letters in BSpellCheckerDictionary
-[done] Fix BSpellCheckerDictionary validity testing
-
-[done] Add ability to set compression for every network operation independently
-[done] Add ability to listen on several ports/hosts to BNetworkServer
-[done] Implement spam notification in network server
-[done] Improve banned user handling in network server
-
-[done] Remove BApplication::createStandardAction method
-[done] Remove some static methods from BApplication
-[done] Remove some template methods from BApplication and BAbstractSettingsTab
-[done] Remove BGuiPluginInterface::handleSettings method
-[done] Remove old methods from BPluginsSettingsTab
-[done] Rename BGuiPluginInterface settingsTab method into createSettingsTab
-[done] Merge similar GUI method pairs into templates
-[done] Move BApplication::SettingsTabNavigation enum to BSettingsDialog (change related methods)
-[done] Fix BPluginsSettingsTab About dialog version
-[done] Improve ChangeLog files displaying
-[done] Add Help information to plugin BGuiPluginInterface
-[done] Show plugin Help
-[done] Overload BAboutDuialog::setAppVersion method
-[done] Add pointSize parameter to BApplication::createMonospaceFont
-[done] Add ability to set user About dialog for plugins
-[done] Add new methods to BAboutDialog
-[done] Add new methods to BPasswordWidget and BLoginWidget
-[done] Implement BTerminalWidget history
-[done] Improve BTerminalWidget event handling
-[done] Improve BTerminalWidget codec system
-[done] Improve BLocalTerminalDriver builtin commands handling ("cd")
-[done] Reimplement BClipboardNotifier
-
-[done] Add new methods to BOperationProgressDialog
-
-[done] Add BAbstractCodeEditorDocument::clear method
-[done] Do not use QPointer for in editor modules
-[done] Improve code editor modules (de)serializing
-[done] Improve BTextBlockUserData (implement multiple skip intervals)
-[done] Implement code editor regexp-based search
-[done] Add position to point conversion method to BAbstractCodeEditorDocument
-[done] Add pure position retrieving method to BAbstractCodeEditorDocument
-[done] Add overloaded moveCursor method to BAbstractCodeEditorDocument
-[done] Implement BSimpleCodeEditorDocument textPreprocessingFunction and preprocessingUserData methods
-[done] Add public function for handling events to BAbstractCodeEditorDocument
-[done] Implement autocompletion
-[done] Hide BTextBlockUserData; add BTextBlockExtraData instead
-[done] Remove old function declarations from BeQtCodeEditor classes
-[done] Change BAbstractCodeEditorDocument preprocessing user data from QVariantMap to QVariant

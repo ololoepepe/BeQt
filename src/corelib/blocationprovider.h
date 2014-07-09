@@ -51,6 +51,7 @@ protected:
     explicit BLocationProvider(BLocationProviderPrivate &d);
 public:
     void addLocation(const QString &name, const PathMap &paths);
+    void addLocation(const QString &name, const QString &subdirName = QString());
     void addLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
     bool autoCreatePaths() const;
     bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;

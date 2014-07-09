@@ -32,7 +32,7 @@ win32 {
     CONFIG(release, debug|release):releaseDebugSuffix=/release
     CONFIG(debug, debug|release):releaseDebugSuffix=/debug
     #Set suffix for libraries names
-    libNameSuffix=3
+    libNameSuffix=4
 }
 
 #Gets full module name, for example "BeQtCore", "BeQtWidgets", etc.
