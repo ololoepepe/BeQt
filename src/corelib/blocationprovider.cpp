@@ -155,6 +155,12 @@ void BLocationProvider::addLocationPath(const QString &locationName, BApplicatio
     m.insert(type, path);
 }
 
+void BLocationProvider::addLocations(const QStringList &names)
+{
+    foreach (const QString &name, names)
+        addLocation(name);
+}
+
 bool BLocationProvider::autoCreatePaths() const
 {
     return d_func()->autoCreate;
