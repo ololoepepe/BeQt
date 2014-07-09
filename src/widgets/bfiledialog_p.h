@@ -22,52 +22,68 @@
 #ifndef BFILEDIALOG_P_H
 #define BFILEDIALOG_P_H
 
-class ProxyModel;
+class BTextCodecComboBox;
 
-class QLayout;
-class QLabel;
-class QComboBox;
 class QEvent;
+class QLabel;
+class QModelIndex;
 
 #include "bfiledialog.h"
-#include "btextcodecmenu.h"
-#include "btextcodeccombobox.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include "btextcodecmenu.h"
+
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
+#include <QSortFilterProxyModel>
 #include <QString>
+
+/*============================================================================
+================================ BProxyModel =================================
+============================================================================*/
+
+class B_WIDGETS_EXPORT BProxyModel : public QSortFilterProxyModel
+{
+private:
+    bool prevent;
+public:
+    explicit BProxyModel(QObject *parent = 0);
+public:
+    void setPreventAll(bool b);
+protected:
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
+};
 
 /*============================================================================
 ================================ BFileDialogPrivate ==========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BFileDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BFileDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BFileDialog)
+public:
+    const BTextCodecMenu::Style CmboxStyle;
+    const QString TopDir;
+public:
+    BTextCodecComboBox *cmboxEncodings;
+    QLabel *lblEncodings;
+    int maxHistorySize;
+    BProxyModel *proxy;
 public:
     explicit BFileDialogPrivate(BFileDialog *q, BTextCodecMenu::Style comboBoxStyle,
                                 const QString &topDir = QString());
     ~BFileDialogPrivate();
 public:
-    void init();
+    static QString chooseDir(const QString &path);
+public:
     bool eventFilter(QObject *o, QEvent *e);
+    void init();
     bool pathFits(const QString &path) const;
 public Q_SLOTS:
-    void checkHistory();
     void checkGoToParent();
+    void checkHistory();
     void checkLineEdit(const QString &text);
-public:
-    const BTextCodecMenu::Style CmboxStyle;
-    const QString TopDir;
-public:
-    int maxHistorySize;
-    ProxyModel *proxy;
-    QLayout *lt;
-      QLabel *lblEncodings;
-      BTextCodecComboBox *cmboxEncodings;
 private:
     Q_DISABLE_COPY(BFileDialogPrivate)
 };

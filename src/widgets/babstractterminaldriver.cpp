@@ -22,7 +22,7 @@
 #include "babstractterminaldriver.h"
 
 #include <QObject>
-#include <QMetaObject>
+#include <QString>
 
 /*============================================================================
 ================================ BAbstractTerminalDriver =====================
@@ -43,14 +43,14 @@ BAbstractTerminalDriver::~BAbstractTerminalDriver()
 
 /*============================== Public methods ============================*/
 
-void BAbstractTerminalDriver::terminate()
-{
-    close();
-}
-
 void BAbstractTerminalDriver::kill()
 {
     terminate();
+}
+
+bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &, QTextCodec *)
+{
+    return true;
 }
 
 QString BAbstractTerminalDriver::prompt() const
@@ -58,26 +58,26 @@ QString BAbstractTerminalDriver::prompt() const
     return "$";
 }
 
-bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &)
-{
-    emitFinished(0);
-    return true;
-}
-
-bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &)
-{
-    emitFinished(0);
-    return true;
-}
-
-bool BAbstractTerminalDriver::processCommand(const QString &, const QStringList &, QString &)
-{
-    return true;
-}
-
 void BAbstractTerminalDriver::setWorkingDirectory(const QString &)
 {
     //
+}
+
+bool BAbstractTerminalDriver::terminalCommand(const QString &, const QStringList &, QString &, QTextCodec *)
+{
+    emitFinished(0);
+    return true;
+}
+
+bool BAbstractTerminalDriver::terminalCommand(const QVariant &, QString &, QTextCodec *)
+{
+    emitFinished(0);
+    return true;
+}
+
+void BAbstractTerminalDriver::terminate()
+{
+    close();
 }
 
 QString BAbstractTerminalDriver::workingDirectory() const
@@ -87,9 +87,9 @@ QString BAbstractTerminalDriver::workingDirectory() const
 
 /*============================== Protected slots ===========================*/
 
-void BAbstractTerminalDriver::emitReadyRead()
+void BAbstractTerminalDriver::emitBlockTerminal()
 {
-    Q_EMIT readyRead();
+    Q_EMIT blockTerminal();
 }
 
 void BAbstractTerminalDriver::emitFinished(int exitCode)
@@ -97,9 +97,9 @@ void BAbstractTerminalDriver::emitFinished(int exitCode)
     Q_EMIT finished(exitCode);
 }
 
-void BAbstractTerminalDriver::emitBlockTerminal()
+void BAbstractTerminalDriver::emitReadyRead()
 {
-    Q_EMIT blockTerminal();
+    Q_EMIT readyRead();
 }
 
 void BAbstractTerminalDriver::emitUnblockTerminal()

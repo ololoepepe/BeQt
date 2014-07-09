@@ -24,42 +24,38 @@
 
 class BGenericSocketPrivate;
 
-class QLocalSocket;
-
 #include "bgenericsocket.h"
 
-#include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
-#include <QLocalSocket>
-#include <QPointer>
 #include <QAbstractSocket>
+#include <QLocalSocket>
+#include <QObject>
+#include <QPointer>
 
 /*============================================================================
 ================================ BGenericSocketPrivate =======================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericSocketPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BGenericSocketPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BGenericSocket)
-
+public:
+    QPointer<QAbstractSocket> asocket;
+    QPointer<QLocalSocket> lsocket;
 public:
     explicit BGenericSocketPrivate(BGenericSocket *q);
     ~BGenericSocketPrivate();
 public:
+    void connectIODevice();
+    void disconnectIODevice();
     void init();
     void setSocket(QAbstractSocket *socket);
     void setSocket(QLocalSocket *socket);
-    void connectIODevice();
-    void disconnectIODevice();
 public Q_SLOTS:
     void lsocketError(QLocalSocket::LocalSocketError socketError);
     void lsocketStateChanged(QLocalSocket::LocalSocketState socketState);
-public:
-    QPointer<QAbstractSocket> asocket;
-    QPointer<QLocalSocket> lsocket;
 private:
     Q_DISABLE_COPY(BGenericSocketPrivate)
 };

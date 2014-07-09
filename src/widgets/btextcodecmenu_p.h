@@ -24,8 +24,7 @@
 
 #include "btextcodecmenu.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QString>
@@ -36,23 +35,23 @@ class QSignalMapper;
 ================================ BTextCodecMenuPrivate =======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecMenuPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BTextCodecMenuPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BTextCodecMenu)
+public:
+    const BTextCodecMenu::Style Style;
+public:
+    QString codecName;
+    QSignalMapper *mapper;
 public:
     explicit BTextCodecMenuPrivate(BTextCodecMenu *q, BTextCodecMenu::Style s);
     ~BTextCodecMenuPrivate();
 public:
     void init();
 public Q_SLOTS:
-    void retranslateUi();
     void codecSelected(const QString &cn);
-public:
-    const BTextCodecMenu::Style Style;
-public:
-    QString codecName;
-    QSignalMapper *mapper;
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BTextCodecMenuPrivate)
 };

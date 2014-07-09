@@ -23,42 +23,38 @@
 #define BSEARCHEDITORMODULE_P_H
 
 class BSearchDialogPrivate;
+
 class BAbstractCodeEditorDocument;
 
-class QWidget;
-class QString;
-class QByteArray;
-class QStringList;
-class QVBoxLayout;
-class QHBoxLayout;
-class QLabel;
-class QComboBox;
-class QGroupBox;
-class QCheckBox;
-class QDialogButtonBox;
-class QPushButton;
-class QMenu;
 class QAction;
-class QString;
+class QByteArray;
+class QCheckBox;
+class QComboBox;
+class QDialogButtonBox;
 class QEvent;
+class QGroupBox;
+class QLabel;
+class QMenu;
+class QPushButton;
+class QString;
+class QStringList;
+class QWidget;
 
 #include "bsearcheditormodule.h"
 #include "babstracteditormodule_p.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
 #include <QDialog>
+#include <QObject>
 #include <QTextDocument>
-#include <QPointer>
 
 /*============================================================================
 ================================ BSearchDialog ===============================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSearchDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSearchDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSearchDialog)
@@ -69,28 +65,30 @@ public:
 protected:
     explicit BSearchDialog(BSearchDialogPrivate &d, QWidget *parent = 0);
 public:
-    void setCaseSensitivity(Qt::CaseSensitivity cs);
-    void setMatchWholeWords(bool enabled);
-    void setBackwardOrder(bool enabled);
-    void setCyclicSearch(bool enabled);
-    void setSearchHistory(const QStringList &list);
-    void setReplaceHistory(const QStringList &list);
-    void setMaximumHistorySize(int sz);
-    void setReplaceEnabled(bool enabled);
-    void setDocument(BAbstractCodeEditorDocument *doc);
-    void restoreState(const QByteArray &ba);
-    Qt::CaseSensitivity caseSensitivity() const;
-    bool matchWholeWords() const;
     bool backwardOrder() const;
+    Qt::CaseSensitivity caseSensitivity() const;
     bool cyclicSearch() const;
-    QStringList searchHistory() const;
-    QStringList replaceHistory() const;
-    int maximumHistorySize() const;
-    bool replaceEnabled() const;
     BAbstractCodeEditorDocument *document() const;
     bool findNextAvailable() const;
+    bool matchWholeWords() const;
+    int maximumHistorySize() const;
+    bool regexp() const;
+    bool replaceEnabled() const;
+    QStringList replaceHistory() const;
     bool replaceNextAvailable() const;
+    void restoreState(const QByteArray &ba);
     QByteArray saveState() const;
+    QStringList searchHistory() const;
+    void setBackwardOrder(bool enabled);
+    void setCaseSensitivity(Qt::CaseSensitivity cs);
+    void setCyclicSearch(bool enabled);
+    void setDocument(BAbstractCodeEditorDocument *doc);
+    void setMatchWholeWords(bool enabled);
+    void setMaximumHistorySize(int sz);
+    void setRegexp(bool b);
+    void setReplaceEnabled(bool enabled);
+    void setReplaceHistory(const QStringList &list);
+    void setSearchHistory(const QStringList &list);
 public Q_SLOTS:
     void findNext();
     void replaceNext();
@@ -107,51 +105,47 @@ private:
 ================================ BSearchDialogPrivate ========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSearchDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSearchDialog)
 public:
     static const int DefMaximumHistorySize;
 public:
+    QAction *actAllDocuments;
+    QAction *actDocument;
+    QAction *actSelection;
+    QPushButton *btnFind;
+    QPushButton *btnReplace;
+    QPushButton *btnReplaceAll;
+    QCheckBox *cboxBackwardOrder;
+    QCheckBox *cboxCaseSensitive;
+    QCheckBox *cboxCyclic;
+    QCheckBox *cboxRegexp;
+    QCheckBox *cboxWholeWords;
+    QComboBox *cmboxReplace;
+    QComboBox *cmboxSearch;
+    QDialogButtonBox *dlgbbox;
+    BAbstractCodeEditorDocument *document;
+    QGroupBox *gboxOptions;
+    QLabel *lblReplace;
+    QLabel *lblSearch;
+    QMenu *mnuReplaceAll;
+public:
     explicit BSearchDialogPrivate(BSearchDialog *q);
     ~BSearchDialogPrivate();
 public:
-    void init();
-    bool eventFilter(QObject *o, QEvent *e);
     void appendHistory(QComboBox *cmbox);
-    void emitTextReplaced(int count, const QString &oldText, const QString &newText);
     QTextDocument::FindFlags createFindFlags() const;
+    void emitTextReplaced(int count, const QString &oldText, const QString &newText);
+    bool eventFilter(QObject *o, QEvent *e);
+    void init();
     QString windowTitle() const;
 public Q_SLOTS:
-    void retranslateUi();
-    void checkSearchReplace();
-    void actSelectionTriggered();
     void actDocumentTriggered();
-public:
-    BAbstractCodeEditorDocument *document;
-    QVBoxLayout *vlt;
-      QHBoxLayout *hltSearch;
-        QLabel *lblSearch;
-        QComboBox *cmboxSearch;
-      QHBoxLayout *hltReplace;
-        QLabel *lblReplace;
-        QComboBox *cmboxReplace;
-      QGroupBox *gboxOptions;
-        QVBoxLayout *vltOptions;
-          QCheckBox *cboxCaseSensitive;
-          QCheckBox *cboxWholeWords;
-          QCheckBox *cboxBackwardOrder;
-          QCheckBox *cboxCyclic;
-      QDialogButtonBox *dlgbbox;
-        //Close
-        QPushButton *btnReplaceAll;
-          QMenu *mnuReplaceAll;
-            QAction *actSelection;
-            QAction *actDocument;
-            QAction *actAllDocuments;
-        QPushButton *btnReplace;
-        QPushButton *btnFind;
+    void actSelectionTriggered();
+    void checkSearchReplace();
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BSearchDialogPrivate)
 };
@@ -165,20 +159,20 @@ class B_CODEEDITOR_EXPORT BSearchEditorModulePrivate : public BAbstractEditorMod
     Q_OBJECT
     B_DECLARE_PUBLIC(BSearchEditorModule)
 public:
+    QAction *actFind;
+    QAction *actFindNext;
+    BSearchDialog *sdlg;
+public:
     explicit BSearchEditorModulePrivate(BSearchEditorModule *q);
     ~BSearchEditorModulePrivate();
 public:
+    QString createNotFoundMessage(const QString &text);
     void init();
     void setDialogParent(QWidget *parent = 0);
-    QString createNotFoundMessage(const QString &text);
 public Q_SLOTS:
     void retranslateUi();
     void textFound(bool found, const QString &text);
     void textReplaced(int count, const QString &oldText, const QString &newText);
-public:
-    BSearchDialog *sdlg;
-    QPointer<QAction> actFind;
-    QPointer<QAction> actFindNext;
 private:
     Q_DISABLE_COPY(BSearchEditorModulePrivate)
 };

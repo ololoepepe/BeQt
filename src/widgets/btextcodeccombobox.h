@@ -24,13 +24,12 @@
 
 class BTextCodecComboBoxPrivate;
 
-class QTextCodec;
 class QString;
+class QTextCodec;
 
 #include "btextcodecmenu.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QComboBox>
 
@@ -38,7 +37,7 @@ class QString;
 ================================ BTextCodecComboBox ==========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecComboBox : public QComboBox, public BBase
+class B_WIDGETS_EXPORT BTextCodecComboBox : public QComboBox, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTextCodecComboBox)
@@ -49,15 +48,15 @@ public:
 protected:
     explicit BTextCodecComboBox(BTextCodecComboBoxPrivate &d, QWidget *parent = 0);
 public:
-    BTextCodecMenu::Style style() const;
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
+    BTextCodecMenu::Style style() const;
 public Q_SLOTS:
     void selectCodec(QTextCodec *codec);
     void selectCodec(const QString &codecName);
 protected:
-    void showPopup();
     void hidePopup();
+    void showPopup();
 Q_SIGNALS:
     void codecChanged(QTextCodec *codec);
     void codecNameChanged(const QString &codecName);

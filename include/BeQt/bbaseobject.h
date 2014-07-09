@@ -1,0 +1,1 @@
+#include "../BeQtCore/bbaseobject.h"

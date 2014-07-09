@@ -3,7 +3,8 @@ TARGET = BeQtCore
 
 CONFIG += release
 
-QT = core concurrent
+QT = core
+greaterThan(QT_MAJOR_VERSION, 4):QT += concurrent
 
 BEQT =
 
@@ -12,17 +13,24 @@ include(../module.pri)
 DEFINES += BEQT_BUILD_CORE_LIB
 
 HEADERS += \
+    babstractlocationprovider.h \
+    bapplicationbase.h \
+    bapplicationbase_p.h \
     bbase.h \
     bbase_p.h \
+    bbaseobject.h \
+    bbaseobject_p.h \
     bcoreapplication.h \
     bcoreapplication_p.h \
     bdirtools.h \
     bglobal.h \
+    blocationprovider.h \
     blogger.h \
     blogger_p.h \
     bnamespace.h \
     bpassword.h \
     bpersoninfo.h \
+    bpersoninfolist.h \
     bpersoninfoprovider.h \
     bpersoninfoprovider_p.h \
     bplugininterface.h \
@@ -36,10 +44,9 @@ HEADERS += \
     bspellchecker.h \
     bspellchecker_p.h \
     bspellcheckerdictionary.h \
-    bterminaliohandler.h \
-    bterminaliohandler_p.h \
+    bterminal.h \
+    bterminal_p.h \
     btexttools.h \
-    btranslatefunctor.h \
     btranslation.h \
     btranslator.h \
     btranslator_p.h \
@@ -49,13 +56,19 @@ HEADERS += \
     buuid.h
 
 SOURCES += \
+    babstractlocationprovider.cpp \
+    bapplicationbase.cpp \
     bbase.cpp \
+    bbaseobject.cpp \
     bcoreapplication.cpp \
     bdirtools.cpp \
     bglobal.cpp \
+    blocationprovider.cpp \
     blogger.cpp \
     bnamespace.cpp \
     bpassword.cpp \
+    bpersoninfo.cpp \
+    bpersoninfolist.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
     bsettingsnode.cpp \
@@ -63,9 +76,8 @@ SOURCES += \
     bspamnotifier.cpp \
     bspellchecker.cpp \
     bspellcheckerdictionary.cpp \
-    bterminaliohandler.cpp \
+    bterminal.cpp \
     btexttools.cpp \
-    btranslatefunctor.cpp \
     btranslation.cpp \
     btranslator.cpp \
     bversion.cpp \
@@ -73,66 +85,7 @@ SOURCES += \
     btextmatchlist.cpp \
     buuid.cpp
 
-##############################################################################
-################################ Hunspell ####################################
-##############################################################################
-
-!isEmpty(HUNSPELL_PREFIX) {
-    INCLUDEPATH *= $${HUNSPELL_PREFIX}/include
-    DEPENDPATH *= $${HUNSPELL_PREFIX}/include
-    LIBS *= -L$${HUNSPELL_PREFIX}/lib/ -lhunspell
-} else {
-    DEFINES += BUILDING_LIBHUNSPELL
-
-    INCLUDEPATH *= $${PWD}/../3rdparty/hunspell
-    DEPENDPATH *= $${PWD}/../3rdparty/hunspell
-
-    HEADERS += $$files($${PWD}/../3rdparty/hunspell/*.hxx)
-    HEADERS += \
-    ../3rdparty/hunspell/config.h \
-    ../3rdparty/hunspell/hunvisapi.h
-
-    SOURCES += $$files($${PWD}/../3rdparty/hunspell/*.cxx)
-}
-
-##############################################################################
-################################ Enca ########################################
-##############################################################################
-
-!isEmpty(ENCA_PREFIX) {
-    INCLUDEPATH *= $${ENCA_PREFIX}
-    DEPENDPATH *= $${ENCA_PREFIX}
-    INCLUDEPATH *= $${ENCA_PREFIX}/lib
-    DEPENDPATH *= $${ENCA_PREFIX}/lib
-    INCLUDEPATH *= $${ENCA_PREFIX}/data
-    DEPENDPATH *= $${ENCA_PREFIX}/data
-    INCLUDEPATH *= $${ENCA_PREFIX}/tools
-    DEPENDPATH *= $${ENCA_PREFIX}/tools
-    LIBS *= -L$${ENCA_PREFIX}/lib/ -lenca
-} else {
-    DEFINES += BUILDING_LIBENCA
-
-    INCLUDEPATH *= $${PWD}/../3rdparty/enca
-    DEPENDPATH *= $${PWD}/../3rdparty/enca
-
-    HEADERS += $$files($${PWD}/../3rdparty/enca/lib/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/bulgarian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/chinese/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/croatian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/czech/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/estonian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/hungarian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/latvian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/lithuanian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/polish/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/russian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/slovak/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/slovene/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/data/ukrainian/*.h)
-    HEADERS += $$files($${PWD}/../3rdparty/enca/tools/*.h)
-
-    SOURCES += $$files($${PWD}/../3rdparty/enca/lib/*.c)
-}
+include(../3rdparty/3rdparty.pri)
 
 contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES

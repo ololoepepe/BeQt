@@ -20,18 +20,18 @@
 ****************************************************************************/
 
 #include "btranslation.h"
-#include "bglobal.h"
+
 #include "bbase.h"
 #include "bbase_p.h"
 #include "bnamespace.h"
 
-#include <QObject>
-#include <QString>
 #include <QByteArray>
-#include <QVariant>
-#include <QVariantMap>
 #include <QDataStream>
 #include <QDebug>
+#include <QObject>
+#include <QString>
+#include <QVariant>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BTranslationPrivate =========================
@@ -41,15 +41,15 @@ class BTranslationPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTranslation)
 public:
+    QString context;
+    QString disambiguation;
+    int n;
+    QString sourceText;
+public:
     explicit BTranslationPrivate(BTranslation *q);
     ~BTranslationPrivate();
 public:
     void init();
-public:
-    QString context;
-    QString sourceText;
-    QString disambiguation;
-    int n;
 private:
     Q_DISABLE_COPY(BTranslationPrivate)
 };
@@ -82,36 +82,6 @@ void BTranslationPrivate::init()
 ================================ BTranslation ================================
 ============================================================================*/
 
-/*============================== Static public methods =====================*/
-
-BTranslation BTranslation::translate(const char *context, const char *sourceText, const char *disambiguation, int n)
-{
-    if (n < 0)
-        n = -1;
-    BTranslation t;
-    BTranslationPrivate *dd = t.d_func();
-    dd->context = context;
-    dd->sourceText = sourceText;
-    dd->disambiguation = disambiguation;
-    dd->n = n;
-    return t;
-}
-
-BTranslation BTranslation::tr(const char *sourceText, const char *disambiguation, int n)
-{
-    return translate("BTranslation", sourceText, disambiguation, n);
-}
-
-QString BTranslation::translate(const BTranslation &t)
-{
-    return t.translate();
-}
-
-QString BTranslation::tr(const BTranslation &t)
-{
-    return t.translate();
-}
-
 /*============================== Public constructors =======================*/
 
 BTranslation::BTranslation() :
@@ -139,6 +109,36 @@ BTranslation::BTranslation(BTranslationPrivate &d) :
     d_func()->init();
 }
 
+/*============================== Static public methods =====================*/
+
+BTranslation BTranslation::tr(const char *sourceText, const char *disambiguation, int n)
+{
+    return translate("BTranslation", sourceText, disambiguation, n);
+}
+
+QString BTranslation::tr(const BTranslation &t)
+{
+    return t.translate();
+}
+
+BTranslation BTranslation::translate(const char *context, const char *sourceText, const char *disambiguation, int n)
+{
+    if (n < 0)
+        n = -1;
+    BTranslation t;
+    BTranslationPrivate *dd = t.d_func();
+    dd->context = context;
+    dd->sourceText = sourceText;
+    dd->disambiguation = disambiguation;
+    dd->n = n;
+    return t;
+}
+
+QString BTranslation::translate(const BTranslation &t)
+{
+    return t.translate();
+}
+
 /*============================== Public methods ============================*/
 
 QString BTranslation::context() const
@@ -146,14 +146,14 @@ QString BTranslation::context() const
     return d_func()->context;
 }
 
-QString BTranslation::sourceText() const
-{
-    return d_func()->sourceText;
-}
-
 QString BTranslation::disambiguation() const
 {
     return d_func()->disambiguation;
+}
+
+bool BTranslation::isValid() const
+{
+    return !d_func()->context.isEmpty() && !d_func()->sourceText.isEmpty();
 }
 
 int BTranslation::n() const
@@ -161,11 +161,9 @@ int BTranslation::n() const
     return d_func()->n;
 }
 
-QString BTranslation::translate() const
+QString BTranslation::sourceText() const
 {
-    const B_D(BTranslation);
-    return BeQt::translate(d->context.toUtf8().constData(), d->sourceText.toUtf8().constData(),
-                           d->disambiguation.toUtf8().constData(), d->n);
+    return d_func()->sourceText;
 }
 
 QString BTranslation::tr() const
@@ -173,9 +171,11 @@ QString BTranslation::tr() const
     return translate();
 }
 
-bool BTranslation::isValid() const
+QString BTranslation::translate() const
 {
-    return !d_func()->context.isEmpty() && !d_func()->sourceText.isEmpty();
+    const B_D(BTranslation);
+    return BeQt::translate(d->context.toUtf8().constData(), d->sourceText.toUtf8().constData(),
+                           d->disambiguation.toUtf8().constData(), d->n);
 }
 
 /*============================== Public operators ==========================*/

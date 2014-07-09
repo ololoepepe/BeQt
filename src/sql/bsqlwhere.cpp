@@ -22,13 +22,11 @@
 #include "bsqlwhere.h"
 
 #include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BeQt>
 
 #include <QObject>
+#include <QString>
 #include <QVariant>
 #include <QVariantMap>
-#include <QString>
 
 /*============================================================================
 ================================ BSqlWherePrivate ============================
@@ -38,13 +36,13 @@ class BSqlWherePrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSqlWhere)
 public:
+    QString string;
+    QVariantMap values;
+public:
     explicit BSqlWherePrivate(BSqlWhere *q);
     ~BSqlWherePrivate();
 public:
     void init();
-public:
-    QString string;
-    QVariantMap values;
 private:
     Q_DISABLE_COPY(BSqlWherePrivate)
 };
@@ -110,14 +108,24 @@ BSqlWhere::~BSqlWhere()
 
 /*============================== Public methods ============================*/
 
-void BSqlWhere::setString(const QString &s)
+QVariantMap BSqlWhere::boundValues() const
 {
-    d_func()->string = s;
+    return d_func()->values;
+}
+
+bool BSqlWhere::isValid() const
+{
+    return !d_func()->string.isEmpty();
 }
 
 void BSqlWhere::setBoundValues(const QVariantMap &values)
 {
     d_func()->values = values;
+}
+
+void BSqlWhere::setString(const QString &s)
+{
+    d_func()->string = s;
 }
 
 void BSqlWhere::setBoundValues(const QString &placeholder1, const QVariant &boundValue1, const QString &placeholder2,
@@ -134,16 +142,6 @@ void BSqlWhere::setBoundValues(const QString &placeholder1, const QVariant &boun
 QString BSqlWhere::string() const
 {
     return d_func()->string;
-}
-
-QVariantMap BSqlWhere::boundValues() const
-{
-    return d_func()->values;
-}
-
-bool BSqlWhere::isValid() const
-{
-    return !d_func()->string.isEmpty();
 }
 
 /*============================== Public operators ==========================*/

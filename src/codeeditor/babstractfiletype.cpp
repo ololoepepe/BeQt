@@ -19,65 +19,33 @@
 **
 ****************************************************************************/
 
-class QColor;
-class QFont;
+class BTextBlockExtraData;
 
 #include "babstractfiletype.h"
 #include "babstractfiletype_p.h"
-#include "bcodeedit.h"
-#include "btextblockuserdata.h"
+
 #include "babstractcodeeditordocument_p.h"
 
-#include <QApplication>
+#include <QAction>
+#include <QColor>
+#include <QDebug>
+#include <QFileInfo>
+#include <QFont>
+#include <QList>
+#include <QMenu>
+#include <QPoint>
 #include <QString>
 #include <QStringList>
-#include <QSyntaxHighlighter>
-#include <QList>
-#include <QTextBlockUserData>
 #include <QTextBlock>
 #include <QTextCharFormat>
 
-#include <BeQtCore/private/bbase_p.h>
-
-#include <QDebug>
-
 /*============================================================================
 ================================ BDefaultFileType ============================
 ============================================================================*/
 
-class BDefaultFileType : public BAbstractFileType
-{
-    Q_DECLARE_TR_FUNCTIONS(BDefaultFileType)
-public:
-    static BDefaultFileType *instance();
-public:
-    BDefaultFileType();
-    ~BDefaultFileType();
-public:
-    QString id() const;
-    QString name() const;
-    QString description() const;
-    QStringList suffixes() const;
-    bool matchesFileName(const QString &fileName) const;
-    BracketPairList brackets() const;
-protected:
-    static BDefaultFileType *_m_self;
-protected:
-    void highlightBlock(const QString &text);
-};
+/*============================== Static protected variables ================*/
 
-/*============================================================================
-================================ BDefaultFileType ============================
-============================================================================*/
-
-/*============================== Static public methods =====================*/
-
-BDefaultFileType *BDefaultFileType::instance()
-{
-    if (!_m_self)
-        _m_self = new BDefaultFileType;
-    return _m_self;
-}
+BDefaultFileType *BDefaultFileType::_m_self = 0;
 
 /*============================== Public constructors =======================*/
 
@@ -91,16 +59,20 @@ BDefaultFileType::~BDefaultFileType()
     //
 }
 
-/*============================== Public methods ============================*/
+/*============================== Static public methods =====================*/
 
-QString BDefaultFileType::id() const
+BDefaultFileType *BDefaultFileType::instance()
 {
-    return "Text";
+    if (!_m_self)
+        _m_self = new BDefaultFileType;
+    return _m_self;
 }
 
-QString BDefaultFileType::name() const
+/*============================== Public methods ============================*/
+
+BAbstractFileType::BracketPairList BDefaultFileType::brackets() const
 {
-    return tr("Text", "name");
+    return BracketPairList();
 }
 
 QString BDefaultFileType::description() const
@@ -108,9 +80,9 @@ QString BDefaultFileType::description() const
     return tr("All files", "description");
 }
 
-QStringList BDefaultFileType::suffixes() const
+QString BDefaultFileType::id() const
 {
-    return QStringList() << "*";
+    return "Text";
 }
 
 bool BDefaultFileType::matchesFileName(const QString &) const
@@ -118,21 +90,15 @@ bool BDefaultFileType::matchesFileName(const QString &) const
     return true;
 }
 
-BAbstractFileType::BracketPairList BDefaultFileType::brackets() const
+QString BDefaultFileType::name() const
 {
-    return BracketPairList();
+    return tr("Text", "name");
 }
 
-/*============================== Protected methods =========================*/
-
-void BDefaultFileType::highlightBlock(const QString &)
+QStringList BDefaultFileType::suffixes() const
 {
-    //
+    return QStringList() << "*";
 }
-
-/*============================== Static protected variables ================*/
-
-BDefaultFileType *BDefaultFileType::_m_self = 0;
 
 /*============================================================================
 ================================ BAbstractFileTypePrivate ====================
@@ -177,6 +143,22 @@ BAbstractFileType::~BAbstractFileType()
 
 /*============================== Static public methods =====================*/
 
+bool BAbstractFileType::areEqual(const BracketPair &bp1, const BracketPair &bp2)
+{
+    return bp1.opening == bp2.opening && bp1.closing == bp2.closing && bp1.escape == bp2.escape;
+}
+
+bool BAbstractFileType::areEqual(const BracketPairList &l1, const BracketPairList &l2)
+{
+    if (l1.size() != l2.size())
+        return false;
+    for (int i = 0; i < l1.size(); ++i) {
+        if (!areEqual(l1.at(i), l2.at(i)))
+            return false;
+    }
+    return true;
+}
+
 BAbstractFileType *BAbstractFileType::defaultFileType()
 {
     return BDefaultFileType::instance();
@@ -187,44 +169,59 @@ QString BAbstractFileType::defaultFileTypeId()
     return defaultFileType()->id();
 }
 
-bool BAbstractFileType::areEqual(const BracketPair &bp1, const BracketPair &bp2)
-{
-    return bp1.opening == bp2.opening && bp1.closing == bp2.closing && bp1.escape == bp2.escape;
-}
-
-bool BAbstractFileType::areEqual(const BracketPairList &l1, const BracketPairList &l2)
-{
-    if (l1.size() != l2.size())
-        return false;
-    for (int i = 0; i < l1.size(); ++i)
-        if (!areEqual(l1.at(i), l2.at(i)))
-            return false;
-    return true;
-}
-
 /*============================== Public methods ============================*/
 
 QString BAbstractFileType::createFileDialogFilter() const
 {
     QString desc = description();
     QStringList sl = suffixes();
-    if ( desc.isEmpty() || sl.isEmpty() )
+    if (desc.isEmpty() || sl.isEmpty())
         return "";
     QString filter;
     filter += desc + " (";
-    if ( sl.contains("*") )
+    if (sl.contains("*"))
         sl.clear();
     sl.removeDuplicates();
-    if ( !sl.isEmpty() )
+    if (!sl.isEmpty()) {
         for (int i = 0; i < sl.size(); ++i)
             filter += "*." + sl.at(i) + (i < sl.size() - 1 ? " " : "");
+    }
     else
         filter += "*";
     filter += ")";
     return filter;
 }
 
+int BAbstractFileType::indentation(const QTextBlock &previousBlock) const
+{
+    if (!previousBlock.isValid())
+        return 0;
+    QString text = previousBlock.text();
+    int i = 0;
+    while (i < text.length() && text.at(i) == ' ')
+        ++i;
+    return i;
+}
+
+bool BAbstractFileType::matchesFileName(const QString &fileName) const
+{
+    return suffixes().contains(QFileInfo(fileName).suffix(), Qt::CaseInsensitive);
+}
+
 /*============================== Static protected methods ==================*/
+
+BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionItem(const QString &text,
+                                                                                  const QString &toolTip,
+                                                                                  const QIcon &icon)
+{
+    if (text.isEmpty())
+        return AutocompletionItem();
+    AutocompletionItem item;
+    item.text = text;
+    item.toolTip = toolTip;
+    item.icon = icon;
+    return item;
+}
 
 BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QString &op, const QString &cl,
                                                                     const QString &esc)
@@ -238,9 +235,35 @@ BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QStrin
 
 /*============================== Protected methods =========================*/
 
+void BAbstractFileType::addCurrentBlockSkipInterval(const SkipInterval &si)
+{
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), si);
+}
+
+void BAbstractFileType::addCurrentBlockSkipInterval(int start, int end)
+{
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), start, end);
+}
+
+void BAbstractFileType::clearCurrentBlockSkipIntervals()
+{
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), QList<SkipInterval>());
+}
+
+QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocompletionItemList(
+        BAbstractCodeEditorDocument *, QTextBlock, int)
+{
+    return QList<AutocompletionItem>();
+}
+
 QTextBlock BAbstractFileType::currentBlock() const
 {
     return d_func()->highlighter ? d_func()->highlighter->currentBlock() : QTextBlock();
+}
+
+BTextBlockExtraData *BAbstractFileType::currentBlockExtraData() const
+{
+    return d_func()->highlighter ? d_func()->highlighter->currentBlockExtraData() : 0;
 }
 
 int BAbstractFileType::currentBlockState() const
@@ -248,9 +271,11 @@ int BAbstractFileType::currentBlockState() const
     return d_func()->highlighter ? d_func()->highlighter->currentBlockState() : -1;
 }
 
-BTextBlockUserData *BAbstractFileType::currentBlockUserData() const
+BAbstractCodeEditorDocument *BAbstractFileType::currentDocument() const
 {
-    return d_func()->highlighter ? d_func()->highlighter->currentBlockUserData() : 0;
+    if (!d_func()->highlighter)
+        return 0;
+    return d_func()->highlighter->EditorDocument;
 }
 
 QTextCharFormat BAbstractFileType::format(int position) const
@@ -258,9 +283,26 @@ QTextCharFormat BAbstractFileType::format(int position) const
     return d_func()->highlighter ? d_func()->highlighter->format(position) : QTextCharFormat();
 }
 
+void BAbstractFileType::highlightBlock(const QString &)
+{
+    //
+}
+
 int BAbstractFileType::previousBlockState() const
 {
     return d_func()->highlighter ? d_func()->highlighter->previousBlockState() : -1;
+}
+
+void BAbstractFileType::setCurrentBlockExtraData(BTextBlockExtraData *data)
+{
+    if (!d_func()->highlighter)
+        return;
+    d_func()->highlighter->setCurrentBlockExtraData(data);
+}
+
+void BAbstractFileType::setCurrentBlockSkipIntervals(const QList<SkipInterval> &list)
+{
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), list);
 }
 
 void BAbstractFileType::setCurrentBlockState(int newState)
@@ -268,13 +310,6 @@ void BAbstractFileType::setCurrentBlockState(int newState)
     if (!d_func()->highlighter)
         return;
     d_func()->highlighter->setCurrentBlockState(newState);
-}
-
-void BAbstractFileType::setCurrentBlockUserData(BTextBlockUserData *data)
-{
-    if (!d_func()->highlighter)
-        return;
-    d_func()->highlighter->setCurrentBlockUserData(data);
 }
 
 void BAbstractFileType::setFormat(int start, int count, const QTextCharFormat &format)
@@ -296,4 +331,37 @@ void BAbstractFileType::setFormat(int start, int count, const QFont &font)
     if (!d_func()->highlighter)
         return;
     d_func()->highlighter->setFormat(start, count, font);
+}
+
+void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+                                               const QPoint &globalPos)
+{
+    QList<AutocompletionItem> list = createAutocompletionItemList(doc, block, posInBlock);
+    if (list.isEmpty())
+        return;
+    QMenu *mnu = new QMenu;
+    foreach (const AutocompletionItem &aci, list) {
+        if (aci.text.isEmpty())
+            continue;
+        mnu->addAction(aci.icon, aci.text)->setToolTip(aci.toolTip);
+    }
+    if (mnu->isEmpty()) {
+        delete mnu;
+        return;
+    }
+    mnu->setActiveAction(mnu->actions().first());
+    QAction *act = mnu->exec(globalPos);
+    if (!act) {
+        delete mnu;
+        return;
+    }
+    QString text = act->text();
+    delete mnu;
+    QString btext = block.text();
+    int start = block.position() + posInBlock - 1;
+    int end = start + 1;
+    while (start > 0 && start < btext.length() && btext.at(start) != ' ')
+        --start;
+    doc->selectText(start + 1, end);
+    doc->insertText(text);
 }

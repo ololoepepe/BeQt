@@ -24,15 +24,16 @@
 
 class BSpellCheckerDictionaryPrivate;
 
-class QString;
-class QTextCodec;
-class QLocale;
 class QByteArray;
+class QLocale;
+class QString;
+class QStringList;
+class QTextCodec;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QStringList>
+#include "QChar"
+#include <QMap>
 
 /*============================================================================
 ================================ BSpellCheckerDictionary =====================
@@ -49,18 +50,21 @@ public:
                                      const QLocale &locale);
     ~BSpellCheckerDictionary();
 public:
-    bool spell(const QString &word) const;
-    QStringList suggest(const QString &word) const;
+    static QMap<QChar, QChar> replacedLetters();
+    static void setReplacedLetters(const QMap<QChar, QChar> &m);
+public:
     void addWord(const QString &word);
-    void removeWord(const QString &word);
-    QString path() const;
     QByteArray affixData() const;
-    QByteArray dictionaryData() const;
-    QLocale locale() const;
-    QString localeName() const;
     QTextCodec *codec() const;
     QString codecName() const;
+    QByteArray dictionaryData() const;
     bool isValid() const;
+    QLocale locale() const;
+    QString localeName() const;
+    QString path() const;
+    void removeWord(const QString &word);
+    bool spell(const QString &word) const;
+    QStringList suggest(const QString &word) const;
 private:
     Q_DISABLE_COPY(BSpellCheckerDictionary)
 };

@@ -21,7 +21,7 @@
 
 #include <BCoreApplication>
 #include <BLogger>
-#include <BTerminalIOHandler>
+#include <BTerminal>
 #include <BTranslator>
 
 #include <QCoreApplication>
@@ -32,25 +32,24 @@
 
 int main(int argc, char **argv)
 {
-    //Creating QCoreApplication instance
-    QCoreApplication *app = new QCoreApplication(argc, argv);
-    Q_UNUSED(app)
-    //QApplication initialization
-    QCoreApplication::setApplicationName("Console app");
-    QCoreApplication::setOrganizationName("Andrey Bogdanov");
-    QCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
-    QCoreApplication::setApplicationVersion("0.1.0");
     //Creating BCoreApplication instance
-    BCoreApplication *bapp = new BCoreApplication;
-    Q_UNUSED(bapp)
+    BCoreApplication::InitialSettings settings;
+    settings.applicationName = "Console app";
+    settings.organizationName = "Andrey Bogdanov";
+    BCoreApplication app(argc, argv, settings);
+    BCoreApplication::setOrganizationDomain("https://github.com/the-dark-angel");
+    BCoreApplication::setApplicationVersion("0.1.0");
+    Q_UNUSED(app)
     bLogger->setIncludeDateTime(false);
+    BTerminal::setMode(BTerminal::StandardMode);
     bLog("Application started", BLogger::InfoLevel);
-    BCoreApplication::installTranslator(new BTranslator("beqt"));
+    BCoreApplication::installBeqtTranslator("beqt");
     //Communicating with user through BTerminalIOHandler
-    QString s = BTerminalIOHandler::readLine("Enter something: ");
-    BTerminalIOHandler::writeLine("You entered: \"" + s + "\"");
-    QSize sz = BTerminalIOHandler::terminalSize();
+    QString s = BTerminal::readLine("Enter something: ");
+    BTerminal::writeLine("You entered: \"" + s + "\"");
+    QSize sz = BTerminal::size();
     bWriteLine("By the way, terminal size is " + QString::number(sz.width()) + "x" + QString::number(sz.height()));
     bWriteLine("Goodbye!");
+    BTerminal::destroy();
     return 0;
 }

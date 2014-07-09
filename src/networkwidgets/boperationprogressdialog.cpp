@@ -22,20 +22,19 @@
 #include "boperationprogressdialog.h"
 #include "boperationprogressdialog_p.h"
 
-#include <BeQtNetwork/BNetworkOperation>
-#include <BeQtCore/BCoreApplication>
 #include <BeQtCore/BSignalDelayProxy>
+#include <BeQtNetwork/BNetworkOperation>
+#include <BeQtWidgets/BApplication>
 
-#include <QWidget>
-#include <QVBoxLayout>
+#include <QApplication>
+#include <QDebug>
+#include <QDialogButtonBox>
 #include <QLabel>
 #include <QProgressBar>
-#include <QDialogButtonBox>
-#include <QTimer>
 #include <QPushButton>
-#include <QApplication>
-
-#include <QDebug>
+#include <QTimer>
+#include <QVBoxLayout>
+#include <QWidget>
 
 /*============================================================================
 ================================ BOperationProgressDialogPrivate =============
@@ -64,8 +63,7 @@ void BOperationProgressDialogPrivate::init()
     connect(proxy, SIGNAL(triggered()), this, SLOT(update()));
     canCancel = true;
     autoCloseInterval = -1;
-    if (Operation)
-    {
+    if (Operation) {
         connect(Operation, SIGNAL(finished()), this, SLOT(update()));
         connect(Operation, SIGNAL(error()), this, SLOT(update()));
         connect(Operation, SIGNAL(uploadProgress(qint64, qint64)), proxy, SLOT(trigger()));
@@ -80,18 +78,24 @@ void BOperationProgressDialogPrivate::init()
         vlt->addWidget(pbar);
     q->setWidget(wgt);
     btn = q->addButton(" ", QDialogButtonBox::RejectRole, this, SLOT(btnClicked()));
-    connect(BCoreApplication::instance(), SIGNAL(languageChanged()), this, SLOT(update()));
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(update()));
     update();
 }
 
 /*============================== Public slots ==============================*/
 
+void BOperationProgressDialogPrivate::btnClicked()
+{
+    if (Operation && !Operation->isFinished() && !Operation->isError())
+        Operation->cancel();
+    else
+        q_func()->close();
+}
+
 void BOperationProgressDialogPrivate::update()
 {
-    if (Operation)
-    {
-        if (Operation->isFinished())
-        {
+    if (Operation) {
+        if (Operation->isFinished()) {
             lbl->setText(!successText.isEmpty() ? successText : tr("Operation successfully completed", "lbl text"));
             pbar->setMaximum(100);
             pbar->setValue(qMax(Operation->uploadProgress(), Operation->downloadProgress()));
@@ -101,9 +105,7 @@ void BOperationProgressDialogPrivate::update()
                 QTimer::singleShot(autoCloseInterval, q_func(), SLOT(close()));
             else if (!autoCloseInterval)
                 q_func()->close();
-        }
-        else if (Operation->isError())
-        {
+        } else if (Operation->isError()) {
             lbl->setText(!failureText.isEmpty() ? failureText : tr("Operation failed", "lbl text"));
             pbar->setMaximum(100);
             pbar->setValue(qMax(Operation->uploadProgress(), Operation->downloadProgress()));
@@ -113,32 +115,23 @@ void BOperationProgressDialogPrivate::update()
                 QTimer::singleShot(autoCloseInterval, q_func(), SLOT(close()));
             else if (!autoCloseInterval)
                 q_func()->close();
-        }
-        else if (Operation->isRequest())
-        {
-            if (Operation->downloadBytesTotal() > 0)
-            {
+        } else if (Operation->isRequest()) {
+            if (Operation->downloadBytesTotal() > 0) {
                 lbl->setText(!receivingReplyText.isEmpty() ? receivingReplyText :
                                                              tr("Receiving data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->downloadProgress());
-            }
-            else if (Operation->uploadBytesTotal() == Operation->uploadBytesReady())
-            {
+            } else if (Operation->uploadBytesTotal() == Operation->uploadBytesReady()) {
                 lbl->setText(!waitingForReplyText.isEmpty() ? waitingForReplyText :
                                                               tr("Waiting for reply...", "lbl text"));
                 pbar->setValue(0);
                 pbar->setMaximum(0);
-            }
-            else if (Operation->uploadBytesTotal() > 0)
-            {
+            } else if (Operation->uploadBytesTotal() > 0) {
                 lbl->setText(!sendingRequestText.isEmpty() ? sendingRequestText :
                                                              tr("Sending data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->uploadProgress());
-            }
-            else
-            {
+            } else {
                 lbl->setText(!waitingForStartText.isEmpty() ? waitingForStartText :
                                                               tr("Waiting for the operation start...", "lbl text"));
                 pbar->setValue(0);
@@ -146,31 +139,23 @@ void BOperationProgressDialogPrivate::update()
             }
             btn->setEnabled(canCancel);
             btn->setText(tr("Cancel", "btn text"));
-        }
-        else
-        {
+        } else {
             if (Operation->uploadBytesTotal() > 0)
             {
                 lbl->setText(!sendingReplyText.isEmpty() ? sendingReplyText : tr("Sending data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->uploadProgress());
-            }
-            else if (Operation->downloadBytesTotal() == Operation->downloadBytesReady())
-            {
+            } else if (Operation->downloadBytesTotal() == Operation->downloadBytesReady()) {
                 lbl->setText(!processingRequestText.isEmpty() ? processingRequestText :
                                                                 tr("Processing request...", "lbl text"));
                 pbar->setValue(0);
                 pbar->setMaximum(0);
-            }
-            else if (Operation->downloadBytesTotal() > 0)
-            {
+            } else if (Operation->downloadBytesTotal() > 0) {
                 lbl->setText(!receivingRequestText.isEmpty() ? receivingRequestText :
                                                                tr("Receiving data...", "lbl text"));
                 pbar->setMaximum(100);
                 pbar->setValue(Operation->downloadProgress());
-            }
-            else
-            {
+            } else {
                 lbl->setText(!waitingForStartText.isEmpty() ? waitingForStartText :
                                                               tr("Waiting for the operation start...", "lbl text"));
                 pbar->setValue(0);
@@ -179,9 +164,7 @@ void BOperationProgressDialogPrivate::update()
             btn->setEnabled(canCancel);
             btn->setText(tr("Cancel", "btn text"));
         }
-    }
-    else
-    {
+    } else {
         lbl->setText(tr("Invalid operation", "lbl text"));
         pbar->setMaximum(100);
         pbar->setValue(0);
@@ -189,14 +172,6 @@ void BOperationProgressDialogPrivate::update()
         btn->setText(tr("Close", "btn text"));
     }
     QApplication::processEvents();
-}
-
-void BOperationProgressDialogPrivate::btnClicked()
-{
-    if (Operation && !Operation->isFinished() && !Operation->isError())
-        Operation->cancel();
-    else
-        q_func()->close();
 }
 
 /*============================================================================
@@ -227,27 +202,74 @@ BOperationProgressDialog::BOperationProgressDialog(BOperationProgressDialogPriva
 
 /*============================== Public methods ============================*/
 
-void BOperationProgressDialog::setWaitingForStartText(const QString &text)
+int BOperationProgressDialog::autoCloseInterval() const
 {
-    d_func()->waitingForStartText = text;
+    return d_func()->autoCloseInterval;
+}
+
+bool BOperationProgressDialog::canCancel() const
+{
+    return d_func()->canCancel;
+}
+
+QString BOperationProgressDialog::failureText() const
+{
+    return d_func()->failureText;
+}
+
+bool BOperationProgressDialog::isValid() const
+{
+    return d_func()->Operation;
+}
+
+BNetworkOperation *BOperationProgressDialog::operation() const
+{
+    return d_func()->Operation;
+}
+
+QString BOperationProgressDialog::processingRequestText() const
+{
+    return d_func()->processingRequestText;
+}
+
+QString BOperationProgressDialog::receivingReplyText() const
+{
+    return d_func()->receivingReplyText;
+}
+
+QString BOperationProgressDialog::receivingRequestText() const
+{
+    return d_func()->receivingRequestText;
+}
+
+QString BOperationProgressDialog::sendingReplyText() const
+{
+    return d_func()->sendingReplyText;
+}
+
+QString BOperationProgressDialog::sendingRequestText() const
+{
+    return d_func()->sendingRequestText;
+}
+
+void BOperationProgressDialog::setAutoCloseInterval(int msecs)
+{
+    B_D(BOperationProgressDialog);
+    bool b = d->autoCloseInterval;
+    d->autoCloseInterval = msecs > 0 ? msecs : 0;
+    if ((!d->Operation || d->Operation->isFinished() || d->Operation->isError()) && !b && msecs > 0)
+        QTimer::singleShot(msecs, this, SLOT(close()));
+}
+
+void BOperationProgressDialog::setCanCancel(bool b)
+{
+    d_func()->canCancel = b;
     d_func()->update();
 }
 
-void BOperationProgressDialog::setSendingRequestText(const QString &text)
+void BOperationProgressDialog::setFailureText(const QString &text)
 {
-    d_func()->sendingRequestText = text;
-    d_func()->update();
-}
-
-void BOperationProgressDialog::setReceivingRequestText(const QString &text)
-{
-    d_func()->receivingRequestText = text;
-    d_func()->update();
-}
-
-void BOperationProgressDialog::setWaitingForReplyText(const QString &text)
-{
-    d_func()->waitingForReplyText = text;
+    d_func()->failureText = text;
     d_func()->update();
 }
 
@@ -263,27 +285,27 @@ void BOperationProgressDialog::setReceivingReplyText(const QString &text)
     d_func()->update();
 }
 
+void BOperationProgressDialog::setReceivingRequestText(const QString &text)
+{
+    d_func()->receivingRequestText = text;
+    d_func()->update();
+}
+
 void BOperationProgressDialog::setSendingReplyText(const QString &text)
 {
     d_func()->sendingReplyText = text;
     d_func()->update();
 }
 
+void BOperationProgressDialog::setSendingRequestText(const QString &text)
+{
+    d_func()->sendingRequestText = text;
+    d_func()->update();
+}
+
 void BOperationProgressDialog::setSuccessText(const QString &text)
 {
     d_func()->successText = text;
-    d_func()->update();
-}
-
-void BOperationProgressDialog::setFailureText(const QString &text)
-{
-    d_func()->failureText = text;
-    d_func()->update();
-}
-
-void BOperationProgressDialog::setCanCancel(bool b)
-{
-    d_func()->canCancel = b;
     d_func()->update();
 }
 
@@ -295,23 +317,21 @@ void BOperationProgressDialog::setUpdateInterval(int msecs)
     d_func()->proxy->setIntermediateDelay(msecs / 2);
 }
 
-void BOperationProgressDialog::setAutoCloseInterval(int msecs)
+void BOperationProgressDialog::setWaitingForReplyText(const QString &text)
 {
-    B_D(BOperationProgressDialog);
-    bool b = d->autoCloseInterval;
-    d->autoCloseInterval = msecs > 0 ? msecs : 0;
-    if ((!d->Operation || d->Operation->isFinished() || d->Operation->isError()) && !b && msecs > 0)
-        QTimer::singleShot(msecs, this, SLOT(close()));
+    d_func()->waitingForReplyText = text;
+    d_func()->update();
 }
 
-BNetworkOperation *BOperationProgressDialog::operation() const
+void BOperationProgressDialog::setWaitingForStartText(const QString &text)
 {
-    return d_func()->Operation;
+    d_func()->waitingForStartText = text;
+    d_func()->update();
 }
 
-bool BOperationProgressDialog::canCancel() const
+QString BOperationProgressDialog::successText() const
 {
-    return d_func()->canCancel;
+    return d_func()->successText;
 }
 
 int BOperationProgressDialog::updateInterval() const
@@ -319,12 +339,12 @@ int BOperationProgressDialog::updateInterval() const
     return d_func()->proxy->maximumDelay();
 }
 
-int BOperationProgressDialog::autoCloseInterval() const
+QString BOperationProgressDialog::waitingForReplyText() const
 {
-    return d_func()->autoCloseInterval;
+    return d_func()->waitingForReplyText;
 }
 
-bool BOperationProgressDialog::isValid() const
+QString BOperationProgressDialog::waitingForStartText() const
 {
-    return d_func()->Operation;
+    return d_func()->waitingForStartText;
 }

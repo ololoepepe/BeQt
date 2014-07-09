@@ -26,20 +26,22 @@ class QLineEdit;
 
 #include "beditgroup.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
 #include <QMap>
+#include <QObject>
 
 /*============================================================================
 ================================ BEditGroupPrivate ===========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BEditGroupPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BEditGroupPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BEditGroup)
+public:
+    QMap<QObject *, QLineEdit *> ledtMap;
+    bool match;
 public:
     explicit BEditGroupPrivate(BEditGroup *q);
     ~BEditGroupPrivate();
@@ -48,9 +50,6 @@ public:
 public Q_SLOTS:
     void ledtDestroyed(QObject *object);
     void textChanged();
-public:
-    QMap<QObject *, QLineEdit *> ledtMap;
-    bool match;
 private:
     Q_DISABLE_COPY(BEditGroupPrivate)
 };

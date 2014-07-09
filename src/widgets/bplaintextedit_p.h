@@ -26,27 +26,25 @@ class BPlainTextEditPrivate;
 
 #include "bplaintextedit.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
-#include <QCoreApplication>
 
 /*============================================================================
 ================================ BPlainTextEditPrivate =======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPlainTextEditPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPlainTextEditPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BPlainTextEdit)
+public:
+    bool drag;
 public:
     explicit BPlainTextEditPrivate(BPlainTextEdit *q);
     ~BPlainTextEditPrivate();
 public:
     void init();
-public:
-    bool drag;
 private:
     Q_DISABLE_COPY(BPlainTextEditPrivate)
 };

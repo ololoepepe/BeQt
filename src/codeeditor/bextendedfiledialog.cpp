@@ -20,23 +20,22 @@
 ****************************************************************************/
 
 #include "bextendedfiledialog.h"
+
 #include "babstractfiletype.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BeQt>
-#include <BeQtWidgets/BTextCodecMenu>
 #include <BeQtWidgets/BFileDialog>
+#include <BeQtWidgets/BTextCodecMenu>
 #include <BeQtWidgets/private/bfiledialog_p.h>
 
+#include <QByteArray>
+#include <QDebug>
+#include <QList>
 #include <QObject>
 #include <QString>
 #include <QStringList>
-#include <QList>
 #include <QVariant>
 #include <QVariantMap>
-#include <QByteArray>
-
-#include <QDebug>
 
 /*============================================================================
 ================================ BExtendedFileDialogPrivate ==================
@@ -47,13 +46,13 @@ class B_CODEEDITOR_EXPORT BExtendedFileDialogPrivate : public BFileDialogPrivate
     Q_DECLARE_TR_FUNCTIONS(BExtendedFileDialogPrivate)
     B_DECLARE_PUBLIC(BExtendedFileDialog)
 public:
-        explicit BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle,
-                                            const QString &topDir = QString());
+    QList<BAbstractFileType *> fileTypes;
+public:
+    explicit BExtendedFileDialogPrivate(BExtendedFileDialog *q, BTextCodecMenu::Style cmboxStyle,
+                                        const QString &topDir = QString());
     ~BExtendedFileDialogPrivate();
 public:
     void init();
-public:
-    QList<BAbstractFileType *> fileTypes;
 private:
     Q_DISABLE_COPY(BExtendedFileDialogPrivate)
 };
@@ -128,18 +127,37 @@ BExtendedFileDialog::BExtendedFileDialog(BExtendedFileDialogPrivate &d, QWidget 
 
 /*============================== Public methods ============================*/
 
-void BExtendedFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
+void BExtendedFileDialog::restoreState(const QByteArray &ba)
 {
-    d_func()->fileTypes = list;
-    if (list.isEmpty())
-    {
-        setNameFilter("");
-        return;
+    QVariantMap m = BeQt::deserialize(ba).toMap();
+    BFileDialog::restoreState(m.value("b_file_dialog_state").toByteArray());
+    selectFileType(m.value("file_type_id").toString());
+}
+
+QByteArray BExtendedFileDialog::saveState() const
+{
+    QVariantMap m;
+    m.insert("b_file_dialog_state", BFileDialog::saveState());
+    m.insert("file_type_id", selectedFileTypeId());
+    return BeQt::serialize(m);
+}
+
+BAbstractFileType *BExtendedFileDialog::selectedFileType() const
+{
+    QString sf = selectedNameFilter();
+    if (sf.isEmpty())
+        return 0;
+    foreach (BAbstractFileType *ft, d_func()->fileTypes) {
+        if (ft->createFileDialogFilter() == sf)
+            return ft;
     }
-    QStringList filters;
-    foreach (BAbstractFileType *ft, list)
-        filters += ft->createFileDialogFilter();
-    setNameFilters(filters);
+    return 0;
+}
+
+QString BExtendedFileDialog::selectedFileTypeId() const
+{
+    BAbstractFileType *ft = selectedFileType();
+    return ft ? ft->id() : QString();
 }
 
 void BExtendedFileDialog::selectFileType(BAbstractFileType *ft)
@@ -153,39 +171,21 @@ void BExtendedFileDialog::selectFileType(const QString &id)
 {
     if (id.isEmpty())
         return;
-    foreach (BAbstractFileType *ft, d_func()->fileTypes)
+    foreach (BAbstractFileType *ft, d_func()->fileTypes) {
         if (ft->id() == id)
             return selectNameFilter(ft->createFileDialogFilter());
+    }
 }
 
-void BExtendedFileDialog::restoreState(const QByteArray &ba)
+void BExtendedFileDialog::setFileTypes(const QList<BAbstractFileType *> &list)
 {
-    QVariantMap m = BeQt::deserialize(ba).toMap();
-    BFileDialog::restoreState(m.value("b_file_dialog_state").toByteArray());
-    selectFileType(m.value("file_type_id").toString());
-}
-
-BAbstractFileType *BExtendedFileDialog::selectedFileType() const
-{
-    QString sf = selectedNameFilter();
-    if (sf.isEmpty())
-        return 0;
-    foreach (BAbstractFileType *ft, d_func()->fileTypes)
-        if (ft->createFileDialogFilter() == sf)
-            return ft;
-    return 0;
-}
-
-QString BExtendedFileDialog::selectedFileTypeId() const
-{
-    BAbstractFileType *ft = selectedFileType();
-    return ft ? ft->id() : QString();
-}
-
-QByteArray BExtendedFileDialog::saveState() const
-{
-    QVariantMap m;
-    m.insert("b_file_dialog_state", BFileDialog::saveState());
-    m.insert("file_type_id", selectedFileTypeId());
-    return BeQt::serialize(m);
+    d_func()->fileTypes = list;
+    if (list.isEmpty()) {
+        setNameFilter("");
+        return;
+    }
+    QStringList filters;
+    foreach (BAbstractFileType *ft, list)
+        filters += ft->createFileDialogFilter();
+    setNameFilters(filters);
 }

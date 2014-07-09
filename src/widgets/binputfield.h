@@ -26,7 +26,6 @@ class BInputFieldPrivate;
 
 class QSize;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QWidget>
@@ -42,9 +41,9 @@ class B_WIDGETS_EXPORT BInputField : public QWidget, public BBase
 public:
     enum ShowStyle
     {
-        ShowAlways,
-        ShowIfValid,
+        ShowAlways = 1,
         ShowIfInvalid,
+        ShowIfValid,
         ShowNever
     };
 public:
@@ -52,13 +51,13 @@ public:
     explicit BInputField(ShowStyle s, QWidget *parent = 0);
     ~BInputField();
 public:
-    QSize sizeHint() const;
-    void setShowStyle(ShowStyle s);
     void addWidget(QWidget *w);
     void insertWidget(int index, QWidget *w);
-    void removeWidget(QWidget *w);
-    ShowStyle showStyle() const;
     bool isValid() const;
+    void removeWidget(QWidget *w);
+    void setShowStyle(ShowStyle s);
+    ShowStyle showStyle() const;
+    QSize sizeHint() const;
 public Q_SLOTS:
     void setValid(bool b);
 private:

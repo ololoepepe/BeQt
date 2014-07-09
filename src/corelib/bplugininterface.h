@@ -22,13 +22,13 @@
 #ifndef BPLUGININTERFACE_H
 #define BPLUGININTERFACE_H
 
+class BVersion;
+
 #include "bglobal.h"
-#include "bpersoninfo.h"
-#include "bdirtools.h"
+#include "bpersoninfolist.h"
 
 #include <QString>
 #include <QtPlugin>
-#include <QList>
 
 /*============================================================================
 ================================ BPluginInterface ============================
@@ -39,38 +39,39 @@ class B_CORE_EXPORT BPluginInterface
 public:
     struct PluginInfo
     {
-        QString organization;
-        QString copyrightYears;
-        QString website;
-        QString descriptionFileName;
-        QString changeLogFileName;
-        QString licenseFileName;
         QString authorsFileName;
-        QString translatorsFileName;
-        QString thanksToFileName;
-    };
-    struct PluginInfoStatic
-    {
-        QString organization;
+        QString changeLogFileName;
         QString copyrightYears;
+        QString descriptionFileName;
+        QString licenseFileName;
+        QString organization;
+        QString thanksToFileName;
+        QString translatorsFileName;
         QString website;
-        QString description;
-        QString changeLog;
+    };
+    struct StaticPluginInfo
+    {
         BPersonInfoList authors;
-        BPersonInfoList translators;
-        BPersonInfoList thanksTo;
+        QString changeLog;
+        QString copyrightYears;
+        QString description;
         QString license;
+        QString organization;
+        BPersonInfoList thanksTo;
+        BPersonInfoList translators;
+        QString website;
     };
 public:
     virtual ~BPluginInterface() {}
 public:
-    virtual QString type() const = 0;
-    virtual QString name() const = 0;
-    virtual bool prefereStaticInfo() const = 0;
-    virtual PluginInfoStatic staticInfo() const = 0;
-    virtual PluginInfo info() const = 0;
     virtual void activate() = 0;
     virtual void deactivate() = 0;
+    virtual PluginInfo info() const = 0;
+    virtual QString name() const = 0;
+    virtual bool prefereStaticInfo() const = 0;
+    virtual StaticPluginInfo staticInfo() const = 0;
+    virtual QString type() const = 0;
+    virtual BVersion version() const = 0;
 };
 
 Q_DECLARE_INTERFACE(BPluginInterface, "BeQt.BPluginInterface")

@@ -22,24 +22,23 @@
 #include "blinenumberwidget.h"
 #include "blinenumberwidget_p.h"
 
-#include <BeQtCore/private/bbase_p.h>
-
-#include <QObject>
-#include <QWidget>
-#include <QPlainTextEdit>
-#include <QSize>
-#include <QLatin1Char>
-#include <QPaintEvent>
-#include <QPainter>
-#include <QTextBlock>
-#include <QRect>
-#include <QRectF>
-#include <QPointF>
-#include <QString>
-#include <QEvent>
-#include <QTimer>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QDebug>
+#include <QEvent>
+#include <QLatin1Char>
+#include <QObject>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QPlainTextEdit>
+#include <QPointF>
+#include <QRect>
+#include <QRectF>
+#include <QSize>
+#include <QString>
+#include <QTextBlock>
+#include <QTimer>
+#include <QWidget>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
@@ -48,7 +47,7 @@
 /*============================== Public constructors =======================*/
 
 BLineNumberWidgetPrivate::BLineNumberWidgetPrivate(BLineNumberWidget *q, QPlainTextEdit *edit) :
-    BBasePrivate(q), Edit(edit)
+    BBaseObjectPrivate(q), Edit(edit)
 {
     //
 }
@@ -60,19 +59,9 @@ BLineNumberWidgetPrivate::~BLineNumberWidgetPrivate()
 
 /*============================== Public methods ============================*/
 
-void BLineNumberWidgetPrivate::init()
-{
-    if (!Edit)
-        return;
-    Edit->installEventFilter(this);
-    connect(Edit, SIGNAL(blockCountChanged(int)), this, SLOT(updateArea()));
-    connect(Edit, SIGNAL(updateRequest(QRect, int)), this, SLOT(update(QRect, int)));
-    updateArea();
-}
-
 bool BLineNumberWidgetPrivate::eventFilter(QObject *o, QEvent *e)
 {
-    if (o != Edit || e->type() != QEvent::Resize)
+    if ((o != Edit) || (e->type() != QEvent::Resize))
         return false;
     QTimer::singleShot(0, this, SLOT(resize()));
     return false;
@@ -84,13 +73,22 @@ int BLineNumberWidgetPrivate::getWidth() const
         return 0;
     int digits = 1;
     int max = qMax(1, Edit->blockCount());
-    while (max >= 10)
-    {
+    while (max >= 10) {
         max /= 10;
         ++digits;
     }
     int space = 3 + Edit->fontMetrics().width(QLatin1Char('9')) * digits;
     return space;
+}
+
+void BLineNumberWidgetPrivate::init()
+{
+    if (!Edit)
+        return;
+    Edit->installEventFilter(this);
+    connect(Edit, SIGNAL(blockCountChanged(int)), this, SLOT(updateArea()));
+    connect(Edit, SIGNAL(updateRequest(QRect, int)), this, SLOT(update(QRect, int)));
+    updateArea();
 }
 
 bool BLineNumberWidgetPrivate::paintEvent(QPaintEvent *e)
@@ -120,36 +118,39 @@ bool BLineNumberWidgetPrivate::paintEvent(QPaintEvent *e)
     painter.fillRect(e->rect(), Qt::lightGray);
     QTextBlock block = Edit->textCursor().block();
     QPointF offset = EditHack::contentOffsetHack(Edit);
-    if (block.isVisible())
-    {
+    if (block.isVisible()) {
         QRect r = e->rect();
         QRectF g = EditHack::blockBoundingGeometryHack(Edit, block);
-        r.setTop((int) g.translated(offset).top());
-        r.setBottom(r.top() + (int) g.height());
+        r.setTop(int(g.translated(offset).top()));
+        r.setBottom(r.top() + int(g.height()));
         painter.fillRect(r, Qt::yellow);
     }
     block = EditHack::firstVisibleBlockHack(Edit);
     int blockNumber = block.blockNumber();
     QRectF g = EditHack::blockBoundingGeometryHack(Edit, block);
-    int top = (int) g.translated(offset).top();
-    int bottom = top + (int) g.height();
-    while (block.isValid() && top <= e->rect().bottom())
-    {
-        if (block.isVisible() && bottom >= e->rect().top())
-        {
+    int top = int(g.translated(offset).top());
+    int bottom = top + int(g.height());
+    while (block.isValid() && top <= e->rect().bottom()) {
+        if (block.isVisible() && bottom >= e->rect().top()) {
             QString number = QString::number(blockNumber + 1);
             painter.setPen(Qt::black);
             painter.drawText(0, top, q_func()->width(), Edit->fontMetrics().height(), Qt::AlignRight, number);
         }
         block = block.next();
         top = bottom;
-        bottom = top + (int) EditHack::blockBoundingGeometryHack(Edit, block).height();
+        bottom = top + int(EditHack::blockBoundingGeometryHack(Edit, block).height());
         ++blockNumber;
     }
     return true;
 }
 
 /*============================== Public slots ==============================*/
+
+void BLineNumberWidgetPrivate::resize()
+{
+    QRect cr = Edit->contentsRect();
+    q_func()->setGeometry(QRect(cr.left(), cr.top(), getWidth(), cr.height()));
+}
 
 void BLineNumberWidgetPrivate::update(const QRect &rect, int dy)
 {
@@ -177,12 +178,6 @@ void BLineNumberWidgetPrivate::updateArea()
     resize();
 }
 
-void BLineNumberWidgetPrivate::resize()
-{
-    QRect cr = Edit->contentsRect();
-    q_func()->setGeometry(QRect(cr.left(), cr.top(), getWidth(), cr.height()));
-}
-
 /*============================================================================
 ================================ BSettingsDialog =============================
 ============================================================================*/
@@ -190,7 +185,7 @@ void BLineNumberWidgetPrivate::resize()
 /*============================== Public constructors =======================*/
 
 BLineNumberWidget::BLineNumberWidget(QPlainTextEdit *edit) :
-    QWidget(edit), BBase(*new BLineNumberWidgetPrivate(this, edit))
+    QWidget(edit), BBaseObject(*new BLineNumberWidgetPrivate(this, edit))
 {
     d_func()->init();
 }

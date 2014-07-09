@@ -22,27 +22,31 @@
 #ifndef BSPAMNOTIFIER_P_H
 #define BSPAMNOTIFIER_P_H
 
-class QTimer;
+class QElapsedTimer;
 
 #include "bspamnotifier.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include "bbaseobject_p.h"
 
 #include <QObject>
-
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-class QElapsedTimer;
-#endif
+#include <QTimer>
 
 /*============================================================================
-================================ BSpamNotifierPrivate
+================================ BSpamNotifierPrivate ========================
 ============================================================================*/
 
-class B_CORE_EXPORT BSpamNotifierPrivate : public BBasePrivate
+class B_CORE_EXPORT BSpamNotifierPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSpamNotifier)
+public:
+    int count;
+    int elapsed;
+    bool enabled;
+    QElapsedTimer *etimer;
+    int interval;
+    int limit;
+    QTimer timer;
 public:
     explicit BSpamNotifierPrivate(BSpamNotifier *q);
     ~BSpamNotifierPrivate();
@@ -52,16 +56,6 @@ public:
     int timeElapsed() const;
 public Q_SLOTS:
     void timeout();
-public:
-    QTimer *timer;
-#if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
-    QElapsedTimer *etimer;
-#endif
-    int interval;
-    int limit;
-    int count;
-    int elapsed;
-    bool enabled;
 private:
     Q_DISABLE_COPY(BSpamNotifierPrivate)
 };

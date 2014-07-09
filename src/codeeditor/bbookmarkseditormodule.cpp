@@ -21,26 +21,24 @@
 
 #include "bbookmarkseditormodule.h"
 #include "bbookmarkseditormodule_p.h"
+
+#include "babstractcodeeditordocument.h"
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
-#include "babstractcodeeditordocument.h"
 #include "bcodeeditor.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
 #include <BeQtWidgets/BApplication>
 
-#include <QObject>
 #include <QAction>
+#include <QDebug>
+#include <QKeySequence>
 #include <QList>
+#include <QObject>
 #include <QPoint>
 #include <QVariant>
 #include <QVariantList>
-#include <QPointer>
-#include <QKeySequence>
-
-#include <QDebug>
 
 /*============================================================================
 ================================ BBookmarksEditorModulePrivate ===============
@@ -61,6 +59,26 @@ BBookmarksEditorModulePrivate::~BBookmarksEditorModulePrivate()
 
 /*============================== Static public methods =====================*/
 
+QList<QPoint> BBookmarksEditorModulePrivate::bookmarks(BAbstractCodeEditorDocument *doc)
+{
+    if (!doc)
+        return QList<QPoint>();
+    QList<QPoint> list;
+    foreach (const QVariant &v, doc->property("beqt/bookmarks").toList()) {
+        if (v.type() == QVariant::Point)
+            list << v.toPoint();
+    }
+    return list;
+}
+
+QPoint BBookmarksEditorModulePrivate::currentBookmark(BAbstractCodeEditorDocument *doc)
+{
+    if (!doc)
+        return BBookmarksEditorModule::InvalidPos;
+    QVariant v = doc->property("beqt/currentBookmark");
+    return v.type() == QVariant::Point ? v.toPoint() : BBookmarksEditorModule::InvalidPos;
+}
+
 void BBookmarksEditorModulePrivate::setBookmarks(BAbstractCodeEditorDocument *doc, const QList<QPoint> &list)
 {
     if (!doc)
@@ -78,77 +96,48 @@ void BBookmarksEditorModulePrivate::setCurrentBookmark(BAbstractCodeEditorDocume
     doc->setProperty("beqt/currentBookmark", pos);
 }
 
-QList<QPoint> BBookmarksEditorModulePrivate::bookmarks(BAbstractCodeEditorDocument *doc)
-{
-    if (!doc)
-        return QList<QPoint>();
-    QList<QPoint> list;
-    foreach ( const QVariant &v, doc->property("beqt/bookmarks").toList() )
-        if (v.type() == QVariant::Point)
-            list << v.toPoint();
-    return list;
-}
-
-QPoint BBookmarksEditorModulePrivate::currentBookmark(BAbstractCodeEditorDocument *doc)
-{
-    if (!doc)
-        return BBookmarksEditorModule::InvalidPos;
-    QVariant v = doc->property("beqt/currentBookmark");
-    return v.type() == QVariant::Point ? v.toPoint() : BBookmarksEditorModule::InvalidPos;
-}
-
 /*============================== Public methods ============================*/
+
+void BBookmarksEditorModulePrivate::checkBookmarks()
+{
+    BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
+    bool bm = !bookmarks(doc).isEmpty();
+    actMakeBookmark->setEnabled(doc);
+    actGotoNextBookmark->setEnabled(bm);
+}
 
 void BBookmarksEditorModulePrivate::init()
 {
     B_Q(BBookmarksEditorModule);
     maxBookmarks = 4;
     //
-    actMakeBookmark = new QAction(this);
-      actMakeBookmark->setIcon( BApplication::icon("bookmark_add") );
+    actMakeBookmark = new QAction(q);
+      actMakeBookmark->setIcon(BApplication::icon("bookmark_add"));
       actMakeBookmark->setShortcut(QKeySequence("Ctrl+Shift+K"));
-      connect( actMakeBookmark.data(), SIGNAL( triggered() ), q, SLOT( makeBookmark() ) );
-    actGotoNextBookmark = new QAction(this);
-      actGotoNextBookmark->setIcon( BApplication::icon("bookmark") );
+      QObject::connect(actMakeBookmark, SIGNAL(triggered()), q, SLOT(makeBookmark()));
+    actGotoNextBookmark = new QAction(q);
+      actGotoNextBookmark->setIcon(BApplication::icon("bookmark"));
       actGotoNextBookmark->setShortcut(QKeySequence("Ctrl+K"));
-      connect( actGotoNextBookmark.data(), SIGNAL( triggered() ), q, SLOT( gotoNextBookmark() ) );
+      QObject::connect(actGotoNextBookmark, SIGNAL(triggered()), q, SLOT(gotoNextBookmark()));
     //
     checkBookmarks();
     retranslateUi();
-    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
-}
-
-void BBookmarksEditorModulePrivate::checkBookmarks()
-{
-    BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
-    bool bm = !bookmarks(doc).isEmpty();
-    if ( !actMakeBookmark.isNull() )
-        actMakeBookmark->setEnabled(doc);
-    if ( !actGotoNextBookmark.isNull() )
-        actGotoNextBookmark->setEnabled(bm);
+    QObject::connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 /*============================== Public slots ==============================*/
 
 void BBookmarksEditorModulePrivate::retranslateUi()
 {
-    if ( !actMakeBookmark.isNull() )
-    {
-        actMakeBookmark->setText( tr("Make bookmark", "act text") );
-        actMakeBookmark->setToolTip( tr("Make a bookmark at cursor position", "act toolTip") );
-        actMakeBookmark->setWhatsThis( tr("Use this action to make a bookmark at the current cursor position",
-                                          "act whatsThis") );
-    }
-    if ( !actGotoNextBookmark.isNull() )
-    {
-        actGotoNextBookmark->setText( tr("Next bookmark", "act text") );
-        actGotoNextBookmark->setToolTip( tr("Go to next bookmark", "act toolTip") );
-        actGotoNextBookmark->setWhatsThis( tr("Use this action to go to next bookmark in current document",
-                                              "act whatsThis") );
-    }
+    actMakeBookmark->setText(tr("Make bookmark", "act text"));
+    actMakeBookmark->setToolTip(tr("Make a bookmark at cursor position", "act toolTip"));
+    actMakeBookmark->setWhatsThis(tr("Use this action to make a bookmark at the current cursor position",
+                                     "act whatsThis"));
+    actGotoNextBookmark->setText(tr("Next bookmark", "act text"));
+    actGotoNextBookmark->setToolTip(tr("Go to next bookmark", "act toolTip"));
+    actGotoNextBookmark->setWhatsThis(tr("Use this action to go to next bookmark in current document",
+                                         "act whatsThis"));
 }
-
-
 
 /*============================================================================
 ================================ BBookmarksEditorModule ======================
@@ -181,9 +170,35 @@ BBookmarksEditorModule::BBookmarksEditorModule(BBookmarksEditorModulePrivate &d,
 
 /*============================== Public methods ============================*/
 
+QAction *BBookmarksEditorModule::action(int type)
+{
+    switch (type) {
+    case MakeBookmarkAction:
+        return d_func()->actMakeBookmark;
+    case GotoNextBookmarkAction:
+        return d_func()->actGotoNextBookmark;
+    default:
+        return 0;
+    }
+}
+
+QList<QAction *> BBookmarksEditorModule::actions(bool)
+{
+    const B_D(BBookmarksEditorModule);
+    QList<QAction *> list;
+    list << d->actMakeBookmark;
+    list << d->actGotoNextBookmark;
+    return list;
+}
+
 QString BBookmarksEditorModule::id() const
 {
     return "beqt/bookmarks";
+}
+
+int BBookmarksEditorModule::maximumBookmarkCount() const
+{
+    return d_func()->maxBookmarks;
 }
 
 void BBookmarksEditorModule::setMaximumBookmarkCount(int count)
@@ -194,64 +209,60 @@ void BBookmarksEditorModule::setMaximumBookmarkCount(int count)
     if (count < 0)
         count = 0;
     d->maxBookmarks = count;
-    if (count > 0)
-    {
-        foreach (BAbstractCodeEditorDocument *doc, editor()->documents())
-        {
+    if (count > 0) {
+        foreach (BAbstractCodeEditorDocument *doc, editor()->documents()) {
             QVariantList vl = doc->property("beqt/bookmarks").toList();
             while (vl.size() > count)
                 vl.removeLast();
             doc->setProperty("beqt/bookmarks", vl);
         }
 
-    }
-    else
-    {
+    } else {
         foreach (BAbstractCodeEditorDocument *doc, editor()->documents())
             doc->setProperty( "beqt/bookmarks", QVariant() );
     }
     d->checkBookmarks();
 }
 
-int BBookmarksEditorModule::maximumBookmarkCount() const
-{
-    return d_func()->maxBookmarks;
-}
-
-QAction *BBookmarksEditorModule::action(int type)
-{
-    switch (type)
-    {
-    case MakeBookmarkAction:
-        return d_func()->actMakeBookmark.data();
-    case GotoNextBookmarkAction:
-        return d_func()->actGotoNextBookmark.data();
-    default:
-        return 0;
-    }
-}
-
-QList<QAction *> BBookmarksEditorModule::actions(bool)
-{
-    const B_D(BBookmarksEditorModule);
-    QList<QAction *> list;
-    if ( !d->actMakeBookmark.isNull() )
-        list << d->actMakeBookmark.data();
-    if ( !d->actGotoNextBookmark.isNull() )
-        list << d->actGotoNextBookmark.data();
-    return list;
-}
-
 /*============================== Public slots ==============================*/
+
+bool BBookmarksEditorModule::gotoBookmark(int index)
+{
+    if (!currentDocument())
+        return false;
+    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks(currentDocument());
+    if (index < 0 || index >= list.size())
+        return false;
+    QPoint pos = list.at(index);
+    if (InvalidPos == pos) {
+        removeBookmark(index);
+        BBookmarksEditorModulePrivate::setCurrentBookmark(currentDocument(), InvalidPos);
+        return false;
+    }
+    currentDocument()->moveCursor(pos);
+    d_func()->checkBookmarks();
+    return true;
+}
+
+bool BBookmarksEditorModule::gotoNextBookmark()
+{
+    if (!currentDocument())
+        return false;
+    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks(currentDocument());
+    if (list.isEmpty())
+        return false;
+    int ind = list.indexOf(BBookmarksEditorModulePrivate::currentBookmark(currentDocument())) + 1;
+    return gotoBookmark(list.size() != ind ? ind : 0);
+}
 
 void BBookmarksEditorModule::makeBookmark()
 {
-    if ( !currentDocument() )
+    if (!currentDocument())
         return;
     B_D(BBookmarksEditorModule);
-    QPoint pos = currentDocument()->cursorPosition();
-    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
-    if ( list.contains(pos) )
+    QPoint pos = currentDocument()->cursorPositionRowColumn();
+    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks(currentDocument());
+    if (list.contains(pos))
         list.removeAll(pos);
     list.prepend(pos);
     while (list.size() > d->maxBookmarks)
@@ -262,12 +273,12 @@ void BBookmarksEditorModule::makeBookmark()
 
 void BBookmarksEditorModule::removeBookmark(int index)
 {
-    if ( !currentDocument() )
+    if (!currentDocument())
         return;
-    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
-    if ( index < 0 || index >= list.size() )
+    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks(currentDocument());
+    if (index < 0 || index >= list.size())
         return;
-    QPoint pos = BBookmarksEditorModulePrivate::currentBookmark( currentDocument() );
+    QPoint pos = BBookmarksEditorModulePrivate::currentBookmark(currentDocument());
     int pind = list.indexOf(pos) - 1;
     if (pind < 0)
         pind = 0;
@@ -280,43 +291,13 @@ void BBookmarksEditorModule::removeBookmark(int index)
 
 void BBookmarksEditorModule::removeLastBookmark()
 {
-    if ( !currentDocument() )
+    if (!currentDocument())
         return;
-    QPoint pos = BBookmarksEditorModulePrivate::currentBookmark( currentDocument() );
+    QPoint pos = BBookmarksEditorModulePrivate::currentBookmark(currentDocument());
     if (InvalidPos == pos)
         return;
-    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
-    removeBookmark( list.indexOf(pos) );
-}
-
-bool BBookmarksEditorModule::gotoBookmark(int index)
-{
-    if ( !currentDocument() )
-        return false;
-    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
-    if ( index < 0 || index >= list.size() )
-        return false;
-    QPoint pos = list.at(index);
-    if (InvalidPos == pos)
-    {
-        removeBookmark(index);
-        BBookmarksEditorModulePrivate::setCurrentBookmark(currentDocument(), InvalidPos);
-        return false;
-    }
-    currentDocument()->moveCursor(pos);
-    d_func()->checkBookmarks();
-    return true;
-}
-
-bool BBookmarksEditorModule::gotoNextBookmark()
-{
-    if ( !currentDocument() )
-        return false;
-    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks( currentDocument() );
-    if ( list.isEmpty() )
-        return false;
-    int ind = list.indexOf( BBookmarksEditorModulePrivate::currentBookmark( currentDocument() ) ) + 1;
-    return gotoBookmark(list.size() != ind ? ind : 0);
+    QList<QPoint> list = BBookmarksEditorModulePrivate::bookmarks(currentDocument());
+    removeBookmark(list.indexOf(pos));
 }
 
 /*============================== Protected methods =========================*/

@@ -23,13 +23,13 @@
 #define BTEXTMATCH_H
 
 class BTextMatchPrivate;
+
 class BTextMatchList;
 
-class QString;
 class QDebug;
 class QRegExp;
+class QString;
 
-#include "bglobal.h"
 #include "bbase.h"
 #include "btexttools.h"
 
@@ -47,10 +47,10 @@ public:
 private:
     explicit BTextMatch(const QString *const text, int position, int length);
 public:
-    QString text() const;
-    int position() const;
-    int length() const;
     bool isValid() const;
+    int length() const;
+    int position() const;
+    QString text() const;
 public:
     BTextMatch &operator =(const BTextMatch &other);
     bool operator ==(const BTextMatch &other) const;
@@ -60,6 +60,7 @@ public:
                                                           const QRegExp &prefixedBy, const QRegExp &postfixedBy);
 public:
     friend QDebug operator <<(QDebug dbg, const BTextMatch &tm);
+    //This class must NOT be serialized because it only points to a string
 };
 
 #endif // BTEXTMATCH_H

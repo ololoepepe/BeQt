@@ -33,27 +33,12 @@ defineReplace(beqtModuleSubdir) {
 isEmpty(BEQT_SUBDIR_NAME):BEQT_SUBDIR_NAME=beqt
 
 #Searching for headers
-beqtHeadersPath=
-mac:exists($${PWD}/../Headers):beqtHeadersPath=$${PWD}/../Headers
-else:unix:!mac:exists($${PWD}/../../include/beqt):beqtHeadersPath=$${PWD}/../../include/beqt
-else:exists($${PWD}/include):beqtHeadersPath=$${PWD}/include
-isEmpty(beqtHeadersPath):error("BeQt headers not found")
+beqtHeadersPath=$${PWD}/../../include/$${BEQT_SUBDIR_NAME}
+!exists($${beqtHeadersPath}):error("BeQt headers not found")
+
 #Searching for libraries
-beqtLibsPath=
-beqtLibsOneFolder=
-mac:exists($${PWD}/../Frameworks) {
-    beqtLibsPath=$${PWD}/../Frameworks
-    beqtLibsOneFolder=true
-}
-else:exists($${PWD}/lib) {
-    beqtLibsPath=$${PWD}/lib
-    beqtLibsOneFolder=true
-}
-else:exists($${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/$${BEQT_SUBDIR_NAME}/src
-else:exists($${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../$${BEQT_SUBDIR_NAME}/src
-else:exists($${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../$${BEQT_SUBDIR_NAME}/src
-else:exists($${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src):beqtLibsPath=$${OUT_PWD}/../../../$${BEQT_SUBDIR_NAME}/src
-else:beqtLibsOneFolder=true
+beqtLibsPath=$${PWD}/../../lib
+!exists($${beqtLibsPath}):error("BeQt libs not found")
 
 win32 {
     #If CONFIG contains "release" or "debug", set special suffix for libs' path
@@ -61,7 +46,7 @@ win32 {
     CONFIG(release, debug|release):releaseDebugSuffix=/release
     CONFIG(debug, debug|release):releaseDebugSuffix=/debug
     #Set suffix for libraries names
-    libNameSuffix=3
+    libNameSuffix=4
 }
 
 #Gets short module name, for example "core", "widgets", etc.
@@ -71,20 +56,7 @@ defineTest(addBeqtModule) {
     fullName=$$fullBeqtModuleName($${shortName})
     INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
     DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
-    !isEmpty(beqtLibsPath) {
-        beqtModuleSubdir=
-        isEmpty(beqtLibsOneFolder):beqtModuleSubdir=/$$beqtModuleSubdir($${shortName})
-        beqtFinalLibPath=$${beqtLibsPath}$${beqtModuleSubdir}$${releaseDebugSuffix}
-        !exists($${beqtFinalLibPath}):beqtFinalLibPath=$${beqtLibsPath}$${beqtModuleSubdir}
-        mac:contains(CONFIG, lib_bundle) {
-            LIBS *= -F$${beqtFinalLibPath}/ -framework $${fullName}
-        } else {
-            LIBS *= -L$${beqtFinalLibPath}/ -l$${fullName}$${libNameSuffix}
-        }
-    } else {
-        mac:LIBS *= -framework $${fullName}
-        else:LIBS *= -l$${fullName}$${libNameSuffix}
-    }
+    LIBS *= -L$${beqtLibsPath}$${releaseDebugSuffix}/ -l$${fullName}$${libNameSuffix}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     export(LIBS)
@@ -107,26 +79,32 @@ contains(BEQT, all) {
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui widgets concurrent
+    QT *= core gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core widgets
 }
 contains(BEQT, core) {
-    QT *= core concurrent
+    QT *= core
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
 }
 contains(BEQT, network) {
-    QT *= core network concurrent
+    QT *= core network
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
     BEQT *= core
 }
 contains(BEQT, sql) {
-    QT *= core sql concurrent
+    QT *= core sql
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
     BEQT *= core
 }
 contains(BEQT, widgets) {
-    QT *= core gui widgets concurrent
+    QT *= core gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core
 }
 contains(BEQT, networkwidgets) {
-    QT *= core concurrent network gui widgets
+    QT *= core network gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent widgets
     BEQT *= core network widgets
 }
 

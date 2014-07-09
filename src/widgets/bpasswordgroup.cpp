@@ -21,19 +21,18 @@
 
 #include "bpasswordgroup.h"
 #include "bpasswordgroup_p.h"
+
 #include "bpasswordwidget.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BPassword>
-
-#include <QObject>
-#include <QMap>
-#include <QList>
-#include <QMetaObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QDebug>
+#include <QList>
+#include <QMap>
+#include <QMetaObject>
+#include <QObject>
 
 /*============================================================================
 ================================ BPasswordGroupPrivate =======================
@@ -42,7 +41,7 @@
 /*============================== Public constructors =======================*/
 
 BPasswordGroupPrivate::BPasswordGroupPrivate(BPasswordGroup *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -61,23 +60,14 @@ void BPasswordGroupPrivate::init()
 
 /*============================== Public slots ==============================*/
 
-void BPasswordGroupPrivate::pwdwgtDestroyed(QObject *object)
-{
-    wgtMap.remove(object);
-    passwordChanged();
-}
-
 void BPasswordGroupPrivate::passwordChanged()
 {
     QList<BPasswordWidget *> list = wgtMap.values();
     bool nmatch = !list.isEmpty();
-    if (nmatch)
-    {
+    if (nmatch) {
         BPassword pwd = list.first()->password();
-        foreach (int i, bRangeD(1, list.size() - 1))
-        {
-            if (list.at(i)->password() != pwd)
-            {
+        foreach (int i, bRangeD(1, list.size() - 1)) {
+            if (list.at(i)->password() != pwd) {
                 nmatch = false;
                 break;
             }
@@ -89,6 +79,12 @@ void BPasswordGroupPrivate::passwordChanged()
         QMetaObject::invokeMethod(q_func(), "passwordsMatchChanged", Q_ARG(bool, match));
 }
 
+void BPasswordGroupPrivate::pwdwgtDestroyed(QObject *object)
+{
+    wgtMap.remove(object);
+    passwordChanged();
+}
+
 /*============================================================================
 ================================ BPasswordGroup ==============================
 ============================================================================*/
@@ -96,7 +92,7 @@ void BPasswordGroupPrivate::passwordChanged()
 /*============================== Public constructors =======================*/
 
 BPasswordGroup::BPasswordGroup(QObject *parent) :
-    QObject(parent), BBase(*new BPasswordGroupPrivate(this))
+    QObject(parent), BBaseObject(*new BPasswordGroupPrivate(this))
 {
     d_func()->init();
 }
@@ -109,7 +105,7 @@ BPasswordGroup::~BPasswordGroup()
 /*============================== Protected constructors ====================*/
 
 BPasswordGroup::BPasswordGroup(BPasswordGroupPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }
@@ -126,12 +122,12 @@ void BPasswordGroup::addPasswordWidget(BPasswordWidget *pwdwgt)
     d_func()->passwordChanged();
 }
 
-bool BPasswordGroup::passwordsMatch() const
-{
-    return d_func()->match;
-}
-
 BPassword BPasswordGroup::password() const
 {
     return d_func()->match ? d_func()->wgtMap.values().first()->password() : BPassword();
+}
+
+bool BPasswordGroup::passwordsMatch() const
+{
+    return d_func()->match;
 }

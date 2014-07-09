@@ -26,12 +26,11 @@ class BTranslationPrivate;
 
 class QDataStream;
 class QDebug;
+class QString;
 class QVariant;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QString>
 #include <QMetaType>
 
 /*============================================================================
@@ -42,25 +41,25 @@ class B_CORE_EXPORT BTranslation : public BBase
 {
     B_DECLARE_PRIVATE(BTranslation)
 public:
-    static BTranslation translate(const char *context, const char *sourceText, const char *disambiguation = 0,
-                                  int n = -1);
-    static BTranslation tr(const char *sourceText, const char *disambiguation = 0, int n = -1);
-    static QString translate(const BTranslation &t);
-    static QString tr(const BTranslation &t);
-public:
     explicit BTranslation();
     BTranslation(const BTranslation &other);
     ~BTranslation();
 protected:
     explicit BTranslation(BTranslationPrivate &d);
 public:
+    static BTranslation tr(const char *sourceText, const char *disambiguation = 0, int n = -1);
+    static QString tr(const BTranslation &t);
+    static BTranslation translate(const char *context, const char *sourceText, const char *disambiguation = 0,
+                                  int n = -1);
+    static QString translate(const BTranslation &t);
+public:
     QString context() const;
-    QString sourceText() const;
     QString disambiguation() const;
-    int n() const;
-    QString translate() const;
-    QString tr() const;
     bool isValid() const;
+    int n() const;
+    QString sourceText() const;
+    QString tr() const;
+    QString translate() const;
 public:
     BTranslation &operator =(const BTranslation &other);
     bool operator ==(const BTranslation &other) const;

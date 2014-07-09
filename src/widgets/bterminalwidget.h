@@ -23,38 +23,39 @@
 #define BTERMINALWIDGET_H
 
 class BTerminalWidgetPrivate;
+
 class BAbstractTerminalDriver;
 
-class QWidget;
 class QStringList;
+class QTextCodec;
 class QVariant;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
-#include <QWidget>
 #include <QString>
 #include <QTextCharFormat>
+#include <QWidget>
 
 /*============================================================================
 ================================ BTerminalWidget =============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBase
+class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTerminalWidget)
 public:
-    enum TerminalMode
-    {
-        NormalMode,
-        ProgrammaticMode
-    };
     enum StandardFormat
     {
-        MessageFormat,
+        //This order reflects the importance of each level of messages
+        MessageFormat = 1,
         WarningFormat,
         CriticalFormat
+    };
+    enum TerminalMode
+    {
+        NormalMode = 1,
+        ProgrammaticMode
     };
 public:
     explicit BTerminalWidget(TerminalMode mode, QWidget *parent = 0);
@@ -63,29 +64,41 @@ public:
 protected:
     explicit BTerminalWidget(BTerminalWidgetPrivate &d, QWidget *parent = 0);
 public:
-    void setDriver(BAbstractTerminalDriver *driver);
-    void setTerminatingSequence( int key, int modifiers, const QString &displayedSymbols = QString() );
-    void setWorkingDirectory(const QString &path);
-    TerminalMode mode() const;
+    QTextCodec *codec() const;
+    QString codecName() const;
     BAbstractTerminalDriver *driver() const;
-    QString workingDirectory() const;
-    bool isValid() const;
+    QStringList history() const;
+    bool historyEnabled() const;
     bool isActive() const;
+    bool isValid() const;
+    TerminalMode mode() const;
+    QStringList processHistory() const;
+    bool processHistoryEnabled() const;
+    void setCodec(QTextCodec *codec);
+    void setCodec(const QString &codecName);
+    void setDriver(BAbstractTerminalDriver *driver);
+    void setHistory(const QStringList &list);
+    void setHistoryEnabled(bool enabled);
+    void setProcessHistory(const QStringList &list);
+    void setProcessHistoryEnabled(bool enabled);
+    void setTerminatingSequence(int key, int modifiers, const QString &displayedSymbols = "^D");
+    void setWorkingDirectory(const QString &path);
+    QString workingDirectory() const;
 public Q_SLOTS:
+    void appendLine(const QString &text, StandardFormat format);
+    void appendLine(const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat());
+    void appendText(const QString &text, const QTextCharFormat &format = QTextCharFormat());
+    void appendText(const QString &text, StandardFormat format);
+    void clearEdit();
+    void close();
+    void emulateUserInput(const QString &command);
+    void kill();
+    void processCommand(const QString &command);
+    void processCommand(const QString &command, const QStringList &arguments);
     void terminalCommand(const QString &command);
     void terminalCommand(const QString &command, const QStringList &arguments);
     void terminalCommand(const QVariant &data);
-    void processCommand(const QString &command);
-    void processCommand(const QString &command, const QStringList &arguments);
-    void emulateUserInput(const QString &command);
-    void close();
     void terminate();
-    void kill();
-    void clearEdit();
-    void appendText( const QString &text, const QTextCharFormat &format = QTextCharFormat() );
-    void appendLine( const QString &text = QString(), const QTextCharFormat &format = QTextCharFormat() );
-    void appendText(const QString &text, StandardFormat format);
-    void appendLine(const QString &text, StandardFormat format);
 Q_SIGNALS:
     void finished(int exitCode);
 private:

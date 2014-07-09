@@ -22,16 +22,15 @@
 #include "bsignaldelayproxy.h"
 #include "bsignaldelayproxy_p.h"
 
-#include "bglobal.h"
+#include "bbaseobject.h"
+#include "bbaseobject_p.h"
 #include "bnamespace.h"
-#include "bbase_p.h"
-#include "bbase_p.h"
 
+#include <QMetaObject>
 #include <QObject>
 #include <QString>
-#include <QVariant>
 #include <QTimer>
-#include <QMetaObject>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSignalDelayProxyPrivate ====================
@@ -40,7 +39,7 @@
 /*============================== Public constructors =======================*/
 
 BSignalDelayProxyPrivate::BSignalDelayProxyPrivate(BSignalDelayProxy *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -54,10 +53,8 @@ BSignalDelayProxyPrivate::~BSignalDelayProxyPrivate()
 
 void BSignalDelayProxyPrivate::init()
 {
-    tmrIntermediate = new QTimer(this);
-    connect( tmrIntermediate, SIGNAL( timeout() ), this, SLOT( timeout() ) );
-    tmrMaximum = new QTimer(this);
-    connect( tmrMaximum, SIGNAL( timeout() ), this, SLOT( timeout() ) );
+    connect(&tmrIntermediate, SIGNAL(timeout()), this, SLOT(timeout()));
+    connect(&tmrMaximum, SIGNAL(timeout()), this, SLOT(timeout()));
     intermediateDelay = 500;
     maximumDelay = BeQt::Second;
 }
@@ -65,10 +62,10 @@ void BSignalDelayProxyPrivate::init()
 void BSignalDelayProxyPrivate::trigger(const QVariant &data)
 {
     lastData = data;
-    if ( !tmrMaximum->isActive() )
-        tmrMaximum->start(maximumDelay);
-    tmrIntermediate->stop();
-    tmrIntermediate->start(intermediateDelay);
+    if (!tmrMaximum.isActive())
+        tmrMaximum.start(maximumDelay);
+    tmrIntermediate.stop();
+    tmrIntermediate.start(intermediateDelay);
 }
 
 /*============================== Public slots ==============================*/
@@ -76,16 +73,15 @@ void BSignalDelayProxyPrivate::trigger(const QVariant &data)
 void BSignalDelayProxyPrivate::timeout()
 {
     B_Q(BSignalDelayProxy);
-    tmrIntermediate->stop();
-    tmrMaximum->stop();
+    tmrIntermediate.stop();
+    tmrMaximum.stop();
     QMetaObject::invokeMethod(q, "triggered");
-    switch ( lastData.type() )
-    {
+    switch (lastData.type()) {
     case QVariant::Int:
-        QMetaObject::invokeMethod( q, "triggered", Q_ARG( int, lastData.toInt() ) );
+        QMetaObject::invokeMethod(q, "triggered", Q_ARG(int, lastData.toInt()));
         break;
     case QVariant::String:
-        QMetaObject::invokeMethod( q, "triggered", Q_ARG( QString, lastData.toString() ) );
+        QMetaObject::invokeMethod(q, "triggered", Q_ARG(QString, lastData.toString()));
         break;
     default:
         break;
@@ -99,13 +95,13 @@ void BSignalDelayProxyPrivate::timeout()
 /*============================== Public constructors =======================*/
 
 BSignalDelayProxy::BSignalDelayProxy(QObject *parent) :
-    QObject(parent), BBase( *new BSignalDelayProxyPrivate(this) )
+    QObject(parent), BBaseObject(*new BSignalDelayProxyPrivate(this))
 {
     d_func()->init();
 }
 
 BSignalDelayProxy::BSignalDelayProxy(int intermediateDelay, int maximumDelay, QObject *parent) :
-    QObject(parent), BBase( *new BSignalDelayProxyPrivate(this) )
+    QObject(parent), BBaseObject(*new BSignalDelayProxyPrivate(this))
 {
     d_func()->init();
     setIntermediateDelay(intermediateDelay);
@@ -120,26 +116,12 @@ BSignalDelayProxy::~BSignalDelayProxy()
 /*============================== Protected constructors ====================*/
 
 BSignalDelayProxy::BSignalDelayProxy(BSignalDelayProxyPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
-
-void BSignalDelayProxy::setIntermediateDelay(int msecs)
-{
-    if (msecs < 0)
-        return;
-    d_func()->intermediateDelay = msecs;
-}
-
-void BSignalDelayProxy::setMaximumDelay(int msecs)
-{
-    if (msecs < 0)
-        return;
-    d_func()->maximumDelay = msecs;
-}
 
 int BSignalDelayProxy::intermediateDelay() const
 {
@@ -155,24 +137,38 @@ void BSignalDelayProxy::setConnection(QObject *sender, const char *signal, QObje
 {
     if (!sender || !signal || !receiver || !method)
         return;
-    connect( sender, signal, this, SLOT( trigger() ) );
-    connect(this, SIGNAL( triggered() ), receiver, method);
+    connect(sender, signal, this, SLOT(trigger()));
+    connect(this, SIGNAL(triggered()), receiver, method);
 }
 
 void BSignalDelayProxy::setIntConnection(QObject *sender, const char *signal, QObject *receiver, const char *method)
 {
     if (!sender || !signal || !receiver || !method)
         return;
-    connect( sender, signal, this, SLOT( trigger(int) ) );
-    connect(this, SIGNAL( triggered(int) ), receiver, method);
+    connect(sender, signal, this, SLOT(trigger(int)));
+    connect(this, SIGNAL(triggered(int)), receiver, method);
+}
+
+void BSignalDelayProxy::setIntermediateDelay(int msecs)
+{
+    if (msecs < 0)
+        return;
+    d_func()->intermediateDelay = msecs;
+}
+
+void BSignalDelayProxy::setMaximumDelay(int msecs)
+{
+    if (msecs < 0)
+        return;
+    d_func()->maximumDelay = msecs;
 }
 
 void BSignalDelayProxy::setStringConnection(QObject *sender, const char *signal, QObject *receiver, const char *method)
 {
     if (!sender || !signal || !receiver || !method)
         return;
-    connect( sender, signal, this, SLOT( trigger(QString) ) );
-    connect(this, SIGNAL( triggered(QString) ), receiver, method);
+    connect(sender, signal, this, SLOT(trigger(QString)));
+    connect(this, SIGNAL(triggered(QString)), receiver, method);
 }
 
 /*============================== Public slots ==============================*/

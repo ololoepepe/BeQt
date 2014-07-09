@@ -26,14 +26,13 @@ class BSqlQueryPrivate;
 
 class QSqlDatabase;
 
-#include <BeQtCore/BeQt>
 #include <BeQtCore/BBase>
 
+#include <QSqlQuery>
 #include <QString>
 #include <QVariant>
-#include <QVariantMap>
-#include <QSqlQuery>
 #include <QVariantList>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BSqlQuery ===================================
@@ -45,7 +44,7 @@ class B_SQL_EXPORT BSqlQuery : public BBase
 public:
     enum BindingType
     {
-        NamedBinding,
+        NamedBinding = 1,
         PositionalBinding
     };
 public:
@@ -54,24 +53,24 @@ public:
     BSqlQuery(const BSqlQuery &other);
     ~BSqlQuery();
 public:
-    void setQueryString(const QString &qs);
     void addBindValue(const QVariant &val);
+    void addBoundValues(const QVariantMap &vals);
+    BindingType bindingType() const;
     void bindValue(const QString &placeholder, const QVariant &val);
     void bindValue(int pos, const QVariant &val);
-    void addBoundValues(const QVariantMap &vals);
+    QVariant boundValue(const QString &placeholder) const;
+    QVariant boundValue(int pos) const;
+    QVariantMap boundValues() const;
+    QSqlQuery *createQuery(const QSqlDatabase &db) const;
+    bool isForwardOnly() const;
+    bool isValid() const;
+    QSql::NumericalPrecisionPolicy numericalPrecisionPolicy() const;
+    QString queryString() const;
     void setBoundValues(const QVariantMap &vals);
     void setBoundValues(const QVariantList &vals);
     void setForwardOnly(bool forward);
     void setNumericalPrecisionPolicy(QSql::NumericalPrecisionPolicy precisionPolicy);
-    const QString queryString() const;
-    QVariant boundValue(const QString &placeholder) const;
-    QVariant boundValue(int pos) const;
-    QVariantMap boundValues() const;
-    BindingType bindingType() const;
-    bool isForwardOnly() const;
-    QSql::NumericalPrecisionPolicy numericalPrecisionPolicy() const;
-    bool isValid() const;
-    QSqlQuery *createQuery(const QSqlDatabase &db) const;
+    void setQueryString(const QString &qs);
 public:
     BSqlQuery &operator =(const BSqlQuery &other);
     bool operator ==(const BSqlQuery &other) const;

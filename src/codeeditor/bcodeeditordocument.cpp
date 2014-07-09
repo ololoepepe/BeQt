@@ -23,20 +23,18 @@ class BSplittedLinesDialog;
 
 #include "bcodeeditordocument.h"
 #include "bcodeeditordocument_p.h"
+
 #include "bcodeedit.h"
 #include "bcodeeditor.h"
 #include "bplaintextedit.h"
 
 #include <BeQtCore/BeQt>
 
+#include <QDebug>
+#include <QList>
 #include <QObject>
 #include <QString>
-#include <QTextCodec>
 #include <QTextDocument>
-#include <QColor>
-#include <QList>
-
-#include <QDebug>
 
 /*============================================================================
 ================================ BCodeEditorDocumentPrivate ==================
@@ -56,12 +54,6 @@ BCodeEditorDocumentPrivate::~BCodeEditorDocumentPrivate()
 }
 
 /*============================== Public methods ============================*/
-
-void BCodeEditorDocumentPrivate::init()
-{
-    cedt = 0;
-    sld = 0;
-}
 
 QWidget *BCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
 {
@@ -99,6 +91,12 @@ QWidget *BCodeEditorDocumentPrivate::createEdit(QTextDocument **doc)
     return cedt;
 }
 
+void BCodeEditorDocumentPrivate::init()
+{
+    cedt = 0;
+    sld = 0;
+}
+
 /*============================================================================
 ================================ BCodeEditorDocument =========================
 ============================================================================*/
@@ -126,19 +124,124 @@ BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget 
 
 /*============================== Public methods ============================*/
 
-void BCodeEditorDocument::setReadOnly(bool ro)
+QFont BCodeEditorDocument::editFont() const
 {
-    d_func()->cedt->setReadOnly(ro);
+    return d_func()->cedt->editFont();
 }
 
-void BCodeEditorDocument::setModification(bool modified)
+int BCodeEditorDocument::editLineLength() const
 {
-    d_func()->cedt->setModification(modified);
+    return d_func()->cedt->editLineLength();
+}
+
+BCodeEdit::EditMode BCodeEditorDocument::editMode() const
+{
+    return d_func()->cedt->editMode();
+}
+
+BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
+{
+    return d_func()->cedt->editTabWidth();
+}
+
+bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    return d_func()->cedt->findNext(txt, flags, cyclic);
+}
+
+bool BCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
+{
+    return d_func()->cedt->findNextRegexp(rx, flags, cyclic);
+}
+
+void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
+{
+    d_func()->cedt->innerEdit()->installEventFilter(filter);
+}
+
+bool BCodeEditorDocument::isEditAutoIndentationEnabled() const
+{
+    return d_func()->cedt->isEditAutoIndentationEnabled();
+}
+
+bool BCodeEditorDocument::isLineNumberWidgetVisible() const
+{
+    return d_func()->cedt->isLineNumberWidgetVisible();
+}
+
+void BCodeEditorDocument::removeInnerEventFilter(QObject *filter)
+{
+    d_func()->cedt->innerEdit()->removeEventFilter(filter);
+}
+
+int BCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags)
+{
+    return d_func()->cedt->replaceInDocument(txt, newText, flags);
+}
+
+int BCodeEditorDocument::replaceInDocumentRegexp(const QRegExp &rx, const QString &newText)
+{
+    return d_func()->cedt->replaceInDocumentRegexp(rx, newText);
+}
+
+int BCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags)
+{
+    return d_func()->cedt->replaceInSelection(txt, newText, flags);
+}
+
+int BCodeEditorDocument::replaceInSelectionRegexp(const QRegExp &rx, const QString &newText)
+{
+    return d_func()->cedt->replaceInSelectionRegexp(rx, newText);
+}
+
+bool BCodeEditorDocument::replaceNext(const QString &newText)
+{
+    return d_func()->cedt->replaceNext(newText);
+}
+
+QString BCodeEditorDocument::selectedText(bool full) const
+{
+    return d_func()->cedt->selectedText(full);
+}
+
+int BCodeEditorDocument::selectionEnd() const
+{
+    return d_func()->cedt->selectionEnd();
+}
+
+QPoint BCodeEditorDocument::selectionEndRowColumn() const
+{
+    return d_func()->cedt->selectionEndRowColumn();
+}
+
+int BCodeEditorDocument::selectionStart() const
+{
+    return d_func()->cedt->selectionStart();
+}
+
+QPoint BCodeEditorDocument::selectionStartRowColumn() const
+{
+    return d_func()->cedt->selectionStartRowColumn();
+}
+
+void BCodeEditorDocument::setEditAutoIndentationEnabled(bool enabled)
+{
+    d_func()->cedt->setEditAutoIndentationEnabled(enabled);
 }
 
 void BCodeEditorDocument::setEditFont(const QFont &fnt)
 {
     d_func()->cedt->setEditFont(fnt);
+}
+
+void BCodeEditorDocument::setEditLineLength(int ll)
+{
+    d_func()->cedt->setEditLineLength(ll);
+}
+
+void BCodeEditorDocument::setEditMode(BCodeEdit::EditMode mode)
+{
+    d_func()->cedt->setEditMode(mode);
 }
 
 void BCodeEditorDocument::setEditTabWidth(BeQt::TabWidth tw)
@@ -151,69 +254,14 @@ void BCodeEditorDocument::setLineNumberWidgetVisible(bool b)
     d_func()->cedt->setLineNumberWidgetVisible(b);
 }
 
-bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+void BCodeEditorDocument::setModification(bool modified)
 {
-    return d_func()->cedt->findNext(txt, flags, cyclic);
+    d_func()->cedt->setModification(modified);
 }
 
-bool BCodeEditorDocument::replaceNext(const QString &newText)
+void BCodeEditorDocument::setReadOnly(bool ro)
 {
-    return d_func()->cedt->replaceNext(newText);
-}
-
-int BCodeEditorDocument::replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
-{
-    return d_func()->cedt->replaceInSelection(txt, newText, cs);
-}
-
-int BCodeEditorDocument::replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs)
-{
-    return d_func()->cedt->replaceInDocument(txt, newText, cs);
-}
-
-QFont BCodeEditorDocument::editFont() const
-{
-    return d_func()->cedt->editFont();
-}
-
-BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
-{
-    return d_func()->cedt->editTabWidth();
-}
-
-bool BCodeEditorDocument::lineNumberWidgetVisible() const
-{
-    return d_func()->cedt->lineNumberWidgetVisible();
-}
-
-QString BCodeEditorDocument::text(bool full) const
-{
-    return d_func()->cedt->text(full);
-}
-
-QString BCodeEditorDocument::selectedText(bool full) const
-{
-    return d_func()->cedt->selectedText(full);
-}
-
-QPoint BCodeEditorDocument::selectionStart() const
-{
-    return d_func()->cedt->selectionStart();
-}
-
-QPoint BCodeEditorDocument::selectionEnd() const
-{
-    return d_func()->cedt->selectionEnd();
-}
-
-void BCodeEditorDocument::setEditMode(BCodeEdit::EditMode mode)
-{
-    d_func()->cedt->setEditMode(mode);
-}
-
-void BCodeEditorDocument::setEditLineLength(int ll)
-{
-    d_func()->cedt->setEditLineLength(ll);
+    d_func()->cedt->setReadOnly(ro);
 }
 
 void BCodeEditorDocument::setSplittedLinesDialog(BSplittedLinesDialog *dlg)
@@ -221,22 +269,17 @@ void BCodeEditorDocument::setSplittedLinesDialog(BSplittedLinesDialog *dlg)
     d_func()->sld = dlg;
 }
 
-BCodeEdit::EditMode BCodeEditorDocument::editMode() const
-{
-    return d_func()->cedt->editMode();
-}
-
-int BCodeEditorDocument::editLineLength() const
-{
-    return d_func()->cedt->editLineLength();
-}
-
 BSplittedLinesDialog *BCodeEditorDocument::splittedLinesDialog() const
 {
     return d_func()->sld;
 }
 
-/*============================== Protected slots ===========================*/
+QString BCodeEditorDocument::text(bool full) const
+{
+    return d_func()->cedt->text(full);
+}
+
+/*============================== Public slots ==============================*/
 
 void BCodeEditorDocument::switchMode()
 {
@@ -245,24 +288,49 @@ void BCodeEditorDocument::switchMode()
 
 /*============================== Protected methods =========================*/
 
-QWidget *BCodeEditorDocument::createEdit(QTextDocument **doc)
-{
-    return d_func()->createEdit(doc);
-}
-
-void BCodeEditorDocument::setFocusImplementation()
-{
-    d_func()->cedt->setFocus();
-}
-
 void BCodeEditorDocument::activateWindowImplementation()
 {
     d_func()->cedt->activateWindow();
 }
 
-void BCodeEditorDocument::setTextImplementation(const QString &txt)
+void BCodeEditorDocument::clearImplementation()
 {
-    d_func()->cedt->setText(txt, asyncProcessingMinimumLength());
+    d_func()->cedt->clear();
+}
+
+void BCodeEditorDocument::copyImplementation()
+{
+    d_func()->cedt->copy();
+}
+
+QWidget *BCodeEditorDocument::createEdit(QTextDocument **doc)
+{
+    return d_func()->createEdit(doc);
+}
+
+int BCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
+{
+    return d_func()->cedt->cursorPositionForRowColumn(pos);
+}
+
+QPoint BCodeEditorDocument::cursorPositionRowColumnImplementation() const
+{
+    return d_func()->cedt->cursorPositionRowColumn();
+}
+
+void BCodeEditorDocument::cutImplementation()
+{
+    d_func()->cedt->cut();
+}
+
+void BCodeEditorDocument::deleteSelectionImplementation()
+{
+    d_func()->cedt->deleteSelection();
+}
+
+void BCodeEditorDocument::deselectTextImplementation()
+{
+    d_func()->cedt->deselectText();
 }
 
 void BCodeEditorDocument::insertTextImplementation(const QString &txt)
@@ -270,9 +338,39 @@ void BCodeEditorDocument::insertTextImplementation(const QString &txt)
     d_func()->cedt->insertText(txt);
 }
 
+void BCodeEditorDocument::installDropHandler(QObject *handler)
+{
+    d_func()->cedt->innerEdit()->viewport()->installEventFilter(handler);
+}
+
+void BCodeEditorDocument::moveCursorImplementation(int pos)
+{
+    d_func()->cedt->moveCursor(pos);
+}
+
 void BCodeEditorDocument::moveCursorImplementation(const QPoint &pos)
 {
     d_func()->cedt->moveCursor(pos);
+}
+
+void BCodeEditorDocument::pasteImplementation()
+{
+    d_func()->cedt->paste();
+}
+
+void BCodeEditorDocument::redoImplementation()
+{
+    d_func()->cedt->redo();
+}
+
+void BCodeEditorDocument::selectAllImplementation()
+{
+    d_func()->cedt->selectAll();
+}
+
+void BCodeEditorDocument::selectLinesImplementation(int firstLine, int lastLine)
+{
+    d_func()->cedt->selectLines(firstLine, lastLine);
 }
 
 void BCodeEditorDocument::selectTextImplementation(const QPoint &start, const QPoint &end)
@@ -285,57 +383,17 @@ void BCodeEditorDocument::selectTextImplementation(int start, int end)
     d_func()->cedt->selectText(start, end);
 }
 
-void BCodeEditorDocument::selectLinesImplementation(int firstLine, int lastLine)
+void BCodeEditorDocument::setFocusImplementation()
 {
-    d_func()->cedt->selectLines(firstLine, lastLine);
+    d_func()->cedt->setFocus();
 }
 
-void BCodeEditorDocument::selectAllImplementation()
+void BCodeEditorDocument::setTextImplementation(const QString &txt)
 {
-    d_func()->cedt->selectAll();
-}
-
-void BCodeEditorDocument::deselectTextImplementation()
-{
-    d_func()->cedt->deselectText();
-}
-
-void BCodeEditorDocument::cutImplementation()
-{
-    d_func()->cedt->cut();
-}
-
-void BCodeEditorDocument::copyImplementation()
-{
-    d_func()->cedt->copy();
-}
-
-void BCodeEditorDocument::pasteImplementation()
-{
-    d_func()->cedt->paste();
-}
-
-void BCodeEditorDocument::deleteSelectionImplementation()
-{
-    d_func()->cedt->deleteSelection();
+    d_func()->cedt->setText(txt, asyncProcessingMinimumLength());
 }
 
 void BCodeEditorDocument::undoImplementation()
 {
     d_func()->cedt->undo();
-}
-
-void BCodeEditorDocument::redoImplementation()
-{
-    d_func()->cedt->redo();
-}
-
-void BCodeEditorDocument::installDropHandler(QObject *handler)
-{
-    d_func()->cedt->innerEdit()->viewport()->installEventFilter(handler);
-}
-
-void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
-{
-    d_func()->cedt->innerEdit()->installEventFilter(filter);
 }

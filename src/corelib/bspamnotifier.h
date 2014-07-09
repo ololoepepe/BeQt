@@ -24,8 +24,7 @@
 
 class BSpamNotifierPrivate;
 
-#include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 
 #include <QObject>
 
@@ -33,7 +32,7 @@ class BSpamNotifierPrivate;
 ================================ BSpamNotifier ===============================
 ============================================================================*/
 
-class B_CORE_EXPORT BSpamNotifier : public QObject, public BBase
+class B_CORE_EXPORT BSpamNotifier : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSpamNotifier)
@@ -44,14 +43,14 @@ public:
 protected:
     explicit BSpamNotifier(BSpamNotifierPrivate &d, QObject *parent = 0);
 public:
+    int checkInterval() const;
+    int eventCount() const;
+    int eventLimit() const;
+    bool isActive() const;
+    bool isEnabled() const;
     void setCheckInterval(int msecs);
     void setEventLimit(int count);
-    int checkInterval() const;
-    int eventLimit() const;
-    int eventCount() const;
     int timeElapsed() const;
-    bool isEnabled() const;
-    bool isActive() const;
 public Q_SLOTS:
     void setEnabled(bool enabled);
     void spam(int eventWeight = 1);

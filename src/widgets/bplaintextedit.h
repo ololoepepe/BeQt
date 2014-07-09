@@ -24,11 +24,10 @@
 
 class BPlainTextEditPrivate;
 
-class QWidget;
 class QMimeData;
+class QWidget;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QPlainTextEdit>
 
@@ -36,7 +35,7 @@ class QMimeData;
 ================================ BPlainTextEdit ==============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBase
+class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPlainTextEdit)
@@ -46,8 +45,8 @@ public:
 protected:
     explicit BPlainTextEdit(BPlainTextEditPrivate &d, QWidget *parent = 0);
 public:
-    void setDragEnabled(bool b);
     bool dragEnabled() const;
+    void setDragEnabled(bool b);
 protected:
     QMimeData *createMimeDataFromSelection() const;
 private:

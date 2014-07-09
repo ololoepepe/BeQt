@@ -1,62 +1,22 @@
-* Fix dragging from BPlainTextEdit. Note: not sure if needed
 * Add comments to the code and make docs; write detailed user manual
-* Improve MacOS support
-* Fix code editor document modification on setText
-* Implement multi-cursor in code editor
-* Implement code folding in code editor
+* Add tests
+* Use enum_cast wherever it makes sense
+
+* Implement native settings dialogs
 * Add function for unzipping Hunspell dictionaries
+* Implement code folding in code editor
 
 === PATCH ===
 
-
+* Improve SQL schema parsing
+* Fix dragging from BPlainTextEdit. Note: not sure if needed
 
 === MINOR ===
 
-* Add function for removing old plugin settings
-* Add processor architecture enum
-* Add ability to remember entered commands in BTerminalIOHandler
-* Add ability to set auto-indentation in code editor
-* Add overloaded BCoreApplication::installTranslator method
+* Add PDCurses binding
+* Implement Katepart-compatible file type definition using XML files
+* Add method for setting terminal window size to BTerminal
 
 === MAJOR ===
 
-* Fix BVersion: rename "minor", "major", etc.
-* Fix BeQt::OSType enum values
-* Merge similar GUI method pairs into templates
-* Remove BeQt::variantToData and BeQt::dataToVatiant functions
-* Use BUuid class instead of QUuid
-* Reimplement BCoreApplication, BApplication, and resource lookup system
-* Move some methods to separate namespaces
-* Implement locking of global object instances
-* Add ability to listen on several ports/hosts to BNetworkServer
-* Improve BTextBlockUserData (implement multiple skip intervals)
-* Improve BLocaleComboBox (implement custom mode)
-* Implement native settings dialogs
-* Remove BGuiPluginInterface::handleSettings method
-* Remove old methods from BPluginsSettingsTab
-* Implement Katepart-compatible file type definition using XML files
-* Improve code editor search (use regular expressions)
-* Add position to point conversion method to BAbstractCodeEditorDocument
-* Add pure position retrieving method to BAbstractCodeEditorDocument
-* Add overloaded moveCursor method to BAbstractCodeEditorDocument
-* Implement autocompletion
-* Improve document-wide and selection-wide replacing
-* Add methods to navigate through BAbstractCodeEditorDocument
-* Fix insertion of spaces and tabulations in code editor documents
-* Improve plugin loading system
-* Add BGuiPluginWrapper class
-* Add ability to add extra locations and to restrict locations
-* Improve BLineNumberWidget: add virtual functions
-* Add PDCurses binding
-* Add ability to set compression for every operation independently
-* Add public function for handling events to BAbstractCodeEditorDocument
-* Add version information to plugins
-* Add Help information to plugin info
-* Add ability to set user About dialog tabs for plugins
-* Add BAbstractCodeEditorDocument::clear method
-* Add ability to set multiple copyright owners
-* Disable changing parent editor of code editor modules
-* Fix BPluginsSettingsTab About dialog version
-* Rename BPluginWrapper::interfacetestFunction into interfaceTestFunction
-* Move setBlockComment method from BCodeEdit
-* Add working directory argument to BeQt::startProcessDetached function
+

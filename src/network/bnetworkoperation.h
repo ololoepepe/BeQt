@@ -22,17 +22,16 @@
 #ifndef BNETWORKOPERATION_H
 #define BNETWORKOPERATION_H
 
-class BNetworkConnection;
 class BNetworkOperationPrivate;
+
+class BNetworkConnection;
 class BNetworkConnectionPrivate;
+class BNetworkOperationMetaData;
 
 class QVariant;
 
-#include "bsocketwrapper.h"
-#include "bnetworkoperationmetadata.h"
-
 #include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QObject>
 #include <QByteArray>
@@ -41,7 +40,7 @@ class QVariant;
 ================================ BNetworkOperation ===========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BNetworkOperation : public QObject, public BBase
+class B_NETWORK_EXPORT BNetworkOperation : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkOperation)
@@ -52,47 +51,47 @@ protected:
 private:
     explicit BNetworkOperation(const BNetworkOperationMetaData &metaData, BNetworkConnection *parent);
 public:
-    void setAutoDelete(bool b);
-    void setStartTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
-    void setFinishTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
-    void reply(const QByteArray &data = QByteArray());
-    void reply(const QVariant &variant);
-    void onStarted(const QObject *receiver, const char *method, bool c = true);
-    void onFinished(const QObject *receiver, const char *method, bool c = true);
-    void onError(const QObject *receiver, const char *method, bool c = true);
     bool autoDelete() const;
     BNetworkConnection *connection() const;
     const QByteArray &data() const;
-    QVariant variantData() const;
-    BNetworkOperationMetaData metaData() const;
-    bool isRequest() const;
-    bool isValid() const;
-    bool isStarted() const;
-    bool isError() const;
     qint64 downloadBytesReady() const;
     qint64 downloadBytesTotal() const;
+    int downloadProgress(int nth = 100) const;
+    bool isError() const;
+    bool isFinished() const;
+    bool isRequest() const;
+    bool isStarted() const;
+    bool isValid() const;
+    BNetworkOperationMetaData metaData() const;
+    void onError(const QObject *receiver, const char *method, bool c = true);
+    void onFinished(const QObject *receiver, const char *method, bool c = true);
+    void onStarted(const QObject *receiver, const char *method, bool c = true);
+    void reply(const QByteArray &data = QByteArray());
+    void reply(const QVariant &variant);
+    void setAutoDelete(bool b);
+    void setFinishTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
+    void setStartTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
     qint64 uploadBytesReady() const;
     qint64 uploadBytesTotal() const;
-    int downloadProgress(int nth = 100) const;
     int uploadProgress(int nth = 100) const;
-    bool isFinished() const;
-    bool waitForStarted(int msecs = 30 * BeQt::Second);
-    bool waitForFinished(int msecs = 30 * BeQt::Second);
+    QVariant variantData() const;
     bool waitForDownload(qint64 bytes, int msecs = 30 * BeQt::Second);
-    bool waitForUpload(qint64 bytes, int msecs = 30 * BeQt::Second);
     bool waitForDownloadProgress(int n, int nth = 100, int msecs = 30 * BeQt::Second);
+    bool waitForFinished(int msecs = 30 * BeQt::Second);
+    bool waitForStarted(int msecs = 30 * BeQt::Second);
+    bool waitForUpload(qint64 bytes, int msecs = 30 * BeQt::Second);
     bool waitForUploadProgress(int n, int nth = 100, int msecs = 30 * BeQt::Second);
 public Q_SLOTS:
     void cancel();
 Q_SIGNALS:
-    void started();
-    void error();
-    void downloadProgress(qint64 bytesReady, qint64 bytesTotal);
-    void uploadProgress(qint64 bytesReady, qint64 bytesTotal);
-    void downloadProgress(int bytesReady, int bytesTotal);
-    void uploadProgress(int bytesReady, int bytesTotal);
-    void finished();
     void canceled();
+    void downloadProgress(qint64 bytesReady, qint64 bytesTotal);
+    void downloadProgress(int bytesReady, int bytesTotal);
+    void error();
+    void finished();
+    void started();
+    void uploadProgress(qint64 bytesReady, qint64 bytesTotal);
+    void uploadProgress(int bytesReady, int bytesTotal);
 private:
     Q_DISABLE_COPY(BNetworkOperation)
     friend class BNetworkConnectionPrivate;

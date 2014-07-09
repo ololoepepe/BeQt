@@ -24,11 +24,10 @@
 
 class BTextCodecMenuPrivate;
 
-class QTextCodec;
 class QString;
+class QTextCodec;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QMenu>
 
@@ -36,15 +35,15 @@ class QString;
 ================================ BTextCodecMenu ==============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BTextCodecMenu : public QMenu, public BBase
+class B_WIDGETS_EXPORT BTextCodecMenu : public QMenu, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BTextCodecMenu)
 public:
     enum Style
     {
-        StructuredStyle = 0,
-        PlainStyle
+        PlainStyle = 1,
+        StructuredStyle
     };
 public:
     explicit BTextCodecMenu(QWidget *parent = 0);
@@ -53,10 +52,10 @@ public:
 protected:
     explicit BTextCodecMenu(BTextCodecMenuPrivate &d, QWidget *parent = 0);
 public:
-    void setMapping(const QObject *receiver, const char *method);
-    Style style() const;
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
+    void setMapping(const QObject *receiver, const char *method);
+    Style style() const;
 private:
     Q_DISABLE_COPY(BTextCodecMenu)
 };

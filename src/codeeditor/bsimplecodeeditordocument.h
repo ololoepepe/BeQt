@@ -23,22 +23,23 @@
 #define BSIMPLECODEEDITORDOCUMENT_H
 
 class BSimpleCodeEditorDocumentPrivate;
+
 class BCodeEditor;
 
-class QWidget;
-class QPoint;
 class QFont;
+class QPoint;
+class QRegExp;
 class QString;
+class QWidget;
 
 #include "babstractcodeeditordocument.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BeQt>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 #include <QTextDocument>
-#include <QVariantMap>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSimpleCodeEditorDocument ===================
@@ -54,44 +55,56 @@ public:
 protected:
     explicit BSimpleCodeEditorDocument(BSimpleCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 public:
-    void setReadOnly(bool ro);
-    void setModification(bool modified);
+    QFont editFont() const;
+    BeQt::TabWidth editTabWidth() const;
+    bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    void installInnerEventFilter(QObject *filter);
+    bool isEditAutoIndentationEnabled() const;
+    bool isLineNumberWidgetVisible() const;
+    void removeInnerEventFilter(QObject *filter);
+    int replaceInDocument(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInDocumentRegexp(const QRegExp &rx, const QString &newText);
+    int replaceInSelection(const QString &txt, const QString &newText, QTextDocument::FindFlags flags = 0);
+    int replaceInSelectionRegexp(const QRegExp &rx, const QString &newText);
+    bool replaceNext(const QString &newText);
+    QString selectedText(bool full = false) const;
+    int selectionEnd() const;
+    QPoint selectionEndRowColumn() const;
+    int selectionStart() const;
+    QPoint selectionStartRowColumn() const;
+    void setEditAutoIndentationEnabled(bool enabled);
     void setEditFont(const QFont &fnt);
     void setEditTabWidth(BeQt::TabWidth tw);
     void setLineNumberWidgetVisible(bool b);
-    bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
-    bool replaceNext(const QString &newText);
-    int replaceInSelection(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-    int replaceInDocument(const QString &txt, const QString &newText, Qt::CaseSensitivity cs);
-    QFont editFont() const;
-    BeQt::TabWidth editTabWidth() const;
-    bool lineNumberWidgetVisible() const;
+    void setModification(bool modified);
+    void setReadOnly(bool ro);
     QString text(bool full = false) const;
-    QString selectedText(bool full = false) const;
-    QPoint selectionStart() const;
-    QPoint selectionEnd() const;
 protected:
-    QWidget *createEdit(QTextDocument **doc = 0);
-    void setFocusImplementation();
     void activateWindowImplementation();
-    void setTextImplementation(const QString &txt);
+    void clearImplementation();
+    void copyImplementation();
+    QWidget *createEdit(QTextDocument **doc = 0);
+    int cursorPositionForRowColumn(const QPoint &pos) const;
+    QPoint cursorPositionRowColumnImplementation() const;
+    void cutImplementation();
+    void deleteSelectionImplementation();
+    void deselectTextImplementation();
     void insertTextImplementation(const QString &txt);
+    void installDropHandler(QObject *handler);
+    void moveCursorImplementation(int pos);
     void moveCursorImplementation(const QPoint &pos);
+    void pasteImplementation();
+    void redoImplementation();
+    void selectAllImplementation();
+    void selectLinesImplementation(int firstLine, int lastLine);
     void selectTextImplementation(const QPoint &start, const QPoint &end);
     void selectTextImplementation(int start, int end);
-    void selectLinesImplementation(int firstLine, int lastLine);
-    void selectAllImplementation();
-    void deselectTextImplementation();
-    void cutImplementation();
-    void copyImplementation();
-    void pasteImplementation();
-    void deleteSelectionImplementation();
+    void setFocusImplementation();
+    void setTextImplementation(const QString &txt);
+    TextProcessingFunction textPreprocessingFunction() const;
+    QVariant textPreprocessingUserData();
     void undoImplementation();
-    void redoImplementation();
-    void installDropHandler(QObject *handler);
-    void installInnerEventFilter(QObject *filter);
-    //TextProcessingFunction textPreprocessingFunction() const;
-    //QVariantMap preprocessingUserData();
 private:
     Q_DISABLE_COPY(BSimpleCodeEditorDocument)
 };

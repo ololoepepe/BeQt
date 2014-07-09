@@ -31,9 +31,7 @@ class QPushButton;
 
 #include "boperationprogressdialog.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtWidgets/private/bdialog_p.h>
-#include <BeQtCore/BPersonInfoProvider>
 
 #include <QObject>
 #include <QString>
@@ -47,31 +45,31 @@ class B_NETWORKWIDGETS_EXPORT BOperationProgressDialogPrivate : public BDialogPr
     Q_OBJECT
     B_DECLARE_PUBLIC(BOperationProgressDialog)
 public:
+    BNetworkOperation * const Operation;
+public:
+    int autoCloseInterval;
+    QPushButton *btn;
+    bool canCancel;
+    QString failureText;
+    QLabel *lbl;
+    QProgressBar *pbar;
+    QString processingRequestText;
+    BSignalDelayProxy *proxy;
+    QString receivingReplyText;
+    QString receivingRequestText;
+    QString sendingReplyText;
+    QString sendingRequestText;
+    QString successText;
+    QString waitingForReplyText;
+    QString waitingForStartText;
+public:
     explicit BOperationProgressDialogPrivate(BOperationProgressDialog *q, BNetworkOperation *op);
     ~BOperationProgressDialogPrivate();
 public:
     void init();
 public Q_SLOTS:
-    void update();
     void btnClicked();
-public:
-    BNetworkOperation *const Operation;
-public:
-    QString waitingForStartText;
-    QString sendingRequestText;
-    QString receivingRequestText;
-    QString waitingForReplyText;
-    QString processingRequestText;
-    QString receivingReplyText;
-    QString sendingReplyText;
-    QString successText;
-    QString failureText;
-    BSignalDelayProxy *proxy;
-    bool canCancel;
-    int autoCloseInterval;
-    QLabel *lbl;
-    QProgressBar *pbar;
-    QPushButton *btn;
+    void update();
 private:
     Q_DISABLE_COPY(BOperationProgressDialogPrivate)
 };

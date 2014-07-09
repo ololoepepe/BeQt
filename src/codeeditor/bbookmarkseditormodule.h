@@ -23,14 +23,15 @@
 #define BBOOKMARKSEDITORMODULE_H
 
 class BBookmarksEditorModulePrivate;
-class BCodeEditor;
-class BAbstractCodeEditorDocument;
 
-class QString;
+class BAbstractCodeEditorDocument;
+class BCodeEditor;
+
 class QAction;
+class QString;
+
 #include "babstracteditormodule.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QList>
@@ -47,8 +48,8 @@ class B_CODEEDITOR_EXPORT BBookmarksEditorModule : public BAbstractEditorModule
 public:
     enum Action
     {
-        MakeBookmarkAction,
-        GotoNextBookmarkAction
+        GotoNextBookmarkAction = 1,
+        MakeBookmarkAction
     };
 public:
     static const QPoint InvalidPos;
@@ -58,21 +59,21 @@ public:
 protected:
     explicit BBookmarksEditorModule(BBookmarksEditorModulePrivate &d, QObject *parent = 0);
 public:
-    QString id() const;
-    void setMaximumBookmarkCount(int count);
-    int maximumBookmarkCount() const;
     QAction *action(int type);
     QList<QAction *> actions(bool extended = false);
+    QString id() const;
+    int maximumBookmarkCount() const;
+    void setMaximumBookmarkCount(int count);
 public Q_SLOTS:
+    bool gotoBookmark(int index);
+    bool gotoNextBookmark();
     void makeBookmark();
     void removeBookmark(int index);
     void removeLastBookmark();
-    bool gotoBookmark(int index);
-    bool gotoNextBookmark();
 protected:
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
-    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
 private:
     Q_DISABLE_COPY(BBookmarksEditorModule)
 };

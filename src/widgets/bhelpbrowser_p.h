@@ -24,59 +24,51 @@
 
 class BHelpBrowserPrivate;
 
-class QVBoxLayout;
-class QToolBar;
-class QToolButton;
 class QLabel;
 class QLineEdit;
-class QTextBrowser;
-class QString;
-class QTextCodec;
 class QPushButton;
+class QTextBrowser;
+class QTextCodec;
+class QToolButton;
 
 #include "bhelpbrowser.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QApplication>
-#include <QStringList>
-#include <QObject>
 #include <QMap>
+#include <QObject>
 #include <QPair>
+#include <QString>
+#include <QStringList>
 
 /*============================================================================
 ================================ BHelpBrowserPrivate =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BHelpBrowser)
 public:
-    explicit BHelpBrowserPrivate( BHelpBrowser *q);
+    static QMap< QString, QPair<QStringList, QStringList> > searchCache;
+public:
+    QPushButton *btnFind;
+    QTextCodec *codec;
+    QLabel *lblSearch;
+    QLineEdit *ledtSearch;
+    QTextBrowser *tbrsr;
+    QToolButton *tbtnBackward;
+    QToolButton *tbtnForward;
+    QToolButton *tbtnHome;
+public:
+    explicit BHelpBrowserPrivate(BHelpBrowser *q);
     ~BHelpBrowserPrivate();
 public:
     void init();
 public Q_SLOTS:
     void retranslateUi();
-    void updateCaption();
     void search();
-public:
-    static QMap< QString, QPair<QStringList, QStringList> > searchCache;
-public:
-    QTextCodec *codec;
-    QVBoxLayout *vlt;
-      QToolBar *tbar;
-        QToolButton *tbtnBackward;
-        QToolButton *tbtnForward;
-        //separator
-        QToolButton *tbtnHome;
-        //separator
-        QLabel *lblSearch;
-        QLineEdit *ledtSearch;
-        QPushButton *btnFind;
-      QTextBrowser *tbrsr;
+    void updateCaption();
 private:
     Q_DISABLE_COPY(BHelpBrowserPrivate)
 };

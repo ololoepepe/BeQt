@@ -22,61 +22,53 @@
 #ifndef BSETTINGSDIALOG_P_H
 #define BSETTINGSDIALOG_P_H
 
-class QVBoxLayout;
-class QTabWidget;
-class QDialogButtonBox;
-class QSplitter;
-class QListWidget;
-class QStackedWidget;
 class QCheckBox;
+class QDialogButtonBox;
+class QListWidget;
 class QPushButton;
+class QSplitter;
+class QStackedWidget;
+class QTabWidget;
 
 #include "bsettingsdialog.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
 #include <QList>
-#include <QMap>
-#include <QApplication>
-#include <QStringList>
+#include <QObject>
 
 /*============================================================================
 ================================ BSettingsDialogPrivate ======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BSettingsDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSettingsDialog)
 public:
+    const BSettingsDialog::TabNavigation Navigation;
+    const QList<BAbstractSettingsTab *> Tabs;
+public:
+    QPushButton *btnRestoreDefault;
+    QCheckBox *cboxAdvancedMode;
+    QDialogButtonBox *dlgbbox;
+    QSplitter *hspltr;
+    QListWidget *lstwgt;
+    QStackedWidget *stkdwgt;
+    QTabWidget *twgt;
+    bool valid;
+public:
     explicit BSettingsDialogPrivate(BSettingsDialog *q, const QList<BAbstractSettingsTab *> &tabs,
-                                    BSettingsDialog::Navigation navigation = BSettingsDialog::ListNavigation);
+                                    BSettingsDialog::TabNavigation navigation = BSettingsDialog::ListNavigation);
     ~BSettingsDialogPrivate();
 public:
-    void init();
     BAbstractSettingsTab *currentTab() const;
-public:
-    const QList<BAbstractSettingsTab *> Tabs;
-    const BSettingsDialog::Navigation Navigation;
-public:
-    bool valid;
-    QVBoxLayout *vlt;
-      QCheckBox *cboxAdvancedMode;
-      QPushButton *btnRestoreDefault;
-      QSplitter *hspltr;
-        QListWidget *lstwgt;
-        QStackedWidget *stkdwgt;
-      QTabWidget *twgt;
-      QDialogButtonBox *dlgbbox;
-        //Ok
-        //Cancel
+    void init();
 public Q_SLOTS:
     void accepted();
+    void btnRestoreDefaultClicked();
     void cboxAdvancedModeStateChanged(int state);
     void currentChanged(int index = 0);
-    void btnRestoreDefaultClicked();
     void updateSize();
 private:
     Q_DISABLE_COPY(BSettingsDialogPrivate)

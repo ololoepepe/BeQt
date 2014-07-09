@@ -22,48 +22,50 @@
 #ifndef BCODEEDITOR_P_H
 #define BCODEEDITOR_P_H
 
-class BAbstractCodeEditorDocument;
-class BAbstractEditorModule;
-class BAbstractDocumentDriver;
 class BSelectDocumentsDialogPrivate;
 class BSplittedLinesDialogPrivate;
+
+class BAbstractCodeEditorDocument;
+class BAbstractDocumentDriver;
+class BAbstractEditorModule;
 class BAbstractFileType;
 class BCodeEditorDocument;
 class BSpellChecker;
 
-class QVBoxLayout;
-class QTabWidget;
-class QPoint;
+class QAbstractButton;
+class QCheckBox;
+class QDialogButtonBox;
+class QEvent;
 class QLabel;
 class QListWidget;
-class QDialogButtonBox;
-class QAbstractButton;
-class QTextCodec;
-class QEvent;
-class QCheckBox;
-class QPushButton;
 class QListWidgetItem;
+class QPoint;
+class QPushButton;
+class QTabWidget;
+class QTextCodec;
 
 #include "bcodeeditor.h"
+
 #include "bcodeedit.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QMap>
-#include <QString>
-#include <QList>
 #include <QDialog>
 #include <QFont>
+#include <QList>
+#include <QMap>
+#include <QObject>
+#include <QString>
 #include <QStringList>
 
 /*============================================================================
 ================================ BSelectDocumentsDialog ======================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSelectDocumentsDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSelectDocumentsDialog)
@@ -83,10 +85,19 @@ private:
 ================================ BSelectDocumentsDialogPrivate ===============
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSelectDocumentsDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSelectDocumentsDialog)
+public:
+    const QList<BAbstractCodeEditorDocument *> Documents;
+public:
+    int decision;
+    QDialogButtonBox *dlgbbox;
+    QLabel *lblInformativeTextUpper;
+    QLabel *lblInformativeTextLower;
+    QLabel *lblText;
+    QListWidget *lstwgt;
 public:
     explicit BSelectDocumentsDialogPrivate(BSelectDocumentsDialog *q,
                                            const QList<BAbstractCodeEditorDocument *> &list);
@@ -95,19 +106,6 @@ public:
     void init();
 public Q_SLOTS:
     void dlgbboxClicked(QAbstractButton *button);
-public:
-    const QList<BAbstractCodeEditorDocument *> Documents;
-public:
-    int decision;
-    QVBoxLayout *vlt;
-      QLabel *lblText;
-      QLabel *lblInformativeTextUpper;
-      QListWidget *lstwgt;
-      QLabel *lblInformativeTextLower;
-      QDialogButtonBox *dlgbbox;
-        //Save
-        //Discard
-        //Cancel
 private:
     Q_DISABLE_COPY(BSelectDocumentsDialogPrivate)
 };
@@ -116,7 +114,7 @@ private:
 ================================ BSplittedLinesDialog ========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSplittedLinesDialog : public QDialog, public BBase
+class B_CODEEDITOR_EXPORT BSplittedLinesDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSplittedLinesDialog)
@@ -137,10 +135,19 @@ private:
 ================================ BSplittedLinesDialogPrivate =================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BSplittedLinesDialogPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BSplittedLinesDialogPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BSplittedLinesDialog)
+public:
+    const int LineLength;
+    const QList<BCodeEdit::SplittedLinesRange> Ranges;
+public:
+    QPushButton *btnGoto;
+    QCheckBox *cboxSelect;
+    QDialogButtonBox *dlgbbox;
+    QLabel *lbl;
+    QListWidget *lstwgt;
 public:
     explicit BSplittedLinesDialogPrivate(BSplittedLinesDialog *q,
                                          const QList<BCodeEdit::SplittedLinesRange> &ranges, int lineLength);
@@ -150,19 +157,8 @@ public:
 public:
     void init();
 public Q_SLOTS:
-    void lstwgtItemDoubleClicked(QListWidgetItem *item);
     void btnGotoClicked();
-public:
-    const QList<BCodeEdit::SplittedLinesRange> Ranges;
-    const int LineLength;
-public:
-    QVBoxLayout *vlt;
-      QLabel *lbl;
-      QListWidget *lstwgt;
-      QCheckBox *cboxSelect;
-      QDialogButtonBox *dlgbbox;
-        QPushButton *btnGoto;
-        //Close
+    void lstwgtItemDoubleClicked(QListWidgetItem *item);
 private:
     Q_DISABLE_COPY(BSplittedLinesDialogPrivate)
 };
@@ -174,13 +170,13 @@ private:
 class B_CODEEDITOR_EXPORT BDropHandler : public QObject
 {
     Q_OBJECT
+private:
+    BCodeEditor *const Editor;
 public:
-    explicit BDropHandler(BCodeEditorPrivate *parent);
+    explicit BDropHandler(BCodeEditor *parent);
     ~BDropHandler();
 public:
     bool eventFilter(QObject *o, QEvent *e);
-private:
-    BCodeEditorPrivate *const Editor;
 private:
     Q_DISABLE_COPY(BDropHandler)
 };
@@ -192,6 +188,10 @@ private:
 class B_CODEEDITOR_EXPORT BCloseHandler : public QObject
 {
     Q_OBJECT
+private:
+    BCodeEditorPrivate *const Editor;
+private:
+    QObject *lastSender;
 public:
     explicit BCloseHandler(BCodeEditorPrivate *parent);
     ~BCloseHandler();
@@ -200,10 +200,6 @@ public:
 public Q_SLOTS:
     void processingFinished();
 private:
-    BCodeEditorPrivate *const Editor;
-private:
-    QObject *lastSender;
-private:
     Q_DISABLE_COPY(BCloseHandler)
 };
 
@@ -211,123 +207,123 @@ private:
 ================================ BCodeEditorPrivate ==========================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BCodeEditorPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BCodeEditor)
 public:
     enum Operation
     {
-        AddOperation,
+        AddOperation = 1,
         OpenOperation,
         SaveOperation
     };
 public:
+    int asyncMin;
+    bool autoCodecDetection;
+    bool bracketsHighlighting;
+    BCloseHandler *closeHandler;
+    QList<BAbstractCodeEditorDocument *> closingDocuments;
+    QTextCodec *defaultCodec;
+    QString defaultFN;
+    int docType;
+    BAbstractCodeEditorDocument *document;
+    BAbstractDocumentDriver *driver;
+    BDropHandler *dropHandler;
+    bool editAutoIndentation;
+    QFont editFont;
+    int editLineLength;
+    BCodeEdit::EditMode editMode;
+    BeQt::TabWidth editTabWidth;
+    QStringList fileHistory;
+    QMap<QString, BAbstractFileType *> fileTypes;
+    bool lineNumberVisible;
+    int maxHistoryCount;
+    int maximumFileSize;
+    QMap<QString, BAbstractEditorModule *> modules;
+    QMap<BAbstractCodeEditorDocument *, QString> openingDocuments;
+    BAbstractFileType *preferredFileType;
+    QList<BAbstractCodeEditorDocument *> processedDocuments;
+    QMap<BAbstractCodeEditorDocument *, QString> savingDocuments;
+    BSpellChecker *spellChecker;
+    QTabWidget *twgt;
+public:
     explicit BCodeEditorPrivate(BCodeEditor *q);
     ~BCodeEditorPrivate();
 public:
-    static QString defaultFileName();
     static QString createFileName(const QString &fileName, const QString &defaultName,
                                   const QStringList &existingNames);
+    static QString defaultFileName();
 public:
-    void init();
-    bool eventFilter(QObject *o, QEvent *e);
-    bool tryAddFileType(BAbstractFileType *ft);
-    bool tryRemoveFileType(const QString &id);
-    bool findDocument(const QString &fileName);
-    BAbstractCodeEditorDocument *createDocument( const QString &fileName = QString(), const QString &text = QString() );
     void addDocument(BAbstractCodeEditorDocument *doc);
-    void removeDocument(BAbstractCodeEditorDocument *doc);
-    BAbstractFileType *selectDocumentFileType(BAbstractCodeEditorDocument *doc);
-    BAbstractCodeEditorDocument *openDocument(QString fileName, QTextCodec *codec = 0);
-    bool reopenDocument(BAbstractCodeEditorDocument *doc, QTextCodec *codec = 0);
-    bool saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
-    bool saveDocuments(const QList<BAbstractCodeEditorDocument *> &list);
-    bool closeDocument(BAbstractCodeEditorDocument *doc);
-    bool closeAllDocuments(bool save = true);
-    bool tryCloseDocument(BAbstractCodeEditorDocument *doc);
-    bool isDefaultFileName(const QString &fileName) const;
-    void updateDocumentTab(BAbstractCodeEditorDocument *doc);
-    void appendFileHistory( const QString &fileName, const QString &oldFileName = QString() );
-    void failedToOpenMessage(const QString &fileName, const QString &info = QString());
-    void failedToSaveMessage( const QString &fileName, const QString &newFileName = QString() );
     void alreadyOpenedMessage(const QString &fileName);
-    int reopenModifiedMessage(const QString &fileName);
+    void appendFileHistory(const QString &fileName, const QString &oldFileName = QString());
+
+    bool closeAllDocuments(bool save = true);
+    bool closeDocument(BAbstractCodeEditorDocument *doc);
     int closeModifiedMessage(const QString &fileName);
-    void showClosingMessage(QWidget *parent);
+    BAbstractCodeEditorDocument *createDocument(const QString &fileName = QString(), const QString &text = QString());
     BSplittedLinesDialog *createSplittedLinesDialog(BCodeEditorDocument *doc,
                                                     const QList<BCodeEdit::SplittedLinesRange> ranges);
-    void emitDefaultCodecChanged(const QString &codecName);
-    void emitEditModeChanged(BCodeEdit::EditMode mode);
-    void emitDocumentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
-    void emitDocumentAdded(BAbstractCodeEditorDocument *doc);
-    void emitDocumentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
-    void emitDocumentRemoved(const QString &fileName);
     void emitCurrentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void emitCurrentDocumentFileNameChanged(const QString &fileName);
     void emitCurrentDocumentModificationChanged(bool modified);
-    void emitFileTypesChanged();
+    void emitDefaultCodecChanged(const QString &codecName);
+    void emitDocumentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
+    void emitDocumentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
+    void emitDocumentAdded(BAbstractCodeEditorDocument *doc);
+    void emitDocumentRemoved(const QString &fileName);
+    void emitEditModeChanged(BCodeEdit::EditMode mode);
     void emitFileHistoryChanged(const QStringList &list);
-    void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
+    void emitFileTypesChanged();
+    bool eventFilter(QObject *o, QEvent *e);
+    void failedToOpenMessage(const QString &fileName, const QString &info = QString());
+    void failedToSaveMessage(const QString &fileName, const QString &newFileName = QString());
+    bool findDocument(const QString &fileName);
+    void init();
+    bool isDefaultFileName(const QString &fileName) const;
+    BAbstractCodeEditorDocument *openDocument(QString fileName, QTextCodec *codec = 0);
+    void removeDocument(BAbstractCodeEditorDocument *doc);
+    bool reopenDocument(BAbstractCodeEditorDocument *doc, QTextCodec *codec = 0);
+    int reopenModifiedMessage(const QString &fileName);
+
+    bool saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
+    bool saveDocuments(const QList<BAbstractCodeEditorDocument *> &list);
+    BAbstractFileType *selectDocumentFileType(BAbstractCodeEditorDocument *doc);
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
+    void setModuleEditor(BAbstractEditorModule *mdl, BCodeEditor *edr);
+    void showClosingMessage(QWidget *parent);
+    bool tryAddFileType(BAbstractFileType *ft);
+    bool tryCloseDocument(BAbstractCodeEditorDocument *doc);
+    bool tryRemoveFileType(const QString &id);
+    void updateDocumentTab(BAbstractCodeEditorDocument *doc);
 public Q_SLOTS:
-    void createDropHandler();
     void createCloseHandler();
-    void twgtCurrentChanged(int index);
-    void twgtTabCloseRequested(int index);
-    void documentReadOnlyChanged(bool ro);
-    void documentModificationChanged(bool modified);
-    void documentSelectionChanged();
-    void documentHasSelectionChanged(bool hasSelection);
-    void documentCutAvailableChanged(bool available);
-    void documentCopyAvailableChanged(bool available);
-    void documentPasteAvailableChanged(bool available);
-    void documentUndoAvailableChanged(bool available);
-    void documentRedoAvailableChanged(bool available);
-    void documentEditModeChanged(BCodeEdit::EditMode mode);
-    void documentCursorPositionChanged(const QPoint &pos);
+    void createDropHandler();
     void documentBuisyChanged(bool buisy);
+    void documentCodecChanged(const QString &codecName);
+    void documentCopyAvailableChanged(bool available);
+    void documentCursorPositionChanged(const QPoint &pos);
+    void documentCutAvailableChanged(bool available);
+    void documentEditModeChanged(BCodeEdit::EditMode mode);
+    void documentFileNameChanged(const QString &fn);
+    void documentFileTypeChanged(BAbstractFileType *ft);
+    void documentHasSelectionChanged(bool hasSelection);
     void documentLineSplitted(const BCodeEdit::SplittedLinesRange &linesRange);
     void documentLinesSplitted(const QList<BCodeEdit::SplittedLinesRange> linesRanges);
-    void documentFileNameChanged(const QString &fn);
-    void documentCodecChanged(const QString &codecName);
-    void documentFileTypeChanged(BAbstractFileType *ft);
     void documentLoadingFinished(bool success);
+    void documentModificationChanged(bool modified);
+    void documentPasteAvailableChanged(bool available);
+    void documentReadOnlyChanged(bool ro);
+    void documentRedoAvailableChanged(bool available);
     void documentSavingFinished(bool success);
-public:
-    int docType;
-    QMap<QString, BAbstractEditorModule *> modules;
-    BAbstractCodeEditorDocument *document;
-    QMap<BAbstractCodeEditorDocument *, QString> openingDocuments;
-    QMap<BAbstractCodeEditorDocument *, QString> savingDocuments;
-    QList<BAbstractCodeEditorDocument *> closingDocuments;
-    QList<BAbstractCodeEditorDocument *> processedDocuments;
-    QFont editFont;
-    BCodeEdit::EditMode editMode;
-    int editLineLength;
-    BeQt::TabWidth editTabWidth;
-    bool lineNumberVisible;
-    bool bracketsHighlighting;
-    BSpellChecker *spellChecker;
-    QTextCodec *defaultCodec;
-    QString defaultFN;
-    int maximumFileSize;
-    int asyncMin;
-    bool autoCodecDetection;
-    BAbstractDocumentDriver *driver;
-    QMap<QString, BAbstractFileType *> fileTypes;
-    BAbstractFileType *preferredFileType;
-    BDropHandler *dropHandler;
-    BCloseHandler *closeHandler;
-    QStringList fileHistory;
-    int maxHistoryCount;
-    QVBoxLayout *vlt;
-      QTabWidget *twgt;
-private:
-    friend class BDropHandler;
-    friend class BCloseHandler;
+    void documentSelectionChanged();
+    void documentUndoAvailableChanged(bool available);
+    void twgtCurrentChanged(int index);
+    void twgtTabCloseRequested(int index);
 private:
     Q_DISABLE_COPY(BCodeEditorPrivate)
+    friend class BCloseHandler;
 };
 
 #endif // BCODEEDITOR_P_H

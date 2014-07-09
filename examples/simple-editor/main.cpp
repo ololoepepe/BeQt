@@ -32,6 +32,8 @@
 #include <BPersonInfoProvider>
 #include <BAboutDialog>
 #include <BTranslator>
+#include <BTerminal>
+#include <BGuiTools>
 
 #include <QApplication>
 #include <QString>
@@ -52,19 +54,18 @@
 
 int main(int argc, char **argv)
 {
-    //Creating QApplication instance
-    QApplication *app = new QApplication(argc, argv);
-    //QApplication initialization
-    QApplication::setApplicationName("Simple Editor");
-    QApplication::setOrganizationName("Andrey Bogdanov");
-    QApplication::setOrganizationDomain("https://github.com/the-dark-angel");
-    QApplication::setApplicationVersion("0.1.0");
     //Creating BApplication instance
-    BApplication *bapp = new BApplication;
+    BApplication::InitialSettings settings;
+    settings.applicationName = "Simple Editor";
+    settings.organizationName = "Andrey Bogdanov";
+    BApplication app(argc, argv, settings);
+    BApplication::setOrganizationDomain("https://github.com/the-dark-angel");
+    BApplication::setApplicationVersion("0.1.0");
+    BTerminal::setMode(BTerminal::StandardMode);
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);
-    BApplication::installTranslator( new BTranslator("beqt") );
+    BApplication::installBeqtTranslator("beqt");
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
     BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2014");
@@ -114,11 +115,11 @@ int main(int argc, char **argv)
     mnu->addSeparator();
     mnu->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
     mnu = mw->menuBar()->addMenu("Help");
-    mnu->addAction( BApplication::createStandardAction(BApplication::HomepageAction) );
+    mnu->addAction(BGuiTools::createStandardAction(BGuiTools::HomepageAction));
     mnu->addSeparator();
-    mnu->addAction( BApplication::createStandardAction(BApplication::WhatsThisAction) );
+    mnu->addAction(BGuiTools::createStandardAction(BGuiTools::WhatsThisAction));
     mnu->addSeparator();
-    mnu->addAction( BApplication::createStandardAction(BApplication::AboutAction) );
+    mnu->addAction(BGuiTools::createStandardAction(BGuiTools::AboutAction));
     //Creating toolbars
     QToolBar *tbar = mw->addToolBar("Open");
     tbar->setObjectName("ToolBarOpen");
@@ -142,7 +143,7 @@ int main(int argc, char **argv)
     mw->restoreState( s ? s->value("main_window/state").toByteArray() : mw->saveState() ) ;
     mw->show();
     //Running main event loop
-    int ret = app->exec();
+    int ret = app.exec();
     //Saving settings
     if (s)
     {
@@ -154,8 +155,7 @@ int main(int argc, char **argv)
     }
     //Deleting objects
     delete mw;
-    delete bapp;
-    delete app;
     //Returning from main
+    BTerminal::destroy();
     return ret;
 }

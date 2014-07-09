@@ -21,46 +21,42 @@
 
 #include "bsearcheditormodule.h"
 #include "bsearcheditormodule_p.h"
-#include "bcodeeditordocument.h"
+
 #include "babstracteditormodule.h"
 #include "babstracteditormodule_p.h"
 #include "bcodeeditor.h"
+#include "bcodeeditordocument.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtWidgets/BApplication>
 
-#include <QObject>
-#include <QDialog>
+#include <QAction>
 #include <QByteArray>
-#include <QDataStream>
-#include <QIODevice>
-#include <QString>
-#include <QStringList>
-#include <QVBoxLayout>
+#include <QCheckBox>
+#include <QComboBox>
+#include <QCompleter>
+#include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QEvent>
+#include <QGroupBox>
 #include <QHBoxLayout>
 #include <QLabel>
-#include <QComboBox>
-#include <QGroupBox>
-#include <QCheckBox>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QMenu>
-#include <QAction>
-#include <QSizePolicy>
 #include <QLineEdit>
-#include <QEvent>
-#include <QShowEvent>
-#include <QTextDocument>
-#include <QMetaObject>
-#include <QPointer>
 #include <QList>
+#include <QMenu>
 #include <QMetaObject>
-#include <QCompleter>
-
-#include <QDebug>
+#include <QObject>
+#include <QPushButton>
+#include <QSizePolicy>
+#include <QString>
+#include <QStringList>
+#include <QTextDocument>
+#include <QVariant>
+#include <QVariantMap>
+#include <QVBoxLayout>
 
 /*============================================================================
 ================================ BSearchDialogPrivate ========================
@@ -73,7 +69,7 @@ const int BSearchDialogPrivate::DefMaximumHistorySize = 20;
 /*============================== Public constructors =======================*/
 
 BSearchDialogPrivate::BSearchDialogPrivate(BSearchDialog *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -85,14 +81,57 @@ BSearchDialogPrivate::~BSearchDialogPrivate()
 
 /*============================== Public methods ============================*/
 
+void BSearchDialogPrivate::appendHistory(QComboBox *cmbox)
+{
+    QString text = cmbox->currentText();
+    if (text.isEmpty())
+        return;
+    int index = cmbox->findText(text);
+    if (index >= 0)
+        cmbox->removeItem(index);
+    cmbox->insertItem(0, text);
+    cmbox->setCurrentIndex(0);
+}
+
+QTextDocument::FindFlags BSearchDialogPrivate::createFindFlags() const
+{
+    QTextDocument::FindFlags flags = 0;
+    if (cboxCaseSensitive->isChecked())
+        flags |= QTextDocument::FindCaseSensitively;
+    if (cboxWholeWords->isChecked())
+        flags |= QTextDocument::FindWholeWords;
+    if (cboxBackwardOrder->isChecked())
+        flags |= QTextDocument::FindBackward;
+    return flags;
+}
+
+void BSearchDialogPrivate::emitTextReplaced(int count, const QString &oldText, const QString &newText)
+{
+    if (count < 0)
+        return;
+    QMetaObject::invokeMethod(q_func(), "textReplaced", Q_ARG(int, count), Q_ARG(QString, oldText),
+                              Q_ARG(QString, newText));
+}
+
+bool BSearchDialogPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() == QEvent::Show) {
+        if (document && document->hasSelection())
+            cmboxSearch->lineEdit()->setText(document->selectedText());
+        cmboxSearch->lineEdit()->setFocus();
+        cmboxSearch->lineEdit()->selectAll();
+    }
+    return QObject::eventFilter(o, e);
+}
+
 void BSearchDialogPrivate::init()
 {
     B_Q(BSearchDialog);
     document = 0;
     q->installEventFilter(this);
     //
-    vlt = new QVBoxLayout(q);
-      hltSearch = new QHBoxLayout;
+    QVBoxLayout *vlt = new QVBoxLayout(q);
+      QHBoxLayout *hltSearch = new QHBoxLayout;
         lblSearch = new QLabel(q);
         hltSearch->addWidget(lblSearch);
         cmboxSearch = new QComboBox(q);
@@ -102,10 +141,10 @@ void BSearchDialogPrivate::init()
           cmboxSearch->setInsertPolicy(QComboBox::InsertAtTop);
           cmboxSearch->setEditable(true);
           cmboxSearch->lineEdit()->completer()->setCaseSensitivity(Qt::CaseSensitive);
-          connect( cmboxSearch, SIGNAL( editTextChanged(QString) ), this, SLOT( checkSearchReplace() ) );
+          connect(cmboxSearch, SIGNAL(editTextChanged(QString)), this, SLOT(checkSearchReplace()));
         hltSearch->addWidget(cmboxSearch);
       vlt->addLayout(hltSearch);
-      hltReplace = new QHBoxLayout;
+      QHBoxLayout *hltReplace = new QHBoxLayout;
         lblReplace = new QLabel(q);
         hltReplace->addWidget(lblReplace);
         cmboxReplace = new QComboBox(q);
@@ -118,7 +157,9 @@ void BSearchDialogPrivate::init()
         hltReplace->addWidget(cmboxReplace);
       vlt->addLayout(hltReplace);
       gboxOptions = new QGroupBox(q);
-        vltOptions = new QVBoxLayout;
+        QVBoxLayout *vltOptions = new QVBoxLayout;
+          cboxRegexp = new QCheckBox;
+          vltOptions->addWidget(cboxRegexp);
           cboxCaseSensitive = new QCheckBox;
           vltOptions->addWidget(cboxCaseSensitive);
           cboxWholeWords = new QCheckBox;
@@ -132,73 +173,29 @@ void BSearchDialogPrivate::init()
       vlt->addWidget(gboxOptions);
       dlgbbox = new QDialogButtonBox(q);
         dlgbbox->setStandardButtons(QDialogButtonBox::Close);
-        connect( dlgbbox->button(QDialogButtonBox::Close), SIGNAL( clicked() ), q, SLOT( close() ) );
+        connect(dlgbbox->button(QDialogButtonBox::Close), SIGNAL(clicked()), q, SLOT(close()));
         btnReplaceAll = new QPushButton;
           mnuReplaceAll = new QMenu(q);
             actSelection = new QAction(this);
-              connect( actSelection, SIGNAL( triggered() ), this, SLOT( actSelectionTriggered() ) );
+              connect(actSelection, SIGNAL(triggered()), this, SLOT(actSelectionTriggered()));
             mnuReplaceAll->addAction(actSelection);
             actDocument = new QAction(this);
-              connect( actDocument, SIGNAL( triggered() ), this, SLOT( actDocumentTriggered() ) );
+              connect(actDocument, SIGNAL(triggered()), this, SLOT(actDocumentTriggered()));
             mnuReplaceAll->addAction(actDocument);
           btnReplaceAll->setMenu(mnuReplaceAll);
         dlgbbox->addButton(btnReplaceAll, QDialogButtonBox::ActionRole);
         btnReplace = new QPushButton;
-          connect( btnReplace, SIGNAL( clicked() ), q, SLOT( replaceNext() ) );
+          connect(btnReplace, SIGNAL(clicked()), q, SLOT(replaceNext()));
         dlgbbox->addButton(btnReplace, QDialogButtonBox::ApplyRole);
         btnFind = new QPushButton;
           btnFind->setDefault(true);
-          connect( btnFind, SIGNAL( clicked() ), q, SLOT( findNext() ) );
+          connect(btnFind, SIGNAL(clicked()), q, SLOT(findNext()));
         dlgbbox->addButton(btnFind, QDialogButtonBox::ApplyRole);
       vlt->addWidget(dlgbbox);
     //
     checkSearchReplace();
     retranslateUi();
-    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
-}
-
-bool BSearchDialogPrivate::eventFilter(QObject *o, QEvent *e)
-{
-    if (e->type() == QEvent::Show)
-    {
-        if ( document && document->hasSelection() )
-            cmboxSearch->lineEdit()->setText( document->selectedText() );
-        cmboxSearch->lineEdit()->setFocus();
-        cmboxSearch->lineEdit()->selectAll();
-    }
-    return QObject::eventFilter(o, e);
-}
-
-void BSearchDialogPrivate::appendHistory(QComboBox *cmbox)
-{
-    QString text = cmbox->currentText();
-    if ( text.isEmpty() )
-        return;
-    int index = cmbox->findText(text);
-    if (index >= 0)
-        cmbox->removeItem(index);
-    cmbox->insertItem(0, text);
-    cmbox->setCurrentIndex(0);
-}
-
-void BSearchDialogPrivate::emitTextReplaced(int count, const QString &oldText, const QString &newText)
-{
-    if (count < 0)
-        return;
-    QMetaObject::invokeMethod( q_func(), "textReplaced", Q_ARG(int, count),
-                               Q_ARG(QString, oldText), Q_ARG(QString, newText) );
-}
-
-QTextDocument::FindFlags BSearchDialogPrivate::createFindFlags() const
-{
-    QTextDocument::FindFlags flags = 0;
-    if ( cboxCaseSensitive->isChecked() )
-        flags |= QTextDocument::FindCaseSensitively;
-    if ( cboxWholeWords->isChecked() )
-        flags |= QTextDocument::FindWholeWords;
-    if ( cboxBackwardOrder->isChecked() )
-        flags |= QTextDocument::FindBackward;
-    return flags;
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 QString BSearchDialogPrivate::windowTitle() const
@@ -208,21 +205,32 @@ QString BSearchDialogPrivate::windowTitle() const
 
 /*============================== Public slots ==============================*/
 
-void BSearchDialogPrivate::retranslateUi()
+void BSearchDialogPrivate::actDocumentTriggered()
 {
-    q_func()->setWindowTitle( windowTitle() );
-    lblSearch->setText( tr("Find:", "lbl text") );
-    lblReplace->setText( tr("Replace with:", "lbl text") );
-    gboxOptions->setTitle( tr("Options", "gbox title") );
-    cboxCaseSensitive->setText( tr("Case sensitive", "cbox text") );
-    cboxWholeWords->setText( tr("Whole words only", "cbox text") );
-    cboxBackwardOrder->setText( tr("Reverse search", "cbox text") );
-    cboxCyclic->setText( tr("Cyclic search", "cbox text") );
-    btnReplaceAll->setText( tr("Replace all", "btn text") );
-    actSelection->setText( tr("in selection", "act text") );
-    actDocument->setText( tr("in document", "act text") );
-    btnReplace->setText( tr("Replace", "btn text") );
-    btnFind->setText( tr("Find", "btn text") );
+    QString oldText = cmboxSearch->lineEdit()->text();
+    QString newText = cmboxReplace->lineEdit()->text();
+    int count = cboxRegexp->isChecked() ?
+                document->replaceInDocumentRegexp(QRegExp(oldText, q_func()->caseSensitivity()), newText) :
+                document->replaceInDocument(oldText, newText, createFindFlags());
+    if (count > 0) {
+        appendHistory(cmboxSearch);
+        appendHistory(cmboxReplace);
+    }
+    emitTextReplaced(count, oldText, newText);
+}
+
+void BSearchDialogPrivate::actSelectionTriggered()
+{
+    QString oldText = cmboxSearch->lineEdit()->text();
+    QString newText = cmboxReplace->lineEdit()->text();
+    int count = cboxRegexp->isChecked() ?
+                document->replaceInSelectionRegexp(QRegExp(oldText, q_func()->caseSensitivity()), newText) :
+                document->replaceInSelection(oldText, newText, createFindFlags());
+    if (count > 0) {
+        appendHistory(cmboxSearch);
+        appendHistory(cmboxReplace);
+    }
+    emitTextReplaced(count, oldText, newText);
 }
 
 void BSearchDialogPrivate::checkSearchReplace()
@@ -238,35 +246,27 @@ void BSearchDialogPrivate::checkSearchReplace()
     btnReplace->setEnabled(hasSelection && writable);
     btnFind->setEnabled(hasText && document);
     if (btnFind->isEnabled() != fnap)
-        QMetaObject::invokeMethod( q_func(), "findNextAvailableChanged", Q_ARG( bool, btnFind->isEnabled() ) );
+        QMetaObject::invokeMethod(q_func(), "findNextAvailableChanged", Q_ARG(bool, btnFind->isEnabled()));
     if (btnReplace->isEnabled() != rnap)
-        QMetaObject::invokeMethod( q_func(), "replaceNextAvailableChanged", Q_ARG( bool, btnReplace->isEnabled() ) );
+        QMetaObject::invokeMethod(q_func(), "replaceNextAvailableChanged", Q_ARG(bool, btnReplace->isEnabled()));
 }
 
-void BSearchDialogPrivate::actSelectionTriggered()
+void BSearchDialogPrivate::retranslateUi()
 {
-    QString oldText = cmboxSearch->lineEdit()->text();
-    QString newText = cmboxReplace->lineEdit()->text();
-    int count = document->replaceInSelection( oldText, newText, q_func()->caseSensitivity() );
-    if (count > 0)
-    {
-        appendHistory(cmboxSearch);
-        appendHistory(cmboxReplace);
-    }
-    emitTextReplaced(count, oldText, newText);
-}
-
-void BSearchDialogPrivate::actDocumentTriggered()
-{
-    QString oldText = cmboxSearch->lineEdit()->text();
-    QString newText = cmboxReplace->lineEdit()->text();
-    int count = document->replaceInDocument( oldText, newText, q_func()->caseSensitivity() );
-    if (count > 0)
-    {
-        appendHistory(cmboxSearch);
-        appendHistory(cmboxReplace);
-    }
-    emitTextReplaced(count, oldText, newText);
+    q_func()->setWindowTitle(windowTitle());
+    lblSearch->setText(tr("Find:", "lbl text"));
+    lblReplace->setText(tr("Replace with:", "lbl text"));
+    gboxOptions->setTitle(tr("Options", "gbox title"));
+    cboxRegexp->setText(tr("Treat as RegExp", "cbox text"));
+    cboxCaseSensitive->setText(tr("Case sensitive", "cbox text"));
+    cboxWholeWords->setText(tr("Whole words only", "cbox text"));
+    cboxBackwardOrder->setText(tr("Reverse search", "cbox text"));
+    cboxCyclic->setText(tr("Cyclic search", "cbox text"));
+    btnReplaceAll->setText(tr("Replace all", "btn text"));
+    actSelection->setText(tr("in selection", "act text"));
+    actDocument->setText(tr("in document", "act text"));
+    btnReplace->setText(tr("Replace", "btn text"));
+    btnFind->setText(tr("Find", "btn text"));
 }
 
 /*============================================================================
@@ -276,13 +276,13 @@ void BSearchDialogPrivate::actDocumentTriggered()
 /*============================== Public constructors =======================*/
 
 BSearchDialog::BSearchDialog(QWidget *parent) :
-    QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
+    QDialog(parent), BBaseObject(*new BSearchDialogPrivate(this))
 {
     d_func()->init();
 }
 
 BSearchDialog::BSearchDialog(bool replaceEnabled, QWidget *parent) :
-    QDialog(parent), BBase( *new BSearchDialogPrivate(this) )
+    QDialog(parent), BBaseObject(*new BSearchDialogPrivate(this))
 {
     d_func()->init();
     setReplaceEnabled(replaceEnabled);
@@ -296,21 +296,105 @@ BSearchDialog::~BSearchDialog()
 /*============================== Protected constructors ====================*/
 
 BSearchDialog::BSearchDialog(BSearchDialogPrivate &d, QWidget *parent) :
-    QDialog(parent), BBase(d)
+    QDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
 
-void BSearchDialog::setCaseSensitivity(Qt::CaseSensitivity cs)
+bool BSearchDialog::backwardOrder() const
 {
-    d_func()->cboxCaseSensitive->setChecked(Qt::CaseSensitive == cs);
+    return d_func()->cboxBackwardOrder->isChecked();
 }
 
-void BSearchDialog::setMatchWholeWords(bool enabled)
+Qt::CaseSensitivity BSearchDialog::caseSensitivity() const
 {
-    d_func()->cboxWholeWords->setChecked(enabled);
+    return d_func()->cboxCaseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
+}
+
+bool BSearchDialog::cyclicSearch() const
+{
+    return d_func()->cboxCyclic->isChecked();
+}
+
+BAbstractCodeEditorDocument *BSearchDialog::document() const
+{
+    return d_func()->document;
+}
+
+bool BSearchDialog::findNextAvailable() const
+{
+    return d_func()->btnFind->isEnabled();
+}
+
+bool BSearchDialog::matchWholeWords() const
+{
+    return d_func()->cboxWholeWords->isChecked();
+}
+
+int BSearchDialog::maximumHistorySize() const
+{
+    return d_func()->cmboxSearch->maxCount();
+}
+
+bool BSearchDialog::regexp() const
+{
+    return d_func()->cboxRegexp->isChecked();
+}
+
+bool BSearchDialog::replaceEnabled() const
+{
+    return d_func()->cmboxReplace->isVisible();
+}
+
+QStringList BSearchDialog::replaceHistory() const
+{
+    QStringList sl;
+    const B_D(BSearchDialog);
+    for (int i = 0; i < d->cmboxReplace->count(); ++i)
+        sl << d->cmboxReplace->itemText(i);
+    return sl;
+}
+
+bool BSearchDialog::replaceNextAvailable() const
+{
+    return d_func()->btnReplace->isEnabled();
+}
+
+void BSearchDialog::restoreState(const QByteArray &ba)
+{
+    QVariantMap m = BeQt::deserialize(ba).toMap();
+    setRegexp(m.value("regexp").toBool());
+    setCaseSensitivity(enum_cast<Qt::CaseSensitivity>(m.value("case_sensitivity"), Qt::CaseInsensitive,
+                                                      Qt::CaseSensitive));
+    setMatchWholeWords(m.value("match_whole_words").toBool());
+    setBackwardOrder(m.value("backward_order").toBool());
+    setCyclicSearch(m.value("cyclic_search", true).toBool());
+    setSearchHistory(m.value("search_history").toStringList());
+    setReplaceHistory(m.value("replace_history").toStringList());
+}
+
+QByteArray BSearchDialog::saveState() const
+{
+    QVariantMap m;
+    m.insert("regexp", regexp());
+    m.insert("case_sensitivity", (int) caseSensitivity());
+    m.insert("match_whole_words", matchWholeWords());
+    m.insert("backward_order", backwardOrder());
+    m.insert("cyclic_search", cyclicSearch());
+    m.insert("search_history", searchHistory());
+    m.insert("replace_history", replaceHistory());
+    return BeQt::serialize(m);
+}
+
+QStringList BSearchDialog::searchHistory() const
+{
+    QStringList sl;
+    const B_D(BSearchDialog);
+    for (int i = 0; i < d->cmboxSearch->count(); ++i)
+        sl << d->cmboxSearch->itemText(i);
+    return sl;
 }
 
 void BSearchDialog::setBackwardOrder(bool enabled)
@@ -318,23 +402,36 @@ void BSearchDialog::setBackwardOrder(bool enabled)
     d_func()->cboxBackwardOrder->setChecked(enabled);
 }
 
+void BSearchDialog::setCaseSensitivity(Qt::CaseSensitivity cs)
+{
+    d_func()->cboxCaseSensitive->setChecked(Qt::CaseSensitive == cs);
+}
+
 void BSearchDialog::setCyclicSearch(bool enabled)
 {
     d_func()->cboxCyclic->setChecked(enabled);
 }
 
-void BSearchDialog::setSearchHistory(const QStringList &list)
+void BSearchDialog::setDocument(BAbstractCodeEditorDocument *doc)
 {
     B_D(BSearchDialog);
-    d->cmboxSearch->clear();
-    d->cmboxSearch->addItems(list);
+    if (d->document)
+        disconnect(d->document, SIGNAL(hasSelectionChanged(bool)), d, SLOT(checkSearchReplace()));
+    if (doc) {
+        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(doc);
+        if (ddoc) {
+            d->cmboxSearch->lineEdit()->setMaxLength(ddoc->editLineLength());
+            d->cmboxReplace->lineEdit()->setMaxLength(ddoc->editLineLength());
+        }
+        connect(doc, SIGNAL(hasSelectionChanged(bool)), d, SLOT(checkSearchReplace()));
+    }
+    d->document = doc;
+    d->checkSearchReplace();
 }
 
-void BSearchDialog::setReplaceHistory(const QStringList &list)
+void BSearchDialog::setMatchWholeWords(bool enabled)
 {
-    B_D(BSearchDialog);
-    d->cmboxReplace->clear();
-    d->cmboxReplace->addItems(list);
+    d_func()->cboxWholeWords->setChecked(enabled);
 }
 
 void BSearchDialog::setMaximumHistorySize(int sz)
@@ -348,6 +445,11 @@ void BSearchDialog::setMaximumHistorySize(int sz)
     d->cmboxReplace->setMaxVisibleItems(sz);
 }
 
+void BSearchDialog::setRegexp(bool b)
+{
+    d_func()->cboxRegexp->setChecked(b);
+}
+
 void BSearchDialog::setReplaceEnabled(bool enabled)
 {
     B_D(BSearchDialog);
@@ -358,137 +460,31 @@ void BSearchDialog::setReplaceEnabled(bool enabled)
     setWindowTitle( d->windowTitle() );
 }
 
-void BSearchDialog::setDocument(BAbstractCodeEditorDocument *doc)
+void BSearchDialog::setReplaceHistory(const QStringList &list)
 {
     B_D(BSearchDialog);
-    if (d->document)
-        disconnect( d->document, SIGNAL( hasSelectionChanged(bool) ), d, SLOT( checkSearchReplace() ) );
-    if (doc)
-    {
-        BCodeEditorDocument *ddoc = qobject_cast<BCodeEditorDocument *>(doc);
-        if (ddoc)
-        {
-            d->cmboxSearch->lineEdit()->setMaxLength(ddoc->editLineLength());
-            d->cmboxReplace->lineEdit()->setMaxLength(ddoc->editLineLength());
-        }
-        connect( doc, SIGNAL( hasSelectionChanged(bool) ), d, SLOT( checkSearchReplace() ) );
-    }
-    d->document = doc;
-    d->checkSearchReplace();
+    d->cmboxReplace->clear();
+    d->cmboxReplace->addItems(list);
 }
 
-void BSearchDialog::restoreState(const QByteArray &ba)
+void BSearchDialog::setSearchHistory(const QStringList &list)
 {
-    if ( ba.isEmpty() )
-        return;
-    QDataStream out(ba);
-    out.setVersion(BeQt::DataStreamVersion);
-    bool cs = false;
-    bool wholeWords = false;
-    bool backward = false;
-    bool cyclic = true;
-    QStringList searchHist;
-    QStringList replaceHist;
-    out >> cs;
-    out >> wholeWords;
-    out >> backward;
-    out >> cyclic;
-    out >> searchHist;
-    out >> replaceHist;
-    setCaseSensitivity(cs ? Qt::CaseSensitive : Qt::CaseInsensitive);
-    setMatchWholeWords(wholeWords);
-    setBackwardOrder(backward);
-    setCyclicSearch(cyclic);
-    setSearchHistory(searchHist);
-    setReplaceHistory(replaceHist);
-}
-
-Qt::CaseSensitivity BSearchDialog::caseSensitivity() const
-{
-    return d_func()->cboxCaseSensitive->isChecked() ? Qt::CaseSensitive : Qt::CaseInsensitive;
-}
-
-bool BSearchDialog::matchWholeWords() const
-{
-    return d_func()->cboxWholeWords->isChecked();
-}
-
-bool BSearchDialog::backwardOrder() const
-{
-    return d_func()->cboxBackwardOrder->isChecked();
-}
-
-bool BSearchDialog::cyclicSearch() const
-{
-    return d_func()->cboxCyclic->isChecked();
-}
-
-QStringList BSearchDialog::searchHistory() const
-{
-    QStringList sl;
-    const B_D(BSearchDialog);
-    for (int i = 0; i < d->cmboxSearch->count(); ++i)
-        sl << d->cmboxSearch->itemText(i);
-    return sl;
-}
-
-QStringList BSearchDialog::replaceHistory() const
-{
-    QStringList sl;
-    const B_D(BSearchDialog);
-    for (int i = 0; i < d->cmboxReplace->count(); ++i)
-        sl << d->cmboxReplace->itemText(i);
-    return sl;
-}
-
-int BSearchDialog::maximumHistorySize() const
-{
-    return d_func()->cmboxSearch->maxCount();
-}
-
-bool BSearchDialog::replaceEnabled() const
-{
-    return d_func()->cmboxReplace->isVisible();
-}
-
-BAbstractCodeEditorDocument *BSearchDialog::document() const
-{
-    return d_func()->document;
-}
-
-bool BSearchDialog::findNextAvailable() const
-{
-    return d_func()->btnFind->isEnabled();
-}
-
-bool BSearchDialog::replaceNextAvailable() const
-{
-    return d_func()->btnReplace->isEnabled();
-}
-
-QByteArray BSearchDialog::saveState() const
-{
-    QByteArray ba;
-    QDataStream out(&ba, QIODevice::WriteOnly);
-    out.setVersion(BeQt::DataStreamVersion);
-    out << (caseSensitivity() == Qt::CaseSensitive);
-    out << matchWholeWords();
-    out << backwardOrder();
-    out << cyclicSearch();
-    out << searchHistory();
-    out << replaceHistory();
-    return ba;
+    B_D(BSearchDialog);
+    d->cmboxSearch->clear();
+    d->cmboxSearch->addItems(list);
 }
 
 /*============================== Public slots ==============================*/
 
 void BSearchDialog::findNext()
 {
-    if ( !findNextAvailable() )
+    if (!findNextAvailable())
         return;
     B_D(BSearchDialog);
     QString text = d->cmboxSearch->lineEdit()->text();
-    bool b = d->document->findNext( text, d->createFindFlags(), cyclicSearch() );
+    bool b = d->cboxRegexp->isChecked() ? d->document->findNextRegexp(QRegExp(text, caseSensitivity()),
+                                                                      d->createFindFlags(), cyclicSearch()) :
+                                          d->document->findNext(text, d->createFindFlags(), cyclicSearch());
     if (b)
         d->appendHistory(d->cmboxSearch);
     Q_EMIT textFound(b, text);
@@ -496,7 +492,7 @@ void BSearchDialog::findNext()
 
 void BSearchDialog::replaceNext()
 {
-    if ( !replaceNextAvailable() )
+    if (!replaceNextAvailable())
         return;
     B_D(BSearchDialog);
     QString text = d->cmboxSearch->lineEdit()->text();
@@ -505,7 +501,7 @@ void BSearchDialog::replaceNext()
     if (b)
         d->appendHistory(d->cmboxReplace);
     Q_EMIT textReplaced(b, text, ntext);
-    d->document->findNext( d->cmboxSearch->lineEdit()->text(), d->createFindFlags(), cyclicSearch() );
+    d->document->findNext(d->cmboxSearch->lineEdit()->text(), d->createFindFlags(), cyclicSearch());
 }
 
 /*============================================================================
@@ -527,27 +523,33 @@ BSearchEditorModulePrivate::~BSearchEditorModulePrivate()
 
 /*============================== Public methods ============================*/
 
+QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
+{
+    QString t = (text.length() > 50) ? (text.left(47) + "...") : text;
+    return tr("Text", "msg text") + " \"" + t + "\" " + tr("not found", "msg text");
+}
+
 void BSearchEditorModulePrivate::init()
 {
     sdlg = new BSearchDialog;
-    connect( sdlg, SIGNAL( textFound(bool, QString) ), this, SLOT( textFound(bool, QString) ) );
-    connect( sdlg, SIGNAL( textReplaced(int, QString, QString) ), this, SLOT( textReplaced(int, QString, QString) ) );
+    connect(sdlg, SIGNAL(textFound(bool, QString)), this, SLOT(textFound(bool, QString)));
+    connect(sdlg, SIGNAL(textReplaced(int, QString, QString)), this, SLOT(textReplaced(int, QString, QString)));
     //
     B_Q(BSearchEditorModule);
     actFind = new QAction(this);
       actFind->setEnabled(false);
-      actFind->setIcon( BApplication::icon("find") );
+      actFind->setIcon(BApplication::icon("find"));
       actFind->setShortcut(QKeySequence::Find);
-      connect( actFind.data(), SIGNAL( triggered() ), q, SLOT( find() ) );
+      connect(actFind, SIGNAL(triggered()), q, SLOT(find()));
     actFindNext = new QAction(this);
       actFindNext->setEnabled(false);
-      actFindNext->setIcon( BApplication::icon("edit_find_next") );
+      actFindNext->setIcon(BApplication::icon("edit_find_next"));
       actFindNext->setShortcut(QKeySequence::FindNext);
-      connect( actFindNext.data(), SIGNAL( triggered() ), q, SLOT( findNext() ) );
-      connect( sdlg, SIGNAL( findNextAvailableChanged(bool) ), actFindNext.data(), SLOT( setEnabled(bool) ) );
+      connect(actFindNext, SIGNAL(triggered()), q, SLOT(findNext()));
+      connect(sdlg, SIGNAL(findNextAvailableChanged(bool)), actFindNext, SLOT(setEnabled(bool)));
     //
     retranslateUi();
-    connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
@@ -557,62 +559,43 @@ void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
     sdlg->setWindowFlags(flags);
 }
 
-QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
-{
-    QString t = (text.length() > 50) ? (text.left(47) + "...") : text;
-    return tr("Text", "msg text") + " \"" + t + "\" " + tr("not found", "msg text");
-}
-
 /*============================== Public slots ==============================*/
 
 void BSearchEditorModulePrivate::retranslateUi()
 {
-    if ( !actFind.isNull() )
-    {
-        actFind->setText( tr("Find and replace...", "act text") );
-        actFind->setToolTip( tr("Find and replace text", "act toolTip") );
-        actFind->setWhatsThis( tr("Use this action to open a find and replace dialog", "act whatsThis") );
-    }
-    if ( !actFindNext.isNull() )
-    {
-        actFindNext->setText( tr("Find next", "act text") );
-        actFindNext->setToolTip( tr("Find next", "act toolTip") );
-        actFindNext->setWhatsThis( tr("Use this action to find next occurrence of the text", "act whatsThis") );
-    }
+    actFind->setText(tr("Find and replace...", "act text"));
+    actFind->setToolTip(tr("Find and replace text", "act toolTip"));
+    actFind->setWhatsThis(tr("Use this action to open a find and replace dialog", "act whatsThis"));
+    actFindNext->setText(tr("Find next", "act text"));
+    actFindNext->setToolTip(tr("Find next", "act toolTip"));
+    actFindNext->setWhatsThis(tr("Use this action to find next occurrence of the text", "act whatsThis"));
 }
 
 void BSearchEditorModulePrivate::textFound(bool found, const QString &text)
 {
     B_Q(BSearchEditorModule);
-    if (found)
-    {
-        QMetaObject::invokeMethod( q, "textFound", Q_ARG(QString, text) );
-    }
-    else
-    {
-        QMetaObject::invokeMethod( q, "textNotFound", Q_ARG(QString, text) );
-        QMetaObject::invokeMethod( q, "message", Q_ARG( QString, createNotFoundMessage(text) ) );
+    if (found) {
+        QMetaObject::invokeMethod(q, "textFound", Q_ARG(QString, text));
+    } else {
+        QMetaObject::invokeMethod(q, "textNotFound", Q_ARG(QString, text));
+        QMetaObject::invokeMethod(q, "message", Q_ARG(QString, createNotFoundMessage(text)));
     }
 }
 
 void BSearchEditorModulePrivate::textReplaced(int count, const QString &oldText, const QString &newText)
 {
     B_Q(BSearchEditorModule);
-    if (count > 0)
-    {
-        QMetaObject::invokeMethod( q, "textReplaced", Q_ARG(int, count), Q_ARG(QString, oldText),
-                                   Q_ARG(QString, newText) );
-        if (count > 1)
-        {
-            QString msg = tr("Found and replaced", "msg text") + " " +
-                    QString::number(count) + " " + tr("entries", "msg text");
-            QMetaObject::invokeMethod( q, "message", Q_ARG(QString, msg) );
+    if (count > 0) {
+        QMetaObject::invokeMethod(q, "textReplaced", Q_ARG(int, count), Q_ARG(QString, oldText),
+                                  Q_ARG(QString, newText));
+        if (count > 1) {
+            QString msg = tr("Found and replaced", "msg text") + " "
+                    + QString::number(count) + " " + tr("entries", "msg text");
+            QMetaObject::invokeMethod(q, "message", Q_ARG(QString, msg));
         }
-    }
-    else
-    {
-        QMetaObject::invokeMethod( q, "textNotFound", Q_ARG(QString, oldText) );
-        QMetaObject::invokeMethod( q, "message", Q_ARG( QString, createNotFoundMessage(oldText) ) );
+    } else {
+        QMetaObject::invokeMethod(q, "textNotFound", Q_ARG(QString, oldText));
+        QMetaObject::invokeMethod(q, "message", Q_ARG(QString, createNotFoundMessage(oldText)));
     }
 }
 
@@ -643,19 +626,13 @@ BSearchEditorModule::BSearchEditorModule(BSearchEditorModulePrivate &d, QObject 
 
 /*============================== Public methods ============================*/
 
-QString BSearchEditorModule::id() const
-{
-    return "beqt/search";
-}
-
 QAction *BSearchEditorModule::action(int type)
 {
-    switch (type)
-    {
+    switch (type) {
     case FindAction:
-        return d_func()->actFind.data();
+        return d_func()->actFind;
     case FindNextAction:
-        return d_func()->actFindNext.data();
+        return d_func()->actFindNext;
     default:
         return 0;
     }
@@ -665,61 +642,9 @@ QList<QAction *> BSearchEditorModule::actions(bool)
 {
     const B_D(BSearchEditorModule);
     QList<QAction *> list;
-    if ( !d->actFind.isNull() )
-        list << d->actFind.data();
-    if ( !d->actFindNext.isNull() )
-        list << d->actFindNext.data();
+    list << d->actFind;
+    list << d->actFindNext;
     return list;
-}
-
-QByteArray BSearchEditorModule::saveState() const
-{
-    return d_func()->sdlg->saveState();
-}
-
-void BSearchEditorModule::restoreState(const QByteArray &state)
-{
-    d_func()->sdlg->restoreState(state);
-}
-
-void BSearchEditorModule::setCaseSensitivity(Qt::CaseSensitivity cs)
-{
-    d_func()->sdlg->setCaseSensitivity(cs);
-}
-
-void BSearchEditorModule::setMatchWholeWords(bool enabled)
-{
-    d_func()->sdlg->setMatchWholeWords(enabled);
-}
-
-void BSearchEditorModule::setBackwardOrder(bool enabled)
-{
-    d_func()->sdlg->setBackwardOrder(enabled);
-}
-
-void BSearchEditorModule::setCyclicSearch(bool enabled)
-{
-    d_func()->sdlg->setCyclicSearch(enabled);
-}
-
-void BSearchEditorModule::setMaximumHistorySize(int sz)
-{
-    d_func()->sdlg->setMaximumHistorySize(sz);
-}
-
-void BSearchEditorModule::setReplaceEnabled(bool enabled)
-{
-    d_func()->sdlg->setReplaceEnabled(enabled);
-}
-
-Qt::CaseSensitivity BSearchEditorModule::caseSensitivity() const
-{
-    return d_func()->sdlg->caseSensitivity();
-}
-
-bool BSearchEditorModule::matchWholeWords() const
-{
-    return d_func()->sdlg->matchWholeWords();
 }
 
 bool BSearchEditorModule::backwardOrder() const
@@ -727,9 +652,24 @@ bool BSearchEditorModule::backwardOrder() const
     return d_func()->sdlg->backwardOrder();
 }
 
+Qt::CaseSensitivity BSearchEditorModule::caseSensitivity() const
+{
+    return d_func()->sdlg->caseSensitivity();
+}
+
 bool BSearchEditorModule::cyclicSearch() const
 {
     return d_func()->sdlg->cyclicSearch();
+}
+
+QString BSearchEditorModule::id() const
+{
+    return "beqt/search";
+}
+
+bool BSearchEditorModule::matchWholeWords() const
+{
+    return d_func()->sdlg->matchWholeWords();
 }
 
 int BSearchEditorModule::maximumHistorySize() const
@@ -737,9 +677,59 @@ int BSearchEditorModule::maximumHistorySize() const
     return d_func()->sdlg->maximumHistorySize();
 }
 
+bool BSearchEditorModule::regexp() const
+{
+    return d_func()->sdlg->regexp();
+}
+
 bool BSearchEditorModule::replaceEnabled() const
 {
     return d_func()->sdlg->replaceEnabled();
+}
+
+void BSearchEditorModule::restoreState(const QByteArray &state)
+{
+    d_func()->sdlg->restoreState(state);
+}
+
+QByteArray BSearchEditorModule::saveState() const
+{
+    return d_func()->sdlg->saveState();
+}
+
+void BSearchEditorModule::setBackwardOrder(bool enabled)
+{
+    d_func()->sdlg->setBackwardOrder(enabled);
+}
+
+void BSearchEditorModule::setCaseSensitivity(Qt::CaseSensitivity cs)
+{
+    d_func()->sdlg->setCaseSensitivity(cs);
+}
+
+void BSearchEditorModule::setCyclicSearch(bool enabled)
+{
+    d_func()->sdlg->setCyclicSearch(enabled);
+}
+
+void BSearchEditorModule::setMatchWholeWords(bool enabled)
+{
+    d_func()->sdlg->setMatchWholeWords(enabled);
+}
+
+void BSearchEditorModule::setMaximumHistorySize(int sz)
+{
+    d_func()->sdlg->setMaximumHistorySize(sz);
+}
+
+void BSearchEditorModule::setRegexp(bool b)
+{
+    d_func()->sdlg->setRegexp(b);
+}
+
+void BSearchEditorModule::setReplaceEnabled(bool enabled)
+{
+    d_func()->sdlg->setReplaceEnabled(enabled);
 }
 
 /*============================== Public slots ==============================*/
@@ -747,7 +737,7 @@ bool BSearchEditorModule::replaceEnabled() const
 void BSearchEditorModule::find()
 {
     B_D(BSearchEditorModule);
-    if ( d->sdlg->isVisible() )
+    if (d->sdlg->isVisible())
         d->sdlg->activateWindow();
     else
         d->sdlg->show();
@@ -761,6 +751,13 @@ void BSearchEditorModule::findNext(bool showDialog)
 }
 
 /*============================== Protected methods =========================*/
+
+void BSearchEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *doc)
+{
+    B_D(BSearchEditorModule);
+    d->sdlg->setDocument(doc);
+    d->actFind->setEnabled(doc);
+}
 
 void BSearchEditorModule::editorSet(BCodeEditor *edr)
 {
@@ -777,11 +774,4 @@ void BSearchEditorModule::editorUnset(BCodeEditor *)
     d->setDialogParent(0);
     d->sdlg->setDocument(0);
     d->actFind->setEnabled(0);
-}
-
-void BSearchEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *doc)
-{
-    B_D(BSearchEditorModule);
-    d->sdlg->setDocument(doc);
-    d->actFind->setEnabled(doc);
 }

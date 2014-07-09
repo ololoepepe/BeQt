@@ -26,8 +26,7 @@ class BCodeEditor;
 
 #include "babstractdocumentdriver.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 
@@ -35,18 +34,18 @@ class BCodeEditor;
 ================================ BAbstractDocumentDriverPrivate ==============
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractDocumentDriverPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractDocumentDriverPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAbstractDocumentDriver)
+public:
+    BCodeEditor *editor;
 public:
     explicit BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q);
     ~BAbstractDocumentDriverPrivate();
 public:
     void init();
     void setEditor(BCodeEditor *edr);
-public:
-    BCodeEditor *editor;
 private:
     Q_DISABLE_COPY(BAbstractDocumentDriverPrivate)
 };

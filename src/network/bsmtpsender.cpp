@@ -21,18 +21,19 @@
 
 #include "bsmtpsender.h"
 #include "bsmtpsender_p.h"
+
 #include "bgenericsocket.h"
 
 #include <BeQtCore/BeQt>
 
-#include <QObject>
-#include <QEventLoop>
-#include <QTimer>
-#include <QSslSocket>
-#include <QIODevice>
-#include <QTextStream>
 #include <QByteArray>
+#include <QEventLoop>
 #include <QMetaObject>
+#include <QObject>
+#include <QSslSocket>
+#include <QString>
+#include <QTextStream>
+#include <QTimer>
 
 /*============================================================================
 ================================ BSmtpSenderPrivate ==========================
@@ -41,7 +42,7 @@
 /*============================== Public constructors =======================*/
 
 BSmtpSenderPrivate::BSmtpSenderPrivate(BSmtpSender *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -52,30 +53,6 @@ BSmtpSenderPrivate::~BSmtpSenderPrivate()
 }
 
 /*============================== Public methods ============================*/
-
-void BSmtpSenderPrivate::init()
-{
-    port = 25;
-    socketType = BGenericSocket::TcpSocket;
-    buisy = false;
-    success = false;
-    socket = 0;
-    stage = Initial;
-    receiver = 0;
-}
-
-void BSmtpSenderPrivate::send(QTextStream &stream, const QString &what)
-{
-    stream << (what + ((what.right(1) != "\n") ? "\n" : ""));
-    stream.flush();
-}
-
-void BSmtpSenderPrivate::handleInitial(QTextStream &stream)
-{
-    send(stream, "HELO" + QString(!hostName.isEmpty() ? " " : "") + hostName + "\n");
-    if (login.isEmpty())
-        stage += 3;
-}
 
 void BSmtpSenderPrivate::handleAuth(QTextStream &stream)
 {
@@ -94,28 +71,22 @@ void BSmtpSenderPrivate::handleAuthPassword(QTextStream &stream)
     send(stream, QString(password.toLatin1().toBase64()) + "\n");
 }
 
-void BSmtpSenderPrivate::handleSender(QTextStream &stream)
-{
-    send(stream, "MAIL FROM: <" + login + ">\n");
-}
-
-void BSmtpSenderPrivate::handleReceiver(QTextStream &stream)
-{
-    send(stream, "RCPT TO: <" + email.receiver(receiver) + ">\n");
-    ++receiver;
-    if (email.receiversCount() > receiver)
-        --stage;
-}
-
 void BSmtpSenderPrivate::handleData(QTextStream &stream)
 {
     send(stream, "DATA\n");
 }
 
+void BSmtpSenderPrivate::handleInitial(QTextStream &stream)
+{
+    send(stream, "HELO" + QString(!hostName.isEmpty() ? " " : "") + hostName + "\n");
+    if (login.isEmpty())
+        stage += 3;
+}
+
 void BSmtpSenderPrivate::handleMail(QTextStream &stream)
 {
-    QString s = "Content-Type: text/plain; charset=UTF-8;\n"; //TODO
-    s += "Content-Transfer-Encoding: 8bit\n"; //TODO
+    QString s = "Content-Type: text/plain; charset=UTF-8;\n";
+    s += "Content-Transfer-Encoding: 8bit\n"; //TODO: Make sure that 8bit encoding is appropriate for all cases
     s += "FROM: " + (!email.sender().isEmpty() ? email.sender() : login) + "\n";
     s += "TO: " + email.receiver() + "\n";
     if (!email.subject().isEmpty())
@@ -128,6 +99,36 @@ void BSmtpSenderPrivate::handleMail(QTextStream &stream)
 void BSmtpSenderPrivate::handleQuit(QTextStream &stream)
 {
     stream << "QUIT\n";
+}
+
+void BSmtpSenderPrivate::handleReceiver(QTextStream &stream)
+{
+    send(stream, "RCPT TO: <" + email.receiver(receiver) + ">\n");
+    ++receiver;
+    if (email.receiversCount() > receiver)
+        --stage;
+}
+
+void BSmtpSenderPrivate::handleSender(QTextStream &stream)
+{
+    send(stream, "MAIL FROM: <" + login + ">\n");
+}
+
+void BSmtpSenderPrivate::init()
+{
+    port = 25;
+    socketType = BGenericSocket::TcpSocket;
+    buisy = false;
+    success = false;
+    socket = 0;
+    stage = Initial;
+    receiver = 0;
+}
+
+void BSmtpSenderPrivate::send(QTextStream &stream, const QString &what)
+{
+    stream << (what + ((what.right(1) != "\n") ? "\n" : ""));
+    stream.flush();
 }
 
 /*============================== Public slots ==============================*/
@@ -156,14 +157,12 @@ void BSmtpSenderPrivate::error(QAbstractSocket::SocketError)
 void BSmtpSenderPrivate::readyRead()
 {
     QTextStream stream(socket->ioDevice());
-    while (socket->canReadLine())
-    {
+    while (socket->canReadLine()) {
         QString line = stream.readLine();
         bool ok = false;
         int code = line.left(3).toInt(&ok);
         QString text = line.mid(4);
-        switch (code)
-        {
+        switch (code) {
         case 211:
         case 214:
             break;
@@ -175,8 +174,7 @@ void BSmtpSenderPrivate::readyRead()
             socket->disconnectFromHost();
             break;
         case 235:
-            switch (stage)
-            {
+            switch (stage) {
             case Sender:
                 handleSender(stream);
                 break;
@@ -186,8 +184,7 @@ void BSmtpSenderPrivate::readyRead()
             break;
         case 250:
         case 251:
-            switch (stage)
-            {
+            switch (stage) {
             case Initial:
                 handleInitial(stream);
                 break;
@@ -219,8 +216,7 @@ void BSmtpSenderPrivate::readyRead()
             }
             break;
         case 334:
-            switch (stage)
-            {
+            switch (stage) {
             case Auth:
                 handleAuth(stream);
                 break;
@@ -266,34 +262,10 @@ void BSmtpSenderPrivate::readyRead()
 ================================ BSocketWrapper ==============================
 ============================================================================*/
 
-/*============================== Static public methods =====================*/
-
-bool BSmtpSender::send(const QString &address, const BEmail &email, int timeout, const QString &userName,
-                       const QString &userPassword, quint16 port, BGenericSocket::SocketType type,
-                       const QString &localHostName, QString *error, bool translationsEnabled)
-{
-    BSmtpSender s;
-    s.setServer(address, port);
-    s.setSocketType(type);
-    s.setLocalHostName(localHostName);
-    s.setUser(userName, userPassword);
-    s.setEmail(email);
-    if (!s.isValid())
-        return bRet(error, translationsEnabled ? tr("Invalid parameters", "errorString") :
-                                                 QString("Invalid parameters"), false);
-    s.send();
-    if (!s.waitForFinished(timeout))
-        return bRet(error, translationsEnabled ? tr("Operation timed out", "errorString") :
-                                                 QString("Operation timed out"), false);
-    if (error)
-        *error = s.lastTransferError();
-    return s.lastTransferSuccess();
-}
-
 /*============================== Public constructors =======================*/
 
 BSmtpSender::BSmtpSender(QObject *parent) :
-    QObject(parent), BBase(*new BSmtpSenderPrivate(this))
+    QObject(parent), BBaseObject(*new BSmtpSenderPrivate(this))
 {
     d_func()->init();
 }
@@ -306,12 +278,91 @@ BSmtpSender::~BSmtpSender()
 /*============================== Protected constructors ====================*/
 
 BSmtpSender::BSmtpSender(BSmtpSenderPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }
 
+/*============================== Static public methods =====================*/
+
+bool BSmtpSender::send(const QString &address, const BEmail &email, int timeout, const QString &userName,
+                       const QString &userPassword, quint16 port, BGenericSocket::SocketType type,
+                       const QString &localHostName, QString *error, bool translationsEnabled)
+{
+    BSmtpSender s;
+    s.setServer(address, port);
+    s.setSocketType(type);
+    s.setLocalHostName(localHostName);
+    s.setUser(userName, userPassword);
+    s.setEmail(email);
+    if (!s.isValid()) {
+        return bRet(error, translationsEnabled ? tr("Invalid parameters", "errorString") :
+                                                 QString("Invalid parameters"), false);
+    }
+    s.send();
+    if (!s.waitForFinished(timeout)) {
+        return bRet(error, translationsEnabled ? tr("Operation timed out", "errorString") :
+                                                 QString("Operation timed out"), false);
+    }
+    return bRet(error, s.lastTransferError(), s.lastTransferSuccess());
+}
+
 /*============================== Public methods ============================*/
+
+BEmail BSmtpSender::email() const
+{
+    return d_func()->email;
+}
+
+bool BSmtpSender::isBuisy() const
+{
+    return d_func()->buisy;
+}
+
+bool BSmtpSender::isValid() const
+{
+    const B_D(BSmtpSender);
+    return !d->address.isEmpty() && d->port && d->email.isValid();
+}
+
+QString BSmtpSender::lastTransferError() const
+{
+    return d_func()->err;
+}
+
+bool BSmtpSender::lastTransferSuccess() const
+{
+    return d_func()->success;
+}
+
+QString BSmtpSender::localHostName() const
+{
+    return d_func()->hostName;
+}
+
+QString BSmtpSender::serverAddress() const
+{
+    return d_func()->address;
+}
+
+quint16 BSmtpSender::serverPort() const
+{
+    return d_func()->port;
+}
+
+void BSmtpSender::setEmail(const BEmail &email)
+{
+    if (isBuisy())
+        return;
+    d_func()->email = email;
+}
+
+void BSmtpSender::setLocalHostName(const QString &hostName)
+{
+    if (isBuisy())
+        return;
+    d_func()->hostName = hostName;
+}
 
 void BSmtpSender::setServer(const QString &address, quint16 port)
 {
@@ -328,13 +379,6 @@ void BSmtpSender::setSocketType(BGenericSocket::SocketType type)
     d_func()->socketType = type;
 }
 
-void BSmtpSender::setLocalHostName(const QString &hostName)
-{
-    if (isBuisy())
-        return;
-    d_func()->hostName = hostName;
-}
-
 void BSmtpSender::setUser(const QString &name, const QString &password)
 {
     if (isBuisy())
@@ -343,31 +387,9 @@ void BSmtpSender::setUser(const QString &name, const QString &password)
     d_func()->password = password;
 }
 
-void BSmtpSender::setEmail(const BEmail &email)
-{
-    if (isBuisy())
-        return;
-    d_func()->email = email;
-}
-
-QString BSmtpSender::serverAddress() const
-{
-    return d_func()->address;
-}
-
-quint16 BSmtpSender::serverPort() const
-{
-    return d_func()->port;
-}
-
 BGenericSocket::SocketType BSmtpSender::socketType() const
 {
     return d_func()->socketType;
-}
-
-QString BSmtpSender::localHostName() const
-{
-    return d_func()->hostName;
 }
 
 QString BSmtpSender::userName() const
@@ -380,22 +402,6 @@ QString BSmtpSender::userPassword() const
     return d_func()->password;
 }
 
-BEmail BSmtpSender::email() const
-{
-    return d_func()->email;
-}
-
-bool BSmtpSender::isValid() const
-{
-    const B_D(BSmtpSender);
-    return !d->address.isEmpty() && d->port && d->email.isValid();
-}
-
-bool BSmtpSender::isBuisy() const
-{
-    return d_func()->buisy;
-}
-
 bool BSmtpSender::waitForFinished(int msecs)
 {
     if (!isBuisy())
@@ -406,16 +412,6 @@ bool BSmtpSender::waitForFinished(int msecs)
         QTimer::singleShot(msecs, &el, SLOT(quit()));
     el.exec();
     return !isBuisy();
-}
-
-bool BSmtpSender::lastTransferSuccess() const
-{
-    return d_func()->success;
-}
-
-QString BSmtpSender::lastTransferError() const
-{
-    return d_func()->err;
 }
 
 /*============================== Public slots ==============================*/
@@ -436,13 +432,10 @@ void BSmtpSender::send(const BEmail &email)
     connect(d->socket, SIGNAL(disconnected()), d, SLOT(disconnected()));
     connect(d->socket, SIGNAL(error(QAbstractSocket::SocketError)), d, SLOT(error(QAbstractSocket::SocketError)));
     connect(d->socket, SIGNAL(readyRead()), d, SLOT(readyRead()));
-    if (BGenericSocket::SslSocket == d->socketType)
-    {
+    if (BGenericSocket::SslSocket == d->socketType) {
         connect(d->socket->sslSocket(), SIGNAL(encrypted()), d, SLOT(connected()));
         d->socket->sslSocket()->connectToHostEncrypted(d->address, d->port);
-    }
-    else
-    {
+    } else {
         connect(d->socket, SIGNAL(connected()), d, SLOT(connected()));
         d->socket->connectToHost(d->address, d->port);
     }

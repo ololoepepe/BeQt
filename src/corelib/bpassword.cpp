@@ -20,17 +20,17 @@
 ****************************************************************************/
 
 #include "bpassword.h"
-#include "bglobal.h"
+
 #include "bbase_p.h"
 #include "bnamespace.h"
 
-#include <QString>
 #include <QByteArray>
 #include <QCryptographicHash>
-#include <QVariant>
-#include <QVariantMap>
 #include <QDataStream>
 #include <QDebug>
+#include <QString>
+#include <QVariant>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BPasswordPrivate ============================
@@ -40,17 +40,17 @@ class BPasswordPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BPassword)
 public:
+    QCryptographicHash::Algorithm algorithm;
+    int charCount;
+    QByteArray encrypted;
+    bool isEncrypted;
+    BPassword::Mode mode;
+    QString open;
+public:
     explicit BPasswordPrivate(BPassword *q);
     ~BPasswordPrivate();
 public:
     void init();
-public:
-    BPassword::Mode mode;
-    QString open;
-    QByteArray encrypted;
-    int charCount;
-    QCryptographicHash::Algorithm algorithm;
-    bool isEncrypted;
 private:
     Q_DISABLE_COPY(BPasswordPrivate)
 };
@@ -131,13 +131,103 @@ BPassword::BPassword(BPasswordPrivate &d) :
 
 /*============================== Public methods ============================*/
 
+QCryptographicHash::Algorithm BPassword::algorithm() const
+{
+    return d_func()->algorithm;
+}
+
+int BPassword::charCountHint(Mode m) const
+{
+    switch (m) {
+    case AlwaysOpenMode:
+        return d_func()->open.length();
+    case AlwaysEncryptedMode:
+        return d_func()->charCount;
+    case FlexibleMode:
+    default:
+        return d_func()->isEncrypted ? d_func()->charCount : d_func()->open.length();
+    }
+}
+
+void BPassword::clear()
+{
+    B_D(BPassword);
+    d->open.clear();
+    d->encrypted.clear();
+    d->charCount = 0;
+    d->algorithm = QCryptographicHash::Sha1;
+    d->isEncrypted = false;
+}
+
+void BPassword::encrypt(QCryptographicHash::Algorithm a)
+{
+    int count = 0;
+    QByteArray ba = encryptedPassword(a, &count);
+    setPassword(a, ba, count);
+}
+
+QByteArray BPassword::encryptedPassword(int *hint) const
+{
+    return encryptedPassword(d_func()->algorithm, hint);
+}
+
+QByteArray BPassword::encryptedPassword(QCryptographicHash::Algorithm a, int *hint) const
+{
+    if (hint)
+        *hint = charCountHint();
+    if (!d_func()->encrypted.isEmpty())
+        return d_func()->encrypted;
+    return !d_func()->open.isEmpty() ? QCryptographicHash::hash(d_func()->open.toUtf8(), a) : QByteArray();
+}
+
+bool BPassword::isEncrypted() const
+{
+    return d_func()->isEncrypted;
+}
+
+BPassword::Mode BPassword::mode() const
+{
+    return d_func()->mode;
+}
+
+QString BPassword::openPassword() const
+{
+    return d_func()->open;
+}
+
+void BPassword::restore(const QByteArray &data)
+{
+    QVariantMap m = BeQt::deserialize(data).toMap();
+    if (m.value("encrypted").toBool()) {
+        setPassword(static_cast<QCryptographicHash::Algorithm>(m.value("algorithm").toInt()),
+                    m.value("encrypted_password").toByteArray(), m.value("char_count_hint").toInt());
+    } else {
+        setPassword(m.value("open_password").toString());
+    }
+}
+
+QByteArray BPassword::save(Mode mode) const
+{
+    const B_D(BPassword);
+    QVariantMap m;
+    bool enc = (AlwaysEncryptedMode == mode || d->isEncrypted);
+    m.insert("encrypted", enc);
+    if (enc) {
+        m.insert("encrypted_password", encryptedPassword());
+        m.insert("char_count_hint", charCountHint());
+        m.insert("algorithm", d->algorithm);
+    } else {
+        m.insert("open_password", d->open);
+    }
+    return BeQt::serialize(m);
+}
+
 void BPassword::setMode(Mode m)
 {
     if (m == d_func()->mode)
         return;
     d_func()->mode = m;
-    switch (m)
-    {
+    switch (m) {
     case AlwaysOpenMode:
         clear();
         break;
@@ -169,100 +259,6 @@ void BPassword::setPassword(QCryptographicHash::Algorithm a, const QByteArray &b
     d->charCount = (charCountHint > 0 && !ba.isEmpty()) ? charCountHint : 0;
     d->algorithm = a;
     d->isEncrypted = true;
-}
-
-void BPassword::encrypt(QCryptographicHash::Algorithm a)
-{
-    int count = 0;
-    QByteArray ba = encryptedPassword(a, &count);
-    setPassword(a, ba, count);
-}
-
-void BPassword::clear()
-{
-    B_D(BPassword);
-    d->open.clear();
-    d->encrypted.clear();
-    d->charCount = 0;
-    d->algorithm = QCryptographicHash::Sha1;
-    d->isEncrypted = false;
-}
-
-void BPassword::restore(const QByteArray &data)
-{
-    QVariantMap m = BeQt::deserialize(data).toMap();
-    if (m.value("encrypted").toBool())
-        setPassword(static_cast<QCryptographicHash::Algorithm>(m.value("algorithm").toInt()),
-                    m.value("encrypted_password").toByteArray(), m.value("char_count_hint").toInt());
-    else
-        setPassword(m.value("open_password").toString());
-}
-
-BPassword::Mode BPassword::mode() const
-{
-    return d_func()->mode;
-}
-
-QString BPassword::openPassword() const
-{
-    return d_func()->open;
-}
-
-QByteArray BPassword::encryptedPassword(int *hint) const
-{
-    return encryptedPassword(d_func()->algorithm, hint);
-}
-
-QByteArray BPassword::encryptedPassword(QCryptographicHash::Algorithm a, int *hint) const
-{
-    if (hint)
-        *hint = charCountHint();
-    if (!d_func()->encrypted.isEmpty())
-        return d_func()->encrypted;
-    return !d_func()->open.isEmpty() ? QCryptographicHash::hash(d_func()->open.toUtf8(), a) : QByteArray();
-}
-
-int BPassword::charCountHint(Mode m) const
-{
-    switch (m)
-    {
-    case AlwaysOpenMode:
-        return d_func()->open.length();
-    case AlwaysEncryptedMode:
-        return d_func()->charCount;
-    case FlexibleMode:
-    default:
-        return d_func()->isEncrypted ? d_func()->charCount : d_func()->open.length();
-    }
-}
-
-QCryptographicHash::Algorithm BPassword::algorithm() const
-{
-    return d_func()->algorithm;
-}
-
-QByteArray BPassword::save(Mode mode) const
-{
-    const B_D(BPassword);
-    QVariantMap m;
-    bool enc = AlwaysEncryptedMode == mode || d->isEncrypted;
-    m.insert("encrypted", enc);
-    if (enc)
-    {
-        m.insert("encrypted_password", encryptedPassword());
-        m.insert("char_count_hint", charCountHint());
-        m.insert("algorithm", d->algorithm);
-    }
-    else
-    {
-        m.insert("open_password", d->open);
-    }
-    return BeQt::serialize(m);
-}
-
-bool BPassword::isEncrypted() const
-{
-    return d_func()->isEncrypted;
 }
 
 /*============================== Public operators ==========================*/

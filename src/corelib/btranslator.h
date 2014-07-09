@@ -23,16 +23,14 @@
 #define BTRANSLATOR_H
 
 class BTranslatorPrivate;
-class BCoreApplicationPrivate;
 
 class QLocale;
 class QTranslator;
 
-#include "bglobal.h"
 #include "bbase.h"
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 #include <QString>
 
 /*============================================================================
@@ -51,21 +49,23 @@ public:
 protected:
     explicit BTranslator(BTranslatorPrivate &d, QObject *parent = 0);
 public:
-    void setFileName(const QString &fileName);
-    void setLocale(const QLocale &locale);
+    QList<QLocale> availableLocales() const;
+    QString fileName() const;
+    void install();
+    bool isInstalled() const;
+    bool isLoaded() const;
+    bool isValid() const;
     bool load(const QString &fileName = QString());
     bool load(const QLocale &locale, const QString &fileName = QString());
-    void unload();
-    bool isValid() const;
-    bool isLoaded() const;
-    QString fileName() const;
     QLocale locale() const;
-    QList<QLocale> availableLocales() const;
-    QList<QTranslator *> translators() const;
+    void remove();
+    void setFileName(const QString &fileName);
+    void setLocale(const QLocale &locale);
     QString translate(const char *context, const char *sourceText, const char *disambiguation = 0, int n = -1) const;
+    QList<QTranslator *> translators() const;
+    void unload();
 private:
     Q_DISABLE_COPY(BTranslator)
-    friend class BCoreApplicationPrivate;
 };
 
 #endif // BTRANSLATOR_H

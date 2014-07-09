@@ -23,19 +23,20 @@
 #define BSEARCHEDITORMODULE_H
 
 class BSearchEditorModulePrivate;
-class BCodeEditor;
-class BAbstractCodeEditorDocument;
 
-class QString;
+class BAbstractCodeEditorDocument;
+class BCodeEditor;
+
 class QAction;
 class QByteArray;
+class QString;
 
 #include "babstracteditormodule.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BSearchEditorModule =========================
@@ -48,7 +49,7 @@ class B_CODEEDITOR_EXPORT BSearchEditorModule : public BAbstractEditorModule
 public:
     enum Action
     {
-        FindAction,
+        FindAction = 1,
         FindNextAction
     };
 public:
@@ -57,35 +58,37 @@ public:
 protected:
     explicit BSearchEditorModule(BSearchEditorModulePrivate &d, QObject *parent = 0);
 public:
-    QString id() const;
     QAction *action(int type);
     QList<QAction *> actions(bool extended = false);
-    QByteArray saveState() const;
-    void restoreState(const QByteArray &state);
-    void setCaseSensitivity(Qt::CaseSensitivity cs);
-    void setMatchWholeWords(bool enabled);
-    void setBackwardOrder(bool enabled);
-    void setCyclicSearch(bool enabled);
-    void setMaximumHistorySize(int sz);
-    void setReplaceEnabled(bool enabled);
-    Qt::CaseSensitivity caseSensitivity() const;
-    bool matchWholeWords() const;
     bool backwardOrder() const;
+    Qt::CaseSensitivity caseSensitivity() const;
     bool cyclicSearch() const;
+    QString id() const;
+    bool matchWholeWords() const;
     int maximumHistorySize() const;
+    bool regexp() const;
     bool replaceEnabled() const;
+    void restoreState(const QByteArray &state);
+    QByteArray saveState() const;
+    void setBackwardOrder(bool enabled);
+    void setCaseSensitivity(Qt::CaseSensitivity cs);
+    void setCyclicSearch(bool enabled);
+    void setMatchWholeWords(bool enabled);
+    void setMaximumHistorySize(int sz);
+    void setRegexp(bool b);
+    void setReplaceEnabled(bool enabled);
 public Q_SLOTS:
     void find();
     void findNext(bool showDialog = true);
 protected:
+    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
     void editorSet(BCodeEditor *edr);
     void editorUnset(BCodeEditor *edr);
-    void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
 Q_SIGNALS:
+    void message(const QString &msg);
     void textFound(const QString &text);
     void textNotFound(const QString &text);
     void textReplaced(int count, const QString &oldText, const QString &newText);
-    void message(const QString &msg);
 private:
     Q_DISABLE_COPY(BSearchEditorModule)
 };

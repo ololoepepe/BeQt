@@ -22,18 +22,15 @@
 #include "bclipboardnotifier.h"
 #include "bclipboardnotifier_p.h"
 
-#include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QApplication>
-#include <QObject>
 #include <QClipboard>
+#include <QDebug>
 #include <QMetaObject>
-
-static void clipboardNotifierCleanup()
-{
-    delete BClipboardNotifier::instance();
-}
+#include <QMimeData>
+#include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BClipboardNotifierPrivate ===================
@@ -42,54 +39,75 @@ static void clipboardNotifierCleanup()
 /*============================== Public constructors =======================*/
 
 BClipboardNotifierPrivate::BClipboardNotifierPrivate(BClipboardNotifier *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
 
 BClipboardNotifierPrivate::~BClipboardNotifierPrivate()
 {
-    detach();
+    disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(dataChanged()));
 }
 
 /*============================== Public methods ============================*/
 
 void BClipboardNotifierPrivate::init()
 {
-    textDataAvailable = !QApplication::clipboard()->text().isEmpty();
+    qAddPostRoutine(&BClipboardNotifier::destroy);
+    const QMimeData *md = QApplication::clipboard()->mimeData();
+    colorAvailable = md && md->hasText();
+    htmlAvailable = md && md->hasHtml();
+    imageAvailable = md && md->hasImage();
+    textAvailable = md && md->hasText();
+    urlsAvailable = md && md->hasUrls();
     connect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(dataChanged()));
-}
-
-void BClipboardNotifierPrivate::detach()
-{
-    disconnect(QApplication::clipboard(), SIGNAL(dataChanged()), this, SLOT(dataChanged()));
 }
 
 /*============================== Public slots ==============================*/
 
 void BClipboardNotifierPrivate::dataChanged()
 {
-    bool b = !QApplication::clipboard()->text().isEmpty();
-    bool bb = (b != textDataAvailable);
-    textDataAvailable = b;
-    if (bb)
-        QMetaObject::invokeMethod(q_func(), "textDataAvailableChanged", Q_ARG(bool, b));
+    const QMimeData *md = QApplication::clipboard()->mimeData();
+    bool nc = md && md->hasColor();
+    bool nh = md && md->hasHtml();
+    bool ni = md && md->hasImage();
+    bool nt = md && md->hasText();
+    bool nu = md && md->hasUrls();
+    if (nc != colorAvailable) {
+        colorAvailable = !colorAvailable;
+        QMetaObject::invokeMethod(q_func(), "hasColorChanged", Q_ARG(bool, colorAvailable));
+    }
+    if (nh != htmlAvailable) {
+        htmlAvailable = !htmlAvailable;
+        QMetaObject::invokeMethod(q_func(), "hasHtmlChanged", Q_ARG(bool, htmlAvailable));
+    }
+    if (ni != imageAvailable) {
+        imageAvailable = !imageAvailable;
+        QMetaObject::invokeMethod(q_func(), "hasImageChanged", Q_ARG(bool, imageAvailable));
+    }
+    if (nt != textAvailable) {
+        textAvailable = !textAvailable;
+        QMetaObject::invokeMethod(q_func(), "hasTextChanged", Q_ARG(bool, textAvailable));
+    }
+    if (nu != urlsAvailable) {
+        urlsAvailable = !urlsAvailable;
+        QMetaObject::invokeMethod(q_func(), "hasUrlsChanged", Q_ARG(bool, urlsAvailable));
+    }
 }
 
 /*============================================================================
 ================================ BClipboardNotifier ==========================
 ============================================================================*/
 
+/*============================== Static protected variables ================*/
+
+BClipboardNotifier *BClipboardNotifier::_m_self = 0;
+
 /*============================== Public constructors =======================*/
 
 BClipboardNotifier::BClipboardNotifier() :
-    QObject(0), BBase(*new BClipboardNotifierPrivate(this))
+    QObject(0), BBaseObject(*new BClipboardNotifierPrivate(this))
 {
-    bTest(!_m_self, "BClipboardNotifier", "There should be only one instance of BClipboardNotifier");
-    if (_m_self)
-        _m_self->d_func()->detach();
-    else
-        qAddPostRoutine(&clipboardNotifierCleanup);
     d_func()->init();
     _m_self = this;
 }
@@ -101,18 +119,53 @@ BClipboardNotifier::~BClipboardNotifier()
 
 /*============================== Static public methods =====================*/
 
+void BClipboardNotifier::destroy()
+{
+    if (!_m_self)
+        return;
+    delete _m_self;
+    _m_self = 0;
+}
+
 BClipboardNotifier *BClipboardNotifier::instance()
 {
+    if (!_m_self)
+        _m_self = new BClipboardNotifier;
     return _m_self;
 }
 
-/*============================== Public methods ============================*/
-
-bool BClipboardNotifier::textDataAvailable() const
+bool BClipboardNotifier::hasColor()
 {
-    return d_func()->textDataAvailable;
+    instance();
+    return ds_func()->colorAvailable;
 }
 
-/*============================== Static protected variables ================*/
+bool BClipboardNotifier::hasFormat(const QString &mimeType)
+{
+    const QMimeData *md = QApplication::clipboard()->mimeData();
+    return md && md->hasFormat(mimeType);
+}
 
-BClipboardNotifier *BClipboardNotifier::_m_self = 0;
+bool BClipboardNotifier::hasHtml()
+{
+    instance();
+    return ds_func()->htmlAvailable;
+}
+
+bool BClipboardNotifier::hasImage()
+{
+    instance();
+    return ds_func()->imageAvailable;
+}
+
+bool BClipboardNotifier::hasText()
+{
+    instance();
+    return ds_func()->textAvailable;
+}
+
+bool BClipboardNotifier::hasUrls()
+{
+    instance();
+    return ds_func()->urlsAvailable;
+}

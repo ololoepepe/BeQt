@@ -22,14 +22,13 @@
 #ifndef BSETTINGSDIALOG_H
 #define BSETTINGSDIALOG_H
 
-class BAbstractSettingsTab;
 class BSettingsDialogPrivate;
 
-class QWidget;
+class BAbstractSettingsTab;
+
 class QStringList;
 
-#include <BeQtCore/BeQt>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QDialog>
 #include <QList>
@@ -38,19 +37,19 @@ class QStringList;
 ================================ BSettingsDialog =============================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBase
+class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BSettingsDialog)
 public:
-    enum Navigation
+    enum TabNavigation
     {
-        ListNavigation,
+        ListNavigation = 1,
         TabbedNavigation
     };
 public:
     explicit BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, QWidget *parent = 0);
-    explicit BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, Navigation navigation, QWidget *parent = 0);
+    explicit BSettingsDialog(const QList<BAbstractSettingsTab *> &tabs, TabNavigation navigation, QWidget *parent = 0);
     explicit BSettingsDialog(BAbstractSettingsTab *tab, QWidget *parent = 0);
     ~BSettingsDialog();
 protected:

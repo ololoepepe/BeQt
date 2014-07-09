@@ -32,9 +32,8 @@ class QToolButton;
 
 #include "bloginwidget.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
 #include <BeQtCore/BTranslation>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QStringList>
@@ -43,16 +42,10 @@ class QToolButton;
 ================================ BLoginWidgetPrivate =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BLoginWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BLoginWidgetPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BLoginWidget)
-public:
-    explicit BLoginWidgetPrivate(BLoginWidget *q);
-    ~BLoginWidgetPrivate();
-public:
-    void init();
-    void updateTabOrder();
 public:
     bool valid;
     BLoginWidget::AddressType addressType;
@@ -61,6 +54,7 @@ public:
     bool portRequired;
     bool loginRequired;
     bool passwordRequired;
+    int lastPort;
     BTranslation addressLabel;
     BTranslation portLabel;
     BTranslation loginLabel;
@@ -80,11 +74,17 @@ public:
       QLineEdit *ledtLogin;
       QLineEdit *ledtPassword;
       BPasswordWidget *pwdwgt;
+public:
+    explicit BLoginWidgetPrivate(BLoginWidget *q);
+    ~BLoginWidgetPrivate();
+public:
+    void init();
+    void updateTabOrder();
 public Q_SLOTS:
-    void retranslateUi();
     void checkInputs();
     void cmboxAddressCurrentIndexChanged(int index);
     void removeCurrentAddress();
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BLoginWidgetPrivate)
 };

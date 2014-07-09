@@ -20,12 +20,12 @@
 ****************************************************************************/
 
 #include "babstractsettingstab.h"
+
 #include "bapplication.h"
 
-#include <QWidget>
-#include <QFormLayout>
-#include <QList>
 #include <QIcon>
+#include <QString>
+#include <QWidget>
 
 /*============================================================================
 ================================ BAbstractSettingsTab ========================
@@ -42,28 +42,6 @@ BAbstractSettingsTab::BAbstractSettingsTab() :
 BAbstractSettingsTab::~BAbstractSettingsTab()
 {
     //
-}
-
-/*============================== Static public methods======================*/
-
-void BAbstractSettingsTab::setRowVisible(QWidget *field, bool visible)
-{
-    BApplication::setRowVisible(field, visible);
-}
-
-void BAbstractSettingsTab::setRowVisible(QLayout *field, bool visible)
-{
-    BApplication::setRowVisible(field, visible);
-}
-
-void BAbstractSettingsTab::setRowEnabled(QWidget *field, bool enabled)
-{
-    BApplication::setRowEnabled(field, enabled);
-}
-
-void BAbstractSettingsTab::setRowEnabled(QLayout *field, bool enabled)
-{
-    BApplication::setRowEnabled(field, enabled);
 }
 
 /*============================== Public methods ============================*/

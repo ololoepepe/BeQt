@@ -23,17 +23,17 @@
 #define BEXTENDEDFILEDIALOG_H
 
 class BExtendedFileDialogPrivate;
+
 class BAbstractFileType;
 
-class QString;
 class QByteArray;
+class QString;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtWidgets/BTextCodecMenu>
 #include <BeQtWidgets/BFileDialog>
+#include <BeQtWidgets/BTextCodecMenu>
 
-#include <QObject>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BExtendedFileDialog =========================
@@ -52,13 +52,13 @@ public:
 protected:
     explicit BExtendedFileDialog(BExtendedFileDialogPrivate &d, QWidget *parent = 0);
 public:
-    void setFileTypes(const QList<BAbstractFileType *> &list);
-    void selectFileType(BAbstractFileType *ft);
-    void selectFileType(const QString &id);
     void restoreState(const QByteArray &ba);
+    QByteArray saveState() const;
     BAbstractFileType *selectedFileType() const;
     QString selectedFileTypeId() const;
-    QByteArray saveState() const;
+    void selectFileType(BAbstractFileType *ft);
+    void selectFileType(const QString &id);
+    void setFileTypes(const QList<BAbstractFileType *> &list);
 private:
     Q_DISABLE_COPY(BExtendedFileDialog)
 };

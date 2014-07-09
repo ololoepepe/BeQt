@@ -20,15 +20,14 @@
 ****************************************************************************/
 
 #include "bversion.h"
-#include "bglobal.h"
 #include "bbase_p.h"
 
-#include <QString>
-#include <QStringList>
 #include <QDataStream>
 #include <QDebug>
-#include <QVariantMap>
+#include <QString>
+#include <QStringList>
 #include <QVariant>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BVersionPrivate =============================
@@ -38,18 +37,18 @@ class BVersionPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BVersion)
 public:
+    qint8 vmajor;
+    qint8 vminor;
+    qint8 vpatch;
+    BVersion::Status vstatus;
+    qint8 vextra;
+public:
     explicit BVersionPrivate(BVersion *q);
     ~BVersionPrivate();
 public:
-    static bool statusFromString(const QString &s, BVersion::Status &status, qint8 *extra = 0);
+    static bool statusFromString(const QString &s, BVersion::Status &vstatus, qint8 *vextra = 0);
 public:
     void init();
-public:
-    qint8 major;
-    qint8 minor;
-    qint8 patch;
-    BVersion::Status status;
-    qint8 extra;
 private:
     Q_DISABLE_COPY(BVersionPrivate)
 };
@@ -73,67 +72,45 @@ BVersionPrivate::~BVersionPrivate()
 
 /*============================== Static public methods =====================*/
 
-bool BVersionPrivate::statusFromString(const QString &s, BVersion::Status &status, qint8 *extra)
+bool BVersionPrivate::statusFromString(const QString &s, BVersion::Status &vstatus, qint8 *vextra)
 {
     int len = 0;
-    if (!s.left(8).compare("prealpha", Qt::CaseInsensitive))
-    {
-        status = BVersion::PreAlpha;
+    if (!s.left(8).compare("prealpha", Qt::CaseInsensitive)) {
+        vstatus = BVersion::PreAlpha;
         len = 8;
-    }
-    else if (!s.left(2).compare("pa", Qt::CaseInsensitive))
-    {
-        status = BVersion::PreAlpha;
+    } else if (!s.left(2).compare("pa", Qt::CaseInsensitive)) {
+        vstatus = BVersion::PreAlpha;
         len = 2;
-    }
-    else if (!s.left(5).compare("alpha", Qt::CaseInsensitive))
-    {
-        status = BVersion::Alpha;
+    } else if (!s.left(5).compare("alpha", Qt::CaseInsensitive)) {
+        vstatus = BVersion::Alpha;
         len = 5;
-    }
-    else if (!s.left(1).compare("a", Qt::CaseInsensitive))
-    {
-        status = BVersion::Alpha;
+    } else if (!s.left(1).compare("a", Qt::CaseInsensitive)) {
+        vstatus = BVersion::Alpha;
         len = 1;
-    }
-    else if (!s.left(4).compare("beta", Qt::CaseInsensitive))
-    {
-        status = BVersion::Beta;
+    } else if (!s.left(4).compare("beta", Qt::CaseInsensitive)) {
+        vstatus = BVersion::Beta;
         len = 4;
-    }
-    else if (!s.left(1).compare("b", Qt::CaseInsensitive))
-    {
-        status = BVersion::Beta;
+    } else if (!s.left(1).compare("b", Qt::CaseInsensitive)) {
+        vstatus = BVersion::Beta;
         len = 1;
-    }
-    else if (!s.left(16).compare("releasecandidate", Qt::CaseInsensitive))
-    {
-        status = BVersion::ReleaseCandidate;
+    } else if (!s.left(16).compare("releasecandidate", Qt::CaseInsensitive)) {
+        vstatus = BVersion::ReleaseCandidate;
         len = 16;
-    }
-    else if (!s.left(2).compare("rc", Qt::CaseInsensitive))
-    {
-        status = BVersion::ReleaseCandidate;
+    } else if (!s.left(2).compare("rc", Qt::CaseInsensitive)) {
+        vstatus = BVersion::ReleaseCandidate;
         len = 2;
-    }
-    else
-    {
+    } else {
         return false;
     }
     QString ss = s.mid(len);
-    if (ss.isEmpty())
-    {
-        if (extra)
-            *extra = -1;
-    }
-    else
-    {
+    if (ss.isEmpty()) {
+        bSet(vextra, (qint8) -1);
+    } else {
         bool b = false;
         qint8 x = ss.toInt(&b);
         if (!b)
             return false;
-        if (extra)
-            *extra = x;
+        bSet(vextra, x);
     }
     return true;
 }
@@ -142,110 +119,31 @@ bool BVersionPrivate::statusFromString(const QString &s, BVersion::Status &statu
 
 void BVersionPrivate::init()
 {
-    major = 0;
-    minor = -1;
-    patch = -1;
-    status = BVersion::NoStatus;
-    extra = -1;
+    vmajor = 0;
+    vminor = -1;
+    vpatch = -1;
+    vstatus = BVersion::NoStatus;
+    vextra = -1;
 }
 
 /*============================================================================
 ================================ BVersion ====================================
 ============================================================================*/
 
-/*============================== Static public methods =====================*/
-
-QString BVersion::statusToString(Status s, StatusRepresentation r)
-{
-    if (Full == r)
-    {
-        switch (s)
-        {
-        case PreAlpha:
-            return "PreAlpha";
-        case Alpha:
-            return "Alpha";
-        case Beta:
-            return "Beta";
-        case ReleaseCandidate:
-            return "ReleaseCandidate";
-        default:
-            return "";
-        }
-    }
-    else
-    {
-        QString ss;
-        switch (s)
-        {
-        case PreAlpha:
-            ss = "pa";
-            break;
-        case Alpha:
-            ss = "a";
-            break;
-        case Beta:
-            ss = "b";
-            break;
-        case ReleaseCandidate:
-            ss = "rc";
-            break;
-        default:
-            break;
-        }
-        return (ShortLowercase == r) ? ss : ss.toUpper();
-    }
-}
-
-int BVersion::compare(const BVersion &v1, const BVersion &v2)
-{
-    if (!v1.isValid() && !v2.isValid())
-        return 0;
-    if (!v1.isValid() && v2.isValid())
-        return -1;
-    if (v1.isValid() && !v2.isValid())
-        return 1;
-    if (v1.major() < v2.major())
-        return -1;
-    else if (v1.major() > v2.major())
-        return 1;
-    if (v1.minor() < v2.minor())
-        return -1;
-    else if (v1.minor() > v2.minor())
-        return 1;
-    if (v1.patch() < v2.patch())
-        return -1;
-    else if (v1.patch() > v2.patch())
-        return 1;
-    if (v1.status() != NoStatus && v2.status() == NoStatus)
-        return -1;
-    else if (v1.status() == NoStatus && v2.status() != NoStatus)
-        return 1;
-    if (v1.status() < v2.status())
-        return -1;
-    else if (v1.status() > v2.status())
-        return 1;
-    if (v2.extra() != 1 && v1.extra() < v2.extra())
-        return -1;
-    else if (v1.extra() != 1 && v1.extra() > v2.extra())
-        return 1;
-    return 0;
-}
-
 /*============================== Public constructors =======================*/
 
-BVersion::BVersion(qint8 major, qint8 minor, qint8 patch, Status s, qint8 extra) :
+BVersion::BVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 vextra) :
     BBase(*new BVersionPrivate(this))
 {
     d_func()->init();
-    setVersion(major, minor, patch, s, extra);
+    setVersion(vmajor, vminor, vpatch, vs, vextra);
 }
 
-BVersion::BVersion(const QString &s) :
+BVersion::BVersion(const QString &s, QChar versionSeparator, QChar statusSeparator) :
     BBase(*new BVersionPrivate(this))
 {
     d_func()->init();
-    setVersion(s);
+    setVersion(s, versionSeparator, statusSeparator);
 }
 
 BVersion::BVersion(const BVersion &other) :
@@ -268,16 +166,112 @@ BVersion::BVersion(BVersionPrivate &d) :
     d_func()->init();
 }
 
+/*============================== Static public methods =====================*/
+
+int BVersion::compare(const BVersion &v1, const BVersion &v2)
+{
+    if (!v1.isValid() && !v2.isValid())
+        return 0;
+    if (!v1.isValid() && v2.isValid())
+        return -1;
+    if (v1.isValid() && !v2.isValid())
+        return 1;
+    const BVersionPrivate *d1 = v1.d_func();
+    const BVersionPrivate *d2 = v2.d_func();
+    if (d1->vmajor < d2->vmajor)
+        return -1;
+    else if (d1->vmajor > d2->vmajor)
+        return 1;
+    if (d1->vminor < d2->vminor)
+        return -1;
+    else if (d1->vminor > d2->vminor)
+        return 1;
+    if (d1->vpatch < d2->vpatch)
+        return -1;
+    else if (d1->vpatch > d2->vpatch)
+        return 1;
+    if (NoStatus != d1->vstatus && NoStatus == d2->vstatus)
+        return -1;
+    else if (NoStatus == d1->vstatus && NoStatus != d2->vstatus)
+        return 1;
+    if (d1->vstatus < d2->vstatus)
+        return -1;
+    else if (d1->vstatus > d2->vstatus)
+        return 1;
+    if (d2->vextra != 1 && d1->vextra < d2->vextra)
+        return -1;
+    else if (d1->vextra != 1 && d1->vextra > d2->vextra)
+        return 1;
+    return 0;
+}
+
+BVersion BVersion::fromString(const QString &s, QChar versionSeparator, QChar statusSeparator)
+{
+    return BVersion(s, versionSeparator, statusSeparator);
+}
+
+QString BVersion::statusToString(Status vs, StatusRepresentation r)
+{
+    if (Full == r) {
+        switch (vs) {
+        case PreAlpha:
+            return "PreAlpha";
+        case Alpha:
+            return "Alpha";
+        case Beta:
+            return "Beta";
+        case ReleaseCandidate:
+            return "ReleaseCandidate";
+        default:
+            return "";
+        }
+    } else {
+        QString ss;
+        switch (vs) {
+        case PreAlpha:
+            ss = "pa";
+            break;
+        case Alpha:
+            ss = "a";
+            break;
+        case Beta:
+            ss = "b";
+            break;
+        case ReleaseCandidate:
+            ss = "rc";
+            break;
+        default:
+            break;
+        }
+        return (ShortLowercase == r) ? ss : ss.toUpper();
+    }
+}
+
 /*============================== Public methods ============================*/
 
-void BVersion::setVersion(qint8 major, qint8 minor, qint8 patch, Status s, qint8 extra)
+void BVersion::clear()
+{
+    setVersion(0);
+}
+
+int BVersion::compare(const BVersion &other) const
+{
+    return compare(*this, other);
+}
+
+bool BVersion::isValid() const
+{
+    return d_func()->vmajor >= 0;
+}
+
+void BVersion::setVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 vextra)
 {
     B_D(BVersion);
-    d->major = major >= 0 ? major : -1;
-    d->minor = minor >= 0 ? minor : -1;
-    d->patch = patch >= 0 ? patch : -1;
-    d->status = s;
-    d->extra = extra >= 0 ? extra : -1;
+    d->vmajor = vmajor >= 0 ? vmajor : -1;
+    d->vminor = vminor >= 0 ? vminor : -1;
+    d->vpatch = vpatch >= 0 ? vpatch : -1;
+    d->vstatus = enum_cast(vs, NoStatus, ReleaseCandidate);
+    d->vextra = vextra >= 0 ? vextra : -1;
 }
 
 void BVersion::setVersion(const QString &s, QChar versionSeparator, QChar statusSeparator)
@@ -294,60 +288,33 @@ void BVersion::setVersion(const QString &s, QChar versionSeparator, QChar status
     QStringList main = parts.first().split(versionSeparator);
     if (main.size() > 3)
         return setVersion(-1);
-    for (int i = 0; i < main.size(); ++i)
-    {
+    const B_D(BVersion);
+    for (int i = 0; i < main.size(); ++i) {
         bool b = false;
         int v = main.at(i).toInt(&b);
         if (!b)
             return setVersion(-1);
-        switch (i)
-        {
+        switch (i) {
         case 0:
             setVersion(v);
             break;
         case 1:
-            setVersion(major(), v);
+            setVersion(d->vmajor, v);
             break;
         case 2:
-            setVersion(major(), minor(), v);
+            setVersion(d->vmajor, d->vminor, v);
             break;
         default:
             return setVersion(-1);
         }
     }
-    if (parts.size() == 2)
-    {
-        Status s = NoStatus;
+    if (parts.size() == 2) {
+        Status vs = NoStatus;
         qint8 x = -1;
-        if (!BVersionPrivate::statusFromString(parts.last(), s, &x))
+        if (!BVersionPrivate::statusFromString(parts.last(), vs, &x))
             return setVersion(-1);
-        setVersion(major(), minor(), patch(), s, x);
+        setVersion(d->vmajor, d->vminor, d->vpatch, vs, x);
     }
-}
-
-qint8 BVersion::major() const
-{
-    return d_func()->major;
-}
-
-qint8 BVersion::minor() const
-{
-    return d_func()->minor;
-}
-
-qint8 BVersion::patch() const
-{
-    return d_func()->patch;
-}
-
-BVersion::Status BVersion::status() const
-{
-    return d_func()->status;
-}
-
-qint8 BVersion::extra() const
-{
-    return d_func()->extra;
 }
 
 QString BVersion::toString(StatusRepresentation r, QChar versionSeparator, QChar statusSeparator) const
@@ -359,26 +326,41 @@ QString BVersion::toString(StatusRepresentation r, QChar versionSeparator, QChar
     if (statusSeparator.isNull())
         statusSeparator = '-';
     const B_D(BVersion);
-    QString s = QString::number(d->major);
-    if (d->minor >= 0)
-        s += versionSeparator + QString::number(d->minor);
-    if (d->patch >= 0)
-        s += versionSeparator + QString::number(d->patch);
-    if (NoStatus != d->status)
-        s += statusSeparator + statusToString(d->status, r);
-    if (d->extra >= 0)
-        s += QString::number(d->extra);
+    QString s = QString::number(d->vmajor);
+    if (d->vminor >= 0)
+        s += versionSeparator + QString::number(d->vminor);
+    if (d->vpatch >= 0)
+        s += versionSeparator + QString::number(d->vpatch);
+    if (NoStatus != d->vstatus)
+        s += statusSeparator + statusToString(d->vstatus, r);
+    if (d->vextra >= 0)
+        s += QString::number(d->vextra);
     return s;
 }
 
-int BVersion::compare(const BVersion &other) const
+qint8 BVersion::vextra() const
 {
-    return compare(*this, other);
+    return d_func()->vextra;
 }
 
-bool BVersion::isValid() const
+qint8 BVersion::vmajor() const
 {
-    return d_func()->major >= 0;
+    return d_func()->vmajor;
+}
+
+qint8 BVersion::vminor() const
+{
+    return d_func()->vminor;
+}
+
+qint8 BVersion::vpatch() const
+{
+    return d_func()->vpatch;
+}
+
+BVersion::Status BVersion::vstatus() const
+{
+    return d_func()->vstatus;
 }
 
 /*============================== Public operators ==========================*/
@@ -387,11 +369,11 @@ BVersion &BVersion::operator =(const BVersion &other)
 {
     B_D(BVersion);
     const BVersionPrivate *dd = other.d_func();
-    d->major = dd->major;
-    d->minor = dd->minor;
-    d->patch = dd->patch;
-    d->status = dd->status;
-    d->extra = dd->extra;
+    d->vmajor = dd->vmajor;
+    d->vminor = dd->vminor;
+    d->vpatch = dd->vpatch;
+    d->vstatus = dd->vstatus;
+    d->vextra = dd->vextra;
     return *this;
 }
 
@@ -441,11 +423,11 @@ QDataStream &operator <<(QDataStream &stream, const BVersion &v)
 {
     const BVersionPrivate *d = v.d_func();
     QVariantMap m;
-    m.insert("major", d->major);
-    m.insert("minor", d->minor);
-    m.insert("patch", d->patch);
-    m.insert("status", d->status);
-    m.insert("extra", d->extra);
+    m.insert("major", d->vmajor);
+    m.insert("minor", d->vminor);
+    m.insert("patch", d->vpatch);
+    m.insert("status", d->vstatus);
+    m.insert("extra", d->vextra);
     stream << m;
     return stream;
 }
@@ -455,11 +437,12 @@ QDataStream &operator >>(QDataStream &stream, BVersion &v)
     BVersionPrivate *d = v.d_func();
     QVariantMap m;
     stream >> m;
-    d->major = m.value("major", -1).toInt();
-    d->minor = m.value("minor", -1).toInt();
-    d->patch = m.value("patch", -1).toInt();
-    d->status = static_cast<BVersion::Status>(m.value("status", BVersion::NoStatus).toInt());
-    d->extra = m.value("extra", -1).toInt();
+    d->vmajor = m.value("major", -1).toInt();
+    d->vminor = m.value("minor", -1).toInt();
+    d->vpatch = m.value("patch", -1).toInt();
+    d->vstatus = enum_cast(m.value("status", BVersion::NoStatus).toInt(), BVersion::NoStatus,
+                           BVersion::ReleaseCandidate);
+    d->vextra = m.value("extra", -1).toInt();
     return stream;
 }
 

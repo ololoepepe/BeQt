@@ -22,22 +22,17 @@
 #ifndef BGENERICSERVER_P_H
 #define BGENERICSERVER_P_H
 
-class BGenericServerPrivate;
 class BGenericSocket;
-
-class QTcpServer;
-class QLocalServer;
 
 #include "bgenericserver.h"
 
-#include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
-#include <QQueue>
-#include <QPointer>
-#include <QTcpServer>
 #include <QLocalServer>
+#include <QObject>
+#include <QPointer>
+#include <QQueue>
+#include <QTcpServer>
 
 /*============================================================================
 ================================ BLocalServer ================================
@@ -75,10 +70,15 @@ Q_SIGNALS:
 ================================ BGenericServerPrivate =======================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericServerPrivate : public BBasePrivate
+class B_NETWORK_EXPORT BGenericServerPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BGenericServer)
+public:
+    QPointer<QLocalServer> lserver;
+    int maxPending;
+    QQueue<BGenericSocket *> socketQueue;
+    QPointer<QTcpServer> tserver;
 public:
     explicit BGenericServerPrivate(BGenericServer *q);
     ~BGenericServerPrivate();
@@ -86,11 +86,6 @@ public:
     void init();
 public Q_SLOTS:
     void newConnection(int socketDescriptor);
-public:
-    QPointer<QTcpServer> tserver;
-    QPointer<QLocalServer> lserver;
-    QQueue<BGenericSocket *> socketQueue;
-    int maxPending;
 private:
     Q_DISABLE_COPY(BGenericServerPrivate)
 };

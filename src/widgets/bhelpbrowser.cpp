@@ -21,46 +21,46 @@
 
 #include "bhelpbrowser.h"
 #include "bhelpbrowser_p.h"
+
 #include "bapplication.h"
 
 #include <BeQtCore/BTextTools>
 #include <BeQtCore/BDirTools>
 #include <BeQtCore/BTextMatch>
 #include <BeQtCore/BTextMatchList>
-#include <BeQtCore/BTerminalIOHandler>
-
-#include <QApplication>
-#include <QWidget>
-#include <QString>
-#include <QUrl>
-#include <QStringList>
-#include <QTextBrowser>
-#include <QVBoxLayout>
-#include <QToolBar>
-#include <QToolButton>
-#include <QLabel>
-#include <QLineEdit>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
-#include <QTextCodec>
-#include <QRegExp>
-#include <QDesktopServices>
-#include <QPushButton>
-#include <QTimer>
-#include <QList>
-#include <QPair>
 
 #include <QDebug>
+#include <QDir>
+#include <QFileInfo>
+#include <QLabel>
+#include <QLineEdit>
+#include <QList>
+#include <QPair>
+#include <QPushButton>
+#include <QRegExp>
+#include <QString>
+#include <QStringList>
+#include <QTextBrowser>
+#include <QTextCodec>
+#include <QTimer>
+#include <QToolBar>
+#include <QToolButton>
+#include <QUrl>
+#include <QVBoxLayout>
+#include <QWidget>
 
 /*============================================================================
 ================================ BHelpBrowserPrivate =========================
 ============================================================================*/
 
+/*============================== Static public variables ===================*/
+
+QMap< QString, QPair<QStringList, QStringList> > BHelpBrowserPrivate::searchCache;
+
 /*============================== Public constructors =======================*/
 
 BHelpBrowserPrivate::BHelpBrowserPrivate(BHelpBrowser *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -77,24 +77,24 @@ void BHelpBrowserPrivate::init()
     codec = QTextCodec::codecForName("UTF-8");
     B_Q(BHelpBrowser);
     QVBoxLayout *vlt = new QVBoxLayout(q);
-      tbar = new QToolBar(q);
+      QToolBar *tbar = new QToolBar(q);
         tbtnBackward = new QToolButton;
           tbtnBackward->setEnabled(false);
-          tbtnBackward->setIcon( BApplication::icon("back") );
+          tbtnBackward->setIcon(BApplication::icon("back"));
         tbar->addWidget(tbtnBackward);
         tbtnForward = new QToolButton;
           tbtnForward->setEnabled(false);
-          tbtnForward->setIcon( BApplication::icon("forward") );
+          tbtnForward->setIcon(BApplication::icon("forward"));
         tbar->addWidget(tbtnForward);
         tbar->addSeparator();
         tbtnHome = new QToolButton;
-          tbtnHome->setIcon( BApplication::icon("gohome") );
+          tbtnHome->setIcon(BApplication::icon("gohome"));
         tbar->addWidget(tbtnHome);
         tbar->addSeparator();
         lblSearch = new QLabel;
         tbar->addWidget(lblSearch);
         ledtSearch = new QLineEdit;
-          connect( ledtSearch, SIGNAL( returnPressed() ), this, SLOT( search() ) );
+          connect(ledtSearch, SIGNAL(returnPressed()), this, SLOT(search()));
         tbar->addWidget(ledtSearch);
         btnFind = new QPushButton;
           connect(btnFind, SIGNAL(clicked()), this, SLOT(search()));
@@ -102,18 +102,18 @@ void BHelpBrowserPrivate::init()
         tbar->addWidget(btnFind);
       vlt->addWidget(tbar);
       tbrsr = new QTextBrowser(q);
-        connect( tbtnBackward, SIGNAL( clicked() ), tbrsr, SLOT( backward() ) );
-        connect( tbtnForward, SIGNAL( clicked() ), tbrsr, SLOT( forward() ) );
-        connect( tbtnHome, SIGNAL( clicked() ), tbrsr, SLOT( home() ) );
-        connect( tbrsr, SIGNAL( backwardAvailable(bool) ), tbtnBackward, SLOT( setEnabled(bool) ) );
-        connect( tbrsr, SIGNAL( forwardAvailable(bool) ), tbtnForward, SLOT( setEnabled(bool) ) );
-        connect( tbrsr, SIGNAL( sourceChanged(QUrl) ), this, SLOT( updateCaption() ) );
+        connect(tbtnBackward, SIGNAL(clicked()), tbrsr, SLOT(backward()));
+        connect(tbtnForward, SIGNAL(clicked()), tbrsr, SLOT(forward()));
+        connect(tbtnHome, SIGNAL(clicked()), tbrsr, SLOT(home()));
+        connect(tbrsr, SIGNAL(backwardAvailable(bool)), tbtnBackward, SLOT(setEnabled(bool)));
+        connect(tbrsr, SIGNAL(forwardAvailable(bool)), tbtnForward, SLOT(setEnabled(bool)));
+        connect(tbrsr, SIGNAL(sourceChanged(QUrl)), this, SLOT(updateCaption()));
         tbrsr->setOpenExternalLinks(true);
       vlt->addWidget(tbrsr);
     //
     QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
     retranslateUi();
-    QObject::connect( bApp, SIGNAL( languageChanged() ), this, SLOT( retranslateUi() ) );
+    QObject::connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
 }
 
 /*============================== Public slots ==============================*/
@@ -128,16 +128,6 @@ void BHelpBrowserPrivate::retranslateUi()
     updateCaption();
 }
 
-void BHelpBrowserPrivate::updateCaption()
-{
-    QString title = tr("Help", "windowTitle");
-    QString dt = tbrsr->documentTitle();
-    if ( !dt.isEmpty() )
-        title += ": " + dt;
-    q_func()->setWindowTitle(title);
-    QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
-}
-
 void BHelpBrowserPrivate::search()
 {
     QString text = ledtSearch->text();
@@ -146,37 +136,29 @@ void BHelpBrowserPrivate::search()
     QPair<QStringList, QStringList> p;
     QStringList &sl = p.first;
     QStringList &documents = p.second;
-    if (!searchCache.contains(text))
-    {
-        QStringList terms = BTerminalIOHandler::splitCommand(text);
-        foreach (const QString &path, tbrsr->searchPaths())
-        {
+    if (!searchCache.contains(text)) {
+        QStringList terms = BTextTools::splitCommand(text);
+        foreach (const QString &path, tbrsr->searchPaths()) {
             QStringList files = BDirTools::entryList(path, QStringList() << "*.html" << "*.htm", QDir::Files);
-            foreach (const QString &file, files)
-            {
+            foreach (const QString &file, files)  {
                 sl << file;
                 documents << BDirTools::readTextFile(file, codec);
             }
         }
         QList<int> list = BTextTools::tfidfSortedIndexes(terms, documents);
-        foreach (int i, bRangeD(0, list.size() - 1))
-        {
+        foreach (int i, bRangeD(0, list.size() - 1)) {
             sl.swap(i, list.at(i));
             documents.swap(i, list.at(i));
         }
         sl = sl.mid(0, list.size());
         documents = documents.mid(0, list.size());
         searchCache.insert(text, qMakePair(sl, documents));
-    }
-    else
-    {
+    } else {
         p = searchCache.value(text);
     }
     QString source = "<center><font size=5><b>" + tr("Search results", "tbrsr text") + "</b></font></center><br><br>";
-    if (!sl.isEmpty())
-    {
-        foreach (int i, bRangeD(0, sl.size() - 1))
-        {
+    if (!sl.isEmpty()) {
+        foreach (int i, bRangeD(0, sl.size() - 1)) {
             BTextMatchList ml = BTextTools::match(documents.at(i), QRegExp(".+"),
                                                   QRegExp("<title>(\n)*", Qt::CaseInsensitive),
                                                   QRegExp("(\n)*</title>", Qt::CaseInsensitive));
@@ -184,9 +166,7 @@ void BHelpBrowserPrivate::search()
                 continue;
             source += "<a href=\"" + QFileInfo(sl.at(i)).fileName() + "\">" + ml.first() + "</a><br>";
         }
-    }
-    else
-    {
+    } else {
         source += "<img src=\"" + BDirTools::findResource("beqt/pixmaps/sadpanda.jpg", BDirTools::GlobalOnly) + "\">";
         source += "<br><br>" + tr("Sorry, nothing found.", "tbrsr text");
     }
@@ -194,9 +174,15 @@ void BHelpBrowserPrivate::search()
     tbrsr->setHtml(source);
 }
 
-/*============================== Static public variables ===================*/
-
-QMap< QString, QPair<QStringList, QStringList> > BHelpBrowserPrivate::searchCache;
+void BHelpBrowserPrivate::updateCaption()
+{
+    QString title = tr("Help", "windowTitle");
+    QString dt = tbrsr->documentTitle();
+    if (!dt.isEmpty())
+        title += ": " + dt;
+    q_func()->setWindowTitle(title);
+    QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
+}
 
 /*============================================================================
 ================================ BHelpBrowser ================================
@@ -205,38 +191,38 @@ QMap< QString, QPair<QStringList, QStringList> > BHelpBrowserPrivate::searchCach
 /*============================== Public constructors =======================*/
 
 BHelpBrowser::BHelpBrowser(QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject(*new BHelpBrowserPrivate(this))
 {
     d_func()->init();
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject(*new BHelpBrowserPrivate(this))
 {
     d_func()->init();
     d_func()->tbrsr->setSearchPaths(searchPaths);
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &file, QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject(*new BHelpBrowserPrivate(this))
 {
     d_func()->init();
     B_D(BHelpBrowser);
     d->tbrsr->setSearchPaths(searchPaths);
-    d->tbrsr->setSource( QUrl(file) );
+    d->tbrsr->setSource(QUrl(file));
 }
 
 BHelpBrowser::BHelpBrowser(const QStringList &searchPaths, const QString &index, const QString &file,
                            QWidget *parent) :
-    QWidget(parent), BBase( *new BHelpBrowserPrivate(this) )
+    QWidget(parent), BBaseObject(*new BHelpBrowserPrivate(this))
 {
     d_func()->init();
     B_D(BHelpBrowser);
     d->tbrsr->setSearchPaths(searchPaths);
-    if ( !index.isEmpty() )
-        d->tbrsr->setSource( QUrl(index) );
+    if (!index.isEmpty())
+        d->tbrsr->setSource(QUrl(index));
     if (file != index)
-        d->tbrsr->setSource( QUrl(file) );
+        d->tbrsr->setSource(QUrl(file));
 }
 
 BHelpBrowser::~BHelpBrowser()
@@ -247,7 +233,7 @@ BHelpBrowser::~BHelpBrowser()
 /*============================== Protected constructors ====================*/
 
 BHelpBrowser::BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent) :
-    QWidget(parent), BBase(d)
+    QWidget(parent), BBaseObject(d)
 {
     d_func()->init();
 }
@@ -261,16 +247,6 @@ void BHelpBrowser::clearSearchCache()
 
 /*============================== Public methods ============================*/
 
-void BHelpBrowser::setSearchPaths(const QStringList &paths)
-{
-    d_func()->tbrsr->setSearchPaths(paths);
-}
-
-void BHelpBrowser::setFile(const QString &file)
-{
-    d_func()->tbrsr->setSource( QUrl(file) );
-}
-
 void BHelpBrowser::setCodec(QTextCodec *codec)
 {
     if (!codec)
@@ -280,5 +256,15 @@ void BHelpBrowser::setCodec(QTextCodec *codec)
 
 void BHelpBrowser::setCodec(const char *codecName)
 {
-    setCodec( QTextCodec::codecForName(codecName) );
+    setCodec(QTextCodec::codecForName(codecName));
+}
+
+void BHelpBrowser::setFile(const QString &file)
+{
+    d_func()->tbrsr->setSource(QUrl(file));
+}
+
+void BHelpBrowser::setSearchPaths(const QStringList &paths)
+{
+    d_func()->tbrsr->setSearchPaths(paths);
 }

@@ -22,11 +22,9 @@
 #ifndef BINDICATORSEDITORMODULE_P_H
 #define BINDICATORSEDITORMODULE_P_H
 
-class QLabel;
-class QWidget;
-class QPoint;
-class QString;
 class QComboBox;
+class QLabel;
+class QString;
 
 #include "bindicatorseditormodule.h"
 #include "babstracteditormodule_p.h"
@@ -37,7 +35,6 @@ class QComboBox;
 #include <QObject>
 #include <QMap>
 #include <QList>
-#include <QPointer>
 
 /*============================================================================
 ================================ BIndicatorsEditorModulePrivate ==============
@@ -54,6 +51,10 @@ public:
         QString name;
     };
 public:
+    QComboBox *cmboxFileType;
+    QLabel *lblCursorPos;
+    QLabel *lblEncoding;
+public:
     explicit BIndicatorsEditorModulePrivate(BIndicatorsEditorModule *q);
     ~BIndicatorsEditorModulePrivate();
 public:
@@ -62,12 +63,8 @@ public:
     void updateEncodingIndicator();
     void updateFileTypeIndicator();
 public Q_SLOTS:
-    void retranslateUi();
     void cmboxFileTypeCurrentIndexChanged(int index);
-public:
-    QPointer<QLabel> lblCursorPos;
-    QPointer<QLabel> lblEncoding;
-    QPointer<QComboBox> cmboxFileType;
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BIndicatorsEditorModulePrivate)
 };

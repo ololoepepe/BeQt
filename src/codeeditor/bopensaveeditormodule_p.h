@@ -22,22 +22,18 @@
 #ifndef BOPENSAVEEDITORMODULE_P_H
 #define BOPENSAVEEDITORMODULE_P_H
 
-class BCodeEditor;
-
 class QAction;
-class QString;
 class QMenu;
+class QString;
 
 #include "bopensaveeditormodule.h"
-#include "babstracteditormodule_p.h"
-#include "bcodeeditor.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include "babstracteditormodule_p.h"
+
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QPointer>
 #include <QList>
+#include <QObject>
 #include <QStringList>
 
 /*============================================================================
@@ -49,27 +45,27 @@ class B_CODEEDITOR_EXPORT BOpenSaveEditorModulePrivate : public BAbstractEditorM
     Q_OBJECT
     B_DECLARE_PUBLIC(BOpenSaveEditorModule)
 public:
+    QAction *actCloseAllFiles;
+    QAction *actCloseFile;
+    QAction *actNewFile;
+    QAction *actOpenFiles;
+    QAction *actReopenFile;
+    QAction *actSaveAllFiles;
+    QAction *actSaveFile;
+    QAction *actSaveFileAs;
+    QMenu *mnuFileHistory;
+public:
     explicit BOpenSaveEditorModulePrivate(BOpenSaveEditorModule *q);
     ~BOpenSaveEditorModulePrivate();
 public:
-    void init();
     void checkActions();
-    void resetFileHistory( const QStringList &list = QStringList() );
+    void init();
+    void resetFileHistory(const QStringList &list = QStringList());
 public Q_SLOTS:
-    void retranslateUi();
     void codecTriggered(const QString &codecName);
     void fileTriggered();
     void resetFileHistoryMenuToolTip();
-public:
-    QPointer<QAction> actNewFile;
-    QPointer<QAction> actOpenFiles;
-    QPointer<QAction> actReopenFile;
-    QPointer<QAction> actSaveFile;
-    QPointer<QAction> actSaveFileAs;
-    QPointer<QAction> actSaveAllFiles;
-    QPointer<QAction> actCloseFile;
-    QPointer<QAction> actCloseAllFiles;
-    QPointer<QMenu> mnuFileHistory;
+    void retranslateUi();
 private:
     Q_DISABLE_COPY(BOpenSaveEditorModulePrivate)
 };

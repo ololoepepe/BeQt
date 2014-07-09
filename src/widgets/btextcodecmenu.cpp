@@ -22,18 +22,18 @@
 #include "btextcodecmenu.h"
 #include "btextcodecmenu_p.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
-#include <BeQtCore/BeQt>
-#include <BeQtCore/BCoreApplication>
+#include "bapplication.h"
 
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/BeQt>
+#include <BeQtCore/private/bbaseobject_p.h>
+
+#include <QAction>
+#include <QList>
 #include <QMenu>
+#include <QSignalMapper>
 #include <QString>
 #include <QTextCodec>
-#include <QSignalMapper>
-#include <QList>
-#include <QAction>
 
 /*============================================================================
 ================================ BTextCodecMenuPrivate =======================
@@ -42,7 +42,7 @@
 /*============================== Public constructors =======================*/
 
 BTextCodecMenuPrivate::BTextCodecMenuPrivate(BTextCodecMenu *q, BTextCodecMenu::Style s) :
-    BBasePrivate(q), Style(s)
+    BBaseObjectPrivate(q), Style(s)
 {
     //
 }
@@ -58,24 +58,18 @@ void BTextCodecMenuPrivate::init()
 {
     mapper = new QSignalMapper(this);
     q_func()->setMapping(this, SLOT(codecSelected(QString)));
-    if (BTextCodecMenu::StructuredStyle == Style)
-    {
-        foreach (BeQt::CodecsGroup gr, BeQt::codecsGroups())
-        {
+    if (BTextCodecMenu::StructuredStyle == Style) {
+        foreach (BeQt::CodecsGroup gr, BeQt::codecsGroups()) {
             QMenu *submnu = q_func()->addMenu("");
             submnu->setProperty("beqt/codec_group", gr);
-            foreach (const QString &cn, BeQt::codecNamesForGroup(gr))
-            {
+            foreach (const QString &cn, BeQt::codecNamesForGroup(gr)) {
                 QAction *act = submnu->addAction("");
                 act->setProperty("beqt/codec_name", cn);
                 bSetMapping(mapper, act, SIGNAL(triggered()), cn);
             }
         }
-    }
-    else
-    {
-        foreach (const QString &cn, BeQt::supportedCodecsNames())
-        {
+    } else {
+        foreach (const QString &cn, BeQt::supportedCodecsNames()) {
             QAction *act = q_func()->addAction("");
             act->setProperty("beqt/codec_name", cn);
             bSetMapping(mapper, act, SIGNAL(triggered()), cn);
@@ -87,14 +81,17 @@ void BTextCodecMenuPrivate::init()
 
 /*============================== Public slots ==============================*/
 
+void BTextCodecMenuPrivate::codecSelected(const QString &cn)
+{
+    codecName = cn;
+}
+
 void BTextCodecMenuPrivate::retranslateUi()
 {
     QList<QAction *> actions;
-    foreach (QAction *act, q_func()->actions())
-    {
+    foreach (QAction *act, q_func()->actions()) {
         QMenu *submnu = act->menu();
-        if (!submnu)
-        {
+        if (!submnu) {
             actions << act;
             continue;
         }
@@ -104,18 +101,12 @@ void BTextCodecMenuPrivate::retranslateUi()
         submnu->setTitle(BeQt::codecsGroupName(gr));
         actions << submnu->actions();
     }
-    foreach (QAction *act, actions)
-    {
+    foreach (QAction *act, actions) {
         QString cn = act->property("beqt/codec_name").toString();
         if (cn.isEmpty() || !BeQt::supportedCodecsNames().contains(cn))
             continue;
         act->setText(BeQt::fullCodecName(cn));
     }
-}
-
-void BTextCodecMenuPrivate::codecSelected(const QString &cn)
-{
-    codecName = cn;
 }
 
 /*============================================================================
@@ -125,13 +116,13 @@ void BTextCodecMenuPrivate::codecSelected(const QString &cn)
 /*============================== Public constructors =======================*/
 
 BTextCodecMenu::BTextCodecMenu(QWidget *parent) :
-    QMenu(parent), BBase(*new BTextCodecMenuPrivate(this, StructuredStyle))
+    QMenu(parent), BBaseObject(*new BTextCodecMenuPrivate(this, StructuredStyle))
 {
     d_func()->init();
 }
 
 BTextCodecMenu::BTextCodecMenu(Style s, QWidget *parent) :
-    QMenu(parent), BBase(*new BTextCodecMenuPrivate(this, s))
+    QMenu(parent), BBaseObject(*new BTextCodecMenuPrivate(this, s))
 {
     d_func()->init();
 }
@@ -144,12 +135,22 @@ BTextCodecMenu::~BTextCodecMenu()
 /*============================== Protected constructors ====================*/
 
 BTextCodecMenu::BTextCodecMenu(BTextCodecMenuPrivate &d, QWidget *parent) :
-    QMenu(parent), BBase(d)
+    QMenu(parent), BBaseObject(d)
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
+
+QTextCodec *BTextCodecMenu::selectedCodec() const
+{
+    return BeQt::codec(d_func()->codecName);
+}
+
+QString BTextCodecMenu::selectedCodecName() const
+{
+    return d_func()->codecName;
+}
 
 void BTextCodecMenu::setMapping(const QObject *receiver, const char *method)
 {
@@ -161,14 +162,4 @@ void BTextCodecMenu::setMapping(const QObject *receiver, const char *method)
 BTextCodecMenu::Style BTextCodecMenu::style() const
 {
     return d_func()->Style;
-}
-
-QTextCodec *BTextCodecMenu::selectedCodec() const
-{
-    return BeQt::codec(d_func()->codecName);
-}
-
-QString BTextCodecMenu::selectedCodecName() const
-{
-    return d_func()->codecName;
 }

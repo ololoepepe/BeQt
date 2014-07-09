@@ -2,7 +2,7 @@
 **
 ** Copyright (C) 2012-2014 Andrey Bogdanov
 **
-** This file is part of the BeQtCodeEditor module of the BeQt library.
+** This file is part of the BeQtCore module of the BeQt library.
 **
 ** BeQt is free software: you can redistribute it and/or modify it under
 ** the terms of the GNU Lesser General Public License as published by
@@ -19,33 +19,32 @@
 **
 ****************************************************************************/
 
-#ifndef BTEXTBLOCKUSERDATA_H
-#define BTEXTBLOCKUSERDATA_H
+#ifndef BPERSONINFOLIST_H
+#define BPERSONINFOLIST_H
 
-class BTextBlock;
+class BPersonInfoPrivate;
 
-class QString;
+class QDataStream;
+class QVariant;
 
-#include <BeQtCore/BeQtGlobal>
+#include "bpersoninfo.h"
 
-#include <QTextBlockUserData>
+#include <QList>
+#include <QMetaType>
 
 /*============================================================================
-================================ BTextBlockUserData ==========================
+================================ BPersonInfoList =============================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BTextBlockUserData : public QTextBlockUserData
+class B_CORE_EXPORT BPersonInfoList : public QList<BPersonInfo>
 {
 public:
-    explicit BTextBlockUserData(int sf = -1, int st = -1);
-    ~BTextBlockUserData();
+    operator QVariant() const;
 public:
-    static QString textWithoutComments(const BTextBlockUserData *ud, const QString &text);
-    static QString textWithoutComments(const QTextBlock &block);
-    static int blockSkipFrom(const QTextBlock &block);
-public:
-    int skipFrom;
-    int skipTo;
+    friend QDataStream &operator <<(QDataStream &stream, const BPersonInfoList &list);
+    friend QDataStream &operator >>(QDataStream &stream, BPersonInfoList &list);
 };
 
-#endif // BTEXTBLOCKUSERDATA_H
+Q_DECLARE_METATYPE(BPersonInfoList)
+
+#endif // BPERSONINFOLIST_H

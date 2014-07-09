@@ -23,12 +23,10 @@
 #define BABSTRACTEDITORMODULE_P_H
 
 class BCodeEditor;
-class BCodeEditorPrivate;
 
 #include "babstracteditormodule.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 
@@ -36,21 +34,20 @@ class BCodeEditorPrivate;
 ================================ BAbstractEditorModulePrivate ================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractEditorModulePrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractEditorModulePrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAbstractEditorModule)
+public:
+    BCodeEditor *editor;
 public:
     explicit BAbstractEditorModulePrivate(BAbstractEditorModule *q);
     ~BAbstractEditorModulePrivate();
 public:
     void init();
     void setEditor(BCodeEditor *edr);
-public:
-    BCodeEditor *editor;
 private:
     Q_DISABLE_COPY(BAbstractEditorModulePrivate)
-    friend class BCodeEditorPrivate;
 };
 
 #endif // BABSTRACTEDITORMODULE_P_H

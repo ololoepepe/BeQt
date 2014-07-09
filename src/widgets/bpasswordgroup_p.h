@@ -22,12 +22,11 @@
 #ifndef BPASSWORDGROUP_P_H
 #define BPASSWORDGROUP_P_H
 
-class BPaswordWidget;
+class BPasswordWidget;
 
 #include "bpasswordgroup.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 #include <QMap>
@@ -36,21 +35,21 @@ class BPaswordWidget;
 ================================ BPasswordGroupPrivate =======================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPasswordGroupPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BPasswordGroupPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BPasswordGroup)
+public:
+    QMap<QObject *, BPasswordWidget *> wgtMap;
+    bool match;
 public:
     explicit BPasswordGroupPrivate(BPasswordGroup *q);
     ~BPasswordGroupPrivate();
 public:
     void init();
 public Q_SLOTS:
-    void pwdwgtDestroyed(QObject *object);
     void passwordChanged();
-public:
-    QMap<QObject *, BPasswordWidget *> wgtMap;
-    bool match;
+    void pwdwgtDestroyed(QObject *object);
 private:
     Q_DISABLE_COPY(BPasswordGroupPrivate)
 };

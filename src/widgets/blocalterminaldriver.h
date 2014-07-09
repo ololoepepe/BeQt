@@ -29,7 +29,6 @@ class QTextCodec;
 
 #include "babstractterminaldriver.h"
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
 #include <QObject>
@@ -48,20 +47,16 @@ public:
 protected:
     explicit BLocalTerminalDriver(BLocalTerminalDriverPrivate &d, QObject *parent = 0);
 public:
-    bool isActive() const;
-    QString read();
     void close();
-    void terminate();
+    bool isActive() const;
     void kill();
+    QString read(QTextCodec *codec);
+    bool processCommand(const QString &command, const QStringList &arguments, QString &error, QTextCodec *codec);
     QString prompt() const;
-    bool terminalCommand(const QString &command, const QStringList &arguments, QString &error);
-    bool processCommand(const QString &command, const QStringList &arguments, QString &error);
     void setWorkingDirectory(const QString &path);
+    bool terminalCommand(const QString &command, const QStringList &arguments, QString &error, QTextCodec *codec);
+    void terminate();
     QString workingDirectory() const;
-    void setCodec(QTextCodec *codec);
-    void setCodec(const QString &codecName);
-    QTextCodec *codec() const;
-    QString codecName() const;
 private:
     Q_DISABLE_COPY(BLocalTerminalDriver)
 };

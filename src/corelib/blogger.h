@@ -24,23 +24,23 @@
 
 class BLoggerPrivate;
 
-#include "bglobal.h"
-#include "bbase.h"
+#include "bbaseobject.h"
 
-#include <QString>
 #include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BLogger =====================================
 ============================================================================*/
 
-class B_CORE_EXPORT BLogger : public QObject, public BBase
+class B_CORE_EXPORT BLogger : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BLogger)
 public:
     enum Level
     {
+        //This order reflects the importance of each level of messages
         NoLevel = 0,
         InfoLevel,
         TraceLevel,
@@ -59,32 +59,32 @@ public:
     static bool isStderrLevel(Level lvl);
     static QString levelToString(Level lvl);
 public:
-    void setUseStderr(bool b);
-    void setIncludeLevel(bool b);
-    void setIncludeDateTime(bool b);
-    void setDateTimeFormat(const QString &format);
-    void setLogToConsoleEnabled(bool enabled);
-    void setLogToFileEnabled(bool enabled);
-    void setFileName(const QString &fileName);
-    void setFileFlushInterval(int msecs);
-    bool isStderrUsed() const;
-    bool isLevelIncluded() const;
-    bool isDateTimeIncluded() const;
     QString dateTimeFormat() const;
+    int fileFlushInterval() const;
+    QString fileName() const;
+    bool isDateTimeIncluded() const;
+    bool isLevelIncluded() const;
     bool isLogToConsoleEnabled() const;
     bool isLogToFileEnabled() const;
-    QString fileName() const;
-    int fileFlushInterval() const;
+    bool isStderrUsed() const;
     void log(const QString &text, Level lvl);
+    void setDateTimeFormat(const QString &format);
+    void setFileFlushInterval(int msecs);
+    void setFileName(const QString &fileName);
+    void setIncludeDateTime(bool b);
+    void setIncludeLevel(bool b);
+    void setLogToConsoleEnabled(bool enabled);
+    void setLogToFileEnabled(bool enabled);
+    void setUseStderr(bool b);
 public Q_SLOTS:
+    void flushFile();
     void log(const QString &text);
+    void logCritical(const QString &text);
+    void logDebug(const QString &text);
+    void logFatal(const QString &text);
     void logInfo(const QString &text);
     void logTrace(const QString &text);
-    void logDebug(const QString &text);
     void logWarning(const QString &text);
-    void logCritical(const QString &text);
-    void logFatal(const QString &text);
-    void flushFile();
 protected:
     virtual void userLog(const QString &text, Level level);
 private:

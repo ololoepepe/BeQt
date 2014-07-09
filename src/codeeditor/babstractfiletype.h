@@ -22,21 +22,25 @@
 #ifndef BABSTRACTFILETYPE_H
 #define BABSTRACTFILETYPE_H
 
-class BSyntaxHighlighter;
-class BTextBlockUserData;
 class BAbstractFileTypePrivate;
 
+class BAbstractCodeEditorDocument;
+class BAbstractCodeEditorDocumentPrivate;
+class BSyntaxHighlighter;
+class BTextBlockExtraData;
+
+class QColor;
+class QFont;
+class QPoint;
 class QStringList;
 class QTextBlock;
 class QTextCharFormat;
-class QColor;
-class QFont;
 
-#include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/BBase>
 
-#include <QString>
+#include <QIcon>
 #include <QList>
+#include <QString>
 
 /*============================================================================
 ================================ BAbstractFileType ===========================
@@ -46,11 +50,22 @@ class B_CODEEDITOR_EXPORT BAbstractFileType : public BBase
 {
     B_DECLARE_PRIVATE(BAbstractFileType)
 public:
+    struct AutocompletionItem
+    {
+        QIcon icon;
+        QString text;
+        QString toolTip;
+    };
     struct BracketPair
     {
-        QString opening;
         QString closing;
         QString escape;
+        QString opening;
+    };
+    struct SkipInterval
+    {
+        int end;
+        int start;
     };
 public:
     typedef QList<BracketPair> BracketPairList;
@@ -58,34 +73,47 @@ public:
     explicit BAbstractFileType();
     virtual ~BAbstractFileType();
 public:
-    static BAbstractFileType *defaultFileType();
-    static QString defaultFileTypeId();
     static bool areEqual(const BracketPair &bp1, const BracketPair &bp2);
     static bool areEqual(const BracketPairList &l1, const BracketPairList &l2);
+    static BAbstractFileType *defaultFileType();
+    static QString defaultFileTypeId();
 public:
-    virtual QString id() const = 0;
-    virtual QString name() const = 0;
-    virtual QString description() const = 0;
-    virtual QStringList suffixes() const = 0;
-    virtual bool matchesFileName(const QString &fileName) const = 0;
     virtual BracketPairList brackets() const = 0;
     QString createFileDialogFilter() const;
+    virtual QString description() const = 0;
+    virtual QString id() const = 0;
+    virtual int indentation(const QTextBlock &previousBlock) const;
+    virtual bool matchesFileName(const QString &fileName) const;
+    virtual QString name() const = 0;
+    virtual QStringList suffixes() const = 0;
 protected:
+    static AutocompletionItem createAutocompletionItem(const QString &text, const QString &toolTip = QString(),
+                                                       const QIcon &icon = QIcon());
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
 protected:
-    virtual void highlightBlock(const QString &text) = 0;
+    void addCurrentBlockSkipInterval(const SkipInterval &si);
+    void addCurrentBlockSkipInterval(int start, int end = -1);
+    void clearCurrentBlockSkipIntervals();
+    virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc, QTextBlock block,
+                                                                   int posInBlock);
     QTextBlock currentBlock() const;
+    BTextBlockExtraData *currentBlockExtraData() const;
     int currentBlockState() const;
-    BTextBlockUserData *currentBlockUserData() const;
+    BAbstractCodeEditorDocument *currentDocument() const;
     QTextCharFormat format(int position) const;
+    virtual void highlightBlock(const QString &text);
     int previousBlockState() const;
+    void setCurrentBlockExtraData(BTextBlockExtraData *data);
+    void setCurrentBlockSkipIntervals(const QList<SkipInterval> &list = QList<SkipInterval>());
     void setCurrentBlockState(int newState);
-    void setCurrentBlockUserData(BTextBlockUserData *data);
     void setFormat(int start, int count, const QTextCharFormat &format);
     void setFormat(int start, int count, const QColor &color);
     void setFormat(int start, int count, const QFont &font);
+    virtual void showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+                                        const QPoint &globalPos);
 private:
     friend class BSyntaxHighlighter;
+    friend class BAbstractCodeEditorDocumentPrivate;
 };
 
 #endif // BABSTRACTFILETYPE_H

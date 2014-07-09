@@ -32,7 +32,7 @@ win32 {
     CONFIG(release, debug|release):releaseDebugSuffix=/release
     CONFIG(debug, debug|release):releaseDebugSuffix=/debug
     #Set suffix for libraries names
-    libNameSuffix=3
+    libNameSuffix=4
 }
 
 #Gets full module name, for example "BeQtCore", "BeQtWidgets", etc.
@@ -43,11 +43,7 @@ defineTest(addBeqtModule) {
     INCLUDEPATH *= $${PWD}/../include/$${fullName}
     DEPENDPATH *= $${PWD}/../include/$${fullName}
     libFinalPath=$${OUT_PWD}/../../src/$$beqtModuleSubdir($${shortName})$${releaseDebugSuffix}/
-    mac:contains(CONFIG, lib_bundle) {
-        LIBS *= -F$${libFinalPath} -framework $${fullName}
-    } else {
-        LIBS *= -L$${libFinalPath} -l$${fullName}$${libNameSuffix}
-    }
+    LIBS *= -L$${libFinalPath} -l$${fullName}$${libNameSuffix}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     export(LIBS)
@@ -70,26 +66,32 @@ contains(BEQT, all) {
 
 #Adds required Qt and BeQt modules (on which other included modules depend)
 contains(BEQT, codeeditor) {
-    QT *= core gui widgets concurrent
+    QT *= core gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core widgets
 }
 contains(BEQT,core) {
-    QT *= core concurrent
+    QT *= core
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
 }
 contains(BEQT, network) {
-    QT *= core network concurrent
+    QT *= core network
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
     BEQT *= core
 }
 contains(BEQT, sql) {
-    QT *= core sql concurrent
+    QT *= core sql
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= concurrent
     BEQT *= core
 }
 contains(BEQT, widgets) {
-    QT *= core gui widgets concurrent
+    QT *= core gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core
 }
 contains(BEQT, networkwidgets) {
-    QT *= core network gui widgets concurrent
+    QT *= core network gui
+    greaterThan(QT_MAJOR_VERSION, 4):QT *= widgets concurrent
     BEQT *= core network widgets
 }
 

@@ -1,1 +1,0 @@
-#include "../BeQtCore/bterminaliohandler.h"

@@ -25,15 +25,14 @@ class QTextCodec;
 
 #include "babstractdocumentdriver.h"
 #include "babstractdocumentdriver_p.h"
+
 #include "bcodeeditordocument.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
 #include <QByteArray>
-
 #include <QDebug>
+#include <QObject>
 
 /*============================================================================
 ================================ BAbstractDocumentDriverPrivate ==============
@@ -42,7 +41,7 @@ class QTextCodec;
 /*============================== Public constructors =======================*/
 
 BAbstractDocumentDriverPrivate::BAbstractDocumentDriverPrivate(BAbstractDocumentDriver *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -71,7 +70,7 @@ void BAbstractDocumentDriverPrivate::setEditor(BCodeEditor *edr)
 /*============================== Public constructors =======================*/
 
 BAbstractDocumentDriver::BAbstractDocumentDriver(QObject *parent) :
-    QObject(parent)
+    QObject(parent), BBaseObject(*new BBaseObjectPrivate(this))
 {
     d_func()->init();
 }
@@ -84,21 +83,16 @@ BAbstractDocumentDriver::~BAbstractDocumentDriver()
 /*============================== Protected constructors ====================*/
 
 BAbstractDocumentDriver::BAbstractDocumentDriver(BAbstractDocumentDriverPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
 
-QByteArray BAbstractDocumentDriver::saveState() const
+BCodeEditor *BAbstractDocumentDriver::editor() const
 {
-    return QByteArray();
-}
-
-void BAbstractDocumentDriver::restoreState(const QByteArray &)
-{
-    //
+    return d_func()->editor;
 }
 
 bool BAbstractDocumentDriver::load(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
@@ -112,6 +106,16 @@ bool BAbstractDocumentDriver::load(BAbstractCodeEditorDocument *doc, QTextCodec 
     return handleLoadOperation(op);
 }
 
+bool BAbstractDocumentDriver::load(BAbstractCodeEditorDocument *doc, const QString &fileName)
+{
+    return load(doc, 0, fileName);
+}
+
+void BAbstractDocumentDriver::restoreState(const QByteArray &)
+{
+    //
+}
+
 bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
 {
     if (!doc)
@@ -123,19 +127,14 @@ bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, QTextCodec 
     return handleSaveOperation(op);
 }
 
-bool BAbstractDocumentDriver::load(BAbstractCodeEditorDocument *doc, const QString &fileName)
-{
-    return load(doc, 0, fileName);
-}
-
 bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, const QString &fileName)
 {
     return save(doc, 0, fileName);
 }
 
-BCodeEditor *BAbstractDocumentDriver::editor() const
+QByteArray BAbstractDocumentDriver::saveState() const
 {
-    return d_func()->editor;
+    return QByteArray();
 }
 
 /*============================== Protected methods =========================*/

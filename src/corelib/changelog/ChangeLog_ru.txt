@@ -1,3 +1,93 @@
+=== BeQt 4.0.0 (xx июля 2014) ===
+==== BeQtCore ====
+    * На всех платформах теперь используется структура ресурсов как в UNIX
+    * Удалены функции из BDirTools: createUserLocation и createUserLocations
+    * Добавлены шаблонные методы для безопасного приведения int и QVariant к перечисляемому типу (enum_cast)
+    * Добвлены шаблонные функции bReverse и bReversed
+    * Изменены значения перечисления BeQt::OSType
+    * Удалены функции BeQt::variantToData и BeQt::dataToVatiant
+    * Рабочая папка добавлена в качестве аргумента функции BeQt::startProcessDetached
+    * Добавлена функция BTextTools:toHtml
+    * Добавлена альтернативная пара базовых классов, у которой private-часть не является QObject
+    * Исправлена проверка BSpellCheckerDictionary на валидность
+    * Добавлена возможность задавать заменяемые буквы в BSpellCheckerDictionary
+    * Добавлен класс BApplicationBase
+    * BCoreApplication и BApplication теперь наследуют BApplicationBase и QCoreApplication (либо QApplication)
+    * Некоторые чдены класса BCoreApplication переименованы: instance -> binstance, translator -> beqtTranslator и т.д.
+    * Удалены методы класса BCoreApplication: saveSettings и loadSettings
+    * Добавлены перегруженные методы installTranslator и removeTranslator в BApplicationBase
+    * В BApplicationBase добавлены методы deactivatedPlugins и setDeactivatedPlugins
+    * В BApplicationBase добавлена возможность указывать несколько владельцев авторских прав
+    * BTerminalIOHandler переименован в BTerminal и сделан синглтоном
+    * Методы splitCommand и mergeArguments перенесены из BTerminal в BTextTools
+    * Реализованы режимы терминала
+    * В BTerminal добавлена возможность запоминать введенные команды
+    * Метод BPluginWrapper::interfacetestFunction переименован в interfaceTestFunction
+    * Добавлен метод для удаления старых настрек плагинов в BPluginWrapper
+    * В BPluginInterface добавлена информация о версии
+    * Структура PluginInfoStatic переименована в StaticPluginInfo
+    * Удален класс BTranslateFunctor
+    * Изменена сериализация BUuid
+    * Вместо QUuid теперь используется BUuid
+    * Некоторые члены класса BVersion переименованы: minor -> vminor, major -> vmajor и т.д.
+    * Добавлен метод BVersion::clear
+    * Классы BPersonInfo и BPersonInfoList тепреь сериализуемы
+    * Добавлены классы BAbstractLocationProvider и BLocationProvider
+
+==== BeQtNetwork ====
+    * Добавлена возможность указывать уровень сжатия независимо для каждой сетевой операции
+    * В BNetworkServer добавлена возможность слушать несколько хостов/портов
+    * В BNetworkServer реализована возможность предварительно обрабатывать входящее соединение
+    * В BNetworkServer улучшена система блокировки пользователей
+
+==== BeQtWidgets ====
+    * Похожие методы в BGuiTools объединены в шаблонные методы
+    * Перечисление BApplication::SettingsTabNavigation перемещено в BSettingsDialog (соответствующие методы изменены)
+    * В метод BApplication::createMonospaceFont был добавлен параметр pointSize
+    * Убраны некоторые статические методы из BApplication
+    * Убраны некоторые шаблонные методы из BApplication
+    * Исправлена обработка событий в BTerminalWidget
+    * Исправлена система кодеков в BTerminalWidget
+    * Реализована история команд в BTerminalWidget
+    * Исправлена обработка встроенных команд ("cd") в BLocalTerminalDriver
+    * Добавлены новые методы в BAboutDialog
+    * Исправлено отображение файлов ChangeLog
+    * Функция BGuiPluginInterface settingsTab переименована в createSettingsTab
+    * Убран метод BGuiPluginInterface::handleSettings
+    * Добавлена информация о Справке в BGuiPluginInterface
+    * Добавлена возможность задавать пользовательский диалог "About" для плагинов
+    * Убраны некоторые шаблонные методы из BAbstractSettingsTab
+    * Убраны старые методы из BPluginsSettingsTab
+    * Исправлено отображение версии плагина в диалоге "О плагине" в BPluginsSettingsTab
+    * Теперь показывается справка по плагинам
+    * Заново реализован класс BClipboardNotifier
+    * Добавлены новые методы в BPasswordWidget и BLoginWidget
+
+==== BeQtNetworkWidgets ====
+    * В BOperationProgressDialog добавлены новые методы
+
+==== BeQtCodeEditor ====
+    * Убраны старые объявления нереализованных функций из классов
+    * QPointer больше не используется в модулях редактора
+    * Улучшена (де)сериализация модулей редактора
+    * Улучшен класс BTextBlockUserData (реализованы множественные пропускаемые интервалы)
+    * Класс BTextBlockUserData скрыт; вместо него добавлен класс BTextBlockExtraData
+    * В класс BAbstractCodeEditorDocument добавлен public-метод для обработки событий
+    * В класс BAbstractCodeEditorDocument добавлен метод для преобразования точки в абсолютное положение курсора
+    * В класс BAbstractCodeEditorDocument добавлен метод для получения абсолютного положения курсора
+    * В класс BAbstractCodeEditorDocument добавлен перегруженный метод moveCursor
+    * Добавлен метод BAbstractCodeEditorDocument::clear
+    * В класс BSimpleCodeEditorDocument добавлены методы textPreprocessingFunction и textPreprocessingUserData
+    * Добавлена возможность задавать автоматический отступ в редакторе
+    * В редакторе реализован поиск на основе регулярных выражений
+    * Реализовано автодополнение
+
+==== Misc ====
+    * Добавлены файлы .pri для сторонних библиотек (Hunspell и Enca)
+    * Исправлены преупреждения в Qt4 при добавлении модулей "concurrent" и "widgets"
+    * Формат библиотек Mac OS (Frameworks) больше не поддерживается - использубтся библиотеки в UNIX-стиле
+    * Использован стиль кода Qt, отсортированы включаемые файлы, члены классов и т.д.
+
 === BeQt 3.2.3 (02 июля 2014) ===
     * Добавлены дефайны процессорных архитектур
     * Исправлено получение глобального пути к плагинам на Linux

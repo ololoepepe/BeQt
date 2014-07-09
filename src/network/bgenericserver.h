@@ -23,25 +23,23 @@
 #define BGENERICSERVER_H
 
 class BGenericServerPrivate;
+
 class BGenericSocket;
 
 class QTcpServer;
 class QLocalServer;
 class QString;
 
-#include "bgenericsocket.h"
+#include <BeQtCore/BBaseObject>
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-
-#include <QObject>
 #include <QAbstractSocket>
+#include <QObject>
 
 /*============================================================================
 ================================ BGenericServer ==============================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BGenericServer : public QObject, public BBase
+class B_NETWORK_EXPORT BGenericServer : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BGenericServer)
@@ -58,20 +56,20 @@ public:
 protected:
     explicit BGenericServer(BGenericServerPrivate &d, QObject *parent = 0);
 public:
-    QTcpServer *tcpServer() const;
-    QLocalServer *localServer() const;
     void close();
     QString errorString() const;
     bool hasPendingConnections() const;
     bool isListening() const;
     bool isServerSet() const;
     bool listen(const QString &address, quint16 port = 0);
+    QLocalServer *localServer() const;
     int maxPendingConnections() const;
     BGenericSocket *nextPendingConnection();
     QString serverAddress() const;
     QAbstractSocket::SocketError serverError() const;
     ServerType serverType() const;
     void setMaxPendingConnections(int numConnections);
+    QTcpServer *tcpServer() const;
     bool waitForNewConnection(int msec = 0, bool *timedOut = 0);
 protected:
     virtual BGenericSocket *createSocket(int socketDescriptor);

@@ -1,62 +1,104 @@
-class QAction;
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the BeQtWidgets module of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
 class QObject;
-class QWidget;
-class QFont;
-class QToolButton;
-class QToolBar;
-class QVBoxLayout;
-class QString;
-class QLayout;
-class QFormLayout;
 
 #include "bguitools.h"
-#include "bapplication.h"
+
+#include "bapplication_p.h"
 
 #include <BeQtCore/BeQtGlobal>
 
+#include <QAction>
+#include <QFont>
 #include <QFrame>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QLayout>
+#include <QString>
+#include <QToolBar>
+#include <QToolButton>
+#include <QVBoxLayout>
+#include <QWidget>
 
 namespace BGuiTools
 {
 
-QAction *createStandardAction(BApplication::StandardAction type, QObject *parent)
-{
-    return BApplication::createStandardAction(type, parent);
-}
-
-QAction *createSeparator(QObject *parent)
-{
-    return BApplication::createSeparator(parent);
-}
-
-QFrame *createFrame(QFrame::Shape shape, QWidget *parent)
-{
-    return BApplication::createFrame(shape, parent);
-}
-
-QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent)
-{
-    return BApplication::createFrame(shape, shadow, parent);
-}
-
-QFont createMonospaceFont()
-{
-    return BApplication::createMonospaceFont();
-}
-
-QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action)
-{
-    return BApplication::toolButtonForAction(toolBar, action);
-}
-
 void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field)
 {
-    return BApplication::addRow(vlt, label, field);
+    if (!vlt || !field)
+        return;
+    QHBoxLayout *hlt = new QHBoxLayout;
+    hlt->addWidget(new QLabel(label));
+    hlt->addWidget(field);
+    vlt->addLayout(hlt);
 }
 
 void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field)
 {
-    return BApplication::addRow(vlt, label, field);
+    if (!vlt || !field)
+        return;
+    QHBoxLayout *hlt = new QHBoxLayout;
+    hlt->addWidget(new QLabel(label));
+    hlt->addLayout(field);
+    vlt->addLayout(hlt);
+}
+
+QFrame *createFrame(QFrame::Shape shape, QWidget *parent)
+{
+    return createFrame(shape, QFrame::Plain, parent);
+}
+
+QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent)
+{
+    QFrame *fr = new QFrame(parent);
+    fr->setFrameShape(shape);
+    fr->setFrameShadow(shadow);
+    return fr;
+}
+
+QFont createMonospaceFont(int pointSize)
+{
+#if defined Q_OS_WIN
+    //On Windows some weird fonts are selected, so we set the font explicitly
+    QString f = "Courier New";
+#else
+    QString f = "monospace";
+#endif
+    //Using such a construct to guarantee that the font will be monospaced
+    QFont fnt(QFontInfo(QFont(f)).family());
+    fnt.setPointSize((pointSize > 0) ? pointSize : QApplication::font().pointSize());
+    return fnt;
+}
+
+QAction *createSeparator(QObject *parent)
+{
+    QAction *act = new QAction(parent);
+    act->setSeparator(true);
+    return act;
+}
+
+QAction *createStandardAction(StandardAction type, QObject *parent)
+{
+    return BApplicationPrivate::createStandardAction(type, parent);
 }
 
 void removeRow(QVBoxLayout *vlt, QWidget *field)
@@ -79,34 +121,71 @@ void removeRow(QVBoxLayout *vlt, QLayout *field)
         label->deleteLater();
 }
 
-QFormLayout *formLayout(QWidget *field)
-{
-    return BApplication::formLayout(field);
-}
-
-QFormLayout *formLayout(QLayout *field)
-{
-    return BApplication::formLayout(field);
-}
-
-void setRowVisible(QWidget *field, bool visible)
-{
-    return BApplication::setRowVisible(field, visible);
-}
-
-void setRowVisible(QLayout *field, bool visible)
-{
-    return BApplication::setRowVisible(field, visible);
-}
-
 void setRowEnabled(QWidget *field, bool enabled)
 {
-    return BApplication::setRowEnabled(field, enabled);
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setEnabled(enabled);
+    field->setEnabled(enabled);
 }
 
 void setRowEnabled(QLayout *field, bool enabled)
 {
-    return BApplication::setRowEnabled(field, enabled);
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setEnabled(enabled);
+    QStack<QLayout *> s;
+    s.push(field);
+    while (!s.isEmpty()) {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        foreach (int i, bRangeD(0, lt->count() - 1)) {
+            s.push(lt->itemAt(i)->layout());
+            QWidget *w = lt->itemAt(i)->widget();
+            if (w)
+                w->setEnabled(enabled);
+        }
+    }
+}
+
+void setRowVisible(QWidget *field, bool visible)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setVisible(visible);
+    field->setVisible(visible);
+}
+
+void setRowVisible(QLayout *field, bool visible)
+{
+    QWidget *w = labelForField<QWidget>(field);
+    if (!field || !w)
+        return;
+    w->setVisible(visible);
+    QStack<QLayout *> s;
+    s.push(field);
+    while (!s.isEmpty()) {
+        QLayout *lt = s.pop();
+        if (!lt)
+            continue;
+        foreach (int i, bRangeD(0, lt->count() - 1)) {
+            s.push(lt->itemAt(i)->layout());
+            QWidget *w = lt->itemAt(i)->widget();
+            if (w)
+                w->setVisible(visible);
+        }
+    }
+}
+
+QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action)
+{
+    if (!toolBar || !action)
+        return 0;
+    return static_cast<QToolButton *>(toolBar->widgetForAction(action));
 }
 
 }

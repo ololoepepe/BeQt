@@ -22,36 +22,86 @@
 #ifndef BABSTRACTCODEEDITORDOCUMENT_P_H
 #define BABSTRACTCODEEDITORDOCUMENT_P_H
 
-class BCodeEditor;
-class BTextBlockUserData;
-class BSpellChecker;
+class BTextBlockUserDataPrivate;
 
-class QWidget;
-class QTextCodec;
-class QTextDocument;
-class QTextCharFormat;
+class BCodeEditor;
+class BSpellChecker;
+class BTextBlockExtraData;
+
 class QColor;
 class QFont;
-class QTextBlock;
-class QPlainTextEdit;
-class QPoint;
 class QMenu;
+class QPlainTextEdit;
+class QTextCodec;
+class QTextDocument;
 
 #include "babstractcodeeditordocument.h"
-#include "babstractdocumentdriver.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include "babstractdocumentdriver.h"
+#include "babstractfiletype.h"
+
+#include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QString>
-#include <QList>
-#include <QSyntaxHighlighter>
-#include <QTextEdit>
-#include <QTextCharFormat>
-#include <QPair>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QList>
+#include <QPair>
+#include <QPoint>
+#include <QString>
+#include <QSyntaxHighlighter>
+#include <QTextBlock>
+#include <QTextCharFormat>
+#include <QTextEdit>
+#include <QTimer>
+#include <QWidget>
+
+/*============================================================================
+================================ BTextBlockUserData ==========================
+============================================================================*/
+
+class BTextBlockUserData : public QTextBlockUserData, public BBase
+{
+    B_DECLARE_PRIVATE(BTextBlockUserData)
+public:
+    typedef BAbstractFileType::SkipInterval SkipInterval;
+public:
+    explicit BTextBlockUserData(const QList<SkipInterval> &list = QList<SkipInterval>());
+    ~BTextBlockUserData();
+public:
+    static bool shouldSkip(const BTextBlockUserData *ud, int pos);
+    static bool shouldSkip(const QTextBlock &block, int pos);
+    static QList<SkipInterval> skipIntervals(const QTextBlock &block);
+    static QString textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer = '\0');
+    static QString textWithoutSkipIntervals(const QTextBlock &block, char replacer = '\0');
+public:
+    BTextBlockExtraData *extraData() const;
+    void setExtraData(BTextBlockExtraData *data);
+    void setSkipIntervals(const QList<SkipInterval> &list);
+    QList<SkipInterval> skipIntervals() const;
+};
+
+/*============================================================================
+================================ BTextBlockUserDataPrivate ===================
+============================================================================*/
+
+class BTextBlockUserDataPrivate : public BBasePrivate
+{
+    B_DECLARE_PUBLIC(BTextBlockUserData)
+public:
+    typedef BAbstractFileType::SkipInterval SkipInterval;
+public:
+    BTextBlockExtraData *data;
+    QList<SkipInterval> skipIntervals;
+public:
+    explicit BTextBlockUserDataPrivate(BTextBlockUserData *q);
+    ~BTextBlockUserDataPrivate();
+public:
+    static bool lessThan(const SkipInterval &si1, const SkipInterval &si2);
+    static QList<SkipInterval> processList(const QList<SkipInterval> &list);
+public:
+    void init();
+};
 
 /*============================================================================
 ================================ BSyntaxHighlighter ==========================
@@ -62,17 +112,18 @@ class B_CODEEDITOR_EXPORT BSyntaxHighlighter : public QSyntaxHighlighter
 public:
     explicit BSyntaxHighlighter(BAbstractCodeEditorDocument *doc, QTextDocument *parent);
 public:
+    QTextBlock currentBlock() const;
+    BTextBlockExtraData *currentBlockExtraData() const;
+    int currentBlockState() const;
+    BTextBlockUserData *currentBlockUserData() const;
+    BAbstractCodeEditorDocument *editorDocument() const;
+    QTextCharFormat format(int position) const;
+    int previousBlockState() const;
+    void setCurrentBlockExtraData(BTextBlockExtraData *data);
     void setCurrentBlockState(int newState);
-    void setCurrentBlockUserData(BTextBlockUserData *data);
     void setFormat(int start, int count, const QTextCharFormat &format);
     void setFormat(int start, int count, const QColor &color);
     void setFormat(int start, int count, const QFont &font);
-    QTextBlock currentBlock() const;
-    int currentBlockState() const;
-    BTextBlockUserData *currentBlockUserData() const;
-    QTextCharFormat format(int position) const;
-    int previousBlockState() const;
-    BAbstractCodeEditorDocument *editorDocument() const;
 protected:
     void highlightBlock(const QString &text);
 public:
@@ -83,89 +134,96 @@ public:
 ================================ BAbstractCodeEditorDocumentPrivate ==========
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocumentPrivate : public BBasePrivate
+class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocumentPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BAbstractCodeEditorDocument)
 public:
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
+    typedef QTextEdit::ExtraSelection ExtraSelection;
+    typedef QList<ExtraSelection> ExtraSelectionList;
+    typedef BAbstractFileType::SkipInterval SkipInterval;
     typedef BAbstractCodeEditorDocument::TextProcessingResult TextProcessingResult;
     typedef QFuture<TextProcessingResult> TextProcessingResultFuture;
     typedef QFutureWatcher<TextProcessingResult> TextProcessingResultFutureWatcher;
 public:
     struct FindBracketPairResult
     {
-        int start;
-        int end;
-        const BracketPair *startBr;
         const BracketPair *endBr;
+        const BracketPair *startBr;
+    public:
+        int end;
+        int start;
     };
 public:
     typedef QList<FindBracketPairResult> FindBracketPairResultList;
-    typedef QTextEdit::ExtraSelection ExtraSelection;
-    typedef QList<ExtraSelection> ExtraSelectionList;
 public:
-    static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
-    static QTextCharFormat createBracketsFormat();
-    static QTextCharFormat createBracketsErrorFormat();
-    static ExtraSelection createExtraSelection(const QTextEdit *edt,
-                                               const QTextCharFormat &format = QTextCharFormat());
-    static ExtraSelection createExtraSelection(const QPlainTextEdit *edt,
-                                               const QTextCharFormat &format = QTextCharFormat());
-    static FindBracketPairResult createFindBracketPairResult();
+    BCodeEditor *const Editor;
+public:
+    int asyncMin;
+    QTextBlock autocompletionBlock;
+    QPoint autocompletionGlobalPos;
+    int autocompletionPosInBlock;
+    QTimer autocompletionTimer;
+    bool bracketsHighlighting;
+    bool buisy;
+    QTextCodec *codec;
+    bool copyAvailable;
+    int cursorPosition;
+    QPoint cursorPositionRowColumn;
+    bool cutAvailable;
+    QTextDocument *document;
+    QWidget *edit;
+    QString fileName;
+    BAbstractFileType *fileType;
+    bool hasSelection;
+    ExtraSelectionList highlightedBrackets;
+    BSyntaxHighlighter *highlighter;
+    bool isModified;
+    bool pasteAvailable;
+    bool readOnly;
+    BracketPairList recognizedBrackets;
+    bool redoAvailable;
+    BSpellChecker *spellChecker;
+    bool undoAvailable;
+    mutable QPair<int, int> wordToReplace;
 public:
     explicit BAbstractCodeEditorDocumentPrivate(BAbstractCodeEditorDocument *q, BCodeEditor *editor);
     ~BAbstractCodeEditorDocumentPrivate();
 public:
-    void init();
+    static void addBlockSkipInterval(QTextBlock block, const BAbstractFileType::SkipInterval &si);
+    static void addBlockSkipInterval(QTextBlock block, int start, int end = -1);
+    static QTextCharFormat createBracketsErrorFormat();
+    static QTextCharFormat createBracketsFormat();
+    static FindBracketPairResult createFindBracketPairResult();
+    static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
+    static void setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list = QList<SkipInterval>());
+public:
     bool createEdit();
-    void setBuisy(bool b);
-    void setFileName(QString fn);
-    void setCodec(QTextCodec *c);
-    void rehighlight();
-    void highlightBrackets();
-    void setExtraSelections(const ExtraSelectionList &list, bool *ok = 0);
-    ExtraSelectionList getExtraSelections(bool *ok = 0) const;
     ExtraSelection createExtraSelection(const QTextCharFormat &format, bool *ok = 0) const;
     ExtraSelection createExtraSelection(bool *ok = 0) const;
+    QMenu *createSpellCheckerMenu(const QPoint &pos);
     FindBracketPairResult findLeftBracketPair() const;
     FindBracketPairResult findRightBracketPair() const;
+    ExtraSelectionList getExtraSelections(bool *ok = 0) const;
+    void highlightBrackets();
+    void init();
+    void rehighlight();
+    void setBuisy(bool b);
+    void setCodec(QTextCodec *c);
+    void setExtraSelections(const ExtraSelectionList &list, bool *ok = 0);
+    void setFileName(QString fn);
     bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
-    QMenu *createSpellCheckerMenu(const QPoint &pos);
 public Q_SLOTS:
-    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
-    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
-    void replaceWord();
-    void ignoreWord();
-    void dontIgnoreWord();
     void customContextMenuRequested(const QPoint &pos);
+    void dontIgnoreWord();
+    void ignoreWord();
+    void loadingFinished(const BAbstractDocumentDriver::Operation &operation, bool success, const QString &text);
     void preprocessingFinished();
-public:
-    BCodeEditor *const Editor;
-public:
-    QWidget *edit;
-    QTextDocument *document;
-    BSyntaxHighlighter *highlighter;
-    BAbstractFileType *fileType;
-    BracketPairList recognizedBrackets;
-    bool bracketsHighlighting;
-    ExtraSelectionList highlightedBrackets;
-    BSpellChecker *spellChecker;
-    QString fileName;
-    QTextCodec *codec;
-    int asyncMin;
-    bool readOnly;
-    bool isModified;
-    bool hasSelection;
-    bool cutAvailable;
-    bool copyAvailable;
-    bool pasteAvailable;
-    bool undoAvailable;
-    bool redoAvailable;
-    QPoint cursorPosition;
-    bool buisy;
-    mutable QPair<int, int> wordToReplace;
+    void replaceWord();
+    void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
+    void showAutocompletionMenu();
 private:
     Q_DISABLE_COPY(BAbstractCodeEditorDocumentPrivate)
 };

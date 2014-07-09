@@ -22,15 +22,14 @@
 #ifndef BLINENUMBERWIDGET_P_H
 #define BLINENUMBERWIDGET_P_H
 
-class QPlainTextEdit;
-class QPaintEvent;
-class QRect;
 class QEvent;
+class QPaintEvent;
+class QPlainTextEdit;
+class QRect;
 
 #include "blinenumberwidget.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QObject>
 
@@ -38,24 +37,24 @@ class QEvent;
 ================================ BLineNumberWidgetPrivate ====================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BLineNumberWidgetPrivate : public BBasePrivate
+class B_WIDGETS_EXPORT BLineNumberWidgetPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
     B_DECLARE_PUBLIC(BLineNumberWidget)
 public:
+    QPlainTextEdit *const Edit;
+public:
     explicit BLineNumberWidgetPrivate(BLineNumberWidget *q, QPlainTextEdit *edit);
     ~BLineNumberWidgetPrivate();
 public:
-    void init();
     bool eventFilter(QObject *o, QEvent *e);
     int getWidth() const;
+    void init();
     bool paintEvent(QPaintEvent *e);
 public Q_SLOTS:
+    void resize();
     void update(const QRect &rect, int dy);
     void updateArea();
-    void resize();
-public:
-    QPlainTextEdit *const Edit;
 private:
     Q_DISABLE_COPY(BLineNumberWidgetPrivate)
 };

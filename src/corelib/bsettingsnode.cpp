@@ -20,21 +20,20 @@
 ****************************************************************************/
 
 #include "bsettingsnode.h"
-#include "bglobal.h"
+
+#include "bapplicationbase.h"
 #include "bbase_p.h"
-#include "bterminaliohandler.h"
-#include "bcoreapplication.h"
+#include "bterminal.h"
 #include "btranslation.h"
 
-#include <QString>
-#include <QList>
-#include <QVariant>
 #include <QChar>
-#include <QStringList>
-#include <QSettings>
-#include <QLocale>
-
 #include <QDebug>
+#include <QList>
+#include <QLocale>
+#include <QSettings>
+#include <QString>
+#include <QStringList>
+#include <QVariant>
 
 /*============================================================================
 ================================ BSettingsNodePrivate ========================
@@ -44,19 +43,19 @@ class BSettingsNodePrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BSettingsNode)
 public:
+    QList<BSettingsNode *> childNodes;
+    BTranslation description;
+    QString key;
+    BSettingsNode *parentNode;
+    bool secure;
+    BSettingsNode::SetFunction setFunction;
+    BSettingsNode::ShowFunction showFunction;
+    QVariant::Type type;
+public:
     explicit BSettingsNodePrivate(BSettingsNode *q);
     ~BSettingsNodePrivate();
 public:
     void init();
-public:
-    BSettingsNode *parentNode;
-    QList<BSettingsNode *> childNodes;
-    QString key;
-    QVariant::Type type;
-    bool secure;
-    BTranslation description;
-    BSettingsNode::SetFunction setFunction;
-    BSettingsNode::ShowFunction showFunction;
 private:
     Q_DISABLE_COPY(BSettingsNodePrivate)
 };
@@ -133,8 +132,7 @@ QVariant BSettingsNode::stringToVariant(const QString &s, QVariant::Type t, bool
     if (ok)
         *ok = true;
     QVariant v;
-    switch (t)
-    {
+    switch (t) {
     case QVariant::Locale:
         v = QLocale(s);
         break;
@@ -152,8 +150,7 @@ QString BSettingsNode::variantToString(QVariant v, bool *ok)
     if (ok)
         *ok = true;
     QString s;
-    switch (v.type())
-    {
+    switch (v.type()) {
     case QVariant::Locale:
         s = v.toLocale().name();
         break;
@@ -169,47 +166,6 @@ QString BSettingsNode::variantToString(QVariant v, bool *ok)
 
 /*============================== Public methods ============================*/
 
-void BSettingsNode::setParent(BSettingsNode *parent)
-{
-    if (parent == d_func()->parentNode)
-        return;
-    if (d_func()->parentNode)
-        d_func()->parentNode->d_func()->childNodes.removeAll(this);
-    d_func()->parentNode = parent;
-    if (parent && !parent->d_func()->childNodes.contains(this))
-        parent->d_func()->childNodes << this;
-}
-
-void BSettingsNode::setKey(const QString &key)
-{
-    d_func()->key = key;
-}
-
-void BSettingsNode::setType(QVariant::Type type)
-{
-    d_func()->type = type;
-}
-
-void BSettingsNode::setSecureInput(bool b)
-{
-    d_func()->secure = b;
-}
-
-void BSettingsNode::setDescription(const BTranslation &t)
-{
-    d_func()->description = t;
-}
-
-void BSettingsNode::setUserSetFunction(SetFunction f)
-{
-    d_func()->setFunction = f;
-}
-
-void BSettingsNode::setUserShowFunction(ShowFunction f)
-{
-    d_func()->showFunction = f;
-}
-
 void BSettingsNode::addChild(BSettingsNode *node)
 {
     if (!node || d_func()->childNodes.contains(node))
@@ -222,23 +178,33 @@ void BSettingsNode::addChild(const QString &key, QVariant::Type type)
     addChild(new BSettingsNode(type, key));
 }
 
-void BSettingsNode::removeChild(BSettingsNode *node)
+int BSettingsNode::childCount() const
 {
-    if (!node)
-        return;
-    node->setParent(0);
+    return d_func()->childNodes.size();
 }
 
-void BSettingsNode::showTree(int indentStep, int initialIndent) const
+QList<BSettingsNode *> BSettingsNode::childNodes() const
 {
-    if (indentStep < 0)
-        indentStep = 2;
-    if (initialIndent < 0)
-        initialIndent = 0;
-    if (!key().isEmpty())
-        BTerminalIOHandler::writeLine(QString(initialIndent, ' ') + key());
-    foreach (BSettingsNode *n, childNodes())
-        n->showTree(indentStep, initialIndent + (!key().isEmpty() ? indentStep : 0));
+    return d_func()->childNodes;
+}
+
+BSettingsNode *BSettingsNode::clone(BSettingsNode *parent) const
+{
+    BSettingsNode *root = new BSettingsNode(parent);
+    root->setKey(key());
+    root->setType(type());
+    root->setSecureInput(secureInput());
+    root->setDescription(description());
+    root->setUserSetFunction(userSetFunction());
+    root->setUserShowFunction(userShowFunction());
+    foreach (BSettingsNode *n, d_func()->childNodes)
+        root->addChild(n->clone(root));
+    return root;
+}
+
+BTranslation BSettingsNode::description() const
+{
+    return d_func()->description;
 }
 
 BSettingsNode *BSettingsNode::find(const QString &path, QChar separator)
@@ -247,25 +213,20 @@ BSettingsNode *BSettingsNode::find(const QString &path, QChar separator)
         return 0;
     if (separator.isNull())
         separator = '.';
-    if (key().isEmpty())
-    {
-        foreach (BSettingsNode *n, childNodes())
-        {
+    if (key().isEmpty()) {
+        foreach (BSettingsNode *n, childNodes()) {
             BSettingsNode *nn = n->find(path, separator);
             if (nn)
                 return nn;
         }
-    }
-    else
-    {
+    } else {
         QStringList sl = path.split(separator);
         if (sl.takeFirst() != key())
             return 0;
         QString spath = sl.join(QString(separator));
         if (spath.isEmpty())
             return this;
-        foreach (BSettingsNode *n, childNodes())
-        {
+        foreach (BSettingsNode *n, childNodes()) {
             BSettingsNode *nn = n->find(spath, separator);
             if (nn)
                 return nn;
@@ -277,6 +238,28 @@ BSettingsNode *BSettingsNode::find(const QString &path, QChar separator)
 const BSettingsNode *BSettingsNode::find(const QString &path, QChar separator) const
 {
     return const_cast<BSettingsNode *>(this)->find(path, separator);
+}
+
+QString BSettingsNode::key() const
+{
+    return d_func()->key;
+}
+
+BSettingsNode *BSettingsNode::parent() const
+{
+    return d_func()->parentNode;
+}
+
+void BSettingsNode::removeChild(BSettingsNode *node)
+{
+    if (!node)
+        return;
+    node->setParent(0);
+}
+
+bool BSettingsNode::secureInput() const
+{
+    return d_func()->secure;
 }
 
 bool BSettingsNode::set(QString path, QChar separator) const
@@ -302,7 +285,7 @@ bool BSettingsNode::set(QString path, QString text, QChar separator) const
     if (!ok)
         return false;
     if (path == "BeQt/Core/locale")
-        BCoreApplication::setLocale(v.toLocale());
+        BApplicationBase::setLocale(v.toLocale());
     else
         bSettings->setValue(path, v);
     return true;
@@ -320,10 +303,51 @@ bool BSettingsNode::set(QString path, QVariant value, QChar separator) const
         separator = '.';
     path.replace(separator, '/');
     if (path == "BeQt/Core/locale")
-        BCoreApplication::setLocale(v.toLocale());
+        BApplicationBase::setLocale(v.toLocale());
     else
         bSettings->setValue(path, v);
     return true;
+}
+
+void BSettingsNode::setDescription(const BTranslation &t)
+{
+    d_func()->description = t;
+}
+
+void BSettingsNode::setKey(const QString &key)
+{
+    d_func()->key = key;
+}
+
+void BSettingsNode::setParent(BSettingsNode *parent)
+{
+    if (parent == d_func()->parentNode)
+        return;
+    if (d_func()->parentNode)
+        d_func()->parentNode->d_func()->childNodes.removeAll(this);
+    d_func()->parentNode = parent;
+    if (parent && !parent->d_func()->childNodes.contains(this))
+        parent->d_func()->childNodes << this;
+}
+
+void BSettingsNode::setSecureInput(bool b)
+{
+    d_func()->secure = b;
+}
+
+void BSettingsNode::setType(QVariant::Type type)
+{
+    d_func()->type = type;
+}
+
+void BSettingsNode::setUserSetFunction(SetFunction f)
+{
+    d_func()->setFunction = f;
+}
+
+void BSettingsNode::setUserShowFunction(ShowFunction f)
+{
+    d_func()->showFunction = f;
 }
 
 bool BSettingsNode::show(QString path, QChar separator) const
@@ -346,57 +370,25 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     QString vs = variantToString(v, &ok);
     if (!ok)
         return false;
-    BTerminalIOHandler::writeLine(text.replace("%k", path.split("/").last()).replace("%v", vs));
+    BTerminal::writeLine(text.replace("%k", path.split("/").last()).replace("%v", vs));
     return true;
 }
 
-BSettingsNode *BSettingsNode::clone(BSettingsNode *parent) const
+void BSettingsNode::showTree(int indentStep, int initialIndent) const
 {
-    BSettingsNode *root = new BSettingsNode(parent);
-    root->setKey(key());
-    root->setType(type());
-    root->setSecureInput(secureInput());
-    root->setDescription(description());
-    root->setUserSetFunction(userSetFunction());
-    root->setUserShowFunction(userShowFunction());
-    foreach (BSettingsNode *n, d_func()->childNodes)
-        root->addChild(n->clone(root));
-    return root;
-}
-
-BSettingsNode *BSettingsNode::parent() const
-{
-    return d_func()->parentNode;
-}
-
-QList<BSettingsNode *> BSettingsNode::childNodes() const
-{
-    return d_func()->childNodes;
-}
-
-int BSettingsNode::childCount() const
-{
-    return d_func()->childNodes.size();
-}
-
-QString BSettingsNode::key() const
-{
-    return d_func()->key;
+    if (indentStep < 0)
+        indentStep = 2;
+    if (initialIndent < 0)
+        initialIndent = 0;
+    if (!key().isEmpty())
+        BTerminal::writeLine(QString(initialIndent, ' ') + key());
+    foreach (BSettingsNode *n, childNodes())
+        n->showTree(indentStep, initialIndent + (!key().isEmpty() ? indentStep : 0));
 }
 
 QVariant::Type BSettingsNode::type() const
 {
     return d_func()->type;
-}
-
-bool BSettingsNode::secureInput() const
-{
-    return d_func()->secure;
-}
-
-BTranslation BSettingsNode::description() const
-{
-    return d_func()->description;
 }
 
 BSettingsNode::SetFunction BSettingsNode::userSetFunction() const

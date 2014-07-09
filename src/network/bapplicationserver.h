@@ -24,18 +24,18 @@
 
 class BApplicationServerPrivate;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+class QString;
+
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
-#include <QString>
 #include <QStringList>
 
 /*============================================================================
 ================================ BApplicationServer ==========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BApplicationServer : public BBase
+class B_NETWORK_EXPORT BApplicationServer : public BBaseObject
 {
     B_DECLARE_PRIVATE(BApplicationServer)
 public:
@@ -50,10 +50,10 @@ protected:
     explicit BApplicationServer(BApplicationServerPrivate &d);
 public:
     bool isValid() const;
-    bool testServer() const;
     bool listen();
+    bool testServer() const;
     bool sendMessage(int &argc, char **argv);
-    bool sendMessage( const QStringList &arguments = QStringList() );
+    bool sendMessage(const QStringList &arguments = QStringList());
 protected:
     virtual void handleMessage(const QStringList &arguments);
 private:

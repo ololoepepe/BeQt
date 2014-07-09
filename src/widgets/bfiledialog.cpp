@@ -21,83 +21,56 @@
 
 #include "bfiledialog.h"
 #include "bfiledialog_p.h"
-#include "btextcodecmenu.h"
+
 #include "btextcodeccombobox.h"
+#include "btextcodecmenu.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
-#include <QString>
-#include <QTextCodec>
-#include <QStringList>
-#include <QFileDialog>
-#include <QList>
-#include <QLayout>
-#include <QLabel>
-#include <QVariant>
-#include <QByteArray>
-#include <QVariantMap>
-#include <QToolButton>
-#include <QDir>
-#include <QLineEdit>
-#include <QDialogButtonBox>
-#include <QPushButton>
-#include <QEvent>
-#include <QKeyEvent>
 #include <QAbstractButton>
-#include <QCompleter>
-#include <QAbstractItemView>
-#include <QFileInfo>
-#include <QSortFilterProxyModel>
-#include <QModelIndex>
-#include <QCompleter>
 #include <QAbstractItemModel>
-#include <QTimer>
-
+#include <QAbstractItemView>
+#include <QByteArray>
+#include <QCompleter>
 #include <QDebug>
+#include <QDialogButtonBox>
+#include <QDir>
+#include <QEvent>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QKeyEvent>
+#include <QLabel>
+#include <QLayout>
+#include <QLineEdit>
+#include <QList>
+#include <QModelIndex>
+#include <QObject>
+#include <QSortFilterProxyModel>
+#include <QString>
+#include <QStringList>
+#include <QTextCodec>
+#include <QTimer>
+#include <QToolButton>
+#include <QVariant>
+#include <QVariantMap>
 
 /*============================================================================
-================================ ProxyModel ==================================
+================================ BProxyModel =================================
 ============================================================================*/
 
-class ProxyModel : public QSortFilterProxyModel
-{
-public:
-    explicit ProxyModel(QObject *parent = 0);
-public:
-    void setPreventAll(bool b);
-protected:
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
-private:
-    bool prevent;
-};
+/*============================== Public constructors =======================*/
 
-/*============================================================================
-================================ Static global functions =====================
-============================================================================*/
-
-static QString chooseDir(const QString &path)
-{
-    if (path.isEmpty())
-        return "";
-    QFileInfo fi(path);
-    return fi.isDir() ? QDir::cleanPath(fi.absoluteFilePath()) : QString();
-}
-
-/*============================================================================
-================================ ProxyModel ==================================
-============================================================================*/
-
-ProxyModel::ProxyModel(QObject *parent) :
+BProxyModel::BProxyModel(QObject *parent) :
     QSortFilterProxyModel(parent)
 {
     prevent = false;
 }
 
-void ProxyModel::setPreventAll(bool b)
+/*============================== Public methods ============================*/
+
+void BProxyModel::setPreventAll(bool b)
 {
     if (b == prevent)
         return;
@@ -105,7 +78,9 @@ void ProxyModel::setPreventAll(bool b)
     invalidateFilter();
 }
 
-bool ProxyModel::filterAcceptsRow(int row, const QModelIndex &parent) const
+/*============================== Protected methods =========================*/
+
+bool BProxyModel::filterAcceptsRow(int row, const QModelIndex &parent) const
 {
     return !prevent && QSortFilterProxyModel::filterAcceptsRow(row, parent);
 }
@@ -117,7 +92,7 @@ bool ProxyModel::filterAcceptsRow(int row, const QModelIndex &parent) const
 /*============================== Public constructors =======================*/
 
 BFileDialogPrivate::BFileDialogPrivate(BFileDialog *q, BTextCodecMenu::Style comboBoxStyle, const QString &topDir) :
-    BBasePrivate(q), CmboxStyle(comboBoxStyle), TopDir(chooseDir(topDir))
+    BBaseObjectPrivate(q), CmboxStyle(comboBoxStyle), TopDir(chooseDir(topDir))
 {
     //
 }
@@ -127,14 +102,38 @@ BFileDialogPrivate::~BFileDialogPrivate()
     //
 }
 
+/*============================== Static public methods =====================*/
+
+QString BFileDialogPrivate::chooseDir(const QString &path)
+{
+    if (path.isEmpty())
+        return "";
+    QFileInfo fi(path);
+    return fi.isDir() ? QDir::cleanPath(fi.absoluteFilePath()) : QString();
+}
+
 /*============================== Public methods ============================*/
+
+bool BFileDialogPrivate::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() != QEvent::KeyPress)
+        return false;
+    int key = static_cast<QKeyEvent *>(e)->key();
+    if (o->objectName() == "listView" || o->objectName() == "treeView")
+        return (Qt::Key_Backspace == key && !pathFits(q_func()->directory().absolutePath()));
+    if (Qt::Key_Return != key && Qt::Key_Enter != key)
+        return false;
+    QString text = q_func()->findChild<QLineEdit *>("fileNameEdit")->text();
+    QString path = QDir::cleanPath(q_func()->directory().absolutePath() + (text.startsWith("/") ? "" : "/") + text);
+    bool a = QDir(text).isAbsolute();
+    return !((!a && pathFits(path)) || (a && pathFits(text)));
+}
 
 void BFileDialogPrivate::init()
 {
     maxHistorySize = 20;
     B_Q(BFileDialog);
-    if (!TopDir.isEmpty())
-    {
+    if (!TopDir.isEmpty()) {
         connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(checkGoToParent()));
         connect(q->findChild<QToolButton *>("backButton"), SIGNAL(clicked()), this, SLOT(checkGoToParent()));
         connect(q->findChild<QToolButton *>("forwardButton"), SIGNAL(clicked()), this, SLOT(checkGoToParent()));
@@ -146,20 +145,18 @@ void BFileDialogPrivate::init()
         QAbstractItemView *view = q->findChild<QLineEdit *>("fileNameEdit")->completer()->popup();
         view->installEventFilter(this);
         QAbstractItemModel *mdl = view->model();
-        proxy = new ProxyModel(this);
+        proxy = new BProxyModel(this);
         view->setModel(proxy);
         proxy->setSourceModel(mdl);
         q->findChild<QWidget *>("lookInCombo")->setEnabled(false);
         q->findChild<QWidget *>("sidebar")->setEnabled(false);
         checkGoToParent();
-    }
-    else
-    {
+    } else {
         proxy = 0;
     }
     connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(checkHistory()));
     q->setOption(BFileDialog::DontUseNativeDialog, true);
-    lt = q->layout();
+    QLayout *lt = q->layout();
       lblEncodings = new QLabel(q);
         lblEncodings->setText(tr("Encoding", "lbl text") + ":");
       lt->addWidget(lblEncodings);
@@ -167,27 +164,6 @@ void BFileDialogPrivate::init()
       connect(cmboxEncodings, SIGNAL(codecChanged(QTextCodec *)), q, SIGNAL(codecChanged(QTextCodec *)));
       connect(cmboxEncodings, SIGNAL(codecNameChanged(QString)), q, SIGNAL(codecNameChanged(QString)));
       lt->addWidget(cmboxEncodings);
-}
-
-bool BFileDialogPrivate::eventFilter(QObject *o, QEvent *e)
-{
-    if (e->type() != QEvent::KeyPress)
-        return false;
-    int key = static_cast<QKeyEvent *>(e)->key();
-    if (o->objectName() == "listView" || o->objectName() == "treeView")
-    {
-        return (Qt::Key_Backspace == key && !pathFits(q_func()->directory().absolutePath()));
-    }
-    else
-    {
-        if (Qt::Key_Return != key && Qt::Key_Enter != key)
-            return false;
-        QString text = q_func()->findChild<QLineEdit *>("fileNameEdit")->text();
-        QString path = QDir::cleanPath(q_func()->directory().absolutePath() +
-                                       (text.startsWith("/") ? "" : "/") + text);
-        bool a = QDir(text).isAbsolute();
-        return !((!a && pathFits(path)) || (a && pathFits(text)));
-    }
 }
 
 bool BFileDialogPrivate::pathFits(const QString &path) const
@@ -231,26 +207,27 @@ void BFileDialogPrivate::checkLineEdit(const QString &text)
 /*============================== Public constructors =======================*/
 
 BFileDialog::BFileDialog(QWidget *parent) :
-    QFileDialog(parent), BBase(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle))
+    QFileDialog(parent), BBaseObject(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle))
 {
     d_func()->init();
 }
 
 BFileDialog::BFileDialog(const QString &topDir, QWidget *parent) :
-    QFileDialog(parent, "", chooseDir(topDir)),
-    BBase(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle, topDir))
+    QFileDialog(parent, "", BFileDialogPrivate::chooseDir(topDir)),
+    BBaseObject(*new BFileDialogPrivate(this, BTextCodecMenu::StructuredStyle, topDir))
 {
     d_func()->init();
 }
 
 BFileDialog::BFileDialog(BTextCodecMenu::Style comboBoxStyle, QWidget *parent) :
-    QFileDialog(parent), BBase(*new BFileDialogPrivate(this, comboBoxStyle))
+    QFileDialog(parent), BBaseObject(*new BFileDialogPrivate(this, comboBoxStyle))
 {
     d_func()->init();
 }
 
 BFileDialog::BFileDialog(BTextCodecMenu::Style comboBoxStyle, const QString &topDir, QWidget *parent) :
-    QFileDialog(parent, "", chooseDir(topDir)), BBase(*new BFileDialogPrivate(this, comboBoxStyle, topDir))
+    QFileDialog(parent, "", BFileDialogPrivate::chooseDir(topDir)),
+    BBaseObject(*new BFileDialogPrivate(this, comboBoxStyle, topDir))
 {
     d_func()->init();
 }
@@ -263,19 +240,21 @@ BFileDialog::~BFileDialog()
 /*============================== Protected constructors ====================*/
 
 BFileDialog::BFileDialog(BFileDialogPrivate &d, QWidget *parent) :
-    QFileDialog(parent), BBase(d)
+    QFileDialog(parent), BBaseObject(d)
 {
     d_func()->init();
 }
 
 /*============================== Public methods ============================*/
 
-void BFileDialog::setMaxHistorySize(int sz)
+bool BFileDialog::codecSelectionEnabled() const
 {
-    if (sz < 1)
-        return;
-    d_func()->maxHistorySize = sz;
-    d_func()->checkHistory();
+    return d_func()->cmboxEncodings->isVisible();
+}
+
+int BFileDialog::maxHistorySize() const
+{
+    return d_func()->maxHistorySize;
 }
 
 void BFileDialog::restoreState(const QByteArray &ba)
@@ -286,19 +265,12 @@ void BFileDialog::restoreState(const QByteArray &ba)
     selectCodec(m.value("codec_name").toString());
 }
 
-int BFileDialog::maxHistorySize() const
+QByteArray BFileDialog::saveState() const
 {
-    return d_func()->maxHistorySize;
-}
-
-QString BFileDialog::topDir() const
-{
-    return d_func()->TopDir;
-}
-
-bool BFileDialog::codecSelectionEnabled() const
-{
-    return d_func()->cmboxEncodings->isVisible();
+    QVariantMap m;
+    m.insert("q_file_dialog_state", QFileDialog::saveState());
+    m.insert("codec_name", selectedCodecName());
+    return BeQt::serialize(m);
 }
 
 QTextCodec *BFileDialog::selectedCodec() const
@@ -311,20 +283,20 @@ QString BFileDialog::selectedCodecName() const
     return d_func()->cmboxEncodings->selectedCodecName();
 }
 
-QByteArray BFileDialog::saveState() const
+void BFileDialog::setMaxHistorySize(int sz)
 {
-    QVariantMap m;
-    m.insert("q_file_dialog_state", QFileDialog::saveState());
-    m.insert("codec_name", selectedCodecName());
-    return BeQt::serialize(m);
+    if (sz < 1)
+        return;
+    d_func()->maxHistorySize = sz;
+    d_func()->checkHistory();
+}
+
+QString BFileDialog::topDir() const
+{
+    return d_func()->TopDir;
 }
 
 /*============================== Public slots ==============================*/
-
-void BFileDialog::setCodecSelectionEnabled(bool b)
-{
-    d_func()->cmboxEncodings->setVisible(b);
-}
 
 void BFileDialog::selectCodec(QTextCodec *codec)
 {
@@ -334,4 +306,9 @@ void BFileDialog::selectCodec(QTextCodec *codec)
 void BFileDialog::selectCodec(const QString &codecName)
 {
     d_func()->cmboxEncodings->selectCodec(codecName);
+}
+
+void BFileDialog::setCodecSelectionEnabled(bool b)
+{
+    d_func()->cmboxEncodings->setVisible(b);
 }

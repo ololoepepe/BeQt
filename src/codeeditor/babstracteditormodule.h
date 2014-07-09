@@ -23,31 +23,31 @@
 #define BABSTRACTEDITORMODULE_H
 
 class BAbstractEditorModulePrivate;
-class BCodeEditor;
-class BCodeEditorPrivate;
+
 class BAbstractCodeEditorDocument;
 class BAbstractFileType;
+class BCodeEditor;
+class BCodeEditorPrivate;
 
+class QAction;
+class QByteArray;
+class QPoint;
 class QString;
 class QStringList;
-class QAction;
 class QWidget;
-class QByteArray;
 
 #include "bcodeedit.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
-#include <QObject>
-#include <QPoint>
 #include <QList>
+#include <QObject>
 
 /*============================================================================
 ================================ BAbstractEditorModule =======================
 ============================================================================*/
 
-class B_CODEEDITOR_EXPORT BAbstractEditorModule : public QObject, public BBase
+class B_CODEEDITOR_EXPORT BAbstractEditorModule : public QObject, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BAbstractEditorModule)
@@ -57,46 +57,47 @@ public:
 protected:
     explicit BAbstractEditorModule(BAbstractEditorModulePrivate &d, QObject *parent = 0);
 public:
-    virtual QString id() const = 0;
-    virtual bool isBuisy() const;
     virtual QAction *action(int type);
     virtual QList<QAction *> actions(int group, bool extended = false);
     virtual QList<QAction *> actions(bool extended = false);
+    BCodeEditor *editor() const;
+    virtual QString id() const = 0;
+    virtual bool isBuisy() const;
+    virtual void restoreState(const QByteArray &state);
+    virtual QByteArray saveState() const;
     virtual QWidget *widget(int type);
     virtual QList<QWidget *> widgets(int group, bool extended = false);
     virtual QList<QWidget *> widgets(bool extended = false);
-    virtual QByteArray saveState() const;
-    virtual void restoreState(const QByteArray &state);
-    BCodeEditor *editor() const;
 protected:
+    BAbstractCodeEditorDocument *currentDocument() const;
+    virtual void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
+    virtual void defaultCodecChanged(const QString &codecName);
+    virtual void documentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
+    virtual void documentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
+    virtual void documentAdded(BAbstractCodeEditorDocument *doc);
+    virtual void documentBuisyChanged(bool buisy);
+    virtual void documentCodecChanged(const QString &codecName);
+    virtual void documentCopyAvailableChanged(bool available);
+    virtual void documentCursorPositionChanged(int pos);
+    virtual void documentCursorPositionChanged(const QPoint &pos);
+    virtual void documentCutAvailableChanged(bool available);
+    virtual void documentEditModeChanged(BCodeEdit::EditMode mode);
+    virtual void documentFileNameChanged(const QString &fn);
+    virtual void documentFileTypeChanged(BAbstractFileType *ft);
+    virtual void documentHasSelectionChanged(bool hasSelection);
+    virtual void documentModificationChanged(bool modified);
+    virtual void documentPasteAvailableChanged(bool available);
+    virtual void documentReadOnlyChanged(bool ro);
+    virtual void documentRedoAvailableChanged(bool available);
+    virtual void documentRemoved(const QString &fileName);
+    QList<BAbstractCodeEditorDocument *> documents() const;
+    virtual void documentSelectionChanged();
+    virtual void documentUndoAvailableChanged(bool available);
+    virtual void editModeChanged(BCodeEdit::EditMode mode);
     virtual void editorSet(BCodeEditor *edr);
     virtual void editorUnset(BCodeEditor *edr);
-    virtual void documentReadOnlyChanged(bool ro);
-    virtual void documentModificationChanged(bool modified);
-    virtual void documentSelectionChanged();
-    virtual void documentHasSelectionChanged(bool hasSelection);
-    virtual void documentCutAvailableChanged(bool available);
-    virtual void documentCopyAvailableChanged(bool available);
-    virtual void documentPasteAvailableChanged(bool available);
-    virtual void documentUndoAvailableChanged(bool available);
-    virtual void documentRedoAvailableChanged(bool available);
-    virtual void documentEditModeChanged(BCodeEdit::EditMode mode);
-    virtual void documentCursorPositionChanged(const QPoint &pos);
-    virtual void documentBuisyChanged(bool buisy);
-    virtual void documentFileNameChanged(const QString &fn);
-    virtual void documentCodecChanged(const QString &codecName);
-    virtual void documentFileTypeChanged(BAbstractFileType *ft);
-    virtual void defaultCodecChanged(const QString &codecName);
-    virtual void editModeChanged(BCodeEdit::EditMode mode);
-    virtual void documentAboutToBeAdded(BAbstractCodeEditorDocument *doc);
-    virtual void documentAdded(BAbstractCodeEditorDocument *doc);
-    virtual void documentAboutToBeRemoved(BAbstractCodeEditorDocument *doc);
-    virtual void documentRemoved(const QString &fileName);
-    virtual void currentDocumentChanged(BAbstractCodeEditorDocument *doc);
-    virtual void fileTypesChanged();
     virtual void fileHistoryChanged(const QStringList &list);
-    BAbstractCodeEditorDocument *currentDocument() const;
-    QList<BAbstractCodeEditorDocument *> documents() const;
+    virtual void fileTypesChanged();
 private:
     Q_DISABLE_COPY(BAbstractEditorModule)
     friend class BCodeEditorPrivate;

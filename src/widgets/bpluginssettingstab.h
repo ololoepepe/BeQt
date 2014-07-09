@@ -24,21 +24,18 @@
 
 class BPluginsSettingsTabPrivate;
 
-class QString;
 class QIcon;
+class QString;
 
 #include "babstractsettingstab.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-
-#include <QVariantMap>
+#include <BeQtCore/BBaseObject>
 
 /*============================================================================
 ================================ BPluginsSettingsTab =========================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public BBase
+class B_WIDGETS_EXPORT BPluginsSettingsTab : public BAbstractSettingsTab, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginsSettingsTab)
@@ -48,9 +45,8 @@ public:
 protected:
     explicit BPluginsSettingsTab(BPluginsSettingsTabPrivate &d);
 public:
-    QString title() const;
     QIcon icon() const;
-    QVariantMap valueMap() const;
+    QString title() const;
 private:
     Q_DISABLE_COPY(BPluginsSettingsTab)
 };

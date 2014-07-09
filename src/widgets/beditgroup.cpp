@@ -22,16 +22,15 @@
 #include "beditgroup.h"
 #include "beditgroup_p.h"
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
-#include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BBaseObject>
+#include <BeQtCore/private/bbaseobject_p.h>
 
-#include <QObject>
-#include <QMap>
-#include <QList>
-#include <QString>
-#include <QMetaObject>
 #include <QLineEdit>
+#include <QList>
+#include <QMap>
+#include <QMetaObject>
+#include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BEditGroupPrivate ===========================
@@ -40,7 +39,7 @@
 /*============================== Public constructors =======================*/
 
 BEditGroupPrivate::BEditGroupPrivate(BEditGroup *q) :
-    BBasePrivate(q)
+    BBaseObjectPrivate(q)
 {
     //
 }
@@ -69,13 +68,10 @@ void BEditGroupPrivate::textChanged()
 {
     QList<QLineEdit *> list = ledtMap.values();
     bool nmatch = !list.isEmpty();
-    if (nmatch)
-    {
+    if (nmatch) {
         QString txt = list.first()->text();
-        foreach (int i, bRangeD(1, list.size() - 1))
-        {
-            if (list.at(i)->text() != txt)
-            {
+        foreach (int i, bRangeD(1, list.size() - 1)) {
+            if (list.at(i)->text() != txt) {
                 nmatch = false;
                 break;
             }
@@ -94,7 +90,7 @@ void BEditGroupPrivate::textChanged()
 /*============================== Public constructors =======================*/
 
 BEditGroup::BEditGroup(QObject *parent) :
-    QObject(parent), BBase(*new BEditGroupPrivate(this))
+    QObject(parent), BBaseObject(*new BEditGroupPrivate(this))
 {
     d_func()->init();
 }
@@ -107,7 +103,7 @@ BEditGroup::~BEditGroup()
 /*============================== Protected constructors ====================*/
 
 BEditGroup::BEditGroup(BEditGroupPrivate &d, QObject *parent) :
-    QObject(parent), BBase(d)
+    QObject(parent), BBaseObject(d)
 {
     d_func()->init();
 }
@@ -124,12 +120,12 @@ void BEditGroup::addEdit(QLineEdit *ledt)
     d_func()->textChanged();
 }
 
-bool BEditGroup::textsMatch() const
-{
-    return d_func()->match;
-}
-
 QString BEditGroup::text() const
 {
     return d_func()->match ? d_func()->ledtMap.values().first()->text() : QString();
+}
+
+bool BEditGroup::textsMatch() const
+{
+    return d_func()->match;
 }

@@ -28,8 +28,7 @@ class QString;
 class QStringList;
 class QTextCodec;
 
-#include <BeQtCore/BeQtGlobal>
-#include <BeQtCore/BBase>
+#include <BeQtCore/BBaseObject>
 
 #include <QWidget>
 
@@ -37,7 +36,7 @@ class QTextCodec;
 ================================ BHelpBrowser ================================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBase
+class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBaseObject
 {
     Q_OBJECT
     B_DECLARE_PRIVATE(BHelpBrowser)
@@ -53,10 +52,10 @@ protected:
 public:
     static void clearSearchCache();
 public:
-    void setSearchPaths(const QStringList &paths);
-    void setFile(const QString &file);
     void setCodec(QTextCodec *codec);
     void setCodec(const char *codecName);
+    void setFile(const QString &file);
+    void setSearchPaths(const QStringList &paths);
 private:
     Q_DISABLE_COPY(BHelpBrowser)
 };
