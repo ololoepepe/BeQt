@@ -45,7 +45,7 @@ class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
     Q_OBJECT
     B_DECLARE_PRIVATE(BPluginWrapper)
 public:
-    typedef bool (*InterfaceTestFunction)(const QObject *);
+    typedef bool (*InterfaceTestFunction)(const QObject *interface);
 public:
     explicit BPluginWrapper(QObject *parent = 0);
     explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);

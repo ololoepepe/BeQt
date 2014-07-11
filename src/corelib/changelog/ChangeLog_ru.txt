@@ -33,6 +33,7 @@
     * Добавлен метод BVersion::clear
     * Классы BPersonInfo и BPersonInfoList тепреь сериализуемы
     * Добавлены классы BAbstractLocationProvider и BLocationProvider
+    * Добавлен класс BDynamicTranslator
 
 ==== BeQtNetwork ====
     * Добавлена возможность указывать уровень сжатия независимо для каждой сетевой операции

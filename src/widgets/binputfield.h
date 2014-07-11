@@ -24,6 +24,8 @@
 
 class BInputFieldPrivate;
 
+class BTranslation;
+
 class QSize;
 
 #include <BeQtCore/BBase>
@@ -53,11 +55,15 @@ public:
 public:
     void addWidget(QWidget *w);
     void insertWidget(int index, QWidget *w);
+    BTranslation invalidToolTip() const;
     bool isValid() const;
     void removeWidget(QWidget *w);
+    void setInvalidToolTip(const BTranslation &t);
     void setShowStyle(ShowStyle s);
+    void setValidToolTip(const BTranslation &t);
     ShowStyle showStyle() const;
     QSize sizeHint() const;
+    BTranslation validToolTip() const;
 public Q_SLOTS:
     void setValid(bool b);
 private:

@@ -25,6 +25,7 @@
 
 #include <BeQtCore/BBase>
 #include <BeQtCore/private/bbase_p.h>
+#include <BeQtCore/BTranslation>
 
 #include <QDebug>
 #include <QHBoxLayout>
@@ -44,9 +45,11 @@ class BInputFieldPrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BInputField)
 public:
     QHBoxLayout *hlt;
+    BTranslation invalidToolTip;
     QLabel *lbl;
     BInputField::ShowStyle style;
     bool valid;
+    BTranslation validToolTip;
 public:
     explicit BInputFieldPrivate(BInputField *q);
     ~BInputFieldPrivate();
@@ -98,6 +101,7 @@ void BInputFieldPrivate::setValid(bool b)
     if (b == valid)
         return;
     valid = b;
+    lbl->setToolTip(b ? validToolTip.translate() : invalidToolTip.translate());
     lbl->setPixmap(QPixmap(BApplication::icon(b ? "ok" : "stop").pixmap(128)));
     switch (style) {
     case BInputField::ShowIfValid:
@@ -152,6 +156,11 @@ void BInputField::insertWidget(int index, QWidget *w)
     d_func()->hlt->insertWidget(index, w);
 }
 
+BTranslation BInputField::invalidToolTip() const
+{
+    return d_func()->invalidToolTip;
+}
+
 bool BInputField::isValid() const
 {
     return d_func()->valid;
@@ -160,6 +169,13 @@ bool BInputField::isValid() const
 void BInputField::removeWidget(QWidget *w)
 {
     d_func()->hlt->removeWidget(w);
+}
+
+void BInputField::setInvalidToolTip(const BTranslation &t)
+{
+    d_func()->invalidToolTip = t;
+    if (!d_func()->valid)
+        d_func()->lbl->setToolTip(t.translate());
 }
 
 void BInputField::setShowStyle(ShowStyle s)
@@ -172,6 +188,13 @@ void BInputField::setShowStyle(ShowStyle s)
     d_func()->setValid(b);
 }
 
+void BInputField::setValidToolTip(const BTranslation &t)
+{
+    d_func()->validToolTip = t;
+    if (d_func()->valid)
+        d_func()->lbl->setToolTip(t.translate());
+}
+
 BInputField::ShowStyle BInputField::showStyle() const
 {
     return d_func()->style;
@@ -182,6 +205,11 @@ QSize BInputField::sizeHint() const
     QSize sh = d_func()->hlt->sizeHint();
     d_func()->lbl->setFixedSize(sh.height(), sh.height());
     return d_func()->hlt->sizeHint();
+}
+
+BTranslation BInputField::validToolTip() const
+{
+    return d_func()->validToolTip;
 }
 
 /*============================== Public slots ==============================*/

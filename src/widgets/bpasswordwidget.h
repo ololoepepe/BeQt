@@ -43,7 +43,7 @@ class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBaseObject
     Q_OBJECT
     B_DECLARE_PRIVATE(BPasswordWidget)
 public:
-    typedef QString (*GeneratePasswordFunction)(int);
+    typedef QString (*GeneratePasswordFunction)(int length);
 public:
     explicit BPasswordWidget(QWidget *parent = 0);
     explicit BPasswordWidget(const BPassword &password, QWidget *parent = 0);

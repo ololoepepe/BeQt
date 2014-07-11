@@ -65,7 +65,7 @@ public:
 public:
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
-    typedef TextProcessingResult (*TextProcessingFunction)(const QString &, const QVariant &);
+    typedef TextProcessingResult (*TextProcessingFunction)(const QString &text, const QVariant &userData);
 public:
     explicit BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
     ~BAbstractCodeEditorDocument();

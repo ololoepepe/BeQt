@@ -33,6 +33,7 @@
     * Add BVersion::clear method
     * Make BPersonInfo and BPersonInfoList serializable
     * Add BAbstractLocationProvider and BLocationProvider classes
+    * Add BDynamicTranslator class
 
 ==== BeQtNetwork ====
     * Add ability to set compression for every network operation independently
