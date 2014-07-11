@@ -46,6 +46,8 @@ public:
         SlotTarget
     };
 public:
+    explicit BDynamicTranslator(QObject *parent, const char *targetPropertyName, const BTranslation &translation);
+    explicit BDynamicTranslator(QObject *parent, const BTranslation &translation, const char *targetSlotName);
     explicit BDynamicTranslator(QObject *parent, QObject *triggerSender, const char *triggerSignal,
                                 const char *targetPropertyName, const BTranslation &translation);
     explicit BDynamicTranslator(QObject *parent, QObject *triggerSender, const char *triggerSignal,

@@ -22,23 +22,26 @@
 #ifndef BGUITOOLS_H
 #define BGUITOOLS_H
 
+class BTranslation;
+
 class QAction;
-class QObject;
-class QWidget;
 class QFont;
-class QToolButton;
-class QToolBar;
-class QVBoxLayout;
+class QObject;
 class QString;
+class QToolBar;
+class QToolButton;
+class QVBoxLayout;
+class QWidget;
 
 #include "bapplication.h"
 
-#include <BeQtCore/BeQtGlobal>
+#include <BeQtCore/BDynamicTranslator>
 
-#include <QFrame>
-#include <QStack>
 #include <QFormLayout>
+#include <QFrame>
+#include <QLabel>
 #include <QLayout>
+#include <QStack>
 
 /*============================================================================
 ================================ BGuiTools ===================================
@@ -101,6 +104,14 @@ template <typename T, typename U> T *labelForField(U *field)
             s.push(lt->itemAt(i)->layout());
     }
     return 0;
+}
+
+template <typename T> void installTranslatorOnField(T *field, const BTranslation &translation)
+{
+    QLabel *lbl = labelForField<QLabel>(field);
+    if (!lbl)
+        return;
+    new BDynamicTranslator(lbl, bApp, SIGNAL(languageChanged()), "text", translation);
 }
 
 B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field);
