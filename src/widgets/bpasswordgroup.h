@@ -48,7 +48,9 @@ public:
     void addPasswordWidget(BPasswordWidget *pwdwgt);
     BPassword password() const;
     bool passwordsMatch() const;
+    bool passwordsMatchAndAcceptable() const;
 Q_SIGNALS:
+    void passwordsMatchAndAcceptableChanged(bool match);
     void passwordsMatchChanged(bool match);
 private:
     Q_DISABLE_COPY(BPasswordGroup)

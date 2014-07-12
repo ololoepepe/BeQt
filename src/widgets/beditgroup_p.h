@@ -42,6 +42,7 @@ class B_WIDGETS_EXPORT BEditGroupPrivate : public BBaseObjectPrivate
 public:
     QMap<QObject *, QLineEdit *> ledtMap;
     bool match;
+    bool matchAndAcceptable;
 public:
     explicit BEditGroupPrivate(BEditGroup *q);
     ~BEditGroupPrivate();

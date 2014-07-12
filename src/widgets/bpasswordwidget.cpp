@@ -233,9 +233,19 @@ bool BPasswordWidget::generatePasswordVisible() const
     return d_func()->tbtnGenerate->isVisibleTo(const_cast<BPasswordWidget *>(this));
 }
 
+bool BPasswordWidget::hasAcceptableInput() const
+{
+    return d_func()->ledt->hasAcceptableInput();
+}
+
 QString BPasswordWidget::inputMask() const
 {
     return d_func()->ledt->inputMask();
+}
+
+bool BPasswordWidget::isEmpty() const
+{
+    return d_func()->ledt->text().isEmpty();
 }
 
 BPassword::Mode BPasswordWidget::mode() const

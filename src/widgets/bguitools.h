@@ -106,7 +106,7 @@ template <typename T, typename U> T *labelForField(U *field)
     return 0;
 }
 
-template <typename T> void installTranslatorOnField(T *field, const BTranslation &translation)
+template <typename T> void installTranslatorOnLabel(T *field, const BTranslation &translation)
 {
     QLabel *lbl = labelForField<QLabel>(field);
     if (!lbl)

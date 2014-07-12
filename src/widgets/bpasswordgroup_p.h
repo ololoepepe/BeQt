@@ -42,6 +42,7 @@ class B_WIDGETS_EXPORT BPasswordGroupPrivate : public BBaseObjectPrivate
 public:
     QMap<QObject *, BPasswordWidget *> wgtMap;
     bool match;
+    bool matchAndAcceptable;
 public:
     explicit BPasswordGroupPrivate(BPasswordGroup *q);
     ~BPasswordGroupPrivate();

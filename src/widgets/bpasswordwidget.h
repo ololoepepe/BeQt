@@ -58,7 +58,9 @@ public:
     int generatedPasswordLength() const;
     GeneratePasswordFunction generatePasswordFunction() const;
     bool generatePasswordVisible() const;
+    bool hasAcceptableInput() const;
     QString inputMask() const;
+    bool isEmpty() const;
     BPassword::Mode mode() const;
     QString openPassword() const;
     BPassword password() const;

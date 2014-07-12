@@ -56,6 +56,7 @@ BPasswordGroupPrivate::~BPasswordGroupPrivate()
 void BPasswordGroupPrivate::init()
 {
     match = false;
+    matchAndAcceptable = false;
 }
 
 /*============================== Public slots ==============================*/
@@ -64,9 +65,12 @@ void BPasswordGroupPrivate::passwordChanged()
 {
     QList<BPasswordWidget *> list = wgtMap.values();
     bool nmatch = !list.isEmpty();
+    bool nmatchAndAcceptable = nmatch;
     if (nmatch) {
         BPassword pwd = list.first()->password();
+        nmatchAndAcceptable = nmatchAndAcceptable && list.first()->hasAcceptableInput();
         foreach (int i, bRangeD(1, list.size() - 1)) {
+            nmatchAndAcceptable = nmatchAndAcceptable && list.at(i)->hasAcceptableInput();
             if (list.at(i)->password() != pwd) {
                 nmatch = false;
                 break;
@@ -74,9 +78,13 @@ void BPasswordGroupPrivate::passwordChanged()
         }
     }
     bool b = nmatch != match;
+    bool bb = nmatchAndAcceptable != matchAndAcceptable;
     match = nmatch;
+    matchAndAcceptable = nmatchAndAcceptable;
     if (b)
         QMetaObject::invokeMethod(q_func(), "passwordsMatchChanged", Q_ARG(bool, match));
+    if (bb)
+        QMetaObject::invokeMethod(q_func(), "passwordsMatchAndAcceptableChanged", Q_ARG(bool, matchAndAcceptable));
 }
 
 void BPasswordGroupPrivate::pwdwgtDestroyed(QObject *object)
@@ -130,4 +138,9 @@ BPassword BPasswordGroup::password() const
 bool BPasswordGroup::passwordsMatch() const
 {
     return d_func()->match;
+}
+
+bool BPasswordGroup::passwordsMatchAndAcceptable() const
+{
+    return d_func()->matchAndAcceptable;
 }

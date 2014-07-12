@@ -48,7 +48,9 @@ public:
     void addEdit(QLineEdit *ledt);
     QString text() const;
     bool textsMatch() const;
+    bool textsMatchAndAcceptable() const;
 Q_SIGNALS:
+    void textsMatchAndAcceptableChanged(bool match);
     void textsMatchChanged(bool match);
 private:
     Q_DISABLE_COPY(BEditGroup)

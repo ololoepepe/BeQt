@@ -54,6 +54,7 @@ BEditGroupPrivate::~BEditGroupPrivate()
 void BEditGroupPrivate::init()
 {
     match = false;
+    matchAndAcceptable = false;
 }
 
 /*============================== Public slots ==============================*/
@@ -68,9 +69,12 @@ void BEditGroupPrivate::textChanged()
 {
     QList<QLineEdit *> list = ledtMap.values();
     bool nmatch = !list.isEmpty();
+    bool nmatchAndAcceptable = nmatch;
     if (nmatch) {
         QString txt = list.first()->text();
+        nmatchAndAcceptable = nmatchAndAcceptable && list.first()->hasAcceptableInput();
         foreach (int i, bRangeD(1, list.size() - 1)) {
+            nmatchAndAcceptable = nmatchAndAcceptable && list.at(i)->hasAcceptableInput();
             if (list.at(i)->text() != txt) {
                 nmatch = false;
                 break;
@@ -78,9 +82,13 @@ void BEditGroupPrivate::textChanged()
         }
     }
     bool b = nmatch != match;
+    bool bb = nmatchAndAcceptable != matchAndAcceptable;
     match = nmatch;
+    matchAndAcceptable = nmatchAndAcceptable;
     if (b)
         QMetaObject::invokeMethod(q_func(), "textsMatchChanged", Q_ARG(bool, match));
+    if (bb)
+        QMetaObject::invokeMethod(q_func(), "textsMatchAndAcceptableChanged", Q_ARG(bool, matchAndAcceptable));
 }
 
 /*============================================================================
@@ -128,4 +136,9 @@ QString BEditGroup::text() const
 bool BEditGroup::textsMatch() const
 {
     return d_func()->match;
+}
+
+bool BEditGroup::textsMatchAndAcceptable() const
+{
+    return d_func()->matchAndAcceptable;
 }
