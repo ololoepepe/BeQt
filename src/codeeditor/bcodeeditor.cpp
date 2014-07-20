@@ -597,8 +597,8 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
         return 0;
     doc->init();
     doc->setFileName(createFileName(fileName, defaultFN, q_func()->fileNames()));
-    doc->installDropHandler(dropHandler);
     doc->installInnerEventFilter(this);
+    doc->installInnerViewportEventFilter(dropHandler);
     doc->setEditFont(editFont);
     BCodeEditorDocument *ddoc  = qobject_cast<BCodeEditorDocument *>(doc);
     if (ddoc) {
@@ -1040,7 +1040,7 @@ void BCodeEditorPrivate::createDropHandler()
 {
     dropHandler = new BDropHandler(q_func());
     foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
-        doc->installDropHandler(dropHandler);
+        doc->installInnerViewportEventFilter(dropHandler);
     connect(dropHandler, SIGNAL(destroyed()), this, SLOT(createDropHandler()));
 }
 

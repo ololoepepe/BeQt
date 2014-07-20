@@ -296,6 +296,7 @@ void BApplicationBasePrivate::init(BApplicationBase::Portability portability)
     Q_INIT_RESOURCE(beqtcore);
     Q_INIT_RESOURCE(beqt_translations);
 #endif
+    bRegister();
     appName = QCoreApplication::applicationName();
     if (!bTest(!appName.isEmpty(), "BApplicationBase", "Application name not specified"))
         appName = DefaultAppName;

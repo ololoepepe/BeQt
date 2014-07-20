@@ -61,6 +61,7 @@ public:
     bool hasAcceptableInput() const;
     QString inputMask() const;
     bool isEmpty() const;
+    int maxLength() const;
     BPassword::Mode mode() const;
     QString openPassword() const;
     BPassword password() const;
@@ -76,6 +77,7 @@ public:
     void setGeneratePasswordFunction(GeneratePasswordFunction f);
     void setGeneratePasswordVisible(bool visible);
     void setInputMask(const QString &mask);
+    void setMaxLength(int length);
     void setMode(BPassword::Mode mode);
     void setPassword(QCryptographicHash::Algorithm a, const QByteArray &password, int charCount = -1);
     void setValidator(const QValidator *v);

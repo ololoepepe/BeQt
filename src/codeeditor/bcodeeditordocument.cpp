@@ -124,6 +124,11 @@ BCodeEditorDocument::BCodeEditorDocument(BCodeEditorDocumentPrivate &d, QWidget 
 
 /*============================== Public methods ============================*/
 
+int BCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
+{
+    return d_func()->cedt->cursorPositionForRowColumn(pos);
+}
+
 QFont BCodeEditorDocument::editFont() const
 {
     return d_func()->cedt->editFont();
@@ -144,19 +149,14 @@ BeQt::TabWidth BCodeEditorDocument::editTabWidth() const
     return d_func()->cedt->editTabWidth();
 }
 
-bool BCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
-{
-    return d_func()->cedt->findNext(txt, flags, cyclic);
-}
-
-bool BCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
-{
-    return d_func()->cedt->findNextRegexp(rx, flags, cyclic);
-}
-
 void BCodeEditorDocument::installInnerEventFilter(QObject *filter)
 {
     d_func()->cedt->innerEdit()->installEventFilter(filter);
+}
+
+void BCodeEditorDocument::installInnerViewportEventFilter(QObject *filter)
+{
+    d_func()->cedt->innerEdit()->viewport()->installEventFilter(filter);
 }
 
 bool BCodeEditorDocument::isEditAutoIndentationEnabled() const
@@ -308,11 +308,6 @@ QWidget *BCodeEditorDocument::createEdit(QTextDocument **doc)
     return d_func()->createEdit(doc);
 }
 
-int BCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
-{
-    return d_func()->cedt->cursorPositionForRowColumn(pos);
-}
-
 QPoint BCodeEditorDocument::cursorPositionRowColumnImplementation() const
 {
     return d_func()->cedt->cursorPositionRowColumn();
@@ -333,14 +328,24 @@ void BCodeEditorDocument::deselectTextImplementation()
     d_func()->cedt->deselectText();
 }
 
+BCodeEditorDocument::ExtraSelectionList BCodeEditorDocument::extraSelectionsImplementation() const
+{
+    return d_func()->cedt->extraSelections();
+}
+
+bool BCodeEditorDocument::findNextImplementation(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    return d_func()->cedt->findNext(txt, flags, cyclic);
+}
+
+bool BCodeEditorDocument::findNextRegexpImplementation(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
+{
+    return d_func()->cedt->findNextRegexp(rx, flags, cyclic);
+}
+
 void BCodeEditorDocument::insertTextImplementation(const QString &txt)
 {
     d_func()->cedt->insertText(txt);
-}
-
-void BCodeEditorDocument::installDropHandler(QObject *handler)
-{
-    d_func()->cedt->innerEdit()->viewport()->installEventFilter(handler);
 }
 
 void BCodeEditorDocument::moveCursorImplementation(int pos)
@@ -381,6 +386,11 @@ void BCodeEditorDocument::selectTextImplementation(const QPoint &start, const QP
 void BCodeEditorDocument::selectTextImplementation(int start, int end)
 {
     d_func()->cedt->selectText(start, end);
+}
+
+void BCodeEditorDocument::setExtraSelectionsImplementation(const ExtraSelectionList &list)
+{
+    d_func()->cedt->setExtraSelections(list);
 }
 
 void BCodeEditorDocument::setFocusImplementation()

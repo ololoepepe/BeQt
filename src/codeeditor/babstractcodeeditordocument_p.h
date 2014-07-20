@@ -48,6 +48,7 @@ class QTextDocument;
 #include <QList>
 #include <QPair>
 #include <QPoint>
+#include <QRegExp>
 #include <QString>
 #include <QSyntaxHighlighter>
 #include <QTextBlock>
@@ -179,8 +180,12 @@ public:
     BAbstractFileType *fileType;
     bool hasSelection;
     ExtraSelectionList highlightedBrackets;
+    ExtraSelectionList highlightedSearchResults;
     BSyntaxHighlighter *highlighter;
     bool isModified;
+    QTextDocument::FindFlags lastSearchFlags;
+    QRegExp lastSearchRegexp;
+    QString lastSearchText;
     bool pasteAvailable;
     bool readOnly;
     BracketPairList recognizedBrackets;
@@ -197,22 +202,20 @@ public:
     static QTextCharFormat createBracketsErrorFormat();
     static QTextCharFormat createBracketsFormat();
     static FindBracketPairResult createFindBracketPairResult();
+    static QTextCharFormat createSearchResultFormat();
     static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
+    static void removeExtraSelections(ExtraSelectionList &from, int start, int end);
     static void setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list = QList<SkipInterval>());
 public:
     bool createEdit();
-    ExtraSelection createExtraSelection(const QTextCharFormat &format, bool *ok = 0) const;
-    ExtraSelection createExtraSelection(bool *ok = 0) const;
     QMenu *createSpellCheckerMenu(const QPoint &pos);
     FindBracketPairResult findLeftBracketPair() const;
     FindBracketPairResult findRightBracketPair() const;
-    ExtraSelectionList getExtraSelections(bool *ok = 0) const;
     void highlightBrackets();
     void init();
     void rehighlight();
     void setBuisy(bool b);
     void setCodec(QTextCodec *c);
-    void setExtraSelections(const ExtraSelectionList &list, bool *ok = 0);
     void setFileName(QString fn);
     bool testBracket(const QString &text, int posInBlock, bool opening, const BracketPair *&bracket) const;
 public Q_SLOTS:

@@ -44,7 +44,9 @@ class QTextCursor;
 
 #include <QList>
 #include <QString>
+#include <QTextCharFormat>
 #include <QTextDocument>
+#include <QTextEdit>
 #include <QVariant>
 #include <QWidget>
 
@@ -65,6 +67,8 @@ public:
 public:
     typedef BAbstractFileType::BracketPair BracketPair;
     typedef QList<BracketPair> BracketPairList;
+    typedef QTextEdit::ExtraSelection ExtraSelection;
+    typedef QList<ExtraSelection> ExtraSelectionList;
     typedef TextProcessingResult (*TextProcessingFunction)(const QString &text, const QVariant &userData);
 public:
     explicit BAbstractCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);
@@ -73,21 +77,30 @@ protected:
     explicit BAbstractCodeEditorDocument(BAbstractCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 public:
     int asyncProcessingMinimumLength() const;
+    void blockHighlighter(bool block);
     QTextCodec *codec() const;
     QString codecName() const;
+    virtual QMenu *createContextMenu();
+    ExtraSelection createExtraSelection(const QTextCharFormat &format = QTextCharFormat()) const;
     int cursorPosition() const;
+    virtual int cursorPositionForRowColumn(const QPoint &pos) const = 0;
     QPoint cursorPositionRowColumn() const;
+    virtual QRect cursorRect() const;
     virtual QFont editFont() const = 0;
     BCodeEditor *editor() const;
     virtual BeQt::TabWidth editTabWidth() const = 0;
+    ExtraSelectionList extraSelections() const;
     QString fileName() const;
     BAbstractFileType *fileType() const;
     QString fileTypeId() const;
-    virtual bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true) = 0;
-    virtual bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true) = 0;
+    bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool hasSelection() const;
     void init();
+    QTextDocument *innerDocument() const;
+    QWidget *innerEdit(QTextDocument **doc = 0) const;
     virtual void installInnerEventFilter(QObject *filter) = 0;
+    virtual void installInnerViewportEventFilter(QObject *filter) = 0;
     bool isBracketHighlightingEnabled() const;
     bool isBuisy() const;
     bool isCopyAvailable() const;
@@ -122,6 +135,7 @@ public:
     virtual void setEditAutoIndentationEnabled(bool enabled) = 0;
     virtual void setEditFont(const QFont &fnt) = 0;
     virtual void setEditTabWidth(BeQt::TabWidth tw) = 0;
+    void setExtraSelections(const ExtraSelectionList &list);
     void setFileName(const QString &fn);
     void setFileType(BAbstractFileType *ft);
     virtual void setLineNumberWidgetVisible(bool b) = 0;
@@ -129,8 +143,10 @@ public:
     virtual void setReadOnly(bool ro) = 0;
     void setRecognizedBrackets(const BracketPairList &list);
     void setSpellChecker(BSpellChecker *sc);
+    bool shouldProcessAsynchronously(const QString &txt) const;
     BSpellChecker *spellChecker() const;
     virtual QString text(bool full = false) const = 0;
+    virtual QTextCursor textCursor() const;
 public Q_SLOTS:
     void activateWindow();
     void clear();
@@ -155,23 +171,20 @@ public Q_SLOTS:
 protected:
     virtual void activateWindowImplementation() = 0;
     virtual void afterPreprocessing(const QVariant &result);
-    void blockHighlighter(bool block);
     virtual void clearImplementation() = 0;
     virtual void clearUndoRedoStacks(QTextDocument::Stacks historyToClear = QTextDocument::UndoAndRedoStacks);
     virtual void copyImplementation() = 0;
-    virtual QMenu *createContextMenu();
     virtual QWidget *createEdit(QTextDocument **doc = 0) = 0;
-    virtual int cursorPositionForRowColumn(const QPoint &pos) const = 0;
     virtual QPoint cursorPositionRowColumnImplementation() const = 0;
-    virtual QRect cursorRect(bool *ok = 0) const;
     virtual void cutImplementation() = 0;
     virtual void deleteSelectionImplementation() = 0;
     virtual void deselectTextImplementation() = 0;
-    virtual void highlightBrackets();
-    QTextDocument *innerDocument() const;
-    QWidget *innerEdit(QTextDocument **doc = 0) const;
+    virtual ExtraSelectionList extraSelectionsImplementation() const = 0;
+    virtual bool findNextImplementation(const QString &txt, QTextDocument::FindFlags flags = 0,
+                                        bool cyclic = true) = 0;
+    virtual bool findNextRegexpImplementation(const QRegExp &rx, QTextDocument::FindFlags flags = 0,
+                                              bool cyclic = true) = 0;
     virtual void insertTextImplementation(const QString &txt) = 0;
-    virtual void installDropHandler(QObject *handler) = 0;
     virtual void moveCursorImplementation(int pos) = 0;
     virtual void moveCursorImplementation(const QPoint &pos) = 0;
     virtual void pasteImplementation() = 0;
@@ -180,10 +193,9 @@ protected:
     virtual void selectLinesImplementation(int firstLine, int lastLine) = 0;
     virtual void selectTextImplementation(const QPoint &start, const QPoint &end) = 0;
     virtual void selectTextImplementation(int start, int end) = 0;
+    virtual void setExtraSelectionsImplementation(const ExtraSelectionList &list) = 0;
     virtual void setFocusImplementation() = 0;
     virtual void setTextImplementation(const QString &txt) = 0;
-    bool shouldProcessAsynchronously(const QString &txt) const;
-    virtual QTextCursor textCursor(bool *ok = 0) const;
     virtual TextProcessingFunction textPreprocessingFunction() const;
     virtual QVariant textPreprocessingUserData();
     virtual void undoImplementation() = 0;

@@ -545,7 +545,7 @@ void BSearchEditorModulePrivate::init()
       actFindNext->setEnabled(false);
       actFindNext->setIcon(BApplication::icon("edit_find_next"));
       actFindNext->setShortcut(QKeySequence::FindNext);
-      connect(actFindNext, SIGNAL(triggered()), q, SLOT(findNext()));
+      connect(actFindNext, SIGNAL(triggered()), sdlg, SLOT(findNext()));
       connect(sdlg, SIGNAL(findNextAvailableChanged(bool)), actFindNext, SLOT(setEnabled(bool)));
     //
     retranslateUi();

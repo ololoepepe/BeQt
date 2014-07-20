@@ -84,9 +84,8 @@ public:
 public:
     QMap<QString, BTerminal::CommandHelpList> commandHelp;
     QStringList commandHistory;
-    QMap<QString, BTerminal::ExternalHandler> externalHandlers;
+    QMap<QString, BTerminal::HandlerFunction> handlers;
     BTranslation help;
-    QMap<QString, BTerminal::InternalHandler> internalHandlers;
     QStringList lastArgs;
     QString lastCommand;
     BTerminalThread *readThread;
@@ -101,6 +100,7 @@ public:
 public:
     void init();
 public Q_SLOTS:
+    void commandEntered(const QString &cmd, const QStringList &args);
     void lineRead(const QString &text);
 private:
     Q_DISABLE_COPY(BTerminalPrivate)

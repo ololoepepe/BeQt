@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1267"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1386"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -134,19 +134,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="506"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="509"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="517"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="520"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="520"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="523"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="604"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="612"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="784"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="605"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="613"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="785"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>
@@ -1384,7 +1384,7 @@
         <translation>Значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="460"/>
+        <location filename="../src/corelib/bterminal.cpp" line="468"/>
         <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
         <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
@@ -1482,32 +1482,32 @@
         <translation>Введите локаль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="364"/>
+        <location filename="../src/corelib/bterminal.cpp" line="372"/>
         <source>Quit the application</source>
         <translation>Выйти из приложения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="369"/>
+        <location filename="../src/corelib/bterminal.cpp" line="377"/>
         <source>Show list of all available settings</source>
         <translation>Показать список всех доступных настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="372"/>
+        <location filename="../src/corelib/bterminal.cpp" line="380"/>
         <source>Show the value for &lt;key&gt; or it&apos;s description</source>
         <translation>Показать значение для ключа &lt;key&gt; или его описание</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="375"/>
+        <location filename="../src/corelib/bterminal.cpp" line="383"/>
         <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
         <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="381"/>
+        <location filename="../src/corelib/bterminal.cpp" line="389"/>
         <source>Show description of &lt;command&gt;</source>
         <translation>Показать описание команды &lt;command&gt;</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="384"/>
+        <location filename="../src/corelib/bterminal.cpp" line="392"/>
         <source>Show basic help, or:
   --commands - list of all available commands
   --settings - list of all available settings
@@ -1518,104 +1518,104 @@
   --all - всё вышеперечисленное (включая основную справку)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="390"/>
+        <location filename="../src/corelib/bterminal.cpp" line="398"/>
         <source>Show information about this application</source>
         <translation>Показать информацию об это приложении</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="393"/>
+        <location filename="../src/corelib/bterminal.cpp" line="401"/>
         <source>Show information about BeQt libraries</source>
         <translation>Показать информацию о библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="398"/>
+        <location filename="../src/corelib/bterminal.cpp" line="406"/>
         <source>Reenter last n-th command (the very last by default)</source>
         <translation>Ввести заново последнюю n-ную команду (самую последнюю по умолчанию)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="401"/>
+        <location filename="../src/corelib/bterminal.cpp" line="409"/>
         <source>Show n last commands (10 by default)</source>
         <translation>Показать n последних команд (10 по умолчанию)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="914"/>
-        <location filename="../src/corelib/bterminal.cpp" line="919"/>
-        <location filename="../src/corelib/bterminal.cpp" line="942"/>
-        <location filename="../src/corelib/bterminal.cpp" line="954"/>
-        <location filename="../src/corelib/bterminal.cpp" line="968"/>
-        <location filename="../src/corelib/bterminal.cpp" line="996"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1018"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1032"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1058"/>
+        <location filename="../src/corelib/bterminal.cpp" line="923"/>
+        <location filename="../src/corelib/bterminal.cpp" line="928"/>
+        <location filename="../src/corelib/bterminal.cpp" line="951"/>
+        <location filename="../src/corelib/bterminal.cpp" line="963"/>
+        <location filename="../src/corelib/bterminal.cpp" line="978"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1006"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1028"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1042"/>
         <location filename="../src/corelib/bterminal.cpp" line="1069"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1078"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1119"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1080"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1089"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1130"/>
         <source>Invalid parameters</source>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="901"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1062"/>
+        <location filename="../src/corelib/bterminal.cpp" line="910"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1073"/>
         <source>Settings structure not set</source>
         <translation>Не задана структура настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1073"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1084"/>
         <source>Failed to show value</source>
         <translation>Не удалось показать значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1083"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1095"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1094"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1106"/>
         <source>No such option</source>
         <translation>Нет такой опции</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1088"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1099"/>
         <source>No description</source>
         <translation>Описание отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1102"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1113"/>
         <source>Invalid value</source>
         <translation>Недейтсивтельное значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1106"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1113"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1117"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1124"/>
         <source>Failed to set value</source>
         <translation>Не удалось установить значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1109"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1116"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1120"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1127"/>
         <source>OK</source>
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="867"/>
-        <location filename="../src/corelib/bterminal.cpp" line="874"/>
-        <location filename="../src/corelib/bterminal.cpp" line="891"/>
-        <location filename="../src/corelib/bterminal.cpp" line="948"/>
+        <location filename="../src/corelib/bterminal.cpp" line="876"/>
+        <location filename="../src/corelib/bterminal.cpp" line="883"/>
+        <location filename="../src/corelib/bterminal.cpp" line="900"/>
+        <location filename="../src/corelib/bterminal.cpp" line="957"/>
         <source>Nothing to display</source>
         <translation>Нечего отобразить</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="883"/>
-        <location filename="../src/corelib/bterminal.cpp" line="894"/>
+        <location filename="../src/corelib/bterminal.cpp" line="892"/>
+        <location filename="../src/corelib/bterminal.cpp" line="903"/>
         <source>The following commands are available:</source>
         <translation>Доступны следующие команды:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="973"/>
-        <location filename="../src/corelib/bterminal.cpp" line="984"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1000"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1022"/>
+        <location filename="../src/corelib/bterminal.cpp" line="983"/>
+        <location filename="../src/corelib/bterminal.cpp" line="994"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1010"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1032"/>
         <source>History is empty</source>
         <translation>История пуста</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1004"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1014"/>
         <source>Invalid index</source>
         <translation>Некорректный индекс</translation>
     </message>
@@ -1623,7 +1623,7 @@
 <context>
     <name>BTerminalPrivate</name>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="291"/>
+        <location filename="../src/corelib/bterminal.cpp" line="289"/>
         <source>Unknown command</source>
         <translation>Неизвестная команда</translation>
     </message>

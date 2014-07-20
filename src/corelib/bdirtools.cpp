@@ -145,7 +145,7 @@ QStringList entryListRecursive(const QString &dirName, const QStringList &nameFi
     QDir d(dirName);
     foreach (const QString &fn, d.entryList(nameFilters, filters, sort))
         sl << d.absoluteFilePath(fn);
-    foreach (const QString &dn, d.entryList(nameFilters, QDir::Dirs | QDir::NoDotAndDotDot, sort))
+    foreach (const QString &dn, d.entryList(QDir::Dirs | QDir::NoDotAndDotDot, sort))
         sl << entryListRecursive(dirName + "/" + dn, nameFilters, filters, sort);
     return sl;
 }

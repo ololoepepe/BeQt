@@ -405,6 +405,13 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     return r;
 }
 
+QTextCharFormat BAbstractCodeEditorDocumentPrivate::createSearchResultFormat()
+{
+    QTextCharFormat fmt;
+    fmt.setBackground(QBrush(QColor("yellow")));
+    return fmt;
+}
+
 void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from,
                                                                const ExtraSelectionList &what)
 {
@@ -413,6 +420,17 @@ void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionLis
             if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
                 from.removeAt(i);
         }
+    }
+}
+
+void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from, int start, int end)
+{
+    for (int i = from.size() - 1; i >= 0; --i) {
+        const QTextCursor &tc = from.at(i).cursor;
+        int sstart = qMin(tc.selectionStart(), tc.selectionEnd());
+        int send = qMax(tc.selectionStart(), tc.selectionEnd());
+        if (sstart >= start && send <= end)
+            from.removeAt(i);
     }
 }
 
@@ -447,21 +465,6 @@ bool BAbstractCodeEditorDocumentPrivate::createEdit()
         connect(edit, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customContextMenuRequested(QPoint)));
     }
     return true;
-}
-
-BAbstractCodeEditorDocumentPrivate::ExtraSelection
-    BAbstractCodeEditorDocumentPrivate::createExtraSelection(const QTextCharFormat &format, bool *ok) const
-{
-    ExtraSelection r;
-    r.cursor = q_func()->textCursor(ok);
-    r.format = format;
-    return bRet(ok, !r.cursor.isNull(), r);
-}
-
-BAbstractCodeEditorDocumentPrivate::ExtraSelection
-    BAbstractCodeEditorDocumentPrivate::createExtraSelection(bool *ok) const
-{
-    return createExtraSelection(ok);
 }
 
 QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &pos)
@@ -617,60 +620,35 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     return res;
 }
 
-BAbstractCodeEditorDocumentPrivate::ExtraSelectionList
-    BAbstractCodeEditorDocumentPrivate::getExtraSelections(bool *ok) const
-{
-    if (ok)
-        *ok = true;
-    QTextEdit *tedt = qobject_cast<QTextEdit *>(q_func()->innerEdit());
-    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(q_func()->innerEdit());
-    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(q_func()->innerEdit());
-    if (tedt)
-        return tedt->extraSelections();
-    else if (ptedt)
-        return ptedt->extraSelections();
-    else if (cedt)
-        return cedt->extraSelections();
-    else
-        return bRet(ok, false, ExtraSelectionList());
-}
-
 void BAbstractCodeEditorDocumentPrivate::highlightBrackets()
 {
-    bool ok = false;
-    ExtraSelectionList selections = getExtraSelections(&ok);
-    if (!ok)
-        return;
-    removeExtraSelections(selections, highlightedBrackets);
+    ExtraSelectionList selections = q_func()->extraSelections();
     highlightedBrackets.clear();
     if (!bracketsHighlighting)
-        return setExtraSelections(selections);
+        return q_func()->setExtraSelections(selections);
     FindBracketPairResultList list;
     list << findLeftBracketPair();
     list << findRightBracketPair();
     foreach (const FindBracketPairResult &res, list) {
         if (res.start >= 0 && res.end >= 0) {
             if (BAbstractFileType::areEqual(*res.startBr, *res.endBr)) {
-                QTextEdit::ExtraSelection ess = createExtraSelection(createBracketsFormat());
+                QTextEdit::ExtraSelection ess = q_func()->createExtraSelection(createBracketsFormat());
                 ess.cursor.setPosition(res.start);
                 ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
                 highlightedBrackets << ess;
-                selections << ess;
-                QTextEdit::ExtraSelection ese = createExtraSelection(createBracketsFormat());
-                ese.cursor.setPosition( res.end - res.endBr->closing.length() );
+                QTextEdit::ExtraSelection ese = q_func()->createExtraSelection(createBracketsFormat());
+                ese.cursor.setPosition(res.end - res.endBr->closing.length());
                 ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
                 highlightedBrackets << ese;
-                selections << ese;
             } else {
-                QTextEdit::ExtraSelection es = createExtraSelection(createBracketsErrorFormat());
+                QTextEdit::ExtraSelection es = q_func()->createExtraSelection(createBracketsErrorFormat());
                 es.cursor.setPosition(res.start);
                 es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
                 highlightedBrackets << es;
-                selections << es;
             }
         }
     }
-    setExtraSelections(selections);
+    q_func()->setExtraSelections(selections);
 }
 
 void BAbstractCodeEditorDocumentPrivate::init()
@@ -706,7 +684,7 @@ void BAbstractCodeEditorDocumentPrivate::rehighlight()
     if (!highlighter)
         return;
     highlighter->rehighlight();
-    q_func()->highlightBrackets();
+    highlightBrackets();
 }
 
 void BAbstractCodeEditorDocumentPrivate::setBuisy(bool b)
@@ -727,23 +705,6 @@ void BAbstractCodeEditorDocumentPrivate::setCodec(QTextCodec *c)
     codec = c;
     if (b)
         QMetaObject::invokeMethod(q_func(), "codecChanged", Q_ARG(QString, BeQt::codecName(c)));
-}
-
-void BAbstractCodeEditorDocumentPrivate::setExtraSelections(const ExtraSelectionList &list, bool *ok)
-{
-    if (ok)
-        *ok = true;
-    QTextEdit *tedt = qobject_cast<QTextEdit *>(q_func()->innerEdit());
-    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(q_func()->innerEdit());
-    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(q_func()->innerEdit());
-    if (tedt)
-        tedt->setExtraSelections(list);
-    else if (ptedt)
-        ptedt->setExtraSelections(list);
-    else if (cedt)
-        cedt->setExtraSelections(list);
-    else if (ok)
-        *ok = false;
 }
 
 void BAbstractCodeEditorDocumentPrivate::setFileName(QString fn)
@@ -934,6 +895,16 @@ int BAbstractCodeEditorDocument::asyncProcessingMinimumLength() const
     return d_func()->asyncMin;
 }
 
+void BAbstractCodeEditorDocument::blockHighlighter(bool block)
+{
+    if (!d_func()->highlighter)
+        return;
+    if (block)
+        d_func()->highlighter->setDocument(0);
+    else
+        d_func()->highlighter->setDocument(innerDocument());
+}
+
 QTextCodec *BAbstractCodeEditorDocument::codec() const
 {
     return d_func()->codec;
@@ -942,6 +913,32 @@ QTextCodec *BAbstractCodeEditorDocument::codec() const
 QString BAbstractCodeEditorDocument::codecName() const
 {
     return BeQt::codecName(d_func()->codec);
+}
+
+QMenu *BAbstractCodeEditorDocument::createContextMenu()
+{
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
+    if (tedt)
+        return tedt->createStandardContextMenu();
+    else if (ptedt)
+        return ptedt->createStandardContextMenu();
+    else if (cedt)
+        return cedt->createContextMenu();
+    else
+        return 0;
+}
+
+BAbstractCodeEditorDocument::ExtraSelection BAbstractCodeEditorDocument::createExtraSelection(
+        const QTextCharFormat &format) const
+{
+    ExtraSelection r;
+    r.cursor = textCursor();
+    if (r.cursor.isNull())
+        return ExtraSelection();
+    r.format = format;
+    return r;
 }
 
 int BAbstractCodeEditorDocument::cursorPosition() const
@@ -954,9 +951,32 @@ QPoint BAbstractCodeEditorDocument::cursorPositionRowColumn() const
     return d_func()->cursorPositionRowColumn;
 }
 
+QRect BAbstractCodeEditorDocument::cursorRect() const
+{
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
+    if (tedt)
+        return tedt->cursorRect();
+    else if (ptedt)
+        return ptedt->cursorRect();
+    else if (cedt)
+        return cedt->innerEdit()->cursorRect();
+    else
+        return QRect();
+}
+
 BCodeEditor *BAbstractCodeEditorDocument::editor() const
 {
     return d_func()->Editor;
+}
+
+BAbstractCodeEditorDocument::ExtraSelectionList BAbstractCodeEditorDocument::extraSelections() const
+{
+    ExtraSelectionList list = extraSelectionsImplementation();
+    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedBrackets);
+    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedSearchResults);
+    return list;
 }
 
 QString BAbstractCodeEditorDocument::fileName() const
@@ -974,6 +994,65 @@ QString BAbstractCodeEditorDocument::fileTypeId() const
     return d_func()->fileType ? d_func()->fileType->id() : QString();
 }
 
+bool BAbstractCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    B_D(BAbstractCodeEditorDocument);
+    ExtraSelectionList selections = extraSelections();
+    d->highlightedSearchResults.clear();
+    bool b = findNextImplementation(txt, flags, cyclic);
+    if (b) {
+        d->lastSearchFlags = flags;
+        d->lastSearchRegexp = QRegExp();
+        d->lastSearchText = txt;
+        Qt::CaseSensitivity cs = (flags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
+                                                                                Qt::CaseInsensitive;
+        bool wholeWords = flags & QTextDocument::FindWholeWords;
+        QString t = text(true);
+        int ind = BTextTools::indexOf(t, txt, 0, cs, wholeWords);
+        while (ind >= 0) {
+            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
+            es.cursor.setPosition(ind);
+            es.cursor.setPosition(ind + txt.length(), QTextCursor::KeepAnchor);
+            d->highlightedSearchResults << es;
+            ind = BTextTools::indexOf(t, txt, ind + txt.length(), cs, wholeWords);
+        }
+    } else {
+        d->lastSearchFlags = 0;
+        d->lastSearchRegexp = QRegExp();
+        d->lastSearchText.clear();
+    }
+    setExtraSelections(selections);
+    return b;
+}
+
+bool BAbstractCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
+{
+    B_D(BAbstractCodeEditorDocument);
+    ExtraSelectionList selections = extraSelections();
+    d->highlightedSearchResults.clear();
+    bool b = findNextRegexpImplementation(rx, flags, cyclic);
+    if (b) {
+        d->lastSearchFlags = flags;
+        d->lastSearchRegexp = rx;
+        d->lastSearchText.clear();
+        QString t = text(true);
+        int ind = rx.indexIn(t);
+        while (ind >= 0) {
+            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
+            es.cursor.setPosition(ind);
+            es.cursor.setPosition(ind + rx.matchedLength(), QTextCursor::KeepAnchor);
+            d->highlightedSearchResults << es;
+            ind = rx.indexIn(t, ind + rx.matchedLength());
+        }
+    } else {
+        d->lastSearchFlags = 0;
+        d->lastSearchRegexp = QRegExp();
+        d->lastSearchText.clear();
+    }
+   setExtraSelections(selections);
+    return b;
+}
+
 bool BAbstractCodeEditorDocument::hasSelection() const
 {
     return d_func()->hasSelection;
@@ -984,6 +1063,18 @@ void BAbstractCodeEditorDocument::init()
     if (d_func()->edit)
         return;
     d_func()->createEdit();
+}
+
+QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
+{
+    return d_func()->document;
+}
+
+QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
+{
+    if (doc)
+        *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
+    return d_func()->edit;
 }
 
 bool BAbstractCodeEditorDocument::isBracketHighlightingEnabled() const
@@ -1090,7 +1181,7 @@ void BAbstractCodeEditorDocument::setBracketHighlightingEnabled(bool enabled)
     if (enabled == d_func()->bracketsHighlighting)
         return;
     d_func()->bracketsHighlighting = enabled;
-    highlightBrackets();
+    d_func()->highlightBrackets();
 }
 
 void BAbstractCodeEditorDocument::setCodec(QTextCodec *codec)
@@ -1103,6 +1194,14 @@ void BAbstractCodeEditorDocument::setCodec(QTextCodec *codec)
 void BAbstractCodeEditorDocument::setCodec(const QString &codecName)
 {
     setCodec(BeQt::codec(codecName));
+}
+
+void BAbstractCodeEditorDocument::setExtraSelections(const ExtraSelectionList &list)
+{
+    ExtraSelectionList nlist = list;
+    nlist << d_func()->highlightedSearchResults;
+    nlist << d_func()->highlightedBrackets;
+    setExtraSelectionsImplementation(nlist);
 }
 
 void BAbstractCodeEditorDocument::setFileName(const QString &fn)
@@ -1132,7 +1231,7 @@ void BAbstractCodeEditorDocument::setRecognizedBrackets(const BracketPairList &l
     if (BAbstractFileType::areEqual(d_func()->recognizedBrackets, list))
         return;
     d_func()->recognizedBrackets = list;
-    highlightBrackets();
+    d_func()->highlightBrackets();
 }
 
 void BAbstractCodeEditorDocument::setSpellChecker(BSpellChecker *sc)
@@ -1147,9 +1246,29 @@ void BAbstractCodeEditorDocument::setSpellChecker(BSpellChecker *sc)
     d_func()->highlighter->rehighlight();
 }
 
+bool BAbstractCodeEditorDocument::shouldProcessAsynchronously(const QString &txt) const
+{
+    return d_func()->asyncMin && txt.length() >= d_func()->asyncMin;
+}
+
 BSpellChecker *BAbstractCodeEditorDocument::spellChecker() const
 {
     return d_func()->spellChecker;
+}
+
+QTextCursor BAbstractCodeEditorDocument::textCursor() const
+{
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
+    if (tedt)
+        return tedt->textCursor();
+    else if (ptedt)
+        return ptedt->textCursor();
+    else if (cedt)
+        return cedt->innerEdit()->textCursor();
+    else
+        return QTextCursor();
 }
 
 /*============================== Public slots ==============================*/
@@ -1299,93 +1418,12 @@ void BAbstractCodeEditorDocument::afterPreprocessing(const QVariant &)
     //
 }
 
-void BAbstractCodeEditorDocument::blockHighlighter(bool block)
-{
-    if (!d_func()->highlighter)
-        return;
-    if (block)
-        d_func()->highlighter->setDocument(0);
-    else
-        d_func()->highlighter->setDocument(innerDocument());
-}
-
 void BAbstractCodeEditorDocument::clearUndoRedoStacks(QTextDocument::Stacks historyToClear)
 {
     QTextDocument *doc = innerDocument();
     if (!doc)
         return;
     doc->clearUndoRedoStacks(historyToClear);
-}
-
-QMenu *BAbstractCodeEditorDocument::createContextMenu()
-{
-    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
-    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
-    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
-    if (tedt)
-        return tedt->createStandardContextMenu();
-    else if (ptedt)
-        return ptedt->createStandardContextMenu();
-    else if (cedt)
-        return cedt->createContextMenu();
-    else
-        return 0;
-}
-
-QRect BAbstractCodeEditorDocument::cursorRect(bool *ok) const
-{
-    if (ok)
-        *ok = true;
-    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
-    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
-    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
-    if (tedt)
-        return tedt->cursorRect();
-    else if (ptedt)
-        return ptedt->cursorRect();
-    else if (cedt)
-        return cedt->innerEdit()->cursorRect();
-    else
-        return bRet(ok, false, QRect());
-}
-
-void BAbstractCodeEditorDocument::highlightBrackets()
-{
-    d_func()->highlightBrackets();
-}
-
-QTextDocument *BAbstractCodeEditorDocument::innerDocument() const
-{
-    return d_func()->document;
-}
-
-QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
-{
-    if (doc)
-        *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
-    return d_func()->edit;
-}
-
-bool BAbstractCodeEditorDocument::shouldProcessAsynchronously(const QString &txt) const
-{
-    return d_func()->asyncMin && txt.length() >= d_func()->asyncMin;
-}
-
-QTextCursor BAbstractCodeEditorDocument::textCursor(bool *ok) const
-{
-    if (ok)
-        *ok = true;
-    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
-    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
-    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
-    if (tedt)
-        return tedt->textCursor();
-    else if (ptedt)
-        return ptedt->textCursor();
-    else if (cedt)
-        return cedt->innerEdit()->textCursor();
-    else
-        return bRet(ok, false, QTextCursor());
 }
 
 BAbstractCodeEditorDocument::TextProcessingFunction BAbstractCodeEditorDocument::textPreprocessingFunction() const
@@ -1407,6 +1445,41 @@ void BAbstractCodeEditorDocument::emitSelectionChanged()
 
 void BAbstractCodeEditorDocument::emitTextChanged()
 {
+    B_D(BAbstractCodeEditorDocument);
+    if (d->lastSearchRegexp.isValid() && !d->lastSearchRegexp.isEmpty()) {
+        ExtraSelectionList selections = extraSelections();
+        QTextBlock tb = textCursor().block();
+        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(d->highlightedSearchResults, tb.position(),
+                                                                  tb.position() + tb.length());
+        QString t = tb.text();
+        int ind = d->lastSearchRegexp.indexIn(t);
+        while (ind >= 0) {
+            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
+            es.cursor.setPosition(tb.position() + ind);
+            es.cursor.setPosition(tb.position() + ind + d->lastSearchRegexp.matchedLength(), QTextCursor::KeepAnchor);
+            d->highlightedSearchResults << es;
+            ind = d->lastSearchRegexp.indexIn(t, ind + d->lastSearchRegexp.matchedLength());
+        }
+        setExtraSelections(selections);
+    } else if (!d->lastSearchText.isEmpty()) {
+        ExtraSelectionList selections = extraSelections();
+        QTextBlock tb = textCursor().block();
+        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(d->highlightedSearchResults, tb.position(),
+                                                                  tb.position() + tb.length());
+        QString t = tb.text();
+        Qt::CaseSensitivity cs = (d->lastSearchFlags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
+                                                                                             Qt::CaseInsensitive;
+        bool wholeWords = d->lastSearchFlags & QTextDocument::FindWholeWords;
+        int ind = BTextTools::indexOf(t, d->lastSearchText, 0, cs, wholeWords);
+        while (ind >= 0) {
+            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
+            es.cursor.setPosition(tb.position() + ind);
+            es.cursor.setPosition(tb.position() + ind + d->lastSearchText.length(), QTextCursor::KeepAnchor);
+            d->highlightedSearchResults << es;
+            ind = BTextTools::indexOf(t, d->lastSearchText, ind + d->lastSearchText.length(), cs, wholeWords);
+        }
+        setExtraSelections(selections);
+    }
     Q_EMIT textChanged();
 }
 
@@ -1432,20 +1505,18 @@ void BAbstractCodeEditorDocument::setCursorPosition(int pos)
     QPoint rc = cursorPositionRowColumnImplementation();
     bool b = rc != d_func()->cursorPositionRowColumn;
     d_func()->cursorPositionRowColumn = rc;
-    highlightBrackets();
+    d_func()->highlightBrackets();
     Q_EMIT cursorPositionChanged(pos);
     if (b)
         Q_EMIT cursorPositionChanged(rc);
-    bool ok = false;
-    QTextCursor tc = textCursor(&ok);
-    if (!ok)
+    QTextCursor tc = textCursor();
+    if (tc.isNull())
         return;
     d_func()->autocompletionBlock = tc.block();
     if (!d_func()->autocompletionBlock.isValid())
         return;
-    ok = false;
-    QRect r = cursorRect(&ok);
-    if (!ok)
+    QRect r = cursorRect();
+    if (!r.isValid() || r.isNull())
         return;
     QWidget *edt = innerEdit();
     if (!edt)

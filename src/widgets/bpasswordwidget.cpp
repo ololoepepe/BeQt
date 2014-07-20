@@ -248,6 +248,11 @@ bool BPasswordWidget::isEmpty() const
     return d_func()->ledt->text().isEmpty();
 }
 
+int BPasswordWidget::maxLength() const
+{
+    return d_func()->ledt->maxLength();
+}
+
 BPassword::Mode BPasswordWidget::mode() const
 {
     return d_func()->pwd.mode();
@@ -343,6 +348,11 @@ void BPasswordWidget::setGeneratePasswordVisible(bool visible)
 void BPasswordWidget::setInputMask(const QString &mask)
 {
     d_func()->ledt->setInputMask(mask);
+}
+
+void BPasswordWidget::setMaxLength(int length)
+{
+    d_func()->ledt->setMaxLength(length);
 }
 
 void BPasswordWidget::setMode(BPassword::Mode mode)

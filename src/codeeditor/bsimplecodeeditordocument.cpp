@@ -247,6 +247,19 @@ BSimpleCodeEditorDocument::BSimpleCodeEditorDocument(BSimpleCodeEditorDocumentPr
 
 /*============================== Public methods ============================*/
 
+int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
+{
+    if (pos.x() < 0 || pos.y() < 0)
+        return -1;
+    const B_D(BSimpleCodeEditorDocument);
+    QTextBlock tb = d->ptedt->document()->findBlockByLineNumber(pos.y());
+    if (!tb.isValid())
+        return -1;
+    if (pos.x() >= tb.length())
+        return -1;
+    return tb.position() + pos.x();
+}
+
 QFont BSimpleCodeEditorDocument::editFont() const
 {
     return d_func()->ptedt->font();
@@ -257,44 +270,14 @@ BeQt::TabWidth BSimpleCodeEditorDocument::editTabWidth() const
     return d_func()->tabWidth;
 }
 
-bool BSimpleCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
-{
-    if (txt.isEmpty())
-        return false;
-    bool b = d_func()->ptedt->find(txt, flags);
-    if (!b && cyclic) {
-        if (flags & QTextDocument::FindBackward)
-            d_func()->ptedt->moveCursor(QTextCursor::End);
-        else
-            d_func()->ptedt->moveCursor(QTextCursor::Start);
-        b = d_func()->ptedt->find(txt, flags);
-    }
-    return b;
-}
-
-bool BSimpleCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
-{
-    if (!rx.isValid() || rx.isEmpty())
-        return false;
-    QTextDocument *doc = d_func()->ptedt->document();
-    QTextCursor tc = doc->find(rx, d_func()->ptedt->textCursor());
-    bool b = !tc.isNull();
-    if (!b && cyclic) {
-        if (flags & QTextDocument::FindBackward)
-            d_func()->ptedt->moveCursor(QTextCursor::End);
-        else
-            d_func()->ptedt->moveCursor(QTextCursor::Start);
-        tc = doc->find(rx, d_func()->ptedt->textCursor());
-        b = !tc.isNull();
-    }
-    if (b)
-        d_func()->ptedt->setTextCursor(tc);
-    return b;
-}
-
 void BSimpleCodeEditorDocument::installInnerEventFilter(QObject *filter)
 {
     d_func()->ptedt->installEventFilter(filter);
+}
+
+void BSimpleCodeEditorDocument::installInnerViewportEventFilter(QObject *filter)
+{
+    d_func()->ptedt->viewport()->installEventFilter(filter);
 }
 
 bool BSimpleCodeEditorDocument::isEditAutoIndentationEnabled() const
@@ -545,19 +528,6 @@ QWidget *BSimpleCodeEditorDocument::createEdit(QTextDocument **doc)
     return d_func()->createEdit(doc);
 }
 
-int BSimpleCodeEditorDocument::cursorPositionForRowColumn(const QPoint &pos) const
-{
-    if (pos.x() < 0 || pos.y() < 0)
-        return -1;
-    const B_D(BSimpleCodeEditorDocument);
-    QTextBlock tb = d->ptedt->document()->findBlockByLineNumber(pos.y());
-    if (!tb.isValid())
-        return -1;
-    if (pos.x() >= tb.length())
-        return -1;
-    return tb.position() + pos.x();
-}
-
 QPoint BSimpleCodeEditorDocument::cursorPositionRowColumnImplementation() const
 {
     QTextCursor tc = d_func()->ptedt->textCursor();
@@ -588,14 +558,50 @@ void BSimpleCodeEditorDocument::deselectTextImplementation()
     d_func()->ptedt->setTextCursor(tc);
 }
 
+BSimpleCodeEditorDocument::ExtraSelectionList BSimpleCodeEditorDocument::extraSelectionsImplementation() const
+{
+    return d_func()->ptedt->extraSelections();
+}
+
+bool BSimpleCodeEditorDocument::findNextImplementation(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
+{
+    if (txt.isEmpty())
+        return false;
+    bool b = d_func()->ptedt->find(txt, flags);
+    if (!b && cyclic) {
+        if (flags & QTextDocument::FindBackward)
+            d_func()->ptedt->moveCursor(QTextCursor::End);
+        else
+            d_func()->ptedt->moveCursor(QTextCursor::Start);
+        b = d_func()->ptedt->find(txt, flags);
+    }
+    return b;
+}
+
+bool BSimpleCodeEditorDocument::findNextRegexpImplementation(const QRegExp &rx, QTextDocument::FindFlags flags,
+                                                            bool cyclic)
+{
+    if (!rx.isValid() || rx.isEmpty())
+        return false;
+    QTextDocument *doc = d_func()->ptedt->document();
+    QTextCursor tc = doc->find(rx, d_func()->ptedt->textCursor());
+    bool b = !tc.isNull();
+    if (!b && cyclic) {
+        if (flags & QTextDocument::FindBackward)
+            d_func()->ptedt->moveCursor(QTextCursor::End);
+        else
+            d_func()->ptedt->moveCursor(QTextCursor::Start);
+        tc = doc->find(rx, d_func()->ptedt->textCursor());
+        b = !tc.isNull();
+    }
+    if (b)
+        d_func()->ptedt->setTextCursor(tc);
+    return b;
+}
+
 void BSimpleCodeEditorDocument::insertTextImplementation(const QString &txt)
 {
     d_func()->ptedt->insertPlainText(txt);
-}
-
-void BSimpleCodeEditorDocument::installDropHandler(QObject *handler)
-{
-    d_func()->ptedt->viewport()->installEventFilter(handler);
 }
 
 void BSimpleCodeEditorDocument::moveCursorImplementation(int pos)
@@ -673,6 +679,11 @@ void BSimpleCodeEditorDocument::selectTextImplementation(int start, int end)
     tc.setPosition(start);
     tc.setPosition(end, QTextCursor::KeepAnchor);
     d_func()->ptedt->setTextCursor(tc);
+}
+
+void BSimpleCodeEditorDocument::setExtraSelectionsImplementation(const ExtraSelectionList &list)
+{
+    d_func()->ptedt->setExtraSelections(list);
 }
 
 void BSimpleCodeEditorDocument::setFocusImplementation()
