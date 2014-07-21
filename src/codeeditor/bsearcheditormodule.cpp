@@ -257,7 +257,7 @@ void BSearchDialogPrivate::retranslateUi()
     lblSearch->setText(tr("Find:", "lbl text"));
     lblReplace->setText(tr("Replace with:", "lbl text"));
     gboxOptions->setTitle(tr("Options", "gbox title"));
-    cboxRegexp->setText(tr("Treat as RegExp", "cbox text"));
+    cboxRegexp->setText(tr("Treat as regular expression", "cbox text"));
     cboxCaseSensitive->setText(tr("Case sensitive", "cbox text"));
     cboxWholeWords->setText(tr("Whole words only", "cbox text"));
     cboxBackwardOrder->setText(tr("Reverse search", "cbox text"));

@@ -1189,9 +1189,9 @@
     </message>
     <message>
         <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="260"/>
-        <source>Treat as RegExp</source>
+        <source>Treat as regular expression</source>
         <comment>cbox text</comment>
-        <translation>Воспринимать как RegExp</translation>
+        <translation>Воспринимать как регулярное выражение</translation>
     </message>
     <message>
         <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="261"/>
