@@ -30,6 +30,7 @@ class QTextCodec;
 
 #include "babstractdocumentdriver_p.h"
 
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QByteArray>
@@ -71,14 +72,13 @@ public:
     QByteArray fileDialogGeometry;
     QByteArray fileDialogState;
     BAbstractFileType *lastFileType;
-    bool nativeLineEnd;
 public:
     explicit BLocalDocumentDriverPrivate(BLocalDocumentDriver *q);
     ~BLocalDocumentDriverPrivate();
 public:
     static LoadResult loadFile(const Operation &op, const QString &fn, QTextCodec *codec, bool autoDetection);
     static SaveResult saveFile(const Operation &op, const QString &fn, QString txt, QTextCodec *codec,
-                               bool native = false);
+                               BeQt::LineFeed lineFeed);
 public:
     void init();
 public Q_SLOTS:

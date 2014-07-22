@@ -123,6 +123,8 @@ public:
     virtual bool replaceNext(const QString &newText) = 0;
     bool save(BAbstractDocumentDriver *driver, const QString &fileName = QString());
     bool save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName = QString());
+    bool save(BAbstractDocumentDriver *driver, QTextCodec *codec, BeQt::LineFeed lineFeed,
+              const QString &fileName = QString());
     virtual QString selectedText(bool full = false) const = 0;
     virtual int selectionEnd() const = 0;
     virtual QPoint selectionEndRowColumn() const = 0;

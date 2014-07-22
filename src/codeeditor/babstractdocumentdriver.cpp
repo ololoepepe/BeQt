@@ -116,7 +116,18 @@ void BAbstractDocumentDriver::restoreState(const QByteArray &)
     //
 }
 
+bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, const QString &fileName)
+{
+    return save(doc, 0, fileName);
+}
+
 bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName)
+{
+    return save(doc, codec, BeQt::DefaultLineFeed, fileName);
+}
+
+bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, BeQt::LineFeed lineFeed,
+                                   const QString &fileName)
 {
     if (!doc)
         return false;
@@ -124,12 +135,8 @@ bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, QTextCodec 
     op.document = doc;
     op.fileName = fileName;
     op.codec = codec;
+    op.lineFeed = lineFeed;
     return handleSaveOperation(op);
-}
-
-bool BAbstractDocumentDriver::save(BAbstractCodeEditorDocument *doc, const QString &fileName)
-{
-    return save(doc, 0, fileName);
 }
 
 QByteArray BAbstractDocumentDriver::saveState() const

@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1386"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1392"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -378,13 +378,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2040"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2042"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2042"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2044"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -614,10 +614,34 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="161"/>
-        <source>Encoding</source>
+        <location filename="../src/widgets/bfiledialog.cpp" line="163"/>
+        <source>Encoding:</source>
         <comment>lbl text</comment>
-        <translation>Кодировка</translation>
+        <translation>Кодировка:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bfiledialog.cpp" line="171"/>
+        <source>Line feed:</source>
+        <comment>lbl text</comment>
+        <translation>Конец строки:</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bfiledialog.cpp" line="174"/>
+        <source>Classic Mac OS</source>
+        <comment>cmbox item text</comment>
+        <translation>Классическая Mac OS</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bfiledialog.cpp" line="175"/>
+        <source>UNIX/Linux</source>
+        <comment>cmbox item text</comment>
+        <translation>UNIX/Linux</translation>
+    </message>
+    <message>
+        <location filename="../src/widgets/bfiledialog.cpp" line="176"/>
+        <source>Windows</source>
+        <comment>cmbox item text</comment>
+        <translation>Windows</translation>
     </message>
 </context>
 <context>

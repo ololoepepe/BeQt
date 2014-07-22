@@ -33,6 +33,7 @@ class QTextCodec;
 class QWidget;
 
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BeQt>
 
 #include <QObject>
 #include <QString>
@@ -51,6 +52,7 @@ public:
         QTextCodec *codec;
         const BAbstractCodeEditorDocument *document;
         QString fileName;
+        BeQt::LineFeed lineFeed;
     };
 public:
     explicit BAbstractDocumentDriver(QObject *parent = 0);
@@ -60,7 +62,8 @@ protected:
 public:
     BCodeEditor *editor() const;
     virtual bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec) = 0;
-    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec) = 0;
+    virtual bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec,
+                                   BeQt::LineFeed &lineFeed) = 0;
     virtual QString id() const = 0;
     virtual bool isBuisy() const = 0;
     bool load(BAbstractCodeEditorDocument *doc, const QString &fileName = QString());
@@ -68,6 +71,8 @@ public:
     virtual void restoreState(const QByteArray &state);
     bool save(BAbstractCodeEditorDocument *doc, const QString &fileName = QString());
     bool save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, const QString &fileName = QString());
+    bool save(BAbstractCodeEditorDocument *doc, QTextCodec *codec, BeQt::LineFeed lineFeed,
+              const QString &fileName = QString());
     virtual QByteArray saveState() const;
     virtual bool testFileExistance(const QString &fileName) = 0;
     virtual bool testFileReadOnly(const QString &fileName) = 0;

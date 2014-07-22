@@ -33,6 +33,7 @@ class QWidget;
 
 #include "babstractdocumentdriver.h"
 
+#include <BeQtCore/BeQt>
 #include <BeQtWidgets/BTextCodecMenu>
 
 /*============================================================================
@@ -50,14 +51,14 @@ protected:
     explicit BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 public:
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
-    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec);
+    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec,
+                           BeQt::LineFeed &lineFeed);
     QString id() const;
     bool isBuisy() const;
     void restoreState(const QByteArray &state);
     QByteArray saveState() const;
     void setCodecsComboBoxStyle(BTextCodecMenu::Style style);
     void setDefaultDir(const QString &dir);
-    void setNativeLineEnd(bool enabled);
     bool testFileExistance(const QString &fileName);
     bool testFileReadOnly(const QString &fileName);
 protected:

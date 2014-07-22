@@ -905,7 +905,8 @@ int BCodeEditorPrivate::reopenModifiedMessage(const QString &fileName)
     return msg.exec();
 }
 
-bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
+bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec,
+                                      BeQt::LineFeed lineFeed)
 {
     if (!doc || savingDocuments.contains(doc))
         return false;
@@ -913,7 +914,7 @@ bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QS
     if (nfn.isEmpty() && !driver->testFileExistance(doc->fileName())) {
         if (!codec)
             codec = doc->codec();
-        if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec))
+        if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec, lineFeed))
             return false;
         if (doc->fileName() != nfn && findDocument(nfn)) {
             alreadyOpenedMessage(nfn);
@@ -928,7 +929,7 @@ bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QS
             nfn = doc->fileName();
     }
     savingDocuments.insert(doc, nfn);
-    bool b = doc->save(driver, codec, nfn);
+    bool b = doc->save(driver, codec, lineFeed, nfn);
     if (!b) {
         savingDocuments.remove(doc);
         failedToSaveMessage(doc->fileName(), nfn);
@@ -2003,8 +2004,9 @@ bool BCodeEditor::saveCurrentDocumentAs()
         return false;
     QString nfn;
     QTextCodec *codec = currentDocument()->codec();
-    return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&
-            d_func()->saveDocument(currentDocument(), nfn, codec);
+    BeQt::LineFeed lineFeed = BeQt::DefaultLineFeed;
+    return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec, lineFeed) &&
+            d_func()->saveDocument(currentDocument(), nfn, codec, lineFeed);
 }
 
 bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec)

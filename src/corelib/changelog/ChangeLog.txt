@@ -73,6 +73,7 @@
     * Improve editor modules (de)serializing
     * Improve BTextBlockUserData (implement multiple skip intervals)
     * Hide BTextBlockUserData; add BTextBlockExtraData instead
+    * Add ability to select line feed
     * Add public method for handling events to BAbstractCodeEditorDocument
     * Add method for converting point into absolute cursor position to BAbstractCodeEditorDocument
     * Add method for retrieving absolute cursor position to BAbstractCodeEditorDocument

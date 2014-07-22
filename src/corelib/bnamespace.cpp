@@ -565,6 +565,19 @@ QString osVersion()
 #endif
 }
 
+LineFeed platformLineFeed()
+{
+#if defined(Q_OS_MAC)
+    return ClassicMacLineFeed);
+#elif defined(Q_OS_UNIX)
+    return UnixLineFeed;
+#elif defined(Q_OS_WIN)
+    return WindowsLineFeed;
+#else
+    return DefaultLineFeed;
+#endif
+}
+
 ProcessorArchitecture processorArchitecture()
 {
 #if defined(BEQT_ARCH_ALPHA)

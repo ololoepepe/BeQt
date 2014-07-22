@@ -1156,13 +1156,19 @@ bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, const QS
 
 bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCodec *codec, const QString &fileName)
 {
+    return save(driver, codec, BeQt::DefaultLineFeed, fileName);
+}
+
+bool BAbstractCodeEditorDocument::save(BAbstractDocumentDriver *driver, QTextCodec *codec, BeQt::LineFeed lineFeed,
+                                       const QString &fileName)
+{
     if (!driver || isBuisy())
         return false;
     B_D(BAbstractCodeEditorDocument);
     d->setBuisy(true);
-    connect(driver, SIGNAL( savingFinished(BAbstractDocumentDriver::Operation, bool)),
+    connect(driver, SIGNAL(savingFinished(BAbstractDocumentDriver::Operation, bool)),
             d, SLOT(savingFinished(BAbstractDocumentDriver::Operation, bool)));
-    if (!driver->save(this, codec, fileName)) {
+    if (!driver->save(this, codec, lineFeed, fileName)) {
         disconnect(driver, SIGNAL(savingFinished(BAbstractDocumentDriver::Operation, bool)),
                    d, SLOT(savingFinished(BAbstractDocumentDriver::Operation, bool)));
         d->setBuisy(false);

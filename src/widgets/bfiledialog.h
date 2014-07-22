@@ -31,6 +31,7 @@ class QTextCodec;
 #include "btextcodecmenu.h"
 
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BeQt>
 
 #include <QFileDialog>
 #include <QList>
@@ -54,20 +55,25 @@ protected:
     explicit BFileDialog(BFileDialogPrivate &d, QWidget *parent = 0);
 public:
     bool codecSelectionEnabled() const;
+    bool lineFeedSelectionEnabled() const;
     int maxHistorySize() const;
     void restoreState(const QByteArray &ba);
     QByteArray saveState() const;
     QTextCodec *selectedCodec() const;
     QString selectedCodecName() const;
+    BeQt::LineFeed selectedLineFeed() const;
     void setMaxHistorySize(int sz);
     QString topDir() const;
 public Q_SLOTS:
     void selectCodec(QTextCodec *codec);
     void selectCodec(const QString &codecName);
+    void selectLineFeed(BeQt::LineFeed lineFeed);
     void setCodecSelectionEnabled(bool b);
+    void setLineFeedSelectionEnabled(bool b);
 Q_SIGNALS:
     void codecChanged(QTextCodec *codec);
     void codecNameChanged(const QString &codecName);
+    void lineFeedChanged(BeQt::LineFeed lineFeed);
 private:
     Q_DISABLE_COPY(BFileDialog)
 };

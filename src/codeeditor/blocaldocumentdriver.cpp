@@ -102,9 +102,8 @@ BLocalDocumentDriverPrivate::LoadResult BLocalDocumentDriverPrivate::loadFile(co
 
 BLocalDocumentDriverPrivate::SaveResult BLocalDocumentDriverPrivate::saveFile(const Operation &op, const QString &fn,
                                                                               QString txt, QTextCodec *codec,
-                                                                              bool native)
+                                                                              BeQt::LineFeed lineFeed)
 {
-    Q_UNUSED(native);
     QFile f(fn);
     SaveResult res;
     res.operation = op;
@@ -114,10 +113,19 @@ BLocalDocumentDriverPrivate::SaveResult BLocalDocumentDriverPrivate::saveFile(co
     }
     QTextStream out(&f);
     out.setCodec(codec);
-#if defined(Q_OS_WIN)
-    if (native)
+    if (BeQt::DefaultLineFeed == lineFeed)
+        lineFeed = BeQt::platformLineFeed();
+    switch (lineFeed) {
+    case BeQt::ClassicMacLineFeed:
+        txt.replace('\n', '\r');
+        break;
+    case BeQt::WindowsLineFeed:
         txt.replace('\n', "\r\n");
-#endif
+        break;
+    case BeQt::UnixLineFeed:
+    default:
+        break;
+    }
     out << txt;
     f.close();
     res.success = true;
@@ -129,7 +137,6 @@ BLocalDocumentDriverPrivate::SaveResult BLocalDocumentDriverPrivate::saveFile(co
 void BLocalDocumentDriverPrivate::init()
 {
     defaultDir = QDir::homePath();
-    nativeLineEnd = true;
     lastFileType = 0;
     codecsComboBoxStyle = BTextCodecMenu::StructuredStyle;
 }
@@ -211,8 +218,8 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
     return true;
 }
 
-bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fileName,
-                                             QString &newName, QTextCodec *&codec)
+bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName,
+                                             QTextCodec *&codec, BeQt::LineFeed &lineFeed)
 {
     if (!editor())
         return false;
@@ -231,6 +238,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     else if (d->fileDialogState.isEmpty())
         bfd.setDirectory(d->defaultDir);
     bfd.selectFile(fileName);
+    //bfd.selectLineFeed(lineFeed);
     int ret = bfd.exec();
     d->fileDialogState = bfd.saveState();
     d->fileDialogGeometry = bfd.saveGeometry();
@@ -238,6 +246,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
         return false;
     newName = bfd.selectedFiles().first();
     codec = bfd.selectedCodec();
+    lineFeed = bfd.selectedLineFeed();
     return true;
 }
 
@@ -278,11 +287,6 @@ void BLocalDocumentDriver::setDefaultDir(const QString &dir)
     d_func()->defaultDir = dir;
 }
 
-void BLocalDocumentDriver::setNativeLineEnd(bool enabled)
-{
-    d_func()->nativeLineEnd = enabled;
-}
-
 bool BLocalDocumentDriver::testFileExistance(const QString &fileName)
 {
     return QFileInfo(fileName).isFile();
@@ -318,7 +322,7 @@ bool BLocalDocumentDriver::handleSaveOperation(const Operation &op)
     QTextCodec *c = op.codec ? op.codec : op.document->codec();
     QString txt = op.document->text();
     BLocalDocumentDriverPrivate::SaveResultFuture future =
-            QtConcurrent::run(&BLocalDocumentDriverPrivate::saveFile, op, fn, txt, c, d_func()->nativeLineEnd);
+            QtConcurrent::run(&BLocalDocumentDriverPrivate::saveFile, op, fn, txt, c, op.lineFeed);
     BLocalDocumentDriverPrivate::SaveResultFutureWatcher *watcher =
             new BLocalDocumentDriverPrivate::SaveResultFutureWatcher(this);
     watcher->setFuture(future);
