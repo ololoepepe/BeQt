@@ -24,14 +24,14 @@
 
 class BImageWidgetPrivate;
 
-class QIcon;
-class QImage;
-class QPicture;
-class QPixmap;
-class QString;
 
 #include <BeQtCore/BBase>
 
+#include <QIcon>
+#include <QImage>
+#include <QPicture>
+#include <QPixmap>
+#include <QString>
 #include <QWidget>
 
 /*============================================================================
@@ -41,6 +41,12 @@ class QString;
 class B_WIDGETS_EXPORT BImageWidget : public QWidget, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(bool hasScaledContents READ hasScaledContents WRITE setScaledContents)
+    Q_PROPERTY(QIcon icon READ icon WRITE setIcon)
+    Q_PROPERTY(QImage image READ image WRITE setImage)
+    Q_PROPERTY(QString imageFileName READ imageFileName)
+    Q_PROPERTY(QPicture picture READ picture WRITE setPicture)
+    Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap)
     B_DECLARE_PRIVATE(BImageWidget)
 public:
     explicit BImageWidget(QWidget *parent = 0);

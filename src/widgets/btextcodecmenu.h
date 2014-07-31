@@ -38,6 +38,10 @@ class QTextCodec;
 class B_WIDGETS_EXPORT BTextCodecMenu : public QMenu, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QTextCodec * selectedCodec READ selectedCodec)
+    Q_PROPERTY(QString selectedCodecName READ selectedCodecName)
+    Q_PROPERTY(Style style READ style CONSTANT)
+    Q_ENUMS(Style)
     B_DECLARE_PRIVATE(BTextCodecMenu)
 public:
     enum Style

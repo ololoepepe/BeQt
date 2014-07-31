@@ -30,8 +30,6 @@ class BAbstractEditorModule;
 class BAbstractFileType;
 class BSpellChecker;
 
-class QFont;
-class QStringList;
 class QTextCodec;
 
 #include "bcodeedit.h"
@@ -39,8 +37,10 @@ class QTextCodec;
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
+#include <QFont>
 #include <QList>
 #include <QString>
+#include <QStringList>
 #include <QWidget>
 
 /*============================================================================
@@ -50,6 +50,39 @@ class QTextCodec;
 class B_CODEEDITOR_EXPORT BCodeEditor : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(int asyncProcessingMinimumLength READ asyncProcessingMinimumLength
+               WRITE setAsyncProcessingMinimumLength)
+    Q_PROPERTY(bool autoCodecDetectionEnabled READ isAutoCodecDetectionEnabled WRITE setAutoCodecDetectionEnabled)
+    Q_PROPERTY(bool bracketHighlightingEnabled READ isBracketHighlightingEnabled WRITE setBracketHighlightingEnabled)
+    Q_PROPERTY(bool buisy READ isBuisy NOTIFY buisyChanged STORED false)
+    Q_PROPERTY(QObject * closeHandler READ closeHandler CONSTANT)
+    Q_PROPERTY(BAbstractCodeEditorDocument * currentDocument READ currentDocument NOTIFY currentDocumentChanged
+               STORED false)
+    Q_PROPERTY(QString currentDocumentFileName READ currentDocumentFileName NOTIFY currentDocumentFileNameChanged
+               STORED false)
+    Q_PROPERTY(bool currentDocumentModified READ isCurrentDocumentModified NOTIFY currentDocumentModificationChanged
+               STORED false)
+    Q_PROPERTY(QTextCodec * defaultCodec READ defaultCodec WRITE setDefaultCodec)
+    Q_PROPERTY(QString defaultCodecName READ defaultCodecName WRITE setDefaultCodec NOTIFY defaultCodecChanged)
+    Q_PROPERTY(QString defaultFileName READ defaultFileName WRITE setDefaultFileName)
+    Q_PROPERTY(bool documentAvailable READ documentAvailable NOTIFY documentAvailableChanged STORED false)
+    Q_PROPERTY(int documentType READ documentType STORED false)
+    Q_PROPERTY(BAbstractDocumentDriver * driver READ driver WRITE setDriver)
+    Q_PROPERTY(QObject * dropHandler READ dropHandler CONSTANT)
+    Q_PROPERTY(bool editAutoIndentationEnabled READ isEditAutoIndentationEnabled WRITE setEditAutoIndentationEnabled)
+    Q_PROPERTY(QFont editFont READ editFont WRITE setEditFont)
+    Q_PROPERTY(QString editFontFamily READ editFontFamily WRITE setEditFontFamily STORED false)
+    Q_PROPERTY(int editFontPointSize READ editFontPointSize WRITE setEditFontPointSize STORED false)
+    Q_PROPERTY(int editLineLength READ editLineLength WRITE setEditLineLength)
+    Q_PROPERTY(BCodeEdit::EditMode editMode READ editMode WRITE setEditMode NOTIFY editModeChanged)
+    Q_PROPERTY(QStringList fileHistory READ fileHistory WRITE setFileHistory NOTIFY fileHistoryChanged)
+    Q_PROPERTY(QStringList fileNames READ fileNames STORED false)
+    Q_PROPERTY(bool lineNumberWidgetVisible READ isLineNumberWidgetVisible WRITE setLineNumberWidgetVisible)
+    Q_PROPERTY(BSpellChecker * spellChecker READ spellChecker WRITE setSpellChecker)
+    Q_PROPERTY(int maximumFileSize READ maximumFileSize WRITE setMaximumFileSize)
+    Q_PROPERTY(int maximumHistorySize READ maximumHistorySize WRITE setMaximumHistorySize)
+    Q_PROPERTY(BAbstractFileType * preferredFileType READ preferredFileType WRITE setPreferredFileType)
+    Q_PROPERTY(QString preferredFileTypeId READ preferredFileTypeId STORED false)
     B_DECLARE_PRIVATE(BCodeEditor)
 public:
     enum StandardDocumentType
@@ -110,7 +143,7 @@ public:
     bool isEditAutoIndentationEnabled() const;
     bool isLineNumberWidgetVisible() const;
     int maximumFileSize() const;
-    int maximimHistorySize() const;
+    int maximumHistorySize() const;
     void mergeWith(BCodeEditor *other);
     BAbstractEditorModule *module(const QString &name) const;
     BAbstractEditorModule *module(StandardModule type) const;

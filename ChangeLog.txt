@@ -89,6 +89,7 @@
     * Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
     * Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
     * Use Qt coding style, sort includes, class members, etc.
+    * Add Q_PROPERTY declarations to QObject-based classes
 
 === BeQt 3.2.3 (02 July 2014) ===
     * Add processor architecture defines

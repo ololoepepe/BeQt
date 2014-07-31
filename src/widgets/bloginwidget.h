@@ -24,18 +24,17 @@
 
 class BLoginWidgetPrivate;
 
-class BPassword;
-class BTranslation;
-
-class QByteArray;
-class QString;
-class QStringList;
 class QValidator;
 
 #include "bpasswordwidget.h"
 
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BPassword>
+#include <BeQtCore/BTranslation>
 
+#include <QByteArray>
+#include <QString>
+#include <QStringList>
 #include <QWidget>
 
 /*============================================================================
@@ -45,6 +44,45 @@ class QValidator;
 class B_WIDGETS_EXPORT BLoginWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString address READ address WRITE setAddress NOTIFY addressChanged)
+    Q_PROPERTY(QString addressInputMask READ addressInputMask WRITE setAddressInputMask)
+    Q_PROPERTY(BTranslation addressLabel READ addressLabel WRITE setAddressLabel)
+    Q_PROPERTY(BTranslation addressPlaceholderText READ addressPlaceholderText WRITE setAddressPlaceholderText)
+    Q_PROPERTY(bool addressRequired READ addressRequired)
+    Q_PROPERTY(AddressType addressType READ addressType)
+    Q_PROPERTY(const QValidator * addressValidator READ addressValidator WRITE setAddressValidator)
+    Q_PROPERTY(QStringList availableAddresses READ availableAddresses WRITE setAvailableAddresses)
+    Q_PROPERTY(int generatedPasswordLength READ generatedPasswordLength WRITE setGeneratedPasswordLength)
+    Q_PROPERTY(BPasswordWidget::GeneratePasswordFunction generatePasswordFunction READ generatePasswordFunction
+               WRITE setGeneratePasswordFunction)
+    Q_PROPERTY(bool generatePasswordVisible READ generatePasswordVisible WRITE setGeneratePasswordVisible)
+    Q_PROPERTY(bool hasValidInput READ hasValidInput NOTIFY inputValidityChanged STORED false)
+    Q_PROPERTY(QString login READ login WRITE setLogin NOTIFY loginChanged)
+    Q_PROPERTY(bool loginEnabled READ loginEnabled WRITE setLoginEnabled)
+    Q_PROPERTY(QString loginInputMask READ loginInputMask WRITE setLoginInputMask)
+    Q_PROPERTY(BTranslation loginLabel READ loginLabel WRITE setLoginLabel)
+    Q_PROPERTY(BTranslation loginPlaceholderText READ loginPlaceholderText WRITE setLoginPlaceholderText)
+    Q_PROPERTY(bool loginRequired READ loginRequired)
+    Q_PROPERTY(const QValidator * loginValidator READ loginValidator WRITE setLoginValidator)
+    Q_PROPERTY(QString passwordInputMask READ passwordInputMask WRITE setPasswordInputMask)
+    Q_PROPERTY(BTranslation passwordLabel READ passwordLabel WRITE setPasswordLabel)
+    Q_PROPERTY(BTranslation passwordPlaceholderText READ passwordPlaceholderText WRITE setPasswordPlaceholderText)
+    Q_PROPERTY(bool passwordRequired READ passwordRequired)
+    Q_PROPERTY(const QValidator * passwordValidator READ passwordValidator WRITE setPasswordValidator)
+    Q_PROPERTY(QStringList persistentAddresses READ persistentAddresses WRITE setPersistentAddresses)
+    Q_PROPERTY(int port READ port WRITE setPort NOTIFY portChanged)
+    Q_PROPERTY(bool portEnabled READ portEnabled WRITE setPortEnabled)
+    Q_PROPERTY(QString portInputMask READ portInputMask WRITE setPortInputMask)
+    Q_PROPERTY(BTranslation portLabel READ portLabel WRITE setPortLabel)
+    Q_PROPERTY(BTranslation portPlaceholderText READ portPlaceholderText WRITE setPortPlaceholderText)
+    Q_PROPERTY(bool portRequired READ portRequired)
+    Q_PROPERTY(const QValidator * portValidator READ portValidator WRITE setPortValidator)
+    Q_PROPERTY(bool savePasswordVisible READ savePasswordVisible WRITE setSavePasswordVisible)
+    Q_PROPERTY(BPassword securePassword READ securePassword)
+    Q_PROPERTY(bool showPasswordVisible READ showPasswordVisible WRITE setShowPasswordVisible)
+    Q_PROPERTY(QString simplePassword READ simplePassword)
+    Q_ENUMS(AddressType)
+    Q_ENUMS(PasswordType)
     B_DECLARE_PRIVATE(BLoginWidget)
 public:
     enum AddressType

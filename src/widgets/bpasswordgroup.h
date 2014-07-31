@@ -25,9 +25,9 @@
 class BPasswordGroupPrivate;
 
 class BPasswordWidget;
-class BPassword;
 
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BPassword>
 
 #include <QObject>
 
@@ -38,6 +38,10 @@ class BPassword;
 class B_WIDGETS_EXPORT BPasswordGroup : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(BPassword password READ password STORED false)
+    Q_PROPERTY(bool passwordsMatch READ passwordsMatch NOTIFY passwordsMatchChanged STORED false)
+    Q_PROPERTY(bool passwordsMatchAndAcceptable READ passwordsMatchAndAcceptable
+               NOTIFY passwordsMatchAndAcceptableChanged STORED false)
     B_DECLARE_PRIVATE(BPasswordGroup)
 public:
     explicit BPasswordGroup(QObject *parent = 0);

@@ -40,6 +40,19 @@ class QString;
 class B_NETWORKWIDGETS_EXPORT BOperationProgressDialog : public BDialog
 {
     Q_OBJECT
+    Q_PROPERTY(int autoCloseInterval READ autoCloseInterval WRITE setAutoCloseInterval)
+    Q_PROPERTY(bool canCancel READ canCancel WRITE setCanCancel)
+    Q_PROPERTY(QString failureText READ failureText WRITE setFailureText)
+    Q_PROPERTY(QString processingRequestText READ processingRequestText WRITE setProcessingRequestText)
+    Q_PROPERTY(QString receivingReplyText READ receivingReplyText WRITE setReceivingReplyText)
+    Q_PROPERTY(QString receivingRequestText READ receivingRequestText WRITE setReceivingRequestText)
+    Q_PROPERTY(QString sendingReplyText READ sendingReplyText WRITE setSendingReplyText)
+    Q_PROPERTY(QString sendingRequestText READ sendingRequestText WRITE setSendingRequestText)
+    Q_PROPERTY(QString successText READ successText WRITE setSuccessText)
+    Q_PROPERTY(int updateInterval READ updateInterval WRITE setUpdateInterval)
+    Q_PROPERTY(bool valid READ isValid STORED false)
+    Q_PROPERTY(QString waitingForReplyText READ waitingForReplyText WRITE setWaitingForReplyText)
+    Q_PROPERTY(QString waitingForStartText READ waitingForStartText WRITE setWaitingForStartText)
     B_DECLARE_PRIVATE(BOperationProgressDialog)
 public:
     explicit BOperationProgressDialog(BNetworkOperation *op, QWidget *parent = 0);

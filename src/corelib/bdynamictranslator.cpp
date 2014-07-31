@@ -63,10 +63,9 @@ void BDynamicTranslatorPrivate::translate()
     if (!target)
         return;
     if (!targetPropertyName.isEmpty()) {
-        target->setProperty(targetPropertyName.toLatin1().constData(), translation.translate());
+        target->setProperty(targetPropertyName.constData(), translation.translate());
     } else if (!targetSlotName.isEmpty()) {
-        QMetaObject::invokeMethod(target, targetSlotName.toLatin1().constData(),
-                                  Q_ARG(QString, translation.translate()));
+        QMetaObject::invokeMethod(target, targetSlotName.constData(), Q_ARG(QString, translation.translate()));
     }
 }
 
@@ -76,43 +75,42 @@ void BDynamicTranslatorPrivate::translate()
 
 /*============================== Public constructors =======================*/
 
-BDynamicTranslator::BDynamicTranslator(QObject *parent, const char *targetPropertyName,
-                                       const BTranslation &translation) :
+BDynamicTranslator::BDynamicTranslator(QObject *parent, const QByteArray &targetPropertyName, const BTranslation &t) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
     d_func()->init();
     setTrigger(qApp, SIGNAL(languageChanged()));
     setTargetPropertyName(targetPropertyName);
-    setTranslation(translation);
+    setTranslation(t);
 }
 
-BDynamicTranslator::BDynamicTranslator(QObject *parent, const BTranslation &translation, const char *targetSlotName) :
+BDynamicTranslator::BDynamicTranslator(QObject *parent, const BTranslation &t, const QByteArray &targetSlotName) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
     d_func()->init();
     setTrigger(qApp, SIGNAL(languageChanged()));
     setTargetSlotName(targetSlotName);
-    setTranslation(translation);
+    setTranslation(t);
 }
 
-BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, const char *triggerSignal,
-                                       const char *targetPropertyName, const BTranslation &translation) :
+BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, const QByteArray &triggerSignal,
+                                       const QByteArray &targetPropertyName, const BTranslation &t) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
     d_func()->init();
     setTrigger(triggerSender, triggerSignal);
     setTargetPropertyName(targetPropertyName);
-    setTranslation(translation);
+    setTranslation(t);
 }
 
-BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, const char *triggerSignal,
-                                       const BTranslation &translation, const char *targetSlotName) :
+BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, const QByteArray &triggerSignal,
+                                       const BTranslation &t, const QByteArray &targetSlotName) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
     d_func()->init();
     setTrigger(triggerSender, triggerSignal);
     setTargetSlotName(targetSlotName);
-    setTranslation(translation);
+    setTranslation(t);
 }
 
 BDynamicTranslator::~BDynamicTranslator()
@@ -130,14 +128,14 @@ BDynamicTranslator::BDynamicTranslator(BDynamicTranslatorPrivate &d, QObject *pa
 
 /*============================== Public methods ============================*/
 
-void BDynamicTranslator::setTargetPropertyName(const char *targetPropertyName)
+void BDynamicTranslator::setTargetPropertyName(const QByteArray &targetPropertyName)
 {
     B_D(BDynamicTranslator);
     d->targetSlotName.clear();
     d->targetPropertyName = targetPropertyName;
 }
 
-void BDynamicTranslator::setTargetSlotName(const char *targetSlotName)
+void BDynamicTranslator::setTargetSlotName(const QByteArray &targetSlotName)
 {
     B_D(BDynamicTranslator);
     d->targetPropertyName.clear();
@@ -149,25 +147,25 @@ void BDynamicTranslator::setTranslation(const BTranslation &translation)
     d_func()->translation = translation;
 }
 
-void BDynamicTranslator::setTrigger(QObject *triggerSender, const char *triggerSignal)
+void BDynamicTranslator::setTrigger(QObject *triggerSender, const QByteArray &triggerSignal)
 {
     B_D(BDynamicTranslator);
     if (!d->triggerSender.isNull() && !d->triggerSignal.isEmpty())
-        disconnect(d->triggerSender.data(), d->triggerSignal.toLatin1().constData(), d, SLOT(translate()));
+        disconnect(d->triggerSender.data(), d->triggerSignal.constData(), d, SLOT(translate()));
     d->triggerSender = triggerSender;
     d->triggerSignal = triggerSignal;
-    if (triggerSender && triggerSignal)
-        connect(triggerSender, triggerSignal, d, SLOT(translate()));
+    if (triggerSender && !triggerSignal.isEmpty())
+        connect(triggerSender, triggerSignal.constData(), d, SLOT(translate()));
 }
 
-const char *BDynamicTranslator::targetPropertyName() const
+QByteArray BDynamicTranslator::targetPropertyName() const
 {
-    return d_func()->targetPropertyName.toLatin1().constData();
+    return d_func()->targetPropertyName;
 }
 
-const char *BDynamicTranslator::targetSlotName() const
+QByteArray BDynamicTranslator::targetSlotName() const
 {
-    return d_func()->targetSlotName.toLatin1().constData();
+    return d_func()->targetSlotName;
 }
 
 BDynamicTranslator::TargetType BDynamicTranslator::targetType() const
@@ -190,7 +188,7 @@ QObject *BDynamicTranslator::triggerSender() const
     return d_func()->triggerSender;
 }
 
-const char *BDynamicTranslator::triggerSignal() const
+QByteArray BDynamicTranslator::triggerSignal() const
 {
-    return d_func()->triggerSignal.toLatin1().constData();
+    return d_func()->triggerSignal;
 }

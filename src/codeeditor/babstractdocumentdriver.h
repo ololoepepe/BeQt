@@ -45,6 +45,8 @@ class QWidget;
 class B_CODEEDITOR_EXPORT BAbstractDocumentDriver : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(BCodeEditor * editor READ editor CONSTANT)
+    Q_PROPERTY(bool buisy READ isBuisy STORED false)
     B_DECLARE_PRIVATE(BAbstractDocumentDriver)
 public:
     struct Operation

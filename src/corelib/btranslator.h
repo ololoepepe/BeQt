@@ -24,12 +24,12 @@
 
 class BTranslatorPrivate;
 
-class QLocale;
 class QTranslator;
 
 #include "bbase.h"
 
 #include <QList>
+#include <QLocale>
 #include <QObject>
 #include <QString>
 
@@ -40,6 +40,11 @@ class QTranslator;
 class B_CORE_EXPORT BTranslator : public QObject, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
+    Q_PROPERTY(bool installed READ isInstalled STORED false)
+    Q_PROPERTY(bool loaded READ isLoaded STORED false)
+    Q_PROPERTY(QLocale locale READ locale WRITE setLocale)
+    Q_PROPERTY(bool valid READ isValid STORED false)
     B_DECLARE_PRIVATE(BTranslator)
 public:
     explicit BTranslator(QObject *parent = 0);

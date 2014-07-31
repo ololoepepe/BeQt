@@ -51,6 +51,7 @@ public:
     QToolButton *tbtnGenerate;
     QToolButton *tbtnSave;
     QToolButton *tbtnShow;
+    bool valid;
     bool wasEmpty;
 public:
     explicit BPasswordWidgetPrivate(BPasswordWidget *q);

@@ -4,61 +4,61 @@
 <context>
     <name>BAboutDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="456"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="463"/>
         <source>About</source>
         <comment>windowTitle</comment>
         <translation>О программе</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="450"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="457"/>
         <source>Website</source>
         <comment>lbl text</comment>
         <translation>Веб-сайт</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="445"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="452"/>
         <source>Copyright</source>
         <comment>lbl text</comment>
         <translation>Авторские права</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="364"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="365"/>
         <source>About BeQt</source>
         <comment>adlg windowTitle</comment>
         <translation>О библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="426"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="428"/>
         <source>Description</source>
         <comment>twgt tabText</comment>
         <translation>Описание</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="428"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="430"/>
         <source>Change log</source>
         <comment>twgt tabText</comment>
         <translation>История изменений</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="430"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="432"/>
         <source>Authors</source>
         <comment>twgt tabText</comment>
         <translation>Авторы</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="432"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="434"/>
         <source>Translators</source>
         <comment>twgt tabText</comment>
         <translation>Переводчики</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="434"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="436"/>
         <source>Thanks to</source>
         <comment>twgt tabText</comment>
         <translation>Благодарности</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="436"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="438"/>
         <source>License</source>
         <comment>twgt tabText</comment>
         <translation>Лицензия</translation>
@@ -81,43 +81,43 @@
         <translation>Электронная почта</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="481"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="488"/>
         <source>more...</source>
         <comment>lbl text</comment>
         <translation>больше...</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="482"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="489"/>
         <source>Show extended copyrights information</source>
         <comment>lbl text</comment>
         <translation>Показать расширенную информацию об авторских правах</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="492"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="499"/>
         <source>About Qt</source>
         <comment>tbtn toolTip</comment>
         <translation>О фреймворке Qt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="493"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="500"/>
         <source>About BeQt</source>
         <comment>tbtn toolTip</comment>
         <translation>О библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="507"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="514"/>
         <source>Copyrights information</source>
         <comment>dlg windowTitle</comment>
         <translation>Информация об авторских правах</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="516"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="523"/>
         <source>Copyright</source>
         <comment>tbsr text</comment>
         <translation>Авторские права</translation>
     </message>
     <message>
-        <location filename="../src/widgets/baboutdialog.cpp" line="518"/>
+        <location filename="../src/widgets/baboutdialog.cpp" line="525"/>
         <source>E-mail:</source>
         <comment>tbsr text</comment>
         <translation>Электронная почта:</translation>
@@ -378,13 +378,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2042"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2028"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2044"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2030"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -1140,7 +1140,7 @@
 <context>
     <name>BPluginsSettingsTab</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="239"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="241"/>
         <source>Plugins</source>
         <comment>title</comment>
         <translation>Плагины</translation>
@@ -1167,13 +1167,13 @@
         <translation>Справка по плагину</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="183"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="185"/>
         <source>No settings</source>
         <comment>msgbox title</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="184"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="186"/>
         <source>This plugin does not have any settings</source>
         <comment>msgbox text</comment>
         <translation>У этого плагина отсутствуют какие-либо настройки</translation>

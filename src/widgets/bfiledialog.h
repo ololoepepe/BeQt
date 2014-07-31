@@ -44,6 +44,11 @@ class QTextCodec;
 class B_WIDGETS_EXPORT BFileDialog : public QFileDialog, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool codecSelectionEnabled READ codecSelectionEnabled WRITE setCodecSelectionEnabled)
+    Q_PROPERTY(bool lineFeedSelectionEnabled READ lineFeedSelectionEnabled WRITE setLineFeedSelectionEnabled)
+    Q_PROPERTY(int maxHistorySize READ maxHistorySize WRITE setMaxHistorySize)
+    Q_PROPERTY(QTextCodec * selectedCodec READ selectedCodec STORED false)
+    Q_PROPERTY(QString selectedCodecName READ selectedCodecName STORED false)
     B_DECLARE_PRIVATE(BFileDialog)
 public:
     explicit BFileDialog(QWidget *parent = 0);

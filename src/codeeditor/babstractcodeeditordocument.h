@@ -30,21 +30,21 @@ class BCodeEditor;
 class BCodeEditorPrivate;
 class BSpellChecker;
 
-class QFont;
 class QMenu;
-class QPoint;
 class QRegExp;
 class QTextCodec;
-class QTextCursor;
 
 #include "babstractfiletype.h"
 
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
+#include <QFont>
 #include <QList>
+#include <QPoint>
 #include <QString>
 #include <QTextCharFormat>
+#include <QTextCursor>
 #include <QTextDocument>
 #include <QTextEdit>
 #include <QVariant>
@@ -57,6 +57,38 @@ class QTextCursor;
 class B_CODEEDITOR_EXPORT BAbstractCodeEditorDocument : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(int asyncProcessingMinimumLength READ asyncProcessingMinimumLength
+               WRITE setAsyncProcessingMinimumLength)
+    Q_PROPERTY(bool bracketHighlightingEnabled READ isBracketHighlightingEnabled WRITE setBracketHighlightingEnabled)
+    Q_PROPERTY(bool buisy READ isBuisy NOTIFY buisyChanged STORED false)
+    Q_PROPERTY(QTextCodec * codec READ codec WRITE setCodec)
+    Q_PROPERTY(QString codecName READ codecName WRITE setCodec NOTIFY codecChanged)
+    Q_PROPERTY(bool copyAvailable READ isCopyAvailable NOTIFY copyAvailableChanged STORED false)
+    Q_PROPERTY(int cursorPosition READ cursorPosition WRITE moveCursor NOTIFY cursorPositionChanged)
+    Q_PROPERTY(QPoint cursorPositionRowColumn READ cursorPositionRowColumn WRITE moveCursor
+               NOTIFY cursorPositionChanged)
+    Q_PROPERTY(QRect cursorRect READ cursorRect STORED false)
+    Q_PROPERTY(bool cutAvailable READ isCutAvailable NOTIFY cutAvailableChanged STORED false)
+    Q_PROPERTY(bool editAutoIndentationEnabled READ isEditAutoIndentationEnabled WRITE setEditAutoIndentationEnabled)
+    Q_PROPERTY(QFont editFont READ editFont WRITE setEditFont)
+    Q_PROPERTY(BCodeEditor * editor READ editor CONSTANT)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName NOTIFY fileNameChanged)
+    Q_PROPERTY(BAbstractFileType * fileType READ fileType WRITE setFileType NOTIFY fileTypeChanged)
+    Q_PROPERTY(QString fileTypeId READ fileTypeId STORED false)
+    Q_PROPERTY(bool hasSelection READ hasSelection NOTIFY hasSelectionChanged STORED false)
+    Q_PROPERTY(QTextDocument * innerDocument READ innerDocument CONSTANT)
+    Q_PROPERTY(bool lineNumberWidgetVisible READ isLineNumberWidgetVisible WRITE setLineNumberWidgetVisible)
+    Q_PROPERTY(bool modified READ isModified NOTIFY modificationChanged STORED false)
+    Q_PROPERTY(bool pasteAvailable READ isPasteAvailable NOTIFY pasteAvailableChanged STORED false)
+    Q_PROPERTY(bool readOnly READ isReadOnly WRITE setReadOnly NOTIFY readOnlyChanged)
+    Q_PROPERTY(bool redoAvailable READ isRedoAvailable NOTIFY redoAvailableChanged STORED false)
+    Q_PROPERTY(int selectionEnd READ selectionEnd STORED false)
+    Q_PROPERTY(QPoint selectionEndRowColumn READ selectionEndRowColumn STORED false)
+    Q_PROPERTY(int selectionStart READ selectionStart STORED false)
+    Q_PROPERTY(QPoint selectionStartRowColumn READ selectionStartRowColumn STORED false)
+    Q_PROPERTY(BSpellChecker * spellChecker READ spellChecker WRITE setSpellChecker)
+    Q_PROPERTY(QTextCursor textCursor READ textCursor STORED false)
+    Q_PROPERTY(bool undoAvailable READ isUndoAvailable NOTIFY undoAvailableChanged STORED false)
     B_DECLARE_PRIVATE(BAbstractCodeEditorDocument)
 public:
     struct TextProcessingResult

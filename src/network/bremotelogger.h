@@ -42,6 +42,10 @@ class QString;
 class B_NETWORK_EXPORT BRemoteLogger : public BLogger
 {
     Q_OBJECT
+    Q_PROPERTY(QString hostName READ hostName STORED false)
+    Q_PROPERTY(bool logToRemoteEnabled READ isLogToRemoteEnabled WRITE setLogToRemoteEnabled)
+    Q_PROPERTY(quint16 port READ port STORED false)
+    Q_PROPERTY(int remoteTimeout READ remoteTimeout WRITE setRemoteTimeout)
     B_DECLARE_PRIVATE(BRemoteLogger)
 public:
     explicit BRemoteLogger(QObject *parent = 0);

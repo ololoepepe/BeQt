@@ -39,6 +39,10 @@ class QTextCodec;
 class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QTextCodec * codec READ codec WRITE setCodec)
+    Q_PROPERTY(QString codecName READ codecName WRITE setCodec)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFile)
+    Q_PROPERTY(QStringList searchPaths READ searchPaths WRITE setSearchPaths)
     B_DECLARE_PRIVATE(BHelpBrowser)
 public:
     explicit BHelpBrowser(QWidget *parent = 0);
@@ -52,9 +56,13 @@ protected:
 public:
     static void clearSearchCache();
 public:
+    QTextCodec *codec() const;
+    QString codecName() const;
+    QString fileName() const;
+    QStringList searchPaths() const;
     void setCodec(QTextCodec *codec);
-    void setCodec(const char *codecName);
-    void setFile(const QString &file);
+    void setCodec(const QString &codecName);
+    void setFile(const QString &fileName);
     void setSearchPaths(const QStringList &paths);
 private:
     Q_DISABLE_COPY(BHelpBrowser)

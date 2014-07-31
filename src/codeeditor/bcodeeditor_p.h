@@ -300,8 +300,6 @@ public:
     bool tryRemoveFileType(const QString &id);
     void updateDocumentTab(BAbstractCodeEditorDocument *doc);
 public Q_SLOTS:
-    void createCloseHandler();
-    void createDropHandler();
     void documentBuisyChanged(bool buisy);
     void documentCodecChanged(const QString &codecName);
     void documentCopyAvailableChanged(bool available);

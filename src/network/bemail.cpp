@@ -23,9 +23,14 @@
 
 #include <BeQtCore/private/bbase_p.h>
 
+#include <QDataStream>
+#include <QDebug>
+#include <QMetaType>
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <QVariant>
+#include <QVariantMap>
 
 /*============================================================================
 ================================ BEmailPrivate ===============================
@@ -102,6 +107,18 @@ BEmail::BEmail(BEmailPrivate &d) :
     BBase(d)
 {
     d_func()->init();
+}
+
+/*============================== Static public methods =====================*/
+
+void BEmail::registerThisType()
+{
+    static bool registered = false;
+    if (registered)
+        return;
+    qRegisterMetaType<BEmail>();
+    qRegisterMetaTypeStreamOperators<BEmail>();
+    registered = true;
 }
 
 /*============================== Public methods ============================*/
@@ -192,4 +209,46 @@ bool BEmail::operator ==(const BEmail &other) const
     const BEmailPrivate *dd = other.d_func();
     return d->sender == dd->sender && d->receivers == dd->receivers && d->subject == dd->subject
             && d->body == dd->body;
+}
+
+bool BEmail::operator !=(const BEmail &other) const
+{
+    return !(*this == other);
+}
+
+BEmail::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
+}
+
+/*============================== Public friend operators ===================*/
+
+QDataStream &operator <<(QDataStream &stream, const BEmail &e)
+{
+    const BEmailPrivate *d = e.d_func();
+    QVariantMap m;
+    m.insert("body", d->body);
+    m.insert("receivers", d->receivers);
+    m.insert("sender", d->sender);
+    m.insert("subject", d->subject);
+    stream << m;
+    return stream;
+}
+
+QDataStream &operator >>(QDataStream &stream, BEmail &e)
+{
+    BEmailPrivate *d = e.d_func();
+    QVariantMap m;
+    stream >> m;
+    d->body = m.value("body").toString();
+    d->receivers = m.value("receivers").toStringList();
+    d->sender = m.value("sender").toString();
+    d->subject = m.value("subject").toString();
+    return stream;
+}
+
+QDebug operator <<(QDebug dbg, const BEmail &)
+{
+    dbg.nospace() << "BEmail(" << ")";
+    return dbg.space();
 }

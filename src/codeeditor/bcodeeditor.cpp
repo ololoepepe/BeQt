@@ -827,8 +827,8 @@ void BCodeEditorPrivate::init()
         connect(twgt, SIGNAL(tabCloseRequested(int)), this, SLOT(twgtTabCloseRequested(int)));
       vlt->addWidget(twgt);
    //
-   createDropHandler();
-   createCloseHandler();
+   closeHandler = new BCloseHandler(this);
+   dropHandler = new BDropHandler(q);
 }
 
 bool BCodeEditorPrivate::isDefaultFileName(const QString &fileName) const
@@ -1030,20 +1030,6 @@ void BCodeEditorPrivate::updateDocumentTab(BAbstractCodeEditorDocument *doc)
 }
 
 /*============================== Public slots ==============================*/
-
-void BCodeEditorPrivate::createCloseHandler()
-{
-    closeHandler = new BCloseHandler(this);
-    connect(closeHandler, SIGNAL(destroyed()), this, SLOT(createCloseHandler()));
-}
-
-void BCodeEditorPrivate::createDropHandler()
-{
-    dropHandler = new BDropHandler(q_func());
-    foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
-        doc->installInnerViewportEventFilter(dropHandler);
-    connect(dropHandler, SIGNAL(destroyed()), this, SLOT(createDropHandler()));
-}
 
 void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
 {
@@ -1548,7 +1534,7 @@ int BCodeEditor::maximumFileSize() const
     return d_func()->maximumFileSize;
 }
 
-int BCodeEditor::maximimHistorySize() const
+int BCodeEditor::maximumHistorySize() const
 {
     return d_func()->maxHistoryCount;
 }

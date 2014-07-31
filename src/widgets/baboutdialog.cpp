@@ -247,7 +247,8 @@ void BAboutDialogPrivate::init()
 void BAboutDialogPrivate::initAboutBeqtDialog()
 {
     aboutBeqtDlg = new BAboutDialog(q_func(), "BeQt", bVersion());
-    aboutBeqtDlg->setOrganization("Andrey Bogdanov", "2012-2014");
+    aboutBeqtDlg->setOrganization("Andrey Bogdanov");
+    aboutBeqtDlg->setCopyrightPeriod("2012-2014");
     aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
     aboutBeqtDlg->setPixmap(BApplication::beqtPixmap("beqt_logo"));
     aboutBeqtDlg->setAuthorsProvider(BApplication::beqtAuthorsProvider());
@@ -370,7 +371,8 @@ void BAboutDialogPrivate::retranslateAboutBeqtDialog()
 void BAboutDialogPrivate::setupFromApplicationData()
 {
     B_Q(BAboutDialog);
-    q->setOrganization(QApplication::organizationName(), BApplicationBase::applicationCopyrightPeriod());
+    q->setOrganization(QApplication::organizationName());
+    q->setCopyrightPeriod(BApplicationBase::applicationCopyrightPeriod());
     q->setWebsite(QApplication::organizationDomain());
     if (!BApplicationBase::applicationDescription().isEmpty())
         q->setDescription(BApplicationBase::applicationDescription());
@@ -441,6 +443,11 @@ QString BAboutDialogPrivate::tabTitle(DialogTab t) const
 
 void BAboutDialogPrivate::updateCopyright()
 {
+    if (organization.isEmpty()) {
+        lblCopyright->setVisible(false);
+        return;
+    }
+    lblCopyright->setVisible(true);
     QString cr = !copyrightPeriod.isEmpty() ? (copyrightPeriod + " ") : QString();
     lblCopyright->setText(tr("Copyright", "lbl text") + " &copy; " + cr + organization);
 }
@@ -584,7 +591,7 @@ void BAboutDialog::setDefaultMinimumSize(int width, int height)
 
 /*============================== Public methods ============================*/
 
-bool BAboutDialog::aboutBeQtShown() const
+bool BAboutDialog::aboutBeqtShown() const
 {
     return d_func()->tbtnAboutBeqt->isVisibleTo(const_cast<BAboutDialog *>(this));
 }
@@ -632,9 +639,14 @@ QString BAboutDialog::changeLog() const
     return d_func()->changeLog;
 }
 
-QString BAboutDialog::changeLogFile() const
+QString BAboutDialog::changeLogFileName() const
 {
     return d_func()->changeLogFileName;
+}
+
+QString BAboutDialog::copyrightPeriod() const
+{
+    return d_func()->copyrightPeriod;
 }
 
 QString BAboutDialog::description() const
@@ -642,7 +654,7 @@ QString BAboutDialog::description() const
     return d_func()->description;
 }
 
-QString BAboutDialog::descriptionFile() const
+QString BAboutDialog::descriptionFileName() const
 {
     return d_func()->descriptionFileName;
 }
@@ -657,7 +669,7 @@ QString BAboutDialog::license() const
     return d_func()->license;
 }
 
-QString BAboutDialog::licenseFile() const
+QString BAboutDialog::licenseFileName() const
 {
     return d_func()->licenseFileName;
 }
@@ -665,11 +677,6 @@ QString BAboutDialog::licenseFile() const
 QString BAboutDialog::organization() const
 {
     return d_func()->organization;
-}
-
-QString BAboutDialog::copyrightPeriod() const
-{
-    return d_func()->copyrightPeriod;
 }
 
 QPixmap BAboutDialog::pixmap() const
@@ -760,6 +767,13 @@ void BAboutDialog::setChangeLogFile(const QString &fileName)
     d_func()->resetChangeLogFile(fileName);
 }
 
+void BAboutDialog::setCopyrightPeriod(const QString &copyrightPeriod)
+{
+    B_D(BAboutDialog);
+    d->copyrightPeriod = copyrightPeriod;
+    d->updateCopyright();
+}
+
 void BAboutDialog::setDescription(const QString &text)
 {
     B_D(BAboutDialog);
@@ -796,14 +810,10 @@ void BAboutDialog::setLicenseFile(const QString &fileName)
     d_func()->resetLicenseFile(fileName);
 }
 
-void BAboutDialog::setOrganization(const QString &organization, const QString &copyrightPeriod)
+void BAboutDialog::setOrganization(const QString &organization)
 {
-    if (organization.isEmpty())
-        return;
     B_D(BAboutDialog);
     d->organization = organization;
-    d->copyrightPeriod = copyrightPeriod;
-    d->lblCopyright->setVisible(true);
     d->updateCopyright();
 }
 
@@ -811,12 +821,12 @@ void BAboutDialog::setPixmap(const QPixmap &pixmap)
 {
     B_D(BAboutDialog);
     d->lblIcon->setPixmap( pixmap.scaled(64, 64, Qt::KeepAspectRatio, Qt::SmoothTransformation) );
-    d->lblIcon->setVisible( !pixmap.isNull() );
+    d->lblIcon->setVisible(!pixmap.isNull());
 }
 
 void BAboutDialog::setPixmap(const QString &fileName)
 {
-    setPixmap( QPixmap(fileName) );
+    setPixmap(QPixmap(fileName));
 }
 
 void BAboutDialog::setThanksTo(const BPersonInfoList &list)
@@ -883,7 +893,7 @@ BPersonInfoList BAboutDialog::thanksTo() const
     return d_func()->thanksTo;
 }
 
-QString BAboutDialog::thanksToFile() const
+QString BAboutDialog::thanksToFileName() const
 {
     return d_func()->thanksToProvider ? d_func()->thanksToProvider->fileName() : d_func()->thanksToFileName;
 }
@@ -898,7 +908,7 @@ BPersonInfoList BAboutDialog::translators() const
     return d_func()->translators;
 }
 
-QString BAboutDialog::translatorsFile() const
+QString BAboutDialog::translatorsFileName() const
 {
     return d_func()->translatorsProvider ? d_func()->translatorsProvider->fileName() : d_func()->translatorsFileName;
 }

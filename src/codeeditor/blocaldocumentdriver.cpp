@@ -190,6 +190,16 @@ BLocalDocumentDriver::BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObje
 
 /*============================== Public methods ============================*/
 
+BTextCodecMenu::Style BLocalDocumentDriver::codecsComboBoxStyle() const
+{
+    return d_func()->codecsComboBoxStyle;
+}
+
+QString BLocalDocumentDriver::defaultDir() const
+{
+    return d_func()->defaultDir;
+}
+
 bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec)
 {
     if (!editor())

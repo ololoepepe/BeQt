@@ -40,6 +40,15 @@ class BSmtpSenderPrivate;
 class B_NETWORK_EXPORT BSmtpSender : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool buisy READ isBuisy STORED false)
+    Q_PROPERTY(BEmail email READ email WRITE setEmail)
+    Q_PROPERTY(QString localHostName READ localHostName WRITE setLocalHostName)
+    Q_PROPERTY(QString serverAddress READ serverAddress)
+    Q_PROPERTY(quint16 serverPort READ serverPort)
+    Q_PROPERTY(BGenericSocket::SocketType socketType READ socketType WRITE setSocketType)
+    Q_PROPERTY(QString userName READ userName)
+    Q_PROPERTY(QString userPassword READ userPassword)
+    Q_PROPERTY(bool valid READ isValid STORED false)
     B_DECLARE_PRIVATE(BSmtpSender)
 public:
     explicit BSmtpSender(QObject *parent = 0);

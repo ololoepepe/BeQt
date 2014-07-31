@@ -36,6 +36,14 @@ class BLoggerPrivate;
 class B_CORE_EXPORT BLogger : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString dateTimeFormat READ dateTimeFormat WRITE setDateTimeFormat)
+    Q_PROPERTY(bool dateTimeIncluded READ isDateTimeIncluded WRITE setIncludeDateTime)
+    Q_PROPERTY(int fileFlushInterval READ fileFlushInterval WRITE setFileFlushInterval)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
+    Q_PROPERTY(bool levelIncluded READ isLevelIncluded WRITE setIncludeLevel)
+    Q_PROPERTY(bool logToConsoleEnabled READ isLogToConsoleEnabled WRITE setLogToConsoleEnabled)
+    Q_PROPERTY(bool logToFileEnabled READ isLogToFileEnabled WRITE setLogToFileEnabled)
+    Q_PROPERTY(bool stderrUsed READ isStderrUsed WRITE setUseStderr)
     B_DECLARE_PRIVATE(BLogger)
 public:
     enum Level

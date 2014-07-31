@@ -35,6 +35,12 @@ class BSpamNotifierPrivate;
 class B_CORE_EXPORT BSpamNotifier : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool active READ isActive STORED false)
+    Q_PROPERTY(int checkInterval READ checkInterval WRITE setCheckInterval)
+    Q_PROPERTY(bool enabled READ isEnabled WRITE setEnabled)
+    Q_PROPERTY(int eventCount READ eventCount STORED false)
+    Q_PROPERTY(int eventLimit READ eventLimit WRITE setEventLimit)
+    Q_PROPERTY(int timeElapsed READ timeElapsed STORED false)
     B_DECLARE_PRIVATE(BSpamNotifier)
 public:
     explicit BSpamNotifier(QObject *parent = 0);

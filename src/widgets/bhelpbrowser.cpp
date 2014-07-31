@@ -247,6 +247,26 @@ void BHelpBrowser::clearSearchCache()
 
 /*============================== Public methods ============================*/
 
+QTextCodec *BHelpBrowser::codec() const
+{
+    return d_func()->codec;
+}
+
+QString BHelpBrowser::codecName() const
+{
+    return d_func()->codec ? QString::fromLatin1(d_func()->codec->name()) : QString();
+}
+
+QString BHelpBrowser::fileName() const
+{
+    return d_func()->tbrsr->source().path();
+}
+
+QStringList BHelpBrowser::searchPaths() const
+{
+    return d_func()->tbrsr->searchPaths();
+}
+
 void BHelpBrowser::setCodec(QTextCodec *codec)
 {
     if (!codec)
@@ -254,9 +274,9 @@ void BHelpBrowser::setCodec(QTextCodec *codec)
     d_func()->codec = codec;
 }
 
-void BHelpBrowser::setCodec(const char *codecName)
+void BHelpBrowser::setCodec(const QString &codecName)
 {
-    setCodec(QTextCodec::codecForName(codecName));
+    setCodec(QTextCodec::codecForName(codecName.toLatin1()));
 }
 
 void BHelpBrowser::setFile(const QString &file)

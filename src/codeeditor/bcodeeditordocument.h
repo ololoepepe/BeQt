@@ -49,6 +49,9 @@ class QWidget;
 class B_CODEEDITOR_EXPORT BCodeEditorDocument : public BAbstractCodeEditorDocument
 {
     Q_OBJECT
+    Q_PROPERTY(int editLineLength READ editLineLength WRITE setEditLineLength)
+    Q_PROPERTY(BCodeEdit::EditMode editMode READ editMode WRITE setEditMode NOTIFY editModeChanged)
+    Q_PROPERTY(BSplittedLinesDialog * splittedLinesDialog READ splittedLinesDialog WRITE setSplittedLinesDialog)
     B_DECLARE_PRIVATE(BCodeEditorDocument)
 public:
     explicit BCodeEditorDocument(BCodeEditor *editor, QWidget *parent = 0);

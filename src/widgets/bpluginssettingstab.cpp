@@ -123,7 +123,8 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
     ad.setWindowTitle(pw->name());
     if (pw->prefereStaticInfo()) {
         BPluginInterface::StaticPluginInfo sinf = pw->staticInfo();
-        ad.setOrganization(sinf.organization, sinf.copyrightYears);
+        ad.setOrganization(sinf.organization);
+        ad.setCopyrightPeriod(sinf.copyrightYears);
         ad.setWebsite(sinf.website);
         ad.setDescription(sinf.description);
         ad.setChangeLog(sinf.changeLog);
@@ -133,7 +134,8 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         ad.setThanksTo(sinf.thanksTo);
     } else {
         BPluginInterface::PluginInfo inf = pw->info();
-        ad.setOrganization(inf.organization, inf.copyrightYears);
+        ad.setOrganization(inf.organization);
+        ad.setCopyrightPeriod(inf.copyrightYears);
         ad.setWebsite(inf.website);
         ad.setDescriptionFile(inf.descriptionFileName);
         ad.setChangeLogFile(inf.changeLogFileName);

@@ -47,6 +47,7 @@ class QRegularExpression; //It is here because Qt headers containing the wrappin
 class B_CORE_EXPORT BSpellChecker : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString userDictionary READ userDictionaryPath WRITE setUserDictionary)
     B_DECLARE_PRIVATE(BSpellChecker)
 public:
     explicit BSpellChecker(QObject *parent = 0);

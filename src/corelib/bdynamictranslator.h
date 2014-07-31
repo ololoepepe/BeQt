@@ -24,9 +24,10 @@
 
 class BDynamicTranslatorPrivate;
 
-class BTranslation;
+class QByteArray;
 
 #include "bbaseobject.h"
+#include "btranslation.h"
 
 #include <QObject>
 
@@ -37,6 +38,13 @@ class BTranslation;
 class B_CORE_EXPORT BDynamicTranslator : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QByteArray targetPropertyName READ targetPropertyName WRITE setTargetPropertyName)
+    Q_PROPERTY(QByteArray targetSlotName READ targetSlotName WRITE setTargetSlotName)
+    Q_PROPERTY(TargetType targetType READ targetType)
+    Q_PROPERTY(BTranslation translation READ translation WRITE setTranslation)
+    Q_PROPERTY(QObject * triggerSender READ triggerSender)
+    Q_PROPERTY(QByteArray triggerSignal READ triggerSignal)
+    Q_ENUMS(TargetType)
     B_DECLARE_PRIVATE(BDynamicTranslator)
 public:
     enum TargetType
@@ -46,26 +54,26 @@ public:
         SlotTarget
     };
 public:
-    explicit BDynamicTranslator(QObject *parent, const char *targetPropertyName, const BTranslation &translation);
-    explicit BDynamicTranslator(QObject *parent, const BTranslation &translation, const char *targetSlotName);
-    explicit BDynamicTranslator(QObject *parent, QObject *triggerSender, const char *triggerSignal,
-                                const char *targetPropertyName, const BTranslation &translation);
-    explicit BDynamicTranslator(QObject *parent, QObject *triggerSender, const char *triggerSignal,
-                                const BTranslation &translation, const char *targetSlotName);
+    explicit BDynamicTranslator(QObject *parent, const QByteArray &targetPropertyName, const BTranslation &t);
+    explicit BDynamicTranslator(QObject *parent, const BTranslation &t, const QByteArray &targetSlotName);
+    explicit BDynamicTranslator(QObject *parent, QObject *triggerSender, const QByteArray &triggerSignal,
+                                const QByteArray &targetPropertyName, const BTranslation &t);
+    explicit BDynamicTranslator(QObject *parent, QObject *triggerSender, const QByteArray &triggerSignal,
+                                const BTranslation &t, const QByteArray &targetSlotName);
     ~BDynamicTranslator();
 protected:
     explicit BDynamicTranslator(BDynamicTranslatorPrivate &d, QObject *parent);
 public:
-    void setTargetPropertyName(const char *targetPropertyName);
-    void setTargetSlotName(const char *targetSlotName);
+    void setTargetPropertyName(const QByteArray &targetPropertyName);
+    void setTargetSlotName(const QByteArray &targetSlotName);
     void setTranslation(const BTranslation &translation);
-    void setTrigger(QObject *triggerSender, const char *triggerSignal);
-    const char *targetPropertyName() const;
-    const char *targetSlotName() const;
+    void setTrigger(QObject *triggerSender, const QByteArray &triggerSignal);
+    QByteArray targetPropertyName() const;
+    QByteArray targetSlotName() const;
     TargetType targetType() const;
     BTranslation translation() const;
     QObject *triggerSender() const;
-    const char *triggerSignal() const;
+    QByteArray triggerSignal() const;
 private:
     Q_DISABLE_COPY(BDynamicTranslator)
 };

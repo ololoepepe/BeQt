@@ -40,6 +40,7 @@ class QStringList;
 class B_WIDGETS_EXPORT BSettingsDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool valid READ isValid STORED false)
     B_DECLARE_PRIVATE(BSettingsDialog)
 public:
     enum TabNavigation

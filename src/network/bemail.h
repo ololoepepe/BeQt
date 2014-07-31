@@ -24,10 +24,14 @@
 
 class BEmailPrivate;
 
+class QDataStream;
+class QDebug;
 class QString;
+class QVariant;
 
 #include <BeQtCore/BBase>
 
+#include <QMetaType>
 #include <QStringList>
 
 /*============================================================================
@@ -44,6 +48,8 @@ public:
 protected:
     explicit BEmail(BEmailPrivate &d);
 public:
+    static void registerThisType();
+public:
     QString body() const;
     bool isValid() const;
     QString receiver(int index = 0) const;
@@ -59,6 +65,14 @@ public:
 public:
     BEmail &operator =(const BEmail &other);
     bool operator ==(const BEmail &other) const;
+    bool operator !=(const BEmail &other) const;
+    operator QVariant() const;
+public:
+    friend QDataStream &operator <<(QDataStream &stream, const BEmail &e);
+    friend QDataStream &operator >>(QDataStream &stream, BEmail &e);
+    friend QDebug operator <<(QDebug dbg, const BEmail &e);
 };
+
+Q_DECLARE_METATYPE(BEmail)
 
 #endif // BEMAIL_H

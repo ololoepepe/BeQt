@@ -38,6 +38,7 @@ class QWidget;
 class B_WIDGETS_EXPORT BPlainTextEdit : public QPlainTextEdit, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool dragEnabled READ dragEnabled WRITE setDragEnabled)
     B_DECLARE_PRIVATE(BPlainTextEdit)
 public:
     explicit BPlainTextEdit(QWidget *parent = 0);

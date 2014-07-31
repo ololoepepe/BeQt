@@ -27,9 +27,9 @@
 #include "bbaseobject_p.h"
 #include "btranslation.h"
 
+#include <QByteArray>
 #include <QObject>
 #include <QPointer>
-#include <QString>
 
 /*============================================================================
 ================================ BDynamicTranslatorPrivate ===================
@@ -40,11 +40,11 @@ class B_CORE_EXPORT BDynamicTranslatorPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BDynamicTranslator)
 public:
-    QString targetPropertyName;
-    QString targetSlotName;
+    QByteArray targetPropertyName;
+    QByteArray targetSlotName;
     BTranslation translation;
     QPointer<QObject> triggerSender;
-    QString triggerSignal;
+    QByteArray triggerSignal;
 public:
     explicit BDynamicTranslatorPrivate(BDynamicTranslator *q);
     ~BDynamicTranslatorPrivate();
