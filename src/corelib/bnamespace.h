@@ -67,6 +67,14 @@ enum FileSizeFormat
     GigabytesFormat
 };
 
+enum LineFeed
+{
+    DefaultLineFeed = 0,
+    ClassicMacLineFeed,
+    UnixLineFeed,
+    WindowsLineFeed
+};
+
 enum OSType
 {
     //Keep the order
@@ -169,6 +177,7 @@ B_CORE_EXPORT void msleep(unsigned long msecs);
 B_CORE_EXPORT OSType osType();
 B_CORE_EXPORT QString osTypeToString(OSType t);
 B_CORE_EXPORT QString osVersion();
+B_CORE_EXPORT LineFeed platformLineFeed();
 B_CORE_EXPORT ProcessorArchitecture processorArchitecture();
 B_CORE_EXPORT QString pureUuidText(const BUuid &uuid);
 B_CORE_EXPORT QString pureUuidText(const QString &uuidText);

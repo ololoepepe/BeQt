@@ -24,12 +24,12 @@
 
 class BLocaleComboBoxPrivate;
 
-class QLocale;
 class QWidget;
 
 #include <BeQtCore/BBase>
 
 #include <QComboBox>
+#include <QLocale>
 
 /*============================================================================
 ================================ BLocaleComboBox =============================
@@ -38,6 +38,7 @@ class QWidget;
 class B_WIDGETS_EXPORT BLocaleComboBox : public QComboBox, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(QLocale currentLocale READ currentLocale WRITE setCurrentLocale)
     B_DECLARE_PRIVATE(BLocaleComboBox)
 public:
     explicit BLocaleComboBox(QWidget *parent = 0);

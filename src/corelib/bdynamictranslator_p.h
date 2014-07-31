@@ -2,7 +2,7 @@
 **
 ** Copyright (C) 2012-2014 Andrey Bogdanov
 **
-** This file is part of the BeQtWidgets module of the BeQt library.
+** This file is part of the BeQtCore module of the BeQt library.
 **
 ** BeQt is free software: you can redistribute it and/or modify it under
 ** the terms of the GNU Lesser General Public License as published by
@@ -19,40 +19,41 @@
 **
 ****************************************************************************/
 
-#ifndef BEDITGROUP_P_H
-#define BEDITGROUP_P_H
+#ifndef BDYNAMICTRANSLATOR_P_H
+#define BDYNAMICTRANSLATOR_P_H
 
-class QLineEdit;
+#include "bdynamictranslator.h"
 
-#include "beditgroup.h"
+#include "bbaseobject_p.h"
+#include "btranslation.h"
 
-#include <BeQtCore/private/bbaseobject_p.h>
-
-#include <QMap>
+#include <QByteArray>
 #include <QObject>
+#include <QPointer>
 
 /*============================================================================
-================================ BEditGroupPrivate ===========================
+================================ BDynamicTranslatorPrivate ===================
 ============================================================================*/
 
-class B_WIDGETS_EXPORT BEditGroupPrivate : public BBaseObjectPrivate
+class B_CORE_EXPORT BDynamicTranslatorPrivate : public BBaseObjectPrivate
 {
     Q_OBJECT
-    B_DECLARE_PUBLIC(BEditGroup)
+    B_DECLARE_PUBLIC(BDynamicTranslator)
 public:
-    QMap<QObject *, QLineEdit *> ledtMap;
-    bool match;
-    bool matchAndAcceptable;
+    QByteArray targetPropertyName;
+    QByteArray targetSlotName;
+    BTranslation translation;
+    QPointer<QObject> triggerSender;
+    QByteArray triggerSignal;
 public:
-    explicit BEditGroupPrivate(BEditGroup *q);
-    ~BEditGroupPrivate();
+    explicit BDynamicTranslatorPrivate(BDynamicTranslator *q);
+    ~BDynamicTranslatorPrivate();
 public:
     void init();
 public Q_SLOTS:
-    void ledtDestroyed(QObject *object);
-    void textChanged();
+    void translate();
 private:
-    Q_DISABLE_COPY(BEditGroupPrivate)
+    Q_DISABLE_COPY(BDynamicTranslatorPrivate)
 };
 
-#endif // BEDITGROUP_P_H
+#endif // BDYNAMICTRANSLATOR_P_H

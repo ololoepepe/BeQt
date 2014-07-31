@@ -23,6 +23,8 @@ HEADERS += \
     bcoreapplication.h \
     bcoreapplication_p.h \
     bdirtools.h \
+    bdynamictranslator.h \
+    bdynamictranslator_p.h \
     bglobal.h \
     blocationprovider.h \
     blogger.h \
@@ -62,6 +64,7 @@ SOURCES += \
     bbaseobject.cpp \
     bcoreapplication.cpp \
     bdirtools.cpp \
+    bdynamictranslator.cpp \
     bglobal.cpp \
     blocationprovider.cpp \
     blogger.cpp \

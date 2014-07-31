@@ -24,14 +24,13 @@
 
 class BPluginWrapperPrivate;
 
-class BVersion;
-
 class QSettings;
 class QString;
 class QStringList;
 
 #include "bplugininterface.h"
 #include "bbase.h"
+#include "bversion.h"
 
 #include <QObject>
 #include <QList>
@@ -43,9 +42,16 @@ class QStringList;
 class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(bool activated READ isActivated STORED false)
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
+    Q_PROPERTY(bool loaded READ isLoaded STORED false)
+    Q_PROPERTY(QString name READ name STORED false)
+    Q_PROPERTY(bool prefereStaticInfo READ prefereStaticInfo STORED false)
+    Q_PROPERTY(QString type READ type STORED false)
+    Q_PROPERTY(BVersion version READ version STORED false)
     B_DECLARE_PRIVATE(BPluginWrapper)
 public:
-    typedef bool (*InterfaceTestFunction)(const QObject *);
+    typedef bool (*InterfaceTestFunction)(const QObject *interface);
 public:
     explicit BPluginWrapper(QObject *parent = 0);
     explicit BPluginWrapper(const QString &fileName, QObject *parent = 0);

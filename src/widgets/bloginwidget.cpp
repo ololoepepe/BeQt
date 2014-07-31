@@ -99,8 +99,8 @@ void BLoginWidgetPrivate::init()
         connect(pwdwgt, SIGNAL(passwordChanged()), this, SLOT(checkInputs()));
         connect(pwdwgt, SIGNAL(passwordChanged()), q_func(), SIGNAL(passwordChanged()));
         connect(pwdwgt, SIGNAL(passwordChanged(QString)), q_func(), SIGNAL(passwordChanged(QString)));
-        connect(pwdwgt, SIGNAL(passwordChanged(BPassword)), q_func(), SIGNAL(passwordChanged(BPassword)));
-        connect(pwdwgt, SIGNAL(passwordEdited(QString)), q_func(), SIGNAL(passwordEdited(BPassword)));
+        connect(pwdwgt, SIGNAL(passwordChanged(QByteArray)), q_func(), SIGNAL(passwordChanged(QByteArray)));
+        connect(pwdwgt, SIGNAL(passwordEdited(QString)), q_func(), SIGNAL(passwordEdited(QString)));
       flt->addRow(passwordLabel, pwdwgt);
     //
     connect(bApp, SIGNAL(languageChanged()), this, SLOT(retranslateUi()));
@@ -598,8 +598,8 @@ void BLoginWidget::setPasswordType(PasswordType t, bool required)
         connect(d_func()->pwdwgt, SIGNAL(passwordChanged()), d_func(), SLOT(checkInputs()));
         connect(d_func()->pwdwgt, SIGNAL(passwordChanged()), this, SIGNAL(passwordChanged()));
         connect(d_func()->pwdwgt, SIGNAL(passwordChanged(QString)), this, SIGNAL(passwordChanged(QString)));
-        connect(d_func()->pwdwgt, SIGNAL(passwordChanged(BPassword)), this, SIGNAL(passwordChanged(BPassword)));
-        connect(d_func()->pwdwgt, SIGNAL(passwordEdited(QString)), this, SIGNAL(passwordEdited(BPassword)));
+        connect(d_func()->pwdwgt, SIGNAL(passwordChanged(QByteArray)), this, SIGNAL(passwordChanged(QByteArray)));
+        connect(d_func()->pwdwgt, SIGNAL(passwordEdited(QString)), this, SIGNAL(passwordEdited(QString)));
     } else {
         required = false;
     }

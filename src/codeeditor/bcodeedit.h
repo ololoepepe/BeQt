@@ -29,15 +29,15 @@ class BCodeEditorDocument;
 class BCodeEditorDocumentPrivate;
 class BPlainTextEdit;
 
-class QFont;
-class QPoint;
 class QRegExp;
-class QString;
 
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
+#include <QFont>
 #include <QList>
+#include <QPoint>
+#include <QString>
 #include <QTextDocument>
 #include <QTextEdit>
 #include <QWidget>
@@ -49,8 +49,31 @@ class QString;
 class B_CODEEDITOR_EXPORT BCodeEdit : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool buisy READ isBuisy NOTIFY buisyChanged STORED false)
+    Q_PROPERTY(bool copyAvailable READ isCopyAvailable NOTIFY copyAvailableChanged STORED false)
+    Q_PROPERTY(int cursorPosition READ cursorPosition WRITE moveCursor NOTIFY cursorPositionChanged)
+    Q_PROPERTY(QPoint cursorPositionRowColumn READ cursorPositionRowColumn WRITE moveCursor
+               NOTIFY cursorPositionChanged)
+    Q_PROPERTY(bool cutAvailable READ isCutAvailable NOTIFY cutAvailableChanged STORED false)
+    Q_PROPERTY(bool editAutoIndentationEnabled READ isEditAutoIndentationEnabled WRITE setEditAutoIndentationEnabled)
+    Q_PROPERTY(QFont editFont READ editFont WRITE setEditFont)
+    Q_PROPERTY(int editLineLength READ editLineLength WRITE setEditLineLength)
+    Q_PROPERTY(EditMode editMode READ editMode WRITE setEditMode NOTIFY editModeChanged)
+    Q_PROPERTY(bool hasSelection READ hasSelection NOTIFY hasSelectionChanged STORED false)
+    Q_PROPERTY(QTextDocument * innerDocument READ innerDocument CONSTANT)
+    Q_PROPERTY(BPlainTextEdit * innerEdit READ innerEdit CONSTANT)
+    Q_PROPERTY(bool lineNumberWidgetVisible READ isLineNumberWidgetVisible WRITE setLineNumberWidgetVisible)
+    Q_PROPERTY(bool modified READ isModified NOTIFY modificationChanged STORED false)
+    Q_PROPERTY(bool pasteAvailable READ isPasteAvailable NOTIFY pasteAvailableChanged STORED false)
+    Q_PROPERTY(bool readOnly READ isReadOnly WRITE setReadOnly NOTIFY readOnlyChanged)
+    Q_PROPERTY(bool redoAvailable READ isRedoAvailable NOTIFY redoAvailableChanged STORED false)
+    Q_PROPERTY(int selectionEnd READ selectionEnd STORED false)
+    Q_PROPERTY(QPoint selectionEndRowColumn READ selectionEndRowColumn STORED false)
+    Q_PROPERTY(int selectionStart READ selectionStart STORED false)
+    Q_PROPERTY(QPoint selectionStartRowColumn READ selectionStartRowColumn STORED false)
+    Q_PROPERTY(bool undoAvailable READ isUndoAvailable NOTIFY undoAvailableChanged STORED false)
+    Q_ENUMS(EditMode)
     B_DECLARE_PRIVATE(BCodeEdit)
-
 public:
     enum EditMode
     {
@@ -85,6 +108,8 @@ public:
     bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool hasSelection() const;
+    QTextDocument *innerDocument() const;
+    BPlainTextEdit *innerEdit() const;
     bool isBuisy() const;
     bool isCopyAvailable() const;
     bool isCutAvailable() const;
@@ -135,9 +160,6 @@ public Q_SLOTS:
     void setText(const QString &txt, int asyncIfLongerThan = 100 * BeQt::Kilobyte);
     void switchMode();
     void undo();
-protected:
-    QTextDocument *innerDocument() const;
-    BPlainTextEdit *innerEdit() const;
 Q_SIGNALS:
     void buisyChanged(bool buisy);
     void copyAvailableChanged(bool available);

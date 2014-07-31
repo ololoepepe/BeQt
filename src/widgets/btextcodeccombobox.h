@@ -40,6 +40,9 @@ class QTextCodec;
 class B_WIDGETS_EXPORT BTextCodecComboBox : public QComboBox, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QTextCodec * selectedCodec READ selectedCodec WRITE selectCodec NOTIFY codecChanged)
+    Q_PROPERTY(QString selectedCodecName READ selectedCodecName WRITE selectCodec NOTIFY codecNameChanged)
+    Q_PROPERTY(BTextCodecMenu::Style style READ style CONSTANT)
     B_DECLARE_PRIVATE(BTextCodecComboBox)
 public:
     explicit BTextCodecComboBox(QWidget *parent = 0);

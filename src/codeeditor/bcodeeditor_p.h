@@ -50,6 +50,7 @@ class QTextCodec;
 
 #include <BeQtCore/BBase>
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbaseobject_p.h>
 #include <BeQtCore/private/bbase_p.h>
 
@@ -287,7 +288,8 @@ public:
     bool reopenDocument(BAbstractCodeEditorDocument *doc, QTextCodec *codec = 0);
     int reopenModifiedMessage(const QString &fileName);
 
-    bool saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0);
+    bool saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName = QString(), QTextCodec *codec = 0,
+                      BeQt::LineFeed lineFeed = BeQt::DefaultLineFeed);
     bool saveDocuments(const QList<BAbstractCodeEditorDocument *> &list);
     BAbstractFileType *selectDocumentFileType(BAbstractCodeEditorDocument *doc);
     void setDriverEditor(BAbstractDocumentDriver *drv, BCodeEditor *edr);
@@ -298,8 +300,6 @@ public:
     bool tryRemoveFileType(const QString &id);
     void updateDocumentTab(BAbstractCodeEditorDocument *doc);
 public Q_SLOTS:
-    void createCloseHandler();
-    void createDropHandler();
     void documentBuisyChanged(bool buisy);
     void documentCodecChanged(const QString &codecName);
     void documentCopyAvailableChanged(bool available);

@@ -1669,6 +1669,16 @@ bool BCodeEdit::hasSelection() const
     return d_func()->hasSelection;
 }
 
+QTextDocument *BCodeEdit::innerDocument() const
+{
+    return d_func()->ptedt->document();
+}
+
+BPlainTextEdit *BCodeEdit::innerEdit() const
+{
+    return d_func()->ptedt;
+}
+
 bool BCodeEdit::isBuisy() const
 {
     return d_func()->buisy;
@@ -2267,16 +2277,4 @@ void BCodeEdit::undo()
     tc.setPosition(tb.position() + i + 1);
     d->ptedt->setTextCursor(tc);
     setFocus();
-}
-
-/*============================== Protected methods =========================*/
-
-QTextDocument *BCodeEdit::innerDocument() const
-{
-    return d_func()->ptedt->document();
-}
-
-BPlainTextEdit *BCodeEdit::innerEdit() const
-{
-    return d_func()->ptedt;
 }

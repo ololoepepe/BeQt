@@ -64,8 +64,8 @@ public:
         LogOperation
     };
 public:
-    typedef bool (BNetworkConnection::*InternalHandler)(BNetworkOperation *);
-    typedef bool (*ExternalHandler)(BNetworkOperation *);
+    typedef bool (BNetworkConnection::*InternalHandler)(BNetworkOperation *operation);
+    typedef bool (*ExternalHandler)(BNetworkOperation *operation);
 public:
     explicit BNetworkConnection(BGenericSocket *socket, QObject *parent = 0);
     explicit BNetworkConnection(BNetworkServer *server, BGenericSocket *socket);

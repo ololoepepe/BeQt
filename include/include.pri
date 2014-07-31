@@ -62,7 +62,6 @@ defineReplace(getActualPrivateHeaderPaths) {
 #Global
 beqtInstallsHeadersGlobal.files=$$getActualHeaderPaths(BeQt)
 beqtInstallsHeadersGlobal.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQt
-#message($$getActualHeaderPaths(BeQt))
 INSTALLS += beqtInstallsHeadersGlobal
 
 #Core
@@ -99,7 +98,7 @@ contains(BEQT_CONFIG, private_headers) {
     }
 }
 
-    #Widgets
+#Widgets
 !contains(BEQT_CONFIG, no_widgets) {
     beqtInstallsHeadersWidgets.files=$$getActualHeaderPaths(BeQtWidgets)
     beqtInstallsHeadersWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtWidgets

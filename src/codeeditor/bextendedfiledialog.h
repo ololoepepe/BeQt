@@ -42,6 +42,8 @@ class QString;
 class B_CODEEDITOR_EXPORT BExtendedFileDialog : public BFileDialog
 {
     Q_OBJECT
+    Q_PROPERTY(BAbstractFileType * selectedFileType READ selectedFileType WRITE selectFileType)
+    Q_PROPERTY(QString selectedFileTypeId READ selectedFileTypeId WRITE selectFileType)
     B_DECLARE_PRIVATE(BExtendedFileDialog)
 public:
     explicit BExtendedFileDialog(QWidget *parent = 0);

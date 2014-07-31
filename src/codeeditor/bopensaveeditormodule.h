@@ -45,6 +45,7 @@ class QString;
 class B_CODEEDITOR_EXPORT BOpenSaveEditorModule : public BAbstractEditorModule
 {
     Q_OBJECT
+    Q_PROPERTY(QMenu * fileHistoryMenu READ fileHistoryMenu CONSTANT)
     B_DECLARE_PRIVATE(BOpenSaveEditorModule)
 public:
     enum Action
@@ -73,8 +74,8 @@ public:
     QAction *action(int type);
     QList<QAction *> actions(int group, bool extended = false);
     QList<QAction *> actions(bool extended = false);
-    QList<QAction *> fileHistoryActions();
-    QMenu *fileHistoryMenu();
+    QList<QAction *> fileHistoryActions() const;
+    QMenu *fileHistoryMenu() const;
     QString id() const;
 protected:
     void currentDocumentChanged(BAbstractCodeEditorDocument *doc);

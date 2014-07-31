@@ -24,6 +24,7 @@
 
 class BTextCodecComboBox;
 
+class QComboBox;
 class QEvent;
 class QLabel;
 class QModelIndex;
@@ -66,8 +67,10 @@ public:
     const BTextCodecMenu::Style CmboxStyle;
     const QString TopDir;
 public:
-    BTextCodecComboBox *cmboxEncodings;
-    QLabel *lblEncodings;
+    BTextCodecComboBox *cmboxEncoding;
+    QComboBox *cmboxLineFeed;
+    QLabel *lblEncoding;
+    QLabel *lblLineFeed;
     int maxHistorySize;
     BProxyModel *proxy;
 public:
@@ -84,6 +87,7 @@ public Q_SLOTS:
     void checkGoToParent();
     void checkHistory();
     void checkLineEdit(const QString &text);
+    void cmboxLineFeedCurrentIndexChanged(int index);
 private:
     Q_DISABLE_COPY(BFileDialogPrivate)
 };

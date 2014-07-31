@@ -44,6 +44,7 @@ class QString;
 class B_CODEEDITOR_EXPORT BBookmarksEditorModule : public BAbstractEditorModule
 {
     Q_OBJECT
+    Q_PROPERTY(int maximumBookmarkCount READ maximumBookmarkCount WRITE setMaximumBookmarkCount)
     B_DECLARE_PRIVATE(BBookmarksEditorModule)
 public:
     enum Action

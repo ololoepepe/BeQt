@@ -289,12 +289,12 @@ QList<QAction *> BOpenSaveEditorModule::actions(bool extended)
     return list;
 }
 
-QList<QAction *> BOpenSaveEditorModule::fileHistoryActions()
+QList<QAction *> BOpenSaveEditorModule::fileHistoryActions() const
 {
     return d_func()->mnuFileHistory->actions();
 }
 
-QMenu *BOpenSaveEditorModule::fileHistoryMenu()
+QMenu *BOpenSaveEditorModule::fileHistoryMenu() const
 {
     return d_func()->mnuFileHistory;
 }

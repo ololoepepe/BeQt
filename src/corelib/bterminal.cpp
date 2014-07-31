@@ -275,22 +275,30 @@ void BTerminalPrivate::init()
 
 /*============================== Public slots ==============================*/
 
-void BTerminalPrivate::lineRead(const QString &text)
+void BTerminalPrivate::commandEntered(const QString &cmd, const QStringList &args)
 {
-    lastArgs = BTextTools::splitCommand(text);
-    lastCommand = !lastArgs.isEmpty() ? lastArgs.takeFirst() : QString();
-    if (lastCommand.isEmpty())
+    if (cmd.isEmpty())
         return;
+    lastCommand = cmd;
+    lastArgs = args;
     B_Q(BTerminal);
     QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, lastCommand), Q_ARG(QStringList, lastArgs));
-    if (internalHandlers.contains(lastCommand))
-        (q->*internalHandlers.value(lastCommand))(lastCommand, lastArgs);
-    else if (externalHandlers.contains(lastCommand))
-        externalHandlers.value(lastCommand)(q, lastCommand, lastArgs);
+    if (handlers.contains(lastCommand))
+        handlers.value(lastCommand)(lastCommand, lastArgs);
     else
         q->writeLine(translations ? tr("Unknown command") : QString("Unknown command"));
     if (lastCommand != "last" && !lastCommand.startsWith("last "))
         commandHistory.prepend(lastCommand);
+}
+
+void BTerminalPrivate::lineRead(const QString &text)
+{
+    QStringList args;
+    bool ok = false;
+    QString cmd = BTextTools::splitCommand(text, args, &ok);
+    if (!ok || cmd.isEmpty())
+        return;
+    commandEntered(cmd, args);
 }
 
 /*============================================================================
@@ -483,7 +491,18 @@ void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *meth
     disconnect(_m_self, SIGNAL(commandEntered(QString,QStringList)), receiver, method);
 }
 
-BTerminal::InternalHandler BTerminal::handler(StandardCommand cmd)
+void BTerminal::emulateCommand(const QString &command, const QStringList &arguments)
+{
+    QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!BTerminalPrivate::testInit("BTerminal"))
+        return;
+    if (StandardMode != ds_func()->Mode)
+        return;
+    QMetaObject::invokeMethod(ds_func(), "commandEntered", Qt::QueuedConnection, Q_ARG(QString, command),
+                              Q_ARG(QStringList, arguments));
+}
+
+BTerminal::HandlerFunction BTerminal::handler(StandardCommand cmd)
 {
     switch (cmd) {
     case QuitCommand:
@@ -499,22 +518,17 @@ BTerminal::InternalHandler BTerminal::handler(StandardCommand cmd)
     }
 }
 
-void BTerminal::installHandler(const QString &command, InternalHandler handler)
+BTerminal::HandlerFunction BTerminal::installedHandler(const QString &command)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
-        return;
+        return 0;
     if (StandardMode != ds_func()->Mode)
-        return;
-    if (command.isEmpty() || !handler)
-        return;
-    B_DS(BTerminal);
-    if (ds->internalHandlers.contains(command))
-        return;
-    ds->internalHandlers.insert(command, handler);
+        return 0;
+    return !command.isEmpty() ? ds_func()->handlers.value(command) : 0;
 }
 
-void BTerminal::installHandler(const QString &command, ExternalHandler handler)
+void BTerminal::installHandler(const QString &command, HandlerFunction handler)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
@@ -524,9 +538,9 @@ void BTerminal::installHandler(const QString &command, ExternalHandler handler)
     if (command.isEmpty() || !handler)
         return;
     B_DS(BTerminal);
-    if (ds->externalHandlers.contains(command))
+    if (ds->handlers.contains(command))
         return;
-    ds->externalHandlers.insert(command, handler);
+    ds->handlers.insert(command, handler);
 }
 
 void BTerminal::installHandler(StandardCommand cmd)
@@ -535,7 +549,7 @@ void BTerminal::installHandler(StandardCommand cmd)
         return;
     if (StandardMode != ds_func()->Mode)
         return;
-    InternalHandler h = handler(cmd);
+    HandlerFunction h = handler(cmd);
     CommandHelpList l = commandHelpList(cmd);
     foreach (const QString &s, commands(cmd)) {
         installHandler(s, h);
@@ -543,13 +557,7 @@ void BTerminal::installHandler(StandardCommand cmd)
     }
 }
 
-void BTerminal::installHandler(StandardCommand cmd, InternalHandler handler)
-{
-    foreach (const QString &s, commands(cmd))
-        installHandler(s, handler);
-}
-
-void BTerminal::installHandler(StandardCommand cmd, ExternalHandler handler)
+void BTerminal::installHandler(StandardCommand cmd, HandlerFunction handler)
 {
     foreach (const QString &s, commands(cmd))
         installHandler(s, handler);
@@ -852,71 +860,72 @@ void BTerminal::writeLineErr(const QString &text)
     writeErr(text + "\n");
 }
 
-/*============================== Protected methods =========================*/
+/*============================== Static protected methods ==================*/
 
 bool BTerminal::handleHelp(const QString &, const QStringList &args)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return false;
-    if (StandardMode != ds_func()->Mode)
+    B_DS(BTerminal);
+    if (StandardMode != ds->Mode)
         return false;
-    QString h = d_func()->translations ? d_func()->help.translate() : d_func()->help.sourceText();
+    QString h = ds->translations ? ds->help.translate() : ds->help.sourceText();
     if (args.isEmpty()) {
         if (h.isEmpty()) {
-            writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+            writeLine(ds->translations ? tr("Nothing to display") : QString("Nothing to display"));
             return false;
         }
         writeLine(h);
     } else if (args.size() == 1) {
         if (args.first() == "--all") {
-            if (h.isEmpty() && d_func()->commandHelp.isEmpty()) {
-                writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+            if (h.isEmpty() && ds->commandHelp.isEmpty()) {
+                writeLine(ds->translations ? tr("Nothing to display") : QString("Nothing to display"));
                 return false;
             }
             if (!h.isEmpty()) {
                 writeLine(h);
-                if (!d_func()->commandHelp.isEmpty())
+                if (!ds->commandHelp.isEmpty())
                     writeLine();
             }
-            if (!d_func()->commandHelp.isEmpty()) {
-                writeLine(d_func()->translations ? tr("The following commands are available:") :
+            if (!ds->commandHelp.isEmpty()) {
+                writeLine(ds->translations ? tr("The following commands are available:") :
                                                    QString("The following commands are available:"));
                 writeLine();
-                foreach (const CommandHelpList &ch, bWithoutDuplicates(d_func()->commandHelp.values(), &areEqual))
-                    writeHelpLines(ch, d_func()->translations);
+                foreach (const CommandHelpList &ch, bWithoutDuplicates(ds->commandHelp.values(), &areEqual))
+                    writeHelpLines(ch, ds->translations);
             }
         } else if (args.first() == "--commands") {
-            if (d_func()->commandHelp.isEmpty()) {
-                writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+            if (ds->commandHelp.isEmpty()) {
+                writeLine(ds->translations ? tr("Nothing to display") : QString("Nothing to display"));
                 return false;
             }
-            writeLine(d_func()->translations ? tr("The following commands are available:") :
+            writeLine(ds->translations ? tr("The following commands are available:") :
                                                QString("The following commands are available:"));
             writeLine();
-            foreach (const CommandHelpList &ch, bWithoutDuplicates(d_func()->commandHelp.values(), &areEqual))
-                writeHelpLines(ch, d_func()->translations);
+            foreach (const CommandHelpList &ch, bWithoutDuplicates(ds->commandHelp.values(), &areEqual))
+                writeHelpLines(ch, ds->translations);
         } else if (args.first() == "--settings") {
-            if (!d_func()->root) {
-                writeLine(d_func()->translations ? tr("Settings structure not set") :
+            if (!ds->root) {
+                writeLine(ds->translations ? tr("Settings structure not set") :
                                                    QString("Settings structure not set"));
                 return false;
             }
-            d_func()->root->showTree();
+            ds->root->showTree();
         } else if (args.first() == "--about" || args.first() == "--about-beqt") {
             if (args.first() == "--about-beqt")
                 writeLine(BApplicationBase::beqtInfo(BApplicationBase::Copyringt));
             else
                 writeLine(BApplicationBase::applicationInfo(BApplicationBase::Copyringt));
-        } else if (d_func()->commandHelp.contains(args.first())) {
-            writeHelpLines(d_func()->commandHelp.value(args.first()), d_func()->translations);
+        } else if (ds->commandHelp.contains(args.first())) {
+            writeHelpLines(ds->commandHelp.value(args.first()), ds->translations);
         } else {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
     } else if (args.size() == 2) {
         if (args.first() != "--about" && args.first() != "--about-beqt") {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
         BApplicationBase::About type;
@@ -939,19 +948,19 @@ bool BTerminal::handleHelp(const QString &, const QStringList &args)
             type = BApplicationBase::ThanksTo;
         }
         else {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
         QString s = (args.first() == "--about-beqt") ? BApplicationBase::beqtInfo(type) :
                                                        BApplicationBase::applicationInfo(type);
         if (s.isEmpty()) {
-            writeLine(d_func()->translations ? tr("Nothing to display") : QString("Nothing to display"));
+            writeLine(ds->translations ? tr("Nothing to display") : QString("Nothing to display"));
             return false;
         }
         writeLine(s);
         return true;
     } else {
-        writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+        writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
         return false;
     }
     return true;
@@ -962,15 +971,16 @@ bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
     QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return false;
-    if (StandardMode != ds_func()->Mode)
+    B_DS(BTerminal);
+    if (StandardMode != ds->Mode)
         return false;
     if (args.size() > 2) {
-        writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+        writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
         return false;
     }
     if (args.isEmpty()) {
         if (ds_func()->commandHistory.isEmpty()) {
-            writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+            writeLine(ds->translations ? tr("History is empty") : QString("History is empty"));
             return true;
         }
         QString s = ds_func()->commandHistory.first();
@@ -981,7 +991,7 @@ bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
     } else if (args.size() == 1) {
         if (args.first() == "--show") {
             if (ds_func()->commandHistory.isEmpty()) {
-                writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+                writeLine(ds->translations ? tr("History is empty") : QString("History is empty"));
                 return true;
             }
             int n = 10;
@@ -993,15 +1003,15 @@ bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
             bool ok = false;
             int n = args.first().toInt(&ok);
             if (!ok) {
-                writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+                writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
                 return false;
             }
             if (ds_func()->commandHistory.isEmpty()) {
-                writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+                writeLine(ds->translations ? tr("History is empty") : QString("History is empty"));
                 return true;
             }
             if (n < 1 || n > ds_func()->commandHistory.size()) {
-                writeLine(d_func()->translations ? tr("Invalid index") : QString("Invalid index"));
+                writeLine(ds->translations ? tr("Invalid index") : QString("Invalid index"));
                 return false;
             }
             QString s = ds_func()->commandHistory.at(n - 1);
@@ -1015,11 +1025,11 @@ bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
             bool ok = false;
             int n = args.last().toInt(&ok);
             if (!ok) {
-                writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+                writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
                 return false;
             }
             if (ds_func()->commandHistory.isEmpty()) {
-                writeLine(d_func()->translations ? tr("History is empty") : QString("History is empty"));
+                writeLine(ds->translations ? tr("History is empty") : QString("History is empty"));
                 return true;
             }
             if (n < 1)
@@ -1029,7 +1039,7 @@ bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
             foreach (int i, bRangeD(0, n - 1))
                 writeLine(ds_func()->commandHistory.at(i));
         } else {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
     }
@@ -1052,71 +1062,72 @@ bool BTerminal::handleSet(const QString &, const QStringList &args)
     QMutexLocker locker(&BTerminalPrivate::mutex);
     if (!BTerminalPrivate::testInit("BTerminal"))
         return false;
-    if (StandardMode != ds_func()->Mode)
+    B_DS(BTerminal);
+    if (StandardMode != ds->Mode)
         return false;
     if (args.size() < 1) {
-        writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+        writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
         return false;
     }
-    if (!d_func()->root) {
-        writeLine(d_func()->translations ? tr("Settings structure not set") : QString("Settings structure not set"));
+    if (!ds->root) {
+        writeLine(ds->translations ? tr("Settings structure not set") : QString("Settings structure not set"));
         return false;
     }
     if (args.first() == "--tree") {
-        d_func()->root->showTree();
+        ds->root->showTree();
     } else if (args.first() == "--show") {
         if (args.size() != 2) {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
-        if (!d_func()->root->show(args.last())) {
-            writeLine(d_func()->translations ? tr("Failed to show value") : QString("Failed to show value"));
+        if (!ds->root->show(args.last())) {
+            writeLine(ds->translations ? tr("Failed to show value") : QString("Failed to show value"));
             return false;
         }
     } else if (args.first() == "--description") {
         if (args.size() != 2) {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
-        BSettingsNode *n = d_func()->root->find(args.last());
+        BSettingsNode *n = ds->root->find(args.last());
         if (!n) {
-            writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));
+            writeLine(ds->translations ? tr("No such option") : QString("No such option"));
             return false;
         }
         BTranslation t = n->description();
         if (!t.isValid()) {
-            writeLine(d_func()->translations ? tr("No description") : QString("No description"));
+            writeLine(ds->translations ? tr("No description") : QString("No description"));
             return false;
         }
-        writeLine(d_func()->translations ? t.translate() : t.sourceText());
+        writeLine(ds->translations ? t.translate() : t.sourceText());
     } else {
-        BSettingsNode *n = d_func()->root->find(args.first());
+        BSettingsNode *n = ds->root->find(args.first());
         if (!n) {
-            writeLine(d_func()->translations ? tr("No such option") : QString("No such option"));
+            writeLine(ds->translations ? tr("No such option") : QString("No such option"));
             return false;
         }
         if (args.size() == 2) {
             bool b = false;
             QVariant v = BSettingsNode::stringToVariant(args.last(), n->type(), &b);
             if (!b) {
-                writeLine(d_func()->translations ? tr("Invalid value") : QString("Invalid value"));
+                writeLine(ds->translations ? tr("Invalid value") : QString("Invalid value"));
                 return false;
             }
-            if (!d_func()->root->set(args.first(), v)) {
-                writeLine(d_func()->translations ? tr("Failed to set value") : QString("Failed to set value"));
+            if (!ds->root->set(args.first(), v)) {
+                writeLine(ds->translations ? tr("Failed to set value") : QString("Failed to set value"));
                 return false;
             } else {
-                writeLine(d_func()->translations ? tr("OK") : QString("OK"));
+                writeLine(ds->translations ? tr("OK") : QString("OK"));
             }
         } else if (args.size() == 1) {
-            if (!d_func()->root->set(args.first())) {
-                writeLine(d_func()->translations ? tr("Failed to set value") : QString("Failed to set value"));
+            if (!ds->root->set(args.first())) {
+                writeLine(ds->translations ? tr("Failed to set value") : QString("Failed to set value"));
                 return false;
             } else {
-                writeLine(d_func()->translations ? tr("OK") : QString("OK"));
+                writeLine(ds->translations ? tr("OK") : QString("OK"));
             }
         } else {
-            writeLine(d_func()->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
+            writeLine(ds->translations ? tr("Invalid parameters") : QString("Invalid parameters"));
             return false;
         }
     }

@@ -33,6 +33,7 @@
 #include <QAbstractItemModel>
 #include <QAbstractItemView>
 #include <QByteArray>
+#include <QComboBox>
 #include <QCompleter>
 #include <QDebug>
 #include <QDialogButtonBox>
@@ -45,6 +46,7 @@
 #include <QLayout>
 #include <QLineEdit>
 #include <QList>
+#include <QMetaObject>
 #include <QModelIndex>
 #include <QObject>
 #include <QSortFilterProxyModel>
@@ -157,13 +159,24 @@ void BFileDialogPrivate::init()
     connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(checkHistory()));
     q->setOption(BFileDialog::DontUseNativeDialog, true);
     QLayout *lt = q->layout();
-      lblEncodings = new QLabel(q);
-        lblEncodings->setText(tr("Encoding", "lbl text") + ":");
-      lt->addWidget(lblEncodings);
-      cmboxEncodings = new BTextCodecComboBox(CmboxStyle);
-      connect(cmboxEncodings, SIGNAL(codecChanged(QTextCodec *)), q, SIGNAL(codecChanged(QTextCodec *)));
-      connect(cmboxEncodings, SIGNAL(codecNameChanged(QString)), q, SIGNAL(codecNameChanged(QString)));
-      lt->addWidget(cmboxEncodings);
+      lblEncoding = new QLabel(q);
+        lblEncoding->setText(tr("Encoding:", "lbl text"));
+      lt->addWidget(lblEncoding);
+      cmboxEncoding = new BTextCodecComboBox(CmboxStyle);
+        connect(cmboxEncoding, SIGNAL(codecChanged(QTextCodec *)), q, SIGNAL(codecChanged(QTextCodec *)));
+        connect(cmboxEncoding, SIGNAL(codecNameChanged(QString)), q, SIGNAL(codecNameChanged(QString)));
+      lt->addWidget(cmboxEncoding);
+      lt->addWidget(new QLabel()); //Dummy
+      lblLineFeed = new QLabel(q);
+        lblLineFeed->setText(tr("Line feed:", "lbl text"));
+      lt->addWidget(lblLineFeed);
+      cmboxLineFeed = new QComboBox;
+        cmboxLineFeed->addItem(tr("Classic Mac OS", "cmbox item text"), int(BeQt::ClassicMacLineFeed));
+        cmboxLineFeed->addItem(tr("UNIX/Linux", "cmbox item text"), int(BeQt::UnixLineFeed));
+        cmboxLineFeed->addItem(tr("Windows", "cmbox item text"), int(BeQt::WindowsLineFeed));
+        cmboxLineFeed->setCurrentIndex(cmboxLineFeed->findData(int(BeQt::platformLineFeed())));
+        connect(cmboxLineFeed, SIGNAL(currentIndexChanged(int)), this, SLOT(cmboxLineFeedCurrentIndexChanged(int)));
+      lt->addWidget(cmboxLineFeed);
 }
 
 bool BFileDialogPrivate::pathFits(const QString &path) const
@@ -198,6 +211,11 @@ void BFileDialogPrivate::checkLineEdit(const QString &text)
     if (!b)
         QTimer::singleShot(0, q_func()->findChild<QLineEdit *>("fileNameEdit")->completer()->popup(), SLOT(close()));
 
+}
+
+void BFileDialogPrivate::cmboxLineFeedCurrentIndexChanged(int)
+{
+    QMetaObject::invokeMethod(q_func(), "lineFeedChanged", Q_ARG(BeQt::LineFeed, q_func()->selectedLineFeed()));
 }
 
 /*============================================================================
@@ -249,7 +267,12 @@ BFileDialog::BFileDialog(BFileDialogPrivate &d, QWidget *parent) :
 
 bool BFileDialog::codecSelectionEnabled() const
 {
-    return d_func()->cmboxEncodings->isVisible();
+    return d_func()->cmboxEncoding->isVisibleTo(const_cast<BFileDialog *>(this));
+}
+
+bool BFileDialog::lineFeedSelectionEnabled() const
+{
+    return d_func()->cmboxLineFeed->isVisibleTo(const_cast<BFileDialog *>(this));
 }
 
 int BFileDialog::maxHistorySize() const
@@ -263,6 +286,9 @@ void BFileDialog::restoreState(const QByteArray &ba)
     QFileDialog::restoreState(m.value("q_file_dialog_state").toByteArray());
     d_func()->checkHistory();
     selectCodec(m.value("codec_name").toString());
+    static const QList<BeQt::LineFeed> List = QList<BeQt::LineFeed>() << BeQt::ClassicMacLineFeed << BeQt::UnixLineFeed
+                                                                      << BeQt::WindowsLineFeed;
+    selectLineFeed(enum_cast<BeQt::LineFeed>(m.value("line_feed"), List, BeQt::platformLineFeed()));
 }
 
 QByteArray BFileDialog::saveState() const
@@ -270,17 +296,26 @@ QByteArray BFileDialog::saveState() const
     QVariantMap m;
     m.insert("q_file_dialog_state", QFileDialog::saveState());
     m.insert("codec_name", selectedCodecName());
+    m.insert("line_feed", int(selectedLineFeed()));
     return BeQt::serialize(m);
 }
 
 QTextCodec *BFileDialog::selectedCodec() const
 {
-    return d_func()->cmboxEncodings->selectedCodec();
+    return d_func()->cmboxEncoding->selectedCodec();
 }
 
 QString BFileDialog::selectedCodecName() const
 {
-    return d_func()->cmboxEncodings->selectedCodecName();
+    return d_func()->cmboxEncoding->selectedCodecName();
+}
+
+BeQt::LineFeed BFileDialog::selectedLineFeed() const
+{
+    int ind = d_func()->cmboxLineFeed->currentIndex();
+    static const QList<BeQt::LineFeed> List = QList<BeQt::LineFeed>() << BeQt::ClassicMacLineFeed << BeQt::UnixLineFeed
+                                                                      << BeQt::WindowsLineFeed;
+    return enum_cast<BeQt::LineFeed>(d_func()->cmboxLineFeed->itemData(ind), List, BeQt::platformLineFeed());
 }
 
 void BFileDialog::setMaxHistorySize(int sz)
@@ -300,15 +335,29 @@ QString BFileDialog::topDir() const
 
 void BFileDialog::selectCodec(QTextCodec *codec)
 {
-    d_func()->cmboxEncodings->selectCodec(codec);
+    d_func()->cmboxEncoding->selectCodec(codec);
 }
 
 void BFileDialog::selectCodec(const QString &codecName)
 {
-    d_func()->cmboxEncodings->selectCodec(codecName);
+    d_func()->cmboxEncoding->selectCodec(codecName);
+}
+
+void BFileDialog::selectLineFeed(BeQt::LineFeed lineFeed)
+{
+    static const QList<BeQt::LineFeed> List = QList<BeQt::LineFeed>() << BeQt::ClassicMacLineFeed << BeQt::UnixLineFeed
+                                                                      << BeQt::WindowsLineFeed;
+    int ind = d_func()->cmboxLineFeed->findData(int(enum_cast(lineFeed, List, BeQt::platformLineFeed())));
+    d_func()->cmboxLineFeed->setCurrentIndex(ind);
 }
 
 void BFileDialog::setCodecSelectionEnabled(bool b)
 {
-    d_func()->cmboxEncodings->setVisible(b);
+    d_func()->lblEncoding->setVisible(b);
+    d_func()->cmboxEncoding->setVisible(b);
+}
+
+void BFileDialog::setLineFeedSelectionEnabled(bool b)
+{
+    d_func()->cmboxLineFeed->setVisible(b);
 }

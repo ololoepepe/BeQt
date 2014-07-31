@@ -26,14 +26,17 @@ class BLocalDocumentDriverPrivate;
 
 class QByteArray;
 class QObject;
-class QString;
 class QStringList;
 class QTextCodec;
 class QWidget;
 
 #include "babstractdocumentdriver.h"
 
+#include <BeQtCore/BeQt>
 #include <BeQtWidgets/BTextCodecMenu>
+
+#include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BLocalDocumentDriver ========================
@@ -42,6 +45,8 @@ class QWidget;
 class B_CODEEDITOR_EXPORT BLocalDocumentDriver : public BAbstractDocumentDriver
 {
     Q_OBJECT
+    Q_PROPERTY(BTextCodecMenu::Style codecsComboBoxStyle READ codecsComboBoxStyle WRITE setCodecsComboBoxStyle)
+    Q_PROPERTY(QString defaultDir READ defaultDir WRITE setDefaultDir)
     B_DECLARE_PRIVATE(BLocalDocumentDriver)
 public:
     explicit BLocalDocumentDriver(QObject *parent = 0);
@@ -49,15 +54,17 @@ public:
 protected:
     explicit BLocalDocumentDriver(BLocalDocumentDriverPrivate &d, QObject *parent = 0);
 public:
+    BTextCodecMenu::Style codecsComboBoxStyle() const;
+    QString defaultDir() const;
     bool getOpenFileNames(QWidget *parent, QStringList &fileNames, QTextCodec *&codec);
-    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec);
+    bool getSaveAsFileName(QWidget *parent, const QString &fileName, QString &newName, QTextCodec *&codec,
+                           BeQt::LineFeed &lineFeed);
     QString id() const;
     bool isBuisy() const;
     void restoreState(const QByteArray &state);
     QByteArray saveState() const;
     void setCodecsComboBoxStyle(BTextCodecMenu::Style style);
     void setDefaultDir(const QString &dir);
-    void setNativeLineEnd(bool enabled);
     bool testFileExistance(const QString &fileName);
     bool testFileReadOnly(const QString &fileName);
 protected:

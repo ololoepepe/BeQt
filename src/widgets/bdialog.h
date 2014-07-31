@@ -44,6 +44,9 @@ class QWidget;
 class B_WIDGETS_EXPORT BDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool centerButtons READ centerButtons WRITE setCenterButtons)
+    Q_PROPERTY(bool stretchEnabled READ stretchEnabled WRITE setStretchEnabled)
+    Q_PROPERTY(QWidget * widget READ widget WRITE setWidget)
     B_DECLARE_PRIVATE(BDialog)
 public:
     explicit BDialog(QWidget *parent = 0);

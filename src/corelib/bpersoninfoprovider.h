@@ -41,6 +41,7 @@ class QString;
 class B_CORE_EXPORT BPersonInfoProvider : public QObject, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
     B_DECLARE_PRIVATE(BPersonInfoProvider)
 public:
     explicit BPersonInfoProvider(QObject *parent = 0);

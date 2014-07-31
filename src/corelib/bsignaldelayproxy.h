@@ -38,6 +38,8 @@ class QString;
 class B_CORE_EXPORT BSignalDelayProxy : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(int intermediateDelay READ intermediateDelay WRITE setIntermediateDelay)
+    Q_PROPERTY(int maximumDelay READ maximumDelay WRITE setMaximumDelay)
     B_DECLARE_PRIVATE(BSignalDelayProxy)
 public:
     explicit BSignalDelayProxy(QObject *parent);

@@ -47,7 +47,6 @@ class B_WIDGETS_EXPORT BLoginWidgetPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BLoginWidget)
 public:
-    bool valid;
     BLoginWidget::AddressType addressType;
     BLoginWidget::PasswordType passwordType;
     bool addressRequired;
@@ -74,6 +73,7 @@ public:
       QLineEdit *ledtLogin;
       QLineEdit *ledtPassword;
       BPasswordWidget *pwdwgt;
+   bool valid;
 public:
     explicit BLoginWidgetPrivate(BLoginWidget *q);
     ~BLoginWidgetPrivate();

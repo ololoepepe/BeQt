@@ -26,7 +26,6 @@ class BTerminalPrivate;
 
 class BSettingsNode;
 
-class QStringList;
 class QSize;
 
 #include "bbaseobject.h"
@@ -34,6 +33,7 @@ class QSize;
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 
 #define bReadLine BTerminal::readLine
 #define bReadLineSecure BTerminal::readLineSecure
@@ -84,8 +84,7 @@ public:
     };
 public:
     typedef QList<CommandHelp> CommandHelpList;
-    typedef bool (*ExternalHandler)(BTerminal *, const QString &cmd, const QStringList &args);
-    typedef bool (BTerminal::*InternalHandler)(const QString &cmd, const QStringList &args);
+    typedef bool (*HandlerFunction)(const QString &command, const QStringList &arguments);
 protected:
     static BTerminal *_m_self;
 protected:
@@ -104,12 +103,12 @@ public:
     static BSettingsNode *createBeQtSettingsNode(BSettingsNode *parent = rootSettingsNode());
     static void destroy();
     static void disconnectFromCommandEntered(QObject *receiver, const char *method);
-    static InternalHandler handler(StandardCommand cmd);
-    static void installHandler(const QString &command, InternalHandler handler);
-    static void installHandler(const QString &command, ExternalHandler handler);
+    static void emulateCommand(const QString &command, const QStringList &arguments = QStringList());
+    static HandlerFunction handler(StandardCommand command);
+    static HandlerFunction installedHandler(const QString &command);
+    static void installHandler(const QString &command, HandlerFunction handler);
     static void installHandler(StandardCommand cmd);
-    static void installHandler(StandardCommand cmd, InternalHandler handler);
-    static void installHandler(StandardCommand cmd, ExternalHandler handler);
+    static void installHandler(StandardCommand cmd, HandlerFunction handler);
     static QString lastCommand(QStringList *args = 0);
     static Mode mode();
     static QString readLine(const QString &text = QString());
@@ -138,10 +137,10 @@ public:
     static void writeLine( const QString &text = QString() );
     static void writeLineErr( const QString &text = QString() );
 protected:
-    bool handleHelp(const QString &command, const QStringList &arguments);
-    bool handleLast(const QString &command, const QStringList &arguments);
-    bool handleQuit(const QString &command, const QStringList &arguments);
-    bool handleSet(const QString &command, const QStringList &arguments);
+    static bool handleHelp(const QString &command, const QStringList &arguments);
+    static bool handleLast(const QString &command, const QStringList &arguments);
+    static bool handleQuit(const QString &command, const QStringList &arguments);
+    static bool handleSet(const QString &command, const QStringList &arguments);
 Q_SIGNALS:
     void commandEntered(const QString &command, const QStringList &arguments);
 private:

@@ -59,7 +59,7 @@ BInternalLocationProvider::BInternalLocationProvider(const QString &appName, con
     AppName(appName), Names(createNames()), OrgName(orgName), Portable(portable),
      SharedPrefix(createSharedPrefix()), UserPrefix(createUserPrefix(AppName, OrgName))
 {
-
+    //
 }
 
 BInternalLocationProvider::~BInternalLocationProvider()
@@ -232,7 +232,7 @@ QString BApplicationBasePrivate::confFileName(const QString &path, const QString
 {
     if (path.isEmpty() || appName.isEmpty())
         return QString();
-    return path + "/settings/" + platformSpecificAppName(appName) + ".conf";
+    return path + "/" + platformSpecificAppName(appName) + ".conf";
 }
 
 BApplicationBase::LocaleSupportInfo BApplicationBasePrivate::createLocaleSupportInfo()
@@ -296,6 +296,7 @@ void BApplicationBasePrivate::init(BApplicationBase::Portability portability)
     Q_INIT_RESOURCE(beqtcore);
     Q_INIT_RESOURCE(beqt_translations);
 #endif
+    bRegister();
     appName = QCoreApplication::applicationName();
     if (!bTest(!appName.isEmpty(), "BApplicationBase", "Application name not specified"))
         appName = DefaultAppName;
@@ -303,7 +304,7 @@ void BApplicationBasePrivate::init(BApplicationBase::Portability portability)
     if (!bTest(!orgName.isEmpty(), "BApplicationBase", "Organization name not specified"))
         orgName = DefaultOrgName;
     if (BApplicationBase::AutoDetect == portability) {
-        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/..");
+        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../settings");
         portable = QFileInfo(confFileName(path, appName)).isFile();
     } else {
         portable = (BApplicationBase::Portable == portability);

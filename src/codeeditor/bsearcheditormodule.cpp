@@ -257,7 +257,7 @@ void BSearchDialogPrivate::retranslateUi()
     lblSearch->setText(tr("Find:", "lbl text"));
     lblReplace->setText(tr("Replace with:", "lbl text"));
     gboxOptions->setTitle(tr("Options", "gbox title"));
-    cboxRegexp->setText(tr("Treat as RegExp", "cbox text"));
+    cboxRegexp->setText(tr("Treat as regular expression", "cbox text"));
     cboxCaseSensitive->setText(tr("Case sensitive", "cbox text"));
     cboxWholeWords->setText(tr("Whole words only", "cbox text"));
     cboxBackwardOrder->setText(tr("Reverse search", "cbox text"));
@@ -545,7 +545,7 @@ void BSearchEditorModulePrivate::init()
       actFindNext->setEnabled(false);
       actFindNext->setIcon(BApplication::icon("edit_find_next"));
       actFindNext->setShortcut(QKeySequence::FindNext);
-      connect(actFindNext, SIGNAL(triggered()), q, SLOT(findNext()));
+      connect(actFindNext, SIGNAL(triggered()), sdlg, SLOT(findNext()));
       connect(sdlg, SIGNAL(findNextAvailableChanged(bool)), actFindNext, SLOT(setEnabled(bool)));
     //
     retranslateUi();

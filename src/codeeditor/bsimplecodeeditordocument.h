@@ -55,11 +55,11 @@ public:
 protected:
     explicit BSimpleCodeEditorDocument(BSimpleCodeEditorDocumentPrivate &d, QWidget *parent = 0);
 public:
+    int cursorPositionForRowColumn(const QPoint &pos) const;
     QFont editFont() const;
     BeQt::TabWidth editTabWidth() const;
-    bool findNext(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
-    bool findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     void installInnerEventFilter(QObject *filter);
+    void installInnerViewportEventFilter(QObject *filter);
     bool isEditAutoIndentationEnabled() const;
     bool isLineNumberWidgetVisible() const;
     void removeInnerEventFilter(QObject *filter);
@@ -85,13 +85,14 @@ protected:
     void clearImplementation();
     void copyImplementation();
     QWidget *createEdit(QTextDocument **doc = 0);
-    int cursorPositionForRowColumn(const QPoint &pos) const;
     QPoint cursorPositionRowColumnImplementation() const;
     void cutImplementation();
     void deleteSelectionImplementation();
     void deselectTextImplementation();
+    ExtraSelectionList extraSelectionsImplementation() const;
+    bool findNextImplementation(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
+    bool findNextRegexpImplementation(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     void insertTextImplementation(const QString &txt);
-    void installDropHandler(QObject *handler);
     void moveCursorImplementation(int pos);
     void moveCursorImplementation(const QPoint &pos);
     void pasteImplementation();
@@ -100,6 +101,7 @@ protected:
     void selectLinesImplementation(int firstLine, int lastLine);
     void selectTextImplementation(const QPoint &start, const QPoint &end);
     void selectTextImplementation(int start, int end);
+    void setExtraSelectionsImplementation(const ExtraSelectionList &list);
     void setFocusImplementation();
     void setTextImplementation(const QString &txt);
     TextProcessingFunction textPreprocessingFunction() const;

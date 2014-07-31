@@ -27,6 +27,7 @@ class BInputFieldPrivate;
 class QSize;
 
 #include <BeQtCore/BBase>
+#include <BeQtCore/BTranslation>
 
 #include <QWidget>
 
@@ -37,6 +38,11 @@ class QSize;
 class B_WIDGETS_EXPORT BInputField : public QWidget, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(BTranslation invalidToolTip READ invalidToolTip WRITE setInvalidToolTip)
+    Q_PROPERTY(ShowStyle showStyle READ showStyle WRITE setShowStyle)
+    Q_PROPERTY(bool valid READ isValid STORED false)
+    Q_PROPERTY(BTranslation validToolTip READ validToolTip WRITE setValidToolTip)
+    Q_ENUMS(ShowStyle)
     B_DECLARE_PRIVATE(BInputField)
 public:
     enum ShowStyle
@@ -53,11 +59,15 @@ public:
 public:
     void addWidget(QWidget *w);
     void insertWidget(int index, QWidget *w);
+    BTranslation invalidToolTip() const;
     bool isValid() const;
     void removeWidget(QWidget *w);
+    void setInvalidToolTip(const BTranslation &t);
     void setShowStyle(ShowStyle s);
+    void setValidToolTip(const BTranslation &t);
     ShowStyle showStyle() const;
     QSize sizeHint() const;
+    BTranslation validToolTip() const;
 public Q_SLOTS:
     void setValid(bool b);
 private:

@@ -25,6 +25,8 @@
 #include "bbase_p.h"
 #include "bdirtools.h"
 
+#include <QDebug>
+#include <QDir>
 #include <QMap>
 #include <QString>
 #include <QStringList>
@@ -133,6 +135,8 @@ void BLocationProvider::addLocation(const QString &name, const QString &subdirNa
         QString l = BApplicationBase::location(BApplicationBase::DataPath, r);
         if (l.isEmpty())
             continue;
+        if (!QDir(l + "/" + s).exists())
+            continue;
         m.insert(r, l + "/" + s);
     }
     d_func()->locations.insert(name, m);
@@ -149,6 +153,12 @@ void BLocationProvider::addLocationPath(const QString &locationName, BApplicatio
     if (m.contains(type))
         return;
     m.insert(type, path);
+}
+
+void BLocationProvider::addLocations(const QStringList &names)
+{
+    foreach (const QString &name, names)
+        addLocation(name);
 }
 
 bool BLocationProvider::autoCreatePaths() const

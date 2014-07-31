@@ -45,6 +45,7 @@ class QUdpSocket;
 class B_NETWORK_EXPORT BGenericSocket : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_ENUMS(SocketType)
     B_DECLARE_PRIVATE(BGenericSocket)
 public:
     enum SocketType

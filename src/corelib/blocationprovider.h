@@ -53,6 +53,7 @@ public:
     void addLocation(const QString &name, const PathMap &paths);
     void addLocation(const QString &name, const QString &subdirName = QString());
     void addLocationPath(const QString &locationName, BApplicationBase::ResourceType type, const QString &path);
+    void addLocations(const QStringList &names);
     bool autoCreatePaths() const;
     bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
     bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);

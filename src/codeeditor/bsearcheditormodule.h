@@ -45,6 +45,12 @@ class QString;
 class B_CODEEDITOR_EXPORT BSearchEditorModule : public BAbstractEditorModule
 {
     Q_OBJECT
+    Q_PROPERTY(bool backwardOrder READ backwardOrder WRITE setBackwardOrder)
+    Q_PROPERTY(bool cyclicSearch READ cyclicSearch WRITE setCyclicSearch)
+    Q_PROPERTY(bool matchWholeWords READ matchWholeWords WRITE setMatchWholeWords)
+    Q_PROPERTY(int maximumHistorySize READ maximumHistorySize WRITE setMaximumHistorySize)
+    Q_PROPERTY(bool regexp READ regexp WRITE setRegexp)
+    Q_PROPERTY(bool replaceEnabled READ replaceEnabled WRITE setReplaceEnabled)
     B_DECLARE_PRIVATE(BSearchEditorModule)
 public:
     enum Action

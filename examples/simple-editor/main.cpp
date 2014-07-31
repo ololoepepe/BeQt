@@ -19,38 +19,31 @@
 **
 ****************************************************************************/
 
+#include <BAboutDialog>
+#include <BAbstractDocumentDriver>
+#include <BAbstractEditorModule>
 #include <BApplication>
 #include <BCodeEditor>
-#include <BAbstractEditorModule>
-#include <BBookmarksEditorModule>
-#include <BIndicatorsEditorModule>
-#include <BSearchEditorModule>
-#include <BOpenSaveEditorModule>
-#include <BAbstractDocumentDriver>
-#include <BLocalDocumentDirver>
 #include <BEditEditorModule>
-#include <BPersonInfoProvider>
-#include <BAboutDialog>
-#include <BTranslator>
-#include <BTerminal>
 #include <BGuiTools>
+#include <BIndicatorsEditorModule>
+#include <BOpenSaveEditorModule>
+#include <BSearchEditorModule>
+#include <BTerminal>
 
-#include <QApplication>
-#include <QString>
+#include <QAction>
+#include <QByteArray>
+#include <QDebug>
+#include <QList>
 #include <QMainWindow>
 #include <QMenu>
-#include <QList>
-#include <QAction>
 #include <QMenuBar>
-#include <QToolBar>
-#include <QStatusBar>
 #include <QSettings>
+#include <QStatusBar>
+#include <QString>
+#include <QToolBar>
 #include <QVariant>
-#include <QByteArray>
-#include <QToolButton>
 #include <QWidget>
-
-#include <QDebug>
 
 int main(int argc, char **argv)
 {
@@ -68,19 +61,20 @@ int main(int argc, char **argv)
     BApplication::installBeqtTranslator("beqt");
     BAboutDialog::setDefaultMinimumSize(800, 400);
     //Initializing BApplication About
-    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov", "2012-2014");
-    BApplication::aboutDialogInstance()->setWebsite(QApplication::organizationDomain());
+    BApplication::aboutDialogInstance()->setOrganization("Andrey Bogdanov");
+    BApplication::aboutDialogInstance()->setCopyrightPeriod("2012-2014");
+    BApplication::aboutDialogInstance()->setWebsite(BApplication::organizationDomain());
     BApplication::aboutDialogInstance()->setDescription("<center>Simple code editor.<br><a href="
-                                                        + QApplication::organizationDomain()
+                                                        + BApplication::organizationDomain()
                                                         + ">homepage</a></center>");
     //Creating code editor and loading related settings
     BCodeEditor *cedtr = new BCodeEditor;
     QSettings *s = BApplication::settingsInstance();
-    cedtr->driver()->restoreState( s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray() );
+    cedtr->driver()->restoreState(s ? s->value("editor/driver_dialog_state").toByteArray() : QByteArray());
     BAbstractEditorModule *osmdl = cedtr->module(BCodeEditor::OpenSaveModule);
     BAbstractEditorModule *emdl = cedtr->module(BCodeEditor::EditModule);
-    BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>( cedtr->module(BCodeEditor::SearchModule) );
-    smdl->restoreState( s ? s->value("editor/search_dialog_state").toByteArray() : QByteArray() );
+    BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>(cedtr->module(BCodeEditor::SearchModule));
+    smdl->restoreState(s ? s->value("editor/search_dialog_state").toByteArray() : QByteArray());
     BAbstractEditorModule *imdl = cedtr->module(BCodeEditor::IndicatorsModule);
     //Creating Main window
     QMainWindow *mw = new QMainWindow;
@@ -90,30 +84,30 @@ int main(int argc, char **argv)
     mw->installEventFilter(cedtr->closeHandler());
     mw->setAcceptDrops(true);
     mw->setCentralWidget(cedtr);
-    mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::FileTypeIndicator) );
-    mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::CursorPositionIndicator) );
-    mw->statusBar()->addPermanentWidget( imdl->widget(BIndicatorsEditorModule::EncodingIndicator) );
-    QObject::connect( smdl, SIGNAL( message(QString) ), mw->statusBar(), SLOT( showMessage(QString) ) );
+    mw->statusBar()->addPermanentWidget(imdl->widget(BIndicatorsEditorModule::FileTypeIndicator));
+    mw->statusBar()->addPermanentWidget(imdl->widget(BIndicatorsEditorModule::CursorPositionIndicator));
+    mw->statusBar()->addPermanentWidget(imdl->widget(BIndicatorsEditorModule::EncodingIndicator));
+    QObject::connect(smdl, SIGNAL(message(QString)), mw->statusBar(), SLOT(showMessage(QString)));
     //Creating menus
     QMenu *mnu = mw->menuBar()->addMenu("File");
-    mnu->addActions( osmdl->actions(BOpenSaveEditorModule::OpenActionGroup, true) );
-    mnu->addMenu( static_cast<BOpenSaveEditorModule *>(osmdl)->fileHistoryMenu() );
+    mnu->addActions(osmdl->actions(BOpenSaveEditorModule::OpenActionGroup, true));
+    mnu->addMenu(static_cast<BOpenSaveEditorModule *>(osmdl)->fileHistoryMenu());
     mnu->addSeparator();
-    mnu->addActions( osmdl->actions(BOpenSaveEditorModule::SaveActionGroup, true) );
+    mnu->addActions(osmdl->actions(BOpenSaveEditorModule::SaveActionGroup, true));
     mnu->addSeparator();
-    mnu->addActions( osmdl->actions(BOpenSaveEditorModule::CloseActionGroup, true) );
+    mnu->addActions(osmdl->actions(BOpenSaveEditorModule::CloseActionGroup, true));
     mnu->addSeparator();
     QAction *act = new QAction("Quit", mnu);
-    QObject::connect( act, SIGNAL( triggered() ), mw, SLOT( close() ) );
+    QObject::connect(act, SIGNAL(triggered()), mw, SLOT(close()));
     mnu->addAction(act);
     mnu = mw->menuBar()->addMenu("Edit");
-    mnu->addActions( emdl->actions(BEditEditorModule::UndoRedoActionGroup) );
+    mnu->addActions(emdl->actions(BEditEditorModule::UndoRedoActionGroup));
     mnu->addSeparator();
-    mnu->addActions( emdl->actions(BEditEditorModule::ClipboardActionGroup) );
+    mnu->addActions(emdl->actions(BEditEditorModule::ClipboardActionGroup));
     mnu->addSeparator();
-    mnu->addActions( smdl->actions() );
+    mnu->addActions(smdl->actions());
     mnu->addSeparator();
-    mnu->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
+    mnu->addAction(emdl->action(BEditEditorModule::SwitchModeAction));
     mnu = mw->menuBar()->addMenu("Help");
     mnu->addAction(BGuiTools::createStandardAction(BGuiTools::HomepageAction));
     mnu->addSeparator();
@@ -123,34 +117,33 @@ int main(int argc, char **argv)
     //Creating toolbars
     QToolBar *tbar = mw->addToolBar("Open");
     tbar->setObjectName("ToolBarOpen");
-    tbar->addActions( osmdl->actions(BOpenSaveEditorModule::OpenActionGroup, true) );
+    tbar->addActions(osmdl->actions(BOpenSaveEditorModule::OpenActionGroup, true));
     tbar = mw->addToolBar("Save");
     tbar->setObjectName("ToolBarSave");
-    tbar->addActions( osmdl->actions(BOpenSaveEditorModule::SaveActionGroup, true) );
+    tbar->addActions(osmdl->actions(BOpenSaveEditorModule::SaveActionGroup, true));
     tbar = mw->addToolBar("Undo/Redo");
     tbar->setObjectName("ToolBarUndoRedo");
-    tbar->addActions( emdl->actions(BEditEditorModule::UndoRedoActionGroup) );
+    tbar->addActions(emdl->actions(BEditEditorModule::UndoRedoActionGroup));
     tbar->addSeparator();
-    tbar->addAction( emdl->action(BEditEditorModule::SwitchModeAction) );
+    tbar->addAction(emdl->action(BEditEditorModule::SwitchModeAction));
     tbar = mw->addToolBar("Clipboard");
     tbar->setObjectName("ToolBarClipboard");
-    tbar->addActions( emdl->actions(BEditEditorModule::ClipboardActionGroup) );
+    tbar->addActions(emdl->actions(BEditEditorModule::ClipboardActionGroup));
     tbar = mw->addToolBar("Search");
     tbar->setObjectName("ToolBarSearch");
-    tbar->addActions( smdl->actions() );
+    tbar->addActions(smdl->actions());
     //Restoring main window settings and showing it
-    mw->restoreGeometry( s ? s->value("main_window/geometry").toByteArray() : mw->saveGeometry() );
-    mw->restoreState( s ? s->value("main_window/state").toByteArray() : mw->saveState() ) ;
+    mw->restoreGeometry(s ? s->value("main_window/geometry").toByteArray() : mw->saveGeometry());
+    mw->restoreState(s ? s->value("main_window/state").toByteArray() : mw->saveState()) ;
     mw->show();
     //Running main event loop
     int ret = app.exec();
     //Saving settings
-    if (s)
-    {
-        s->setValue( "editor/driver_dialog_state", cedtr->driver()->saveState() );
-        s->setValue( "editor/search_dialog_state", smdl->saveState() );
-        s->setValue( "main_window/geometry", mw->saveGeometry() );
-        s->setValue( "main_window/state", mw->saveState() );
+    if (s) {
+        s->setValue("editor/driver_dialog_state", cedtr->driver()->saveState());
+        s->setValue("editor/search_dialog_state", smdl->saveState());
+        s->setValue("main_window/geometry", mw->saveGeometry());
+        s->setValue("main_window/state", mw->saveState());
         s->sync();
     }
     //Deleting objects

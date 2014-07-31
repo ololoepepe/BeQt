@@ -26,13 +26,13 @@ class BTerminalWidgetPrivate;
 
 class BAbstractTerminalDriver;
 
-class QStringList;
 class QTextCodec;
 class QVariant;
 
 #include <BeQtCore/BBaseObject>
 
 #include <QString>
+#include <QStringList>
 #include <QTextCharFormat>
 #include <QWidget>
 
@@ -43,6 +43,18 @@ class QVariant;
 class B_WIDGETS_EXPORT BTerminalWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool active READ isActive STORED false)
+    Q_PROPERTY(QTextCodec * codec READ codec WRITE setCodec)
+    Q_PROPERTY(QString codecName READ codecName WRITE setCodec)
+    Q_PROPERTY(BAbstractTerminalDriver * driver READ driver WRITE setDriver)
+    Q_PROPERTY(QStringList history READ history WRITE setHistory)
+    Q_PROPERTY(bool historyEnabled READ historyEnabled WRITE setHistoryEnabled)
+    Q_PROPERTY(TerminalMode mode READ mode CONSTANT)
+    Q_PROPERTY(QStringList processHistory READ processHistory WRITE setProcessHistory)
+    Q_PROPERTY(bool processHistoryEnabled READ processHistoryEnabled WRITE setProcessHistoryEnabled)
+    Q_PROPERTY(bool valid READ isValid STORED false)
+    Q_PROPERTY(QString workingDirectory READ workingDirectory WRITE setWorkingDirectory)
+    Q_ENUMS(TerminalMode)
     B_DECLARE_PRIVATE(BTerminalWidget)
 public:
     enum StandardFormat

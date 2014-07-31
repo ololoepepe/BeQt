@@ -22,11 +22,9 @@
 #include <BCoreApplication>
 #include <BLogger>
 #include <BTerminal>
-#include <BTranslator>
 
-#include <QCoreApplication>
-#include <QString>
 #include <QSize>
+#include <QString>
 
 #include <QDebug>
 

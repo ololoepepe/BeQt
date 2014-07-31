@@ -38,6 +38,10 @@ class QString;
 class B_WIDGETS_EXPORT BEditGroup : public QObject, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(QString text READ text STORED false)
+    Q_PROPERTY(bool textsMatch READ textsMatch NOTIFY textsMatchChanged STORED false)
+    Q_PROPERTY(bool textsMatchAndAcceptable READ textsMatchAndAcceptable NOTIFY textsMatchAndAcceptableChanged
+               STORED false)
     B_DECLARE_PRIVATE(BEditGroup)
 public:
     explicit BEditGroup(QObject *parent = 0);
@@ -48,7 +52,9 @@ public:
     void addEdit(QLineEdit *ledt);
     QString text() const;
     bool textsMatch() const;
+    bool textsMatchAndAcceptable() const;
 Q_SIGNALS:
+    void textsMatchAndAcceptableChanged(bool match);
     void textsMatchChanged(bool match);
 private:
     Q_DISABLE_COPY(BEditGroup)

@@ -38,6 +38,9 @@ class QVariant;
 class B_WIDGETS_EXPORT BAbstractTerminalDriver : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool active READ isActive STORED false)
+    Q_PROPERTY(QString prompt READ prompt STORED false)
+    Q_PROPERTY(QString workingDirectory READ workingDirectory STORED false)
 public:
     explicit BAbstractTerminalDriver(QObject *parent = 0);
     ~BAbstractTerminalDriver();

@@ -33,6 +33,7 @@
     * Add BVersion::clear method
     * Make BPersonInfo and BPersonInfoList serializable
     * Add BAbstractLocationProvider and BLocationProvider classes
+    * Add BDynamicTranslator class
 
 ==== BeQtNetwork ====
     * Add ability to set compression for every network operation independently
@@ -72,6 +73,7 @@
     * Improve editor modules (de)serializing
     * Improve BTextBlockUserData (implement multiple skip intervals)
     * Hide BTextBlockUserData; add BTextBlockExtraData instead
+    * Add ability to select line feed
     * Add public method for handling events to BAbstractCodeEditorDocument
     * Add method for converting point into absolute cursor position to BAbstractCodeEditorDocument
     * Add method for retrieving absolute cursor position to BAbstractCodeEditorDocument
@@ -87,6 +89,7 @@
     * Fix warnings for Qt4 when adding "concurrent" and "widgets" modules
     * Get rid of native Mac OS library format (Frameworks) - use UNIX-style libs
     * Use Qt coding style, sort includes, class members, etc.
+    * Add Q_PROPERTY declarations to QObject-based classes
 
 === BeQt 3.2.3 (02 July 2014) ===
     * Add processor architecture defines

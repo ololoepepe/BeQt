@@ -72,6 +72,7 @@ QString BPasswordWidgetPrivate::defaultGeneratePasswordFunction(int len)
 
 void BPasswordWidgetPrivate::init()
 {
+    valid = false;
     B_Q(BPasswordWidget);
     wasEmpty = true;
     generateFunction = &defaultGeneratePasswordFunction;
@@ -123,20 +124,17 @@ void BPasswordWidgetPrivate::updateEdit()
 
 void BPasswordWidgetPrivate::passwordChanged(const QString &password)
 {
+    bool bvalid = valid;
+    valid = q_func()->hasAcceptableInput();
     B_Q(BPasswordWidget);
-    if (wasEmpty && !password.isEmpty() && pwd.isEncrypted())
-    {
+    if (wasEmpty && !password.isEmpty() && pwd.isEncrypted()) {
         pwdBackup = pwd;
         wasEmpty = false;
         pwd.setPassword(password);
-    }
-    else if (!wasEmpty && password.isEmpty() && pwdBackup.isEncrypted())
-    {
+    } else if (!wasEmpty && password.isEmpty() && pwdBackup.isEncrypted()) {
         pwd = pwdBackup;
         wasEmpty = true;
-    }
-    else
-    {
+    } else {
         pwd.setPassword(password);
     }
     QMetaObject::invokeMethod(q, "passwordChanged");
@@ -144,6 +142,8 @@ void BPasswordWidgetPrivate::passwordChanged(const QString &password)
         QMetaObject::invokeMethod(q, "passwordChanged", Q_ARG(QByteArray, pwd.encryptedPassword()));
     else
         QMetaObject::invokeMethod(q, "passwordChanged", Q_ARG(QString, pwd.openPassword()));
+    if (bvalid != valid)
+        QMetaObject::invokeMethod(q, "inputValidityChanged", Q_ARG(bool, valid));
 }
 
 void BPasswordWidgetPrivate::resetSave(bool b)
@@ -233,9 +233,24 @@ bool BPasswordWidget::generatePasswordVisible() const
     return d_func()->tbtnGenerate->isVisibleTo(const_cast<BPasswordWidget *>(this));
 }
 
+bool BPasswordWidget::hasAcceptableInput() const
+{
+    return d_func()->ledt->hasAcceptableInput();
+}
+
 QString BPasswordWidget::inputMask() const
 {
     return d_func()->ledt->inputMask();
+}
+
+bool BPasswordWidget::isEmpty() const
+{
+    return d_func()->ledt->text().isEmpty();
+}
+
+int BPasswordWidget::maxLength() const
+{
+    return d_func()->ledt->maxLength();
 }
 
 BPassword::Mode BPasswordWidget::mode() const
@@ -333,6 +348,11 @@ void BPasswordWidget::setGeneratePasswordVisible(bool visible)
 void BPasswordWidget::setInputMask(const QString &mask)
 {
     d_func()->ledt->setInputMask(mask);
+}
+
+void BPasswordWidget::setMaxLength(int length)
+{
+    d_func()->ledt->setMaxLength(length);
 }
 
 void BPasswordWidget::setMode(BPassword::Mode mode)

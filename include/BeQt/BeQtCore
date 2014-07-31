@@ -7,6 +7,7 @@
 #include "bbaseobject.h"
 #include "bcoreapplication.h"
 #include "bdirtools.h"
+#include "bdynamictranslator.h"
 #include "bglobal.h"
 #include "blocationprovider.h"
 #include "blogger.h"

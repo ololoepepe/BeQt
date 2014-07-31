@@ -24,7 +24,6 @@
 
 class BAboutDialogPrivate;
 
-class BPersonInfoList;
 class BPersonInfoProvider;
 class BTranslation;
 
@@ -34,6 +33,7 @@ class QWidget;
 
 #include <BeQtCore/BApplicationBase>
 #include <BeQtCore/BBaseObject>
+#include <BeQtCore/BPersonInfoList>
 #include <BeQtCore/BVersion>
 
 #include <QChar>
@@ -48,6 +48,29 @@ class QWidget;
 class B_WIDGETS_EXPORT BAboutDialog : public QDialog, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(bool aboutBeqtShown READ aboutBeqtShown WRITE setAboutBeqtShown)
+    Q_PROPERTY(bool aboutQtShown READ aboutQtShown WRITE setAboutQtShown)
+    Q_PROPERTY(QString appName READ appName WRITE setAppName)
+    Q_PROPERTY(QString appVersion READ appVersion)
+    Q_PROPERTY(BPersonInfoList authors READ authors WRITE setAuthors)
+    Q_PROPERTY(QString authorsFileName READ authorsFileName WRITE setAuthorsFile)
+    Q_PROPERTY(BPersonInfoProvider * authorsProvider READ authorsProvider WRITE setAuthorsProvider)
+    Q_PROPERTY(QString changeLog READ changeLog WRITE setChangeLog)
+    Q_PROPERTY(QString changeLogFileName READ changeLogFileName WRITE setChangeLogFile)
+    Q_PROPERTY(QString copyrightPeriod READ copyrightPeriod WRITE setCopyrightPeriod)
+    Q_PROPERTY(QString description READ description WRITE setDescription)
+    Q_PROPERTY(QString descriptionFileName READ descriptionFileName WRITE setDescriptionFile)
+    Q_PROPERTY(QString license READ license WRITE setLicense)
+    Q_PROPERTY(QString licenseFileName READ licenseFileName WRITE setLicenseFile)
+    Q_PROPERTY(QString organization READ organization WRITE setOrganization)
+    Q_PROPERTY(QPixmap pixmap READ pixmap WRITE setPixmap)
+    Q_PROPERTY(BPersonInfoList thanksTo READ thanksTo WRITE setThanksTo)
+    Q_PROPERTY(QString thanksToFileName READ thanksToFileName WRITE setThanksToFile)
+    Q_PROPERTY(BPersonInfoProvider * thanksToProvider READ thanksToProvider WRITE setThanksToProvider)
+    Q_PROPERTY(BPersonInfoList translators READ translators WRITE setTranslators)
+    Q_PROPERTY(QString translatorsFileName READ translatorsFileName WRITE setTranslatorsFile)
+    Q_PROPERTY(BPersonInfoProvider * translatorsProvider READ translatorsProvider WRITE setTranslatorsProvider)
+    Q_PROPERTY(QString website READ website WRITE setWebsite)
     B_DECLARE_PRIVATE(BAboutDialog)
 public:
     explicit BAboutDialog(QWidget *parent = 0);
@@ -59,7 +82,7 @@ public:
     static void setDefaultMinimumSize(const QSize &sz);
     static void setDefaultMinimumSize(int width, int height);
 public:
-    bool aboutBeQtShown() const;
+    bool aboutBeqtShown() const;
     bool aboutQtShown() const;
     void addTab(QWidget *tab, const BTranslation &title);
     QString appName() const;
@@ -68,14 +91,14 @@ public:
     QString authorsFileName() const;
     BPersonInfoProvider *authorsProvider() const;
     QString changeLog() const;
-    QString changeLogFile() const;
+    QString changeLogFileName() const;
+    QString copyrightPeriod() const;
     QString description() const;
-    QString descriptionFile() const;
+    QString descriptionFileName() const;
     QList<BApplicationBase::CopyrightInfo> extendedCopyrightInfos() const;
     QString license() const;
-    QString licenseFile() const;
+    QString licenseFileName() const;
     QString organization() const;
-    QString copyrightPeriod() const;
     QPixmap pixmap() const;
     void removeTab(QWidget *tab);
     void setAboutBeqtShown(bool b);
@@ -89,12 +112,13 @@ public:
     void setAuthorsProvider(BPersonInfoProvider *prov);
     void setChangeLog(const QString &text);
     void setChangeLogFile(const QString &fileName);
+    void setCopyrightPeriod(const QString &copyrightPeriod);
     void setDescription(const QString &text);
     void setDescriptionFile(const QString &fileName);
     void setExtendedCopyrightInfos(const QList<BApplicationBase::CopyrightInfo> &list);
     void setLicense(const QString &text);
     void setLicenseFile(const QString &fileName);
-    void setOrganization(const QString &organization, const QString &copyrightPeriod = QString());
+    void setOrganization(const QString &organization);
     void setPixmap(const QPixmap &pixmap);
     void setPixmap(const QString &fileName);
     void setThanksTo(const BPersonInfoList &list);
@@ -106,10 +130,10 @@ public:
     void setupWithApplicationData();
     void setWebsite(const QString &site);
     BPersonInfoList thanksTo() const;
-    QString thanksToFile() const;
+    QString thanksToFileName() const;
     BPersonInfoProvider *thanksToProvider() const;
     BPersonInfoList translators() const;
-    QString translatorsFile() const;
+    QString translatorsFileName() const;
     BPersonInfoProvider *translatorsProvider() const;
     QString website() const;
 public Q_SLOTS:

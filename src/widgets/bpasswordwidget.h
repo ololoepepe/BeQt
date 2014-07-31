@@ -41,9 +41,24 @@ class QValidator;
 class B_WIDGETS_EXPORT BPasswordWidget : public QWidget, public BBaseObject
 {
     Q_OBJECT
+    Q_PROPERTY(int generatedPasswordLength READ generatedPasswordLength WRITE setGeneratedPasswordLength)
+    Q_PROPERTY(GeneratePasswordFunction generatePasswordFunction READ GeneratePasswordFunction
+               WRITE setGeneratePasswordFunction)
+    Q_PROPERTY(bool generatePasswordVisible READ generatePasswordVisible WRITE setGeneratePasswordVisible)
+    Q_PROPERTY(bool hasAcceptableInput READ hasAcceptableInput STORED false)
+    Q_PROPERTY(QString inputMask READ inputMask WRITE setInputMask)
+    Q_PROPERTY(bool empty READ isEmpty STORED false)
+    Q_PROPERTY(int maxLength READ maxLength WRITE setMaxLength)
+    Q_PROPERTY(QString openPassword READ openPassword WRITE setPassword)
+    Q_PROPERTY(BPassword password READ password WRITE setPassword)
+    Q_PROPERTY(bool savePassword READ savePassword WRITE setSavePassword NOTIFY savePasswordChanged)
+    Q_PROPERTY(bool savePasswordVisible READ savePasswordVisible WRITE setSavePasswordVisible)
+    Q_PROPERTY(bool showPassword READ showPassword WRITE setShowPassword NOTIFY showPasswordChanged)
+    Q_PROPERTY(bool showPasswordVisible READ showPasswordVisible WRITE setShowPasswordVisible)
+    Q_PROPERTY(const QValidator * validator READ validator WRITE setValidator)
     B_DECLARE_PRIVATE(BPasswordWidget)
 public:
-    typedef QString (*GeneratePasswordFunction)(int);
+    typedef QString (*GeneratePasswordFunction)(int length);
 public:
     explicit BPasswordWidget(QWidget *parent = 0);
     explicit BPasswordWidget(const BPassword &password, QWidget *parent = 0);
@@ -58,7 +73,10 @@ public:
     int generatedPasswordLength() const;
     GeneratePasswordFunction generatePasswordFunction() const;
     bool generatePasswordVisible() const;
+    bool hasAcceptableInput() const;
     QString inputMask() const;
+    bool isEmpty() const;
+    int maxLength() const;
     BPassword::Mode mode() const;
     QString openPassword() const;
     BPassword password() const;
@@ -74,6 +92,7 @@ public:
     void setGeneratePasswordFunction(GeneratePasswordFunction f);
     void setGeneratePasswordVisible(bool visible);
     void setInputMask(const QString &mask);
+    void setMaxLength(int length);
     void setMode(BPassword::Mode mode);
     void setPassword(QCryptographicHash::Algorithm a, const QByteArray &password, int charCount = -1);
     void setValidator(const QValidator *v);
@@ -91,6 +110,7 @@ public Q_SLOTS:
     void setShowPassword(bool b);
     void setShowPasswordVisible(bool visible);
 Q_SIGNALS:
+    void inputValidityChanged(bool b);
     void passwordChanged();
     void passwordChanged(const QString &password);
     void passwordChanged(const QByteArray &encryptedPassword);

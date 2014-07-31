@@ -597,8 +597,8 @@ BAbstractCodeEditorDocument *BCodeEditorPrivate::createDocument(const QString &f
         return 0;
     doc->init();
     doc->setFileName(createFileName(fileName, defaultFN, q_func()->fileNames()));
-    doc->installDropHandler(dropHandler);
     doc->installInnerEventFilter(this);
+    doc->installInnerViewportEventFilter(dropHandler);
     doc->setEditFont(editFont);
     BCodeEditorDocument *ddoc  = qobject_cast<BCodeEditorDocument *>(doc);
     if (ddoc) {
@@ -827,8 +827,8 @@ void BCodeEditorPrivate::init()
         connect(twgt, SIGNAL(tabCloseRequested(int)), this, SLOT(twgtTabCloseRequested(int)));
       vlt->addWidget(twgt);
    //
-   createDropHandler();
-   createCloseHandler();
+   closeHandler = new BCloseHandler(this);
+   dropHandler = new BDropHandler(q);
 }
 
 bool BCodeEditorPrivate::isDefaultFileName(const QString &fileName) const
@@ -905,7 +905,8 @@ int BCodeEditorPrivate::reopenModifiedMessage(const QString &fileName)
     return msg.exec();
 }
 
-bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec)
+bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QString &newFileName, QTextCodec *codec,
+                                      BeQt::LineFeed lineFeed)
 {
     if (!doc || savingDocuments.contains(doc))
         return false;
@@ -913,7 +914,7 @@ bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QS
     if (nfn.isEmpty() && !driver->testFileExistance(doc->fileName())) {
         if (!codec)
             codec = doc->codec();
-        if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec))
+        if (nfn.isEmpty() && !driver->getSaveAsFileName(q_func(), doc->fileName(), nfn, codec, lineFeed))
             return false;
         if (doc->fileName() != nfn && findDocument(nfn)) {
             alreadyOpenedMessage(nfn);
@@ -928,7 +929,7 @@ bool BCodeEditorPrivate::saveDocument(BAbstractCodeEditorDocument *doc, const QS
             nfn = doc->fileName();
     }
     savingDocuments.insert(doc, nfn);
-    bool b = doc->save(driver, codec, nfn);
+    bool b = doc->save(driver, codec, lineFeed, nfn);
     if (!b) {
         savingDocuments.remove(doc);
         failedToSaveMessage(doc->fileName(), nfn);
@@ -1029,20 +1030,6 @@ void BCodeEditorPrivate::updateDocumentTab(BAbstractCodeEditorDocument *doc)
 }
 
 /*============================== Public slots ==============================*/
-
-void BCodeEditorPrivate::createCloseHandler()
-{
-    closeHandler = new BCloseHandler(this);
-    connect(closeHandler, SIGNAL(destroyed()), this, SLOT(createCloseHandler()));
-}
-
-void BCodeEditorPrivate::createDropHandler()
-{
-    dropHandler = new BDropHandler(q_func());
-    foreach (BAbstractCodeEditorDocument *doc, q_func()->documents())
-        doc->installDropHandler(dropHandler);
-    connect(dropHandler, SIGNAL(destroyed()), this, SLOT(createDropHandler()));
-}
 
 void BCodeEditorPrivate::documentBuisyChanged(bool buisy)
 {
@@ -1547,7 +1534,7 @@ int BCodeEditor::maximumFileSize() const
     return d_func()->maximumFileSize;
 }
 
-int BCodeEditor::maximimHistorySize() const
+int BCodeEditor::maximumHistorySize() const
 {
     return d_func()->maxHistoryCount;
 }
@@ -2003,8 +1990,9 @@ bool BCodeEditor::saveCurrentDocumentAs()
         return false;
     QString nfn;
     QTextCodec *codec = currentDocument()->codec();
-    return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec) &&
-            d_func()->saveDocument(currentDocument(), nfn, codec);
+    BeQt::LineFeed lineFeed = BeQt::DefaultLineFeed;
+    return d_func()->driver->getSaveAsFileName(this, currentDocument()->fileName(), nfn, codec, lineFeed) &&
+            d_func()->saveDocument(currentDocument(), nfn, codec, lineFeed);
 }
 
 bool BCodeEditor::saveCurrentDocumentAs(const QString &newFileName, QTextCodec *codec)

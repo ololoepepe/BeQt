@@ -40,10 +40,12 @@ class QWidget;
 class B_WIDGETS_EXPORT BFlowLayout : public QLayout, public BBase
 {
     Q_OBJECT
+    Q_PROPERTY(int horizontalSpacing READ horizontalSpacing CONSTANT)
+    Q_PROPERTY(int verticalSpacing READ verticalSpacing CONSTANT)
     B_DECLARE_PRIVATE(BFlowLayout)
 public:
-    explicit BFlowLayout(QWidget *parent, int hSpacing = -1, int vSpacing = -1);
-    explicit BFlowLayout(int hSpacing = -1, int vSpacing = -1);
+    explicit BFlowLayout(QWidget *parent, int horizontalSpacing = -1, int verticalSpacing = -1);
+    explicit BFlowLayout(int horizontalSpacing = -1, int verticalSpacing = -1);
     ~BFlowLayout();
 protected:
     explicit BFlowLayout(BFlowLayoutPrivate &d, QWidget *parent = 0);
