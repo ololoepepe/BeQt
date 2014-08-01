@@ -73,6 +73,7 @@ void BPasswordGroupPrivate::passwordChanged()
             nmatchAndAcceptable = nmatchAndAcceptable && list.at(i)->hasAcceptableInput();
             if (list.at(i)->password() != pwd) {
                 nmatch = false;
+                nmatchAndAcceptable = false;
                 break;
             }
         }

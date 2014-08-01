@@ -38,6 +38,7 @@
 #include <QLineEdit>
 #include <QMetaObject>
 #include <QObject>
+#include <QSize>
 #include <QString>
 #include <QToolButton>
 #include <QVariant>
@@ -85,20 +86,27 @@ void BPasswordWidgetPrivate::init()
       connect(ledt, SIGNAL(textEdited(QString)), q, SIGNAL(passwordEdited(QString)));
       connect(ledt, SIGNAL(returnPressed()), q, SIGNAL(returnPressed()));
     hlt->addWidget(ledt);
+    QSize sz(ledt->sizeHint().height(), ledt->sizeHint().height());
     tbtnSave = new QToolButton(q);
       tbtnSave->setCheckable(true);
+      tbtnSave->setIconSize(sz - (tbtnSave->sizeHint() - tbtnSave->iconSize()));
       tbtnSave->setIcon(BApplication::icon("filesave"));
+      tbtnSave->setFixedSize(sz);
       connect(tbtnSave, SIGNAL(toggled(bool)), this, SLOT(resetSave(bool)));
     hlt->addWidget(tbtnSave);
     tbtnShow = new QToolButton(q);
       tbtnShow->setCheckable(true);
+      tbtnShow->setIconSize(tbtnSave->iconSize());
       tbtnShow->setIcon(BApplication::icon("decrypted"));
       tbtnShow->installEventFilter(this);
+      tbtnShow->setFixedSize(sz);
       connect(tbtnShow, SIGNAL(toggled(bool)), this, SLOT(resetShow(bool)));
     hlt->addWidget(tbtnShow);
     tbtnGenerate = new QToolButton(q);
+      tbtnGenerate->setIconSize(tbtnSave->iconSize());
       tbtnGenerate->setIcon(BApplication::icon("charset"));
       tbtnGenerate->setVisible(false);
+      tbtnGenerate->setFixedSize(sz);
       connect(tbtnGenerate, SIGNAL(clicked()), q, SLOT(generatePassword()));
     hlt->addWidget(tbtnGenerate);
     //

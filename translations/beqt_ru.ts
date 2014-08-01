@@ -1092,19 +1092,19 @@
 <context>
     <name>BPasswordWidgetPrivate</name>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="162"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="170"/>
         <source>Save password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сохранять пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="163"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="171"/>
         <source>Show password</source>
         <comment>tbtn toolTip</comment>
         <translation>Показывать пароль</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpasswordwidget.cpp" line="164"/>
+        <location filename="../src/widgets/bpasswordwidget.cpp" line="172"/>
         <source>Generate password</source>
         <comment>tbtn toolTip</comment>
         <translation>Сгенерировать пароль</translation>

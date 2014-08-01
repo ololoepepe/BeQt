@@ -77,6 +77,7 @@ void BEditGroupPrivate::textChanged()
             nmatchAndAcceptable = nmatchAndAcceptable && list.at(i)->hasAcceptableInput();
             if (list.at(i)->text() != txt) {
                 nmatch = false;
+                nmatchAndAcceptable = false;
                 break;
             }
         }
