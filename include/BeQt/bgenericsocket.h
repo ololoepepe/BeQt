@@ -1,1 +1,1 @@
-#include "../BeQtNetwork/bgenericsocket.h"
+#include "../../src/network/bgenericsocket.h"

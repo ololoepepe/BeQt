@@ -1,1 +1,1 @@
-#include "../BeQtNetwork/bsmtpsender.h"
+#include "../../src/network/bsmtpsender.h"

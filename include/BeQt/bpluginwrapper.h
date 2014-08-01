@@ -1,1 +1,1 @@
-#include "../BeQtCore/bpluginwrapper.h"
+#include "../../src/corelib/bpluginwrapper.h"

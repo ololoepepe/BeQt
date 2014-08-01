@@ -1,1 +1,1 @@
-#include "../BeQtCore/bbaseobject.h"
+#include "../../src/corelib/bbaseobject.h"

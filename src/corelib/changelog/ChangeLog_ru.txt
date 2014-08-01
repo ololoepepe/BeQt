@@ -63,6 +63,7 @@
     * Теперь показывается справка по плагинам
     * Заново реализован класс BClipboardNotifier
     * Добавлены новые методы в BPasswordWidget и BLoginWidget
+    * Добавлен класс BLineEdit
 
 ==== BeQtNetworkWidgets ====
     * В BOperationProgressDialog добавлены новые методы

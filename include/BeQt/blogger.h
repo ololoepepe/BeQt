@@ -1,1 +1,1 @@
-#include "../BeQtCore/blogger.h"
+#include "../../src/corelib/blogger.h"

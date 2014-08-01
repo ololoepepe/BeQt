@@ -1,1 +1,1 @@
-#include "../BeQtCore/bspamnotifier.h"
+#include "../../src/corelib/bspamnotifier.h"

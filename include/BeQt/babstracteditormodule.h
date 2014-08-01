@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/babstracteditormodule.h"
+#include "../../src/codeeditor/babstracteditormodule.h"

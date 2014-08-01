@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bbookmarkseditormodule.h"
+#include "../../src/codeeditor/bbookmarkseditormodule.h"

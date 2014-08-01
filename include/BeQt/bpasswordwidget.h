@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bpasswordwidget.h"
+#include "../../src/widgets/bpasswordwidget.h"

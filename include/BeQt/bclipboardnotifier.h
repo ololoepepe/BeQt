@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bclipboardnotifier.h"
+#include "../../src/widgets/bclipboardnotifier.h"

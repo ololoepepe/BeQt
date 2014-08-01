@@ -1,1 +1,1 @@
-#include "../BeQtCore/bcoreapplication.h"
+#include "../../src/corelib/bcoreapplication.h"

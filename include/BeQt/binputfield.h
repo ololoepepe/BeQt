@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/binputfield.h"
+#include "../../src/widgets/binputfield.h"

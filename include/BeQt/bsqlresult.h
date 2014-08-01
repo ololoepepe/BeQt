@@ -1,1 +1,1 @@
-#include "../BeQtSql/bsqlresult.h"
+#include "../../src/sql/bsqlresult.h"

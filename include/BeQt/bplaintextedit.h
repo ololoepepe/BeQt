@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bplaintextedit.h"
+#include "../../src/widgets/bplaintextedit.h"

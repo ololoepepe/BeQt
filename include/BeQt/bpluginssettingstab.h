@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bpluginssettingstab.h"
+#include "../../src/widgets/bpluginssettingstab.h"

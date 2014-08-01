@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bflowlayout.h"
+#include "../../src/widgets/bflowlayout.h"

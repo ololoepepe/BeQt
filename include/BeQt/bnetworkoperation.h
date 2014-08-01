@@ -1,1 +1,1 @@
-#include "../BeQtNetwork/bnetworkoperation.h"
+#include "../../src/network/bnetworkoperation.h"

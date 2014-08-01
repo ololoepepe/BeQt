@@ -1,1 +1,1 @@
-#include "../BeQtCore/bsettingsnode.h"
+#include "../../src/corelib/bsettingsnode.h"

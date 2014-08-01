@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/blocaldocumentdriver.h"
+#include "../../src/codeeditor/blocaldocumentdriver.h"

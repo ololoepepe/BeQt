@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bimagewidget.h"
+#include "../../src/widgets/bimagewidget.h"

@@ -1,1 +1,1 @@
-#include "../BeQtCore/babstractlocationprovider.h"
+#include "../../src/corelib/babstractlocationprovider.h"

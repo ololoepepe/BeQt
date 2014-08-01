@@ -1,1 +1,1 @@
-#include "../BeQtCore/bpersoninfolist.h"
+#include "../../src/corelib/bpersoninfolist.h"

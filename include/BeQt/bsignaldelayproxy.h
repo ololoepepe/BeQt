@@ -1,1 +1,1 @@
-#include "../BeQtCore/bsignaldelayproxy.h"
+#include "../../src/corelib/bsignaldelayproxy.h"

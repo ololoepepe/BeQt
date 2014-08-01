@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bdialog.h"
+#include "../../src/widgets/bdialog.h"

@@ -1,1 +1,1 @@
-#include "../BeQtCore/bdirtools.h"
+#include "../../src/corelib/bdirtools.h"

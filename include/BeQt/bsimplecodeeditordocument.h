@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bsimplecodeeditordocument.h"
+#include "../../src/codeeditor/bsimplecodeeditordocument.h"

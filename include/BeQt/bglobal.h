@@ -1,1 +1,1 @@
-#include "../BeQtCore/bglobal.h"
+#include "../../src/corelib/bglobal.h"

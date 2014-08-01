@@ -1,1 +1,1 @@
-#include "../../../src/corelib/btranslator_p.h"
+#include "../../../src/corelib/bpersoninfoprovider_p.h"

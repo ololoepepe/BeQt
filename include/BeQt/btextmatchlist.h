@@ -1,1 +1,1 @@
-#include "../BeQtCore/btextmatchlist.h"
+#include "../../src/corelib/btextmatchlist.h"

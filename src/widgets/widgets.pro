@@ -29,6 +29,8 @@ HEADERS += \
     bguiplugininterface.h \
     bhelpbrowser.h \
     bhelpbrowser_p.h \
+    blineedit.h \
+    blineedit_p.h \
     blinenumberwidget.h \
     blinenumberwidget_p.h \
     blocalecombobox.h \
@@ -67,6 +69,7 @@ SOURCES += \
     bflowlayout.cpp \
     bfiledialog.cpp \
     bhelpbrowser.cpp \
+    blineedit.cpp \
     blinenumberwidget.cpp \
     blocalecombobox.cpp \
     blocalterminaldriver.cpp \

@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/babstractterminaldriver.h"
+#include "../../src/widgets/babstractterminaldriver.h"

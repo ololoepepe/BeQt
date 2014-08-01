@@ -1,1 +1,1 @@
-#include "../BeQtCore/bterminal.h"
+#include "../../src/corelib/bterminal.h"

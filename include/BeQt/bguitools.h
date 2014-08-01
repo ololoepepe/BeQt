@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bguitools.h"
+#include "../../src/widgets/bguitools.h"

@@ -1,1 +1,1 @@
-#include "../BeQtCore/btexttools.h"
+#include "../../src/corelib/btexttools.h"

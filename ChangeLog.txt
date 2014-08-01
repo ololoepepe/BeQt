@@ -63,6 +63,7 @@
     * Show plugin Help
     * Reimplement BClipboardNotifier
     * Add new methods to BPasswordWidget and BLoginWidget
+    * Add BLineEdit class
 
 ==== BeQtNetworkWidgets ====
     * Add new methods to BOperationProgressDialog

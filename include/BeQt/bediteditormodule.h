@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bediteditormodule.h"
+#include "../../src/codeeditor/bediteditormodule.h"

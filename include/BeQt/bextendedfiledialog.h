@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bextandedfiledialog.h"
+#include "../../src/codeeditor/bextendedfiledialog.h"

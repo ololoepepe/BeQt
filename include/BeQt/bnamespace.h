@@ -1,1 +1,1 @@
-#include "../BeQtCore/bnamespace.h"
+#include "../../src/corelib/bnamespace.h"
