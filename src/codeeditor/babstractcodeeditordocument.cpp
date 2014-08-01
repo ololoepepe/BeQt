@@ -42,9 +42,11 @@
 #include <QColor>
 #include <QDebug>
 #include <QDir>
+#include <QEvent>
 #include <QFont>
 #include <QFuture>
 #include <QFutureWatcher>
+#include <QHelpEvent>
 #include <QLayout>
 #include <QList>
 #include <QMenu>
@@ -464,6 +466,7 @@ bool BAbstractCodeEditorDocumentPrivate::createEdit()
         edit->setContextMenuPolicy(Qt::CustomContextMenu);
         connect(edit, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(customContextMenuRequested(QPoint)));
     }
+    edit->installEventFilter(this);
     return true;
 }
 
@@ -526,6 +529,24 @@ QMenu *BAbstractCodeEditorDocumentPrivate::createSpellCheckerMenu(const QPoint &
         mnu = 0;
     }
     return mnu;
+}
+
+bool BAbstractCodeEditorDocumentPrivate::eventFilter(QObject *, QEvent *e)
+{
+    if (e->type() != QEvent::ToolTip)
+        return false;
+    QHelpEvent* he = static_cast<QHelpEvent*>(e);
+    toolTipTimer.stop();
+    QTextCursor tc = q_func()->textCursorForPosition(he->pos());
+    if (tc.isNull())
+        return true;
+    toolTipBlock = tc.block();
+    if (!toolTipBlock.isValid())
+        return true;
+    toolTipPosInBlock = tc.positionInBlock();
+    toolTipGlobalPos = he->globalPos();
+    toolTipTimer.start();
+    return true;
 }
 
 BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
@@ -677,6 +698,9 @@ void BAbstractCodeEditorDocumentPrivate::init()
     autocompletionTimer.setSingleShot(true);
     autocompletionTimer.setInterval(500);
     connect(&autocompletionTimer, SIGNAL(timeout()), this, SLOT(showAutocompletionMenu()));
+    toolTipTimer.setSingleShot(true);
+    toolTipTimer.setInterval(500);
+    connect(&toolTipTimer, SIGNAL(timeout()), this, SLOT(showToolTip()));
 }
 
 void BAbstractCodeEditorDocumentPrivate::rehighlight()
@@ -861,6 +885,13 @@ void BAbstractCodeEditorDocumentPrivate::showAutocompletionMenu()
     if (!fileType)
         return;
     fileType->showAutocompletionMenu(q_func(), autocompletionBlock, autocompletionPosInBlock, autocompletionGlobalPos);
+}
+
+void BAbstractCodeEditorDocumentPrivate::showToolTip()
+{
+    if (!fileType)
+        return;
+    fileType->showToolTip(q_func(), toolTipBlock, toolTipPosInBlock, toolTipGlobalPos);
 }
 
 /*============================================================================
@@ -1273,6 +1304,21 @@ QTextCursor BAbstractCodeEditorDocument::textCursor() const
         return ptedt->textCursor();
     else if (cedt)
         return cedt->innerEdit()->textCursor();
+    else
+        return QTextCursor();
+}
+
+QTextCursor BAbstractCodeEditorDocument::textCursorForPosition(const QPoint &pos) const
+{
+    QTextEdit *tedt = qobject_cast<QTextEdit *>(innerEdit());
+    QPlainTextEdit *ptedt = qobject_cast<QPlainTextEdit *>(innerEdit());
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(innerEdit());
+    if (tedt)
+        return tedt->cursorForPosition(pos);
+    else if (ptedt)
+        return ptedt->cursorForPosition(pos);
+    else if (cedt)
+        return cedt->innerEdit()->cursorForPosition(pos);
     else
         return QTextCursor();
 }

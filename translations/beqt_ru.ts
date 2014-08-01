@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1392"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1438"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -134,19 +134,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="509"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="512"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="520"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="523"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="523"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="526"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -476,13 +476,13 @@
 <context>
     <name>BDefaultFileType</name>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="95"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="96"/>
         <source>Text</source>
         <comment>name</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="80"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="81"/>
         <source>All files</source>
         <comment>description</comment>
         <translation>Все файлы</translation>

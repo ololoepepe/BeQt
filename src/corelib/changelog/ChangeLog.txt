@@ -84,6 +84,7 @@
     * Add ability to set auto-indentation in editor
     * Implement editor regular expression-based search
     * Implement autocompletion
+    * Add ability to show custom tooltips
 
 ==== Misc ====
     * Add .pri files for 3rdparty libraries (Hunspell and Enca)

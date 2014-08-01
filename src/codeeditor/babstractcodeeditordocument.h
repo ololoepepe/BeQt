@@ -181,6 +181,7 @@ public:
     BSpellChecker *spellChecker() const;
     virtual QString text(bool full = false) const = 0;
     virtual QTextCursor textCursor() const;
+    virtual QTextCursor textCursorForPosition(const QPoint &pos) const;
 public Q_SLOTS:
     void activateWindow();
     void clear();

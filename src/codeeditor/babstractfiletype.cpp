@@ -38,6 +38,7 @@ class BTextBlockExtraData;
 #include <QStringList>
 #include <QTextBlock>
 #include <QTextCharFormat>
+#include <QToolTip>
 
 /*============================================================================
 ================================ BDefaultFileType ============================
@@ -256,6 +257,11 @@ QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocomple
     return QList<AutocompletionItem>();
 }
 
+QString BAbstractFileType::createToolTipText(BAbstractCodeEditorDocument *, QTextBlock, int)
+{
+    return QString();
+}
+
 QTextBlock BAbstractFileType::currentBlock() const
 {
     return d_func()->highlighter ? d_func()->highlighter->currentBlock() : QTextBlock();
@@ -364,4 +370,13 @@ void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc,
         --start;
     doc->selectText(start + 1, end);
     doc->insertText(text);
+}
+
+void BAbstractFileType::showToolTip(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+                                    const QPoint &globalPos)
+{
+    QString text = createToolTipText(doc, block, posInBlock);
+    if (text.isEmpty())
+        return QToolTip::hideText();
+    QToolTip::showText(globalPos, text);
 }
