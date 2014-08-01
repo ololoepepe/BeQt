@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/btextcodeccombobox.h"
+#include "../../src/widgets/btextcodeccombobox.h"

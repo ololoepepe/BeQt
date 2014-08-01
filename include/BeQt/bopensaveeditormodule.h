@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bopensaveeditormodule.h"
+#include "../../src/codeeditor/bopensaveeditormodule.h"

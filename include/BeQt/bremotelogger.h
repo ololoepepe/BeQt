@@ -1,1 +1,1 @@
-#include "../BeQtNetwork/bremotelogger.h"
+#include "../../src/network/bremotelogger.h"

@@ -1,1 +1,1 @@
-#include "../BeQtCore/bpassword.h"
+#include "../../src/corelib/bpassword.h"

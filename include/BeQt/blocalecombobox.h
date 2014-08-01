@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/blocalecombobox.h"
+#include "../../src/widgets/blocalecombobox.h"

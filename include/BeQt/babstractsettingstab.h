@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/babstractsettingstab.h"
+#include "../../src/widgets/babstractsettingstab.h"

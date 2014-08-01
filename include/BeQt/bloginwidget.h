@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bloginwidget.h"
+#include "../../src/widgets/bloginwidget.h"

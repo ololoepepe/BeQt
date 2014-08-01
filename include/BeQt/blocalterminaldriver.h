@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/blocalterminaldriver.h"
+#include "../../src/widgets/blocalterminaldriver.h"

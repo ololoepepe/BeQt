@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bapplication.h"
+#include "../../src/widgets/bapplication.h"

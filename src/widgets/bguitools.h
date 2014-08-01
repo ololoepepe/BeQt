@@ -25,6 +25,7 @@
 class BTranslation;
 
 class QAction;
+class QComboBox;
 class QFont;
 class QObject;
 class QString;
@@ -123,6 +124,7 @@ B_WIDGETS_EXPORT QAction *createSeparator(QObject *parent = 0);
 B_WIDGETS_EXPORT QAction *createStandardAction(StandardAction type, QObject *parent = 0);
 B_WIDGETS_EXPORT void removeRow(QVBoxLayout *vlt, QWidget *field);
 B_WIDGETS_EXPORT void removeRow(QVBoxLayout *vlt, QLayout *field);
+B_WIDGETS_EXPORT void setItemEnabled(QComboBox *cmbox, int index, bool enabled);
 B_WIDGETS_EXPORT void setRowEnabled(QWidget *field, bool enabled);
 B_WIDGETS_EXPORT void setRowEnabled(QLayout *field, bool enabled);
 B_WIDGETS_EXPORT void setRowVisible(QWidget *field, bool visible);

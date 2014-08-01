@@ -1,1 +1,1 @@
-#include "../BeQtCore/bspellcheckerdictionary.h"
+#include "../../src/corelib/bspellcheckerdictionary.h"

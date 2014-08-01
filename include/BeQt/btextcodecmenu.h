@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/btextcodecmenu.h"
+#include "../../src/widgets/btextcodecmenu.h"

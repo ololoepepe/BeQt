@@ -29,6 +29,7 @@ class BSpellChecker;
 class BTextBlockExtraData;
 
 class QColor;
+class QEvent;
 class QFont;
 class QMenu;
 class QPlainTextEdit;
@@ -191,6 +192,10 @@ public:
     BracketPairList recognizedBrackets;
     bool redoAvailable;
     BSpellChecker *spellChecker;
+    QTextBlock toolTipBlock;
+    QPoint toolTipGlobalPos;
+    int toolTipPosInBlock;
+    QTimer toolTipTimer;
     bool undoAvailable;
     mutable QPair<int, int> wordToReplace;
 public:
@@ -209,6 +214,7 @@ public:
 public:
     bool createEdit();
     QMenu *createSpellCheckerMenu(const QPoint &pos);
+    bool eventFilter(QObject *o, QEvent *e);
     FindBracketPairResult findLeftBracketPair() const;
     FindBracketPairResult findRightBracketPair() const;
     void highlightBrackets();
@@ -227,6 +233,7 @@ public Q_SLOTS:
     void replaceWord();
     void savingFinished(const BAbstractDocumentDriver::Operation &operation, bool success);
     void showAutocompletionMenu();
+    void showToolTip();
 private:
     Q_DISABLE_COPY(BAbstractCodeEditorDocumentPrivate)
 };

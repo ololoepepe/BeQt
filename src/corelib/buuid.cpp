@@ -234,6 +234,11 @@ BUuid::operator QString() const
 }
 #endif
 
+BUuid::operator QVariant() const
+{
+    return QVariant::fromValue(*this);
+}
+
 BUuid &BUuid::operator= (const BUuid &other)
 {
     d_func()->muuid = other.d_func()->muuid;

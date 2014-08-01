@@ -1,1 +1,1 @@
-#include "../BeQtCore/bdynamictranslator.h"
+#include "../../src/corelib/bdynamictranslator.h"

@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/blinenumberwidget.h"
+#include "../../src/widgets/blinenumberwidget.h"

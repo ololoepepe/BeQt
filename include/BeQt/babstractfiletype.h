@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/babstractfiletype.h"
+#include "../../src/codeeditor/babstractfiletype.h"

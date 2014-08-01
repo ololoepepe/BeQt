@@ -1,1 +1,1 @@
-#include "../BeQtSql/bsqlwhere.h"
+#include "../../src/sql/bsqlwhere.h"

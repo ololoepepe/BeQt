@@ -1,0 +1,6 @@
+#ifndef BEQT_BEQTNETWORKWIDGETS_MODULE_H
+#define BEQT_BEQTNETWORKWIDGETS_MODULE_H
+
+#include "boperationprogressdialog.h"
+
+#endif //BEQT_BEQTNETWORKWIDGETS_MODULE_H

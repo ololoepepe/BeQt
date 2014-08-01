@@ -1,1 +1,1 @@
-#include "../BeQtCore/bplugininterface.h"
+#include "../../src/corelib/bplugininterface.h"

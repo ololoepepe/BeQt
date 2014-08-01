@@ -96,6 +96,7 @@ protected:
     void clearCurrentBlockSkipIntervals();
     virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc, QTextBlock block,
                                                                    int posInBlock);
+    virtual QString createToolTipText(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock);
     QTextBlock currentBlock() const;
     BTextBlockExtraData *currentBlockExtraData() const;
     int currentBlockState() const;
@@ -111,6 +112,8 @@ protected:
     void setFormat(int start, int count, const QFont &font);
     virtual void showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
                                         const QPoint &globalPos);
+    virtual void showToolTip(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+                             const QPoint &globalPos);
 private:
     friend class BSyntaxHighlighter;
     friend class BAbstractCodeEditorDocumentPrivate;

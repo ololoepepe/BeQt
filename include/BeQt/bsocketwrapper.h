@@ -1,1 +1,1 @@
-#include "../BeQtNetwork/bsocketwrapper.h"
+#include "../../src/network/bsocketwrapper.h"

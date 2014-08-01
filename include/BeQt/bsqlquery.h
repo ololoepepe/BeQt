@@ -1,1 +1,1 @@
-#include "../BeQtSql/bsqlquery.h"
+#include "../../src/sql/bsqlquery.h"

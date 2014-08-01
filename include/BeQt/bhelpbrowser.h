@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/bhelpbrowser.h"
+#include "../../src/widgets/bhelpbrowser.h"

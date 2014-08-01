@@ -1,1 +1,1 @@
-#include "../BeQtCodeEditor/bindicatorseditormodule.h"
+#include "../../src/codeeditor/bindicatorseditormodule.h"

@@ -1,1 +1,1 @@
-#include "../BeQtNetwork/bgapplicationserver.h"
+#include "../../src/network/bapplicationserver.h"

@@ -1,1 +1,1 @@
-#include "../BeQtWidgets/beditgroup.h"
+#include "../../src/widgets/beditgroup.h"
