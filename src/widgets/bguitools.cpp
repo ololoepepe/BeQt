@@ -28,14 +28,20 @@ class QObject;
 #include <BeQtCore/BeQtGlobal>
 
 #include <QAction>
+#include <QColor>
+#include <QComboBox>
 #include <QFont>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QPalette>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include <QString>
 #include <QToolBar>
 #include <QToolButton>
+#include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
 
@@ -119,6 +125,28 @@ void removeRow(QVBoxLayout *vlt, QLayout *field)
     field->deleteLater();
     if (label)
         label->deleteLater();
+}
+
+void setItemEnabled(QComboBox *cmbox, int index, bool enabled)
+{
+    if (!cmbox || index < 0 || index >= cmbox->count())
+        return;
+    QStandardItemModel *model = qobject_cast<QStandardItemModel *>(cmbox->model());
+    if (!model)
+        return;
+    QStandardItem *item = model->item(index);
+    if (!item)
+        return;
+    Qt::ItemFlags flags = item->flags();
+    QVariant color;
+    if (enabled) {
+        flags |= (Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    } else {
+        flags &= ~(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        color = cmbox->palette().color(QPalette::Disabled, QPalette::Text);
+    }
+    item->setFlags(flags);
+    item->setData(color, Qt::TextColorRole);
 }
 
 void setRowEnabled(QWidget *field, bool enabled)

@@ -111,7 +111,7 @@ contains(BEQT_CONFIG, private_headers) {
 }
 
 #NetworkWidgets
-!contains(BEQT_CONFIG, no_networkwidgets) {
+!contains(BEQT_CONFIG, no_network)!contains(BEQT_CONFIG, no_widgets):!contains(BEQT_CONFIG, no_networkwidgets) {
     beqtInstallsHeadersNetworkWidgets.files=$$getActualHeaderPaths(BeQtNetworkWidgets)
     beqtInstallsHeadersNetworkWidgets.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtNetworkWidgets
     INSTALLS += beqtInstallsHeadersNetworkWidgets
@@ -123,7 +123,7 @@ contains(BEQT_CONFIG, private_headers) {
 }
 
 #CodeEditor
-!contains(BEQT_CONFIG, no_codeeditor) {
+!contains(BEQT_CONFIG, no_widgets):!contains(BEQT_CONFIG, no_codeeditor) {
     beqtInstallsHeadersCodeeditor.files=$$getActualHeaderPaths(BeQtCodeEditor)
     beqtInstallsHeadersCodeeditor.path=$${BEQT_HEADERS_INSTALLS_PATH}/BeQtCodeEditor
     INSTALLS += beqtInstallsHeadersCodeeditor
