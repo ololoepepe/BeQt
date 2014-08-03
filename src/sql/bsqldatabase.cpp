@@ -284,41 +284,42 @@ QString BSqlDatabase::hostName() const
     return d_func()->db->hostName();
 }
 
-bool BSqlDatabase::initializeFromSchema(const QString &schemaText)
+bool BSqlDatabase::initializeFromSchema(const QString &schemaText, bool transaction)
 {
     QStringList list = schemaFromText(schemaText);
     if (list.isEmpty())
         return false;
     if (!isOpen() && !open())
         return false;
-    if (!transaction())
+    if (transaction && !this->transaction())
         return false;
     foreach (const QString &qs, list) {
         if (!exec(qs)) {
-            rollback();
+            if (transaction)
+                rollback();
             return false;
         }
     }
-    if (!commit()) {
+    if (transaction && !commit()) {
         rollback();
         return false;
     }
     return true;
 }
 
-bool BSqlDatabase::initializeFromSchema(const QStringList &schema)
+bool BSqlDatabase::initializeFromSchema(const QStringList &schema, bool transaction)
 {
-    return initializeFromSchema(schema.join(";\n"));
+    return initializeFromSchema(schema.join(";\n"), transaction);
 }
 
-bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, QTextCodec *codec)
+bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, QTextCodec *codec, bool transaction)
 {
-    return initializeFromSchema(schemaFromFile(fileName, codec));
+    return initializeFromSchema(schemaFromFile(fileName, codec), transaction);
 }
 
-bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, const QString &codecName)
+bool BSqlDatabase::initializeFromSchemaFile(const QString &fileName, const QString &codecName, bool transaction)
 {
-    return initializeFromSchema(schemaFromFile(fileName, codecName));
+    return initializeFromSchema(schemaFromFile(fileName, codecName), transaction);
 }
 
 BSqlResult BSqlDatabase::insert(const QString &table, const QVariantMap &values, const BSqlWhere &where)

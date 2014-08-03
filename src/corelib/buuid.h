@@ -73,6 +73,7 @@ public:
     BUuid(const BUuid &other);
     ~BUuid();
 public:
+    static QString canonicalText(const QString &uuidText);
     static BUuid createUuid();
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
     static BUuid createUuidV3(const BUuid &ns, const QByteArray &baseData);
@@ -81,11 +82,12 @@ public:
     static BUuid createUuidV5(const BUuid &ns, const QString &baseData);
 #endif
     static BUuid fromRfc4122(const QByteArray & bytes);
+    static QString pureText(const QString &uuidText);
 public:
     bool isNull() const;
     QByteArray toByteArray() const;
     QByteArray toRfc4122() const;
-    QString toString() const;
+    QString toString(bool pure = false) const;
     QUuid toUuid() const;
     QUuid::Variant variant() const;
     QUuid::Version version() const;

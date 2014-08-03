@@ -436,6 +436,22 @@ void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionLis
     }
 }
 
+bool BAbstractCodeEditorDocumentPrivate::selectionListsEqual(const ExtraSelectionList &list1,
+                                                             const ExtraSelectionList &list2)
+{
+    if (list1.size() != list2.size())
+        return false;
+    if (list1.isEmpty())
+        return true;
+    foreach (int i, bRangeD(0, list1.size() - 1)) {
+        const ExtraSelection &es1 = list1.at(i);
+        const ExtraSelection &es2 = list2.at(i);
+        if (es1.cursor != es2.cursor || es1.format != es2.format)
+            return false;
+    }
+    return true;
+}
+
 void BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
@@ -643,32 +659,38 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
 
 void BAbstractCodeEditorDocumentPrivate::highlightBrackets()
 {
+    ExtraSelectionList newSelections;
+    if (bracketsHighlighting) {
+        FindBracketPairResultList list;
+        list << findLeftBracketPair();
+        list << findRightBracketPair();
+        foreach (const FindBracketPairResult &res, list) {
+            if (res.start >= 0 && res.end >= 0) {
+                if (BAbstractFileType::areEqual(*res.startBr, *res.endBr)) {
+                    ExtraSelection ess = q_func()->createExtraSelection(createBracketsFormat());
+                    ess.cursor.setPosition(res.start);
+                    ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
+                    newSelections << ess;
+                    ExtraSelection ese = q_func()->createExtraSelection(createBracketsFormat());
+                    ese.cursor.setPosition(res.end - res.endBr->closing.length());
+                    ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
+                    newSelections << ese;
+                } else {
+                    ExtraSelection es = q_func()->createExtraSelection(createBracketsErrorFormat());
+                    es.cursor.setPosition(res.start);
+                    es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
+                    newSelections << es;
+                }
+            }
+        }
+    }
+    if (selectionListsEqual(highlightedBrackets, newSelections))
+        return;
     ExtraSelectionList selections = q_func()->extraSelections();
     highlightedBrackets.clear();
     if (!bracketsHighlighting)
         return q_func()->setExtraSelections(selections);
-    FindBracketPairResultList list;
-    list << findLeftBracketPair();
-    list << findRightBracketPair();
-    foreach (const FindBracketPairResult &res, list) {
-        if (res.start >= 0 && res.end >= 0) {
-            if (BAbstractFileType::areEqual(*res.startBr, *res.endBr)) {
-                QTextEdit::ExtraSelection ess = q_func()->createExtraSelection(createBracketsFormat());
-                ess.cursor.setPosition(res.start);
-                ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
-                highlightedBrackets << ess;
-                QTextEdit::ExtraSelection ese = q_func()->createExtraSelection(createBracketsFormat());
-                ese.cursor.setPosition(res.end - res.endBr->closing.length());
-                ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                highlightedBrackets << ese;
-            } else {
-                QTextEdit::ExtraSelection es = q_func()->createExtraSelection(createBracketsErrorFormat());
-                es.cursor.setPosition(res.start);
-                es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                highlightedBrackets << es;
-            }
-        }
-    }
+    highlightedBrackets = newSelections;
     q_func()->setExtraSelections(selections);
 }
 

@@ -470,6 +470,8 @@ QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
                     break;
                 }
             } else {
+                if ((c == '\"' || c == '\'') && (i > 0 || cmd.at(i - 1) == '\\') && !arg.isEmpty())
+                    arg.remove(arg.length() - 1, 1);
                 arg.append(c);
             }
         }

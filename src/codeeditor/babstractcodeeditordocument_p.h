@@ -210,6 +210,7 @@ public:
     static QTextCharFormat createSearchResultFormat();
     static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
     static void removeExtraSelections(ExtraSelectionList &from, int start, int end);
+    static bool selectionListsEqual(const ExtraSelectionList &list1, const ExtraSelectionList &list2);
     static void setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list = QList<SkipInterval>());
 public:
     bool createEdit();

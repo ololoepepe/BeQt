@@ -20,6 +20,7 @@
     * В BApplicationBase добавлена возможность указывать несколько владельцев авторских прав
     * BTerminalIOHandler переименован в BTerminal и сделан синглтоном
     * Методы splitCommand и mergeArguments перенесены из BTerminal в BTextTools
+    * Функции, относящиеся к UUID, перемещены из пространства имен в класс BUuid
     * Реализованы режимы терминала
     * В BTerminal добавлена возможность запоминать введенные команды
     * Метод BPluginWrapper::interfacetestFunction переименован в interfaceTestFunction
@@ -40,6 +41,9 @@
     * В BNetworkServer добавлена возможность слушать несколько хостов/портов
     * В BNetworkServer реализована возможность предварительно обрабатывать входящее соединение
     * В BNetworkServer улучшена система блокировки пользователей
+
+==== BeQtSql ====
+    * Add ability to disable automatic transaction when creating database from schema
 
 ==== BeQtWidgets ====
     * Похожие методы в BGuiTools объединены в шаблонные методы

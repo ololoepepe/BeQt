@@ -105,6 +105,8 @@ public:
     static void disconnectFromCommandEntered(QObject *receiver, const char *method);
     static void emulateCommand(const QString &command, const QStringList &arguments = QStringList());
     static HandlerFunction handler(StandardCommand command);
+    static void installDefaultHandler(HandlerFunction handler);
+    static HandlerFunction installedDefaultHandler();
     static HandlerFunction installedHandler(const QString &command);
     static void installHandler(const QString &command, HandlerFunction handler);
     static void installHandler(StandardCommand cmd);

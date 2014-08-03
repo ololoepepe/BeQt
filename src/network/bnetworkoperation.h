@@ -66,8 +66,10 @@ public:
     void onError(const QObject *receiver, const char *method, bool c = true);
     void onFinished(const QObject *receiver, const char *method, bool c = true);
     void onStarted(const QObject *receiver, const char *method, bool c = true);
-    void reply(const QByteArray &data = QByteArray());
-    void reply(const QVariant &variant);
+    bool reply(const QByteArray &data = QByteArray());
+    bool reply(const QVariant &variant);
+    bool reply(int compressionLevel, const QByteArray &data = QByteArray());
+    bool reply(int compressionLevel, const QVariant &variant);
     void setAutoDelete(bool b);
     void setFinishTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);
     void setStartTimeout(int msecs = 30 * BeQt::Second, const QObject *receiver = 0, const char *method = 0);

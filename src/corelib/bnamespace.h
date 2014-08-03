@@ -22,8 +22,6 @@
 #ifndef BNAMESPACE_H
 #define BNAMESPACE_H
 
-class BUuid;
-
 class QObject;
 class QProcess;
 class QRect;
@@ -143,7 +141,6 @@ const int KeypadControlShiftModifier = ((int) Qt::KeypadModifier | ContorlShiftM
 
 B_CORE_EXPORT int area(const QRect &r);
 B_CORE_EXPORT qreal area(const QRectF &r);
-B_CORE_EXPORT QString canonicalUuidText(const QString &uuidText);
 B_CORE_EXPORT QTextCodec *codec(const QString &cn);
 B_CORE_EXPORT QTextCodec *codec(const QByteArray &cn);
 B_CORE_EXPORT QString codecName(QTextCodec *codec);
@@ -179,8 +176,7 @@ B_CORE_EXPORT QString osTypeToString(OSType t);
 B_CORE_EXPORT QString osVersion();
 B_CORE_EXPORT LineFeed platformLineFeed();
 B_CORE_EXPORT ProcessorArchitecture processorArchitecture();
-B_CORE_EXPORT QString pureUuidText(const BUuid &uuid);
-B_CORE_EXPORT QString pureUuidText(const QString &uuidText);
+B_CORE_EXPORT QString processorArchitectureToString(ProcessorArchitecture arch);
 B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void sleep(unsigned long secs);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments = QStringList());
@@ -196,7 +192,6 @@ B_CORE_EXPORT QString translate(const char *context, const char *sourceText, con
                                 int n = -1);
 B_CORE_EXPORT Until until(const QObject *object, const char *signal);
 B_CORE_EXPORT void usleep(unsigned long usecs);
-B_CORE_EXPORT BUuid uuidFromText(const QString &uuidText);
 B_CORE_EXPORT void waitNonBlocking(int msecs);
 B_CORE_EXPORT void waitNonBlocking(const QObject *sender, const char *signal, int msecs = -1);
 B_CORE_EXPORT void waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2,

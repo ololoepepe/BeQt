@@ -84,6 +84,7 @@ public:
 public:
     QMap<QString, BTerminal::CommandHelpList> commandHelp;
     QStringList commandHistory;
+    BTerminal::HandlerFunction defaultHandler;
     QMap<QString, BTerminal::HandlerFunction> handlers;
     BTranslation help;
     QStringList lastArgs;

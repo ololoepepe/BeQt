@@ -102,7 +102,7 @@ BUuid::BUuid(const QString &text) :
     data3(d_func()->muuid.data3), data4(d_func()->muuid.data4)
 {
     d_func()->init();
-    d_func()->muuid = QUuid(text);
+    d_func()->muuid = QUuid(canonicalText(text));
 }
 
 BUuid::BUuid(const char *text) :
@@ -146,6 +146,14 @@ BUuid::~BUuid()
 
 /*============================== Static public methods =====================*/
 
+QString BUuid::canonicalText(const QString &uuidText)
+{
+    if (uuidText.isEmpty())
+        return "";
+    QString t = (uuidText.at(0) != '{' ? "{" : "") + uuidText + (uuidText.at(uuidText.length() - 1) != '}' ? "}" : "");
+    return !QUuid(t).isNull() ? t : QString();
+}
+
 BUuid BUuid::createUuid()
 {
     return BUuid(QUuid::createUuid());
@@ -178,6 +186,11 @@ BUuid BUuid::fromRfc4122(const QByteArray &bytes)
     return BUuid(QUuid::fromRfc4122(bytes));
 }
 
+QString BUuid::pureText(const QString &uuidText)
+{
+    return BUuid(canonicalText(uuidText)).toString(true);
+}
+
 /*============================== Public methods ============================*/
 
 bool BUuid::isNull() const
@@ -195,9 +208,14 @@ QByteArray BUuid::toRfc4122() const
     return d_func()->muuid.toRfc4122();
 }
 
-QString BUuid::toString() const
+QString BUuid::toString(bool pure) const
 {
-    return d_func()->muuid.toString();
+    if (pure) {
+        QString t = toString();
+        return t.mid(1, t.length() - 2);
+    } else {
+        return d_func()->muuid.toString();
+    }
 }
 
 QUuid BUuid::toUuid() const

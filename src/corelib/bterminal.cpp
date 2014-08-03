@@ -258,16 +258,15 @@ bool BTerminalPrivate::testInit(const char *where)
 
 void BTerminalPrivate::init()
 {
+    defaultHandler = 0;
     qAddPostRoutine(&BTerminal::destroy);
     root = 0;
     translations = true;
     switch (Mode) {
     case BTerminal::StandardMode:
-    {
         readThread = new BTerminalThread(this);
         readThread->start();
         break;
-    }
     default:
         break;
     }
@@ -285,8 +284,10 @@ void BTerminalPrivate::commandEntered(const QString &cmd, const QStringList &arg
     QMetaObject::invokeMethod(q, "commandEntered", Q_ARG(QString, lastCommand), Q_ARG(QStringList, lastArgs));
     if (handlers.contains(lastCommand))
         handlers.value(lastCommand)(lastCommand, lastArgs);
+    else if (defaultHandler)
+        defaultHandler(lastCommand, lastArgs);
     else
-        q->writeLine(translations ? tr("Unknown command") : QString("Unknown command"));
+        q->writeLine(translations ? tr("Unknown command", "message") : QString("Unknown command"));
     if (lastCommand != "last" && !lastCommand.startsWith("last "))
         commandHistory.prepend(lastCommand);
 }
@@ -516,6 +517,26 @@ BTerminal::HandlerFunction BTerminal::handler(StandardCommand cmd)
     default:
         return 0;
     }
+}
+
+void BTerminal::installDefaultHandler(HandlerFunction handler)
+{
+    QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!BTerminalPrivate::testInit("BTerminal"))
+        return;
+    if (StandardMode != ds_func()->Mode)
+        return;
+    ds_func()->defaultHandler = handler;
+}
+
+BTerminal::HandlerFunction BTerminal::installedDefaultHandler()
+{
+    QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!BTerminalPrivate::testInit("BTerminal"))
+        return 0;
+    if (StandardMode != ds_func()->Mode)
+        return 0;
+    return ds_func()->defaultHandler;
 }
 
 BTerminal::HandlerFunction BTerminal::installedHandler(const QString &command)
