@@ -158,8 +158,14 @@ public:
         int end;
         int start;
     };
+    struct SelectionRange
+    {
+        int end;
+        int start;
+    };
 public:
     typedef QList<FindBracketPairResult> FindBracketPairResultList;
+    typedef QList<SelectionRange> SelectionRangeList;
 public:
     BCodeEditor *const Editor;
 public:
@@ -180,8 +186,9 @@ public:
     QString fileName;
     BAbstractFileType *fileType;
     bool hasSelection;
-    ExtraSelectionList highlightedBrackets;
-    ExtraSelectionList highlightedSearchResults;
+    QList<SelectionRange> highlightedBrackets;
+    QList<SelectionRange> highlightedBracketsError;
+    QList<SelectionRange> highlightedSearchResults;
     BSyntaxHighlighter *highlighter;
     bool isModified;
     QTextDocument::FindFlags lastSearchFlags;
@@ -208,9 +215,9 @@ public:
     static QTextCharFormat createBracketsFormat();
     static FindBracketPairResult createFindBracketPairResult();
     static QTextCharFormat createSearchResultFormat();
-    static void removeExtraSelections(ExtraSelectionList &from, const ExtraSelectionList &what);
-    static void removeExtraSelections(ExtraSelectionList &from, int start, int end);
-    static bool selectionListsEqual(const ExtraSelectionList &list1, const ExtraSelectionList &list2);
+    static int removeExtraSelections(ExtraSelectionList &from, const SelectionRangeList &what);
+    static SelectionRangeList removeSelectionRanges(SelectionRangeList &from, int start, int end);
+    static bool selectionRangeListsEqual(const SelectionRangeList &list1, const SelectionRangeList &list2);
     static void setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list = QList<SkipInterval>());
 public:
     bool createEdit();

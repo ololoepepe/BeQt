@@ -414,39 +414,66 @@ QTextCharFormat BAbstractCodeEditorDocumentPrivate::createSearchResultFormat()
     return fmt;
 }
 
-void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from,
-                                                               const ExtraSelectionList &what)
+int BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from, const SelectionRangeList &what)
 {
-    foreach (const QTextEdit::ExtraSelection &es, what) {
-        for (int i = from.size() - 1; i >= 0; --i) {
-            if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
-                from.removeAt(i);
-        }
-    }
-}
-
-void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from, int start, int end)
-{
-    for (int i = from.size() - 1; i >= 0; --i) {
-        const QTextCursor &tc = from.at(i).cursor;
+    int count = 0;
+    bool range = false;
+    bool hasBegin = false;
+    ExtraSelectionList::Iterator begin = 0;
+    ExtraSelectionList::Iterator end = 0;
+    for (ExtraSelectionList::Iterator i = from.begin(); i != from.end(); ++i) {
+        const QTextCursor &tc = i->cursor;
         int sstart = qMin(tc.selectionStart(), tc.selectionEnd());
         int send = qMax(tc.selectionStart(), tc.selectionEnd());
-        if (sstart >= start && send <= end)
-            from.removeAt(i);
+        bool found = false;
+        foreach (const SelectionRange &sr, what) {
+            if (sr.start == sstart && sr.end == send) {
+                range = true;
+                if (!hasBegin) {
+                    hasBegin = true;
+                    begin = i;
+                }
+                end = i + 1;
+                ++count;
+                found = true;
+                break;
+            }
+        }
+        if (!found && range) {
+            from.erase(begin, end);
+            range = false;
+            hasBegin = false;
+        }
     }
+    if (range) {
+        from.erase(begin, end);
+    }
+    return count;
 }
 
-bool BAbstractCodeEditorDocumentPrivate::selectionListsEqual(const ExtraSelectionList &list1,
-                                                             const ExtraSelectionList &list2)
+BAbstractCodeEditorDocumentPrivate::SelectionRangeList BAbstractCodeEditorDocumentPrivate::removeSelectionRanges(
+        SelectionRangeList &from, int start, int end)
+{
+    SelectionRangeList list;
+    foreach (int i, bRangeR(from.size() - 1, 0)) {
+        const SelectionRange &sr = from.at(i);
+        if (sr.start >= start && sr.end <= end)
+            list << from.takeAt(i);
+    }
+    return list;
+}
+
+bool BAbstractCodeEditorDocumentPrivate::selectionRangeListsEqual(const SelectionRangeList &list1,
+                                                                  const SelectionRangeList &list2)
 {
     if (list1.size() != list2.size())
         return false;
     if (list1.isEmpty())
         return true;
     foreach (int i, bRangeD(0, list1.size() - 1)) {
-        const ExtraSelection &es1 = list1.at(i);
-        const ExtraSelection &es2 = list2.at(i);
-        if (es1.cursor != es2.cursor || es1.format != es2.format)
+        const SelectionRange &sr1 = list1.at(i);
+        const SelectionRange &sr2 = list2.at(i);
+        if (sr1.start != sr2.start || sr1.end != sr2.end)
             return false;
     }
     return true;
@@ -659,7 +686,8 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
 
 void BAbstractCodeEditorDocumentPrivate::highlightBrackets()
 {
-    ExtraSelectionList newSelections;
+    SelectionRangeList newSelections;
+    SelectionRangeList newSelectionsError;
     if (bracketsHighlighting) {
         FindBracketPairResultList list;
         list << findLeftBracketPair();
@@ -667,30 +695,34 @@ void BAbstractCodeEditorDocumentPrivate::highlightBrackets()
         foreach (const FindBracketPairResult &res, list) {
             if (res.start >= 0 && res.end >= 0) {
                 if (BAbstractFileType::areEqual(*res.startBr, *res.endBr)) {
-                    ExtraSelection ess = q_func()->createExtraSelection(createBracketsFormat());
-                    ess.cursor.setPosition(res.start);
-                    ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
-                    newSelections << ess;
-                    ExtraSelection ese = q_func()->createExtraSelection(createBracketsFormat());
-                    ese.cursor.setPosition(res.end - res.endBr->closing.length());
-                    ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                    newSelections << ese;
+                    SelectionRange srs;
+                    srs.start = res.start;
+                    srs.end = res.start + res.startBr->opening.length();
+                    newSelections << srs;
+                    SelectionRange sre;
+                    sre.start = res.end - res.endBr->closing.length();
+                    sre.end = res.end;
+                    newSelections << sre;
                 } else {
-                    ExtraSelection es = q_func()->createExtraSelection(createBracketsErrorFormat());
-                    es.cursor.setPosition(res.start);
-                    es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                    newSelections << es;
+                    SelectionRange sr;
+                    sr.start = res.start;
+                    sr.end = res.end;
+                    newSelectionsError << sr;
                 }
             }
         }
     }
-    if (selectionListsEqual(highlightedBrackets, newSelections))
+    if (selectionRangeListsEqual(newSelections, highlightedBrackets)
+            && selectionRangeListsEqual(newSelectionsError, highlightedBracketsError)) {
         return;
+    }
     ExtraSelectionList selections = q_func()->extraSelections();
     highlightedBrackets.clear();
-    if (!bracketsHighlighting)
-        return q_func()->setExtraSelections(selections);
-    highlightedBrackets = newSelections;
+    highlightedBracketsError.clear();
+    if (bracketsHighlighting) {
+        highlightedBrackets = newSelections;
+        highlightedBracketsError = newSelectionsError;
+    }
     q_func()->setExtraSelections(selections);
 }
 
@@ -1028,7 +1060,12 @@ BAbstractCodeEditorDocument::ExtraSelectionList BAbstractCodeEditorDocument::ext
 {
     ExtraSelectionList list = extraSelectionsImplementation();
     BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedBrackets);
+    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedBracketsError);
     BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedSearchResults);
+    foreach (int i, bRangeR(list.size() - 1, 0)) {
+        if (!list.at(i).cursor.hasSelection())
+            list.removeAt(i);
+    }
     return list;
 }
 
@@ -1063,10 +1100,10 @@ bool BAbstractCodeEditorDocument::findNext(const QString &txt, QTextDocument::Fi
         QString t = text(true);
         int ind = BTextTools::indexOf(t, txt, 0, cs, wholeWords);
         while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(ind);
-            es.cursor.setPosition(ind + txt.length(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
+            BAbstractCodeEditorDocumentPrivate::SelectionRange sr;
+            sr.start = ind;
+            sr.end = ind + txt.length();
+            d->highlightedSearchResults << sr;
             ind = BTextTools::indexOf(t, txt, ind + txt.length(), cs, wholeWords);
         }
     } else {
@@ -1091,10 +1128,10 @@ bool BAbstractCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocumen
         QString t = text(true);
         int ind = rx.indexIn(t);
         while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(ind);
-            es.cursor.setPosition(ind + rx.matchedLength(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
+            BAbstractCodeEditorDocumentPrivate::SelectionRange sr;
+            sr.start = ind;
+            sr.end = ind + rx.matchedLength();
+            d->highlightedSearchResults << sr;
             ind = rx.indexIn(t, ind + rx.matchedLength());
         }
     } else {
@@ -1258,8 +1295,28 @@ void BAbstractCodeEditorDocument::setCodec(const QString &codecName)
 void BAbstractCodeEditorDocument::setExtraSelections(const ExtraSelectionList &list)
 {
     ExtraSelectionList nlist = list;
-    nlist << d_func()->highlightedSearchResults;
-    nlist << d_func()->highlightedBrackets;
+    foreach (int i, bRangeR(nlist.size() - 1, 0)) {
+        if (!nlist.at(i).cursor.hasSelection())
+            nlist.removeAt(i);
+    }
+    ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d_func()->highlightedSearchResults) {
+        es.cursor.setPosition(sr.start);
+        es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        nlist << es;
+    }
+    es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createBracketsFormat());
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d_func()->highlightedBrackets) {
+        es.cursor.setPosition(sr.start);
+        es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        nlist << es;
+    }
+    es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createBracketsErrorFormat());
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d_func()->highlightedBracketsError) {
+        es.cursor.setPosition(sr.start);
+        es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        nlist << es;
+    }
     setExtraSelectionsImplementation(nlist);
 }
 
@@ -1519,39 +1576,46 @@ void BAbstractCodeEditorDocument::emitSelectionChanged()
 
 void BAbstractCodeEditorDocument::emitTextChanged()
 {
+    typedef BAbstractCodeEditorDocumentPrivate::SelectionRange SelectionRange;
+    typedef BAbstractCodeEditorDocumentPrivate::SelectionRangeList SelectionRangeList;
     B_D(BAbstractCodeEditorDocument);
+    if ((!d->lastSearchRegexp.isValid() || d->lastSearchRegexp.isEmpty()) && d->lastSearchText.isEmpty()) {
+        Q_EMIT textChanged();
+        return;
+    }
+    QTextBlock tb = textCursor().block();
+    int start = tb.position();
+    int end = tb.position() + tb.length();
+    SelectionRangeList removed = BAbstractCodeEditorDocumentPrivate::removeSelectionRanges(d->highlightedSearchResults,
+                                                                                           start, end);
+    SelectionRangeList added;
+    QString t = tb.text();
     if (d->lastSearchRegexp.isValid() && !d->lastSearchRegexp.isEmpty()) {
-        ExtraSelectionList selections = extraSelections();
-        QTextBlock tb = textCursor().block();
-        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(d->highlightedSearchResults, tb.position(),
-                                                                  tb.position() + tb.length());
-        QString t = tb.text();
         int ind = d->lastSearchRegexp.indexIn(t);
         while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(tb.position() + ind);
-            es.cursor.setPosition(tb.position() + ind + d->lastSearchRegexp.matchedLength(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
+            SelectionRange sr;
+            sr.start = tb.position() + ind;
+            sr.end = tb.position() + ind + d->lastSearchRegexp.matchedLength();
+            added << sr;
             ind = d->lastSearchRegexp.indexIn(t, ind + d->lastSearchRegexp.matchedLength());
         }
-        setExtraSelections(selections);
     } else if (!d->lastSearchText.isEmpty()) {
-        ExtraSelectionList selections = extraSelections();
-        QTextBlock tb = textCursor().block();
-        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(d->highlightedSearchResults, tb.position(),
-                                                                  tb.position() + tb.length());
-        QString t = tb.text();
         Qt::CaseSensitivity cs = (d->lastSearchFlags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
                                                                                              Qt::CaseInsensitive;
         bool wholeWords = d->lastSearchFlags & QTextDocument::FindWholeWords;
         int ind = BTextTools::indexOf(t, d->lastSearchText, 0, cs, wholeWords);
         while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(tb.position() + ind);
-            es.cursor.setPosition(tb.position() + ind + d->lastSearchText.length(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
+            SelectionRange sr;
+            sr.start = tb.position() + ind;
+            sr.end = tb.position() + ind + d->lastSearchText.length();
+            added << sr;
             ind = BTextTools::indexOf(t, d->lastSearchText, ind + d->lastSearchText.length(), cs, wholeWords);
         }
+    }
+    d->highlightedSearchResults << added;
+    if (!added.isEmpty()) {
+        ExtraSelectionList selections = extraSelections();
+        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(selections, removed);
         setExtraSelections(selections);
     }
     Q_EMIT textChanged();
