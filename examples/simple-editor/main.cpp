@@ -44,7 +44,7 @@
 #include <QToolBar>
 #include <QVariant>
 #include <QWidget>
-#include <BTextTools>
+
 int main(int argc, char **argv)
 {
     //Creating BApplication instance

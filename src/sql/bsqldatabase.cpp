@@ -587,6 +587,15 @@ BSqlResult BSqlDatabase::update(const QString &table, const QVariantMap &values,
 }
 
 BSqlResult BSqlDatabase::update(const QString &table, const QString &field1, const QVariant &value1,
+                                const BSqlWhere &where)
+{
+    QVariantMap m;
+    if (!field1.isEmpty() && !value1.isNull())
+        m.insert(field1, value1);
+    return update(table, m, where);
+}
+
+BSqlResult BSqlDatabase::update(const QString &table, const QString &field1, const QVariant &value1,
                                 const QString &field2, const QVariant &value2, const BSqlWhere &where)
 {
     QVariantMap m;

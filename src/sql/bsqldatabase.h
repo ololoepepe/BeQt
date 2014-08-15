@@ -129,8 +129,9 @@ public:
     bool transaction();
     BSqlResult update(const QString &table, const QVariantMap &values, const BSqlWhere &where = BSqlWhere());
     BSqlResult update(const QString &table, const QString &field1, const QVariant &value1,
-                      const QString &field2 = QString(), const QVariant &value2 = QVariant(),
                       const BSqlWhere &where = BSqlWhere());
+    BSqlResult update(const QString &table, const QString &field1, const QVariant &value1, const QString &field2,
+                      const QVariant &value2, const BSqlWhere &where = BSqlWhere());
     QString userName() const;
 protected:
     QSqlDatabase *innerDatabase() const;

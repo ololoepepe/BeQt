@@ -32,6 +32,7 @@ class QTextCodec;
 
 #include <QList>
 #include <QLocale>
+#include <QMap>
 #include <QRegExp>
 #include <QString>
 
@@ -41,6 +42,17 @@ class QTextCodec;
 
 namespace BTextTools
 {
+
+enum OptionsParsingError
+{
+    NoError = 0,
+    InvalidParametersError,
+    MalformedOptionError,
+    MissingOptionError,
+    RepeatingOptionError,
+    UnknownOptionError,
+    UnknownOptionValueError
+};
 
 enum RegExpPattern
 {
@@ -68,6 +80,8 @@ B_CORE_EXPORT BTextMatchList match(const QString &text, const QRegExp &what, con
                                    const QRegExp &postfixedBy = QRegExp());
 B_CORE_EXPORT QString mergeArguments(const QStringList &list);
 B_CORE_EXPORT QString mergeArguments(const QString &command, const QStringList &arguments);
+B_CORE_EXPORT OptionsParsingError parseOptions(const QStringList &arguments, const QString &options,
+                                               QMap<QString, QString> &result, bool allowOverride = false);
 B_CORE_EXPORT QStringList removeAll(const QStringList &list, const QString &what,
                                     Qt::CaseSensitivity cs = Qt::CaseSensitive, int *count  = 0);
 B_CORE_EXPORT int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs = Qt::CaseSensitive);

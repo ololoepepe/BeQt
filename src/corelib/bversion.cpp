@@ -119,7 +119,7 @@ bool BVersionPrivate::statusFromString(const QString &s, BVersion::Status &vstat
 
 void BVersionPrivate::init()
 {
-    vmajor = 0;
+    vmajor = -1;
     vminor = -1;
     vpatch = -1;
     vstatus = BVersion::NoStatus;

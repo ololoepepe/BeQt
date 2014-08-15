@@ -45,6 +45,84 @@
 #include <math.h>
 
 /*============================================================================
+================================ BParsingOption ==============================
+============================================================================*/
+
+struct BParsingOption
+{
+    bool assignable;
+    QString id;
+    QStringList keys;
+    bool optional;
+    QStringList values;
+public:
+    explicit BParsingOption();
+};
+
+/*============================================================================
+================================ BParsingOption ==============================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BParsingOption::BParsingOption()
+{
+    assignable = false;
+    optional = false;
+}
+
+/*============================================================================
+================================ Global static functions =====================
+============================================================================*/
+
+static QList<BParsingOption> createOptions(const QString &options, BTextTools::OptionsParsingError *error)
+{
+    QList<BParsingOption> list;
+    QStringList sl = options.split(QRegExp("\\,\\s*"), QString::SkipEmptyParts);
+    if (sl.isEmpty())
+        return bRet(error, BTextTools::InvalidParametersError, list);
+    foreach (const QString &ss, sl) {
+        BParsingOption o;
+        if (ss.isEmpty())
+            return bRet(error, BTextTools::InvalidParametersError, list);
+        QString s = ss;
+        if (s.startsWith('[')) {
+            if (s.endsWith(']'))
+                s = s.mid(1, s.length() - 2);
+            else
+                return bRet(error, BTextTools::InvalidParametersError, list);
+        }
+        if (ss != s)
+            o.optional = true;
+        QStringList idsl = s.split(':');
+        if (idsl.size() > 2)
+            return bRet(error, BTextTools::InvalidParametersError, list);
+        if (idsl.size() == 2) {
+            if (idsl.first().isEmpty() || idsl.last().isEmpty())
+                return bRet(error, BTextTools::InvalidParametersError, list);
+            o.id = idsl.first();
+        }
+        QStringList vsl = idsl.last().split('=');
+        if (vsl.first().isEmpty() || vsl.size() > 2)
+            return bRet(error, BTextTools::InvalidParametersError, list);
+        if (vsl.size() == 2) {
+            o.assignable = true;
+            if (!vsl.last().isEmpty())
+                o.values = vsl.last().split('|');
+            if (o.values.contains(""))
+                return bRet(error, BTextTools::InvalidParametersError, list);
+        }
+        o.keys = vsl.first().split('|');
+        if (o.keys.contains(""))
+            return bRet(error, BTextTools::InvalidParametersError, list);
+        if (o.id.isEmpty())
+            o.id = o.keys.first();
+        list << o;
+    }
+    return bRet(error, BTextTools::NoError, list);
+}
+
+/*============================================================================
 ================================ BTextTools ==================================
 ============================================================================*/
 
@@ -251,6 +329,50 @@ QString mergeArguments(const QStringList &list)
 QString mergeArguments(const QString &command, const QStringList &arguments)
 {
     return mergeArguments(QStringList() << command << arguments);
+}
+
+OptionsParsingError parseOptions(const QStringList &arguments, const QString &options, QMap<QString, QString> &result,
+                                 bool allowOverride)
+{
+    result.clear();
+    if (arguments.isEmpty() || options.isEmpty())
+        return NoError;
+    OptionsParsingError error = NoError;
+    QList<BParsingOption> list = createOptions(options, &error);
+    if (NoError != error)
+        return error;
+    foreach (const QString &a, arguments) {
+        bool found = false;
+        foreach (const BParsingOption &o, list) {
+            foreach (const QString &key, o.keys) {
+                if (a.startsWith(key)) {
+                    if (result.contains(o.id) && !allowOverride)
+                        return RepeatingOptionError;
+                    if (o.assignable) {
+                        QStringList sl = a.split('=');
+                        if (sl.size() != 2)
+                            return MalformedOptionError;
+                        if (!o.values.contains(sl.last()))
+                            return UnknownOptionValueError;
+                        result.insert(o.id, sl.last());
+                    } else {
+                        result.insert(o.id, "");
+                    }
+                    found = true;
+                    break;
+                }
+            }
+            if (found)
+                break;
+        }
+        if (!found)
+            return UnknownOptionError;
+    }
+    foreach (const BParsingOption &o, list) {
+        if (!o.optional && !result.contains(o.id))
+            return MissingOptionError;
+    }
+    return NoError;
 }
 
 QStringList removeAll(const QStringList &list, const QString &what, Qt::CaseSensitivity cs, int *count)
