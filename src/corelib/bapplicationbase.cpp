@@ -403,9 +403,6 @@ void BApplicationBasePrivate::removePlugin(QObject *plugin)
         return;
     if (!plugins.contains(plugin))
         return;
-    disconnect(plugin, SIGNAL(activated()), this, SLOT(pluginActivated()));
-    disconnect(plugin, SIGNAL(aboutToBeDeactivated()), this, SLOT(pluginAboutToBeDeactivated()));
-    disconnect(plugin, SIGNAL(destroyed(QObject *)), this, SLOT(pluginDestroyed(QObject *)));
     plugins.remove(plugin);
 }
 
@@ -456,7 +453,6 @@ void BApplicationBasePrivate::pluginAboutToBeDeactivated()
     if (!plugins.contains(pw))
         return;
     emitPluginAboutToBeDeactivated(pw);
-    setPluginActivated(pw->name(), false);
 }
 
 void BApplicationBasePrivate::pluginActivated()
@@ -467,7 +463,6 @@ void BApplicationBasePrivate::pluginActivated()
     if (!plugins.contains(pw))
         return;
     emitPluginActivated(pw);
-    setPluginActivated(pw->name(), true);
 }
 
 void BApplicationBasePrivate::pluginDestroyed(QObject *obj)
@@ -1082,7 +1077,10 @@ void BApplicationBase::removePlugin(BPluginWrapper *plugin)
 {
     if (!BApplicationBasePrivate::testInit())
         return;
-    ds_func()->removePlugin(plugin);
+    B_DS(BApplicationBase);
+    QObject::disconnect(plugin, SIGNAL(activated()), ds, SLOT(pluginActivated()));
+    QObject::disconnect(plugin, SIGNAL(aboutToBeDeactivated()), ds, SLOT(pluginAboutToBeDeactivated()));
+    QObject::disconnect(plugin, SIGNAL(destroyed(QObject *)), ds, SLOT(pluginDestroyed(QObject *)));
 }
 
 void BApplicationBase::setApplicationAuthors(const BPersonInfoList &list)
@@ -1247,6 +1245,6 @@ void BApplicationBase::unloadPlugins(bool remove)
         if (pw->isLoaded())
             pw->unload();
         if (remove)
-            ds_func()->removePlugin(pw);
+            removePlugin(pw);
     }
 }

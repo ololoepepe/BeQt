@@ -75,7 +75,6 @@
 
 ==== BeQtCodeEditor ====
     * Remove old function declarations without definitions from BeQtCodeEditor classes
-    * Do not use QPointer in editor modules
     * Improve editor modules (de)serializing
     * Improve BTextBlockUserData (implement multiple skip intervals)
     * Hide BTextBlockUserData; add BTextBlockExtraData instead

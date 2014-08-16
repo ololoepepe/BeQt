@@ -54,6 +54,7 @@ class BPluginWrapper;
 #include <QStringList>
 #include <QSystemTrayIcon>
 #include <QUrl>
+#include <QVariant>
 #include <QWhatsThis>
 #include <QWidget>
 
@@ -570,7 +571,12 @@ void BApplication::showSettingsDialog(BSettingsDialog::TabNavigation navigation)
         msg.exec();
         return;
     }
+    QSettings *s = ds_func()->settings;
+    sd->restoreGeometry(s->value("BeQt/Widgets/settings_dialog_geometry").toByteArray());
+    sd->restoreState(s->value("BeQt/Widgets/settings_dialog_state").toByteArray());
     sd->exec();
+    s->setValue("BeQt/Widgets/settings_dialog_geometry", sd->saveGeometry());
+    s->setValue("BeQt/Widgets/settings_dialog_state", sd->saveState());
 }
 
 /*============================== Protected methods =========================*/

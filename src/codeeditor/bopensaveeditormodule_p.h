@@ -22,8 +22,6 @@
 #ifndef BOPENSAVEEDITORMODULE_P_H
 #define BOPENSAVEEDITORMODULE_P_H
 
-class QAction;
-class QMenu;
 class QString;
 
 #include "bopensaveeditormodule.h"
@@ -32,8 +30,11 @@ class QString;
 
 #include <BeQtCore/private/bbase_p.h>
 
+#include <QAction>
 #include <QList>
+#include <QMenu>
 #include <QObject>
+#include <QPointer>
 #include <QStringList>
 
 /*============================================================================
@@ -45,15 +46,15 @@ class B_CODEEDITOR_EXPORT BOpenSaveEditorModulePrivate : public BAbstractEditorM
     Q_OBJECT
     B_DECLARE_PUBLIC(BOpenSaveEditorModule)
 public:
-    QAction *actCloseAllFiles;
-    QAction *actCloseFile;
-    QAction *actNewFile;
-    QAction *actOpenFiles;
-    QAction *actReopenFile;
-    QAction *actSaveAllFiles;
-    QAction *actSaveFile;
-    QAction *actSaveFileAs;
-    QMenu *mnuFileHistory;
+    QPointer<QAction> actCloseAllFiles;
+    QPointer<QAction> actCloseFile;
+    QPointer<QAction> actNewFile;
+    QPointer<QAction> actOpenFiles;
+    QPointer<QAction> actReopenFile;
+    QPointer<QAction> actSaveAllFiles;
+    QPointer<QAction> actSaveFile;
+    QPointer<QAction> actSaveFileAs;
+    QPointer<QMenu> mnuFileHistory;
 public:
     explicit BOpenSaveEditorModulePrivate(BOpenSaveEditorModule *q);
     ~BOpenSaveEditorModulePrivate();

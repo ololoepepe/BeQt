@@ -26,7 +26,6 @@ class BSearchDialogPrivate;
 
 class BAbstractCodeEditorDocument;
 
-class QAction;
 class QByteArray;
 class QCheckBox;
 class QComboBox;
@@ -46,8 +45,10 @@ class QWidget;
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/private/bbaseobject_p.h>
 
+#include <QAction>
 #include <QDialog>
 #include <QObject>
+#include <QPointer>
 #include <QTextDocument>
 
 /*============================================================================
@@ -159,8 +160,8 @@ class B_CODEEDITOR_EXPORT BSearchEditorModulePrivate : public BAbstractEditorMod
     Q_OBJECT
     B_DECLARE_PUBLIC(BSearchEditorModule)
 public:
-    QAction *actFind;
-    QAction *actFindNext;
+    QPointer<QAction> actFind;
+    QPointer<QAction> actFindNext;
     BSearchDialog *sdlg;
 public:
     explicit BSearchEditorModulePrivate(BSearchEditorModule *q);

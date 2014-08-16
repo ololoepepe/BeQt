@@ -26,6 +26,7 @@ class BSettingsDialogPrivate;
 
 class BAbstractSettingsTab;
 
+class QByteArray;
 class QStringList;
 
 #include <BeQtCore/BBaseObject>
@@ -57,6 +58,8 @@ protected:
     explicit BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent = 0);
 public:
     bool isValid() const;
+    void restoreState(const QByteArray &state);
+    QByteArray saveState() const;
 private:
     Q_DISABLE_COPY(BSettingsDialog)
 };

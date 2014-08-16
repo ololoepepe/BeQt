@@ -49,6 +49,7 @@
 #include <QMenu>
 #include <QMetaObject>
 #include <QObject>
+#include <QPointer>
 #include <QPushButton>
 #include <QSizePolicy>
 #include <QString>
@@ -563,12 +564,16 @@ void BSearchEditorModulePrivate::setDialogParent(QWidget *parent)
 
 void BSearchEditorModulePrivate::retranslateUi()
 {
-    actFind->setText(tr("Find and replace...", "act text"));
-    actFind->setToolTip(tr("Find and replace text", "act toolTip"));
-    actFind->setWhatsThis(tr("Use this action to open a find and replace dialog", "act whatsThis"));
-    actFindNext->setText(tr("Find next", "act text"));
-    actFindNext->setToolTip(tr("Find next", "act toolTip"));
-    actFindNext->setWhatsThis(tr("Use this action to find next occurrence of the text", "act whatsThis"));
+    if (!actFind.isNull()) {
+        actFind->setText(tr("Find and replace...", "act text"));
+        actFind->setToolTip(tr("Find and replace text", "act toolTip"));
+        actFind->setWhatsThis(tr("Use this action to open a find and replace dialog", "act whatsThis"));
+    }
+    if (!actFindNext.isNull()) {
+        actFindNext->setText(tr("Find next", "act text"));
+        actFindNext->setToolTip(tr("Find next", "act toolTip"));
+        actFindNext->setWhatsThis(tr("Use this action to find next occurrence of the text", "act whatsThis"));
+    }
 }
 
 void BSearchEditorModulePrivate::textFound(bool found, const QString &text)
@@ -642,8 +647,10 @@ QList<QAction *> BSearchEditorModule::actions(bool)
 {
     const B_D(BSearchEditorModule);
     QList<QAction *> list;
-    list << d->actFind;
-    list << d->actFindNext;
+    if (!d->actFind.isNull())
+        list << d->actFind;
+    if (!d->actFindNext.isNull())
+        list << d->actFindNext;
     return list;
 }
 
@@ -756,7 +763,8 @@ void BSearchEditorModule::currentDocumentChanged(BAbstractCodeEditorDocument *do
 {
     B_D(BSearchEditorModule);
     d->sdlg->setDocument(doc);
-    d->actFind->setEnabled(doc);
+    if (!d->actFind.isNull())
+        d->actFind->setEnabled(doc);
 }
 
 void BSearchEditorModule::editorSet(BCodeEditor *edr)
@@ -765,7 +773,8 @@ void BSearchEditorModule::editorSet(BCodeEditor *edr)
     BAbstractCodeEditorDocument *doc = edr ? edr->currentDocument() : 0;
     d->setDialogParent(edr);
     d->sdlg->setDocument(doc);
-    d->actFind->setEnabled(doc);
+    if (!d->actFind.isNull())
+        d->actFind->setEnabled(doc);
 }
 
 void BSearchEditorModule::editorUnset(BCodeEditor *)
@@ -773,5 +782,6 @@ void BSearchEditorModule::editorUnset(BCodeEditor *)
     B_D(BSearchEditorModule);
     d->setDialogParent(0);
     d->sdlg->setDocument(0);
-    d->actFind->setEnabled(0);
+    if (!d->actFind.isNull())
+        d->actFind->setEnabled(false);
 }

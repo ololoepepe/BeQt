@@ -37,6 +37,7 @@
 #include <QLabel>
 #include <QList>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
@@ -56,11 +57,11 @@ BIndicatorsEditorModulePrivate::BIndicatorsEditorModulePrivate(BIndicatorsEditor
 
 BIndicatorsEditorModulePrivate::~BIndicatorsEditorModulePrivate()
 {
-    if (!lblCursorPos->parent())
+    if (!lblCursorPos.isNull() && !lblCursorPos->parent())
         delete lblCursorPos;
-    if (!lblEncoding->parent())
+    if (!lblEncoding.isNull() && !lblEncoding->parent())
         delete lblEncoding;
-    if (!cmboxFileType->parent())
+    if (!cmboxFileType.isNull() && !cmboxFileType->parent())
         delete cmboxFileType;
 }
 
@@ -84,6 +85,8 @@ void BIndicatorsEditorModulePrivate::init()
 
 void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
 {
+    if (lblCursorPos.isNull())
+        return;
     QPoint pos = q_func()->currentDocument() ? q_func()->currentDocument()->cursorPositionRowColumn() : QPoint(-1, -1);
     QString rowVal = (pos.x() >= 0) ? QString::number(pos.x() + 1) : QString();
     QString columnVal = (pos.y() >= 0) ? QString::number(pos.y() + 1) : QString();
@@ -103,6 +106,8 @@ void BIndicatorsEditorModulePrivate::updateCursorPosIndicator()
 
 void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
 {
+    if (lblEncoding.isNull())
+        return;
     if (!editor)
         return lblEncoding->setText("----------");
     QString cn = q_func()->currentDocument() ? q_func()->currentDocument()->codecName() : editor->defaultCodecName();
@@ -114,6 +119,8 @@ void BIndicatorsEditorModulePrivate::updateEncodingIndicator()
 
 void BIndicatorsEditorModulePrivate::updateFileTypeIndicator()
 {
+    if (cmboxFileType.isNull())
+        return;
     QList<FileTypeInfo> ftilist;
     int ind = -1;
     if (editor) {
@@ -155,6 +162,8 @@ void BIndicatorsEditorModulePrivate::retranslateUi()
 
 void BIndicatorsEditorModulePrivate::cmboxFileTypeCurrentIndexChanged(int index)
 {
+    if (cmboxFileType.isNull())
+        return;
     if (!editor || index < 0 || index >= cmboxFileType->count() || !q_func()->currentDocument())
         return;
     q_func()->currentDocument()->blockSignals(true);
@@ -219,9 +228,12 @@ QList<QWidget *> BIndicatorsEditorModule::widgets(bool)
 {
     B_D(BIndicatorsEditorModule);
     QList<QWidget *> list;
-    list << d->lblCursorPos;
-    list << d->lblEncoding;
-    list << d->cmboxFileType;
+    if (!d->lblCursorPos.isNull())
+        list << d->lblCursorPos;
+    if (!d->lblEncoding.isNull())
+        list << d->lblEncoding;
+    if (!d->cmboxFileType.isNull())
+        list << d->cmboxFileType;
     return list;
 }
 

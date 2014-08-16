@@ -816,9 +816,8 @@ bool BTerminal::translationsEnabled()
 void BTerminal::write(const QString &text)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
-    if (!BTerminalPrivate::testInit("BTerminal"))
-        return;
-    if (StandardMode != ds_func()->Mode)
+    Mode m = mode();
+    if (NoMode != m && StandardMode != m)
         return;
     if (text.isEmpty())
         return;
@@ -829,9 +828,8 @@ void BTerminal::write(const QString &text)
 void BTerminal::writeErr(const QString &text)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
-    if (!BTerminalPrivate::testInit("BTerminal"))
-        return;
-    if (StandardMode != ds_func()->Mode)
+    Mode m = mode();
+    if (NoMode != m && StandardMode != m)
         return;
     BTerminalPrivate::writeErrStream << text;
     BTerminalPrivate::writeErrStream.flush();
@@ -840,9 +838,8 @@ void BTerminal::writeErr(const QString &text)
 void BTerminal::writeHelpLine(const QString &usage, const QString &description)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
-    if (!BTerminalPrivate::testInit("BTerminal"))
-        return;
-    if (StandardMode != ds_func()->Mode)
+    Mode m = mode();
+    if (NoMode != m && StandardMode != m)
         return;
     if (usage.isEmpty())
         return;

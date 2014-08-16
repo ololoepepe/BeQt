@@ -25,6 +25,7 @@
 #include "baboutdialog.h"
 #include "babstractsettingstab.h"
 #include "bapplication.h"
+#include "bapplication_p.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"
 #include "bsettingsdialog.h"
@@ -200,7 +201,9 @@ void BPluginsSettingsTabPrivate::lstwgtCurrentRowChanged(int currentRow)
 void BPluginsSettingsTabPrivate::lstwgtItemChanged(QListWidgetItem *item)
 {
     bool b = (item->checkState() == Qt::Checked);
-    plugins.at(lstwgt->row(item))->setActivated(b);
+    BPluginWrapper *pw = plugins.at(lstwgt->row(item));
+    pw->setActivated(b);
+    bApp->d_func()->setPluginActivated(pw->name(), b);
     btnSettings->setEnabled(b);
 }
 

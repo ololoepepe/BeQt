@@ -37,6 +37,7 @@
 #include <QList>
 #include <QObject>
 #include <QPoint>
+#include <QPointer>
 #include <QVariant>
 #include <QVariantList>
 
@@ -102,8 +103,10 @@ void BBookmarksEditorModulePrivate::checkBookmarks()
 {
     BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
     bool bm = !bookmarks(doc).isEmpty();
-    actMakeBookmark->setEnabled(doc);
-    actGotoNextBookmark->setEnabled(bm);
+    if (!actMakeBookmark.isNull())
+        actMakeBookmark->setEnabled(doc);
+    if (!actGotoNextBookmark.isNull())
+        actGotoNextBookmark->setEnabled(bm);
 }
 
 void BBookmarksEditorModulePrivate::init()
@@ -129,14 +132,18 @@ void BBookmarksEditorModulePrivate::init()
 
 void BBookmarksEditorModulePrivate::retranslateUi()
 {
-    actMakeBookmark->setText(tr("Make bookmark", "act text"));
-    actMakeBookmark->setToolTip(tr("Make a bookmark at cursor position", "act toolTip"));
-    actMakeBookmark->setWhatsThis(tr("Use this action to make a bookmark at the current cursor position",
-                                     "act whatsThis"));
-    actGotoNextBookmark->setText(tr("Next bookmark", "act text"));
-    actGotoNextBookmark->setToolTip(tr("Go to next bookmark", "act toolTip"));
-    actGotoNextBookmark->setWhatsThis(tr("Use this action to go to next bookmark in current document",
+    if (!actMakeBookmark.isNull()) {
+        actMakeBookmark->setText(tr("Make bookmark", "act text"));
+        actMakeBookmark->setToolTip(tr("Make a bookmark at cursor position", "act toolTip"));
+        actMakeBookmark->setWhatsThis(tr("Use this action to make a bookmark at the current cursor position",
                                          "act whatsThis"));
+    }
+    if (!actGotoNextBookmark.isNull()) {
+        actGotoNextBookmark->setText(tr("Next bookmark", "act text"));
+        actGotoNextBookmark->setToolTip(tr("Go to next bookmark", "act toolTip"));
+        actGotoNextBookmark->setWhatsThis(tr("Use this action to go to next bookmark in current document",
+                                             "act whatsThis"));
+    }
 }
 
 /*============================================================================
@@ -186,8 +193,10 @@ QList<QAction *> BBookmarksEditorModule::actions(bool)
 {
     const B_D(BBookmarksEditorModule);
     QList<QAction *> list;
-    list << d->actMakeBookmark;
-    list << d->actGotoNextBookmark;
+    if (!d->actMakeBookmark.isNull())
+        list << d->actMakeBookmark;
+    if (!d->actGotoNextBookmark.isNull())
+        list << d->actGotoNextBookmark;
     return list;
 }
 

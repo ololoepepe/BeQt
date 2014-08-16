@@ -24,8 +24,10 @@
 
 #include "babstractsettingstab.h"
 
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbaseobject_p.h>
 
+#include <QByteArray>
 #include <QCheckBox>
 #include <QDebug>
 #include <QDialog>
@@ -36,6 +38,7 @@
 #include <QListWidgetItem>
 #include <QMap>
 #include <QMessageBox>
+#include <QMetaObject>
 #include <QPushButton>
 #include <QSplitter>
 #include <QStackedWidget>
@@ -43,6 +46,8 @@
 #include <QStringList>
 #include <QTabWidget>
 #include <QTimer>
+#include <QVariant>
+#include <QVariantMap>
 #include <QVBoxLayout>
 
 /*============================================================================
@@ -258,4 +263,41 @@ BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
 bool BSettingsDialog::isValid() const
 {
     return d_func()->valid;
+}
+
+void BSettingsDialog::restoreState(const QByteArray &state)
+{
+    if (!isValid())
+        return;
+    B_D(BSettingsDialog);
+    if (!d->lstwgt && !d->twgt)
+        return;
+    QVariantMap m = BeQt::deserialize(state).toMap();
+    QByteArray cn = m.value("current_tab_class_name").toByteArray();
+    if (cn.isEmpty())
+        return;
+    if (d->lstwgt) {
+        foreach (int i, bRangeD(0, d->stkdwgt->count() - 1)) {
+            if (QByteArray(d->stkdwgt->widget(i)->metaObject()->className()) == cn) {
+                d->lstwgt->setCurrentRow(i);
+                break;
+            }
+        }
+    } else if (d->twgt) {
+        foreach (int i, bRangeD(0, d->twgt->count() - 1)) {
+            if (QByteArray(d->twgt->widget(i)->metaObject()->className()) == cn) {
+                d->twgt->setCurrentIndex(i);
+                break;
+            }
+        }
+    }
+}
+
+QByteArray BSettingsDialog::saveState() const
+{
+    QVariantMap m;
+    BAbstractSettingsTab *tab = d_func()->currentTab();
+    if (tab)
+        m.insert("current_tab_class_name", QByteArray(tab->metaObject()->className()));
+    return BeQt::serialize(m);
 }

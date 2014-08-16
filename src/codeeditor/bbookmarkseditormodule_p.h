@@ -24,17 +24,17 @@
 
 class BAbstractCodeEditorDocument;
 
-class QAction;
-
 #include "bbookmarkseditormodule.h"
 
 #include "babstracteditormodule_p.h"
 
 #include <BeQtCore/private/bbase_p.h>
 
+#include <QAction>
 #include <QList>
 #include <QObject>
 #include <QPoint>
+#include <QPointer>
 
 /*============================================================================
 ================================ BBookmarksEditorModulePrivate ===============
@@ -45,8 +45,8 @@ class B_CODEEDITOR_EXPORT BBookmarksEditorModulePrivate : public BAbstractEditor
     Q_OBJECT
     B_DECLARE_PUBLIC(BBookmarksEditorModule)
 public:
-    QAction *actGotoNextBookmark;
-    QAction *actMakeBookmark;
+    QPointer<QAction> actGotoNextBookmark;
+    QPointer<QAction> actMakeBookmark;
     int maxBookmarks;
 public:
     explicit BBookmarksEditorModulePrivate(BBookmarksEditorModule *q);
