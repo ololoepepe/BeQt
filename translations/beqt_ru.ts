@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="604"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="612"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="784"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="614"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="622"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="794"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>
@@ -1140,7 +1140,7 @@
 <context>
     <name>BPluginsSettingsTab</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="244"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="282"/>
         <source>Plugins</source>
         <comment>title</comment>
         <translation>Плагины</translation>
@@ -1149,31 +1149,31 @@
 <context>
     <name>BPluginsSettingsTabPrivate</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="91"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="94"/>
         <source>Configure plugin</source>
         <comment>btn text</comment>
         <translation>Настроить плагин</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="96"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="99"/>
         <source>About plugin</source>
         <comment>btn text</comment>
         <translation>О плагине</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="101"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="104"/>
         <source>Plugin Help</source>
         <comment>btn text</comment>
         <translation>Справка по плагину</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="186"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="189"/>
         <source>No settings</source>
         <comment>msgbox title</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="187"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="190"/>
         <source>This plugin does not have any settings</source>
         <comment>msgbox text</comment>
         <translation>У этого плагина отсутствуют какие-либо настройки</translation>
@@ -1359,37 +1359,37 @@
 <context>
     <name>BSettingsDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="89"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="77"/>
         <source>Settings</source>
         <comment>windowTitle</comment>
         <translation>Настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="98"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="86"/>
         <source>Show additional settings</source>
         <comment>cbox text</comment>
         <translation>Показать дополнительные настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="178"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="166"/>
         <source>Restoring default settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Восстановление настроек по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="182"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="170"/>
         <source>You are about to restore settings to their default state. Do you want to continue?</source>
         <comment>msgbox text</comment>
         <translation>Вы собираетесь вернуть настройки к их изначальному состоянию. Хотите продолжить?</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="93"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="81"/>
         <source>Restore default settings</source>
         <comment>btn text</comment>
         <translation>Восстановить настройки по умолчанию</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bsettingsdialog.cpp" line="148"/>
+        <location filename="../src/widgets/bsettingsdialog.cpp" line="136"/>
         <source>invalid</source>
         <comment>windowTitle</comment>
         <translation>недействительно</translation>

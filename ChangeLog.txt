@@ -62,6 +62,8 @@
     * Remove BGuiPluginInterface::handleSettings method
     * Add Help information to plugin BGuiPluginInterface
     * Add ability to set user About dialog for plugins
+    * Add ability to save/restore BSettingsDialog and BAbstractSettingsTab state
+    * Add virtual id method to BAbstractSettingsTab
     * Remove some template methods from BAbstractSettingsTab
     * Remove old methods from BPluginsSettingsTab
     * Fix BPluginsSettingsTab About dialog version

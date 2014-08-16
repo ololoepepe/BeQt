@@ -22,6 +22,7 @@
 #ifndef BABSTRACTSETTINGSTAB_H
 #define BABSTRACTSETTINGSTAB_H
 
+class QByteArray;
 class QIcon;
 class QString;
 
@@ -40,15 +41,18 @@ public:
     explicit BAbstractSettingsTab();
     ~BAbstractSettingsTab();
 public:
-    virtual QString title() const = 0;
-    virtual QIcon icon() const;
     virtual bool hasAdvancedMode() const;
-    virtual bool isInAdvancedMode() const;
-    virtual void setAdvancedMode(bool enabled);
     virtual bool hasDefault() const;
+    virtual QIcon icon() const;
+    virtual QString id() const = 0;
+    virtual bool isInAdvancedMode() const;
     virtual bool restoreDefault();
     virtual QString restoreDefaultHint() const;
+    virtual void restoreState(const QByteArray &state);
     virtual bool saveSettings();
+    virtual QByteArray saveState() const;
+    virtual void setAdvancedMode(bool enabled);
+    virtual QString title() const = 0;
 private:
     Q_DISABLE_COPY(BAbstractSettingsTab)
 };

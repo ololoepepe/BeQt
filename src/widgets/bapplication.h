@@ -25,7 +25,6 @@
 class BApplicationPrivate;
 
 class BAboutDialog;
-class BPluginsSettingsTabPrivate;
 class BPluginWrapper;
 
 class QPixmap;
@@ -99,7 +98,6 @@ protected:
     virtual QList<BAbstractSettingsTab *> createSettingsTabs() const;
 private:
     Q_DISABLE_COPY(BApplication)
-    friend class BPluginsSettingsTabPrivate;
 };
 
 #endif // BAPPLICATION_H

@@ -130,24 +130,24 @@ bool BPluginWrapperPrivate::load()
         return false;
     }
     QString tp = iface->type();
-    QString nm = iface->name();
+    QString iid = iface->id();
     BVersion v = iface->version();
     if ((!acctptableTypes.isEmpty() && !acctptableTypes.contains(tp)) || (testFunction && !testFunction(obj))
-            || globalMap.contains(nm)) {
+            || globalMap.contains(iid)) {
         deleteLoader();
         return false;
     }
     instance = obj;
     interface = iface;
     type = tp;
-    name = nm;
+    id = iid;
     version = v;
     prefereStaticInfo = interface->prefereStaticInfo();
     staticInfo = interface->staticInfo();
     info = interface->info();
     loaded = true;
-    globalMap.insert(nm, q_func());
-    QString fn = BDirTools::createConfFileName(interface->name());
+    globalMap.insert(iid, q_func());
+    QString fn = BDirTools::createConfFileName(iid);
     if (!fn.isEmpty()) {
         settings = new QSettings(fn, QSettings::IniFormat);
         settings->setIniCodec("UTF-8");
@@ -165,7 +165,7 @@ void BPluginWrapperPrivate::unload()
     instance = 0;
     interface = 0;
     loaded = false;
-    globalMap.remove(name);
+    globalMap.remove(id);
     delete settings;
 }
 
@@ -217,7 +217,7 @@ BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
 {
     if (!i)
         return 0;
-    return BPluginWrapperPrivate::globalMap.value(i->name());
+    return BPluginWrapperPrivate::globalMap.value(i->id());
 }
 
 bool BPluginWrapper::removeSettings(const QString &pluginName)
@@ -245,6 +245,11 @@ void BPluginWrapper::setInterfaceTestFunction(InterfaceTestFunction function)
 QString BPluginWrapper::fileName() const
 {
     return d_func()->fileName;
+}
+
+QString BPluginWrapper::id() const
+{
+    return d_func()->id;
 }
 
 BPluginInterface::PluginInfo BPluginWrapper::info() const
@@ -277,11 +282,6 @@ bool BPluginWrapper::isLoaded() const
     return d_func()->loaded;
 }
 
-QString BPluginWrapper::name() const
-{
-    return d_func()->name;
-}
-
 bool BPluginWrapper::prefereStaticInfo() const
 {
     return d_func()->prefereStaticInfo;
@@ -311,9 +311,14 @@ void BPluginWrapper::setFileName(const QString &fn)
         return;
     d->fileName = fn;
     d->type.clear();
-    d->name.clear();
+    d->id.clear();
     d->version.clear();
     d->info = BPluginInterface::PluginInfo();
+}
+
+QString BPluginWrapper::title() const
+{
+    return d_func()->interface ? d_func()->interface->title() : QString();
 }
 
 QString BPluginWrapper::type() const

@@ -25,15 +25,16 @@
 #include "baboutdialog.h"
 #include "babstractsettingstab.h"
 #include "bapplication.h"
-#include "bapplication_p.h"
 #include "bguiplugininterface.h"
 #include "bhelpbrowser.h"
 #include "bsettingsdialog.h"
 
+#include <BeQtCore/BeQt>
 #include <BeQtCore/BPluginInterface>
 #include <BeQtCore/BPluginWrapper>
 #include <BeQtCore/private/bbaseobject_p.h>
 
+#include <QByteArray>
 #include <QDebug>
 #include <QHBoxLayout>
 #include <QIcon>
@@ -44,6 +45,8 @@
 #include <QObject>
 #include <QPushButton>
 #include <QString>
+#include <QVariant>
+#include <QVariantMap>
 #include <QVBoxLayout>
 
 /*============================================================================
@@ -76,7 +79,7 @@ void BPluginsSettingsTabPrivate::init()
             QListWidgetItem *lwi = new QListWidgetItem;
             lwi->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable);
             lwi->setCheckState(pw->isActivated() ? Qt::Checked : Qt::Unchecked);
-            lwi->setText( pw->name() );
+            lwi->setText(pw->title());
             BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
             if (gpi)
                 lwi->setIcon(QIcon(gpi->pixmap()));
@@ -120,8 +123,8 @@ void BPluginsSettingsTabPrivate::btnAboutClicked()
         if (ad)
             return bRet(ad->exec());
     }
-    BAboutDialog ad(q_func(), pw->name(), pw->version());
-    ad.setWindowTitle(pw->name());
+    BAboutDialog ad(q_func(), pw->title(), pw->version());
+    ad.setWindowTitle(pw->title());
     if (pw->prefereStaticInfo()) {
         BPluginInterface::StaticPluginInfo sinf = pw->staticInfo();
         ad.setOrganization(sinf.organization);
@@ -202,9 +205,15 @@ void BPluginsSettingsTabPrivate::lstwgtItemChanged(QListWidgetItem *item)
 {
     bool b = (item->checkState() == Qt::Checked);
     BPluginWrapper *pw = plugins.at(lstwgt->row(item));
-    pw->setActivated(b);
-    bApp->d_func()->setPluginActivated(pw->name(), b);
+    if (pw->isActivated() == b)
+        return; //NOTE: Not checked state change (may be icon or something else)
+    BApplication::setPluginActivated(pw->id(), b);
     btnSettings->setEnabled(b);
+    if (b) {
+        BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
+        if (gpi)
+            item->setIcon(QIcon(gpi->pixmap()));
+    }
 }
 
 /*============================================================================
@@ -237,6 +246,35 @@ BPluginsSettingsTab::BPluginsSettingsTab(BPluginsSettingsTabPrivate &d) :
 QIcon BPluginsSettingsTab::icon() const
 {
     return BApplication::icon("binary");
+}
+
+QString BPluginsSettingsTab::id() const
+{
+    return "beqt/plugins";
+}
+
+void BPluginsSettingsTab::restoreState(const QByteArray &state)
+{
+    QVariantMap m = BeQt::deserialize(state).toMap();
+    QString n = m.value("current_plugin_id").toString();
+    if (n.isEmpty())
+        return;
+    B_D(BPluginsSettingsTab);
+    foreach (int i, bRangeD(0, d->lstwgt->count() - 1)) {
+        if (d->plugins.at(i)->id() == n) {
+            d->lstwgt->setCurrentRow(i);
+            break;
+        }
+    }
+}
+
+QByteArray BPluginsSettingsTab::saveState() const
+{
+    const B_D(BPluginsSettingsTab);
+    QVariantMap m;
+    if (d->lstwgt->currentRow() >= 0)
+        m.insert("current_plugin_id", d->plugins.at(d->lstwgt->currentRow())->id());
+    return BeQt::serialize(m);
 }
 
 QString BPluginsSettingsTab::title() const

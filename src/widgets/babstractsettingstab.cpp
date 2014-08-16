@@ -23,6 +23,7 @@
 
 #include "bapplication.h"
 
+#include <QByteArray>
 #include <QIcon>
 #include <QString>
 #include <QWidget>
@@ -46,27 +47,22 @@ BAbstractSettingsTab::~BAbstractSettingsTab()
 
 /*============================== Public methods ============================*/
 
-QIcon BAbstractSettingsTab::icon() const
-{
-    return BApplication::icon("configure");
-}
-
 bool BAbstractSettingsTab::hasAdvancedMode() const
 {
     return false;
 }
 
-bool BAbstractSettingsTab::isInAdvancedMode() const
+bool BAbstractSettingsTab::hasDefault() const
 {
     return false;
 }
 
-void BAbstractSettingsTab::setAdvancedMode(bool)
+QIcon BAbstractSettingsTab::icon() const
 {
-    //
+    return BApplication::icon("configure");
 }
 
-bool BAbstractSettingsTab::hasDefault() const
+bool BAbstractSettingsTab::isInAdvancedMode() const
 {
     return false;
 }
@@ -81,7 +77,22 @@ QString BAbstractSettingsTab::restoreDefaultHint() const
     return "";
 }
 
+void BAbstractSettingsTab::restoreState(const QByteArray &)
+{
+    //
+}
+
 bool BAbstractSettingsTab::saveSettings()
 {
     return true;
+}
+
+QByteArray BAbstractSettingsTab::saveState() const
+{
+    return QByteArray();
+}
+
+void BAbstractSettingsTab::setAdvancedMode(bool)
+{
+    //
 }

@@ -137,13 +137,13 @@ public:
     void init(BApplicationBase::Portability portability = BApplicationBase::AutoDetect);
     void installPlugin(BPluginWrapper *plugin);
     void installTranslator(BTranslator *translator);
-    bool isPluginActivated(const QString &pluginName) const;
+    bool isPluginActivated(const QString &pluginId) const;
     QString location(const QString &name, BApplicationBase::ResourceType type) const;
     QStringList locations(const QString &name) const;
     void removePlugin(QObject *plugin);
     void removeTranslator(BTranslator *translator);
     void setLocale(const QLocale &l);
-    void setPluginActivated(const QString &pluginName, bool activated);
+    void setPluginActivated(const QString &pluginId, bool activated);
 public Q_SLOTS:
     void languageChanged();
     void pluginAboutToBeDeactivated();

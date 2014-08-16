@@ -24,6 +24,7 @@
 
 class BPluginsSettingsTabPrivate;
 
+class QByteArray;
 class QIcon;
 class QString;
 
@@ -46,6 +47,9 @@ protected:
     explicit BPluginsSettingsTab(BPluginsSettingsTabPrivate &d);
 public:
     QIcon icon() const;
+    QString id() const;
+    void restoreState(const QByteArray &state);
+    QByteArray saveState() const;
     QString title() const;
 private:
     Q_DISABLE_COPY(BPluginsSettingsTab)

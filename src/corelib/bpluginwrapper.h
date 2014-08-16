@@ -44,9 +44,10 @@ class B_CORE_EXPORT BPluginWrapper : public QObject, public BBase
     Q_OBJECT
     Q_PROPERTY(bool activated READ isActivated STORED false)
     Q_PROPERTY(QString fileName READ fileName WRITE setFileName)
+    Q_PROPERTY(QString id READ id STORED false)
     Q_PROPERTY(bool loaded READ isLoaded STORED false)
-    Q_PROPERTY(QString name READ name STORED false)
     Q_PROPERTY(bool prefereStaticInfo READ prefereStaticInfo STORED false)
+    Q_PROPERTY(QString title READ title STORED false)
     Q_PROPERTY(QString type READ type STORED false)
     Q_PROPERTY(BVersion version READ version STORED false)
     B_DECLARE_PRIVATE(BPluginWrapper)
@@ -67,18 +68,19 @@ public:
     static void setInterfaceTestFunction(InterfaceTestFunction function);
 public:
     QString fileName() const;
+    QString id() const;
     BPluginInterface::PluginInfo info() const;
     void install();
     QObject *instance() const;
     BPluginInterface *interface() const;
     bool isActivated() const;
     bool isLoaded() const;
-    QString name() const;
     bool prefereStaticInfo() const;
     void remove();
     void setFileName(const QString &fn);
     QSettings *settings() const;
     BPluginInterface::StaticPluginInfo staticInfo() const;
+    QString title() const;
     QString type() const;
     BVersion version() const;
 public Q_SLOTS:

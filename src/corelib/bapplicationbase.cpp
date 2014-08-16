@@ -360,13 +360,13 @@ void BApplicationBasePrivate::installTranslator(BTranslator *translator)
     languageChangeProxy->trigger();
 }
 
-bool BApplicationBasePrivate::isPluginActivated(const QString &pluginName) const
+bool BApplicationBasePrivate::isPluginActivated(const QString &pluginId) const
 {
-    if (pluginName.isEmpty())
+    if (pluginId.isEmpty())
         return false;
     if (settings.isNull())
         return true;
-    return !settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginName);
+    return !settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginId);
 }
 
 QString BApplicationBasePrivate::location(const QString &name, BApplicationBase::ResourceType type) const
@@ -424,17 +424,27 @@ void BApplicationBasePrivate::setLocale(const QLocale &l)
     languageChangeProxy->trigger();
 }
 
-void BApplicationBasePrivate::setPluginActivated(const QString &pluginName, bool activated)
+void BApplicationBasePrivate::setPluginActivated(const QString &pluginId, bool activated)
 {
-    if (pluginName.isEmpty())
+    if (pluginId.isEmpty())
         return;
+    BPluginWrapper *pw = 0;
+    foreach (BPluginWrapper *pww, plugins) {
+        if (pww->id() == pluginId) {
+            pw = pww;
+            break;
+        }
+    }
+    if (!pw)
+        return;
+    pw->setActivated(activated);
     if (settings.isNull())
         return;
     QStringList list = settings->value("BeQt/Core/deactivated_plugins").toStringList();
     if (activated)
-        list.removeAll(pluginName);
-    else if (!list.contains(pluginName))
-        list << pluginName;
+        list.removeAll(pluginId);
+    else if (!list.contains(pluginId))
+        list << pluginId;
     settings->setValue("BeQt/Core/deactivated_plugins", list);
 }
 
@@ -926,7 +936,7 @@ void BApplicationBase::loadPlugins(const QStringList &acceptableTypes, BPluginWr
                 continue;
             }
             installPlugin(pw);
-            if (ds_func()->isPluginActivated(pw->name()))
+            if (ds_func()->isPluginActivated(pw->id()))
                 pw->activate();
             else
                 pw->unload();
@@ -1228,6 +1238,13 @@ void BApplicationBase::setLogger(BLogger *l)
     ds->logger = l;
     if (l && !l->parent())
         l->setParent(ds_func());
+}
+
+void BApplicationBase::setPluginActivated(const QString &pluginId, bool activated)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    ds_func()->setPluginActivated(pluginId, activated);
 }
 
 QSettings *BApplicationBase::settingsInstance()
