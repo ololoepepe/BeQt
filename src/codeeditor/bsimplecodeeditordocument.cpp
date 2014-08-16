@@ -558,11 +558,6 @@ void BSimpleCodeEditorDocument::deselectTextImplementation()
     d_func()->ptedt->setTextCursor(tc);
 }
 
-BSimpleCodeEditorDocument::ExtraSelectionList BSimpleCodeEditorDocument::extraSelectionsImplementation() const
-{
-    return d_func()->ptedt->extraSelections();
-}
-
 bool BSimpleCodeEditorDocument::findNextImplementation(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     if (txt.isEmpty())

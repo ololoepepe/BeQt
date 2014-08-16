@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1525"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1521"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -378,13 +378,13 @@
 <context>
     <name>BCodeEditor</name>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2028"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2022"/>
         <source>Saving documents...</source>
         <comment>msgbox windowTitle</comment>
         <translation>Сохранение документов...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2030"/>
+        <location filename="../src/codeeditor/bcodeeditor.cpp" line="2024"/>
         <source>The files are being saved. Please, wait...</source>
         <comment>msgbox text</comment>
         <translation>В данный момент файлы сохраняются. Пожалуйста, ждите...</translation>
@@ -476,13 +476,13 @@
 <context>
     <name>BDefaultFileType</name>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="97"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="98"/>
         <source>Text</source>
         <comment>name</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="82"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="83"/>
         <source>All files</source>
         <comment>description</comment>
         <translation>Все файлы</translation>

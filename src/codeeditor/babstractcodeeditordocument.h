@@ -214,7 +214,6 @@ protected:
     virtual void cutImplementation() = 0;
     virtual void deleteSelectionImplementation() = 0;
     virtual void deselectTextImplementation() = 0;
-    virtual ExtraSelectionList extraSelectionsImplementation() const = 0;
     virtual bool findNextImplementation(const QString &txt, QTextDocument::FindFlags flags = 0,
                                         bool cyclic = true) = 0;
     virtual bool findNextRegexpImplementation(const QRegExp &rx, QTextDocument::FindFlags flags = 0,

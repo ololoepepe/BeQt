@@ -38,6 +38,7 @@ class BTextBlockExtraData;
 #include <QStringList>
 #include <QTextBlock>
 #include <QTextCharFormat>
+#include <QTextCursor>
 #include <QToolTip>
 #include <QVariant>
 
@@ -258,12 +259,12 @@ void BAbstractFileType::clearCurrentBlockSkipSegments()
 }
 
 QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocompletionItemList(
-        BAbstractCodeEditorDocument *, QTextBlock, int)
+        BAbstractCodeEditorDocument *, QTextCursor)
 {
     return QList<AutocompletionItem>();
 }
 
-QString BAbstractFileType::createToolTipText(BAbstractCodeEditorDocument *, QTextBlock, int)
+QString BAbstractFileType::createToolTipText(BAbstractCodeEditorDocument *, QTextCursor)
 {
     return QString();
 }
@@ -345,10 +346,15 @@ void BAbstractFileType::setFormat(int start, int count, const QFont &font)
     d_func()->highlighter->setFormat(start, count, font);
 }
 
-void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextCursor cursor,
                                                const QPoint &globalPos)
 {
-    QList<AutocompletionItem> list = createAutocompletionItemList(doc, block, posInBlock);
+    if (cursor.isNull())
+        return;
+    cursor.select(QTextCursor::WordUnderCursor);
+    if (!cursor.hasSelection())
+        return;
+    QList<AutocompletionItem> list = createAutocompletionItemList(doc, cursor);
     if (list.isEmpty())
         return;
     QMenu *mnu = new QMenu;
@@ -371,13 +377,13 @@ void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc,
     }
     QString text = act->data().toString();
     delete mnu;
+    doc->selectText(cursor.selectionStart(), cursor.selectionEnd());
     doc->insertText(text);
 }
 
-void BAbstractFileType::showToolTip(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
-                                    const QPoint &globalPos)
+void BAbstractFileType::showToolTip(BAbstractCodeEditorDocument *doc, QTextCursor cursor, const QPoint &globalPos)
 {
-    QString text = createToolTipText(doc, block, posInBlock);
+    QString text = createToolTipText(doc, cursor);
     if (text.isEmpty())
         return QToolTip::hideText();
     QToolTip::showText(globalPos, text);

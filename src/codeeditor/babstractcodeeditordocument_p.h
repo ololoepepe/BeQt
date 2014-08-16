@@ -33,6 +33,7 @@ class QEvent;
 class QFont;
 class QMenu;
 class QPlainTextEdit;
+class QTextBlock;
 class QTextCodec;
 class QTextDocument;
 
@@ -52,8 +53,8 @@ class QTextDocument;
 #include <QRegExp>
 #include <QString>
 #include <QSyntaxHighlighter>
-#include <QTextBlock>
 #include <QTextCharFormat>
+#include <QTextCursor>
 #include <QTextEdit>
 #include <QTimer>
 #include <QWidget>
@@ -170,9 +171,8 @@ public:
     BCodeEditor *const Editor;
 public:
     int asyncMin;
-    QTextBlock autocompletionBlock;
+    QTextCursor autocompletionCursor;
     QPoint autocompletionGlobalPos;
-    int autocompletionPosInBlock;
     QTimer autocompletionTimer;
     bool bracketsHighlighting;
     bool buisy;
@@ -199,11 +199,11 @@ public:
     BracketPairList recognizedBrackets;
     bool redoAvailable;
     BSpellChecker *spellChecker;
-    QTextBlock toolTipBlock;
+    QTextCursor toolTipCursor;
     QPoint toolTipGlobalPos;
-    int toolTipPosInBlock;
     QTimer toolTipTimer;
     bool undoAvailable;
+    BAbstractCodeEditorDocument::ExtraSelectionList userSelections;
     mutable QPair<int, int> wordToReplace;
 public:
     explicit BAbstractCodeEditorDocumentPrivate(BAbstractCodeEditorDocument *q, BCodeEditor *editor);

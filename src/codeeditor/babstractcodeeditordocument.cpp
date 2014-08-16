@@ -591,10 +591,7 @@ bool BAbstractCodeEditorDocumentPrivate::eventFilter(QObject *, QEvent *e)
     QTextCursor tc = q_func()->textCursorForPosition(he->pos());
     if (tc.isNull())
         return true;
-    toolTipBlock = tc.block();
-    if (!toolTipBlock.isValid())
-        return true;
-    toolTipPosInBlock = tc.positionInBlock();
+    toolTipCursor = tc;
     toolTipGlobalPos = he->globalPos();
     toolTipTimer.start();
     return true;
@@ -946,14 +943,14 @@ void BAbstractCodeEditorDocumentPrivate::showAutocompletionMenu()
 {
     if (!fileType)
         return;
-    fileType->showAutocompletionMenu(q_func(), autocompletionBlock, autocompletionPosInBlock, autocompletionGlobalPos);
+    fileType->showAutocompletionMenu(q_func(), autocompletionCursor, autocompletionGlobalPos);
 }
 
 void BAbstractCodeEditorDocumentPrivate::showToolTip()
 {
     if (!fileType)
         return;
-    fileType->showToolTip(q_func(), toolTipBlock, toolTipPosInBlock, toolTipGlobalPos);
+    fileType->showToolTip(q_func(), toolTipCursor, toolTipGlobalPos);
 }
 
 /*============================================================================
@@ -1066,10 +1063,7 @@ BCodeEditor *BAbstractCodeEditorDocument::editor() const
 
 BAbstractCodeEditorDocument::ExtraSelectionList BAbstractCodeEditorDocument::extraSelections() const
 {
-    ExtraSelectionList list = extraSelectionsImplementation();
-    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedBrackets);
-    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedBracketsError);
-    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedSearchResults);
+    ExtraSelectionList &list = const_cast<BAbstractCodeEditorDocument *>(this)->d_func()->userSelections;
     foreach (int i, bRangeR(list.size() - 1, 0)) {
         if (!list.at(i).cursor.hasSelection())
             list.removeAt(i);
@@ -1302,13 +1296,15 @@ void BAbstractCodeEditorDocument::setCodec(const QString &codecName)
 
 void BAbstractCodeEditorDocument::setExtraSelections(const ExtraSelectionList &list)
 {
-    ExtraSelectionList nlist = list;
-    foreach (int i, bRangeR(nlist.size() - 1, 0)) {
-        if (!nlist.at(i).cursor.hasSelection())
-            nlist.removeAt(i);
+    B_D(BAbstractCodeEditorDocument);
+    d->userSelections = list;
+    foreach (int i, bRangeR(d->userSelections.size() - 1, 0)) {
+        if (!d->userSelections.at(i).cursor.hasSelection())
+            d->userSelections.removeAt(i);
     }
+    ExtraSelectionList nlist = d->userSelections;
     ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d_func()->highlightedSearchResults) {
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d->highlightedSearchResults) {
         es.cursor.setPosition(sr.start);
         es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
         nlist << es;
@@ -1594,8 +1590,7 @@ void BAbstractCodeEditorDocument::emitTextChanged()
     QTextBlock tb = textCursor().block();
     int start = tb.position();
     int end = tb.position() + tb.length();
-    SelectionRangeList removed = BAbstractCodeEditorDocumentPrivate::removeSelectionRanges(d->highlightedSearchResults,
-                                                                                           start, end);
+    BAbstractCodeEditorDocumentPrivate::removeSelectionRanges(d->highlightedSearchResults, start, end);
     SelectionRangeList added;
     QString t = tb.text();
     if (d->lastSearchRegexp.isValid() && !d->lastSearchRegexp.isEmpty()) {
@@ -1621,11 +1616,8 @@ void BAbstractCodeEditorDocument::emitTextChanged()
         }
     }
     d->highlightedSearchResults << added;
-    if (!added.isEmpty()) {
-        ExtraSelectionList selections = extraSelections();
-        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(selections, removed);
-        setExtraSelections(selections);
-    }
+    if (!added.isEmpty())
+        setExtraSelections(extraSelections());
     Q_EMIT textChanged();
 }
 
@@ -1658,16 +1650,13 @@ void BAbstractCodeEditorDocument::setCursorPosition(int pos)
     QTextCursor tc = textCursor();
     if (tc.isNull())
         return;
-    d_func()->autocompletionBlock = tc.block();
-    if (!d_func()->autocompletionBlock.isValid())
-        return;
     QRect r = cursorRect();
     if (!r.isValid() || r.isNull())
         return;
     QWidget *edt = innerEdit();
     if (!edt)
         return;
-    d_func()->autocompletionPosInBlock = tc.positionInBlock();
+    d_func()->autocompletionCursor = tc;
     d_func()->autocompletionGlobalPos = edt->mapToGlobal(r.bottomRight());
     d_func()->autocompletionTimer.start();
 }

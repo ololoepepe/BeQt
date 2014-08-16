@@ -89,7 +89,6 @@ protected:
     void cutImplementation();
     void deleteSelectionImplementation();
     void deselectTextImplementation();
-    ExtraSelectionList extraSelectionsImplementation() const;
     bool findNextImplementation(const QString &txt, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     bool findNextRegexpImplementation(const QRegExp &rx, QTextDocument::FindFlags flags = 0, bool cyclic = true);
     void insertTextImplementation(const QString &txt);
