@@ -53,7 +53,6 @@ public:
 public:
     QString lastLine;
     QEventLoop *loop;
-    QTextStream readStream;
 public:
     explicit BTerminalThread(BTerminalPrivate *tp);
     ~BTerminalThread();
@@ -76,6 +75,7 @@ public:
     static BTerminal::Color backgroundColor;
     static BTerminal::Mode mode;
     static QMutex mutex;
+    static QTextStream readStream;
     static BTerminal::Color textColor;
     static QTextStream writeErrStream;
     static QTextStream writeStream;

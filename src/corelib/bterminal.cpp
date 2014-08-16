@@ -99,7 +99,7 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
 /*============================== Public constructors =======================*/
 
 BTerminalThread::BTerminalThread(BTerminalPrivate *tp) :
-    QThread(0), TerminalPrivate(tp), readStream(stdin, QIODevice::ReadOnly)
+    QThread(0), TerminalPrivate(tp)
 {
     loop = 0;
 }
@@ -114,7 +114,7 @@ BTerminalThread::~BTerminalThread()
 void BTerminalThread::run()
 {
     forever {
-        QString l = readStream.readLine();
+        QString l = BTerminalPrivate::readStream.readLine();
         if (loop) {
             lastLine = l;
             QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
@@ -134,6 +134,7 @@ void BTerminalThread::run()
 BTerminal::Color BTerminalPrivate::backgroundColor = BTerminal::DefaultColor;
 BTerminal::Mode BTerminalPrivate::mode = BTerminal::NoMode;
 QMutex BTerminalPrivate::mutex(QMutex::Recursive);
+QTextStream BTerminalPrivate::readStream(stdin, QIODevice::ReadOnly);
 BTerminal::Color BTerminalPrivate::textColor = BTerminal::DefaultColor;
 QTextStream BTerminalPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
 QTextStream BTerminalPrivate::writeStream(stdout, QIODevice::WriteOnly);
@@ -603,12 +604,13 @@ BTerminal::Mode BTerminal::mode()
 QString BTerminal::readLine(const QString &text)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
-    if (!BTerminalPrivate::testInit("BTerminal"))
-        return QString();
-    if (StandardMode != ds_func()->Mode)
+    Mode m = mode();
+    if (NoMode != m && StandardMode != m)
         return QString();
     if (!text.isEmpty())
         write(text);
+    if (NoMode == m)
+        return BTerminalPrivate::readStream.readLine();
     QEventLoop loop;
     ds_func()->readThread->loop = &loop;
     loop.exec();
@@ -620,9 +622,8 @@ QString BTerminal::readLine(const QString &text)
 QString BTerminal::readLineSecure(const QString &text)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
-    if (!BTerminalPrivate::testInit("BTerminal"))
-        return QString();
-    if (StandardMode != ds_func()->Mode)
+    Mode m = mode();
+    if (NoMode != m && StandardMode != m)
         return QString();
     setStdinEchoEnabled(false);
     QString line = readLine(text);
@@ -706,6 +707,7 @@ void BTerminal::setMode(Mode mode)
         return;
     if (_m_self)
         destroy();
+    BTerminalPrivate::mode = mode;
     if (NoMode == mode)
         return;
     _m_self = new BTerminal(mode);
