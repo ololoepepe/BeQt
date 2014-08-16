@@ -255,6 +255,33 @@ void ThreadHack::usleepHack(unsigned long usecs)
 namespace BeQt
 {
 
+QList<OSType> allOSTypes(bool includeUnknown, bool includeMeta)
+{
+    QList<OSType> list = QList<OSType>() << WindowsOS << LinuxOS << MacOS;
+    if (includeMeta)
+        list.prepend(UnixOS);
+    if (includeUnknown)
+        list.prepend(UnknownOS);
+    return list;
+}
+
+QList<ProcessorArchitecture> allProcessorArchitectures(bool includeUnknown)
+{
+    QList<ProcessorArchitecture> list = QList<ProcessorArchitecture>() << AlphaArchitecture << Amd64Architecture
+        << ArmArchitecture << Arm64Architecture << BlackfinArchitecture << ConvexArchitecture << EpiphanyArchitecture
+        << HpPaRiscArchitecture << IntelX86Architecture << IntelItaniumArchitecture << Motorola68kAArchitecture
+        << MipsArchitecture << PowerPcArchitecture << Pyramid9810Architecture << Rs6000Architecture
+        << SparcArchitecture << SuperHArchitecture << SystemZArchitecture << Tms320Architecture << Tms470Architecture;
+    if (includeUnknown)
+        list.prepend(UnknownArchitecture);
+    return list;
+}
+
+QList<BeQt::TabWidth> allTabWidths()
+{
+    return QList<BeQt::TabWidth>() << TabWidth2 << TabWidth4 << TabWidth8;
+}
+
 int area(const QRect &r)
 {
     return r.size().width() * r.size().height();

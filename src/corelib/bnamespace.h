@@ -81,7 +81,6 @@ enum OSType
     WindowsOS = 0x02,       //0 0 0 0 0 0 1 0
     LinuxOS = UnixOS | 0x04,//0 0 0 0 0 1 0 1
     MacOS = UnixOS | 0x08   //0 0 0 0 1 0 0 1
-
 };
 
 enum ProcessorArchitecture
@@ -139,6 +138,9 @@ const int KeypadShiftModifier = ((int) Qt::KeypadModifier | (int) Qt::ShiftModif
 const int KeypadControlAltModifier = (KeypadAltModifier | (int) Qt::ControlModifier);
 const int KeypadControlShiftModifier = ((int) Qt::KeypadModifier | ContorlShiftModifier);
 
+B_CORE_EXPORT QList<OSType> allOSTypes(bool includeUnknown = true, bool includeMeta = false);
+B_CORE_EXPORT QList<ProcessorArchitecture> allProcessorArchitectures(bool includeUnknown = true);
+B_CORE_EXPORT QList<TabWidth> allTabWidths();
 B_CORE_EXPORT int area(const QRect &r);
 B_CORE_EXPORT qreal area(const QRectF &r);
 B_CORE_EXPORT QTextCodec *codec(const QString &cn);
