@@ -1277,11 +1277,11 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     addModule(SearchModule);
 }
 
-BCodeEditor::BCodeEditor(StandardDocumentType t, QWidget *parent) :
+BCodeEditor::BCodeEditor(int documentType, QWidget *parent) :
     QWidget(parent), BBaseObject(*new BCodeEditorPrivate(this))
 {
     d_func()->init();
-    d_func()->docType = t;
+    d_func()->docType = documentType;
     addModule(EditModule);
     addModule(IndicatorsModule);
     addModule(OpenSaveModule);

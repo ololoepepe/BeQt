@@ -362,6 +362,7 @@ void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc,
         if (aci.text.isEmpty() || aci.actionText.isEmpty())
             continue;
         QAction *act = mnu->addAction(aci.actionIcon, aci.actionText);
+        act->setIconVisibleInMenu(true);
         act->setToolTip(aci.actionToolTip);
         act->setData(aci.text);
     }

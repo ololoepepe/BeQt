@@ -220,6 +220,7 @@ BApplicationBasePrivate::~BApplicationBasePrivate()
         qApp->removeEventFilter(this);
     foreach (BAbstractLocationProvider *p, locationProviders)
         delete p;
+    locationProviders.clear();
     if (!settings.isNull()) {
         settings->sync();
         delete settings;
@@ -527,11 +528,13 @@ BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const InitialSett
 
 BApplicationBase::~BApplicationBase()
 {
-    ds_func()->destructorCalled = true;
+    d_func()->destructorCalled = true;
     foreach (BTranslator *t, d_func()->translators)
         delete t;
+    d_func()->translators.clear();
     foreach (BPluginWrapper *pw, d_func()->plugins)
         delete pw;
+    d_func()->plugins.clear();
     _m_self = 0;
 }
 

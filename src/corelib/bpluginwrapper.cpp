@@ -131,6 +131,7 @@ bool BPluginWrapperPrivate::load()
     }
     QString tp = iface->type();
     QString iid = iface->id();
+    QString tt = iface->title();
     BVersion v = iface->version();
     if ((!acctptableTypes.isEmpty() && !acctptableTypes.contains(tp)) || (testFunction && !testFunction(obj))
             || globalMap.contains(iid)) {
@@ -141,6 +142,7 @@ bool BPluginWrapperPrivate::load()
     interface = iface;
     type = tp;
     id = iid;
+    title = tt;
     version = v;
     prefereStaticInfo = interface->prefereStaticInfo();
     staticInfo = interface->staticInfo();
@@ -312,13 +314,14 @@ void BPluginWrapper::setFileName(const QString &fn)
     d->fileName = fn;
     d->type.clear();
     d->id.clear();
+    d->title.clear();
     d->version.clear();
     d->info = BPluginInterface::PluginInfo();
 }
 
 QString BPluginWrapper::title() const
 {
-    return d_func()->interface ? d_func()->interface->title() : QString();
+    return d_func()->interface ? d_func()->interface->title() : d_func()->title;
 }
 
 QString BPluginWrapper::type() const

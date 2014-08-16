@@ -60,6 +60,7 @@ public:
     bool prefereStaticInfo;
     QPointer<QSettings> settings;
     BPluginInterface::StaticPluginInfo staticInfo;
+    QString title;
     QString type;
     BVersion version;
 public:
