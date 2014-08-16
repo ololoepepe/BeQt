@@ -62,7 +62,7 @@ public:
         QString escape;
         QString opening;
     };
-    struct SkipInterval
+    struct SkipSegment
     {
         int end;
         int start;
@@ -91,9 +91,10 @@ protected:
                                                        const QIcon &icon = QIcon());
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
 protected:
-    void addCurrentBlockSkipInterval(const SkipInterval &si);
-    void addCurrentBlockSkipInterval(int start, int end = -1);
-    void clearCurrentBlockSkipIntervals();
+    void addCurrentBlockSkipSegment(const SkipSegment &s);
+    void addCurrentBlockSkipSegment(int start, int end = -1);
+    void addCurrentBlockSkipSegmentL(int start, int length = -1);
+    void clearCurrentBlockSkipSegments();
     virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc, QTextBlock block,
                                                                    int posInBlock);
     virtual QString createToolTipText(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock);
@@ -105,7 +106,7 @@ protected:
     virtual void highlightBlock(const QString &text);
     int previousBlockState() const;
     void setCurrentBlockExtraData(BTextBlockExtraData *data);
-    void setCurrentBlockSkipIntervals(const QList<SkipInterval> &list = QList<SkipInterval>());
+    void setCurrentBlockSkipSegments(const QList<SkipSegment> &list = QList<SkipSegment>());
     void setCurrentBlockState(int newState);
     void setFormat(int start, int count, const QTextCharFormat &format);
     void setFormat(int start, int count, const QColor &color);

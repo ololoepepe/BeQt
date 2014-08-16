@@ -166,8 +166,12 @@ QString BInternalLocationProvider::locationPath(const QString &locationName, BAp
     }
     if (prefix.isEmpty())
         return QString();
-    if (plugins)
-        return prefix + "/lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins";
+    if (plugins) {
+        if (BApplicationBase::SharedResource == type)
+            return prefix + "/lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins";
+        else
+            return prefix + "/plugins";
+    }
     else if ("beqt/icons" == locationName)
         return prefix + "/beqt/icons";
     else if ("data" == locationName)

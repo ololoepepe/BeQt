@@ -708,8 +708,6 @@ void BAboutDialog::setAboutQtShown(bool b)
 
 void BAboutDialog::setAppName(const QString &name)
 {
-    if (name.isEmpty())
-        return;
     B_D(BAboutDialog);
     d->appName = name;
     d->updateWindowTitle();
@@ -718,8 +716,6 @@ void BAboutDialog::setAppName(const QString &name)
 
 void BAboutDialog::setAppVersion(const QString &version)
 {
-    if (version.isEmpty())
-        return;
     B_D(BAboutDialog);
     d->appVersion = version;
     d->lblName->setText(d->appName + " v" + d->appVersion);
@@ -728,8 +724,6 @@ void BAboutDialog::setAppVersion(const QString &version)
 void BAboutDialog::setAppVersion(const BVersion &version, BVersion::StatusRepresentation r, QChar versionSeparator,
                                  QChar statusSeparator)
 {
-    if (!version.isValid())
-        return;
     setAppVersion(version.toString(r, versionSeparator, statusSeparator));
 }
 

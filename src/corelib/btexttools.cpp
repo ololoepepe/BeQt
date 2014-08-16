@@ -320,7 +320,7 @@ QString mergeArguments(const QStringList &list)
 {
     QString args;
     foreach (const QString &a, list)
-        args += (a.contains(' ') ? BTextTools::wrapped(a) : a) + " ";
+        args += (a.contains(' ') ? BTextTools::wrapped(a, "\"") : a) + " ";
     if (!args.isEmpty())
         args.remove(args.length() - 1, 1);
     return args;
@@ -334,7 +334,15 @@ QString mergeArguments(const QString &command, const QStringList &arguments)
 OptionsParsingError parseOptions(const QStringList &arguments, const QString &options, QMap<QString, QString> &result,
                                  bool allowOverride)
 {
+    QString s;
+    return parseOptions(arguments, options, result, s, allowOverride);
+}
+
+OptionsParsingError parseOptions(const QStringList &arguments, const QString &options, QMap<QString, QString> &result,
+                                 QString &errorData, bool allowOverride)
+{
     result.clear();
+    errorData.clear();
     if (arguments.isEmpty() || options.isEmpty())
         return NoError;
     OptionsParsingError error = NoError;
@@ -346,14 +354,20 @@ OptionsParsingError parseOptions(const QStringList &arguments, const QString &op
         foreach (const BParsingOption &o, list) {
             foreach (const QString &key, o.keys) {
                 if (a.startsWith(key)) {
-                    if (result.contains(o.id) && !allowOverride)
+                    if (result.contains(o.id) && !allowOverride) {
+                        errorData = o.id;
                         return RepeatingOptionError;
+                    }
                     if (o.assignable) {
                         QStringList sl = a.split('=');
-                        if (sl.size() != 2)
+                        if (sl.size() != 2) {
+                            errorData = a;
                             return MalformedOptionError;
-                        if (!o.values.contains(sl.last()))
+                        }
+                        if (!o.values.isEmpty() && !o.values.contains(sl.last())) {
+                            errorData = sl.last();
                             return UnknownOptionValueError;
+                        }
                         result.insert(o.id, sl.last());
                     } else {
                         result.insert(o.id, "");
@@ -365,12 +379,16 @@ OptionsParsingError parseOptions(const QStringList &arguments, const QString &op
             if (found)
                 break;
         }
-        if (!found)
+        if (!found) {
+            errorData = a;
             return UnknownOptionError;
+        }
     }
     foreach (const BParsingOption &o, list) {
-        if (!o.optional && !result.contains(o.id))
+        if (!o.optional && !result.contains(o.id)) {
+            errorData = o.id;
             return MissingOptionError;
+        }
     }
     return NoError;
 }
@@ -732,22 +750,31 @@ QString toHtml(const QString &text, bool replaceSpaces)
     return html;
 }
 
+void unwrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+{
+    if (text.isEmpty() || leftWrappingText.isEmpty() || rightWrappingText.isEmpty())
+        return;
+    if (text.startsWith(leftWrappingText))
+        text.remove(0, leftWrappingText.length());
+    if (text.endsWith(rightWrappingText))
+        text.remove(text.length() - rightWrappingText.length(), rightWrappingText.length());
+}
+
 void unwrap(QString &text, const QString &wrappingText)
 {
-    if (text.isEmpty() || wrappingText.isEmpty())
-        return;
-    int wl = wrappingText.length();
-    if (text.left(wl) == wrappingText)
-        text.remove(0, wl);
-    if (text.right(wl) == wrappingText)
-        text.remove(text.length() - wl, wl);
+    unwrap(text, wrappingText, wrappingText);
+}
+
+QString unwrapped(const QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+{
+    QString ntext = text;
+    unwrap(ntext, leftWrappingText, rightWrappingText);
+    return ntext;
 }
 
 QString unwrapped(const QString &text, const QString &wrappingText)
 {
-    QString ntext = text;
-    unwrap(ntext, wrappingText);
-    return ntext;
+    return unwrapped(text, wrappingText, wrappingText);
 }
 
 QString withoutUnsuppottedSymbols(const QString &s)
@@ -759,22 +786,31 @@ QString withoutUnsuppottedSymbols(const QString &s)
     return ns;
 }
 
+void wrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+{
+    if (text.isEmpty() || leftWrappingText.isEmpty() || rightWrappingText.isEmpty())
+        return;
+    if (!text.startsWith(leftWrappingText))
+        text.prepend(leftWrappingText);
+    if (!text.endsWith(rightWrappingText))
+        text.append(rightWrappingText);
+}
+
 void wrap(QString &text, const QString &wrappingText)
 {
-    if (text.isEmpty() || wrappingText.isEmpty())
-        return;
-    int wl = wrappingText.length();
-    if (text.left(wl) != wrappingText)
-        text.prepend(wrappingText);
-    if (text.right(wl) != wrappingText)
-        text.append(wrappingText);
+    wrap(text, wrappingText, wrappingText);
+}
+
+QString wrapped(const QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+{
+    QString ntext = text;
+    wrap(ntext, leftWrappingText, rightWrappingText);
+    return ntext;
 }
 
 QString wrapped(const QString &text, const QString &wrappingText)
 {
-    QString ntext = text;
-    wrap(ntext, wrappingText);
-    return ntext;
+    return wrapped(text, wrappingText, wrappingText);
 }
 
 }

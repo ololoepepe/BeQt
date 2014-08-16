@@ -8,6 +8,7 @@
     * Удалены функции BeQt::variantToData и BeQt::dataToVatiant
     * Рабочая папка добавлена в качестве аргумента функции BeQt::startProcessDetached
     * Добавлена функция BTextTools:toHtml
+    * В BTextTools добавлены перегруженные функции wrap, unwrap, wrapped и unwrapped
     * Добавлена альтернативная пара базовых классов, у которой private-часть не является QObject
     * Исправлена проверка BSpellCheckerDictionary на валидность
     * Добавлена возможность задавать заменяемые буквы в BSpellCheckerDictionary

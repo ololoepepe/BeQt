@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1517"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1525"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -134,19 +134,19 @@
 <context>
     <name>BAbstractCodeEditorDocumentPrivate</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="555"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="563"/>
         <source>Spell check</source>
         <comment>mnu title</comment>
         <translation>Проверка орфографии</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="566"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="574"/>
         <source>Remove from ignore list</source>
         <comment>act text</comment>
         <translation>Убрать из списка игнорирования</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="569"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="577"/>
         <source>Ignore this word</source>
         <comment>act text</comment>
         <translation>Игнорировать это слово</translation>
@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="605"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="613"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="785"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="609"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="617"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="789"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>

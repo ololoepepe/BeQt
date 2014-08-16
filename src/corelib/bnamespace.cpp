@@ -471,7 +471,7 @@ QString linuxVersion()
     if (!ok || sl.isEmpty())
         return "Unknown";
     sl = sl.last().split('=', QString::SkipEmptyParts);
-    return (sl.size() == 2) ? ("Linux " + BTextTools::unwrapped(sl.last())) : QString("Unknown");
+    return (sl.size() == 2) ? ("Linux " + BTextTools::unwrapped(sl.last(), "\"")) : QString("Unknown");
 }
 #endif
 

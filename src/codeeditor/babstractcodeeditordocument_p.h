@@ -66,21 +66,21 @@ class BTextBlockUserData : public QTextBlockUserData, public BBase
 {
     B_DECLARE_PRIVATE(BTextBlockUserData)
 public:
-    typedef BAbstractFileType::SkipInterval SkipInterval;
+    typedef BAbstractFileType::SkipSegment SkipSegment;
 public:
-    explicit BTextBlockUserData(const QList<SkipInterval> &list = QList<SkipInterval>());
+    explicit BTextBlockUserData(const QList<SkipSegment> &list = QList<SkipSegment>());
     ~BTextBlockUserData();
 public:
     static bool shouldSkip(const BTextBlockUserData *ud, int pos);
     static bool shouldSkip(const QTextBlock &block, int pos);
-    static QList<SkipInterval> skipIntervals(const QTextBlock &block);
-    static QString textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer = '\0');
-    static QString textWithoutSkipIntervals(const QTextBlock &block, char replacer = '\0');
+    static QList<SkipSegment> skipSegments(const QTextBlock &block);
+    static QString textWithoutSkipSegments(const BTextBlockUserData *ud, const QString &text, char replacer = '\0');
+    static QString textWithoutSkipSegments(const QTextBlock &block, char replacer = '\0');
 public:
     BTextBlockExtraData *extraData() const;
     void setExtraData(BTextBlockExtraData *data);
-    void setSkipIntervals(const QList<SkipInterval> &list);
-    QList<SkipInterval> skipIntervals() const;
+    void setSkipSegments(const QList<SkipSegment> &list);
+    QList<SkipSegment> skipSegments() const;
 };
 
 /*============================================================================
@@ -91,16 +91,16 @@ class BTextBlockUserDataPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTextBlockUserData)
 public:
-    typedef BAbstractFileType::SkipInterval SkipInterval;
+    typedef BAbstractFileType::SkipSegment SkipSegment;
 public:
     BTextBlockExtraData *data;
-    QList<SkipInterval> skipIntervals;
+    QList<SkipSegment> skipSegments;
 public:
     explicit BTextBlockUserDataPrivate(BTextBlockUserData *q);
     ~BTextBlockUserDataPrivate();
 public:
-    static bool lessThan(const SkipInterval &si1, const SkipInterval &si2);
-    static QList<SkipInterval> processList(const QList<SkipInterval> &list);
+    static bool lessThan(const SkipSegment &s1, const SkipSegment &s2);
+    static QList<SkipSegment> processList(const QList<SkipSegment> &list);
 public:
     void init();
 };
@@ -145,7 +145,7 @@ public:
     typedef QList<BracketPair> BracketPairList;
     typedef QTextEdit::ExtraSelection ExtraSelection;
     typedef QList<ExtraSelection> ExtraSelectionList;
-    typedef BAbstractFileType::SkipInterval SkipInterval;
+    typedef BAbstractFileType::SkipSegment SkipSegment;
     typedef BAbstractCodeEditorDocument::TextProcessingResult TextProcessingResult;
     typedef QFuture<TextProcessingResult> TextProcessingResultFuture;
     typedef QFutureWatcher<TextProcessingResult> TextProcessingResultFutureWatcher;
@@ -209,8 +209,9 @@ public:
     explicit BAbstractCodeEditorDocumentPrivate(BAbstractCodeEditorDocument *q, BCodeEditor *editor);
     ~BAbstractCodeEditorDocumentPrivate();
 public:
-    static void addBlockSkipInterval(QTextBlock block, const BAbstractFileType::SkipInterval &si);
-    static void addBlockSkipInterval(QTextBlock block, int start, int end = -1);
+    static void addBlockSkipSegment(QTextBlock block, const BAbstractFileType::SkipSegment &s);
+    static void addBlockSkipSegment(QTextBlock block, int start, int end = -1);
+    static void addBlockSkipSegmentL(QTextBlock block, int start, int length = -1);
     static QTextCharFormat createBracketsErrorFormat();
     static QTextCharFormat createBracketsFormat();
     static FindBracketPairResult createFindBracketPairResult();
@@ -218,7 +219,7 @@ public:
     static int removeExtraSelections(ExtraSelectionList &from, const SelectionRangeList &what);
     static SelectionRangeList removeSelectionRanges(SelectionRangeList &from, int start, int end);
     static bool selectionRangeListsEqual(const SelectionRangeList &list1, const SelectionRangeList &list2);
-    static void setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list = QList<SkipInterval>());
+    static void setBlockSkipSegments(QTextBlock block, const QList<SkipSegment> &list = QList<SkipSegment>());
 public:
     bool createEdit();
     QMenu *createSpellCheckerMenu(const QPoint &pos);

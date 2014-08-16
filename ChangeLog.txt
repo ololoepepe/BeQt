@@ -8,6 +8,7 @@
     * Remove BeQt::variantToData and BeQt::dataToVatiant functions
     * Add working directory argument to BeQt::startProcessDetached function
     * Add BTextTools:toHtml function
+    * Add overloaded BTextTools wrap, unwrap, wrapped and unwrapped functions
     * Add alternative base class pair with non-QObject private base
     * Fix BSpellCheckerDictionary validity testing
     * Add ability to set replaced letters in BSpellCheckerDictionary

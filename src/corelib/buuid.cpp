@@ -23,6 +23,7 @@
 
 #include "bbase.h"
 #include "bbase_p.h"
+#include "btexttools.h"
 
 #include <QObject>
 #include <QString>
@@ -148,10 +149,8 @@ BUuid::~BUuid()
 
 QString BUuid::canonicalText(const QString &uuidText)
 {
-    if (uuidText.isEmpty())
-        return "";
-    QString t = (uuidText.at(0) != '{' ? "{" : "") + uuidText + (uuidText.at(uuidText.length() - 1) != '}' ? "}" : "");
-    return !QUuid(t).isNull() ? t : QString();
+    QUuid uuid(BTextTools::wrapped(uuidText, "{", "}"));
+    return !uuid.isNull() ? uuid.toString() : QString();
 }
 
 BUuid BUuid::createUuid()
@@ -210,12 +209,7 @@ QByteArray BUuid::toRfc4122() const
 
 QString BUuid::toString(bool pure) const
 {
-    if (pure) {
-        QString t = toString();
-        return t.mid(1, t.length() - 2);
-    } else {
-        return d_func()->muuid.toString();
-    }
+    return pure ? BTextTools::unwrapped(toString(), "{", "}") : d_func()->muuid.toString();
 }
 
 QUuid BUuid::toUuid() const

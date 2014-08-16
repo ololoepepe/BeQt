@@ -90,29 +90,29 @@ BTextBlockUserDataPrivate::~BTextBlockUserDataPrivate()
 
 /*============================== Static public methods =====================*/
 
-bool BTextBlockUserDataPrivate::lessThan(const SkipInterval &si1, const SkipInterval &si2)
+bool BTextBlockUserDataPrivate::lessThan(const SkipSegment &s1, const SkipSegment &s2)
 {
-    return si1.start < si2.start;
+    return s1.start < s2.start;
 }
 
-QList<BTextBlockUserDataPrivate::SkipInterval> BTextBlockUserDataPrivate::processList(const QList<SkipInterval> &list)
+QList<BTextBlockUserDataPrivate::SkipSegment> BTextBlockUserDataPrivate::processList(const QList<SkipSegment> &list)
 {
     if (list.isEmpty())
         return list;
-    QList<BAbstractFileType::SkipInterval> nlist = list;
+    QList<BAbstractFileType::SkipSegment> nlist = list;
     foreach (int i, bRangeR(nlist.size() - 1, 0)) {
-        const SkipInterval &si = nlist.at(i);
-        if (si.start < 0 || si.end < 0 || si.start > si.end)
+        const SkipSegment &s = nlist.at(i);
+        if (s.start < 0 || s.end < 0 || s.start > s.end)
             nlist.removeAt(i);
     }
     if (nlist.isEmpty())
         return nlist;
     qSort(nlist.begin(), nlist.end(), &lessThan);
     foreach (int i, bRangeR(nlist.size() - 1, 1)) {
-        SkipInterval &si1 = nlist[i - 1];
-        const SkipInterval &si2 = nlist.at(i);
-        if (si1.end >= si2.start)
-            si1.end = si2.end;
+        SkipSegment &s1 = nlist[i - 1];
+        const SkipSegment &s2 = nlist.at(i);
+        if (s1.end >= s2.start)
+            s1.end = s2.end;
         nlist.removeAt(i);
     }
     return nlist;
@@ -131,11 +131,11 @@ void BTextBlockUserDataPrivate::init()
 
 /*============================== Public constructors =======================*/
 
-BTextBlockUserData::BTextBlockUserData(const QList<SkipInterval> &list) :
+BTextBlockUserData::BTextBlockUserData(const QList<SkipSegment> &list) :
     BBase(*new BTextBlockUserDataPrivate(this))
 {
     d_func()->init();
-    setSkipIntervals(list);
+    setSkipSegments(list);
 }
 
 BTextBlockUserData::~BTextBlockUserData()
@@ -149,8 +149,8 @@ bool BTextBlockUserData::shouldSkip(const BTextBlockUserData *ud, int pos)
 {
     if (!ud || pos < 0)
         return false;
-    foreach (const SkipInterval &si, ud->d_func()->skipIntervals) {
-        if (si.start <= pos && si.end >= pos)
+    foreach (const SkipSegment &s, ud->d_func()->skipSegments) {
+        if (s.start <= pos && s.end >= pos)
             return true;
     }
     return false;
@@ -166,33 +166,33 @@ bool BTextBlockUserData::shouldSkip(const QTextBlock &block, int pos)
     return shouldSkip(ud, pos);
 }
 
-QList<BTextBlockUserData::SkipInterval> BTextBlockUserData::skipIntervals(const QTextBlock &block)
+QList<BTextBlockUserData::SkipSegment> BTextBlockUserData::skipSegments(const QTextBlock &block)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
-    return ud ? ud->d_func()->skipIntervals : QList<SkipInterval>();
+    return ud ? ud->d_func()->skipSegments : QList<SkipSegment>();
 }
 
-QString BTextBlockUserData::textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer)
+QString BTextBlockUserData::textWithoutSkipSegments(const BTextBlockUserData *ud, const QString &text, char replacer)
 {
     if (!ud)
         return text;
     QString ntext = text;
-    foreach (int i, bRangeR(ud->d_func()->skipIntervals.size() - 1, 0)) {
-        const SkipInterval &si = ud->d_func()->skipIntervals.at(i);
-        if (si.start >= ntext.length() || si.end >= ntext.length())
+    foreach (int i, bRangeR(ud->d_func()->skipSegments.size() - 1, 0)) {
+        const SkipSegment &s = ud->d_func()->skipSegments.at(i);
+        if (s.start >= ntext.length() || s.end >= ntext.length())
             continue;
-        int len = si.end - si.start + 1;
+        int len = s.end - s.start + 1;
         if ('\0' != replacer)
-            ntext.replace(si.start, len, replacer);
+            ntext.replace(s.start, len, QString().fill(replacer, len));
         else
-            ntext.remove(si.start, len);
+            ntext.remove(s.start, len);
     }
     return ntext;
 }
 
-QString BTextBlockUserData::textWithoutSkipIntervals(const QTextBlock &block, char replacer)
+QString BTextBlockUserData::textWithoutSkipSegments(const QTextBlock &block, char replacer)
 {
-    return textWithoutSkipIntervals(static_cast<BTextBlockUserData *>(block.userData()), block.text(), replacer);
+    return textWithoutSkipSegments(static_cast<BTextBlockUserData *>(block.userData()), block.text(), replacer);
 }
 
 /*============================== Public methods ============================*/
@@ -209,14 +209,14 @@ void BTextBlockUserData::setExtraData(BTextBlockExtraData *data)
     d_func()->data = data;
 }
 
-void BTextBlockUserData::setSkipIntervals(const QList<SkipInterval> &list)
+void BTextBlockUserData::setSkipSegments(const QList<SkipSegment> &list)
 {
-    d_func()->skipIntervals = BTextBlockUserDataPrivate::processList(list);
+    d_func()->skipSegments = BTextBlockUserDataPrivate::processList(list);
 }
 
-QList<BTextBlockUserData::SkipInterval> BTextBlockUserData::skipIntervals() const
+QList<BTextBlockUserData::SkipSegment> BTextBlockUserData::skipSegments() const
 {
-    return d_func()->skipIntervals;
+    return d_func()->skipSegments;
 }
 
 /*============================================================================
@@ -360,26 +360,34 @@ BAbstractCodeEditorDocumentPrivate::~BAbstractCodeEditorDocumentPrivate()
 
 /*============================== Static public methods =====================*/
 
-void BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(QTextBlock block, const SkipInterval &si)
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(QTextBlock block, const SkipSegment &s)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
-    QList<BAbstractFileType::SkipInterval> list;
-    list << si;
+    QList<BAbstractFileType::SkipSegment> list;
+    list << s;
     if (ud) {
-        list << ud->skipIntervals();
-        ud->setSkipIntervals(list);
+        list << ud->skipSegments();
+        ud->setSkipSegments(list);
     } else {
         ud = new BTextBlockUserData(list);
         block.setUserData(ud);
     }
 }
 
-void BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(QTextBlock block, int start, int end)
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(QTextBlock block, int start, int end)
 {
-    BAbstractFileType::SkipInterval si;
-    si.start = start;
-    si.end = (end >= 0) ? end : (block.text().length() - 1);
-    addBlockSkipInterval(block, si);
+    BAbstractFileType::SkipSegment s;
+    s.start = start;
+    s.end = (end >= 0) ? end : (block.text().length() - 1);
+    addBlockSkipSegment(block, s);
+}
+
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipSegmentL(QTextBlock block, int start, int length)
+{
+    BAbstractFileType::SkipSegment s;
+    s.start = start;
+    s.end = (length >= 0) ? ((s.start >= 0) ? (s.start + length - 1) : -1) : (block.text().length() - 1);
+    addBlockSkipSegment(block, s);
 }
 
 QTextCharFormat BAbstractCodeEditorDocumentPrivate::createBracketsErrorFormat()
@@ -479,14 +487,14 @@ bool BAbstractCodeEditorDocumentPrivate::selectionRangeListsEqual(const Selectio
     return true;
 }
 
-void BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list)
+void BAbstractCodeEditorDocumentPrivate::setBlockSkipSegments(QTextBlock block, const QList<SkipSegment> &list)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
     if (!ud) {
         ud = new BTextBlockUserData(list);
         block.setUserData(ud);
     }
-    ud->setSkipIntervals(list);
+    ud->setSkipSegments(list);
 }
 
 /*============================== Public methods ============================*/
@@ -602,14 +610,14 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
     const BracketPair *bracket = 0;
-    if (!testBracket(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '), posInBlock, false, bracket))
+    if (!testBracket(BTextBlockUserData::textWithoutSkipSegments(tb, ' '), posInBlock, false, bracket))
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
     int depth = 1;
     const BracketPair *br = 0;
     while (tb.isValid()) {
-        QString text = BTextBlockUserData::textWithoutSkipIntervals(tb, ' ');
+        QString text = BTextBlockUserData::textWithoutSkipSegments(tb, ' ');
         while (posInBlock >= 0) {
             if (testBracket(text, posInBlock, true, br)) {
                 --depth;
@@ -648,14 +656,14 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
     const BracketPair *bracket = 0;
-    if (!testBracket(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '), posInBlock, true, bracket))
+    if (!testBracket(BTextBlockUserData::textWithoutSkipSegments(tb, ' '), posInBlock, true, bracket))
         return res;
     res.start = tb.position() + posInBlock;
     posInBlock += bracket->opening.length();
     int depth = 1;
     const BracketPair *br = 0;
     while (tb.isValid()) {
-        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '));
+        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutSkipSegments(tb, ' '));
         while (posInBlock <= text.length()) {
             if (testBracket(text, posInBlock, false, br)) {
                 --depth;

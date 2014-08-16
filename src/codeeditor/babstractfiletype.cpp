@@ -236,19 +236,24 @@ BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QStrin
 
 /*============================== Protected methods =========================*/
 
-void BAbstractFileType::addCurrentBlockSkipInterval(const SkipInterval &si)
+void BAbstractFileType::addCurrentBlockSkipSegment(const SkipSegment &s)
 {
-    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), si);
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(currentBlock(), s);
 }
 
-void BAbstractFileType::addCurrentBlockSkipInterval(int start, int end)
+void BAbstractFileType::addCurrentBlockSkipSegment(int start, int end)
 {
-    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), start, end);
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(currentBlock(), start, end);
 }
 
-void BAbstractFileType::clearCurrentBlockSkipIntervals()
+void BAbstractFileType::addCurrentBlockSkipSegmentL(int start, int length)
 {
-    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), QList<SkipInterval>());
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipSegmentL(currentBlock(), start, length);
+}
+
+void BAbstractFileType::clearCurrentBlockSkipSegments()
+{
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipSegments(currentBlock(), QList<SkipSegment>());
 }
 
 QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocompletionItemList(
@@ -306,9 +311,9 @@ void BAbstractFileType::setCurrentBlockExtraData(BTextBlockExtraData *data)
     d_func()->highlighter->setCurrentBlockExtraData(data);
 }
 
-void BAbstractFileType::setCurrentBlockSkipIntervals(const QList<SkipInterval> &list)
+void BAbstractFileType::setCurrentBlockSkipSegments(const QList<SkipSegment> &list)
 {
-    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), list);
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipSegments(currentBlock(), list);
 }
 
 void BAbstractFileType::setCurrentBlockState(int newState)

@@ -42,11 +42,11 @@ class B_WIDGETS_EXPORT BGuiPluginInterface
 public:
     virtual ~BGuiPluginInterface() {}
 public:
-    virtual QPixmap pixmap() const = 0;
-    virtual BAbstractSettingsTab *createSettingsTab() = 0;
-    virtual QStringList helpSearchPaths() const = 0;
-    virtual QString helpIndex() const = 0;
     virtual BAboutDialog *createAboutDialog() = 0;
+    virtual BAbstractSettingsTab *createSettingsTab() = 0;
+    virtual QString helpIndex() const = 0;
+    virtual QStringList helpSearchPaths() const = 0;
+    virtual QPixmap pixmap() const = 0;
     virtual void processStandardAboutDialog(BAboutDialog *dlg) const = 0;
 };
 
