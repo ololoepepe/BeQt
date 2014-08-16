@@ -278,6 +278,8 @@ void BSettingsDialog::restoreState(const QByteArray &state)
     foreach (BAbstractSettingsTab *tab, tabs())
         tab->restoreState(mm.value(tab->id()).toByteArray());
     setCurrentTab(m.value("current_tab_id").toString());
+    if (d->hspltr)
+        d->hspltr->restoreState(m.value("horizontal_splitter_state").toByteArray());
 }
 
 QByteArray BSettingsDialog::saveState() const
@@ -290,6 +292,8 @@ QByteArray BSettingsDialog::saveState() const
     foreach (BAbstractSettingsTab *tab, tabs())
         mm.insert(tab->id(), tab->saveState());
     m.insert("tab_states", mm);
+    if (d_func()->hspltr)
+        m.insert("horizontal_splitter_state", d_func()->hspltr->saveState());
     return BeQt::serialize(m);
 }
 

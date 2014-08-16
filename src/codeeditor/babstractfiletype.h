@@ -52,9 +52,10 @@ class B_CODEEDITOR_EXPORT BAbstractFileType : public BBase
 public:
     struct AutocompletionItem
     {
-        QIcon icon;
+        QIcon actionIcon;
+        QString actionText;
+        QString actionToolTip;
         QString text;
-        QString toolTip;
     };
     struct BracketPair
     {
@@ -87,8 +88,9 @@ public:
     virtual QString name() const = 0;
     virtual QStringList suffixes() const = 0;
 protected:
-    static AutocompletionItem createAutocompletionItem(const QString &text, const QString &toolTip = QString(),
-                                                       const QIcon &icon = QIcon());
+    static AutocompletionItem createAutocompletionItem(const QString &text, const QString &actionText,
+                                                       const QString &actionToolTip = QString(),
+                                                       const QIcon &actionIcon = QIcon());
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
 protected:
     void addCurrentBlockSkipSegment(const SkipSegment &s);

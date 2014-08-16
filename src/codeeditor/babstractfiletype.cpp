@@ -39,6 +39,7 @@ class BTextBlockExtraData;
 #include <QTextBlock>
 #include <QTextCharFormat>
 #include <QToolTip>
+#include <QVariant>
 
 /*============================================================================
 ================================ BDefaultFileType ============================
@@ -211,16 +212,16 @@ bool BAbstractFileType::matchesFileName(const QString &fileName) const
 
 /*============================== Static protected methods ==================*/
 
-BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionItem(const QString &text,
-                                                                                  const QString &toolTip,
-                                                                                  const QIcon &icon)
+BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionItem(
+        const QString &text, const QString &actionText, const QString &actionToolTip, const QIcon &actionIcon)
 {
     if (text.isEmpty())
         return AutocompletionItem();
     AutocompletionItem item;
     item.text = text;
-    item.toolTip = toolTip;
-    item.icon = icon;
+    item.actionText = actionText;
+    item.actionToolTip = actionToolTip;
+    item.actionIcon = actionIcon;
     return item;
 }
 
@@ -352,9 +353,11 @@ void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc,
         return;
     QMenu *mnu = new QMenu;
     foreach (const AutocompletionItem &aci, list) {
-        if (aci.text.isEmpty())
+        if (aci.text.isEmpty() || aci.actionText.isEmpty())
             continue;
-        mnu->addAction(aci.icon, aci.text)->setToolTip(aci.toolTip);
+        QAction *act = mnu->addAction(aci.actionIcon, aci.actionText);
+        act->setToolTip(aci.actionToolTip);
+        act->setData(aci.text);
     }
     if (mnu->isEmpty()) {
         delete mnu;
@@ -366,14 +369,8 @@ void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc,
         delete mnu;
         return;
     }
-    QString text = act->text();
+    QString text = act->data().toString();
     delete mnu;
-    QString btext = block.text();
-    int start = block.position() + posInBlock - 1;
-    int end = start + 1;
-    while (start > 0 && start < btext.length() && btext.at(start) != ' ')
-        --start;
-    doc->selectText(start + 1, end);
     doc->insertText(text);
 }
 
