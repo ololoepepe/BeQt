@@ -1140,7 +1140,7 @@
 <context>
     <name>BPluginsSettingsTab</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="291"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="301"/>
         <source>Plugins</source>
         <comment>title</comment>
         <translation>Плагины</translation>

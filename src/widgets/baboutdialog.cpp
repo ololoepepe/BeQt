@@ -249,7 +249,7 @@ void BAboutDialogPrivate::initAboutBeqtDialog()
     aboutBeqtDlg = new BAboutDialog(q_func(), "BeQt", bVersion());
     aboutBeqtDlg->setOrganization("Andrey Bogdanov");
     aboutBeqtDlg->setCopyrightPeriod("2012-2014");
-    aboutBeqtDlg->setWebsite("https://github.com/the-dark-angel/BeQt");
+    aboutBeqtDlg->setWebsite("https://github.com/ololoepepe/BeQt");
     aboutBeqtDlg->setPixmap(BApplication::beqtPixmap("beqt_logo"));
     aboutBeqtDlg->setAuthorsProvider(BApplication::beqtAuthorsProvider());
     aboutBeqtDlg->setTranslatorsProvider(BApplication::beqtTranslationsProvider());

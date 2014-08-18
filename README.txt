@@ -4,7 +4,7 @@
 
 Check for your language README in the "readme" directory.
 
-Homepage: https://github.com/the-dark-angel/BeQt
+Homepage: https://github.com/ololoepepe/BeQt
 
 Author: Andrey Bogdanov (ololoepepe@gmail.com)
 

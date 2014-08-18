@@ -260,8 +260,18 @@ void BPluginsSettingsTab::restoreState(const QByteArray &state)
     B_D(BPluginsSettingsTab);
     d->pluginSettingsDialogStates.clear();
     QVariantMap mm = m.value("plugin_settings_dialog_states").toMap();
-    foreach (const QString &key, mm.keys())
+    foreach (const QString &key, mm.keys()) {
+        bool contains = false;
+        foreach (BPluginWrapper *pw, d->plugins) {
+            if (pw->id() == key) {
+                contains = true;
+                break;
+            }
+        }
+        if (!contains)
+            continue;
         d->pluginSettingsDialogStates.insert(key, mm.value(key).toByteArray());
+    }
     QString n = m.value("current_plugin_id").toString();
     if (n.isEmpty())
         return;

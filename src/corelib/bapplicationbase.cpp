@@ -794,7 +794,7 @@ QString BApplicationBase::beqtInfo(About type, const QLocale &loc)
     QString bfn;
     switch (type) {
     case Copyringt:
-        return tr("Copyright") + " (C) 2012-2014 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
+        return tr("Copyright") + " (C) 2012-2014 Andrey Bogdanov [https://github.com/ololoepepe/BeQt]";
     case Description:
         bfn = "description/DESCRIPTION.txt";
         break;

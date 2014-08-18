@@ -2,7 +2,7 @@
  BeQt - Beyond Qt
 ==============================================================================
 
-Домашняя страница: https://github.com/the-dark-angel/BeQt
+Домашняя страница: https://github.com/ololoepepe/BeQt
 
 Автор: Андрей Богданов (ololoepepe@gmail.com)
 
