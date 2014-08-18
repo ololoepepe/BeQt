@@ -486,6 +486,13 @@ void BApplication::setPreferredIconFormats(const QStringList &suffixes)
     ds_func()->preferredIconFormats = suffixes;
 }
 
+void BApplication::setSettingsTabDefaultNavigation(BSettingsDialog::TabNavigation navigation)
+{
+    if (!BApplicationBasePrivate::testInit("BApplication"))
+        return;
+    ds_func()->navigation = navigation;
+}
+
 void BApplication::setThemedIconsEnabled(bool enabled)
 {
     if (!BApplicationBasePrivate::testInit("BApplication"))
@@ -493,11 +500,11 @@ void BApplication::setThemedIconsEnabled(bool enabled)
     ds_func()->themedIcons = enabled;
 }
 
-void BApplication::setSettingsTabDefaultNavigation(BSettingsDialog::TabNavigation navigation)
+BSettingsDialog::TabNavigation BApplication::settingsTabDefaultNavigation()
 {
     if (!BApplicationBasePrivate::testInit("BApplication"))
-        return;
-    ds_func()->navigation = navigation;
+        return BSettingsDialog::ListNavigation;
+    return ds_func()->navigation;
 }
 
 bool BApplication::themedIconsEnabled()

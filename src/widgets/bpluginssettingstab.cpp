@@ -41,6 +41,7 @@
 #include <QList>
 #include <QListWidget>
 #include <QListWidgetItem>
+#include <QMap>
 #include <QMessageBox>
 #include <QObject>
 #include <QPushButton>
@@ -179,12 +180,12 @@ void BPluginsSettingsTabPrivate::btnSettingsClicked()
     if (!pw)
         return;
     BGuiPluginInterface *gpi = qobject_cast<BGuiPluginInterface *>(pw->instance());
-    BAbstractSettingsTab *ast = gpi ? gpi->createSettingsTab() : 0;
-    if (ast) {
-        QList<BAbstractSettingsTab *> tabs;
-        tabs << ast;
-        BSettingsDialog sd( tabs, q_func() );
+    QList<BAbstractSettingsTab *> tabs = gpi ? gpi->createSettingsTabs() : QList<BAbstractSettingsTab *>();
+    if (!tabs.isEmpty()) {
+        BSettingsDialog sd(tabs, BApplication::settingsTabDefaultNavigation(), q_func());
+        sd.restoreState(pluginSettingsDialogStates.value(pw->id()));
         sd.exec();
+        pluginSettingsDialogStates.insert(pw->id(), sd.saveState());
     } else {
         QString title = tr("No settings", "msgbox title");
         QString text = tr("This plugin does not have any settings", "msgbox text");
@@ -256,10 +257,14 @@ QString BPluginsSettingsTab::id() const
 void BPluginsSettingsTab::restoreState(const QByteArray &state)
 {
     QVariantMap m = BeQt::deserialize(state).toMap();
+    B_D(BPluginsSettingsTab);
+    d->pluginSettingsDialogStates.clear();
+    QVariantMap mm = m.value("plugin_settings_dialog_states").toMap();
+    foreach (const QString &key, mm.keys())
+        d->pluginSettingsDialogStates.insert(key, mm.value(key).toByteArray());
     QString n = m.value("current_plugin_id").toString();
     if (n.isEmpty())
         return;
-    B_D(BPluginsSettingsTab);
     foreach (int i, bRangeD(0, d->lstwgt->count() - 1)) {
         if (d->plugins.at(i)->id() == n) {
             d->lstwgt->setCurrentRow(i);
@@ -274,6 +279,10 @@ QByteArray BPluginsSettingsTab::saveState() const
     QVariantMap m;
     if (d->lstwgt->currentRow() >= 0)
         m.insert("current_plugin_id", d->plugins.at(d->lstwgt->currentRow())->id());
+    QVariantMap mm;
+    foreach (const QString &key, d->pluginSettingsDialogStates.keys())
+        mm.insert(key, d->pluginSettingsDialogStates.value(key));
+    m.insert("plugin_settings_dialog_states", mm);
     return BeQt::serialize(m);
 }
 

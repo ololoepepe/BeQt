@@ -72,6 +72,7 @@ public:
     void setMode(Mode m);
     void setPassword(const QString &s, QCryptographicHash::Algorithm a = QCryptographicHash::Sha1);
     void setPassword(QCryptographicHash::Algorithm a, const QByteArray &ba, int charCountHint = 0);
+    BPassword toEncrypted(QCryptographicHash::Algorithm a = QCryptographicHash::Sha1) const;
 public:
     BPassword &operator =(const BPassword &other);
     bool operator ==(const BPassword &other) const;

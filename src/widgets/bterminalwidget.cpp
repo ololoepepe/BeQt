@@ -452,6 +452,11 @@ bool BTerminalWidget::historyEnabled() const
     return d_func()->historyEnabled;
 }
 
+BPlainTextEdit *BTerminalWidget::innerEdit() const
+{
+    return d_func()->ptedt;
+}
+
 bool BTerminalWidget::isActive() const
 {
     const B_D(BTerminalWidget);

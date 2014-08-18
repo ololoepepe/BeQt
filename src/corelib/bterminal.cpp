@@ -290,7 +290,7 @@ void BTerminalPrivate::commandEntered(const QString &cmd, const QStringList &arg
     else
         q->writeLine(translations ? tr("Unknown command", "message") : QString("Unknown command"));
     if (lastCommand != "last" && !lastCommand.startsWith("last "))
-        commandHistory.prepend(lastCommand);
+        commandHistory.prepend(BTextTools::mergeArguments(lastCommand, lastArgs));
 }
 
 void BTerminalPrivate::lineRead(const QString &text)

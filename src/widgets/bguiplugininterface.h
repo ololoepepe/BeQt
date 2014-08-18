@@ -31,6 +31,7 @@ class QStringList;
 
 #include <BeQtCore/BeQtGlobal>
 
+#include <QList>
 #include <QtPlugin>
 
 /*============================================================================
@@ -43,7 +44,7 @@ public:
     virtual ~BGuiPluginInterface() {}
 public:
     virtual BAboutDialog *createAboutDialog() = 0;
-    virtual BAbstractSettingsTab *createSettingsTab() = 0;
+    virtual QList<BAbstractSettingsTab *> createSettingsTabs() = 0;
     virtual QString helpIndex() const = 0;
     virtual QStringList helpSearchPaths() const = 0;
     virtual QPixmap pixmap() const = 0;

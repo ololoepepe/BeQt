@@ -86,6 +86,7 @@ public:
     void removeDictionary(const QString &localeName);
     void setUserDictionary(const QString &path);
     bool spell(const QString &word, const QString &surrLeft = QString(), const QString &surrRight = QString()) const;
+    bool spell(const QStringList &words) const;
     QStringList suggest(const QString &word) const;
     QString userDictionaryPath() const;
 Q_SIGNALS:

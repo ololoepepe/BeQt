@@ -78,8 +78,9 @@ public:
     static void setHelpIndex(const QString &index);
     static void setIconCachingEnabled(bool enabled);
     static void setPreferredIconFormats(const QStringList &suffixes);
-    static void setThemedIconsEnabled(bool enabled);
     static void setSettingsTabDefaultNavigation(BSettingsDialog::TabNavigation navigation);
+    static void setThemedIconsEnabled(bool enabled);
+    static BSettingsDialog::TabNavigation settingsTabDefaultNavigation();
     static bool themedIconsEnabled();
     static QSystemTrayIcon *trayIcon();
 public Q_SLOTS:

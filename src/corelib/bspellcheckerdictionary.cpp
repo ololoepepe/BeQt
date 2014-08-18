@@ -139,7 +139,8 @@ void BSpellCheckerDictionaryPrivate::init()
 
 bool BSpellCheckerDictionaryPrivate::testValidity()
 {
-    return q_func()->spell(Locale.nativeLanguageName());
+    QStringList sl = Locale.nativeLanguageName().split(' ');
+    return !sl.isEmpty() && q_func()->spell(sl);
 }
 
 /*============================================================================
@@ -249,6 +250,15 @@ bool BSpellCheckerDictionary::spell(const QString &word) const
         return false;
     const char *w = codec()->fromUnicode(BSpellCheckerDictionaryPrivate::replaceSpecialLetters(word)).constData();
     return d_func()->hunspell->spell(w);
+}
+
+bool BSpellCheckerDictionary::spell(const QStringList &words) const
+{
+    foreach (const QString &word, words) {
+        if (!spell(word))
+            return false;
+    }
+    return true;
 }
 
 QStringList BSpellCheckerDictionary::suggest(const QString &word) const

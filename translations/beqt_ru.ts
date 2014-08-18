@@ -155,19 +155,19 @@
 <context>
     <name>BApplication</name>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="564"/>
+        <location filename="../src/widgets/bapplication.cpp" line="571"/>
         <source>No settings</source>
         <comment>msgbox windowTitle</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="566"/>
+        <location filename="../src/widgets/bapplication.cpp" line="573"/>
         <source>This application has no settings</source>
         <comment>msgbox text</comment>
         <translation>В этом приложении нет настроек</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bapplication.cpp" line="567"/>
+        <location filename="../src/widgets/bapplication.cpp" line="574"/>
         <source>This message may be shown due to a bug. Try contact the authors</source>
         <comment>msgbox informativeText</comment>
         <translation>Данное сообщение может быть показано по причине бага. Попробуйте связаться с авторами программы</translation>
@@ -1140,7 +1140,7 @@
 <context>
     <name>BPluginsSettingsTab</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="282"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="291"/>
         <source>Plugins</source>
         <comment>title</comment>
         <translation>Плагины</translation>
@@ -1149,31 +1149,31 @@
 <context>
     <name>BPluginsSettingsTabPrivate</name>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="94"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="95"/>
         <source>Configure plugin</source>
         <comment>btn text</comment>
         <translation>Настроить плагин</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="99"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="100"/>
         <source>About plugin</source>
         <comment>btn text</comment>
         <translation>О плагине</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="104"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="105"/>
         <source>Plugin Help</source>
         <comment>btn text</comment>
         <translation>Справка по плагину</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="189"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="190"/>
         <source>No settings</source>
         <comment>msgbox title</comment>
         <translation>Отсутствуют настройки</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bpluginssettingstab.cpp" line="190"/>
+        <location filename="../src/widgets/bpluginssettingstab.cpp" line="191"/>
         <source>This plugin does not have any settings</source>
         <comment>msgbox text</comment>
         <translation>У этого плагина отсутствуют какие-либо настройки</translation>

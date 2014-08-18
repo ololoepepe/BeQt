@@ -161,6 +161,8 @@ void BPassword::clear()
 
 void BPassword::encrypt(QCryptographicHash::Algorithm a)
 {
+    if (d_func()->isEncrypted)
+        return;
     int count = 0;
     QByteArray ba = encryptedPassword(a, &count);
     setPassword(a, ba, count);
@@ -259,6 +261,13 @@ void BPassword::setPassword(QCryptographicHash::Algorithm a, const QByteArray &b
     d->charCount = (charCountHint > 0 && !ba.isEmpty()) ? charCountHint : 0;
     d->algorithm = a;
     d->isEncrypted = true;
+}
+
+BPassword BPassword::toEncrypted(QCryptographicHash::Algorithm a) const
+{
+    BPassword pwd = *this;
+    pwd.encrypt(a);
+    return pwd;
 }
 
 /*============================== Public operators ==========================*/
