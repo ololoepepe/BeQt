@@ -45,6 +45,8 @@ public:
     ~BLineEdit();
 protected:
     explicit BLineEdit(BLineEditPrivate &d, QWidget *parent = 0);
+public Q_SLOTS:
+    void checkValidity();
 Q_SIGNALS:
     void inputValidityChanged(bool b);
 private:
