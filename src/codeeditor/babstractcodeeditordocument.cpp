@@ -770,6 +770,50 @@ void BAbstractCodeEditorDocumentPrivate::rehighlight()
     highlightBrackets();
 }
 
+void BAbstractCodeEditorDocumentPrivate::rehighlightSearchResults()
+{
+    if ((!lastSearchRegexp.isValid() || lastSearchRegexp.isEmpty()) && lastSearchText.isEmpty()) {
+        if (!highlightedSearchResults.isEmpty()) {
+            highlightedSearchResults.clear();
+            q_func()->setExtraSelections(q_func()->extraSelections());
+        }
+        return;
+    }
+    B_Q(BAbstractCodeEditorDocument);
+    ExtraSelectionList selections = q->extraSelections();
+    highlightedSearchResults.clear();
+    if (lastSearchRegexp.isValid()) {
+        QStringList lines = q->text(true).split('\n');
+        int len = 0;
+        foreach (int i, bRangeD(0, lines.size() - 1)) {
+            const QString &t = lines.at(i);
+            int ind = lastSearchRegexp.indexIn(t);
+            while (ind >= 0) {
+                SelectionRange sr;
+                sr.start = ind + len;
+                sr.end = sr.start + lastSearchRegexp.matchedLength();
+                highlightedSearchResults << sr;
+                ind = lastSearchRegexp.indexIn(t, ind + lastSearchRegexp.matchedLength());
+            }
+            len += t.length() + 1;
+        }
+    } else {
+        Qt::CaseSensitivity cs = (lastSearchFlags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
+                                                                                          Qt::CaseInsensitive;
+        bool wholeWords = lastSearchFlags & QTextDocument::FindWholeWords;
+        QString t = q->text(true);
+        int ind = BTextTools::indexOf(t, lastSearchText, 0, cs, wholeWords);
+        while (ind >= 0) {
+            SelectionRange sr;
+            sr.start = ind;
+            sr.end = ind + lastSearchText.length();
+            highlightedSearchResults << sr;
+            ind = BTextTools::indexOf(t, lastSearchText, ind + lastSearchText.length(), cs, wholeWords);
+        }
+    }
+    q->setExtraSelections(selections);
+}
+
 void BAbstractCodeEditorDocumentPrivate::setBuisy(bool b)
 {
     if (b == buisy)
@@ -1089,59 +1133,22 @@ QString BAbstractCodeEditorDocument::fileTypeId() const
 bool BAbstractCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     B_D(BAbstractCodeEditorDocument);
-    ExtraSelectionList selections = extraSelections();
-    d->highlightedSearchResults.clear();
     bool b = findNextImplementation(txt, flags, cyclic);
-    if (b) {
-        d->lastSearchFlags = flags;
-        d->lastSearchRegexp = QRegExp();
-        d->lastSearchText = txt;
-        Qt::CaseSensitivity cs = (flags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
-                                                                                Qt::CaseInsensitive;
-        bool wholeWords = flags & QTextDocument::FindWholeWords;
-        QString t = text(true);
-        int ind = BTextTools::indexOf(t, txt, 0, cs, wholeWords);
-        while (ind >= 0) {
-            BAbstractCodeEditorDocumentPrivate::SelectionRange sr;
-            sr.start = ind;
-            sr.end = ind + txt.length();
-            d->highlightedSearchResults << sr;
-            ind = BTextTools::indexOf(t, txt, ind + txt.length(), cs, wholeWords);
-        }
-    } else {
-        d->lastSearchFlags = 0;
-        d->lastSearchRegexp = QRegExp();
-        d->lastSearchText.clear();
-    }
-    setExtraSelections(selections);
+    d->lastSearchFlags = flags;
+    d->lastSearchRegexp = QRegExp();
+    d->lastSearchText = txt;
+    d->rehighlightSearchResults();
     return b;
 }
 
 bool BAbstractCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
 {
     B_D(BAbstractCodeEditorDocument);
-    ExtraSelectionList selections = extraSelections();
-    d->highlightedSearchResults.clear();
     bool b = findNextRegexpImplementation(rx, flags, cyclic);
-    if (b) {
-        d->lastSearchFlags = flags;
-        d->lastSearchRegexp = rx;
-        d->lastSearchText.clear();
-        QString t = text(true);
-        int ind = rx.indexIn(t);
-        while (ind >= 0) {
-            BAbstractCodeEditorDocumentPrivate::SelectionRange sr;
-            sr.start = ind;
-            sr.end = ind + rx.matchedLength();
-            d->highlightedSearchResults << sr;
-            ind = rx.indexIn(t, ind + rx.matchedLength());
-        }
-    } else {
-        d->lastSearchFlags = 0;
-        d->lastSearchRegexp = QRegExp();
-        d->lastSearchText.clear();
-    }
-   setExtraSelections(selections);
+    d->lastSearchFlags = flags;
+    d->lastSearchRegexp = rx;
+    d->lastSearchText.clear();
+    d->rehighlightSearchResults();
     return b;
 }
 
@@ -1580,44 +1587,7 @@ void BAbstractCodeEditorDocument::emitSelectionChanged()
 
 void BAbstractCodeEditorDocument::emitTextChanged()
 {
-    typedef BAbstractCodeEditorDocumentPrivate::SelectionRange SelectionRange;
-    typedef BAbstractCodeEditorDocumentPrivate::SelectionRangeList SelectionRangeList;
-    B_D(BAbstractCodeEditorDocument);
-    if ((!d->lastSearchRegexp.isValid() || d->lastSearchRegexp.isEmpty()) && d->lastSearchText.isEmpty()) {
-        Q_EMIT textChanged();
-        return;
-    }
-    QTextBlock tb = textCursor().block();
-    int start = tb.position();
-    int end = tb.position() + tb.length();
-    BAbstractCodeEditorDocumentPrivate::removeSelectionRanges(d->highlightedSearchResults, start, end);
-    SelectionRangeList added;
-    QString t = tb.text();
-    if (d->lastSearchRegexp.isValid() && !d->lastSearchRegexp.isEmpty()) {
-        int ind = d->lastSearchRegexp.indexIn(t);
-        while (ind >= 0) {
-            SelectionRange sr;
-            sr.start = tb.position() + ind;
-            sr.end = tb.position() + ind + d->lastSearchRegexp.matchedLength();
-            added << sr;
-            ind = d->lastSearchRegexp.indexIn(t, ind + d->lastSearchRegexp.matchedLength());
-        }
-    } else if (!d->lastSearchText.isEmpty()) {
-        Qt::CaseSensitivity cs = (d->lastSearchFlags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
-                                                                                             Qt::CaseInsensitive;
-        bool wholeWords = d->lastSearchFlags & QTextDocument::FindWholeWords;
-        int ind = BTextTools::indexOf(t, d->lastSearchText, 0, cs, wholeWords);
-        while (ind >= 0) {
-            SelectionRange sr;
-            sr.start = tb.position() + ind;
-            sr.end = tb.position() + ind + d->lastSearchText.length();
-            added << sr;
-            ind = BTextTools::indexOf(t, d->lastSearchText, ind + d->lastSearchText.length(), cs, wholeWords);
-        }
-    }
-    d->highlightedSearchResults << added;
-    if (!added.isEmpty())
-        setExtraSelections(extraSelections());
+    d_func()->rehighlightSearchResults();
     Q_EMIT textChanged();
 }
 

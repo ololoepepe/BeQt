@@ -229,6 +229,7 @@ public:
     void highlightBrackets();
     void init();
     void rehighlight();
+    void rehighlightSearchResults();
     void setBuisy(bool b);
     void setCodec(QTextCodec *c);
     void setFileName(QString fn);
