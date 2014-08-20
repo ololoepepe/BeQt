@@ -63,9 +63,8 @@ public:
     ~BInternalLocationProvider();
 private:
     static QStringList createNames();
-    static QString createSharedPrefix();
+    static QString createSharedPrefix(const QString &appName);
     static QString createUserPrefix(const QString &appName, const QString &orgName);
-    static QString sharedPrefix(const QString &sharedPrefix, bool plugins = false);
 public:
     bool canCreateLocationPath(const QString &locationName, BApplicationBase::ResourceType type) const;
     bool createLocationPath(const QString &locationName, BApplicationBase::ResourceType type);

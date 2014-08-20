@@ -57,7 +57,7 @@ class QWidget;
 
 BInternalLocationProvider::BInternalLocationProvider(const QString &appName, const QString &orgName, bool portable) :
     AppName(appName), Names(createNames()), OrgName(orgName), Portable(portable),
-     SharedPrefix(createSharedPrefix()), UserPrefix(createUserPrefix(AppName, OrgName))
+     SharedPrefix(createSharedPrefix(appName)), UserPrefix(createUserPrefix(AppName, OrgName))
 {
     //
 }
@@ -74,7 +74,7 @@ QStringList BInternalLocationProvider::createNames()
     QStringList names;
     names << "beqt/icons";
     names << "data";
-    names << "documentation";
+    names << "doc";
     names << "icons";
     names << "plugins";
     names << "settings";
@@ -83,9 +83,12 @@ QStringList BInternalLocationProvider::createNames()
     return names;
 }
 
-QString BInternalLocationProvider::createSharedPrefix()
+QString BInternalLocationProvider::createSharedPrefix(const QString &appName)
 {
-    return QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../shared");
+    if (appName.isEmpty())
+        return QString();
+    return QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../share/"
+                           + BApplicationBasePrivate::toLowerNoSpaces(appName));
 }
 
 QString BInternalLocationProvider::createUserPrefix(const QString &appName, const QString &orgName)
@@ -97,23 +100,17 @@ QString BInternalLocationProvider::createUserPrefix(const QString &appName, cons
     if (orgName.isEmpty())
         return QString();
 #endif
+    QString postfix = "/share/" + BApplicationBasePrivate::toLowerNoSpaces(appName);
 #if defined(Q_OS_MAC)
-    return QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName;
+    return QDir::homePath() + "/Library/Application Support/" + orgName + "/" + appName + postfix;
 #elif defined (Q_OS_LINUX)
-    return QDir::homePath() + "/." + BApplicationBasePrivate::platformSpecificAppName(appName);
+    return QDir::homePath() + "/." + BApplicationBasePrivate::platformSpecificAppName(appName) + postfix;
 #elif defined(Q_OS_WIN)
     if (QSysInfo::windowsVersion() ==  QSysInfo::WV_XP || QSysInfo::windowsVersion() == QSysInfo::WV_2003)
-        return QDir::homePath() + "/Application Data/" + orgName + "/" + appName;
+        return QDir::homePath() + "/Application Data/" + orgName + "/" + appName + postfix;
     else
-        return QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName;
+        return QDir::homePath() + "/AppData/Roaming/" + orgName + "/" + appName + postfix;
 #endif
-}
-
-QString BInternalLocationProvider::sharedPrefix(const QString &sharedPrefix, bool plugins)
-{
-    if (sharedPrefix.isEmpty())
-        return QString();
-    return plugins ? QDir::cleanPath(sharedPrefix + "/..") : sharedPrefix;
 }
 
 /*============================== Public methods ============================*/
@@ -149,14 +146,13 @@ QString BInternalLocationProvider::locationPath(const QString &locationName, BAp
 {
     if (locationName.isEmpty() || !Names.contains(locationName))
         return QString();
-    bool plugins = ("plugins" == locationName);
     QString prefix;
     switch (type) {
     case BApplicationBase::UserResource:
-        prefix = Portable ? sharedPrefix(SharedPrefix, plugins) : UserPrefix;
+        prefix = Portable ? SharedPrefix : UserPrefix;
         break;
     case BApplicationBase::SharedResource:
-        prefix = sharedPrefix(SharedPrefix, plugins);
+        prefix = SharedPrefix;
         break;
     case BApplicationBase::BuiltinResource:
         prefix = ":";
@@ -166,27 +162,12 @@ QString BInternalLocationProvider::locationPath(const QString &locationName, BAp
     }
     if (prefix.isEmpty())
         return QString();
-    if (plugins) {
-        if (BApplicationBase::SharedResource == type)
-            return prefix + "/lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins";
-        else
-            return prefix + "/plugins";
-    }
-    else if ("beqt/icons" == locationName)
-        return prefix + "/beqt/icons";
-    else if ("data" == locationName)
+    if ("data" == locationName)
         return prefix;
-    else if ("documentation" == locationName)
-        return prefix + "/doc";
-    else if ("icons" == locationName)
-        return prefix + "icons";
-    else if ("settings" == locationName)
-        return prefix + "/settings";
-    else if ("translations" == locationName)
-        return prefix + "/translations";
-    else if ("beqt" == locationName)
-        return prefix + "/beqt";
-    return QString();
+    else if ("plugins" == locationName)
+        return QDir::cleanPath(prefix + "/../../lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins");
+    else
+        return prefix + "/" + locationName;
 }
 
 /*============================================================================
@@ -309,7 +290,8 @@ void BApplicationBasePrivate::init(BApplicationBase::Portability portability)
     if (!bTest(!orgName.isEmpty(), "BApplicationBase", "Organization name not specified"))
         orgName = DefaultOrgName;
     if (BApplicationBase::AutoDetect == portability) {
-        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../settings");
+        QString path = QDir::cleanPath(QCoreApplication::applicationDirPath() + "/../share/" + toLowerNoSpaces(appName)
+                                       + "/settings");
         portable = QFileInfo(confFileName(path, appName)).isFile();
     } else {
         portable = (BApplicationBase::Portable == portability);
@@ -966,7 +948,7 @@ QString BApplicationBase::location(Location loc, ResourceType type)
         name = "data";
         break;
     case DocumentationPath:
-        name = "documentation";
+        name = "doc";
         break;
     case PluginsPath:
         name = "plugins";
