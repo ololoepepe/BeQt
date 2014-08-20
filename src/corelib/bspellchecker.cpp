@@ -409,6 +409,15 @@ bool BSpellChecker::spell(const QString &word, const QString &surrLeft, const QS
     return false;
 }
 
+bool BSpellChecker::spell(const QStringList &words) const
+{
+    foreach (const QString &word, words) {
+        if (!spell(word))
+            return false;
+    }
+    return true;
+}
+
 QStringList BSpellChecker::suggest(const QString &word) const
 {
     if (word.isEmpty())

@@ -66,10 +66,11 @@ public:
 public:
     virtual void activate() = 0;
     virtual void deactivate() = 0;
+    virtual QString id() const = 0;
     virtual PluginInfo info() const = 0;
-    virtual QString name() const = 0;
     virtual bool prefereStaticInfo() const = 0;
     virtual StaticPluginInfo staticInfo() const = 0;
+    virtual QString title() const = 0;
     virtual QString type() const = 0;
     virtual BVersion version() const = 0;
 };

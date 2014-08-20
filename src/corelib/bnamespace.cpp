@@ -23,7 +23,6 @@
 
 #include "bdirtools.h"
 #include "btexttools.h"
-#include "buuid.h"
 
 #include <QByteArray>
 #include <QCoreApplication>
@@ -256,6 +255,33 @@ void ThreadHack::usleepHack(unsigned long usecs)
 namespace BeQt
 {
 
+QList<OSType> allOSTypes(bool includeUnknown, bool includeMeta)
+{
+    QList<OSType> list = QList<OSType>() << WindowsOS << LinuxOS << MacOS;
+    if (includeMeta)
+        list.prepend(UnixOS);
+    if (includeUnknown)
+        list.prepend(UnknownOS);
+    return list;
+}
+
+QList<ProcessorArchitecture> allProcessorArchitectures(bool includeUnknown)
+{
+    QList<ProcessorArchitecture> list = QList<ProcessorArchitecture>() << AlphaArchitecture << Amd64Architecture
+        << ArmArchitecture << Arm64Architecture << BlackfinArchitecture << ConvexArchitecture << EpiphanyArchitecture
+        << HpPaRiscArchitecture << IntelX86Architecture << IntelItaniumArchitecture << Motorola68kAArchitecture
+        << MipsArchitecture << PowerPcArchitecture << Pyramid9810Architecture << Rs6000Architecture
+        << SparcArchitecture << SuperHArchitecture << SystemZArchitecture << Tms320Architecture << Tms470Architecture;
+    if (includeUnknown)
+        list.prepend(UnknownArchitecture);
+    return list;
+}
+
+QList<BeQt::TabWidth> allTabWidths()
+{
+    return QList<BeQt::TabWidth>() << TabWidth2 << TabWidth4 << TabWidth8;
+}
+
 int area(const QRect &r)
 {
     return r.size().width() * r.size().height();
@@ -264,14 +290,6 @@ int area(const QRect &r)
 qreal area(const QRectF &r)
 {
     return r.size().width() * r.size().height();
-}
-
-QString canonicalUuidText(const QString &uuidText)
-{
-    if (uuidText.isEmpty())
-        return "";
-    QString t = (uuidText.at(0) != '{' ? "{" : "") + uuidText + (uuidText.at(uuidText.length() - 1) != '}' ? "}" : "");
-    return !BUuid(t).isNull() ? t : QString();
 }
 
 QTextCodec *codec(const QString &cn)
@@ -480,7 +498,7 @@ QString linuxVersion()
     if (!ok || sl.isEmpty())
         return "Unknown";
     sl = sl.last().split('=', QString::SkipEmptyParts);
-    return (sl.size() == 2) ? ("Linux " + BTextTools::unwrapped(sl.last())) : QString("Unknown");
+    return (sl.size() == 2) ? ("Linux " + BTextTools::unwrapped(sl.last(), "\"")) : QString("Unknown");
 }
 #endif
 
@@ -623,15 +641,53 @@ ProcessorArchitecture processorArchitecture()
 #endif
 }
 
-QString pureUuidText(const BUuid &uuid)
+QString processorArchitectureToString(ProcessorArchitecture arch)
 {
-    QString t = uuid.toString();
-    return t.mid(1, t.length() - 2);
-}
-
-QString pureUuidText(const QString &uuidText)
-{
-    return pureUuidText(BUuid(canonicalUuidText(uuidText)));
+    switch (arch) {
+    case AlphaArchitecture:
+    return "";
+    case Amd64Architecture:
+        return "";
+    case ArmArchitecture:
+        return "";
+    case Arm64Architecture:
+        return "";
+    case BlackfinArchitecture:
+        return "";
+    case ConvexArchitecture:
+        return "";
+    case EpiphanyArchitecture:
+        return "";
+    case HpPaRiscArchitecture:
+        return "";
+    case IntelX86Architecture:
+        return "";
+    case IntelItaniumArchitecture:
+        return "";
+    case Motorola68kAArchitecture:
+        return "";
+    case MipsArchitecture:
+        return "";
+    case PowerPcArchitecture:
+        return "";
+    case Pyramid9810Architecture:
+        return "";
+    case Rs6000Architecture:
+        return "";
+    case SparcArchitecture:
+        return "";
+    case SuperHArchitecture:
+        return "";
+    case SystemZArchitecture:
+        return "";
+    case Tms320Architecture:
+        return "";
+    case Tms470Architecture:
+        return "";
+    case UnknownArchitecture:
+    default:
+        return "Unknown";
+    }
 }
 
 QByteArray serialize(const QVariant &variant, QDataStream::Version version)
@@ -731,11 +787,6 @@ Until until(const QObject *object, const char *signal)
 void usleep(unsigned long usecs)
 {
     ThreadHack::usleepHack(usecs);
-}
-
-BUuid uuidFromText(const QString &uuidText)
-{
-    return BUuid(canonicalUuidText(uuidText));
 }
 
 void waitNonBlocking(int msecs)

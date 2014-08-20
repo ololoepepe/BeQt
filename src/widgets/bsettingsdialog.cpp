@@ -24,8 +24,10 @@
 
 #include "babstractsettingstab.h"
 
+#include <BeQtCore/BeQt>
 #include <BeQtCore/private/bbaseobject_p.h>
 
+#include <QByteArray>
 #include <QCheckBox>
 #include <QDebug>
 #include <QDialog>
@@ -36,6 +38,7 @@
 #include <QListWidgetItem>
 #include <QMap>
 #include <QMessageBox>
+#include <QMetaObject>
 #include <QPushButton>
 #include <QSplitter>
 #include <QStackedWidget>
@@ -43,6 +46,8 @@
 #include <QStringList>
 #include <QTabWidget>
 #include <QTimer>
+#include <QVariant>
+#include <QVariantMap>
 #include <QVBoxLayout>
 
 /*============================================================================
@@ -64,18 +69,6 @@ BSettingsDialogPrivate::~BSettingsDialogPrivate()
 }
 
 /*============================== Public methods ============================*/
-
-BAbstractSettingsTab *BSettingsDialogPrivate::currentTab() const
-{
-    if (stkdwgt)
-        return Tabs.at(stkdwgt->currentIndex());
-    else if (twgt)
-        return Tabs.at(twgt->currentIndex());
-    else if (!Tabs.isEmpty())
-        return Tabs.first();
-    else
-        return 0;
-}
 
 void BSettingsDialogPrivate::init()
 {
@@ -166,7 +159,7 @@ void BSettingsDialogPrivate::accepted()
 
 void BSettingsDialogPrivate::btnRestoreDefaultClicked()
 {
-    BAbstractSettingsTab *tab = currentTab();
+    BAbstractSettingsTab *tab = q_func()->currentTab();
     if (!tab)
         return;
     QMessageBox msg(q_func());
@@ -187,7 +180,7 @@ void BSettingsDialogPrivate::btnRestoreDefaultClicked()
 
 void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
 {
-    BAbstractSettingsTab *tab = currentTab();
+    BAbstractSettingsTab *tab = q_func()->currentTab();
     if (!tab)
         return;
     bool b = (Qt::Checked == state);
@@ -202,7 +195,7 @@ void BSettingsDialogPrivate::cboxAdvancedModeStateChanged(int state)
 
 void BSettingsDialogPrivate::currentChanged(int)
 {
-    BAbstractSettingsTab *tab = currentTab();
+    BAbstractSettingsTab *tab = q_func()->currentTab();
     if (!tab)
         return;
     btnRestoreDefault->setEnabled(tab->hasDefault());
@@ -255,7 +248,79 @@ BSettingsDialog::BSettingsDialog(BSettingsDialogPrivate &d, QWidget *parent) :
 
 /*============================== Public methods ============================*/
 
+BAbstractSettingsTab *BSettingsDialog::currentTab() const
+{
+    const B_D(BSettingsDialog);
+    if (d->stkdwgt)
+        return d->Tabs.at(d->stkdwgt->currentIndex());
+    else if (d->twgt)
+        return d->Tabs.at(d->twgt->currentIndex());
+    else if (!d->Tabs.isEmpty())
+        return d->Tabs.first();
+    else
+        return 0;
+}
+
 bool BSettingsDialog::isValid() const
 {
     return d_func()->valid;
+}
+
+void BSettingsDialog::restoreState(const QByteArray &state)
+{
+    if (!isValid())
+        return;
+    B_D(BSettingsDialog);
+    if (!d->lstwgt && !d->twgt)
+        return;
+    QVariantMap m = BeQt::deserialize(state).toMap();
+    QVariantMap mm = m.value("tab_states").toMap();
+    foreach (BAbstractSettingsTab *tab, tabs())
+        tab->restoreState(mm.value(tab->id()).toByteArray());
+    setCurrentTab(m.value("current_tab_id").toString());
+    if (d->hspltr)
+        d->hspltr->restoreState(m.value("horizontal_splitter_state").toByteArray());
+}
+
+QByteArray BSettingsDialog::saveState() const
+{
+    QVariantMap m;
+    BAbstractSettingsTab *tab = currentTab();
+    if (tab)
+        m.insert("current_tab_id", tab->id());
+    QVariantMap mm;
+    foreach (BAbstractSettingsTab *tab, tabs())
+        mm.insert(tab->id(), tab->saveState());
+    m.insert("tab_states", mm);
+    if (d_func()->hspltr)
+        m.insert("horizontal_splitter_state", d_func()->hspltr->saveState());
+    return BeQt::serialize(m);
+}
+
+void BSettingsDialog::setCurrentTab(BAbstractSettingsTab *tab)
+{
+    if (!tab)
+        return;
+    setCurrentTab(tab->id());
+}
+
+void BSettingsDialog::setCurrentTab(const QString &id)
+{
+    if (id.isEmpty())
+        return;
+    B_D(BSettingsDialog);
+    foreach (BAbstractSettingsTab *tab, tabs()) {
+        if (tab->id() == id) {
+            if (d->twgt)
+                d->twgt->setCurrentWidget(tab);
+            else if (d->lstwgt)
+                d->lstwgt->setCurrentRow(d->stkdwgt->indexOf(tab));
+            break;
+        }
+    }
+}
+
+QList<BAbstractSettingsTab *> BSettingsDialog::tabs() const
+{
+    return d_func()->Tabs;
 }

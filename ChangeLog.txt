@@ -8,6 +8,7 @@
     * Remove BeQt::variantToData and BeQt::dataToVatiant functions
     * Add working directory argument to BeQt::startProcessDetached function
     * Add BTextTools:toHtml function
+    * Add overloaded BTextTools wrap, unwrap, wrapped and unwrapped functions
     * Add alternative base class pair with non-QObject private base
     * Fix BSpellCheckerDictionary validity testing
     * Add ability to set replaced letters in BSpellCheckerDictionary
@@ -20,6 +21,7 @@
     * Add ability to set multiple copyright owners in BApplicationBase
     * Rename BTerminalIOHandler into BTerminal and make it a singleton
     * Move splitCommand and mergeArguments from BTerminal to BTextTools
+    * Move UUID-related functions from BeQt namespace to BUuid class
     * Implement terminal modes
     * Add ability to remember entered commands in BTerminal
     * Rename BPluginWrapper::interfacetestFunction method into interfaceTestFunction
@@ -41,6 +43,9 @@
     * Add ability to pre-handle incoming connection to BNetworkServer
     * Improve user ban system in BNetworkServer
 
+==== BeQtSql ====
+    * Add ability to disable automatic transaction when creating database from schema
+
 ==== BeQtWidgets ====
     * Merge similar GUI method pairs into templates
     * Move BApplication::SettingsTabNavigation enum to BSettingsDialog (change related methods)
@@ -57,6 +62,8 @@
     * Remove BGuiPluginInterface::handleSettings method
     * Add Help information to plugin BGuiPluginInterface
     * Add ability to set user About dialog for plugins
+    * Add ability to save/restore BSettingsDialog and BAbstractSettingsTab state
+    * Add virtual id method to BAbstractSettingsTab
     * Remove some template methods from BAbstractSettingsTab
     * Remove old methods from BPluginsSettingsTab
     * Fix BPluginsSettingsTab About dialog version
@@ -70,7 +77,6 @@
 
 ==== BeQtCodeEditor ====
     * Remove old function declarations without definitions from BeQtCodeEditor classes
-    * Do not use QPointer in editor modules
     * Improve editor modules (de)serializing
     * Improve BTextBlockUserData (implement multiple skip intervals)
     * Hide BTextBlockUserData; add BTextBlockExtraData instead

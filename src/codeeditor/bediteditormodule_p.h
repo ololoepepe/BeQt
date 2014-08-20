@@ -24,15 +24,15 @@
 
 class BAbstractCodeEditorDocument;
 
-class QAction;
-
 #include "bediteditormodule.h"
 #include "babstracteditormodule_p.h"
 
 #include <BeQtCore/private/bbase_p.h>
 
+#include <QAction>
 #include <QList>
 #include <QObject>
+#include <QPointer>
 
 /*============================================================================
 ================================ BEditEditorModulePrivate ====================
@@ -43,12 +43,12 @@ class B_CODEEDITOR_EXPORT BEditEditorModulePrivate : public BAbstractEditorModul
     Q_OBJECT
     B_DECLARE_PUBLIC(BEditEditorModule)
 public:
-    QAction *actCopy;
-    QAction *actCut;
-    QAction *actPaste;
-    QAction *actRedo;
-    QAction *actSwitchMode;
-    QAction *actUndo;
+    QPointer<QAction> actCopy;
+    QPointer<QAction> actCut;
+    QPointer<QAction> actPaste;
+    QPointer<QAction> actRedo;
+    QPointer<QAction> actSwitchMode;
+    QPointer<QAction> actUndo;
     BAbstractCodeEditorDocument *document;
 public:
     explicit BEditEditorModulePrivate(BEditEditorModule *q);

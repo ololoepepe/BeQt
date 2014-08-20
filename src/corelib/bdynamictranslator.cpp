@@ -22,10 +22,10 @@
 #include "bdynamictranslator.h"
 #include "bdynamictranslator_p.h"
 
+#include "bcoreapplication.h"
 #include "btranslation.h"
 
 #include <QByteArray>
-#include <QCoreApplication>
 #include <QDebug>
 #include <QMetaObject>
 #include <QObject>
@@ -79,7 +79,7 @@ BDynamicTranslator::BDynamicTranslator(QObject *parent, const QByteArray &target
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
     d_func()->init();
-    setTrigger(qApp, SIGNAL(languageChanged()));
+    setTrigger(bApp, SIGNAL(languageChanged()));
     setTargetPropertyName(targetPropertyName);
     setTranslation(t);
 }
@@ -88,7 +88,7 @@ BDynamicTranslator::BDynamicTranslator(QObject *parent, const BTranslation &t, c
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
     d_func()->init();
-    setTrigger(qApp, SIGNAL(languageChanged()));
+    setTrigger(bApp, SIGNAL(languageChanged()));
     setTargetSlotName(targetSlotName);
     setTranslation(t);
 }

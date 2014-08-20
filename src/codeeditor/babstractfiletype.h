@@ -35,6 +35,7 @@ class QPoint;
 class QStringList;
 class QTextBlock;
 class QTextCharFormat;
+class QTextCursor;
 
 #include <BeQtCore/BBase>
 
@@ -52,9 +53,10 @@ class B_CODEEDITOR_EXPORT BAbstractFileType : public BBase
 public:
     struct AutocompletionItem
     {
-        QIcon icon;
+        QIcon actionIcon;
+        QString actionText;
+        QString actionToolTip;
         QString text;
-        QString toolTip;
     };
     struct BracketPair
     {
@@ -62,7 +64,7 @@ public:
         QString escape;
         QString opening;
     };
-    struct SkipInterval
+    struct SkipSegment
     {
         int end;
         int start;
@@ -87,16 +89,18 @@ public:
     virtual QString name() const = 0;
     virtual QStringList suffixes() const = 0;
 protected:
-    static AutocompletionItem createAutocompletionItem(const QString &text, const QString &toolTip = QString(),
-                                                       const QIcon &icon = QIcon());
+    static AutocompletionItem createAutocompletionItem(const QString &text, const QString &actionText,
+                                                       const QString &actionToolTip = QString(),
+                                                       const QIcon &actionIcon = QIcon());
     static BracketPair createBracketPair(const QString &op, const QString &cl, const QString &esc = QString());
 protected:
-    void addCurrentBlockSkipInterval(const SkipInterval &si);
-    void addCurrentBlockSkipInterval(int start, int end = -1);
-    void clearCurrentBlockSkipIntervals();
-    virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc, QTextBlock block,
-                                                                   int posInBlock);
-    virtual QString createToolTipText(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock);
+    void addCurrentBlockSkipSegment(const SkipSegment &s);
+    void addCurrentBlockSkipSegment(int start, int end = -1);
+    void addCurrentBlockSkipSegmentL(int start, int length = -1);
+    void clearCurrentBlockSkipSegments();
+    virtual QList<AutocompletionItem> createAutocompletionItemList(BAbstractCodeEditorDocument *doc,
+                                                                   QTextCursor cursor);
+    virtual QString createToolTipText(BAbstractCodeEditorDocument *doc, QTextCursor cursor);
     QTextBlock currentBlock() const;
     BTextBlockExtraData *currentBlockExtraData() const;
     int currentBlockState() const;
@@ -105,15 +109,13 @@ protected:
     virtual void highlightBlock(const QString &text);
     int previousBlockState() const;
     void setCurrentBlockExtraData(BTextBlockExtraData *data);
-    void setCurrentBlockSkipIntervals(const QList<SkipInterval> &list = QList<SkipInterval>());
+    void setCurrentBlockSkipSegments(const QList<SkipSegment> &list = QList<SkipSegment>());
     void setCurrentBlockState(int newState);
     void setFormat(int start, int count, const QTextCharFormat &format);
     void setFormat(int start, int count, const QColor &color);
     void setFormat(int start, int count, const QFont &font);
-    virtual void showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
-                                        const QPoint &globalPos);
-    virtual void showToolTip(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
-                             const QPoint &globalPos);
+    virtual void showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextCursor cursor, const QPoint &globalPos);
+    virtual void showToolTip(BAbstractCodeEditorDocument *doc, QTextCursor cursor, const QPoint &globalPos);
 private:
     friend class BSyntaxHighlighter;
     friend class BAbstractCodeEditorDocumentPrivate;

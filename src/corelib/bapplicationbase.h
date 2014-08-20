@@ -189,6 +189,7 @@ public:
     static void setDisabledPlugins(const QStringList &list);
     static void setLocale(const QLocale &l);
     static void setLogger(BLogger *l);
+    static void setPluginActivated(const QString &pluginId, bool activated);
     static QSettings *settingsInstance();
     static void unloadPlugins(bool remove = false);
 private:

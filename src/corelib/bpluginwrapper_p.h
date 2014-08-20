@@ -51,15 +51,16 @@ public:
 public:
     bool activated;
     QString fileName;
+    QString id;
     BPluginInterface::PluginInfo info;
     QObject *instance;
     BPluginInterface *interface;
     bool loaded;
     QPointer<QPluginLoader> loader;
-    QString name;
     bool prefereStaticInfo;
     QPointer<QSettings> settings;
     BPluginInterface::StaticPluginInfo staticInfo;
+    QString title;
     QString type;
     BVersion version;
 public:

@@ -328,11 +328,6 @@ void BCodeEditorDocument::deselectTextImplementation()
     d_func()->cedt->deselectText();
 }
 
-BCodeEditorDocument::ExtraSelectionList BCodeEditorDocument::extraSelectionsImplementation() const
-{
-    return d_func()->cedt->extraSelections();
-}
-
 bool BCodeEditorDocument::findNextImplementation(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     return d_func()->cedt->findNext(txt, flags, cyclic);

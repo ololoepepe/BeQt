@@ -90,29 +90,29 @@ BTextBlockUserDataPrivate::~BTextBlockUserDataPrivate()
 
 /*============================== Static public methods =====================*/
 
-bool BTextBlockUserDataPrivate::lessThan(const SkipInterval &si1, const SkipInterval &si2)
+bool BTextBlockUserDataPrivate::lessThan(const SkipSegment &s1, const SkipSegment &s2)
 {
-    return si1.start < si2.start;
+    return s1.start < s2.start;
 }
 
-QList<BTextBlockUserDataPrivate::SkipInterval> BTextBlockUserDataPrivate::processList(const QList<SkipInterval> &list)
+QList<BTextBlockUserDataPrivate::SkipSegment> BTextBlockUserDataPrivate::processList(const QList<SkipSegment> &list)
 {
     if (list.isEmpty())
         return list;
-    QList<BAbstractFileType::SkipInterval> nlist = list;
+    QList<BAbstractFileType::SkipSegment> nlist = list;
     foreach (int i, bRangeR(nlist.size() - 1, 0)) {
-        const SkipInterval &si = nlist.at(i);
-        if (si.start < 0 || si.end < 0 || si.start > si.end)
+        const SkipSegment &s = nlist.at(i);
+        if (s.start < 0 || s.end < 0 || s.start > s.end)
             nlist.removeAt(i);
     }
     if (nlist.isEmpty())
         return nlist;
     qSort(nlist.begin(), nlist.end(), &lessThan);
     foreach (int i, bRangeR(nlist.size() - 1, 1)) {
-        SkipInterval &si1 = nlist[i - 1];
-        const SkipInterval &si2 = nlist.at(i);
-        if (si1.end >= si2.start)
-            si1.end = si2.end;
+        SkipSegment &s1 = nlist[i - 1];
+        const SkipSegment &s2 = nlist.at(i);
+        if (s1.end >= s2.start)
+            s1.end = s2.end;
         nlist.removeAt(i);
     }
     return nlist;
@@ -131,11 +131,11 @@ void BTextBlockUserDataPrivate::init()
 
 /*============================== Public constructors =======================*/
 
-BTextBlockUserData::BTextBlockUserData(const QList<SkipInterval> &list) :
+BTextBlockUserData::BTextBlockUserData(const QList<SkipSegment> &list) :
     BBase(*new BTextBlockUserDataPrivate(this))
 {
     d_func()->init();
-    setSkipIntervals(list);
+    setSkipSegments(list);
 }
 
 BTextBlockUserData::~BTextBlockUserData()
@@ -149,8 +149,8 @@ bool BTextBlockUserData::shouldSkip(const BTextBlockUserData *ud, int pos)
 {
     if (!ud || pos < 0)
         return false;
-    foreach (const SkipInterval &si, ud->d_func()->skipIntervals) {
-        if (si.start <= pos && si.end >= pos)
+    foreach (const SkipSegment &s, ud->d_func()->skipSegments) {
+        if (s.start <= pos && s.end >= pos)
             return true;
     }
     return false;
@@ -166,33 +166,33 @@ bool BTextBlockUserData::shouldSkip(const QTextBlock &block, int pos)
     return shouldSkip(ud, pos);
 }
 
-QList<BTextBlockUserData::SkipInterval> BTextBlockUserData::skipIntervals(const QTextBlock &block)
+QList<BTextBlockUserData::SkipSegment> BTextBlockUserData::skipSegments(const QTextBlock &block)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
-    return ud ? ud->d_func()->skipIntervals : QList<SkipInterval>();
+    return ud ? ud->d_func()->skipSegments : QList<SkipSegment>();
 }
 
-QString BTextBlockUserData::textWithoutSkipIntervals(const BTextBlockUserData *ud, const QString &text, char replacer)
+QString BTextBlockUserData::textWithoutSkipSegments(const BTextBlockUserData *ud, const QString &text, char replacer)
 {
     if (!ud)
         return text;
     QString ntext = text;
-    foreach (int i, bRangeR(ud->d_func()->skipIntervals.size() - 1, 0)) {
-        const SkipInterval &si = ud->d_func()->skipIntervals.at(i);
-        if (si.start >= ntext.length() || si.end >= ntext.length())
+    foreach (int i, bRangeR(ud->d_func()->skipSegments.size() - 1, 0)) {
+        const SkipSegment &s = ud->d_func()->skipSegments.at(i);
+        if (s.start >= ntext.length() || s.end >= ntext.length())
             continue;
-        int len = si.end - si.start + 1;
+        int len = s.end - s.start + 1;
         if ('\0' != replacer)
-            ntext.replace(si.start, len, replacer);
+            ntext.replace(s.start, len, QString().fill(replacer, len));
         else
-            ntext.remove(si.start, len);
+            ntext.remove(s.start, len);
     }
     return ntext;
 }
 
-QString BTextBlockUserData::textWithoutSkipIntervals(const QTextBlock &block, char replacer)
+QString BTextBlockUserData::textWithoutSkipSegments(const QTextBlock &block, char replacer)
 {
-    return textWithoutSkipIntervals(static_cast<BTextBlockUserData *>(block.userData()), block.text(), replacer);
+    return textWithoutSkipSegments(static_cast<BTextBlockUserData *>(block.userData()), block.text(), replacer);
 }
 
 /*============================== Public methods ============================*/
@@ -209,14 +209,14 @@ void BTextBlockUserData::setExtraData(BTextBlockExtraData *data)
     d_func()->data = data;
 }
 
-void BTextBlockUserData::setSkipIntervals(const QList<SkipInterval> &list)
+void BTextBlockUserData::setSkipSegments(const QList<SkipSegment> &list)
 {
-    d_func()->skipIntervals = BTextBlockUserDataPrivate::processList(list);
+    d_func()->skipSegments = BTextBlockUserDataPrivate::processList(list);
 }
 
-QList<BTextBlockUserData::SkipInterval> BTextBlockUserData::skipIntervals() const
+QList<BTextBlockUserData::SkipSegment> BTextBlockUserData::skipSegments() const
 {
-    return d_func()->skipIntervals;
+    return d_func()->skipSegments;
 }
 
 /*============================================================================
@@ -360,26 +360,34 @@ BAbstractCodeEditorDocumentPrivate::~BAbstractCodeEditorDocumentPrivate()
 
 /*============================== Static public methods =====================*/
 
-void BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(QTextBlock block, const SkipInterval &si)
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(QTextBlock block, const SkipSegment &s)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
-    QList<BAbstractFileType::SkipInterval> list;
-    list << si;
+    QList<BAbstractFileType::SkipSegment> list;
+    list << s;
     if (ud) {
-        list << ud->skipIntervals();
-        ud->setSkipIntervals(list);
+        list << ud->skipSegments();
+        ud->setSkipSegments(list);
     } else {
         ud = new BTextBlockUserData(list);
         block.setUserData(ud);
     }
 }
 
-void BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(QTextBlock block, int start, int end)
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(QTextBlock block, int start, int end)
 {
-    BAbstractFileType::SkipInterval si;
-    si.start = start;
-    si.end = (end >= 0) ? end : (block.text().length() - 1);
-    addBlockSkipInterval(block, si);
+    BAbstractFileType::SkipSegment s;
+    s.start = start;
+    s.end = (end >= 0) ? end : (block.text().length() - 1);
+    addBlockSkipSegment(block, s);
+}
+
+void BAbstractCodeEditorDocumentPrivate::addBlockSkipSegmentL(QTextBlock block, int start, int length)
+{
+    BAbstractFileType::SkipSegment s;
+    s.start = start;
+    s.end = (length >= 0) ? ((s.start >= 0) ? (s.start + length - 1) : -1) : (block.text().length() - 1);
+    addBlockSkipSegment(block, s);
 }
 
 QTextCharFormat BAbstractCodeEditorDocumentPrivate::createBracketsErrorFormat()
@@ -414,36 +422,79 @@ QTextCharFormat BAbstractCodeEditorDocumentPrivate::createSearchResultFormat()
     return fmt;
 }
 
-void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from,
-                                                               const ExtraSelectionList &what)
+int BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from, const SelectionRangeList &what)
 {
-    foreach (const QTextEdit::ExtraSelection &es, what) {
-        for (int i = from.size() - 1; i >= 0; --i) {
-            if (from.at(i).cursor == es.cursor && from.at(i).format == es.format)
-                from.removeAt(i);
-        }
-    }
-}
-
-void BAbstractCodeEditorDocumentPrivate::removeExtraSelections(ExtraSelectionList &from, int start, int end)
-{
-    for (int i = from.size() - 1; i >= 0; --i) {
-        const QTextCursor &tc = from.at(i).cursor;
+    int count = 0;
+    bool range = false;
+    bool hasBegin = false;
+    ExtraSelectionList::Iterator begin = 0;
+    ExtraSelectionList::Iterator end = 0;
+    for (ExtraSelectionList::Iterator i = from.begin(); i != from.end(); ++i) {
+        const QTextCursor &tc = i->cursor;
         int sstart = qMin(tc.selectionStart(), tc.selectionEnd());
         int send = qMax(tc.selectionStart(), tc.selectionEnd());
-        if (sstart >= start && send <= end)
-            from.removeAt(i);
+        bool found = false;
+        foreach (const SelectionRange &sr, what) {
+            if (sr.start == sstart && sr.end == send) {
+                range = true;
+                if (!hasBegin) {
+                    hasBegin = true;
+                    begin = i;
+                }
+                end = i + 1;
+                ++count;
+                found = true;
+                break;
+            }
+        }
+        if (!found && range) {
+            from.erase(begin, end);
+            range = false;
+            hasBegin = false;
+        }
     }
+    if (range) {
+        from.erase(begin, end);
+    }
+    return count;
 }
 
-void BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(QTextBlock block, const QList<SkipInterval> &list)
+BAbstractCodeEditorDocumentPrivate::SelectionRangeList BAbstractCodeEditorDocumentPrivate::removeSelectionRanges(
+        SelectionRangeList &from, int start, int end)
+{
+    SelectionRangeList list;
+    foreach (int i, bRangeR(from.size() - 1, 0)) {
+        const SelectionRange &sr = from.at(i);
+        if (sr.start >= start && sr.end <= end)
+            list << from.takeAt(i);
+    }
+    return list;
+}
+
+bool BAbstractCodeEditorDocumentPrivate::selectionRangeListsEqual(const SelectionRangeList &list1,
+                                                                  const SelectionRangeList &list2)
+{
+    if (list1.size() != list2.size())
+        return false;
+    if (list1.isEmpty())
+        return true;
+    foreach (int i, bRangeD(0, list1.size() - 1)) {
+        const SelectionRange &sr1 = list1.at(i);
+        const SelectionRange &sr2 = list2.at(i);
+        if (sr1.start != sr2.start || sr1.end != sr2.end)
+            return false;
+    }
+    return true;
+}
+
+void BAbstractCodeEditorDocumentPrivate::setBlockSkipSegments(QTextBlock block, const QList<SkipSegment> &list)
 {
     BTextBlockUserData *ud = static_cast<BTextBlockUserData *>(block.userData());
     if (!ud) {
         ud = new BTextBlockUserData(list);
         block.setUserData(ud);
     }
-    ud->setSkipIntervals(list);
+    ud->setSkipSegments(list);
 }
 
 /*============================== Public methods ============================*/
@@ -540,10 +591,7 @@ bool BAbstractCodeEditorDocumentPrivate::eventFilter(QObject *, QEvent *e)
     QTextCursor tc = q_func()->textCursorForPosition(he->pos());
     if (tc.isNull())
         return true;
-    toolTipBlock = tc.block();
-    if (!toolTipBlock.isValid())
-        return true;
-    toolTipPosInBlock = tc.positionInBlock();
+    toolTipCursor = tc;
     toolTipGlobalPos = he->globalPos();
     toolTipTimer.start();
     return true;
@@ -559,14 +607,14 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
     const BracketPair *bracket = 0;
-    if (!testBracket(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '), posInBlock, false, bracket))
+    if (!testBracket(BTextBlockUserData::textWithoutSkipSegments(tb, ' '), posInBlock, false, bracket))
         return res;
     res.end = tb.position() + posInBlock;
     posInBlock -= bracket->closing.length();
     int depth = 1;
     const BracketPair *br = 0;
     while (tb.isValid()) {
-        QString text = BTextBlockUserData::textWithoutSkipIntervals(tb, ' ');
+        QString text = BTextBlockUserData::textWithoutSkipSegments(tb, ' ');
         while (posInBlock >= 0) {
             if (testBracket(text, posInBlock, true, br)) {
                 --depth;
@@ -605,14 +653,14 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
     QTextBlock tb = tc.block();
     int posInBlock = tc.positionInBlock();
     const BracketPair *bracket = 0;
-    if (!testBracket(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '), posInBlock, true, bracket))
+    if (!testBracket(BTextBlockUserData::textWithoutSkipSegments(tb, ' '), posInBlock, true, bracket))
         return res;
     res.start = tb.position() + posInBlock;
     posInBlock += bracket->opening.length();
     int depth = 1;
     const BracketPair *br = 0;
     while (tb.isValid()) {
-        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutSkipIntervals(tb, ' '));
+        QString text = BTextTools::removeTrailingSpaces(BTextBlockUserData::textWithoutSkipSegments(tb, ' '));
         while (posInBlock <= text.length()) {
             if (testBracket(text, posInBlock, false, br)) {
                 --depth;
@@ -643,31 +691,42 @@ BAbstractCodeEditorDocumentPrivate::FindBracketPairResult
 
 void BAbstractCodeEditorDocumentPrivate::highlightBrackets()
 {
-    ExtraSelectionList selections = q_func()->extraSelections();
-    highlightedBrackets.clear();
-    if (!bracketsHighlighting)
-        return q_func()->setExtraSelections(selections);
-    FindBracketPairResultList list;
-    list << findLeftBracketPair();
-    list << findRightBracketPair();
-    foreach (const FindBracketPairResult &res, list) {
-        if (res.start >= 0 && res.end >= 0) {
-            if (BAbstractFileType::areEqual(*res.startBr, *res.endBr)) {
-                QTextEdit::ExtraSelection ess = q_func()->createExtraSelection(createBracketsFormat());
-                ess.cursor.setPosition(res.start);
-                ess.cursor.setPosition(res.start + res.startBr->opening.length(), QTextCursor::KeepAnchor);
-                highlightedBrackets << ess;
-                QTextEdit::ExtraSelection ese = q_func()->createExtraSelection(createBracketsFormat());
-                ese.cursor.setPosition(res.end - res.endBr->closing.length());
-                ese.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                highlightedBrackets << ese;
-            } else {
-                QTextEdit::ExtraSelection es = q_func()->createExtraSelection(createBracketsErrorFormat());
-                es.cursor.setPosition(res.start);
-                es.cursor.setPosition(res.end, QTextCursor::KeepAnchor);
-                highlightedBrackets << es;
+    SelectionRangeList newSelections;
+    SelectionRangeList newSelectionsError;
+    if (bracketsHighlighting) {
+        FindBracketPairResultList list;
+        list << findLeftBracketPair();
+        list << findRightBracketPair();
+        foreach (const FindBracketPairResult &res, list) {
+            if (res.start >= 0 && res.end >= 0) {
+                if (BAbstractFileType::areEqual(*res.startBr, *res.endBr)) {
+                    SelectionRange srs;
+                    srs.start = res.start;
+                    srs.end = res.start + res.startBr->opening.length();
+                    newSelections << srs;
+                    SelectionRange sre;
+                    sre.start = res.end - res.endBr->closing.length();
+                    sre.end = res.end;
+                    newSelections << sre;
+                } else {
+                    SelectionRange sr;
+                    sr.start = res.start;
+                    sr.end = res.end;
+                    newSelectionsError << sr;
+                }
             }
         }
+    }
+    if (selectionRangeListsEqual(newSelections, highlightedBrackets)
+            && selectionRangeListsEqual(newSelectionsError, highlightedBracketsError)) {
+        return;
+    }
+    ExtraSelectionList selections = q_func()->extraSelections();
+    highlightedBrackets.clear();
+    highlightedBracketsError.clear();
+    if (bracketsHighlighting) {
+        highlightedBrackets = newSelections;
+        highlightedBracketsError = newSelectionsError;
     }
     q_func()->setExtraSelections(selections);
 }
@@ -709,6 +768,50 @@ void BAbstractCodeEditorDocumentPrivate::rehighlight()
         return;
     highlighter->rehighlight();
     highlightBrackets();
+}
+
+void BAbstractCodeEditorDocumentPrivate::rehighlightSearchResults()
+{
+    if ((!lastSearchRegexp.isValid() || lastSearchRegexp.isEmpty()) && lastSearchText.isEmpty()) {
+        if (!highlightedSearchResults.isEmpty()) {
+            highlightedSearchResults.clear();
+            q_func()->setExtraSelections(q_func()->extraSelections());
+        }
+        return;
+    }
+    B_Q(BAbstractCodeEditorDocument);
+    ExtraSelectionList selections = q->extraSelections();
+    highlightedSearchResults.clear();
+    if (lastSearchRegexp.isValid()) {
+        QStringList lines = q->text(true).split('\n');
+        int len = 0;
+        foreach (int i, bRangeD(0, lines.size() - 1)) {
+            const QString &t = lines.at(i);
+            int ind = lastSearchRegexp.indexIn(t);
+            while (ind >= 0) {
+                SelectionRange sr;
+                sr.start = ind + len;
+                sr.end = sr.start + lastSearchRegexp.matchedLength();
+                highlightedSearchResults << sr;
+                ind = lastSearchRegexp.indexIn(t, ind + lastSearchRegexp.matchedLength());
+            }
+            len += t.length() + 1;
+        }
+    } else {
+        Qt::CaseSensitivity cs = (lastSearchFlags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
+                                                                                          Qt::CaseInsensitive;
+        bool wholeWords = lastSearchFlags & QTextDocument::FindWholeWords;
+        QString t = q->text(true);
+        int ind = BTextTools::indexOf(t, lastSearchText, 0, cs, wholeWords);
+        while (ind >= 0) {
+            SelectionRange sr;
+            sr.start = ind;
+            sr.end = ind + lastSearchText.length();
+            highlightedSearchResults << sr;
+            ind = BTextTools::indexOf(t, lastSearchText, ind + lastSearchText.length(), cs, wholeWords);
+        }
+    }
+    q->setExtraSelections(selections);
 }
 
 void BAbstractCodeEditorDocumentPrivate::setBuisy(bool b)
@@ -884,14 +987,14 @@ void BAbstractCodeEditorDocumentPrivate::showAutocompletionMenu()
 {
     if (!fileType)
         return;
-    fileType->showAutocompletionMenu(q_func(), autocompletionBlock, autocompletionPosInBlock, autocompletionGlobalPos);
+    fileType->showAutocompletionMenu(q_func(), autocompletionCursor, autocompletionGlobalPos);
 }
 
 void BAbstractCodeEditorDocumentPrivate::showToolTip()
 {
     if (!fileType)
         return;
-    fileType->showToolTip(q_func(), toolTipBlock, toolTipPosInBlock, toolTipGlobalPos);
+    fileType->showToolTip(q_func(), toolTipCursor, toolTipGlobalPos);
 }
 
 /*============================================================================
@@ -1004,9 +1107,11 @@ BCodeEditor *BAbstractCodeEditorDocument::editor() const
 
 BAbstractCodeEditorDocument::ExtraSelectionList BAbstractCodeEditorDocument::extraSelections() const
 {
-    ExtraSelectionList list = extraSelectionsImplementation();
-    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedBrackets);
-    BAbstractCodeEditorDocumentPrivate::removeExtraSelections(list, d_func()->highlightedSearchResults);
+    ExtraSelectionList &list = const_cast<BAbstractCodeEditorDocument *>(this)->d_func()->userSelections;
+    foreach (int i, bRangeR(list.size() - 1, 0)) {
+        if (!list.at(i).cursor.hasSelection())
+            list.removeAt(i);
+    }
     return list;
 }
 
@@ -1028,59 +1133,22 @@ QString BAbstractCodeEditorDocument::fileTypeId() const
 bool BAbstractCodeEditorDocument::findNext(const QString &txt, QTextDocument::FindFlags flags, bool cyclic)
 {
     B_D(BAbstractCodeEditorDocument);
-    ExtraSelectionList selections = extraSelections();
-    d->highlightedSearchResults.clear();
     bool b = findNextImplementation(txt, flags, cyclic);
-    if (b) {
-        d->lastSearchFlags = flags;
-        d->lastSearchRegexp = QRegExp();
-        d->lastSearchText = txt;
-        Qt::CaseSensitivity cs = (flags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
-                                                                                Qt::CaseInsensitive;
-        bool wholeWords = flags & QTextDocument::FindWholeWords;
-        QString t = text(true);
-        int ind = BTextTools::indexOf(t, txt, 0, cs, wholeWords);
-        while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(ind);
-            es.cursor.setPosition(ind + txt.length(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
-            ind = BTextTools::indexOf(t, txt, ind + txt.length(), cs, wholeWords);
-        }
-    } else {
-        d->lastSearchFlags = 0;
-        d->lastSearchRegexp = QRegExp();
-        d->lastSearchText.clear();
-    }
-    setExtraSelections(selections);
+    d->lastSearchFlags = flags;
+    d->lastSearchRegexp = QRegExp();
+    d->lastSearchText = txt;
+    d->rehighlightSearchResults();
     return b;
 }
 
 bool BAbstractCodeEditorDocument::findNextRegexp(const QRegExp &rx, QTextDocument::FindFlags flags, bool cyclic)
 {
     B_D(BAbstractCodeEditorDocument);
-    ExtraSelectionList selections = extraSelections();
-    d->highlightedSearchResults.clear();
     bool b = findNextRegexpImplementation(rx, flags, cyclic);
-    if (b) {
-        d->lastSearchFlags = flags;
-        d->lastSearchRegexp = rx;
-        d->lastSearchText.clear();
-        QString t = text(true);
-        int ind = rx.indexIn(t);
-        while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(ind);
-            es.cursor.setPosition(ind + rx.matchedLength(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
-            ind = rx.indexIn(t, ind + rx.matchedLength());
-        }
-    } else {
-        d->lastSearchFlags = 0;
-        d->lastSearchRegexp = QRegExp();
-        d->lastSearchText.clear();
-    }
-   setExtraSelections(selections);
+    d->lastSearchFlags = flags;
+    d->lastSearchRegexp = rx;
+    d->lastSearchText.clear();
+    d->rehighlightSearchResults();
     return b;
 }
 
@@ -1235,9 +1303,31 @@ void BAbstractCodeEditorDocument::setCodec(const QString &codecName)
 
 void BAbstractCodeEditorDocument::setExtraSelections(const ExtraSelectionList &list)
 {
-    ExtraSelectionList nlist = list;
-    nlist << d_func()->highlightedSearchResults;
-    nlist << d_func()->highlightedBrackets;
+    B_D(BAbstractCodeEditorDocument);
+    d->userSelections = list;
+    foreach (int i, bRangeR(d->userSelections.size() - 1, 0)) {
+        if (!d->userSelections.at(i).cursor.hasSelection())
+            d->userSelections.removeAt(i);
+    }
+    ExtraSelectionList nlist = d->userSelections;
+    ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d->highlightedSearchResults) {
+        es.cursor.setPosition(sr.start);
+        es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        nlist << es;
+    }
+    es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createBracketsFormat());
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d_func()->highlightedBrackets) {
+        es.cursor.setPosition(sr.start);
+        es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        nlist << es;
+    }
+    es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createBracketsErrorFormat());
+    foreach (const BAbstractCodeEditorDocumentPrivate::SelectionRange &sr, d_func()->highlightedBracketsError) {
+        es.cursor.setPosition(sr.start);
+        es.cursor.setPosition(sr.end, QTextCursor::KeepAnchor);
+        nlist << es;
+    }
     setExtraSelectionsImplementation(nlist);
 }
 
@@ -1497,41 +1587,7 @@ void BAbstractCodeEditorDocument::emitSelectionChanged()
 
 void BAbstractCodeEditorDocument::emitTextChanged()
 {
-    B_D(BAbstractCodeEditorDocument);
-    if (d->lastSearchRegexp.isValid() && !d->lastSearchRegexp.isEmpty()) {
-        ExtraSelectionList selections = extraSelections();
-        QTextBlock tb = textCursor().block();
-        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(d->highlightedSearchResults, tb.position(),
-                                                                  tb.position() + tb.length());
-        QString t = tb.text();
-        int ind = d->lastSearchRegexp.indexIn(t);
-        while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(tb.position() + ind);
-            es.cursor.setPosition(tb.position() + ind + d->lastSearchRegexp.matchedLength(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
-            ind = d->lastSearchRegexp.indexIn(t, ind + d->lastSearchRegexp.matchedLength());
-        }
-        setExtraSelections(selections);
-    } else if (!d->lastSearchText.isEmpty()) {
-        ExtraSelectionList selections = extraSelections();
-        QTextBlock tb = textCursor().block();
-        BAbstractCodeEditorDocumentPrivate::removeExtraSelections(d->highlightedSearchResults, tb.position(),
-                                                                  tb.position() + tb.length());
-        QString t = tb.text();
-        Qt::CaseSensitivity cs = (d->lastSearchFlags & QTextDocument::FindCaseSensitively) ? Qt::CaseSensitive :
-                                                                                             Qt::CaseInsensitive;
-        bool wholeWords = d->lastSearchFlags & QTextDocument::FindWholeWords;
-        int ind = BTextTools::indexOf(t, d->lastSearchText, 0, cs, wholeWords);
-        while (ind >= 0) {
-            ExtraSelection es = createExtraSelection(BAbstractCodeEditorDocumentPrivate::createSearchResultFormat());
-            es.cursor.setPosition(tb.position() + ind);
-            es.cursor.setPosition(tb.position() + ind + d->lastSearchText.length(), QTextCursor::KeepAnchor);
-            d->highlightedSearchResults << es;
-            ind = BTextTools::indexOf(t, d->lastSearchText, ind + d->lastSearchText.length(), cs, wholeWords);
-        }
-        setExtraSelections(selections);
-    }
+    d_func()->rehighlightSearchResults();
     Q_EMIT textChanged();
 }
 
@@ -1564,16 +1620,13 @@ void BAbstractCodeEditorDocument::setCursorPosition(int pos)
     QTextCursor tc = textCursor();
     if (tc.isNull())
         return;
-    d_func()->autocompletionBlock = tc.block();
-    if (!d_func()->autocompletionBlock.isValid())
-        return;
     QRect r = cursorRect();
     if (!r.isValid() || r.isNull())
         return;
     QWidget *edt = innerEdit();
     if (!edt)
         return;
-    d_func()->autocompletionPosInBlock = tc.positionInBlock();
+    d_func()->autocompletionCursor = tc;
     d_func()->autocompletionGlobalPos = edt->mapToGlobal(r.bottomRight());
     d_func()->autocompletionTimer.start();
 }

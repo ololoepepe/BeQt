@@ -249,18 +249,32 @@ void BNetworkOperation::onStarted(const QObject *receiver, const char *method, b
         disconnect(this, SIGNAL(started()), receiver, method);
 }
 
-void BNetworkOperation::reply(const QByteArray &data)
+bool BNetworkOperation::reply(const QByteArray &data)
 {
     if (isRequest())
-        return;
-    connection()->sendReply(this, data);
+        return false;
+    return connection()->sendReply(this, data);
 }
 
-void BNetworkOperation::reply(const QVariant &variant)
+bool BNetworkOperation::reply(const QVariant &variant)
 {
     if (isRequest())
-        return;
-    connection()->sendReply(this, variant);
+        return false;
+    return connection()->sendReply(this, variant);
+}
+
+bool BNetworkOperation::reply(int compressionLevel, const QByteArray &data)
+{
+    if (isRequest())
+        return false;
+    return connection()->sendReply(this, compressionLevel, data);
+}
+
+bool BNetworkOperation::reply(int compressionLevel, const QVariant &variant)
+{
+    if (isRequest())
+        return false;
+    return connection()->sendReply(this, compressionLevel, variant);
 }
 
 void BNetworkOperation::setAutoDelete(bool b)

@@ -288,6 +288,10 @@ QStringList BLoginWidget::availableAddresses() const
     QStringList list;
     foreach (int i, bRangeD(0, d_func()->cmboxAddress->count() - 1))
         list << d_func()->cmboxAddress->itemText(i);
+    list << d_func()->persistentAddresses;
+    list << d_func()->cmboxAddress->currentText();
+    list.removeAll("");
+    list.removeDuplicates();
     return list;
 }
 

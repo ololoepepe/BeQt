@@ -204,6 +204,20 @@ BPasswordWidget::BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent) :
     d_func()->init();
 }
 
+/*============================== Static public methods =====================*/
+
+bool BPasswordWidget::savePassword(const QByteArray &state)
+{
+    QVariantMap m = BeQt::deserialize(state).toMap();
+    return m.value("save_password").toBool();
+}
+
+bool BPasswordWidget::showPassword(const QByteArray &state)
+{
+    QVariantMap m = BeQt::deserialize(state).toMap();
+    return m.value("show_password").toBool();
+}
+
 /*============================== Public methods ============================*/
 
 QCryptographicHash::Algorithm BPasswordWidget::algorithm() const

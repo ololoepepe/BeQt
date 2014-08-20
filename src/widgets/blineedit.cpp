@@ -22,6 +22,7 @@
 #include "blineedit.h"
 #include "blineedit_p.h"
 
+#include <QDebug>
 #include <QLineEdit>
 #include <QMetaObject>
 
@@ -89,4 +90,11 @@ BLineEdit::BLineEdit(BLineEditPrivate &d, QWidget *parent) :
     QLineEdit(parent), BBaseObject(d)
 {
     d_func()->init();
+}
+
+/*============================== Public slots =============================*/
+
+void BLineEdit::checkValidity()
+{
+    d_func()->textChanged();
 }

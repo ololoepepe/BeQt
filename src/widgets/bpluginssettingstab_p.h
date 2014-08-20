@@ -32,8 +32,11 @@ class QPushButton;
 
 #include <BeQtCore/private/bbaseobject_p.h>
 
+#include <QByteArray>
 #include <QList>
+#include <QMap>
 #include <QObject>
+#include <QString>
 
 /*============================================================================
 ================================ BPluginsSettingsTabPrivate ==================
@@ -49,6 +52,7 @@ public:
     QPushButton *btnSettings;
     QListWidget *lstwgt;
     QList<BPluginWrapper *> plugins;
+    QMap<QString, QByteArray> pluginSettingsDialogStates;
 public:
     explicit BPluginsSettingsTabPrivate(BPluginsSettingsTab *q);
     ~BPluginsSettingsTabPrivate();

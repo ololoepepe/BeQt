@@ -166,8 +166,12 @@ QString BInternalLocationProvider::locationPath(const QString &locationName, BAp
     }
     if (prefix.isEmpty())
         return QString();
-    if (plugins)
-        return prefix + "/lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins";
+    if (plugins) {
+        if (BApplicationBase::SharedResource == type)
+            return prefix + "/lib/" + BApplicationBasePrivate::toLowerNoSpaces(AppName) + "/plugins";
+        else
+            return prefix + "/plugins";
+    }
     else if ("beqt/icons" == locationName)
         return prefix + "/beqt/icons";
     else if ("data" == locationName)
@@ -216,6 +220,7 @@ BApplicationBasePrivate::~BApplicationBasePrivate()
         qApp->removeEventFilter(this);
     foreach (BAbstractLocationProvider *p, locationProviders)
         delete p;
+    locationProviders.clear();
     if (!settings.isNull()) {
         settings->sync();
         delete settings;
@@ -356,13 +361,13 @@ void BApplicationBasePrivate::installTranslator(BTranslator *translator)
     languageChangeProxy->trigger();
 }
 
-bool BApplicationBasePrivate::isPluginActivated(const QString &pluginName) const
+bool BApplicationBasePrivate::isPluginActivated(const QString &pluginId) const
 {
-    if (pluginName.isEmpty())
+    if (pluginId.isEmpty())
         return false;
     if (settings.isNull())
         return true;
-    return !settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginName);
+    return !settings->value("BeQt/Core/deactivated_plugins").toStringList().contains(pluginId);
 }
 
 QString BApplicationBasePrivate::location(const QString &name, BApplicationBase::ResourceType type) const
@@ -399,9 +404,6 @@ void BApplicationBasePrivate::removePlugin(QObject *plugin)
         return;
     if (!plugins.contains(plugin))
         return;
-    disconnect(plugin, SIGNAL(activated()), this, SLOT(pluginActivated()));
-    disconnect(plugin, SIGNAL(aboutToBeDeactivated()), this, SLOT(pluginAboutToBeDeactivated()));
-    disconnect(plugin, SIGNAL(destroyed(QObject *)), this, SLOT(pluginDestroyed(QObject *)));
     plugins.remove(plugin);
 }
 
@@ -423,17 +425,27 @@ void BApplicationBasePrivate::setLocale(const QLocale &l)
     languageChangeProxy->trigger();
 }
 
-void BApplicationBasePrivate::setPluginActivated(const QString &pluginName, bool activated)
+void BApplicationBasePrivate::setPluginActivated(const QString &pluginId, bool activated)
 {
-    if (pluginName.isEmpty())
+    if (pluginId.isEmpty())
         return;
+    BPluginWrapper *pw = 0;
+    foreach (BPluginWrapper *pww, plugins) {
+        if (pww->id() == pluginId) {
+            pw = pww;
+            break;
+        }
+    }
+    if (!pw)
+        return;
+    pw->setActivated(activated);
     if (settings.isNull())
         return;
     QStringList list = settings->value("BeQt/Core/deactivated_plugins").toStringList();
     if (activated)
-        list.removeAll(pluginName);
-    else if (!list.contains(pluginName))
-        list << pluginName;
+        list.removeAll(pluginId);
+    else if (!list.contains(pluginId))
+        list << pluginId;
     settings->setValue("BeQt/Core/deactivated_plugins", list);
 }
 
@@ -452,7 +464,6 @@ void BApplicationBasePrivate::pluginAboutToBeDeactivated()
     if (!plugins.contains(pw))
         return;
     emitPluginAboutToBeDeactivated(pw);
-    setPluginActivated(pw->name(), false);
 }
 
 void BApplicationBasePrivate::pluginActivated()
@@ -463,7 +474,6 @@ void BApplicationBasePrivate::pluginActivated()
     if (!plugins.contains(pw))
         return;
     emitPluginActivated(pw);
-    setPluginActivated(pw->name(), true);
 }
 
 void BApplicationBasePrivate::pluginDestroyed(QObject *obj)
@@ -518,11 +528,13 @@ BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const InitialSett
 
 BApplicationBase::~BApplicationBase()
 {
-    ds_func()->destructorCalled = true;
+    d_func()->destructorCalled = true;
     foreach (BTranslator *t, d_func()->translators)
         delete t;
+    d_func()->translators.clear();
     foreach (BPluginWrapper *pw, d_func()->plugins)
         delete pw;
+    d_func()->plugins.clear();
     _m_self = 0;
 }
 
@@ -782,7 +794,7 @@ QString BApplicationBase::beqtInfo(About type, const QLocale &loc)
     QString bfn;
     switch (type) {
     case Copyringt:
-        return tr("Copyright") + " (C) 2012-2014 Andrey Bogdanov [https://github.com/the-dark-angel/BeQt]";
+        return tr("Copyright") + " (C) 2012-2014 Andrey Bogdanov [https://github.com/ololoepepe/BeQt]";
     case Description:
         bfn = "description/DESCRIPTION.txt";
         break;
@@ -927,7 +939,7 @@ void BApplicationBase::loadPlugins(const QStringList &acceptableTypes, BPluginWr
                 continue;
             }
             installPlugin(pw);
-            if (ds_func()->isPluginActivated(pw->name()))
+            if (ds_func()->isPluginActivated(pw->id()))
                 pw->activate();
             else
                 pw->unload();
@@ -1078,7 +1090,10 @@ void BApplicationBase::removePlugin(BPluginWrapper *plugin)
 {
     if (!BApplicationBasePrivate::testInit())
         return;
-    ds_func()->removePlugin(plugin);
+    B_DS(BApplicationBase);
+    QObject::disconnect(plugin, SIGNAL(activated()), ds, SLOT(pluginActivated()));
+    QObject::disconnect(plugin, SIGNAL(aboutToBeDeactivated()), ds, SLOT(pluginAboutToBeDeactivated()));
+    QObject::disconnect(plugin, SIGNAL(destroyed(QObject *)), ds, SLOT(pluginDestroyed(QObject *)));
 }
 
 void BApplicationBase::setApplicationAuthors(const BPersonInfoList &list)
@@ -1228,6 +1243,13 @@ void BApplicationBase::setLogger(BLogger *l)
         l->setParent(ds_func());
 }
 
+void BApplicationBase::setPluginActivated(const QString &pluginId, bool activated)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return;
+    ds_func()->setPluginActivated(pluginId, activated);
+}
+
 QSettings *BApplicationBase::settingsInstance()
 {
     if (!BApplicationBasePrivate::testInit())
@@ -1243,6 +1265,6 @@ void BApplicationBase::unloadPlugins(bool remove)
         if (pw->isLoaded())
             pw->unload();
         if (remove)
-            ds_func()->removePlugin(pw);
+            removePlugin(pw);
     }
 }

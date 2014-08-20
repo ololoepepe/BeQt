@@ -66,6 +66,9 @@ public:
 protected:
     explicit BPasswordWidget(BPasswordWidgetPrivate &d, QWidget *parent = 0);
 public:
+    static bool savePassword(const QByteArray &state);
+    static bool showPassword(const QByteArray &state);
+public:
     QCryptographicHash::Algorithm algorithm() const;
     int charCountHint(BPassword::Mode mode = BPassword::FlexibleMode) const;
     QByteArray encryptedPassword(int *charCountHint = 0) const;

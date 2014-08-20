@@ -77,7 +77,6 @@ BApplicationServerPrivate::~BApplicationServerPrivate()
 
 void BApplicationServerPrivate::init()
 {
-    bTest(QCoreApplication::instance(), "BApplicationServer", "There must be a QCoreApplication instance");
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     server = new BGenericServer(BGenericServer::TcpServer);
 #else

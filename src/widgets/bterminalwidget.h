@@ -25,6 +25,7 @@
 class BTerminalWidgetPrivate;
 
 class BAbstractTerminalDriver;
+class BPlainTextEdit;
 
 class QTextCodec;
 class QVariant;
@@ -81,6 +82,7 @@ public:
     BAbstractTerminalDriver *driver() const;
     QStringList history() const;
     bool historyEnabled() const;
+    BPlainTextEdit *innerEdit() const;
     bool isActive() const;
     bool isValid() const;
     TerminalMode mode() const;

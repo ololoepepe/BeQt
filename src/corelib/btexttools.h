@@ -32,6 +32,7 @@ class QTextCodec;
 
 #include <QList>
 #include <QLocale>
+#include <QMap>
 #include <QRegExp>
 #include <QString>
 
@@ -41,6 +42,17 @@ class QTextCodec;
 
 namespace BTextTools
 {
+
+enum OptionsParsingError
+{
+    NoError = 0,
+    InvalidParametersError,
+    MalformedOptionError,
+    MissingOptionError,
+    RepeatingOptionError,
+    UnknownOptionError,
+    UnknownOptionValueError
+};
 
 enum RegExpPattern
 {
@@ -68,6 +80,11 @@ B_CORE_EXPORT BTextMatchList match(const QString &text, const QRegExp &what, con
                                    const QRegExp &postfixedBy = QRegExp());
 B_CORE_EXPORT QString mergeArguments(const QStringList &list);
 B_CORE_EXPORT QString mergeArguments(const QString &command, const QStringList &arguments);
+B_CORE_EXPORT OptionsParsingError parseOptions(const QStringList &arguments, const QString &options,
+                                               QMap<QString, QString> &result, bool allowOverride = false);
+B_CORE_EXPORT OptionsParsingError parseOptions(const QStringList &arguments, const QString &options,
+                                               QMap<QString, QString> &result, QString &errorData,
+                                               bool allowOverride = false);
 B_CORE_EXPORT QStringList removeAll(const QStringList &list, const QString &what,
                                     Qt::CaseSensitivity cs = Qt::CaseSensitive, int *count  = 0);
 B_CORE_EXPORT int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs = Qt::CaseSensitive);
@@ -94,11 +111,16 @@ B_CORE_EXPORT QList<double> tfidf(const QStringList &terms, const QStringList &d
 B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents);
 B_CORE_EXPORT QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents);
 B_CORE_EXPORT QString toHtml(const QString &text, bool replaceSpaces = true);
-B_CORE_EXPORT void unwrap(QString &text, const QString &wrappingText = "\"");
-B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT void unwrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText);
+B_CORE_EXPORT void unwrap(QString &text, const QString &wrappingText);
+B_CORE_EXPORT QString unwrapped(const QString &text, const QString &leftWrappingText,
+                                const QString &rightWrappingText);
+B_CORE_EXPORT QString unwrapped(const QString &text, const QString &wrappingText);
 B_CORE_EXPORT QString withoutUnsuppottedSymbols(const QString &s);
-B_CORE_EXPORT void wrap(QString &text, const QString &wrappingText = "\"");
-B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText = "\"");
+B_CORE_EXPORT void wrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText);
+B_CORE_EXPORT void wrap(QString &text, const QString &wrappingText);
+B_CORE_EXPORT QString wrapped(const QString &text, const QString &leftWrappingText, const QString &rightWrappingText);
+B_CORE_EXPORT QString wrapped(const QString &text, const QString &wrappingText);
 
 }
 

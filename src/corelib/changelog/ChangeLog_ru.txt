@@ -8,6 +8,7 @@
     * Удалены функции BeQt::variantToData и BeQt::dataToVatiant
     * Рабочая папка добавлена в качестве аргумента функции BeQt::startProcessDetached
     * Добавлена функция BTextTools:toHtml
+    * В BTextTools добавлены перегруженные функции wrap, unwrap, wrapped и unwrapped
     * Добавлена альтернативная пара базовых классов, у которой private-часть не является QObject
     * Исправлена проверка BSpellCheckerDictionary на валидность
     * Добавлена возможность задавать заменяемые буквы в BSpellCheckerDictionary
@@ -20,6 +21,7 @@
     * В BApplicationBase добавлена возможность указывать несколько владельцев авторских прав
     * BTerminalIOHandler переименован в BTerminal и сделан синглтоном
     * Методы splitCommand и mergeArguments перенесены из BTerminal в BTextTools
+    * Функции, относящиеся к UUID, перемещены из пространства имен в класс BUuid
     * Реализованы режимы терминала
     * В BTerminal добавлена возможность запоминать введенные команды
     * Метод BPluginWrapper::interfacetestFunction переименован в interfaceTestFunction
@@ -41,6 +43,9 @@
     * В BNetworkServer реализована возможность предварительно обрабатывать входящее соединение
     * В BNetworkServer улучшена система блокировки пользователей
 
+==== BeQtSql ====
+    * Add ability to disable automatic transaction when creating database from schema
+
 ==== BeQtWidgets ====
     * Похожие методы в BGuiTools объединены в шаблонные методы
     * Перечисление BApplication::SettingsTabNavigation перемещено в BSettingsDialog (соответствующие методы изменены)
@@ -58,6 +63,8 @@
     * Добавлена информация о Справке в BGuiPluginInterface
     * Добавлена возможность задавать пользовательский диалог "About" для плагинов
     * Убраны некоторые шаблонные методы из BAbstractSettingsTab
+    * Добавлена возможность сохранять/восстанавливать состояние классов BSettingsDialog и BAbstractSettingsTab
+    * В класс BAbstractSettingsTab добавлен виртуальный метод id
     * Убраны старые методы из BPluginsSettingsTab
     * Исправлено отображение версии плагина в диалоге "О плагине" в BPluginsSettingsTab
     * Теперь показывается справка по плагинам
@@ -70,7 +77,6 @@
 
 ==== BeQtCodeEditor ====
     * Убраны старые объявления нереализованных функций из классов
-    * QPointer больше не используется в модулях редактора
     * Улучшена (де)сериализация модулей редактора
     * Улучшен класс BTextBlockUserData (реализованы множественные пропускаемые интервалы)
     * Класс BTextBlockUserData скрыт; вместо него добавлен класс BTextBlockExtraData

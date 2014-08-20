@@ -41,6 +41,7 @@
 #include <QList>
 #include <QMenu>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 #include <QStringList>
 #include <QVariant>
@@ -59,7 +60,7 @@ BOpenSaveEditorModulePrivate::BOpenSaveEditorModulePrivate(BOpenSaveEditorModule
 
 BOpenSaveEditorModulePrivate::~BOpenSaveEditorModulePrivate()
 {
-    if (!mnuFileHistory->parent())
+    if (!mnuFileHistory.isNull() && !mnuFileHistory->parent())
         delete mnuFileHistory;
 }
 
@@ -68,15 +69,24 @@ BOpenSaveEditorModulePrivate::~BOpenSaveEditorModulePrivate()
 void BOpenSaveEditorModulePrivate::checkActions()
 {
     BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
-    actNewFile->setEnabled(editor);
-    actOpenFiles->setEnabled(editor);
-    actReopenFile->setEnabled(doc && editor->driver()->testFileExistance(doc->fileName()) && !doc->isBuisy());
-    actSaveFile->setEnabled(doc && doc->isModified() && !doc->isReadOnly() && !doc->isBuisy());
-    actSaveFileAs->setEnabled(doc && !doc->isBuisy());
-    actSaveAllFiles->setEnabled(editor && doc);
-    actCloseFile->setEnabled(doc && !doc->isBuisy());
-    actCloseAllFiles->setEnabled(editor && doc);
-    mnuFileHistory->setEnabled(editor && !mnuFileHistory->isEmpty());
+    if (!actNewFile.isNull())
+        actNewFile->setEnabled(editor);
+    if (!actOpenFiles.isNull())
+        actOpenFiles->setEnabled(editor);
+    if (!actReopenFile.isNull())
+        actReopenFile->setEnabled(doc && editor->driver()->testFileExistance(doc->fileName()) && !doc->isBuisy());
+    if (!actSaveFile.isNull())
+        actSaveFile->setEnabled(doc && doc->isModified() && !doc->isReadOnly() && !doc->isBuisy());
+    if (!actSaveFileAs.isNull())
+        actSaveFileAs->setEnabled(doc && !doc->isBuisy());
+    if (!actSaveAllFiles.isNull())
+        actSaveAllFiles->setEnabled(editor && doc);
+    if (!actCloseFile.isNull())
+        actCloseFile->setEnabled(doc && !doc->isBuisy());
+    if (!actCloseAllFiles.isNull())
+        actCloseAllFiles->setEnabled(editor && doc);
+    if (!mnuFileHistory.isNull())
+        mnuFileHistory->setEnabled(editor && !mnuFileHistory->isEmpty());
 }
 
 void BOpenSaveEditorModulePrivate::init()
@@ -115,6 +125,8 @@ void BOpenSaveEditorModulePrivate::init()
 
 void BOpenSaveEditorModulePrivate::resetFileHistory(const QStringList &list)
 {
+    if (mnuFileHistory.isNull())
+        return;
     QList<QAction *> acts = mnuFileHistory->actions();
     while (acts.size() > list.size()) {
         QAction *act = acts.takeLast();
@@ -157,51 +169,71 @@ void BOpenSaveEditorModulePrivate::fileTriggered()
 
 void BOpenSaveEditorModulePrivate::resetFileHistoryMenuToolTip()
 {
+    if (mnuFileHistory.isNull())
+        return;
     QObject *s = sender();
     mnuFileHistory->setToolTip(s ? s->property("beqt/file_name").toString() : QString());
 }
 
 void BOpenSaveEditorModulePrivate::retranslateUi()
 {
-    actNewFile->setText(tr("Create", "act text"));
-    actNewFile->setToolTip(tr("Create new document", "act toolTip"));
-    actNewFile->setWhatsThis(tr("Use this action to create a new document. No file will be created on your drive",
-                                "act whatsThis"));
-    actOpenFiles->setText(tr("Open...", "act text"));
-    actOpenFiles->setToolTip(tr("Open existing files", "act toolTip"));
-    actOpenFiles->setWhatsThis(tr("Use this action to open one or more files existing on your drive",
-                                  "act whatsThis"));
-    actReopenFile->setText(tr("Reopen", "act text"));
-    actReopenFile->setToolTip(tr("Reopen current file", "act toolTip"));
-    actReopenFile->setWhatsThis(tr("Use this file to reload current document. "
-                                   "Use the down arrow to reopen the document using another encoding",
-                                   "act whatsThis"));
-    actSaveFile->setText(tr("Save", "act text"));
-    actSaveFile->setToolTip(tr("Save current document", "act toolTip"));
-    actSaveFile->setWhatsThis(tr("Use this action to save the current document on your drive. "
-                                 "If the corresponding file doesn't exist, "
-                                 "you will be proposed to select it's location", "act whatsThis"));
-    actSaveFileAs->setText(tr("Save as...", "act text"));
-    actSaveFileAs->setToolTip(tr("Save current document as...", "act toolTip"));
-    actSaveFileAs->setWhatsThis(tr("Use this action to save the current document on your drive. "
-                                   "You will be proposed to select file location and encoding", "act whatsThis"));
-    actSaveAllFiles->setText(tr("Save all", "act text"));
-    actSaveAllFiles->setToolTip(tr("Save all opened documents", "act toolTip"));
-    actSaveAllFiles->setWhatsThis(tr("Use this action to save all modified documents. "
-                                     "This is the same as using the Save action at every modified document",
-                                     "act whatsThis"));
-    actCloseFile->setText(tr("Close", "act text"));
-    actCloseFile->setToolTip(tr("Close current document", "act toolTip"));
-    actCloseFile->setWhatsThis(tr("Use this action to close the current document. "
-                                  "If the document is modified, you will be asked to save it before closing",
-                                  "act whatsThis"));
-    actCloseAllFiles->setText(tr("Close all", "act text"));
-    actCloseAllFiles->setToolTip(tr("Close all opened documents", "act toolTip"));
-    actCloseAllFiles->setWhatsThis(tr("Use this action to close all opened documents. "
-                                      "If any documents are modified, "
-                                      "you will be asked to save them before closing", "act whatsThis"));
-    mnuFileHistory->setTitle(tr("Recent files", "mnu title"));
-    mnuFileHistory->setWhatsThis(tr("Use this action to open one of the recently opened files", "mnu whatsThis"));
+    if (!actNewFile.isNull()) {
+        actNewFile->setText(tr("Create", "act text"));
+        actNewFile->setToolTip(tr("Create new document", "act toolTip"));
+        actNewFile->setWhatsThis(tr("Use this action to create a new document. No file will be created on your drive",
+                                    "act whatsThis"));
+    }
+    if (!actOpenFiles.isNull()) {
+        actOpenFiles->setText(tr("Open...", "act text"));
+        actOpenFiles->setToolTip(tr("Open existing files", "act toolTip"));
+        actOpenFiles->setWhatsThis(tr("Use this action to open one or more files existing on your drive",
+                                      "act whatsThis"));
+    }
+    if (!actReopenFile.isNull()) {
+        actReopenFile->setText(tr("Reopen", "act text"));
+        actReopenFile->setToolTip(tr("Reopen current file", "act toolTip"));
+        actReopenFile->setWhatsThis(tr("Use this file to reload current document. "
+                                       "Use the down arrow to reopen the document using another encoding",
+                                       "act whatsThis"));
+    }
+    if (!actSaveFile.isNull()) {
+        actSaveFile->setText(tr("Save", "act text"));
+        actSaveFile->setToolTip(tr("Save current document", "act toolTip"));
+        actSaveFile->setWhatsThis(tr("Use this action to save the current document on your drive. "
+                                     "If the corresponding file doesn't exist, "
+                                     "you will be proposed to select it's location", "act whatsThis"));
+    }
+    if (!actSaveFileAs.isNull()) {
+        actSaveFileAs->setText(tr("Save as...", "act text"));
+        actSaveFileAs->setToolTip(tr("Save current document as...", "act toolTip"));
+        actSaveFileAs->setWhatsThis(tr("Use this action to save the current document on your drive. "
+                                       "You will be proposed to select file location and encoding", "act whatsThis"));
+    }
+    if (!actSaveAllFiles.isNull()) {
+        actSaveAllFiles->setText(tr("Save all", "act text"));
+        actSaveAllFiles->setToolTip(tr("Save all opened documents", "act toolTip"));
+        actSaveAllFiles->setWhatsThis(tr("Use this action to save all modified documents. "
+                                         "This is the same as using the Save action at every modified document",
+                                         "act whatsThis"));
+    }
+    if (!actCloseFile.isNull()) {
+        actCloseFile->setText(tr("Close", "act text"));
+        actCloseFile->setToolTip(tr("Close current document", "act toolTip"));
+        actCloseFile->setWhatsThis(tr("Use this action to close the current document. "
+                                      "If the document is modified, you will be asked to save it before closing",
+                                      "act whatsThis"));
+    }
+    if (!actCloseAllFiles.isNull()) {
+        actCloseAllFiles->setText(tr("Close all", "act text"));
+        actCloseAllFiles->setToolTip(tr("Close all opened documents", "act toolTip"));
+        actCloseAllFiles->setWhatsThis(tr("Use this action to close all opened documents. "
+                                          "If any documents are modified, "
+                                          "you will be asked to save them before closing", "act whatsThis"));
+    }
+    if (!mnuFileHistory.isNull()) {
+        mnuFileHistory->setTitle(tr("Recent files", "mnu title"));
+        mnuFileHistory->setWhatsThis(tr("Use this action to open one of the recently opened files", "mnu whatsThis"));
+    }
 }
 
 /*============================================================================
@@ -261,18 +293,26 @@ QList<QAction *> BOpenSaveEditorModule::actions(int group, bool)
     QList<QAction *> list;
     switch (group) {
     case OpenActionGroup:
-        list << d->actNewFile;
-        list << d->actOpenFiles;
-        list << d->actReopenFile;
+        if (!d->actNewFile.isNull())
+            list << d->actNewFile;
+        if (!d->actOpenFiles.isNull())
+            list << d->actOpenFiles;
+        if (!d->actReopenFile.isNull())
+            list << d->actReopenFile;
         break;
     case SaveActionGroup:
-        list << d->actSaveFile;
-        list << d->actSaveFileAs;
-        list << d->actSaveAllFiles;
+        if (!d->actSaveFile.isNull())
+            list << d->actSaveFile;
+        if (!d->actSaveFileAs.isNull())
+            list << d->actSaveFileAs;
+        if (!d->actSaveAllFiles.isNull())
+            list << d->actSaveAllFiles;
         break;
     case CloseActionGroup:
-        list << d->actCloseFile;
-        list << d->actCloseAllFiles;
+        if (!d->actCloseFile.isNull())
+            list << d->actCloseFile;
+        if (!d->actCloseAllFiles.isNull())
+            list << d->actCloseAllFiles;
         break;
     default:
         break;
@@ -291,7 +331,7 @@ QList<QAction *> BOpenSaveEditorModule::actions(bool extended)
 
 QList<QAction *> BOpenSaveEditorModule::fileHistoryActions() const
 {
-    return d_func()->mnuFileHistory->actions();
+    return !d_func()->mnuFileHistory.isNull() ? d_func()->mnuFileHistory->actions() : QList<QAction *>();
 }
 
 QMenu *BOpenSaveEditorModule::fileHistoryMenu() const
@@ -330,14 +370,22 @@ void BOpenSaveEditorModule::editorSet(BCodeEditor *edr)
 {
     B_D(BOpenSaveEditorModule);
     if (edr) {
-        connect(d->actNewFile, SIGNAL(triggered()), edr, SLOT(addDocument()));
-        connect(d->actOpenFiles, SIGNAL(triggered()), edr, SLOT(openDocuments()));
-        connect(d->actReopenFile, SIGNAL(triggered()), edr, SLOT(reopenCurrentDocument()));
-        connect(d->actSaveFile, SIGNAL(triggered()), edr, SLOT(saveCurrentDocument()));
-        connect(d->actSaveFileAs, SIGNAL(triggered()), edr, SLOT(saveCurrentDocumentAs()));
-        connect(d->actSaveAllFiles, SIGNAL(triggered()), edr, SLOT(saveAllDocuments()));
-        connect(d->actCloseFile, SIGNAL(triggered()), edr, SLOT(closeCurrentDocument()));
-        connect(d->actCloseAllFiles, SIGNAL(triggered()), edr, SLOT(closeAllDocuments()));
+        if (!d->actNewFile.isNull())
+            connect(d->actNewFile, SIGNAL(triggered()), edr, SLOT(addDocument()));
+        if (!d->actOpenFiles.isNull())
+            connect(d->actOpenFiles, SIGNAL(triggered()), edr, SLOT(openDocuments()));
+        if (!d->actReopenFile.isNull())
+            connect(d->actReopenFile, SIGNAL(triggered()), edr, SLOT(reopenCurrentDocument()));
+        if (!d->actSaveFile.isNull())
+            connect(d->actSaveFile, SIGNAL(triggered()), edr, SLOT(saveCurrentDocument()));
+        if (!d->actSaveFileAs.isNull())
+            connect(d->actSaveFileAs, SIGNAL(triggered()), edr, SLOT(saveCurrentDocumentAs()));
+        if (!d->actSaveAllFiles.isNull())
+            connect(d->actSaveAllFiles, SIGNAL(triggered()), edr, SLOT(saveAllDocuments()));
+        if (!d->actCloseFile.isNull())
+            connect(d->actCloseFile, SIGNAL(triggered()), edr, SLOT(closeCurrentDocument()));
+        if (!d->actCloseAllFiles.isNull())
+            connect(d->actCloseAllFiles, SIGNAL(triggered()), edr, SLOT(closeAllDocuments()));
     }
     d->checkActions();
     d->resetFileHistory(edr ? edr->fileHistory() : QStringList());
@@ -347,14 +395,22 @@ void BOpenSaveEditorModule::editorUnset(BCodeEditor *edr)
 {
     B_D(BOpenSaveEditorModule);
     if (edr) {
-        disconnect(d->actNewFile, SIGNAL(triggered()), edr, SLOT(addDocument()));
-        disconnect(d->actOpenFiles, SIGNAL(triggered()), edr, SLOT(openDocuments()));
-        disconnect(d->actReopenFile, SIGNAL(triggered()), edr, SLOT(reopenCurrentDocument()));
-        disconnect(d->actSaveFile, SIGNAL(triggered()), edr, SLOT(saveCurrentDocument()));
-        disconnect(d->actSaveFileAs, SIGNAL(triggered()), edr, SLOT(saveCurrentDocumentAs()));
-        disconnect(d->actSaveAllFiles, SIGNAL(triggered()), edr, SLOT(saveAllDocuments()));
-        disconnect(d->actCloseFile, SIGNAL(triggered()), edr, SLOT(closeCurrentDocument()));
-        disconnect(d->actCloseAllFiles, SIGNAL(triggered()), edr, SLOT(closeAllDocuments()));
+        if (!d->actNewFile.isNull())
+            disconnect(d->actNewFile, SIGNAL(triggered()), edr, SLOT(addDocument()));
+        if (!d->actOpenFiles.isNull())
+            disconnect(d->actOpenFiles, SIGNAL(triggered()), edr, SLOT(openDocuments()));
+        if (!d->actReopenFile.isNull())
+            disconnect(d->actReopenFile, SIGNAL(triggered()), edr, SLOT(reopenCurrentDocument()));
+        if (!d->actSaveFile.isNull())
+            disconnect(d->actSaveFile, SIGNAL(triggered()), edr, SLOT(saveCurrentDocument()));
+        if (!d->actSaveFileAs.isNull())
+            disconnect(d->actSaveFileAs, SIGNAL(triggered()), edr, SLOT(saveCurrentDocumentAs()));
+        if (!d->actSaveAllFiles.isNull())
+            disconnect(d->actSaveAllFiles, SIGNAL(triggered()), edr, SLOT(saveAllDocuments()));
+        if (!d->actCloseFile.isNull())
+            disconnect(d->actCloseFile, SIGNAL(triggered()), edr, SLOT(closeCurrentDocument()));
+        if (!d->actCloseAllFiles.isNull())
+            disconnect(d->actCloseAllFiles, SIGNAL(triggered()), edr, SLOT(closeAllDocuments()));
     }
     d->checkActions();
     d->resetFileHistory();

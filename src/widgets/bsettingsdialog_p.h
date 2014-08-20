@@ -62,7 +62,6 @@ public:
                                     BSettingsDialog::TabNavigation navigation = BSettingsDialog::ListNavigation);
     ~BSettingsDialogPrivate();
 public:
-    BAbstractSettingsTab *currentTab() const;
     void init();
 public Q_SLOTS:
     void accepted();

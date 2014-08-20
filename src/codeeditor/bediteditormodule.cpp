@@ -37,6 +37,7 @@
 #include <QKeySequence>
 #include <QList>
 #include <QObject>
+#include <QPointer>
 #include <QString>
 
 /*============================================================================
@@ -61,18 +62,24 @@ BEditEditorModulePrivate::~BEditEditorModulePrivate()
 void BEditEditorModulePrivate::checkActions()
 {
     BAbstractCodeEditorDocument *doc = q_func()->currentDocument();
-    actCut->setEnabled(doc && doc->isCutAvailable());
-    actCopy->setEnabled(doc && doc->isCopyAvailable());
-    actPaste->setEnabled(doc && doc->isPasteAvailable());
-    actUndo->setEnabled(doc && doc->isUndoAvailable());
-    actRedo->setEnabled(doc && doc->isRedoAvailable());
+    if (!actCut.isNull())
+        actCut->setEnabled(doc && doc->isCutAvailable());
+    if (!actCopy.isNull())
+        actCopy->setEnabled(doc && doc->isCopyAvailable());
+    if (!actPaste.isNull())
+        actPaste->setEnabled(doc && doc->isPasteAvailable());
+    if (!actUndo.isNull())
+        actUndo->setEnabled(doc && doc->isUndoAvailable());
+    if (!actRedo.isNull())
+        actRedo->setEnabled(doc && doc->isRedoAvailable());
     checkSwitchModeAction();
 }
 
 void BEditEditorModulePrivate::checkSwitchModeAction()
 {
     BCodeEditorDocument *doc = qobject_cast<BCodeEditorDocument *>(q_func()->currentDocument());
-    actSwitchMode->setEnabled(doc);
+    if (!actSwitchMode.isNull())
+        actSwitchMode->setEnabled(doc);
     if (doc)
         resetSwitchModeAction(doc->editMode() == BCodeEdit::BlockMode);
 }
@@ -107,6 +114,8 @@ void BEditEditorModulePrivate::init()
 
 void BEditEditorModulePrivate::resetSwitchModeAction(bool bm)
 {
+    if (actSwitchMode.isNull())
+        return;
     actSwitchMode->setIcon(BApplication::icon(bm ? "edit_mode_block" : "edit_mode_normal"));
     actSwitchMode->setText(bm ? tr("Mode: blocks", "act text") : tr("Mode: lines", "act text"));
     actSwitchMode->setToolTip(bm ? tr("Edit mode: blocks", "act toolTip") : tr("Edit mode: lines", "act toolTip"));
@@ -136,24 +145,34 @@ void BEditEditorModulePrivate::setDocument(BAbstractCodeEditorDocument *doc)
 
 void BEditEditorModulePrivate::retranslateUi()
 {
-    actCut->setText(tr("Cut", "act text"));
-    actCut->setToolTip(tr("Cut selected text", "act toolTip"));
-    actCut->setWhatsThis(tr("Use this action to delete current selected text and move it to clipboard",
-                            "act whatsThis"));
-    actCopy->setText(tr("Copy", "act text"));
-    actCopy->setToolTip(tr("Copy selected text", "act toolTip"));
-    actCopy->setWhatsThis(tr("Use this action to copy current selected text to clipboard", "act whatsThis"));
-    actPaste->setText(tr("Paste", "act text"));
-    actPaste->setToolTip(tr("Paste text from clipboard", "act toolTip"));
-    actPaste->setWhatsThis(tr("Paste text from clipboard to current cursor position", "act whatsThis"));
-    actUndo->setText(tr("Undo", "act text"));
-    actUndo->setToolTip(tr("Undo last action", "act toolTip"));
-    actUndo->setWhatsThis(tr("Use this action to undo last operation (text insertion, selection deletion, etc.)",
-                            "act whatsThis") );
-    actRedo->setText(tr("Redo", "act text"));
-    actRedo->setToolTip(tr("Redo canceled action", "act toolTip"));
-    actRedo->setWhatsThis(tr("Use this action to repeat last operation, cancelled using the Undo action",
-                             "act whatsThis"));
+    if (!actCut.isNull()) {
+        actCut->setText(tr("Cut", "act text"));
+        actCut->setToolTip(tr("Cut selected text", "act toolTip"));
+        actCut->setWhatsThis(tr("Use this action to delete current selected text and move it to clipboard",
+                                "act whatsThis"));
+    }
+    if (!actCopy.isNull()) {
+        actCopy->setText(tr("Copy", "act text"));
+        actCopy->setToolTip(tr("Copy selected text", "act toolTip"));
+        actCopy->setWhatsThis(tr("Use this action to copy current selected text to clipboard", "act whatsThis"));
+    }
+    if (!actPaste.isNull()) {
+        actPaste->setText(tr("Paste", "act text"));
+        actPaste->setToolTip(tr("Paste text from clipboard", "act toolTip"));
+        actPaste->setWhatsThis(tr("Paste text from clipboard to current cursor position", "act whatsThis"));
+    }
+    if (!actUndo.isNull()) {
+        actUndo->setText(tr("Undo", "act text"));
+        actUndo->setToolTip(tr("Undo last action", "act toolTip"));
+        actUndo->setWhatsThis(tr("Use this action to undo last operation (text insertion, selection deletion, etc.)",
+                                 "act whatsThis"));
+    }
+    if (!actRedo.isNull()) {
+        actRedo->setText(tr("Redo", "act text"));
+        actRedo->setToolTip(tr("Redo canceled action", "act toolTip"));
+        actRedo->setWhatsThis(tr("Use this action to repeat last operation, cancelled using the Undo action",
+                                 "act whatsThis"));
+    }
     checkSwitchModeAction();
 }
 
@@ -217,13 +236,18 @@ QList<QAction *> BEditEditorModule::actions(int group, bool)
     QList<QAction *> list;
     switch (group) {
     case ClipboardActionGroup:
-        list << d->actCut;
-        list << d->actCopy;
-        list << d->actPaste;
+        if (!d->actCut.isNull())
+            list << d->actCut;
+        if (!d->actCopy.isNull())
+            list << d->actCopy;
+        if (!d->actPaste.isNull())
+            list << d->actPaste;
         break;
     case UndoRedoActionGroup:
-        list << d->actUndo;
-        list << d->actRedo;
+        if (!d->actUndo.isNull())
+            list << d->actUndo;
+        if (!d->actRedo.isNull())
+            list << d->actRedo;
         break;
     default:
         break;
@@ -236,7 +260,8 @@ QList<QAction *> BEditEditorModule::actions(bool extended)
     QList<QAction *> list;
     list << actions(ClipboardActionGroup, extended);
     list << actions(UndoRedoActionGroup, extended);
-    list << d_func()->actSwitchMode;
+    if (!d_func()->actSwitchMode.isNull())
+        list << d_func()->actSwitchMode;
     return list;
 }
 

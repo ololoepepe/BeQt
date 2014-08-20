@@ -54,6 +54,7 @@ class BPluginWrapper;
 #include <QStringList>
 #include <QSystemTrayIcon>
 #include <QUrl>
+#include <QVariant>
 #include <QWhatsThis>
 #include <QWidget>
 
@@ -485,6 +486,13 @@ void BApplication::setPreferredIconFormats(const QStringList &suffixes)
     ds_func()->preferredIconFormats = suffixes;
 }
 
+void BApplication::setSettingsTabDefaultNavigation(BSettingsDialog::TabNavigation navigation)
+{
+    if (!BApplicationBasePrivate::testInit("BApplication"))
+        return;
+    ds_func()->navigation = navigation;
+}
+
 void BApplication::setThemedIconsEnabled(bool enabled)
 {
     if (!BApplicationBasePrivate::testInit("BApplication"))
@@ -492,11 +500,11 @@ void BApplication::setThemedIconsEnabled(bool enabled)
     ds_func()->themedIcons = enabled;
 }
 
-void BApplication::setSettingsTabDefaultNavigation(BSettingsDialog::TabNavigation navigation)
+BSettingsDialog::TabNavigation BApplication::settingsTabDefaultNavigation()
 {
     if (!BApplicationBasePrivate::testInit("BApplication"))
-        return;
-    ds_func()->navigation = navigation;
+        return BSettingsDialog::ListNavigation;
+    return ds_func()->navigation;
 }
 
 bool BApplication::themedIconsEnabled()
@@ -570,7 +578,12 @@ void BApplication::showSettingsDialog(BSettingsDialog::TabNavigation navigation)
         msg.exec();
         return;
     }
+    QSettings *s = ds_func()->settings;
+    sd->restoreGeometry(s->value("BeQt/Widgets/settings_dialog_geometry").toByteArray());
+    sd->restoreState(s->value("BeQt/Widgets/settings_dialog_state").toByteArray());
     sd->exec();
+    s->setValue("BeQt/Widgets/settings_dialog_geometry", sd->saveGeometry());
+    s->setValue("BeQt/Widgets/settings_dialog_state", sd->saveState());
 }
 
 /*============================== Protected methods =========================*/

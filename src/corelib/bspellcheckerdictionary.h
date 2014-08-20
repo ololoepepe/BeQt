@@ -64,6 +64,7 @@ public:
     QString path() const;
     void removeWord(const QString &word);
     bool spell(const QString &word) const;
+    bool spell(const QStringList &words) const;
     QStringList suggest(const QString &word) const;
 private:
     Q_DISABLE_COPY(BSpellCheckerDictionary)

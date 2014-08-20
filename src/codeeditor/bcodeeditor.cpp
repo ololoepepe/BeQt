@@ -1277,11 +1277,11 @@ BCodeEditor::BCodeEditor(QWidget *parent) :
     addModule(SearchModule);
 }
 
-BCodeEditor::BCodeEditor(StandardDocumentType t, QWidget *parent) :
+BCodeEditor::BCodeEditor(int documentType, QWidget *parent) :
     QWidget(parent), BBaseObject(*new BCodeEditorPrivate(this))
 {
     d_func()->init();
-    d_func()->docType = t;
+    d_func()->docType = documentType;
     addModule(EditModule);
     addModule(IndicatorsModule);
     addModule(OpenSaveModule);
@@ -1329,12 +1329,6 @@ BAbstractEditorModule *BCodeEditor::createStandardModule(StandardModule type, BC
     if (parent)
         parent->addModule(mdl);
     return mdl;
-}
-
-BCodeEditor::StandardDocumentType BCodeEditor::standardDocumentTypeFromInt(int t)
-{
-    static QList<int> Types = bRangeD(StandardDocument, SimpleDocument);
-    return Types.contains(t) ? static_cast<StandardDocumentType>(t) : StandardDocument;
 }
 
 /*============================== Public methods ============================*/

@@ -38,7 +38,9 @@ class BTextBlockExtraData;
 #include <QStringList>
 #include <QTextBlock>
 #include <QTextCharFormat>
+#include <QTextCursor>
 #include <QToolTip>
+#include <QVariant>
 
 /*============================================================================
 ================================ BDefaultFileType ============================
@@ -211,16 +213,16 @@ bool BAbstractFileType::matchesFileName(const QString &fileName) const
 
 /*============================== Static protected methods ==================*/
 
-BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionItem(const QString &text,
-                                                                                  const QString &toolTip,
-                                                                                  const QIcon &icon)
+BAbstractFileType::AutocompletionItem BAbstractFileType::createAutocompletionItem(
+        const QString &text, const QString &actionText, const QString &actionToolTip, const QIcon &actionIcon)
 {
     if (text.isEmpty())
         return AutocompletionItem();
     AutocompletionItem item;
     item.text = text;
-    item.toolTip = toolTip;
-    item.icon = icon;
+    item.actionText = actionText;
+    item.actionToolTip = actionToolTip;
+    item.actionIcon = actionIcon;
     return item;
 }
 
@@ -236,28 +238,33 @@ BAbstractFileType::BracketPair BAbstractFileType::createBracketPair(const QStrin
 
 /*============================== Protected methods =========================*/
 
-void BAbstractFileType::addCurrentBlockSkipInterval(const SkipInterval &si)
+void BAbstractFileType::addCurrentBlockSkipSegment(const SkipSegment &s)
 {
-    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), si);
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(currentBlock(), s);
 }
 
-void BAbstractFileType::addCurrentBlockSkipInterval(int start, int end)
+void BAbstractFileType::addCurrentBlockSkipSegment(int start, int end)
 {
-    BAbstractCodeEditorDocumentPrivate::addBlockSkipInterval(currentBlock(), start, end);
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipSegment(currentBlock(), start, end);
 }
 
-void BAbstractFileType::clearCurrentBlockSkipIntervals()
+void BAbstractFileType::addCurrentBlockSkipSegmentL(int start, int length)
 {
-    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), QList<SkipInterval>());
+    BAbstractCodeEditorDocumentPrivate::addBlockSkipSegmentL(currentBlock(), start, length);
+}
+
+void BAbstractFileType::clearCurrentBlockSkipSegments()
+{
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipSegments(currentBlock(), QList<SkipSegment>());
 }
 
 QList<BAbstractFileType::AutocompletionItem> BAbstractFileType::createAutocompletionItemList(
-        BAbstractCodeEditorDocument *, QTextBlock, int)
+        BAbstractCodeEditorDocument *, QTextCursor)
 {
     return QList<AutocompletionItem>();
 }
 
-QString BAbstractFileType::createToolTipText(BAbstractCodeEditorDocument *, QTextBlock, int)
+QString BAbstractFileType::createToolTipText(BAbstractCodeEditorDocument *, QTextCursor)
 {
     return QString();
 }
@@ -306,9 +313,9 @@ void BAbstractFileType::setCurrentBlockExtraData(BTextBlockExtraData *data)
     d_func()->highlighter->setCurrentBlockExtraData(data);
 }
 
-void BAbstractFileType::setCurrentBlockSkipIntervals(const QList<SkipInterval> &list)
+void BAbstractFileType::setCurrentBlockSkipSegments(const QList<SkipSegment> &list)
 {
-    BAbstractCodeEditorDocumentPrivate::setBlockSkipIntervals(currentBlock(), list);
+    BAbstractCodeEditorDocumentPrivate::setBlockSkipSegments(currentBlock(), list);
 }
 
 void BAbstractFileType::setCurrentBlockState(int newState)
@@ -339,17 +346,25 @@ void BAbstractFileType::setFormat(int start, int count, const QFont &font)
     d_func()->highlighter->setFormat(start, count, font);
 }
 
-void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
+void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextCursor cursor,
                                                const QPoint &globalPos)
 {
-    QList<AutocompletionItem> list = createAutocompletionItemList(doc, block, posInBlock);
+    if (cursor.isNull())
+        return;
+    cursor.select(QTextCursor::WordUnderCursor);
+    if (!cursor.hasSelection())
+        return;
+    QList<AutocompletionItem> list = createAutocompletionItemList(doc, cursor);
     if (list.isEmpty())
         return;
     QMenu *mnu = new QMenu;
     foreach (const AutocompletionItem &aci, list) {
-        if (aci.text.isEmpty())
+        if (aci.text.isEmpty() || aci.actionText.isEmpty())
             continue;
-        mnu->addAction(aci.icon, aci.text)->setToolTip(aci.toolTip);
+        QAction *act = mnu->addAction(aci.actionIcon, aci.actionText);
+        act->setIconVisibleInMenu(true);
+        act->setToolTip(aci.actionToolTip);
+        act->setData(aci.text);
     }
     if (mnu->isEmpty()) {
         delete mnu;
@@ -361,21 +376,15 @@ void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc,
         delete mnu;
         return;
     }
-    QString text = act->text();
+    QString text = act->data().toString();
     delete mnu;
-    QString btext = block.text();
-    int start = block.position() + posInBlock - 1;
-    int end = start + 1;
-    while (start > 0 && start < btext.length() && btext.at(start) != ' ')
-        --start;
-    doc->selectText(start + 1, end);
+    doc->selectText(cursor.selectionStart(), cursor.selectionEnd());
     doc->insertText(text);
 }
 
-void BAbstractFileType::showToolTip(BAbstractCodeEditorDocument *doc, QTextBlock block, int posInBlock,
-                                    const QPoint &globalPos)
+void BAbstractFileType::showToolTip(BAbstractCodeEditorDocument *doc, QTextCursor cursor, const QPoint &globalPos)
 {
-    QString text = createToolTipText(doc, block, posInBlock);
+    QString text = createToolTipText(doc, cursor);
     if (text.isEmpty())
         return QToolTip::hideText();
     QToolTip::showText(globalPos, text);

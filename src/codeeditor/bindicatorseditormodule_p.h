@@ -22,8 +22,6 @@
 #ifndef BINDICATORSEDITORMODULE_P_H
 #define BINDICATORSEDITORMODULE_P_H
 
-class QComboBox;
-class QLabel;
 class QString;
 
 #include "bindicatorseditormodule.h"
@@ -32,9 +30,12 @@ class QString;
 #include <BeQtCore/BeQtGlobal>
 #include <BeQtCore/private/bbase_p.h>
 
-#include <QObject>
-#include <QMap>
+#include <QComboBox>
+#include <QLabel>
 #include <QList>
+#include <QMap>
+#include <QObject>
+#include <QPointer>
 
 /*============================================================================
 ================================ BIndicatorsEditorModulePrivate ==============
@@ -51,9 +52,9 @@ public:
         QString name;
     };
 public:
-    QComboBox *cmboxFileType;
-    QLabel *lblCursorPos;
-    QLabel *lblEncoding;
+    QPointer<QComboBox> cmboxFileType;
+    QPointer<QLabel> lblCursorPos;
+    QPointer<QLabel> lblEncoding;
 public:
     explicit BIndicatorsEditorModulePrivate(BIndicatorsEditorModule *q);
     ~BIndicatorsEditorModulePrivate();

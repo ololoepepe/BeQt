@@ -79,10 +79,10 @@ public:
     BSqlResult exec(const QString &qs, const QVariantList &boundValues);
     BSqlResult exec(const QString &qs, const QVariantMap &boundValues);
     QString hostName() const;
-    bool initializeFromSchema(const QString &schemaText);
-    bool initializeFromSchema(const QStringList &schema);
-    bool initializeFromSchemaFile(const QString &fileName, QTextCodec *codec = 0);
-    bool initializeFromSchemaFile(const QString &fileName, const QString &codecName);
+    bool initializeFromSchema(const QString &schemaText, bool transaction = true);
+    bool initializeFromSchema(const QStringList &schema, bool transaction = true);
+    bool initializeFromSchemaFile(const QString &fileName, QTextCodec *codec = 0, bool transaction = true);
+    bool initializeFromSchemaFile(const QString &fileName, const QString &codecName, bool transaction = true);
     BSqlResult insert(const QString &table, const QVariantMap &values, const BSqlWhere &where = BSqlWhere());
     BSqlResult insert(const QString &table, const QString &field1, const QVariant &value1,
                       const QString &field2 = QString(), const QVariant &value2 = QVariant(),
@@ -129,8 +129,9 @@ public:
     bool transaction();
     BSqlResult update(const QString &table, const QVariantMap &values, const BSqlWhere &where = BSqlWhere());
     BSqlResult update(const QString &table, const QString &field1, const QVariant &value1,
-                      const QString &field2 = QString(), const QVariant &value2 = QVariant(),
                       const BSqlWhere &where = BSqlWhere());
+    BSqlResult update(const QString &table, const QString &field1, const QVariant &value1, const QString &field2,
+                      const QVariant &value2, const BSqlWhere &where = BSqlWhere());
     QString userName() const;
 protected:
     QSqlDatabase *innerDatabase() const;
