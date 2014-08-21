@@ -25,6 +25,8 @@
 class BDynamicTranslatorPrivate;
 
 class QByteArray;
+class QString;
+class QStringList;
 
 #include "bbaseobject.h"
 #include "btranslation.h"
@@ -64,6 +66,10 @@ public:
 protected:
     explicit BDynamicTranslator(BDynamicTranslatorPrivate &d, QObject *parent);
 public:
+    QString argument(int index = 0) const;
+    QStringList arguments() const;
+    void setArgument(const QString &argument);
+    void setArguments(const QStringList &arguments);
     void setTargetPropertyName(const QByteArray &targetPropertyName);
     void setTargetSlotName(const QByteArray &targetSlotName);
     void setTranslation(const BTranslation &translation);

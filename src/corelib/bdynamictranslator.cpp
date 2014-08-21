@@ -30,6 +30,8 @@
 #include <QMetaObject>
 #include <QObject>
 #include <QPointer>
+#include <QString>
+#include <QStringList>
 
 /*============================================================================
 ================================ BDynamicTranslatorPrivate ===================
@@ -62,11 +64,13 @@ void BDynamicTranslatorPrivate::translate()
     QObject *target = q_func()->parent();
     if (!target)
         return;
-    if (!targetPropertyName.isEmpty()) {
-        target->setProperty(targetPropertyName.constData(), translation.translate());
-    } else if (!targetSlotName.isEmpty()) {
-        QMetaObject::invokeMethod(target, targetSlotName.constData(), Q_ARG(QString, translation.translate()));
-    }
+    QString s = translation.translate();
+    foreach (const QString &arg, arguments)
+        s = s.arg(arg);
+    if (!targetPropertyName.isEmpty())
+        target->setProperty(targetPropertyName.constData(), s);
+    else if (!targetSlotName.isEmpty())
+        QMetaObject::invokeMethod(target, targetSlotName.constData(), Q_ARG(QString, s));
 }
 
 /*============================================================================
@@ -127,6 +131,26 @@ BDynamicTranslator::BDynamicTranslator(BDynamicTranslatorPrivate &d, QObject *pa
 }
 
 /*============================== Public methods ============================*/
+
+QString BDynamicTranslator::argument(int index) const
+{
+    return (index >= 0 && index < d_func()->arguments.size()) ? d_func()->arguments.at(index) : QString();
+}
+
+QStringList BDynamicTranslator::arguments() const
+{
+    return d_func()->arguments;
+}
+
+void BDynamicTranslator::setArgument(const QString &argument)
+{
+    d_func()->arguments = (QStringList() << argument);
+}
+
+void BDynamicTranslator::setArguments(const QStringList &arguments)
+{
+    d_func()->arguments = arguments;
+}
 
 void BDynamicTranslator::setTargetPropertyName(const QByteArray &targetPropertyName)
 {
