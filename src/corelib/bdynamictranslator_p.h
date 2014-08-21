@@ -30,7 +30,6 @@
 #include <QByteArray>
 #include <QObject>
 #include <QPointer>
-#include <QStringList>
 
 /*============================================================================
 ================================ BDynamicTranslatorPrivate ===================
@@ -41,7 +40,6 @@ class B_CORE_EXPORT BDynamicTranslatorPrivate : public BBaseObjectPrivate
     Q_OBJECT
     B_DECLARE_PUBLIC(BDynamicTranslator)
 public:
-    QStringList arguments;
     QByteArray targetPropertyName;
     QByteArray targetSlotName;
     BTranslation translation;
