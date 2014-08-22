@@ -782,7 +782,7 @@ void BAbstractCodeEditorDocumentPrivate::rehighlightSearchResults()
     B_Q(BAbstractCodeEditorDocument);
     ExtraSelectionList selections = q->extraSelections();
     highlightedSearchResults.clear();
-    if (lastSearchRegexp.isValid()) {
+    if (lastSearchRegexp.isValid() && !lastSearchRegexp.isEmpty()) {
         QStringList lines = q->text(true).split('\n');
         int len = 0;
         foreach (int i, bRangeD(0, lines.size() - 1)) {
