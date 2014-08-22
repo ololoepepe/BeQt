@@ -24,6 +24,7 @@
 #include "bpassword.h"
 #include "bpersoninfo.h"
 #include "bpersoninfolist.h"
+#include "bproperties.h"
 #include "btranslation.h"
 #include "buuid.h"
 #include "bversion.h"
@@ -92,6 +93,8 @@ void bRegister()
     qRegisterMetaTypeStreamOperators<BPersonInfo>();
     qRegisterMetaType<BPersonInfoList>();
     qRegisterMetaTypeStreamOperators<BPersonInfoList>();
+    qRegisterMetaType<BProperties>();
+    qRegisterMetaTypeStreamOperators<BProperties>();
     qRegisterMetaType<BTranslation>();
     qRegisterMetaTypeStreamOperators<BTranslation>();
     qRegisterMetaType<BTr>("BTr");

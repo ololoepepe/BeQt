@@ -18,6 +18,7 @@
 #include "bpersoninfoprovider.h"
 #include "bplugininterface.h"
 #include "bpluginwrapper.h"
+#include "bproperties.h"
 #include "bsettingsnode.h"
 #include "bsignaldelayproxy.h"
 #include "bspamnotifier.h"

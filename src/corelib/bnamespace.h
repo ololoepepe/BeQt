@@ -115,8 +115,8 @@ enum TabWidth
     TabWidth8 = 8
 };
 
-typedef QPair<const QObject *, const char *> Until;
 typedef QPair<const QObject *, const char *> Target;
+typedef QPair<const QObject *, const char *> Until;
 
 const QDataStream::Version DataStreamVersion = QDataStream::Qt_4_8;
 
