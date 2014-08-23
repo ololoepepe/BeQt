@@ -111,9 +111,10 @@ QList<BTextBlockUserDataPrivate::SkipSegment> BTextBlockUserDataPrivate::process
     foreach (int i, bRangeR(nlist.size() - 1, 1)) {
         SkipSegment &s1 = nlist[i - 1];
         const SkipSegment &s2 = nlist.at(i);
-        if (s1.end >= s2.start)
+        if (s1.end >= s2.start) {
             s1.end = s2.end;
-        nlist.removeAt(i);
+            nlist.removeAt(i);
+        }
     }
     return nlist;
 }
