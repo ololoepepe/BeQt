@@ -1,0 +1,1 @@
+#include "../../src/corelib/bproperties.h"

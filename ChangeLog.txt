@@ -12,6 +12,7 @@
     * Add alternative base class pair with non-QObject private base
     * Fix BSpellCheckerDictionary validity testing
     * Add ability to set replaced letters in BSpellCheckerDictionary
+    * Add BProperties class
     * Add BApplicationBase class
     * Make BCoreApplication and BApplication inherit BApplicationBase and QCoreApplication (or QApplication)
     * Remove some BCoreApplication members: instance -> binstance, translator -> beqtTranslator, etc.

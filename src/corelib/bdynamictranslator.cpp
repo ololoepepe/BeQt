@@ -30,6 +30,7 @@
 #include <QMetaObject>
 #include <QObject>
 #include <QPointer>
+#include <QString>
 
 /*============================================================================
 ================================ BDynamicTranslatorPrivate ===================
@@ -62,11 +63,10 @@ void BDynamicTranslatorPrivate::translate()
     QObject *target = q_func()->parent();
     if (!target)
         return;
-    if (!targetPropertyName.isEmpty()) {
+    if (!targetPropertyName.isEmpty())
         target->setProperty(targetPropertyName.constData(), translation.translate());
-    } else if (!targetSlotName.isEmpty()) {
+    else if (!targetSlotName.isEmpty())
         QMetaObject::invokeMethod(target, targetSlotName.constData(), Q_ARG(QString, translation.translate()));
-    }
 }
 
 /*============================================================================

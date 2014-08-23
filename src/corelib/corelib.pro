@@ -38,6 +38,7 @@ HEADERS += \
     bplugininterface.h \
     bpluginwrapper.h \
     bpluginwrapper_p.h \
+    bproperties.h \
     bsettingsnode.h \
     bsignaldelayproxy.h \
     bsignaldelayproxy_p.h \
@@ -74,6 +75,7 @@ SOURCES += \
     bpersoninfolist.cpp \
     bpersoninfoprovider.cpp \
     bpluginwrapper.cpp \
+    bproperties.cpp \
     bsettingsnode.cpp \
     bsignaldelayproxy.cpp \
     bspamnotifier.cpp \

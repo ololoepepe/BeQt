@@ -24,6 +24,7 @@
 #include "bpassword.h"
 #include "bpersoninfo.h"
 #include "bpersoninfolist.h"
+#include "bproperties.h"
 #include "btranslation.h"
 #include "buuid.h"
 #include "bversion.h"
@@ -92,6 +93,8 @@ void bRegister()
     qRegisterMetaTypeStreamOperators<BPersonInfo>();
     qRegisterMetaType<BPersonInfoList>();
     qRegisterMetaTypeStreamOperators<BPersonInfoList>();
+    qRegisterMetaType<BProperties>();
+    qRegisterMetaTypeStreamOperators<BProperties>();
     qRegisterMetaType<BTranslation>();
     qRegisterMetaTypeStreamOperators<BTranslation>();
     qRegisterMetaType<BTr>("BTr");
@@ -112,5 +115,5 @@ bool bTest(bool condition, const char *where, const char *what)
 
 const char *bVersion()
 {
-    return "4.0.0-beta3";
+    return "4.0.0-beta4";
 }

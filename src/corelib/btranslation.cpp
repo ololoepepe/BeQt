@@ -30,6 +30,7 @@
 #include <QDebug>
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QVariant>
 #include <QVariantMap>
 
@@ -41,6 +42,7 @@ class BTranslationPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BTranslation)
 public:
+    QStringList arguments;
     QString context;
     QString disambiguation;
     int n;
@@ -141,6 +143,16 @@ QString BTranslation::translate(const BTranslation &t)
 
 /*============================== Public methods ============================*/
 
+QString BTranslation::argument(int index) const
+{
+    return (index >= 0 && index < d_func()->arguments.size()) ? d_func()->arguments.at(index) : QString();
+}
+
+QStringList BTranslation::arguments() const
+{
+    return d_func()->arguments;
+}
+
 QString BTranslation::context() const
 {
     return d_func()->context;
@@ -161,6 +173,16 @@ int BTranslation::n() const
     return d_func()->n;
 }
 
+void BTranslation::setArgument(const QString &argument)
+{
+    d_func()->arguments = (QStringList() << argument);
+}
+
+void BTranslation::setArguments(const QStringList &arguments)
+{
+    d_func()->arguments = arguments;
+}
+
 QString BTranslation::sourceText() const
 {
     return d_func()->sourceText;
@@ -174,8 +196,11 @@ QString BTranslation::tr() const
 QString BTranslation::translate() const
 {
     const B_D(BTranslation);
-    return BeQt::translate(d->context.toUtf8().constData(), d->sourceText.toUtf8().constData(),
-                           d->disambiguation.toUtf8().constData(), d->n);
+    QString s = BeQt::translate(d->context.toUtf8().constData(), d->sourceText.toUtf8().constData(),
+                                d->disambiguation.toUtf8().constData(), d->n);
+    foreach (const QString &a, d->arguments)
+        s = s.arg(a);
+    return s;
 }
 
 /*============================== Public operators ==========================*/
@@ -184,6 +209,7 @@ BTranslation &BTranslation::operator =(const BTranslation &other)
 {
     B_D(BTranslation);
     const BTranslationPrivate *dd = other.d_func();
+    d->arguments = dd->arguments;
     d->context = dd->context;
     d->sourceText = dd->sourceText;
     d->disambiguation = dd->disambiguation;
@@ -195,8 +221,8 @@ bool BTranslation::operator ==(const BTranslation &other) const
 {
     const B_D(BTranslation);
     const BTranslationPrivate *dd = other.d_func();
-    return d->context == dd->context && d->sourceText == dd->sourceText && d->disambiguation == dd->disambiguation
-            && d->n == dd->n;
+    return d->arguments == dd->arguments && d->context == dd->context && d->sourceText == dd->sourceText
+            && d->disambiguation == dd->disambiguation && d->n == dd->n;
 }
 
 bool BTranslation::operator !=(const BTranslation &other) const
@@ -220,6 +246,7 @@ QDataStream &operator <<(QDataStream &stream, const BTranslation &t)
 {
     const BTranslationPrivate *d = t.d_func();
     QVariantMap m;
+    m.insert("arguments", d->arguments);
     m.insert("context", d->context);
     m.insert("source_text", d->sourceText);
     m.insert("disambiguation", d->disambiguation);
@@ -233,6 +260,7 @@ QDataStream &operator >>(QDataStream &stream, BTranslation &t)
     BTranslationPrivate *d = t.d_func();
     QVariantMap m;
     stream >> m;
+    d->arguments = m.value("arguments").toStringList();
     d->context = m.value("context").toString();
     d->sourceText = m.value("source_text").toString();
     d->disambiguation = m.value("disambiguation").toString();

@@ -12,6 +12,7 @@
     * Добавлена альтернативная пара базовых классов, у которой private-часть не является QObject
     * Исправлена проверка BSpellCheckerDictionary на валидность
     * Добавлена возможность задавать заменяемые буквы в BSpellCheckerDictionary
+    * Добавлен класс BProperties
     * Добавлен класс BApplicationBase
     * BCoreApplication и BApplication теперь наследуют BApplicationBase и QCoreApplication (либо QApplication)
     * Некоторые чдены класса BCoreApplication переименованы: instance -> binstance, translator -> beqtTranslator и т.д.

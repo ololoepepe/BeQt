@@ -27,6 +27,7 @@ class BTranslationPrivate;
 class QDataStream;
 class QDebug;
 class QString;
+class QStringList;
 class QVariant;
 
 #include "bbase.h"
@@ -53,10 +54,14 @@ public:
                                   int n = -1);
     static QString translate(const BTranslation &t);
 public:
+    QString argument(int index = 0) const;
+    QStringList arguments() const;
     QString context() const;
     QString disambiguation() const;
     bool isValid() const;
     int n() const;
+    void setArgument(const QString &argument);
+    void setArguments(const QStringList &arguments);
     QString sourceText() const;
     QString tr() const;
     QString translate() const;

@@ -727,9 +727,7 @@ bool startProcessDetached(const QString &command, const QString &workingDir, con
 {
     if (command.isEmpty())
         return false;
-    //Workaround to handle long arguments on Windows
-    return QProcess::startDetached(command + " " + BTextTools::mergeArguments(arguments), QStringList(), workingDir);
-    //End of the workaround
+    return QProcess::startDetached(command, arguments, workingDir);
 }
 
 QList<QTextCodec *> supportedCodecs()

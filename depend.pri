@@ -41,10 +41,6 @@ beqtLibsPath=$${PWD}/../../lib
 !exists($${beqtLibsPath}):error("BeQt libs not found")
 
 win32 {
-    #If CONFIG contains "release" or "debug", set special suffix for libs' path
-    releaseDebugSuffix=
-    CONFIG(release, debug|release):releaseDebugSuffix=/release
-    CONFIG(debug, debug|release):releaseDebugSuffix=/debug
     #Set suffix for libraries names
     libNameSuffix=4
 }
@@ -56,7 +52,7 @@ defineTest(addBeqtModule) {
     fullName=$$fullBeqtModuleName($${shortName})
     INCLUDEPATH *= $${beqtHeadersPath}/$${fullName}
     DEPENDPATH *= $${beqtHeadersPath}/$${fullName}
-    LIBS *= -L$${beqtLibsPath}$${releaseDebugSuffix}/ -l$${fullName}$${libNameSuffix}
+    LIBS *= -L$${beqtLibsPath}/ -l$${fullName}$${libNameSuffix}
     export(INCLUDEPATH)
     export(DEPENDPATH)
     export(LIBS)
