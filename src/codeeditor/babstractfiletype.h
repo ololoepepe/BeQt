@@ -80,6 +80,7 @@ public:
     static BAbstractFileType *defaultFileType();
     static QString defaultFileTypeId();
 public:
+    virtual bool autocompletionMenuVisible(BAbstractCodeEditorDocument *doc) const;
     virtual BracketPairList brackets() const = 0;
     QString createFileDialogFilter() const;
     virtual QString description() const = 0;

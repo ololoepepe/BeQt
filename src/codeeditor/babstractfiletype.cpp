@@ -26,14 +26,25 @@ class BTextBlockExtraData;
 
 #include "babstractcodeeditordocument_p.h"
 
+#include <QAbstractItemView>
 #include <QAction>
 #include <QColor>
+#include <QCompleter>
 #include <QDebug>
+#include <QEvent>
 #include <QFileInfo>
 #include <QFont>
+#include <QKeyEvent>
 #include <QList>
 #include <QMenu>
+#include <QModelIndex>
+#include <QObject>
 #include <QPoint>
+#include <QRect>
+#include <QScrollBar>
+#include <QSize>
+#include <QStandardItem>
+#include <QStandardItemModel>
 #include <QString>
 #include <QStringList>
 #include <QTextBlock>
@@ -101,6 +112,49 @@ QString BDefaultFileType::name() const
 QStringList BDefaultFileType::suffixes() const
 {
     return QStringList() << "*";
+}
+
+/*============================================================================
+================================ BAutoCompletionHelper =======================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BAutoCompletionHelper::BAutoCompletionHelper(BAbstractCodeEditorDocument *parent, QStandardItemModel *model) :
+    QObject(parent), Doc(parent), Model(model)
+{
+    //
+}
+
+/*============================== Public methods ============================*/
+
+bool BAutoCompletionHelper::eventFilter(QObject *object, QEvent *event)
+{
+    if (event->type() != QEvent::KeyPress)
+        return false;
+    QKeyEvent *ke = static_cast<QKeyEvent *>(event);
+    if (ke->key() != Qt::Key_Enter && ke->key() != Qt::Key_Return)
+        return false;
+    QAbstractItemView *popup = qobject_cast<QAbstractItemView *>(object);
+    if (!popup || !popup->isVisible())
+        return false;
+    popup->hide();
+    completerActivated(popup->currentIndex());
+    ke->ignore();
+    return true;
+}
+
+/*============================== Public slots ==============================*/
+
+void BAutoCompletionHelper::completerActivated(const QModelIndex &index)
+{
+    if (!Doc || !Model || !index.isValid() || textCursor.isNull() || !textCursor.hasSelection())
+        return;
+    QStandardItem *item = Model->item(index.row());
+    if (!item)
+        return;
+    Doc->selectText(textCursor.selectionStart(), textCursor.selectionEnd());
+    Doc->insertText(item->data(Qt::UserRole).toString());
 }
 
 /*============================================================================
@@ -173,6 +227,12 @@ QString BAbstractFileType::defaultFileTypeId()
 }
 
 /*============================== Public methods ============================*/
+
+bool BAbstractFileType::autocompletionMenuVisible(BAbstractCodeEditorDocument *doc) const
+{
+    QCompleter *completer = doc ? doc->findChild<QCompleter *>("beqt/completer") : 0;
+    return completer && completer->popup()->isVisible();
+}
 
 QString BAbstractFileType::createFileDialogFilter() const
 {
@@ -346,40 +406,56 @@ void BAbstractFileType::setFormat(int start, int count, const QFont &font)
     d_func()->highlighter->setFormat(start, count, font);
 }
 
-void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextCursor cursor,
-                                               const QPoint &globalPos)
+void BAbstractFileType::showAutocompletionMenu(BAbstractCodeEditorDocument *doc, QTextCursor cursor, const QPoint &)
 {
     if (cursor.isNull())
         return;
+    QCompleter *completer = doc->findChild<QCompleter *>("beqt/completer");
     cursor.select(QTextCursor::WordUnderCursor);
-    if (!cursor.hasSelection())
+    if (!cursor.hasSelection()) {
+        if (completer)
+            completer->popup()->hide();
         return;
+    }
     QList<AutocompletionItem> list = createAutocompletionItemList(doc, cursor);
-    if (list.isEmpty())
-        return;
-    QMenu *mnu = new QMenu;
-    foreach (const AutocompletionItem &aci, list) {
-        if (aci.text.isEmpty() || aci.actionText.isEmpty())
-            continue;
-        QAction *act = mnu->addAction(aci.actionIcon, aci.actionText);
-        act->setIconVisibleInMenu(true);
-        act->setToolTip(aci.actionToolTip);
-        act->setData(aci.text);
-    }
-    if (mnu->isEmpty()) {
-        delete mnu;
+    if (list.isEmpty()) {
+        if (completer)
+            completer->popup()->hide();
         return;
     }
-    mnu->setActiveAction(mnu->actions().first());
-    QAction *act = mnu->exec(globalPos);
-    if (!act) {
-        delete mnu;
-        return;
+    QStandardItemModel *model = doc->findChild<QStandardItemModel *>("beqt/completion_model");
+    if (!model) {
+        model = new QStandardItemModel(doc);
+        model->setObjectName("beqt/completion_model");
+        model->setColumnCount(1);
     }
-    QString text = act->data().toString();
-    delete mnu;
-    doc->selectText(cursor.selectionStart(), cursor.selectionEnd());
-    doc->insertText(text);
+    model->clear();
+    foreach (const AutocompletionItem &item, list) {
+        QStandardItem *si = new QStandardItem(item.actionIcon, item.actionText);
+        si->setData(item.actionToolTip, Qt::ToolTipRole);
+        si->setData(item.text, Qt::UserRole);
+        model->appendRow(si);
+    }
+    if (!completer) {
+        completer = new QCompleter(doc);
+        completer->setObjectName("beqt/completer");
+        completer->setCompletionMode(QCompleter::PopupCompletion);
+        completer->setWidget(doc->innerEdit());
+        completer->setModel(model);
+    }
+    BAutoCompletionHelper *helper = doc->findChild<BAutoCompletionHelper *>("beqt/completion_helper");
+    if (!helper) {
+        helper = new BAutoCompletionHelper(doc, model);
+        helper->setObjectName("beqt/completion_helper");
+        completer->popup()->installEventFilter(helper);
+        QObject::connect(completer, SIGNAL(activated(QModelIndex)), helper, SLOT(completerActivated(QModelIndex)));
+    }
+    helper->textCursor = cursor;
+    QRect cursorRect = doc->cursorRect();
+    QScrollBar *vsbar = completer->popup()->verticalScrollBar();
+    cursorRect.setWidth(completer->popup()->sizeHintForColumn(0) + (vsbar ? vsbar->sizeHint().width() : 0));
+    completer->popup()->setCurrentIndex(model->index(0, 0));
+    completer->complete(cursorRect);
 }
 
 void BAbstractFileType::showToolTip(BAbstractCodeEditorDocument *doc, QTextCursor cursor, const QPoint &globalPos)
