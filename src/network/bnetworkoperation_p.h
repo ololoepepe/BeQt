@@ -51,6 +51,7 @@ public:
     qint64 bytesOutTotal;
     QByteArray data;
     int finishedTimeoutMsecs;
+    bool isCancelled;
     bool isError;
     bool isFinished;
     bool isStarted;

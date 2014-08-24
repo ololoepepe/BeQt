@@ -57,6 +57,7 @@ public:
     qint64 downloadBytesReady() const;
     qint64 downloadBytesTotal() const;
     int downloadProgress(int nth = 100) const;
+    bool isCancelled() const;
     bool isError() const;
     bool isFinished() const;
     bool isRequest() const;

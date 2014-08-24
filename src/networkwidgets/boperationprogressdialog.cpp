@@ -105,7 +105,7 @@ void BOperationProgressDialogPrivate::update()
             btn->setEnabled(true);
             if (autoCloseInterval > 0)
                 QTimer::singleShot(autoCloseInterval, q_func(), SLOT(accept()));
-            else
+            else if (!autoCloseInterval)
                 q_func()->accept();
         } else if (Operation->isError()) {
             lbl->setText(!failureText.isEmpty() ? failureText : tr("Operation failed", "lbl text"));
@@ -115,6 +115,7 @@ void BOperationProgressDialogPrivate::update()
             btn->setEnabled(true);
             if (autoCloseInterval > 0)
                 QTimer::singleShot(autoCloseInterval, q_func(), SLOT(reject()));
+            else if (!autoCloseInterval)
                 q_func()->reject();
         } else if (Operation->isRequest()) {
             if (Operation->downloadBytesTotal() > 0) {
@@ -256,14 +257,7 @@ QString BOperationProgressDialog::sendingRequestText() const
 void BOperationProgressDialog::setAutoCloseInterval(int msecs)
 {
     B_D(BOperationProgressDialog);
-    bool b = d->autoCloseInterval;
-    d->autoCloseInterval = msecs > 0 ? msecs : 0;
-    if (b && msecs > 0) {
-        if (d->Operation && d->Operation->isFinished())
-            QTimer::singleShot(msecs, this, SLOT(accept()));
-        else
-            QTimer::singleShot(msecs, this, SLOT(reject()));
-    }
+    d->autoCloseInterval = (msecs >= 0) ? msecs : -1;
 }
 
 void BOperationProgressDialog::setCanCancel(bool b)
