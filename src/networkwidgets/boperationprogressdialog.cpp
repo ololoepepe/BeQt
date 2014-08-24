@@ -88,8 +88,10 @@ void BOperationProgressDialogPrivate::btnClicked()
 {
     if (Operation && !Operation->isFinished() && !Operation->isError())
         Operation->cancel();
+    else if (Operation && Operation->isFinished())
+        q_func()->accept();
     else
-        q_func()->close();
+        q_func()->reject();
 }
 
 void BOperationProgressDialogPrivate::update()
@@ -102,9 +104,9 @@ void BOperationProgressDialogPrivate::update()
             btn->setText(tr("Close", "btn text"));
             btn->setEnabled(true);
             if (autoCloseInterval > 0)
-                QTimer::singleShot(autoCloseInterval, q_func(), SLOT(close()));
-            else if (!autoCloseInterval)
-                q_func()->close();
+                QTimer::singleShot(autoCloseInterval, q_func(), SLOT(accept()));
+            else
+                q_func()->accept();
         } else if (Operation->isError()) {
             lbl->setText(!failureText.isEmpty() ? failureText : tr("Operation failed", "lbl text"));
             pbar->setMaximum(100);
@@ -112,9 +114,8 @@ void BOperationProgressDialogPrivate::update()
             btn->setText(tr("Close", "btn text"));
             btn->setEnabled(true);
             if (autoCloseInterval > 0)
-                QTimer::singleShot(autoCloseInterval, q_func(), SLOT(close()));
-            else if (!autoCloseInterval)
-                q_func()->close();
+                QTimer::singleShot(autoCloseInterval, q_func(), SLOT(reject()));
+                q_func()->reject();
         } else if (Operation->isRequest()) {
             if (Operation->downloadBytesTotal() > 0) {
                 lbl->setText(!receivingReplyText.isEmpty() ? receivingReplyText :
@@ -257,8 +258,12 @@ void BOperationProgressDialog::setAutoCloseInterval(int msecs)
     B_D(BOperationProgressDialog);
     bool b = d->autoCloseInterval;
     d->autoCloseInterval = msecs > 0 ? msecs : 0;
-    if ((!d->Operation || d->Operation->isFinished() || d->Operation->isError()) && !b && msecs > 0)
-        QTimer::singleShot(msecs, this, SLOT(close()));
+    if (b && msecs > 0) {
+        if (d->Operation && d->Operation->isFinished())
+            QTimer::singleShot(msecs, this, SLOT(accept()));
+        else
+            QTimer::singleShot(msecs, this, SLOT(reject()));
+    }
 }
 
 void BOperationProgressDialog::setCanCancel(bool b)
