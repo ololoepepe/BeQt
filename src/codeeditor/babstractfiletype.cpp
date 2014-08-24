@@ -25,6 +25,7 @@ class BTextBlockExtraData;
 #include "babstractfiletype_p.h"
 
 #include "babstractcodeeditordocument_p.h"
+#include "bcodeedit.h"
 
 #include <QAbstractItemView>
 #include <QAction>

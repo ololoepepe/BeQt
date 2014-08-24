@@ -1174,7 +1174,8 @@ QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
 {
     if (doc)
         *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
-    return d_func()->edit;
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(d_func()->edit);
+    return cedt ? cedt->innerEdit() : d_func()->edit;
 }
 
 bool BAbstractCodeEditorDocument::isBracketHighlightingEnabled() const
