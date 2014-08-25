@@ -30,6 +30,7 @@
 #include <BeQtCore/private/bbaseobject_p.h>
 
 #include <QByteArray>
+#include <QCoreApplication>
 #include <QDataStream>
 #include <QIODevice>
 #include <QLocalServer>
@@ -166,7 +167,7 @@ bool BApplicationServer::isValid() const
 
 bool BApplicationServer::listen()
 {
-    if (!isValid())
+    if (!isValid() || !QCoreApplication::instance())
         return false;
     B_D(BApplicationServer);
     if (d->server->isListening())
