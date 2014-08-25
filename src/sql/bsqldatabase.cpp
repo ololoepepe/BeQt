@@ -257,9 +257,9 @@ BSqlResult BSqlDatabase::exec(const QString &qs, const QString &placeholder1,con
                               const QString &placeholder2, const QVariant &boundValue2)
 {
     QVariantMap m;
-    if (!placeholder1.isEmpty() && !boundValue1.isNull())
+    if (!placeholder1.isEmpty() && boundValue1.isValid())
         m.insert(placeholder1, boundValue1);
-    if (!placeholder2.isEmpty() && !boundValue2.isNull())
+    if (!placeholder2.isEmpty() && boundValue2.isValid())
         m.insert(placeholder2, boundValue2);
     return exec(qs, m);
 }
@@ -346,7 +346,7 @@ BSqlResult BSqlDatabase::insert(const QString &table, const QString &field, cons
                                 const BSqlWhere &where)
 {
     QVariantMap m;
-    if (!field.isEmpty() && !value.isNull())
+    if (!field.isEmpty() && value.isValid())
         m.insert(field, value);
     return insert(table, m, where);
 }
@@ -355,9 +355,9 @@ BSqlResult BSqlDatabase::insert(const QString &table, const QString &field1, con
                                 const QString &field2, const QVariant &value2, const BSqlWhere &where)
 {
     QVariantMap m;
-    if (!field1.isEmpty() && !value1.isNull())
+    if (!field1.isEmpty() && value1.isValid())
         m.insert(field1, value1);
-    if (!field2.isEmpty() && !value2.isNull())
+    if (!field2.isEmpty() && value2.isValid())
         m.insert(field2, value2);
     return insert(table, m, where);
 }
@@ -503,9 +503,9 @@ void BSqlDatabase::setOnOpenQuery(const QString &qs, const QString &placeholder1
                                   const QString &placeholder2, const QVariant &boundValue2)
 {
     QVariantMap m;
-    if (!placeholder1.isEmpty() && !boundValue1.isNull())
+    if (!placeholder1.isEmpty() && boundValue1.isValid())
         m.insert(placeholder1, boundValue1);
-    if (!placeholder2.isEmpty() && !boundValue2.isNull())
+    if (!placeholder2.isEmpty() && boundValue2.isValid())
         m.insert(placeholder2, boundValue2);
     setOnOpenQuery(qs, m);
 }
@@ -599,7 +599,7 @@ BSqlResult BSqlDatabase::update(const QString &table, const QString &field, cons
                                 const BSqlWhere &where)
 {
     QVariantMap m;
-    if (!field.isEmpty() && !value.isNull())
+    if (!field.isEmpty() && value.isValid())
         m.insert(field, value);
     return update(table, m, where);
 }
@@ -608,9 +608,9 @@ BSqlResult BSqlDatabase::update(const QString &table, const QString &field1, con
                                 const QString &field2, const QVariant &value2, const BSqlWhere &where)
 {
     QVariantMap m;
-    if (!field1.isEmpty() && !value1.isNull())
+    if (!field1.isEmpty() && value1.isValid())
         m.insert(field1, value1);
-    if (!field2.isEmpty() && !value2.isNull())
+    if (!field2.isEmpty() && value2.isValid())
         m.insert(field2, value2);
     return update(table, m, where);
 }
