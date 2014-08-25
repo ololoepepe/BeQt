@@ -1479,8 +1479,8 @@
         <location filename="../src/sql/bsqldatabase.cpp" line="207"/>
         <location filename="../src/sql/bsqldatabase.cpp" line="232"/>
         <location filename="../src/sql/bsqldatabase.cpp" line="328"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="433"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="572"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="442"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="581"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
         <translation>Некорректные параметры</translation>

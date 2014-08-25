@@ -342,6 +342,15 @@ BSqlResult BSqlDatabase::insert(const QString &table, const QVariantMap &values,
     return exec(q);
 }
 
+BSqlResult BSqlDatabase::insert(const QString &table, const QString &field, const QVariant &value,
+                                const BSqlWhere &where)
+{
+    QVariantMap m;
+    if (!field.isEmpty() && !value.isNull())
+        m.insert(field, value);
+    return insert(table, m, where);
+}
+
 BSqlResult BSqlDatabase::insert(const QString &table, const QString &field1, const QVariant &value1,
                                 const QString &field2, const QVariant &value2, const BSqlWhere &where)
 {
@@ -586,12 +595,12 @@ BSqlResult BSqlDatabase::update(const QString &table, const QVariantMap &values,
     return exec(q);
 }
 
-BSqlResult BSqlDatabase::update(const QString &table, const QString &field1, const QVariant &value1,
+BSqlResult BSqlDatabase::update(const QString &table, const QString &field, const QVariant &value,
                                 const BSqlWhere &where)
 {
     QVariantMap m;
-    if (!field1.isEmpty() && !value1.isNull())
-        m.insert(field1, value1);
+    if (!field.isEmpty() && !value.isNull())
+        m.insert(field, value);
     return update(table, m, where);
 }
 
