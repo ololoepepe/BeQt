@@ -41,16 +41,15 @@ class BLocaleComboBoxPrivate : public BBasePrivate
 {
     B_DECLARE_PUBLIC(BLocaleComboBox)
 public:
-    const bool AlwaysIncludeEnglish;
+    QList<BApplicationBase::LocaleSupportInfo> availableLocales;
 public:
-    explicit BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish);
+    explicit BLocaleComboBoxPrivate(BLocaleComboBox *q);
     ~BLocaleComboBoxPrivate();
 public:
     static QIcon iconForLocale(const BApplication::LocaleSupportInfo &info);
     static QString localeToString(const BApplication::LocaleSupportInfo &info);
 public:
     void init();
-    void updateAvailableLocales();
 private:
     Q_DISABLE_COPY(BLocaleComboBoxPrivate)
 };
@@ -61,8 +60,8 @@ private:
 
 /*============================== Public constructors =======================*/
 
-BLocaleComboBoxPrivate::BLocaleComboBoxPrivate(BLocaleComboBox *q, bool alwaysIncludeEnglish) :
-    BBasePrivate(q), AlwaysIncludeEnglish(alwaysIncludeEnglish)
+BLocaleComboBoxPrivate::BLocaleComboBoxPrivate(BLocaleComboBox *q) :
+    BBasePrivate(q)
 {
     //
 }
@@ -91,29 +90,7 @@ QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupport
 
 void BLocaleComboBoxPrivate::init()
 {
-    updateAvailableLocales();
-}
-
-void BLocaleComboBoxPrivate::updateAvailableLocales()
-{
-    B_Q(BLocaleComboBox);
-    q->blockSignals(true);
-    QLocale l = q->currentLocale();
-    q->clear();
-    QList<BApplication::LocaleSupportInfo> list = BApplication::availableLocales(AlwaysIncludeEnglish);
-    bool b = false;
-    foreach (const BApplication::LocaleSupportInfo &info, list) {
-        if (info.locale == l) {
-            b = true;
-            break;
-        }
-    }
-    if (!b)
-        q->blockSignals(false);
-    foreach (const BApplication::LocaleSupportInfo &info, list)
-        q->addItem(iconForLocale(info), localeToString(info), info.locale.name());
-    q->setCurrentLocale(l);
-    q->blockSignals(false);
+    q_func()->setAvailableLocales(availableLocales);
 }
 
 /*============================================================================
@@ -122,14 +99,8 @@ void BLocaleComboBoxPrivate::updateAvailableLocales()
 
 /*============================== Public constructors =======================*/
 
-BLocaleComboBox::BLocaleComboBox(bool alwaysIncludeEnglish, QWidget *parent) :
-    QComboBox(parent), BBase(*new BLocaleComboBoxPrivate(this, alwaysIncludeEnglish))
-{
-    d_func()->init();
-}
-
 BLocaleComboBox::BLocaleComboBox(QWidget *parent) :
-    QComboBox(parent), BBase(*new BLocaleComboBoxPrivate(this, false))
+    QComboBox(parent), BBase(*new BLocaleComboBoxPrivate(this))
 {
     d_func()->init();
 }
@@ -149,22 +120,46 @@ BLocaleComboBox::BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent) :
 
 /*============================== Public methods ============================*/
 
+QList<BApplicationBase::LocaleSupportInfo> BLocaleComboBox::availableLocales() const
+{
+    return d_func()->availableLocales;
+}
+
 QLocale BLocaleComboBox::currentLocale() const
 {
-    return (currentIndex() >= 0) ? QLocale(itemData(currentIndex()).toString()) : QLocale(QLocale::English);
+    QVariant v = (currentIndex() >= 0) ? itemData(currentIndex()) : QVariant();
+    return v.canConvert(QVariant::Locale) ? v.toLocale() : QLocale(QLocale::English);
 }
 
 /*============================== Public slots ==============================*/
 
+void BLocaleComboBox::setAvailableLocales(const QList<BApplicationBase::LocaleSupportInfo> &list)
+{
+    blockSignals(true);
+    QLocale l = currentLocale();
+    clear();
+    bool b = false;
+    d_func()->availableLocales = list;
+    foreach (const BApplication::LocaleSupportInfo &info, list) {
+        if (info.locale == l) {
+            b = true;
+            break;
+        }
+    }
+    if (!b)
+        blockSignals(false);
+    foreach (const BApplication::LocaleSupportInfo &info, list) {
+        addItem(BLocaleComboBoxPrivate::iconForLocale(info), BLocaleComboBoxPrivate::localeToString(info),
+                info.locale.name());
+    }
+    setCurrentLocale(l);
+    blockSignals(false);
+}
+
 void BLocaleComboBox::setCurrentLocale(const QLocale &locale)
 {
-    int ind = findData(locale.name());
+    int ind = findData(locale);
     if (ind < 0)
         return;
     setCurrentIndex(ind);
-}
-
-void BLocaleComboBox::updateAvailableLocales()
-{
-    d_func()->updateAvailableLocales();
 }
