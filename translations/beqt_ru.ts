@@ -178,7 +178,7 @@
     <message>
         <location filename="../src/corelib/bapplicationbase.cpp" line="599"/>
         <location filename="../src/corelib/bapplicationbase.cpp" line="607"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="779"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="778"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>

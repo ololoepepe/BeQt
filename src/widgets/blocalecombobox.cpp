@@ -75,7 +75,8 @@ BLocaleComboBoxPrivate::~BLocaleComboBoxPrivate()
 
 QIcon BLocaleComboBoxPrivate::iconForLocale(const BApplication::LocaleSupportInfo &info)
 {
-    return (info.supports == info.total) ? BApplication::icon("ok") : BApplication::icon("messagebox_warning");
+    return (info.total > 0 && info.supports >= info.total) ? BApplication::icon("ok") :
+                                                             BApplication::icon("messagebox_warning");
 }
 
 QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupportInfo &info)
@@ -149,8 +150,9 @@ void BLocaleComboBox::setAvailableLocales(const QList<BApplicationBase::LocaleSu
     if (!b)
         blockSignals(false);
     foreach (const BApplication::LocaleSupportInfo &info, list) {
-        addItem(BLocaleComboBoxPrivate::iconForLocale(info), BLocaleComboBoxPrivate::localeToString(info),
-                info.locale.name());
+        QIcon icon = BLocaleComboBoxPrivate::iconForLocale(info);
+        QString text = BLocaleComboBoxPrivate::localeToString(info);
+        addItem(icon, text, info.locale);
     }
     setCurrentLocale(l);
     blockSignals(false);
