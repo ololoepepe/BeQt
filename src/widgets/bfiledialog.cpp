@@ -359,5 +359,6 @@ void BFileDialog::setCodecSelectionEnabled(bool b)
 
 void BFileDialog::setLineFeedSelectionEnabled(bool b)
 {
+    d_func()->lblLineFeed->setVisible(b);
     d_func()->cmboxLineFeed->setVisible(b);
 }
