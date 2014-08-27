@@ -26,9 +26,11 @@ class BLocaleComboBoxPrivate;
 
 class QWidget;
 
+#include <BeQtCore/BApplicationBase>
 #include <BeQtCore/BBase>
 
 #include <QComboBox>
+#include <QList>
 #include <QLocale>
 
 /*============================================================================
@@ -42,15 +44,15 @@ class B_WIDGETS_EXPORT BLocaleComboBox : public QComboBox, public BBase
     B_DECLARE_PRIVATE(BLocaleComboBox)
 public:
     explicit BLocaleComboBox(QWidget *parent = 0);
-    explicit BLocaleComboBox(bool alwaysIncludeEnglish, QWidget *parent = 0);
     ~BLocaleComboBox();
 protected:
     explicit BLocaleComboBox(BLocaleComboBoxPrivate &d, QWidget *parent = 0);
 public:
+    QList<BApplicationBase::LocaleSupportInfo> availableLocales() const;
     QLocale currentLocale() const;
 public Q_SLOTS:
+    void setAvailableLocales(const QList<BApplicationBase::LocaleSupportInfo> &list);
     void setCurrentLocale(const QLocale &locale);
-    void updateAvailableLocales();
 Q_SIGNALS:
     void currentLocaleChanged(const QLocale &locale);
 private:

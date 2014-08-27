@@ -167,7 +167,7 @@ bool BApplicationServer::isValid() const
 
 bool BApplicationServer::listen()
 {
-    if (!QCoreApplication::instance() || !isValid())
+    if (!isValid() || !QCoreApplication::instance())
         return false;
     B_D(BApplicationServer);
     if (d->server->isListening())
@@ -219,14 +219,11 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
     B_D(BApplicationServer);
     if (d->server->isListening() || !isValid())
         return false;
-    QStringList args = !arguments.isEmpty() ? arguments : QStringList(QCoreApplication::arguments().mid(1));
-    if (args.isEmpty())
-        return false;
     QByteArray ba;
     QDataStream out(&ba, QIODevice::WriteOnly);
     out.setVersion(BeQt::DataStreamVersion);
     out << true;
-    out << args;
+    out << arguments;
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
     BGenericSocket s(BGenericSocket::TcpSocket);
     s.connectToHost("127.0.0.1", d->Port);

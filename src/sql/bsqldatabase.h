@@ -84,8 +84,10 @@ public:
     bool initializeFromSchemaFile(const QString &fileName, QTextCodec *codec = 0, bool transaction = true);
     bool initializeFromSchemaFile(const QString &fileName, const QString &codecName, bool transaction = true);
     BSqlResult insert(const QString &table, const QVariantMap &values, const BSqlWhere &where = BSqlWhere());
+    BSqlResult insert(const QString &table, const QString &field, const QVariant &value,
+                      const BSqlWhere &where = BSqlWhere());
     BSqlResult insert(const QString &table, const QString &field1, const QVariant &value1,
-                      const QString &field2 = QString(), const QVariant &value2 = QVariant(),
+                      const QString &field2, const QVariant &value2,
                       const BSqlWhere &where = BSqlWhere());
     bool isOpen() const;
     bool isOpenError() const;
@@ -128,7 +130,7 @@ public:
     QStringList tables(QSql::TableType type = QSql::Tables);
     bool transaction();
     BSqlResult update(const QString &table, const QVariantMap &values, const BSqlWhere &where = BSqlWhere());
-    BSqlResult update(const QString &table, const QString &field1, const QVariant &value1,
+    BSqlResult update(const QString &table, const QString &field, const QVariant &value,
                       const BSqlWhere &where = BSqlWhere());
     BSqlResult update(const QString &table, const QString &field1, const QVariant &value1, const QString &field2,
                       const QVariant &value2, const BSqlWhere &where = BSqlWhere());

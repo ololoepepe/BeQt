@@ -1174,7 +1174,8 @@ QWidget *BAbstractCodeEditorDocument::innerEdit(QTextDocument **doc) const
 {
     if (doc)
         *doc = d_func()->highlighter ? d_func()->highlighter->document() : 0;
-    return d_func()->edit;
+    BCodeEdit *cedt = qobject_cast<BCodeEdit *>(d_func()->edit);
+    return cedt ? cedt->innerEdit() : d_func()->edit;
 }
 
 bool BAbstractCodeEditorDocument::isBracketHighlightingEnabled() const
@@ -1607,14 +1608,15 @@ void BAbstractCodeEditorDocument::setCopyAvailable(bool available)
 
 void BAbstractCodeEditorDocument::setCursorPosition(int pos)
 {
-    if (pos == d_func()->cursorPosition)
+    B_D(BAbstractCodeEditorDocument);
+    if (pos == d->cursorPosition)
         return;
-    d_func()->autocompletionTimer.stop();
-    d_func()->cursorPosition = pos;
+    d->autocompletionTimer.stop();
+    d->cursorPosition = pos;
     QPoint rc = cursorPositionRowColumnImplementation();
-    bool b = rc != d_func()->cursorPositionRowColumn;
-    d_func()->cursorPositionRowColumn = rc;
-    d_func()->highlightBrackets();
+    bool b = rc != d->cursorPositionRowColumn;
+    d->cursorPositionRowColumn = rc;
+    d->highlightBrackets();
     Q_EMIT cursorPositionChanged(pos);
     if (b)
         Q_EMIT cursorPositionChanged(rc);
@@ -1627,9 +1629,11 @@ void BAbstractCodeEditorDocument::setCursorPosition(int pos)
     QWidget *edt = innerEdit();
     if (!edt)
         return;
-    d_func()->autocompletionCursor = tc;
-    d_func()->autocompletionGlobalPos = edt->mapToGlobal(r.bottomRight());
-    d_func()->autocompletionTimer.start();
+    d->autocompletionCursor = tc;
+    d->autocompletionGlobalPos = edt->mapToGlobal(r.bottomRight());
+    if (d->fileType && d->fileType->autocompletionMenuVisible(this))
+        return d->showAutocompletionMenu();
+    d->autocompletionTimer.start();
 }
 
 void BAbstractCodeEditorDocument::setCursorPosition(const QPoint &pos)

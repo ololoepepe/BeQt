@@ -721,7 +721,8 @@ BPersonInfoProvider *BApplicationBase::applicationTranslationsProvider()
     return ds_func()->appTranslations;
 }
 
-QList<BApplicationBase::LocaleSupportInfo> BApplicationBase::availableLocales(bool alwaysIncludeEnglish)
+QList<BApplicationBase::LocaleSupportInfo> BApplicationBase::availableLocales(bool alwaysIncludeEnglish,
+                                                                              bool englishAlwaysFull)
 {
     if (!BApplicationBasePrivate::testInit())
         return QList<BApplicationBase::LocaleSupportInfo>();
@@ -734,29 +735,27 @@ QList<BApplicationBase::LocaleSupportInfo> BApplicationBase::availableLocales(bo
     if (alwaysIncludeEnglish) {
         LocaleSupportInfo en = BApplicationBasePrivate::createLocaleSupportInfo();
         en.total = ds->translators.size();
-        if (!en.total)
-            en.total += 1;
-        en.supports = en.total;
+        if (englishAlwaysFull)
+            en.supports = en.total;
         list << en;
     }
     foreach (const QList<QLocale> &ll, lll) {
         foreach (const QLocale &l, ll) {
-            if ( !llist.contains(l) ) {
-                llist << l;
-                LocaleSupportInfo lsi = BApplicationBasePrivate::createLocaleSupportInfo();
-                lsi.locale = l;
-                lsi.total = ds->translators.size();
-                if (!lsi.total)
-                    lsi.total += 1;
-                list << lsi;
-            }
+            if (llist.contains(l))
+                continue;
+            llist << l;
+            LocaleSupportInfo lsi = BApplicationBasePrivate::createLocaleSupportInfo();
+            lsi.locale = l;
+            lsi.total = ds->translators.size();
+            list << lsi;
         }
     }
     for (int i = 0; i < list.size(); ++i) {
         LocaleSupportInfo &lsi = list[i];
         foreach (const QList<QLocale> &ll, lll) {
-            if ( ll.contains(lsi.locale) )
-                ++lsi.supports;
+            if (!ll.contains(lsi.locale))
+                continue;
+            ++lsi.supports;
         }
     }
     return list;

@@ -25,6 +25,9 @@
 class BAbstractCodeEditorDocument;
 class BSyntaxHighlighter;
 
+class QEvent;
+class QModelIndex;
+class QStandardItemModel;
 class QString;
 class QStringList;
 
@@ -33,6 +36,8 @@ class QStringList;
 #include <BeQtCore/private/bbase_p.h>
 
 #include <QCoreApplication>
+#include <QObject>
+#include <QTextCursor>
 
 /*============================================================================
 ================================ BDefaultFileType ============================
@@ -55,6 +60,26 @@ public:
     bool matchesFileName(const QString &fileName) const;
     QString name() const;
     QStringList suffixes() const;
+};
+
+/*============================================================================
+================================ BAutoCompletionHelper =======================
+============================================================================*/
+
+class B_CODEEDITOR_EXPORT BAutoCompletionHelper : public QObject
+{
+    Q_OBJECT
+public:
+    BAbstractCodeEditorDocument * const Doc;
+    QStandardItemModel * const Model;
+public:
+    QTextCursor textCursor;
+public:
+    explicit BAutoCompletionHelper(BAbstractCodeEditorDocument *parent, QStandardItemModel *model);
+public:
+    bool eventFilter(QObject *object, QEvent *event);
+public Q_SLOTS:
+    void completerActivated(const QModelIndex &index);
 };
 
 /*============================================================================

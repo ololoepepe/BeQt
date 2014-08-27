@@ -141,7 +141,7 @@ public:
     static BPersonInfoList applicationTranslations();
     static QString applicationTranslationsFile();
     static BPersonInfoProvider *applicationTranslationsProvider();
-    static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false);
+    static QList<LocaleSupportInfo> availableLocales(bool alwaysIncludeEnglish = false, bool englishAlwaysFull = true);
     static BPersonInfoProvider *beqtAuthorsProvider();
     static QString beqtInfo(About type, const QLocale &loc = locale());
     static BPersonInfoProvider *beqtThanksToProvider();

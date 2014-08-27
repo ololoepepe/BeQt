@@ -62,6 +62,7 @@ void BNetworkOperationPrivate::init()
     finishedTimeoutMsecs = 0;
     isStarted = false;
     isError = false;
+    isCancelled = false;
     bytesInReady = 0;
     bytesInTotal = -1;
     bytesOutReady = 0;
@@ -187,6 +188,11 @@ int BNetworkOperation::downloadProgress(int nth) const
         nth = 100;
     const B_D(BNetworkOperation);
     return (d->bytesInTotal > 0) ? ((qreal(d->bytesInReady) / qreal(d->bytesInTotal)) * nth) : 100;
+}
+
+bool BNetworkOperation::isCancelled() const
+{
+    return d_func()->isCancelled;
 }
 
 bool BNetworkOperation::isError() const
@@ -454,5 +460,6 @@ void BNetworkOperation::cancel()
 {
     if (isFinished() || isError())
         return;
+    d_func()->isCancelled = true;
     Q_EMIT canceled();
 }

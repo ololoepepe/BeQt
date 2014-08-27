@@ -126,7 +126,7 @@
 <context>
     <name>BAbstractCodeEditorDocument</name>
     <message>
-        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1529"/>
+        <location filename="../src/codeeditor/babstractcodeeditordocument.cpp" line="1530"/>
         <source>Processing content, please wait...</source>
         <translation>Обработка содержимого, пожалуйста, ждите...</translation>
     </message>
@@ -178,7 +178,7 @@
     <message>
         <location filename="../src/corelib/bapplicationbase.cpp" line="599"/>
         <location filename="../src/corelib/bapplicationbase.cpp" line="607"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="779"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="778"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>
@@ -476,13 +476,13 @@
 <context>
     <name>BDefaultFileType</name>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="98"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="110"/>
         <source>Text</source>
         <comment>name</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/babstractfiletype.cpp" line="83"/>
+        <location filename="../src/codeeditor/babstractfiletype.cpp" line="95"/>
         <source>All files</source>
         <comment>description</comment>
         <translation>Все файлы</translation>
@@ -1023,67 +1023,67 @@
 <context>
     <name>BOperationProgressDialogPrivate</name>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="99"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="101"/>
         <source>Operation successfully completed</source>
         <comment>lbl text</comment>
         <translation>Операция успешно завершена</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="102"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="112"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="172"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="104"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="114"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="174"/>
         <source>Close</source>
         <comment>btn text</comment>
         <translation>Закрыть</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="109"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="111"/>
         <source>Operation failed</source>
         <comment>lbl text</comment>
         <translation>Сбой операции</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="121"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="155"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="123"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="157"/>
         <source>Receiving data...</source>
         <comment>lbl text</comment>
         <translation>Получение данных...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="131"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="145"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="133"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="147"/>
         <source>Sending data...</source>
         <comment>lbl text</comment>
         <translation>Отправка данных...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="126"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="128"/>
         <source>Waiting for reply...</source>
         <comment>lbl text</comment>
         <translation>Ожидане ответа...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="136"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="160"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="138"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="162"/>
         <source>Waiting for the operation start...</source>
         <comment>lbl text</comment>
         <translation>Ожидание начала операции...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="141"/>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="165"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="143"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="167"/>
         <source>Cancel</source>
         <comment>btn text</comment>
         <translation>Отмена</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="150"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="152"/>
         <source>Processing request...</source>
         <comment>lbl text</comment>
         <translation>Обработка запроса...</translation>
     </message>
     <message>
-        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="168"/>
+        <location filename="../src/networkwidgets/boperationprogressdialog.cpp" line="170"/>
         <source>Invalid operation</source>
         <comment>lbl text</comment>
         <translation>Недействительная операция</translation>
@@ -1479,8 +1479,8 @@
         <location filename="../src/sql/bsqldatabase.cpp" line="207"/>
         <location filename="../src/sql/bsqldatabase.cpp" line="232"/>
         <location filename="../src/sql/bsqldatabase.cpp" line="328"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="433"/>
-        <location filename="../src/sql/bsqldatabase.cpp" line="572"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="442"/>
+        <location filename="../src/sql/bsqldatabase.cpp" line="581"/>
         <source>Invalid parameters</source>
         <comment>errorString</comment>
         <translation>Некорректные параметры</translation>
