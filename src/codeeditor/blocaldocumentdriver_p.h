@@ -76,6 +76,7 @@ public:
     explicit BLocalDocumentDriverPrivate(BLocalDocumentDriver *q);
     ~BLocalDocumentDriverPrivate();
 public:
+    static void fixFileNameEncoding(QString &fileName);
     static LoadResult loadFile(const Operation &op, const QString &fn, QTextCodec *codec, bool autoDetection);
     static SaveResult saveFile(const Operation &op, const QString &fn, QString txt, QTextCodec *codec,
                                BeQt::LineFeed lineFeed);
