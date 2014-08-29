@@ -89,6 +89,12 @@ public:
     BSqlResult insert(const QString &table, const QString &field1, const QVariant &value1,
                       const QString &field2, const QVariant &value2,
                       const BSqlWhere &where = BSqlWhere());
+    BSqlResult insertOrReplace(const QString &table, const QVariantMap &values, const BSqlWhere &where = BSqlWhere());
+    BSqlResult insertOrReplace(const QString &table, const QString &field, const QVariant &value,
+                               const BSqlWhere &where = BSqlWhere());
+    BSqlResult insertOrReplace(const QString &table, const QString &field1, const QVariant &value1,
+                               const QString &field2, const QVariant &value2,
+                               const BSqlWhere &where = BSqlWhere());
     bool isOpen() const;
     bool isOpenError() const;
     bool isValid() const;
