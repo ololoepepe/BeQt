@@ -76,7 +76,7 @@ void BNetworkConnectionPrivate::init()
     autoDelete = true;
     logger = 0;
     translations = false;
-    socketWrapper = new BSocketWrapper( q_func() );
+    socketWrapper = new BSocketWrapper(q_func());
     connect(socketWrapper, SIGNAL(downloadProgress(BNetworkOperationMetaData, qint64, qint64)),
             this, SLOT(downloadProgress(BNetworkOperationMetaData, qint64, qint64)));
     connect(socketWrapper, SIGNAL(uploadProgress(BNetworkOperationMetaData, qint64, qint64)),

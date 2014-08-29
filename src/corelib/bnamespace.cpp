@@ -645,45 +645,45 @@ QString processorArchitectureToString(ProcessorArchitecture arch)
 {
     switch (arch) {
     case AlphaArchitecture:
-    return "";
+        return "Alpha";
     case Amd64Architecture:
-        return "";
+        return "AMD64";
     case ArmArchitecture:
-        return "";
+        return "ARM";
     case Arm64Architecture:
-        return "";
+        return "ARM64";
     case BlackfinArchitecture:
-        return "";
+        return "Blackfin";
     case ConvexArchitecture:
-        return "";
+        return "Convex";
     case EpiphanyArchitecture:
-        return "";
+        return "Epiphany";
     case HpPaRiscArchitecture:
-        return "";
+        return "HP/PA RISC";
     case IntelX86Architecture:
-        return "";
+        return "Intel x86";
     case IntelItaniumArchitecture:
-        return "";
+        return "Intel Itanium (IA-64)";
     case Motorola68kAArchitecture:
-        return "";
+        return "Motorola 68k";
     case MipsArchitecture:
-        return "";
+        return "MIPS";
     case PowerPcArchitecture:
-        return "";
+        return "PowerPC";
     case Pyramid9810Architecture:
-        return "";
+        return "Pyramid 9810";
     case Rs6000Architecture:
-        return "";
+        return "RS/6000";
     case SparcArchitecture:
-        return "";
+        return "SPARC";
     case SuperHArchitecture:
-        return "";
+        return "SuperH";
     case SystemZArchitecture:
-        return "";
+        return "SystemZ";
     case Tms320Architecture:
-        return "";
+        return "TMS320";
     case Tms470Architecture:
-        return "";
+        return "TMS470";
     case UnknownArchitecture:
     default:
         return "Unknown";
