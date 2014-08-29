@@ -362,6 +362,46 @@ BSqlResult BSqlDatabase::insert(const QString &table, const QString &field1, con
     return insert(table, m, where);
 }
 
+BSqlResult BSqlDatabase::insertOrReplace(const QString &table, const QVariantMap &values, const BSqlWhere &where)
+{
+    if (table.isEmpty() || values.isEmpty())
+        return BSqlResult(tr("Invalid parameters", "errorString"));
+    QString qs = "INSERT OR REPLACE INTO " + table + " (";
+    QStringList keys = values.keys();
+    qs += keys.join(", ");
+    qs += ") VALUES (:";
+    qs += keys.join(", :");
+    qs += ")";
+    if (where.isValid())
+        qs += " WHERE " + where.string();
+    BSqlQuery q(qs);
+    foreach (const QString &k, keys)
+        q.bindValue(":" + k, values.value(k));
+    if (where.isValid())
+        q.addBoundValues(where.boundValues());
+    return exec(q);
+}
+
+BSqlResult BSqlDatabase::insertOrReplace(const QString &table, const QString &field, const QVariant &value,
+                                         const BSqlWhere &where)
+{
+    QVariantMap m;
+    if (!field.isEmpty() && value.isValid())
+        m.insert(field, value);
+    return insertOrReplace(table, m, where);
+}
+
+BSqlResult BSqlDatabase::insertOrReplace(const QString &table, const QString &field1, const QVariant &value1,
+                                         const QString &field2, const QVariant &value2, const BSqlWhere &where)
+{
+    QVariantMap m;
+    if (!field1.isEmpty() && value1.isValid())
+        m.insert(field1, value1);
+    if (!field2.isEmpty() && value2.isValid())
+        m.insert(field2, value2);
+    return insertOrReplace(table, m, where);
+}
+
 bool BSqlDatabase::isOpen() const
 {
     return d_func()->db->isOpen();
