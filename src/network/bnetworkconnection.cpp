@@ -38,6 +38,7 @@
 #include <QObject>
 #include <QString>
 #include <QThread>
+#include <QTimer>
 #include <QVariant>
 
 /*============================================================================
@@ -301,6 +302,12 @@ void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
     }
 }
 
+void BNetworkConnectionPrivate::logIncomingConnection()
+{
+    if (loggingMode >= BNetworkConnection::NormalLogging)
+        q_func()->log(translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
+}
+
 void BNetworkConnectionPrivate::operationCanceled()
 {
     q_func()->abort();
@@ -374,14 +381,13 @@ BNetworkConnection::InternalHandler BNetworkConnection::requestHandler(StandardO
 /*============================== Public constructors =======================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
-    QObject(parent), BBaseObject( *new BNetworkConnectionPrivate(this) )
+    QObject(parent), BBaseObject(*new BNetworkConnectionPrivate(this))
 {
     d_func()->init();
     if (!socket || (socket->thread() != thread()) || !socket->isOpen())
         return;
     d_func()->setSocket(socket);
-    if (d_func()->loggingMode >= NormalLogging)
-        log(d_func()->translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
+    QTimer::singleShot(0, d_func(), SLOT(logIncomingConnection()));
 }
 
 BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *socket) :
@@ -391,8 +397,7 @@ BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *s
     if (!socket || (socket->thread() != thread()) || !socket->isOpen())
         return;
     d_func()->setSocket(socket);
-    if (d_func()->loggingMode >= NormalLogging)
-        log(d_func()->translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
+    QTimer::singleShot(0, d_func(), SLOT(logIncomingConnection()));
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :
