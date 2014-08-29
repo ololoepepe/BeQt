@@ -121,8 +121,11 @@ void BLoginWidgetPrivate::updateTabOrder()
         list << ledtLogin;
     if (ledtPassword)
         list << ledtPassword;
-    if (pwdwgt)
-        list << pwdwgt;
+    if (pwdwgt) {
+        list << pwdwgt->findChild<QLineEdit *>();
+        foreach (QToolButton *tbtn, pwdwgt->findChildren<QToolButton *>())
+            list << tbtn;
+    }
     for (int i = 0; i < list.size() - 1; ++i)
         QWidget::setTabOrder(list.at(i), list.at(i + 1));
 }
