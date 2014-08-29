@@ -68,6 +68,8 @@ void BNetworkOperationPrivate::init()
     bytesOutReady = 0;
     bytesOutTotal = -1;
     isFinished = false;
+    waiting = false;
+    mustDelete = false;
 }
 
 void BNetworkOperationPrivate::setDownloadProgress(qint64 bytesReady, qint64 bytesTotal)
@@ -82,8 +84,12 @@ void BNetworkOperationPrivate::setError()
 {
     isError = true;
     QMetaObject::invokeMethod(q_func(), "error");
-    if (autoDelete)
-        q_func()->deleteLater();
+    if (autoDelete) {
+        if (waiting)
+            mustDelete = true;
+        else
+            q_func()->deleteLater();
+    }
 }
 
 void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
@@ -92,8 +98,12 @@ void BNetworkOperationPrivate::setFinished(const QByteArray &dt)
         data = dt;
     isFinished = true;
     QMetaObject::invokeMethod(q_func(), "finished");
-    if (autoDelete)
-        q_func()->deleteLater();
+    if (autoDelete) {
+        if (waiting)
+            mustDelete = true;
+        else
+            q_func()->deleteLater();
+    }
 }
 
 void BNetworkOperationPrivate::setStarted()
@@ -350,14 +360,22 @@ bool BNetworkOperation::waitForDownload(qint64 bytes, int msecs)
         while (msecs > 0) {
             QElapsedTimer timer;
             timer.start();
+            d_func()->waiting = true;
             BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(qint64, qint64)), msecs);
+            d_func()->waiting = false;
+            if (d_func()->mustDelete)
+                deleteLater();
             msecs -= (int) timer.elapsed();
             if (downloadBytesReady() >= bytes)
                 return true;
         }
         return downloadBytesReady() >= bytes;
     } else {
+        d_func()->waiting = true;
         BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(qint64, qint64)), msecs);
+        d_func()->waiting = false;
+        if (d_func()->mustDelete)
+            deleteLater();
         return downloadBytesReady() >= bytes;
     }
 }
@@ -376,14 +394,22 @@ bool BNetworkOperation::waitForDownloadProgress(int n, int nth, int msecs)
         while (msecs > 0) {
             QElapsedTimer timer;
             timer.start();
+            d_func()->waiting = true;
             BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(int, int)), msecs);
+            d_func()->waiting = false;
+            if (d_func()->mustDelete)
+                deleteLater();
             msecs -= (int) timer.elapsed();
             if (downloadProgress(nth) >= n)
                 return true;
         }
         return downloadProgress(nth) >= n;
     } else {
+        d_func()->waiting = true;
         BeQt::waitNonBlocking(this, SIGNAL(downloadProgress(int, int)), msecs);
+        d_func()->waiting = false;
+        if (d_func()->mustDelete)
+            deleteLater();
         return downloadProgress(nth) >= n;
     }
 }
@@ -394,7 +420,11 @@ bool BNetworkOperation::waitForFinished(int msecs)
         return true;
     if (d_func()->isError)
         return false;
+    d_func()->waiting = true;
     BeQt::waitNonBlocking(this, SIGNAL(finished()), this, SIGNAL(error()), msecs);
+    d_func()->waiting = false;
+    if (d_func()->mustDelete)
+        deleteLater();
     return d_func()->isFinished;
 }
 
@@ -402,7 +432,11 @@ bool BNetworkOperation::waitForStarted(int msecs)
 {
     if (d_func()->isStarted)
         return true;
+    d_func()->waiting = true;
     BeQt::waitNonBlocking(this, SIGNAL(finished()), msecs);
+    d_func()->waiting = false;
+    if (d_func()->mustDelete)
+        deleteLater();
     return d_func()->isStarted;
 }
 
@@ -416,14 +450,22 @@ bool BNetworkOperation::waitForUpload(qint64 bytes, int msecs)
         while (msecs > 0) {
             QElapsedTimer timer;
             timer.start();
+            d_func()->waiting = true;
             BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(qint64, qint64)), msecs);
+            d_func()->waiting = false;
+            if (d_func()->mustDelete)
+                deleteLater();
             msecs -= (int) timer.elapsed();
             if (uploadBytesReady() >= bytes)
                 return true;
         }
         return uploadBytesReady() >= bytes;
     } else {
+        d_func()->waiting = true;
         BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(qint64, qint64)), msecs);
+        d_func()->waiting = false;
+        if (d_func()->mustDelete)
+            deleteLater();
         return uploadBytesReady() >= bytes;
     }
 }
@@ -442,14 +484,22 @@ bool BNetworkOperation::waitForUploadProgress(int n, int nth, int msecs)
         while (msecs > 0) {
             QElapsedTimer timer;
             timer.start();
+            d_func()->waiting = true;
             BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(int, int)), msecs);
+            d_func()->waiting = false;
+            if (d_func()->mustDelete)
+                deleteLater();
             msecs -= (int) timer.elapsed();
             if (uploadProgress(nth) >= n)
                 return true;
         }
         return uploadProgress(nth) >= n;
     } else {
+        d_func()->waiting = true;
         BeQt::waitNonBlocking(this, SIGNAL(uploadProgress(int, int)), msecs);
+        d_func()->waiting = false;
+        if (d_func()->mustDelete)
+            deleteLater();
         return uploadProgress(nth) >= n;
     }
 }
