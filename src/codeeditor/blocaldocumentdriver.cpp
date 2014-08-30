@@ -143,12 +143,6 @@ void BLocalDocumentDriverPrivate::init()
 
 /*============================== Public slots ==============================*/
 
-void BLocalDocumentDriverPrivate::fixFileNameEncoding(QString &fileName)
-{
-    QByteArray data = fileName.toLocal8Bit();
-    fileName = QTextCodec::codecForLocale()->toUnicode(data);
-}
-
 void BLocalDocumentDriverPrivate::loadOperationFinished()
 {
     LoadResultFutureWatcher *watcher = dynamic_cast<LoadResultFutureWatcher *>(sender());
@@ -230,8 +224,6 @@ bool BLocalDocumentDriver::getOpenFileNames(QWidget *parent, QStringList &fileNa
     if (BExtendedFileDialog::Accepted != ret)
         return false;
     fileNames = bfd.selectedFiles();
-    foreach (int i, bRangeD(0, fileNames.size() - 1))
-        BLocalDocumentDriverPrivate::fixFileNameEncoding(fileNames[i]);
     codec = bfd.selectedCodec();
     return true;
 }
@@ -263,7 +255,6 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     if (BExtendedFileDialog::Accepted != ret)
         return false;
     newName = bfd.selectedFiles().first();
-    BLocalDocumentDriverPrivate::fixFileNameEncoding(newName);
     codec = bfd.selectedCodec();
     lineFeed = bfd.selectedLineFeed();
     return true;

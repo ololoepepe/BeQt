@@ -295,7 +295,7 @@ void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
     B_Q(BNetworkConnection);
     if (loggingMode >= BNetworkConnection::NormalLogging)
         q->log((translations ? tr("Error:", "log text") : QString("Error:")) + " " + q->errorString());
-    QMetaObject::invokeMethod( q, "error", Q_ARG(QAbstractSocket::SocketError, socketError) );
+    QMetaObject::invokeMethod(q, "error", Q_ARG(QAbstractSocket::SocketError, socketError));
     foreach (BNetworkOperation *op, QList<BNetworkOperation *>() << requests.values() << replies.values()) {
         if (!op->isFinished() && !op->isError())
             op->d_func()->setError();

@@ -210,7 +210,7 @@ bool BApplicationServer::sendMessage(int &argc, char **argv)
         return false;
     QStringList args;
     for (int i = 1; i < argc; ++i)
-        args << argv[i];
+        args << QString::fromLocal8Bit(argv[i]);
     return sendMessage(args);
 }
 
