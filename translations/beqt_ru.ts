@@ -791,11 +791,6 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <source>Incoming connection</source>
-        <comment>log text</comment>
-        <translation type="obsolete">Входящее соединение</translation>
-    </message>
-    <message>
         <location filename="../src/network/bnetworkconnection.cpp" line="717"/>
         <source>Unknown reply</source>
         <comment>log text</comment>
@@ -862,7 +857,7 @@
         <location filename="../src/network/bnetworkconnection.cpp" line="308"/>
         <source>Incoming connection</source>
         <comment>log text</comment>
-        <translation type="unfinished">Входящее соединение</translation>
+        <translation>Входящее соединение</translation>
     </message>
 </context>
 <context>
