@@ -614,31 +614,31 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="163"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="164"/>
         <source>Encoding:</source>
         <comment>lbl text</comment>
         <translation>Кодировка:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="171"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="172"/>
         <source>Line feed:</source>
         <comment>lbl text</comment>
         <translation>Конец строки:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="174"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="175"/>
         <source>Classic Mac OS</source>
         <comment>cmbox item text</comment>
         <translation>Классическая Mac OS</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="175"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="176"/>
         <source>UNIX/Linux</source>
         <comment>cmbox item text</comment>
         <translation>UNIX/Linux</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="176"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="177"/>
         <source>Windows</source>
         <comment>cmbox item text</comment>
         <translation>Windows</translation>

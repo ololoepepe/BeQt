@@ -135,7 +135,8 @@ void BFileDialogPrivate::init()
 {
     maxHistorySize = 20;
     B_Q(BFileDialog);
-    if (!TopDir.isEmpty()) {
+    if (!TopDir.isEmpty() && QFileInfo(TopDir).isDir()) {
+        q->setDirectory(TopDir);
         connect(q, SIGNAL(directoryEntered(QString)), this, SLOT(checkGoToParent()));
         connect(q->findChild<QToolButton *>("backButton"), SIGNAL(clicked()), this, SLOT(checkGoToParent()));
         connect(q->findChild<QToolButton *>("forwardButton"), SIGNAL(clicked()), this, SLOT(checkGoToParent()));
