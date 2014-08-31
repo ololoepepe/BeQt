@@ -29,14 +29,16 @@ class QString;
 #include <BeQtCore/BBaseObject>
 #include <BeQtCore/BeQt>
 
+#include <QObject>
 #include <QStringList>
 
 /*============================================================================
 ================================ BApplicationServer ==========================
 ============================================================================*/
 
-class B_NETWORK_EXPORT BApplicationServer : public BBaseObject
+class B_NETWORK_EXPORT BApplicationServer : public QObject, public BBaseObject
 {
+    Q_OBJECT
     B_DECLARE_PRIVATE(BApplicationServer)
 public:
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
@@ -56,6 +58,8 @@ public:
     bool sendMessage(const QStringList &arguments = QStringList());
 protected:
     virtual void handleMessage(const QStringList &arguments);
+Q_SIGNALS:
+    void messageReceived(const QStringList &arguments);
 private:
     Q_DISABLE_COPY(BApplicationServer)
 };

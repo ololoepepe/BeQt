@@ -123,20 +123,20 @@ void BApplicationServerPrivate::newPendingConnection()
 
 #if (QT_VERSION < QT_VERSION_CHECK(5, 0, 0))
 BApplicationServer::BApplicationServer(quint16 port, int operationTimeout) :
-    BBaseObject(*new BApplicationServerPrivate(this, port, operationTimeout))
+    QObject(0), BBaseObject(*new BApplicationServerPrivate(this, port, operationTimeout))
 {
     d_func()->init();
 }
 #else
 BApplicationServer::BApplicationServer(const QString &serverName, int operationTimeout) :
-    BBaseObject(*new BApplicationServerPrivate(this, serverName, operationTimeout))
+    QObject(0), BBaseObject(*new BApplicationServerPrivate(this, serverName, operationTimeout))
 {
     d_func()->init();
 }
 #endif
 
 BApplicationServer::BApplicationServer(quint16 port, const QString &serverName, int operationTimeout) :
-    BBaseObject(*new BApplicationServerPrivate(this, serverName, port, operationTimeout))
+    QObject(0), BBaseObject(*new BApplicationServerPrivate(this, serverName, port, operationTimeout))
 {
     d_func()->init();
 }
@@ -149,7 +149,7 @@ BApplicationServer::~BApplicationServer()
 /*============================== Protected constructors ====================*/
 
 BApplicationServer::BApplicationServer(BApplicationServerPrivate &d) :
-    BBaseObject(d)
+    QObject(0), BBaseObject(d)
 {
     d_func()->init();
 }
@@ -240,7 +240,7 @@ bool BApplicationServer::sendMessage(const QStringList &arguments)
 
 /*============================== Protected methods =========================*/
 
-void BApplicationServer::handleMessage(const QStringList &)
+void BApplicationServer::handleMessage(const QStringList &arguments)
 {
-    //
+    Q_EMIT messageReceived(arguments);
 }
