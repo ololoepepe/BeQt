@@ -466,6 +466,7 @@ void BLoginWidget::setAddressInputMask(const QString &mask)
 void BLoginWidget::setAddressLabel(const BTranslation &t)
 {
     d_func()->addressLabel = t;
+    d_func()->retranslateUi();
 }
 
 void BLoginWidget::setAddressPlaceholderText(const BTranslation &t)
@@ -475,6 +476,7 @@ void BLoginWidget::setAddressPlaceholderText(const BTranslation &t)
     if (!ledt)
         return;
     ledt->setPlaceholderText(t);
+    d_func()->retranslateUi();
 }
 
 void BLoginWidget::setAddressType(AddressType t, bool required)
@@ -555,6 +557,56 @@ void BLoginWidget::setGeneratePasswordFunction(BPasswordWidget::GeneratePassword
     d_func()->pwdwgt->setGeneratePasswordFunction(f);
 }
 
+void BLoginWidget::setLoginEnabled(bool b, bool required)
+{
+    if ((b && d_func()->ledtLogin) || (!b && !d_func()->ledtLogin))
+        return;
+    if (b) {
+        d_func()->ledtLogin = new QLineEdit;
+        int ind = (NoPassword == d_func()->passwordType) ? d_func()->flt->rowCount() : (d_func()->flt->rowCount() - 1);
+        d_func()->flt->insertRow(ind, d_func()->loginLabel, d_func()->ledtLogin);
+        connect(d_func()->ledtLogin, SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
+        connect(d_func()->ledtLogin, SIGNAL(textChanged(QString)), this, SIGNAL(loginChanged(QString)));
+    } else {
+        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->ledtLogin);
+        delete d_func()->ledtLogin;
+        d_func()->ledtLogin = 0;
+        delete lbl;
+        required = false;
+    }
+    d_func()->updateTabOrder();
+    setLoginRequired(required);
+}
+
+void BLoginWidget::setLoginInputMask(const QString &mask)
+{
+    if (!d_func()->ledtLogin)
+        return;
+    d_func()->ledtLogin->setInputMask(mask);
+}
+
+void BLoginWidget::setLoginLabel(const BTranslation &t)
+{
+    d_func()->loginLabel = t;
+    d_func()->retranslateUi();
+}
+
+void BLoginWidget::setLoginPlaceholderText(const BTranslation &t)
+{
+    d_func()->loginPlaceholderText = t;
+    if (!d_func()->ledtLogin)
+        return;
+    d_func()->ledtLogin->setPlaceholderText(t);
+    d_func()->retranslateUi();
+}
+
+void BLoginWidget::setLoginValidator(const QValidator *v)
+{
+    if (!d_func()->ledtLogin)
+        return;
+    d_func()->ledtLogin->setValidator(v);
+}
+
 void BLoginWidget::setPasswordInputMask(const QString &mask)
 {
     if (d_func()->pwdwgt)
@@ -566,6 +618,7 @@ void BLoginWidget::setPasswordInputMask(const QString &mask)
 void BLoginWidget::setPasswordLabel(BTranslation &t)
 {
     d_func()->passwordLabel = t;
+    d_func()->retranslateUi();
 }
 
 void BLoginWidget::setPasswordPlaceholderText(const BTranslation &t)
@@ -574,6 +627,7 @@ void BLoginWidget::setPasswordPlaceholderText(const BTranslation &t)
     if (!d_func()->ledtPassword)
         return;
     d_func()->ledtPassword->setPlaceholderText(t);
+    d_func()->retranslateUi();
 }
 
 void BLoginWidget::setPasswordType(PasswordType t, bool required)
@@ -666,6 +720,7 @@ void BLoginWidget::setPortInputMask(const QString &mask)
 void BLoginWidget::setPortLabel(const BTranslation &t)
 {
     d_func()->portLabel = t;
+    d_func()->retranslateUi();
 }
 
 void BLoginWidget::setPortPlaceholderText(const BTranslation &t)
@@ -674,6 +729,7 @@ void BLoginWidget::setPortPlaceholderText(const BTranslation &t)
     if (!d_func()->ledtPort)
         return;
     d_func()->ledtPort->setPlaceholderText(t);
+    d_func()->retranslateUi();
 }
 
 void BLoginWidget::setPortValidator(const QValidator *v)
@@ -681,54 +737,6 @@ void BLoginWidget::setPortValidator(const QValidator *v)
     if (!d_func()->ledtPort)
         return;
     d_func()->ledtPort->setValidator(v);
-}
-
-void BLoginWidget::setLoginEnabled(bool b, bool required)
-{
-    if ((b && d_func()->ledtLogin) || (!b && !d_func()->ledtLogin))
-        return;
-    if (b) {
-        d_func()->ledtLogin = new QLineEdit;
-        int ind = (NoPassword == d_func()->passwordType) ? d_func()->flt->rowCount() : (d_func()->flt->rowCount() - 1);
-        d_func()->flt->insertRow(ind, d_func()->loginLabel, d_func()->ledtLogin);
-        connect(d_func()->ledtLogin, SIGNAL(textChanged(QString)), d_func(), SLOT(checkInputs()));
-        connect(d_func()->ledtLogin, SIGNAL(textChanged(QString)), this, SIGNAL(loginChanged(QString)));
-    } else {
-        QWidget *lbl = BGuiTools::labelForField<QWidget>(d_func()->ledtLogin);
-        delete d_func()->ledtLogin;
-        d_func()->ledtLogin = 0;
-        delete lbl;
-        required = false;
-    }
-    d_func()->updateTabOrder();
-    setLoginRequired(required);
-}
-
-void BLoginWidget::setLoginInputMask(const QString &mask)
-{
-    if (!d_func()->ledtLogin)
-        return;
-    d_func()->ledtLogin->setInputMask(mask);
-}
-
-void BLoginWidget::setLoginLabel(const BTranslation &t)
-{
-    d_func()->loginLabel = t;
-}
-
-void BLoginWidget::setLoginPlaceholderText(const BTranslation &t)
-{
-    d_func()->loginPlaceholderText = t;
-    if (!d_func()->ledtLogin)
-        return;
-    d_func()->ledtLogin->setPlaceholderText(t);
-}
-
-void BLoginWidget::setLoginValidator(const QValidator *v)
-{
-    if (!d_func()->ledtLogin)
-        return;
-    d_func()->ledtLogin->setValidator(v);
 }
 
 bool BLoginWidget::showPasswordVisible() const

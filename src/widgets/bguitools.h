@@ -28,6 +28,8 @@ class QAction;
 class QComboBox;
 class QFont;
 class QObject;
+class QRect;
+class QSize;
 class QString;
 class QToolBar;
 class QToolButton;
@@ -117,6 +119,10 @@ template <typename T> void installTranslatorOnLabel(T *field, const BTranslation
 
 B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QWidget *field);
 B_WIDGETS_EXPORT void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field);
+B_WIDGETS_EXPORT QRect centerOnScreenGeometry(const QSize &preferredSize, int minimumLeftOffset = 0,
+                                              int minimumTopOffset = 0);
+B_WIDGETS_EXPORT QRect centerOnScreenGeometry(int preferredWidth, int preferredHeight, int minimumLeftOffset = 0,
+                                              int minimumTopOffset = 0);
 B_WIDGETS_EXPORT QFrame *createFrame(QFrame::Shape shape, QWidget *parent = 0);
 B_WIDGETS_EXPORT QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow, QWidget *parent = 0);
 B_WIDGETS_EXPORT QFont createMonospaceFont(int pointSize = 0);
@@ -134,4 +140,3 @@ B_WIDGETS_EXPORT QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *ac
 }
 
 #endif // BGUITOOLS_H
-

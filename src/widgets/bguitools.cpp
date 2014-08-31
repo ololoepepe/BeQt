@@ -28,14 +28,19 @@ class QObject;
 #include <BeQtCore/BeQtGlobal>
 
 #include <QAction>
+#include <QApplication>
 #include <QColor>
 #include <QComboBox>
+#include <QDebug>
+#include <QDesktopWidget>
 #include <QFont>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
 #include <QPalette>
+#include <QRect>
+#include <QSize>
 #include <QStandardItem>
 #include <QStandardItemModel>
 #include <QString>
@@ -66,6 +71,31 @@ void addRow(QVBoxLayout *vlt, const QString &label, QLayout *field)
     hlt->addWidget(new QLabel(label));
     hlt->addLayout(field);
     vlt->addLayout(hlt);
+}
+
+QRect centerOnScreenGeometry(const QSize &preferredSize, int minimumLeftOffset, int minimumTopOffset)
+{
+    return centerOnScreenGeometry(preferredSize.width(), preferredSize.height(), minimumLeftOffset, minimumTopOffset);
+}
+
+QRect centerOnScreenGeometry(int preferredWidth, int preferredHeight, int minimumLeftOffset, int minimumTopOffset)
+{
+    if (preferredWidth <= 0 || preferredHeight <= 0)
+        return QRect();
+    if (minimumLeftOffset < 0)
+        minimumLeftOffset = 0;
+    if (minimumTopOffset < 0)
+        minimumTopOffset = 0;
+    QRect dg = QApplication::desktop()->geometry();
+    int height = qMin(preferredHeight, dg.height());
+    int width = qMin(preferredWidth, dg.width());
+    int topOffset = qMax((dg.height() - height) / 2, minimumTopOffset);
+    int leftOffset = qMax((dg.width() - width) / 2, minimumLeftOffset);
+    height = qMin(height, dg.height() - topOffset);
+    width = qMin(width, dg.width() - leftOffset);
+    if (height <= 0 || width <= 0)
+        return QRect();
+    return QRect(leftOffset, topOffset, width, height);
 }
 
 QFrame *createFrame(QFrame::Shape shape, QWidget *parent)
