@@ -91,7 +91,7 @@ QString BLocaleComboBoxPrivate::localeToString(const BApplication::LocaleSupport
 
 void BLocaleComboBoxPrivate::init()
 {
-    q_func()->setAvailableLocales(availableLocales);
+    //
 }
 
 /*============================================================================
@@ -128,8 +128,7 @@ QList<BApplicationBase::LocaleSupportInfo> BLocaleComboBox::availableLocales() c
 
 QLocale BLocaleComboBox::currentLocale() const
 {
-    QVariant v = (currentIndex() >= 0) ? itemData(currentIndex()) : QVariant();
-    return v.canConvert(QVariant::Locale) ? v.toLocale() : QLocale(QLocale::English);
+    return QLocale((currentIndex() >= 0) ? itemData(currentIndex()).toString() : "en_US");
 }
 
 /*============================== Public slots ==============================*/
@@ -152,7 +151,7 @@ void BLocaleComboBox::setAvailableLocales(const QList<BApplicationBase::LocaleSu
     foreach (const BApplication::LocaleSupportInfo &info, list) {
         QIcon icon = BLocaleComboBoxPrivate::iconForLocale(info);
         QString text = BLocaleComboBoxPrivate::localeToString(info);
-        addItem(icon, text, info.locale);
+        addItem(icon, text, info.locale.name());
     }
     setCurrentLocale(l);
     blockSignals(false);
@@ -160,7 +159,7 @@ void BLocaleComboBox::setAvailableLocales(const QList<BApplicationBase::LocaleSu
 
 void BLocaleComboBox::setCurrentLocale(const QLocale &locale)
 {
-    int ind = findData(locale);
+    int ind = findData(locale.name());
     if (ind < 0)
         return;
     setCurrentIndex(ind);
