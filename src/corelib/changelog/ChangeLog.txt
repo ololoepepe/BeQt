@@ -1,4 +1,4 @@
-=== BeQt 4.0.0 (xx July 2014) ===
+=== BeQt 4.0.0 (02 September 2014) ===
 ==== BeQtCore ====
     * Use UNIX-like resource structure for on all platforms
     * Remove BDirTools methods: createUserLocation и createUserLocations

@@ -1,4 +1,4 @@
-=== BeQt 4.0.0 (xx июля 2014) ===
+=== BeQt 4.0.0 (02 сентября 2014) ===
 ==== BeQtCore ====
     * На всех платформах теперь используется структура ресурсов как в UNIX
     * Удалены функции из BDirTools: createUserLocation и createUserLocations
