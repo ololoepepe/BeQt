@@ -297,13 +297,10 @@ void BNetworkServerPrivate::newConnection(int socketDescriptor)
     if (!server)
         return;
     BNetworkServerThread *t = getOptimalThread();
-    if (t)
-    {
+    if (t) {
         quint16 port = (server->serverType() != BGenericServer::LocalServer) ? server->tcpServer()->serverPort() : 0;
         t->addConnection(socketDescriptor, server->serverAddress(), port);
-    }
-    else
-    {
+    } else {
         //If connection limit is reached, every new connection is automatically removed.
         //No notifications are sent to clients, they are just disconnected.
         //If you want to send a notification to a client before disconnecting, set unlimited connection count,

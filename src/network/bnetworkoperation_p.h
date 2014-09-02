@@ -55,6 +55,8 @@ public:
     bool isError;
     bool isFinished;
     bool isStarted;
+    bool mustDelete;
+    bool waiting;
 public:
     explicit BNetworkOperationPrivate(BNetworkOperation *q, const BNetworkOperationMetaData &md,
                                       BNetworkConnection *connection);

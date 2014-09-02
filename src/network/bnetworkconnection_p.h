@@ -96,6 +96,7 @@ public Q_SLOTS:
     void disconnected();
     void downloadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);
     void error(QAbstractSocket::SocketError socketError);
+    void logIncomingConnection();
     void operationCanceled();
     void operationDestroyed(QObject *obj);
     void uploadProgress(const BNetworkOperationMetaData &metaData, qint64 bytesReady, qint64 bytesTotal);

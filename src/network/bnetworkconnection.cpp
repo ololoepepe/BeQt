@@ -38,6 +38,7 @@
 #include <QObject>
 #include <QString>
 #include <QThread>
+#include <QTimer>
 #include <QVariant>
 
 /*============================================================================
@@ -76,7 +77,7 @@ void BNetworkConnectionPrivate::init()
     autoDelete = true;
     logger = 0;
     translations = false;
-    socketWrapper = new BSocketWrapper( q_func() );
+    socketWrapper = new BSocketWrapper(q_func());
     connect(socketWrapper, SIGNAL(downloadProgress(BNetworkOperationMetaData, qint64, qint64)),
             this, SLOT(downloadProgress(BNetworkOperationMetaData, qint64, qint64)));
     connect(socketWrapper, SIGNAL(uploadProgress(BNetworkOperationMetaData, qint64, qint64)),
@@ -294,11 +295,17 @@ void BNetworkConnectionPrivate::error(QAbstractSocket::SocketError socketError)
     B_Q(BNetworkConnection);
     if (loggingMode >= BNetworkConnection::NormalLogging)
         q->log((translations ? tr("Error:", "log text") : QString("Error:")) + " " + q->errorString());
-    QMetaObject::invokeMethod( q, "error", Q_ARG(QAbstractSocket::SocketError, socketError) );
+    QMetaObject::invokeMethod(q, "error", Q_ARG(QAbstractSocket::SocketError, socketError));
     foreach (BNetworkOperation *op, QList<BNetworkOperation *>() << requests.values() << replies.values()) {
         if (!op->isFinished() && !op->isError())
             op->d_func()->setError();
     }
+}
+
+void BNetworkConnectionPrivate::logIncomingConnection()
+{
+    if (loggingMode >= BNetworkConnection::NormalLogging)
+        q_func()->log(translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
 }
 
 void BNetworkConnectionPrivate::operationCanceled()
@@ -374,14 +381,13 @@ BNetworkConnection::InternalHandler BNetworkConnection::requestHandler(StandardO
 /*============================== Public constructors =======================*/
 
 BNetworkConnection::BNetworkConnection(BGenericSocket *socket, QObject *parent) :
-    QObject(parent), BBaseObject( *new BNetworkConnectionPrivate(this) )
+    QObject(parent), BBaseObject(*new BNetworkConnectionPrivate(this))
 {
     d_func()->init();
     if (!socket || (socket->thread() != thread()) || !socket->isOpen())
         return;
     d_func()->setSocket(socket);
-    if (d_func()->loggingMode >= NormalLogging)
-        log(d_func()->translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
+    QTimer::singleShot(0, d_func(), SLOT(logIncomingConnection()));
 }
 
 BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *socket) :
@@ -391,8 +397,7 @@ BNetworkConnection::BNetworkConnection(BNetworkServer *server, BGenericSocket *s
     if (!socket || (socket->thread() != thread()) || !socket->isOpen())
         return;
     d_func()->setSocket(socket);
-    if (d_func()->loggingMode >= NormalLogging)
-        log(d_func()->translations ? tr("Incoming connection", "log text") : QString("Incoming connection"));
+    QTimer::singleShot(0, d_func(), SLOT(logIncomingConnection()));
 }
 
 BNetworkConnection::BNetworkConnection(BGenericSocket::SocketType type, QObject *parent) :

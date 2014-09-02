@@ -614,31 +614,31 @@
 <context>
     <name>BFileDialogPrivate</name>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="163"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="164"/>
         <source>Encoding:</source>
         <comment>lbl text</comment>
         <translation>Кодировка:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="171"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="172"/>
         <source>Line feed:</source>
         <comment>lbl text</comment>
         <translation>Конец строки:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="174"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="175"/>
         <source>Classic Mac OS</source>
         <comment>cmbox item text</comment>
         <translation>Классическая Mac OS</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="175"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="176"/>
         <source>UNIX/Linux</source>
         <comment>cmbox item text</comment>
         <translation>UNIX/Linux</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bfiledialog.cpp" line="176"/>
+        <location filename="../src/widgets/bfiledialog.cpp" line="177"/>
         <source>Windows</source>
         <comment>cmbox item text</comment>
         <translation>Windows</translation>
@@ -791,20 +791,13 @@
 <context>
     <name>BNetworkConnection</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="384"/>
-        <location filename="../src/network/bnetworkconnection.cpp" line="395"/>
-        <source>Incoming connection</source>
-        <comment>log text</comment>
-        <translation>Входящее соединение</translation>
-    </message>
-    <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="712"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="717"/>
         <source>Unknown reply</source>
         <comment>log text</comment>
         <translation>Неизвестный ответ</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="719"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="724"/>
         <source>Unknown request</source>
         <comment>log text</comment>
         <translation>Неизвестный запрос</translation>
@@ -813,52 +806,58 @@
 <context>
     <name>BNetworkConnectionPrivate</name>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="170"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="171"/>
         <source>Connected</source>
         <comment>log text</comment>
         <translation>Подключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="254"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="255"/>
         <source>Disconnected</source>
         <comment>log text</comment>
         <translation>Отключен</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="296"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="297"/>
         <source>Error:</source>
         <comment>log text</comment>
         <translation>Ошибка:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="278"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="279"/>
         <source>Incoming request:</source>
         <comment>log text</comment>
         <translation>Входящий запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="187"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="188"/>
         <source>Request received:</source>
         <comment>log text</comment>
         <translation>Получен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="209"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="210"/>
         <source>Reply received:</source>
         <comment>log text</comment>
         <translation>Получен ответ:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="231"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="232"/>
         <source>Request sent:</source>
         <comment>log text</comment>
         <translation>Отправлен запрос:</translation>
     </message>
     <message>
-        <location filename="../src/network/bnetworkconnection.cpp" line="242"/>
+        <location filename="../src/network/bnetworkconnection.cpp" line="243"/>
         <source>Reply sent:</source>
         <comment>log text</comment>
         <translation>Отправлен ответ:</translation>
+    </message>
+    <message>
+        <location filename="../src/network/bnetworkconnection.cpp" line="308"/>
+        <source>Incoming connection</source>
+        <comment>log text</comment>
+        <translation>Входящее соединение</translation>
     </message>
 </context>
 <context>

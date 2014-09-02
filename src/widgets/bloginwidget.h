@@ -148,6 +148,11 @@ public:
     void setAddressValidator(const QValidator *v);
     void setGeneratedPasswordLength(int len);
     void setGeneratePasswordFunction(BPasswordWidget::GeneratePasswordFunction f);
+    void setLoginEnabled(bool b, bool required = true);
+    void setLoginInputMask(const QString &mask);
+    void setLoginLabel(const BTranslation &t);
+    void setLoginPlaceholderText(const BTranslation &t);
+    void setLoginValidator(const QValidator *v);
     void setPasswordInputMask(const QString &mask);
     void setPasswordLabel(BTranslation &t);
     void setPasswordPlaceholderText(const BTranslation &t);
@@ -160,11 +165,6 @@ public:
     void setPortLabel(const BTranslation &t);
     void setPortPlaceholderText(const BTranslation &t);
     void setPortValidator(const QValidator *v);
-    void setLoginEnabled(bool b, bool required = true);
-    void setLoginInputMask(const QString &mask);
-    void setLoginLabel(const BTranslation &t);
-    void setLoginPlaceholderText(const BTranslation &t);
-    void setLoginValidator(const QValidator *v);
     bool showPasswordVisible() const;
     QString simplePassword() const;
 public Q_SLOTS:

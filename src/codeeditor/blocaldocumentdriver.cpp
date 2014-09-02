@@ -244,7 +244,7 @@ bool BLocalDocumentDriver::getSaveAsFileName(QWidget *parent, const QString &fil
     bfd.setFileMode(QFileDialog::AnyFile);
     QString dir = QFileInfo(fileName).path();
     if (dir != "." && QDir(dir).exists())
-        bfd.setDirectory(dir); //TODO: Myabe should improve (needs testing)
+        bfd.setDirectory(dir); //TODO: Maybe should improve (needs testing)
     else if (d->fileDialogState.isEmpty())
         bfd.setDirectory(d->defaultDir);
     bfd.selectFile(fileName);
