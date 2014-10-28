@@ -13,7 +13,6 @@
 [done] Fix BDirTools::mayBeExecutable function
 [done] Fix BLocaleComboBox locale selection
 [done] Fix showing settings (pass default value for node type)
-[done] Fix secure line reading in BTerminal
 
 === MINOR ===
 
