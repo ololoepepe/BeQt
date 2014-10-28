@@ -114,13 +114,23 @@ BTerminalThread::~BTerminalThread()
 
 void BTerminalThread::run()
 {
+    QString buff;
     forever {
-        QString l = BTerminalPrivate::readStream.readLine();
-        if (loop) {
-            lastLine = l;
-            QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
+        QString s = BTerminalPrivate::readStream.read(1);
+        if (s.isEmpty()) {
+            msleep(10);
+            continue;
+        }
+        if (s.at(0) == '\n') {
+            if (loop) {
+                lastLine = buff;
+                QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
+            } else {
+                QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, buff));
+            }
+            buff.clear();
         } else {
-            QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, l));
+            buff += s;
         }
     }
 }
