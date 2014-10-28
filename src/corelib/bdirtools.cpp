@@ -270,7 +270,7 @@ bool mayBeExecutable(const QByteArray &data, const QString &fileName)
 {
     if (data.mid(0, 4) == "\x7F""ELF" || data.mid(0, 2) == "MZ" || data.mid(0, 2) == "#!")
         return true;
-    if (!fileName.isEmpty())
+    if (fileName.isEmpty())
         return false;
     QString suffix = QFileInfo(fileName).suffix();
     if (!suffix.compare("dylib", Qt::CaseInsensitive) || !suffix.compare("dll", Qt::CaseInsensitive)

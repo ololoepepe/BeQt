@@ -101,7 +101,7 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
 BTerminalThread::BTerminalThread(BTerminalPrivate *tp) :
     QThread(0), TerminalPrivate(tp)
 {
-    loop = 0;
+    //
 }
 
 BTerminalThread::~BTerminalThread()
@@ -115,13 +115,7 @@ void BTerminalThread::run()
 {
     forever {
         QString l = BTerminalPrivate::readStream.readLine();
-        if (loop) {
-            lastLine = l;
-            QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
-        }
-        else {
-            QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, l));
-        }
+        QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, l));
     }
 }
 
@@ -609,13 +603,16 @@ QString BTerminal::readLine(const QString &text)
         return QString();
     if (!text.isEmpty())
         write(text);
-    if (NoMode == m)
-        return BTerminalPrivate::readStream.readLine();
-    QEventLoop loop;
-    ds_func()->readThread->loop = &loop;
-    loop.exec();
-    QString line = ds_func()->readThread->lastLine;
-    ds_func()->readThread->loop = 0;
+    if (StandardMode == m) {
+        ds_func()->readThread->terminate();
+        ds_func()->readThread->wait();
+        delete ds_func()->readThread;
+    }
+    QString line = BTerminalPrivate::readStream.readLine();
+    if (StandardMode == m) {
+        ds_func()->readThread = new BTerminalThread(ds_func());
+        ds_func()->readThread->start();
+    }
     return line;
 }
 
@@ -732,7 +729,7 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
-    if(enabled)
+    if (enabled)
         tty.c_lflag |= ECHO;
     else
         tty.c_lflag &= ~ECHO;
@@ -741,7 +738,7 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
     GetConsoleMode(hStdin, &mode);
-    if(enabled)
+    if (enabled)
         mode |= ENABLE_ECHO_INPUT;
     else
         mode &= ~ENABLE_ECHO_INPUT;

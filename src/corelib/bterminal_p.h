@@ -52,7 +52,6 @@ public:
     BTerminalPrivate * const TerminalPrivate;
 public:
     QString lastLine;
-    QEventLoop *loop;
 public:
     explicit BTerminalThread(BTerminalPrivate *tp);
     ~BTerminalThread();
