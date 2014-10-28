@@ -26,8 +26,6 @@ class BTerminalPrivate;
 
 class BSettingsNode;
 
-class QEventLoop;
-
 #include "bterminal.h"
 
 #include "bbaseobject_p.h"
@@ -50,9 +48,6 @@ class B_CORE_EXPORT BTerminalThread : public QThread
     Q_OBJECT
 public:
     BTerminalPrivate * const TerminalPrivate;
-public:
-    QString lastLine;
-    QEventLoop *loop;
 public:
     explicit BTerminalThread(BTerminalPrivate *tp);
     ~BTerminalThread();
@@ -102,6 +97,8 @@ public:
     void init();
 public Q_SLOTS:
     void commandEntered(const QString &cmd, const QStringList &args);
+    void createThread();
+    void destroyThread();
     void lineRead(const QString &text);
 private:
     Q_DISABLE_COPY(BTerminalPrivate)

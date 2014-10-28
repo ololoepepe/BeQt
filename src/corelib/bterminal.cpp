@@ -33,7 +33,6 @@
 #include <QChar>
 #include <QCoreApplication>
 #include <QDebug>
-#include <QEventLoop>
 #include <QIODevice>
 #include <QMetaObject>
 #include <QMutex>
@@ -44,6 +43,7 @@
 #include <QStringList>
 #include <QTextStream>
 #include <QThread>
+#include <QTimer>
 
 #include <cstdio>
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
@@ -102,7 +102,7 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
 BTerminalThread::BTerminalThread(BTerminalPrivate *tp) :
     QThread(0), TerminalPrivate(tp)
 {
-    loop = 0;
+    //
 }
 
 BTerminalThread::~BTerminalThread()
@@ -114,24 +114,9 @@ BTerminalThread::~BTerminalThread()
 
 void BTerminalThread::run()
 {
-    QString buff;
     forever {
-        QString s = BTerminalPrivate::readStream.read(1);
-        if (s.isEmpty()) {
-            msleep(10);
-            continue;
-        }
-        if (s.at(0) == '\n') {
-            if (loop) {
-                lastLine = buff;
-                QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
-            } else {
-                QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, buff));
-            }
-            buff.clear();
-        } else {
-            buff += s;
-        }
+        QString line = BTerminalPrivate::readStream.readLine();
+        QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, line));
     }
 }
 
@@ -163,9 +148,7 @@ BTerminalPrivate::~BTerminalPrivate()
     switch (Mode) {
     case BTerminal::StandardMode:
         delete root;
-        readThread->terminate();
-        readThread->wait();
-        delete readThread;
+        destroyThread();
         break;
     default:
         break;
@@ -271,12 +254,12 @@ void BTerminalPrivate::init()
 {
     defaultHandler = 0;
     qAddPostRoutine(&BTerminal::destroy);
+    readThread = 0;
     root = 0;
     translations = true;
     switch (Mode) {
     case BTerminal::StandardMode:
-        readThread = new BTerminalThread(this);
-        readThread->start();
+        QTimer::singleShot(0, this, SLOT(createThread()));
         break;
     default:
         break;
@@ -301,6 +284,22 @@ void BTerminalPrivate::commandEntered(const QString &cmd, const QStringList &arg
         q->writeLine(translations ? tr("Unknown command", "message") : QString("Unknown command"));
     if (lastCommand != "last" && !lastCommand.startsWith("last "))
         commandHistory.prepend(BTextTools::mergeArguments(lastCommand, lastArgs));
+}
+
+void BTerminalPrivate::createThread()
+{
+    readThread = new BTerminalThread(this);
+    readThread->start();
+}
+
+void BTerminalPrivate::destroyThread()
+{
+    if (!readThread)
+        return;
+    readThread->terminate();
+    readThread->wait();
+    delete readThread;
+    readThread = 0;
 }
 
 void BTerminalPrivate::lineRead(const QString &text)
@@ -619,13 +618,10 @@ QString BTerminal::readLine(const QString &text)
         return QString();
     if (!text.isEmpty())
         write(text);
-    if (NoMode == m)
-        return BTerminalPrivate::readStream.readLine();
-    QEventLoop loop;
-    ds_func()->readThread->loop = &loop;
-    loop.exec();
-    QString line = ds_func()->readThread->lastLine;
-    ds_func()->readThread->loop = 0;
+    if (StandardMode == m)
+        ds_func()->destroyThread();
+    QString line = BTerminalPrivate::readStream.readLine();
+    QTimer::singleShot(0, ds_func(), SLOT(createThread()));
     return line;
 }
 
