@@ -127,10 +127,20 @@ void BTerminalThread::run()
 /*============================== Static public variables ===================*/
 
 BTerminal::Color BTerminalPrivate::backgroundColor = BTerminal::DefaultColor;
+QMap<QString, BTerminal::CommandHelpList> BTerminalPrivate::commandHelp;
+QStringList BTerminalPrivate::commandHistory;
+BTerminal::HandlerFunction BTerminalPrivate::defaultHandler = 0;
+QMap<QString, BTerminal::HandlerFunction> BTerminalPrivate::handlers;
+BTranslation BTerminalPrivate::help;
+QStringList BTerminalPrivate::lastArgs;
+QString BTerminalPrivate::lastCommand;
 BTerminal::Mode BTerminalPrivate::mode = BTerminal::NoMode;
 QMutex BTerminalPrivate::mutex(QMutex::Recursive);
 QTextStream BTerminalPrivate::readStream(stdin, QIODevice::ReadOnly);
+BTerminalThread *BTerminalPrivate::readThread = 0;
+BSettingsNode *BTerminalPrivate::root = 0;
 BTerminal::Color BTerminalPrivate::textColor = BTerminal::DefaultColor;
+bool BTerminalPrivate::translations = true;
 QTextStream BTerminalPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
 QTextStream BTerminalPrivate::writeStream(stdout, QIODevice::WriteOnly);
 
@@ -252,11 +262,10 @@ bool BTerminalPrivate::testInit(const char *where)
 
 void BTerminalPrivate::init()
 {
-    defaultHandler = 0;
-    qAddPostRoutine(&BTerminal::destroy);
-    readThread = 0;
-    root = 0;
-    translations = true;
+    init_once(bool, postDestroy, true) {
+        Q_UNUSED(postDestroy)
+        qAddPostRoutine(&BTerminal::destroy);
+    }
     switch (Mode) {
     case BTerminal::StandardMode:
         QTimer::singleShot(0, this, SLOT(createThread()));
@@ -486,6 +495,8 @@ BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
 void BTerminal::destroy()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!_m_self)
+        return;
     delete _m_self;
     _m_self = 0;
 }

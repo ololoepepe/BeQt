@@ -68,25 +68,24 @@ class B_CORE_EXPORT BTerminalPrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC_S(BTerminal)
 public:
     static BTerminal::Color backgroundColor;
+    static QMap<QString, BTerminal::CommandHelpList> commandHelp;
+    static QStringList commandHistory;
+    static BTerminal::HandlerFunction defaultHandler;
+    static QMap<QString, BTerminal::HandlerFunction> handlers;
+    static BTranslation help;
+    static QStringList lastArgs;
+    static QString lastCommand;
     static BTerminal::Mode mode;
     static QMutex mutex;
     static QTextStream readStream;
+    static BTerminalThread *readThread;
+    static BSettingsNode *root;
     static BTerminal::Color textColor;
+    static bool translations;
     static QTextStream writeErrStream;
     static QTextStream writeStream;
 public:
     const BTerminal::Mode Mode;
-public:
-    QMap<QString, BTerminal::CommandHelpList> commandHelp;
-    QStringList commandHistory;
-    BTerminal::HandlerFunction defaultHandler;
-    QMap<QString, BTerminal::HandlerFunction> handlers;
-    BTranslation help;
-    QStringList lastArgs;
-    QString lastCommand;
-    BTerminalThread *readThread;
-    BSettingsNode *root;
-    bool translations;
 public:
     explicit BTerminalPrivate(BTerminal *q, BTerminal::Mode m);
     ~BTerminalPrivate();
