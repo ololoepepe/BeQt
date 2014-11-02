@@ -1,3 +1,11 @@
+=== BeQt 4.0.1 (02 November 2014) ===
+    * Fix BDirTools::mayBeExecutable function
+    * Fix BLocaleComboBox locale selection
+    * Fix showing settings (pass default value for node type)
+    * Fix reading from stdin
+    * Save BTerminal settings when destroying the terminal
+    * Merge identical nearby commands in BTerminal history
+
 === BeQt 4.0.0 (02 September 2014) ===
 ==== BeQtCore ====
     * Use UNIX-like resource structure for on all platforms

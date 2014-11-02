@@ -43,6 +43,7 @@
 #include <QStringList>
 #include <QTextStream>
 #include <QThread>
+#include <QTimer>
 
 #include <cstdio>
 #if defined(Q_OS_LINUX) || defined(Q_OS_MAC)
@@ -101,7 +102,7 @@ static bool setLocale(const BSettingsNode *, const QVariant &v)
 BTerminalThread::BTerminalThread(BTerminalPrivate *tp) :
     QThread(0), TerminalPrivate(tp)
 {
-    loop = 0;
+    //
 }
 
 BTerminalThread::~BTerminalThread()
@@ -114,14 +115,8 @@ BTerminalThread::~BTerminalThread()
 void BTerminalThread::run()
 {
     forever {
-        QString l = BTerminalPrivate::readStream.readLine();
-        if (loop) {
-            lastLine = l;
-            QMetaObject::invokeMethod(loop, "quit", Qt::QueuedConnection);
-        }
-        else {
-            QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, l));
-        }
+        QString line = BTerminalPrivate::readStream.readLine();
+        QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, line));
     }
 }
 
@@ -132,10 +127,20 @@ void BTerminalThread::run()
 /*============================== Static public variables ===================*/
 
 BTerminal::Color BTerminalPrivate::backgroundColor = BTerminal::DefaultColor;
+QMap<QString, BTerminal::CommandHelpList> BTerminalPrivate::commandHelp;
+QStringList BTerminalPrivate::commandHistory;
+BTerminal::HandlerFunction BTerminalPrivate::defaultHandler = 0;
+QMap<QString, BTerminal::HandlerFunction> BTerminalPrivate::handlers;
+BTranslation BTerminalPrivate::help;
+QStringList BTerminalPrivate::lastArgs;
+QString BTerminalPrivate::lastCommand;
 BTerminal::Mode BTerminalPrivate::mode = BTerminal::NoMode;
 QMutex BTerminalPrivate::mutex(QMutex::Recursive);
 QTextStream BTerminalPrivate::readStream(stdin, QIODevice::ReadOnly);
+BTerminalThread *BTerminalPrivate::readThread = 0;
+BSettingsNode *BTerminalPrivate::root = 0;
 BTerminal::Color BTerminalPrivate::textColor = BTerminal::DefaultColor;
+bool BTerminalPrivate::translations = true;
 QTextStream BTerminalPrivate::writeErrStream(stderr, QIODevice::WriteOnly);
 QTextStream BTerminalPrivate::writeStream(stdout, QIODevice::WriteOnly);
 
@@ -153,9 +158,7 @@ BTerminalPrivate::~BTerminalPrivate()
     switch (Mode) {
     case BTerminal::StandardMode:
         delete root;
-        readThread->terminate();
-        readThread->wait();
-        delete readThread;
+        destroyThread();
         break;
     default:
         break;
@@ -259,14 +262,13 @@ bool BTerminalPrivate::testInit(const char *where)
 
 void BTerminalPrivate::init()
 {
-    defaultHandler = 0;
-    qAddPostRoutine(&BTerminal::destroy);
-    root = 0;
-    translations = true;
+    init_once(bool, postDestroy, true) {
+        Q_UNUSED(postDestroy)
+        qAddPostRoutine(&BTerminal::destroy);
+    }
     switch (Mode) {
     case BTerminal::StandardMode:
-        readThread = new BTerminalThread(this);
-        readThread->start();
+        QTimer::singleShot(0, this, SLOT(createThread()));
         break;
     default:
         break;
@@ -289,8 +291,28 @@ void BTerminalPrivate::commandEntered(const QString &cmd, const QStringList &arg
         defaultHandler(lastCommand, lastArgs);
     else
         q->writeLine(translations ? tr("Unknown command", "message") : QString("Unknown command"));
-    if (lastCommand != "last" && !lastCommand.startsWith("last "))
-        commandHistory.prepend(BTextTools::mergeArguments(lastCommand, lastArgs));
+    if (lastCommand == "last")
+        return;
+    QString histCmd = BTextTools::mergeArguments(lastCommand, lastArgs);
+    if (!commandHistory.isEmpty() && commandHistory.first() == histCmd)
+        return;
+    commandHistory.prepend(histCmd);
+}
+
+void BTerminalPrivate::createThread()
+{
+    readThread = new BTerminalThread(this);
+    readThread->start();
+}
+
+void BTerminalPrivate::destroyThread()
+{
+    if (!readThread)
+        return;
+    readThread->terminate();
+    readThread->wait();
+    delete readThread;
+    readThread = 0;
 }
 
 void BTerminalPrivate::lineRead(const QString &text)
@@ -458,7 +480,7 @@ void BTerminal::connectToCommandEntered(QObject *receiver, const char *method)
         return;
     if (!receiver || !method)
         return;
-    connect(_m_self, SIGNAL(commandEntered(QString,QStringList)), receiver, method);
+    connect(_m_self, SIGNAL(commandEntered(QString, QStringList)), receiver, method);
 }
 
 BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
@@ -477,6 +499,8 @@ BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
 void BTerminal::destroy()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
+    if (!_m_self)
+        return;
     delete _m_self;
     _m_self = 0;
 }
@@ -490,7 +514,7 @@ void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *meth
         return;
     if (!receiver || !method)
         return;
-    disconnect(_m_self, SIGNAL(commandEntered(QString,QStringList)), receiver, method);
+    disconnect(_m_self, SIGNAL(commandEntered(QString, QStringList)), receiver, method);
 }
 
 void BTerminal::emulateCommand(const QString &command, const QStringList &arguments)
@@ -609,13 +633,10 @@ QString BTerminal::readLine(const QString &text)
         return QString();
     if (!text.isEmpty())
         write(text);
-    if (NoMode == m)
-        return BTerminalPrivate::readStream.readLine();
-    QEventLoop loop;
-    ds_func()->readThread->loop = &loop;
-    loop.exec();
-    QString line = ds_func()->readThread->lastLine;
-    ds_func()->readThread->loop = 0;
+    if (StandardMode == m)
+        ds_func()->destroyThread();
+    QString line = BTerminalPrivate::readStream.readLine();
+    QTimer::singleShot(0, ds_func(), SLOT(createThread()));
     return line;
 }
 
@@ -732,7 +753,7 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
 #if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
     struct termios tty;
     tcgetattr(STDIN_FILENO, &tty);
-    if(enabled)
+    if (enabled)
         tty.c_lflag |= ECHO;
     else
         tty.c_lflag &= ~ECHO;
@@ -741,7 +762,7 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
     HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
     DWORD mode;
     GetConsoleMode(hStdin, &mode);
-    if(enabled)
+    if (enabled)
         mode |= ENABLE_ECHO_INPUT;
     else
         mode &= ~ENABLE_ECHO_INPUT;

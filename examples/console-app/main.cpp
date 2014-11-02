@@ -45,9 +45,12 @@ int main(int argc, char **argv)
     //Communicating with user through BTerminalIOHandler
     QString s = BTerminal::readLine("Enter something: ");
     BTerminal::writeLine("You entered: \"" + s + "\"");
+    s = BTerminal::readLineSecure("Enter something again: ");
+    BTerminal::writeLine("You entered: \"" + s + "\"");
+    s = BTerminal::readLine("... and again: ");
+    BTerminal::writeLine("You entered: \"" + s + "\"");
     QSize sz = BTerminal::size();
     bWriteLine("By the way, terminal size is " + QString::number(sz.width()) + "x" + QString::number(sz.height()));
     bWriteLine("Goodbye!");
-    BTerminal::destroy();
     return 0;
 }

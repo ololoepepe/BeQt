@@ -363,7 +363,7 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
-    QVariant v = bSettings->value(path);
+    QVariant v = bSettings->value(path, QVariant(n->type()));
     if (n->userShowFunction())
         return n->userShowFunction()(n, v);
     bool ok = false;
