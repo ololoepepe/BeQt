@@ -10,11 +10,6 @@
 
 * Improve SQL schema parsing
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
-[done] Fix BDirTools::mayBeExecutable function
-[done] Fix BLocaleComboBox locale selection
-[done] Fix showing settings (pass default value for node type)
-[done] Fix reading from stdin
-[done] Save BTerminal settings when destroying the terminal
 
 === MINOR ===
 
@@ -26,6 +21,7 @@
 * Export friend operators
 * Add function for scaling images
 * Track stdin echo mode
+* Add BGuiTools::tabifyDockWidgets function
 
 === MAJOR ===
 

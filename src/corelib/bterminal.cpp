@@ -291,8 +291,12 @@ void BTerminalPrivate::commandEntered(const QString &cmd, const QStringList &arg
         defaultHandler(lastCommand, lastArgs);
     else
         q->writeLine(translations ? tr("Unknown command", "message") : QString("Unknown command"));
-    if (lastCommand != "last" && !lastCommand.startsWith("last "))
-        commandHistory.prepend(BTextTools::mergeArguments(lastCommand, lastArgs));
+    if (lastCommand == "last")
+        return;
+    QString histCmd = BTextTools::mergeArguments(lastCommand, lastArgs);
+    if (!commandHistory.isEmpty() && commandHistory.first() == histCmd)
+        return;
+    commandHistory.prepend(histCmd);
 }
 
 void BTerminalPrivate::createThread()
@@ -476,7 +480,7 @@ void BTerminal::connectToCommandEntered(QObject *receiver, const char *method)
         return;
     if (!receiver || !method)
         return;
-    connect(_m_self, SIGNAL(commandEntered(QString,QStringList)), receiver, method);
+    connect(_m_self, SIGNAL(commandEntered(QString, QStringList)), receiver, method);
 }
 
 BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
@@ -510,7 +514,7 @@ void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *meth
         return;
     if (!receiver || !method)
         return;
-    disconnect(_m_self, SIGNAL(commandEntered(QString,QStringList)), receiver, method);
+    disconnect(_m_self, SIGNAL(commandEntered(QString, QStringList)), receiver, method);
 }
 
 void BTerminal::emulateCommand(const QString &command, const QStringList &arguments)
