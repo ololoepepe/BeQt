@@ -68,9 +68,9 @@ public:
     bool operator !=(const BEmail &other) const;
     operator QVariant() const;
 public:
-    friend QDataStream &operator <<(QDataStream &stream, const BEmail &e);
-    friend QDataStream &operator >>(QDataStream &stream, BEmail &e);
-    friend QDebug operator <<(QDebug dbg, const BEmail &e);
+    B_NETWORK_EXPORT friend QDataStream &operator <<(QDataStream &stream, const BEmail &e);
+    B_NETWORK_EXPORT friend QDataStream &operator >>(QDataStream &stream, BEmail &e);
+    B_NETWORK_EXPORT friend QDebug operator <<(QDebug dbg, const BEmail &e);
 };
 
 Q_DECLARE_METATYPE(BEmail)

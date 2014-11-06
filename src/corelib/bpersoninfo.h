@@ -66,9 +66,9 @@ public:
     bool operator !=(const BPersonInfo &other) const;
     operator QVariant() const;
 public:
-    friend QDataStream &operator <<(QDataStream &stream, const BPersonInfo &info);
-    friend QDataStream &operator >>(QDataStream &stream, BPersonInfo &info);
-    friend QDebug operator <<(QDebug dbg, const BPersonInfo &info);
+    B_CORE_EXPORT friend QDataStream &operator <<(QDataStream &stream, const BPersonInfo &info);
+    B_CORE_EXPORT friend QDataStream &operator >>(QDataStream &stream, BPersonInfo &info);
+    B_CORE_EXPORT friend QDebug operator <<(QDebug dbg, const BPersonInfo &info);
 };
 
 Q_DECLARE_METATYPE(BPersonInfo)

@@ -59,8 +59,8 @@ public:
     B_CORE_EXPORT friend BTextMatchList BTextTools::match(const QString &text, const QRegExp &what,
                                                           const QRegExp &prefixedBy, const QRegExp &postfixedBy);
 public:
-    friend QDebug operator <<(QDebug dbg, const BTextMatch &tm);
     //This class must NOT be serialized because it only points to a string
+    B_CORE_EXPORT friend QDebug operator <<(QDebug dbg, const BTextMatch &tm);
 };
 
 #endif // BTEXTMATCH_H
