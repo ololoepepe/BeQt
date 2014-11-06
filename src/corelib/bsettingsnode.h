@@ -44,6 +44,7 @@ class B_CORE_EXPORT BSettingsNode : public BBase
     Q_DECLARE_TR_FUNCTIONS(BSettingsNode)
     B_DECLARE_PRIVATE(BSettingsNode)
 public:
+    typedef QVariant (*GetFunction)(const BSettingsNode *node);
     typedef bool (*SetFunction)(const BSettingsNode *node, const QVariant &value);
     typedef bool (*ShowFunction)(const BSettingsNode *node, const QVariant &value);
 public:
@@ -60,6 +61,7 @@ public:
     int childCount() const;
     QList<BSettingsNode *> childNodes() const;
     BSettingsNode *clone(BSettingsNode *parent = 0) const;
+    QVariant defaultValue() const;
     BTranslation description() const;
     BSettingsNode *find(const QString &path, QChar separator = QChar('.'));
     const BSettingsNode *find(const QString &path, QChar separator = QChar('.')) const;
@@ -70,17 +72,20 @@ public:
     bool set(QString path, QChar separator = QChar('.')) const;
     bool set(QString path, QString text, QChar separator = QChar('.')) const; //%k - key
     bool set(QString path, QVariant value, QChar separator = QChar('.')) const;
+    void setDefaultValue(const QVariant &value);
     void setDescription(const BTranslation &t);
     void setKey(const QString &key);
     void setParent(BSettingsNode *parent);
     void setSecureInput(bool b);
     void setType(QVariant::Type type);
+    void setUserGetFunction(GetFunction f);
     void setUserSetFunction(SetFunction f);
     void setUserShowFunction(ShowFunction f);
     bool show(QString path, QChar separator = QChar('.')) const;
     bool show(QString path, QString text, QChar separator = QChar('.')) const; //%k - key, %v - value
     void showTree(int indentStep = 2, int initialIndent = 0) const;
     QVariant::Type type() const;
+    GetFunction userGetFunction() const;
     SetFunction userSetFunction() const;
     ShowFunction userShowFunction() const;
 private:

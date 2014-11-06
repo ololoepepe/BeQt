@@ -17,8 +17,8 @@
 
 * Add PDCurses binding
 * Implement Katepart-compatible file type definition using XML files
-* Add BSettingsNode setDefaultValue and defaultValue methods
-* Add BSettingsNode setUserGetFunction and userGetUnction methods
+[done] Add BSettingsNode setDefaultValue and defaultValue methods
+[done] Add BSettingsNode setUserGetFunction and userGetUnction methods
 * Export friend operators
 * Add function for scaling images
 * Track stdin echo mode

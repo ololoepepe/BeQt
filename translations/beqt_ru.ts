@@ -1397,12 +1397,12 @@
 <context>
     <name>BSettingsNode</name>
     <message>
-        <location filename="../src/corelib/bsettingsnode.cpp" line="267"/>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="276"/>
         <source>Enter value for</source>
         <translation>Введите значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bsettingsnode.cpp" line="355"/>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="379"/>
         <source>The value for</source>
         <translation>Значение для</translation>
     </message>
