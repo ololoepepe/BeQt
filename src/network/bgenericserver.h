@@ -48,6 +48,7 @@ public:
     {
         NoServer = 0x00,    //0 0 0 0 0 0 0 0
         TcpServer = 0x03,   //0 0 0 0 0 0 1 1
+        SslServer = 0x07,   //0 0 0 0 0 1 1 1
         LocalServer = 0x10  //0 0 0 1 0 0 0 0
     };
 public:

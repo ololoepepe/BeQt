@@ -23,7 +23,12 @@
 * Add function for scaling images
 * Track stdin echo mode
 * Add ability to automatically tabify dock widgets
-* Handle SSL connections properly
+[done] Add SslServer enum to BGenericServer
+[done] Improve BGenericServer SSL connection handling
+[done] Add SslHandlingMode enum to BNetworkServer
+[done] Add setSslEncriptionWaitTimeout and sslEncriptionWaitTimeout methods to BNetworkServer
+[done] Add setSslHandlingMode ande sslHandlingMode methods to BNetworkServer
+[done] Handle SSL connections properly in BNetworkServer
 * Add ability to handle BHelpBrowser links
 [done] Add do_once macro
 

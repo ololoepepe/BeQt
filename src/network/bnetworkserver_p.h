@@ -101,6 +101,8 @@ public:
     int maxPendingConnections;
     int maxThreadCount;
     QList<BGenericServer *> servers;
+    int sslEncriptionWaitTimeout;
+    BNetworkServer::SslHandlingMode sslHandlingMode;
     QList<BNetworkServerThread *> threads;
 public:
     explicit BNetworkServerPrivate(BNetworkServer *q, BGenericServer::ServerType type);

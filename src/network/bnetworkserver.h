@@ -46,6 +46,13 @@ class B_NETWORK_EXPORT BNetworkServer : public QObject, public BBaseObject
     Q_OBJECT
     B_DECLARE_PRIVATE(BNetworkServer)
 public:
+    enum SslHandlingMode
+    {
+        DoNotEncript = 0,
+        EncriptBlocking = 1,
+        EncriptNonBlocking
+    };
+public:
     explicit BNetworkServer(BGenericServer::ServerType type, QObject *parent = 0);
     ~BNetworkServer();
 protected:
@@ -66,6 +73,10 @@ public:
     BGenericServer::ServerType serverType() const;
     void setMaxConnectionCount(int count);
     void setMaxThreadCount(int count);
+    void setSslEncriptionWaitTimeout(int msecs);
+    void setSslHandlingMode(SslHandlingMode mode);
+    int sslEncriptionWaitTimeout() const;
+    SslHandlingMode sslHandlingMode() const;
     void unlock();
     bool tryLock();
 public Q_SLOTS:

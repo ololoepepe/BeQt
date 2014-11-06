@@ -32,9 +32,9 @@
 #include <QObject>
 #include <QPointer>
 #include <QQueue>
+#include <QSslSocket>
 #include <QString>
 #include <QTcpServer>
-
 
 /*============================================================================
 ================================ BLocalServer ================================
@@ -106,6 +106,7 @@ BGenericServerPrivate::~BGenericServerPrivate()
 void BGenericServerPrivate::init()
 {
     maxPending = 10;
+    type = BGenericServer::NoServer;
 }
 
 /*============================== Public slots ==============================*/
@@ -138,20 +139,22 @@ void BGenericServerPrivate::newConnection(int socketDescriptor)
 /*============================== Public constructors =======================*/
 
 BGenericServer::BGenericServer(ServerType type, QObject *parent) :
-    QObject(parent), BBaseObject( *new BGenericServerPrivate(this) )
+    QObject(parent), BBaseObject(*new BGenericServerPrivate(this))
 {
     d_func()->init();
     B_D(BGenericServer);
+    d->type = type;
     switch (type) {
-    case BGenericServer::LocalServer: {
+    case LocalServer: {
         BLocalServer *server = new BLocalServer(this);
         connect(server, SIGNAL(newConnection(int)), d, SLOT(newConnection(int)));
         d->lserver = server;
         break;
     }
-    case BGenericServer::TcpServer: {
+    case TcpServer:
+    case SslServer: {
         BTcpServer *server = new BTcpServer(this);
-        connect( server, SIGNAL(newConnection(int)), d, SLOT(newConnection(int)));
+        connect(server, SIGNAL(newConnection(int)), d, SLOT(newConnection(int)));
         d->tserver = server;
     }
     default: {
@@ -249,9 +252,7 @@ QAbstractSocket::SocketError BGenericServer::serverError() const
 
 BGenericServer::ServerType BGenericServer::serverType() const
 {
-    if (!isServerSet())
-        return NoServer;
-    return !d_func()->tserver.isNull() ? TcpServer : LocalServer;
+    return d_func()->type;
 }
 
 void BGenericServer::setMaxPendingConnections(int numConnections)
@@ -281,6 +282,10 @@ BGenericSocket *BGenericServer::createSocket(int socketDescriptor)
     switch (serverType()) {
     case TcpServer:
         socket = new BGenericSocket(BGenericSocket::TcpSocket);
+        socket->setSocketDescriptor(socketDescriptor);
+        break;
+    case SslServer:
+        socket = new BGenericSocket(BGenericSocket::SslSocket);
         socket->setSocketDescriptor(socketDescriptor);
         break;
     case LocalServer:
