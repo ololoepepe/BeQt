@@ -30,6 +30,7 @@
 #include <BeQtCore/BTextMatchList>
 
 #include <QDebug>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFileInfo>
 #include <QLabel>
@@ -56,6 +57,7 @@
 /*============================== Static public variables ===================*/
 
 QMap< QString, QPair<QStringList, QStringList> > BHelpBrowserPrivate::searchCache;
+BHelpBrowser::UrlHandlerFunction BHelpBrowserPrivate::urlHandlerFunction = 0;
 
 /*============================== Public constructors =======================*/
 
@@ -108,7 +110,9 @@ void BHelpBrowserPrivate::init()
         connect(tbrsr, SIGNAL(backwardAvailable(bool)), tbtnBackward, SLOT(setEnabled(bool)));
         connect(tbrsr, SIGNAL(forwardAvailable(bool)), tbtnForward, SLOT(setEnabled(bool)));
         connect(tbrsr, SIGNAL(sourceChanged(QUrl)), this, SLOT(updateCaption()));
+        connect(tbrsr, SIGNAL(anchorClicked(QUrl)), this, SLOT(anchorClicked(QUrl)));
         tbrsr->setOpenExternalLinks(true);
+        tbrsr->setOpenLinks(false);
       vlt->addWidget(tbrsr);
     //
     QTimer::singleShot(0, ledtSearch, SLOT(setFocus()));
@@ -117,6 +121,17 @@ void BHelpBrowserPrivate::init()
 }
 
 /*============================== Public slots ==============================*/
+
+void BHelpBrowserPrivate::anchorClicked(const QUrl &url)
+{
+    static const Qt::CaseSensitivity Cs = Qt::CaseInsensitive;
+    if (urlHandlerFunction && urlHandlerFunction(url))
+        return;
+    if (url.scheme().isEmpty() || !url.scheme().compare("file", Cs) || !url.scheme().compare("qrc", Cs))
+        tbrsr->setSource(url);
+    else
+        QDesktopServices::openUrl(url);
+}
 
 void BHelpBrowserPrivate::retranslateUi()
 {
@@ -243,6 +258,16 @@ BHelpBrowser::BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent) :
 void BHelpBrowser::clearSearchCache()
 {
     BHelpBrowserPrivate::searchCache.clear();
+}
+
+void BHelpBrowser::setUserUrlHandlerFunction(UrlHandlerFunction f)
+{
+    BHelpBrowserPrivate::urlHandlerFunction = f;
+}
+
+BHelpBrowser::UrlHandlerFunction BHelpBrowser::userUrlHandlerFunction()
+{
+    return BHelpBrowserPrivate::urlHandlerFunction;
 }
 
 /*============================== Public methods ============================*/

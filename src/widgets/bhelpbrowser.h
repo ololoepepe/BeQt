@@ -45,6 +45,8 @@ class B_WIDGETS_EXPORT BHelpBrowser : public QWidget, public BBaseObject
     Q_PROPERTY(QStringList searchPaths READ searchPaths WRITE setSearchPaths)
     B_DECLARE_PRIVATE(BHelpBrowser)
 public:
+    typedef bool (*UrlHandlerFunction)(const QUrl &url);
+public:
     explicit BHelpBrowser(QWidget *parent = 0);
     explicit BHelpBrowser(const QStringList &searchPaths, QWidget *parent = 0);
     explicit BHelpBrowser(const QStringList &searchPaths, const QString &file, QWidget *parent = 0);
@@ -55,6 +57,8 @@ protected:
     explicit BHelpBrowser(BHelpBrowserPrivate &d, QWidget *parent = 0);
 public:
     static void clearSearchCache();
+    static void setUserUrlHandlerFunction(UrlHandlerFunction f);
+    static UrlHandlerFunction userUrlHandlerFunction();
 public:
     QTextCodec *codec() const;
     QString codecName() const;

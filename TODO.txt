@@ -29,7 +29,8 @@
 [done] Add setSslEncriptionWaitTimeout and sslEncriptionWaitTimeout methods to BNetworkServer
 [done] Add setSslHandlingMode ande sslHandlingMode methods to BNetworkServer
 [done] Handle SSL connections properly in BNetworkServer
-* Add ability to handle BHelpBrowser links
+[done] Add ability to handle BHelpBrowser links
+[done] Add setUserUrlHandlerFunction and userUrlHandlerFunction methods to BHelpBrowser
 [done] Add do_once macro
 
 === MAJOR ===
