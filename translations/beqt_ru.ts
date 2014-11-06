@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="599"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="607"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="778"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="593"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="601"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="772"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>

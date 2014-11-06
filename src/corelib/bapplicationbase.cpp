@@ -411,13 +411,7 @@ void BApplicationBasePrivate::setPluginActivated(const QString &pluginId, bool a
 {
     if (pluginId.isEmpty())
         return;
-    BPluginWrapper *pw = 0;
-    foreach (BPluginWrapper *pww, plugins) {
-        if (pww->id() == pluginId) {
-            pw = pww;
-            break;
-        }
-    }
+    BPluginWrapper *pw = BApplicationBase::pluginWrapper(pluginId);
     if (!pw)
         return;
     pw->setActivated(activated);
@@ -1019,6 +1013,19 @@ BLogger *BApplicationBase::logger()
     if (!BApplicationBasePrivate::testInit())
         return 0;
     return ds_func()->logger;
+}
+
+BPluginWrapper *BApplicationBase::pluginWrapper(const QString &pluginId)
+{
+    if (!BApplicationBasePrivate::testInit())
+        return 0;
+    if (pluginId.isEmpty())
+        return 0;
+    foreach (BPluginWrapper *pw, ds_func()->plugins) {
+        if (pw->id() == pluginId)
+            return pw;
+    }
+    return 0;
 }
 
 QList<BPluginWrapper *> BApplicationBase::pluginWrappers(const QString &type)

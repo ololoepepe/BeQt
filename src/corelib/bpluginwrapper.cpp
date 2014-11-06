@@ -222,6 +222,13 @@ BPluginWrapper *BPluginWrapper::parentWrapper(const BPluginInterface *i)
     return BPluginWrapperPrivate::globalMap.value(i->id());
 }
 
+BPluginWrapper *BPluginWrapper::pluginWrapper(const QString &pluginId)
+{
+    if (pluginId.isEmpty())
+        return 0;
+    return BPluginWrapperPrivate::globalMap.value(pluginId);
+}
+
 bool BPluginWrapper::removeSettings(const QString &pluginName)
 {
     if (pluginName.isEmpty())

@@ -22,6 +22,7 @@
 [done] Export friend operators
 [done] Track stdin echo mode
 [done] Add BTerminal::stdinEchoEnabled method
+[done] Add BApplicationBase::pluginWrapper and BPluginWrapper::pluginWrapper methods
 * Add ability to automatically tabify dock widgets
 [done] Add SslServer enum to BGenericServer
 [done] Improve BGenericServer SSL connection handling
