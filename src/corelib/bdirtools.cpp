@@ -23,6 +23,7 @@
 
 #include "bcoreapplication.h"
 #include "bnamespace.h"
+#include "bproperties.h"
 
 #include <QByteArray>
 #include <QDebug>
@@ -307,6 +308,20 @@ QByteArray readFile(const QString &fileName, qint64 maxlen, bool *ok)
     return ba;
 }
 
+BProperties readPropertiesFile(const QString &fileName, QTextCodec *codec, bool *ok)
+{
+    bool b = false;
+    QString s = readTextFile(fileName, codec, &b);
+    if (!b)
+        return bRet(ok, false, BProperties());
+    return BeQt::propertiesFromString(s, ok);
+}
+
+BProperties readPropertiesFile(const QString &fileName, const QString &codecName, bool *ok)
+{
+    return readPropertiesFile(fileName, QTextCodec::codecForName(codecName.toLatin1()), ok);
+}
+
 QString readTextFile(const QString &fileName, QTextCodec *codec, bool *ok)
 {
     if (ok)
@@ -418,6 +433,16 @@ bool writeFile(const QString &fileName, const QByteArray &data)
     bool b = (f.write(data) == data.size());
     f.close();
     return b;
+}
+
+bool writePropertiesFile(const QString &fileName, const BProperties &p, QTextCodec *codec)
+{
+    return writeTextFile(fileName, BeQt::propertiesToString(p), codec);
+}
+
+bool writePropertiesFile(const QString &fileName, const BProperties &p, const QString &codecName)
+{
+    return writePropertiesFile(fileName, p, QTextCodec::codecForName(codecName.toLatin1()));
 }
 
 bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *codec)

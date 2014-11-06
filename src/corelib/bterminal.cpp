@@ -262,10 +262,8 @@ bool BTerminalPrivate::testInit(const char *where)
 
 void BTerminalPrivate::init()
 {
-    init_once(bool, postDestroy, true) {
-        Q_UNUSED(postDestroy)
+    do_once(destroy)
         qAddPostRoutine(&BTerminal::destroy);
-    }
     switch (Mode) {
     case BTerminal::StandardMode:
         QTimer::singleShot(0, this, SLOT(createThread()));

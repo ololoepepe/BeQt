@@ -22,6 +22,8 @@
 #ifndef BNAMESPACE_H
 #define BNAMESPACE_H
 
+class BProperties;
+
 class QObject;
 class QProcess;
 class QRect;
@@ -179,6 +181,9 @@ B_CORE_EXPORT QString osVersion();
 B_CORE_EXPORT LineFeed platformLineFeed();
 B_CORE_EXPORT ProcessorArchitecture processorArchitecture();
 B_CORE_EXPORT QString processorArchitectureToString(ProcessorArchitecture arch);
+B_CORE_EXPORT BProperties propertiesFromString(const QString &s, bool resolveVariables, bool *ok = 0);
+B_CORE_EXPORT BProperties propertiesFromString(const QString &s, bool *ok = 0);
+B_CORE_EXPORT QString propertiesToString(const BProperties &p);
 B_CORE_EXPORT QByteArray serialize(const QVariant &variant, QDataStream::Version version = DataStreamVersion);
 B_CORE_EXPORT void sleep(unsigned long secs);
 B_CORE_EXPORT void startProcess(QProcess *proc, const QString &command, const QStringList &arguments = QStringList());

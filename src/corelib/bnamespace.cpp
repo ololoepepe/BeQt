@@ -22,6 +22,7 @@
 #include "bnamespace.h"
 
 #include "bdirtools.h"
+#include "bproperties.h"
 #include "btexttools.h"
 
 #include <QByteArray>
@@ -35,6 +36,7 @@
 #include <QProcess>
 #include <QRect>
 #include <QRectF>
+#include <QRegExp>
 #include <QString>
 #include <QStringList>
 #include <QSysInfo>
@@ -688,6 +690,110 @@ QString processorArchitectureToString(ProcessorArchitecture arch)
     default:
         return "Unknown";
     }
+}
+
+BProperties propertiesFromString(const QString &s, bool resolveVariables, bool *ok)
+{
+    if (s.isEmpty())
+        return bRet(ok, true, BProperties());
+    QString key;
+    QString value;
+    bool multiline = false;
+    BProperties p;
+    foreach (QString line, s.split(QRegExp("(\n|\r)+"), QString::SkipEmptyParts)) {
+        if (line.startsWith('#') || line.startsWith('!'))
+            continue;
+        line.remove(QRegExp("^\\s+"));
+        if (line.isEmpty())
+            continue;
+        QString stack;
+        for (int i = 0; i < line.length(); ++ i) {
+            const QChar &c = line.at(i);
+            if (('=' == c || ':' == c) && (0 == i || line.at(i - 1) != '\\')) {
+                if (multiline) {
+                    BTextTools::removeTrailingSpaces(&key);
+                    key.replace("\\ ", " ");
+                    value.replace("\\\\", "\\");
+                    QRegExp rx("\\\\u\\d{4}");
+                    int ind = value.indexOf(rx);
+                    while (ind >= 0) {
+                        value.replace(ind, 6, QChar(value.mid(ind + 2, 4).toInt()));
+                        ind = value.indexOf(rx, ind + 1);
+                    }
+                    if (resolveVariables && (value.startsWith('{') || value.startsWith("${")) && value.endsWith('}')) {
+                        QString valueUnwrapped = BTextTools::unwrapped(value, "${", "}");
+                        BTextTools::unwrap(valueUnwrapped, "{", "}");
+                        value = p.value(valueUnwrapped);
+                    }
+                    p.insert(key, value);
+                    key.clear();
+                    value.clear();
+                    multiline = false;
+                }
+                if (!key.isEmpty())
+                    return bRet(ok, false, BProperties());
+                key = stack;
+                stack.clear();
+                QRegExp rx("\\s+");
+                int ind = line.indexOf(rx, i + 1);
+                if (ind >= 0)
+                    i += rx.matchedLength();
+            } else if ('\\' == c && line.length() - 1 == i) {
+                if (key.isEmpty())
+                    return bRet(ok, false, BProperties());
+                multiline = true;
+                value += stack;
+            } else if (('!' == c || '#' == c || '=' == c || ':' == c) && (0 == i || line.at(i - 1) == '\\')) {
+                stack.remove(stack.length() - 1, 1);
+                stack += c;
+            } else {
+                stack += c;
+            }
+        }
+        if (!multiline) {
+            value = stack;
+            BTextTools::removeTrailingSpaces(&key);
+            key.replace("\\ ", " ");
+            value.replace("\\\\", "\\");
+            QRegExp rx("\\\\u\\d{4}");
+            int ind = value.indexOf(rx);
+            while (ind >= 0) {
+                value.replace(ind, 6, QChar(value.mid(ind + 2, 4).toInt()));
+                ind = value.indexOf(rx, ind + 1);
+            }
+            if (resolveVariables && (value.startsWith('{') || value.startsWith("${")) && value.endsWith('}')) {
+                QString valueUnwrapped = BTextTools::unwrapped(value, "${", "}");
+                BTextTools::unwrap(valueUnwrapped, "{", "}");
+                value = p.value(valueUnwrapped);
+            }
+            p.insert(key, value);
+            key.clear();
+            value.clear();
+        } else {
+            value += stack;
+        }
+    }
+    return bRet(ok, true, p);
+}
+
+BProperties propertiesFromString(const QString &s, bool *ok)
+{
+    return propertiesFromString(s, true, ok);
+}
+
+QString propertiesToString(const BProperties &p)
+{
+    QString s;
+    foreach (QString key, p.keys()) {
+        QString value = p.value(key);
+        key.replace(' ', "\\ ").replace('=', "\\=").replace(':', "\\:").replace('#', "\\#").replace('!', "\\!");
+        value.replace("\\", "\\\\").replace('=', "\\=").replace(':', "\\:").replace('#', "\\#").replace('!', "\\!");
+        value.replace('\n', "\\n").replace('\r', "\\r").replace('\t', "\\t");
+        s += key + " = " + value + "\n";
+    }
+    if (!s.isEmpty())
+        s.remove(s.length() - 1, 1);
+    return s;
 }
 
 QByteArray serialize(const QVariant &variant, QDataStream::Version version)

@@ -22,6 +22,8 @@
 #ifndef BDIRTOOLS_H
 #define BDIRTOOLS_H
 
+class BProperties;
+
 class QByteArray;
 class QTextCodec;
 
@@ -74,6 +76,8 @@ B_CORE_EXPORT bool mayBeExecutable(const QByteArray &data, const QString &fileNa
 B_CORE_EXPORT bool mkpath(const QString &dirPath);
 B_CORE_EXPORT bool moveDir(const QString &oldName, const QString &newName);
 B_CORE_EXPORT QByteArray readFile(const QString &fileName, qint64 maxlen = -1, bool *ok = 0);
+B_CORE_EXPORT BProperties readPropertiesFile(const QString &fileName, QTextCodec *codec = 0, bool *ok = 0);
+B_CORE_EXPORT BProperties readPropertiesFile(const QString &fileName, const QString &codecName, bool *ok = 0);
 B_CORE_EXPORT QString readTextFile(const QString &fileName, QTextCodec *codec = 0, bool *ok = 0);
 B_CORE_EXPORT QString readTextFile(const QString &fileName, const QString &codecName, bool *ok = 0);
 B_CORE_EXPORT bool removeEntries(const QString &dirName, const QStringList &nameFilters = QStringList(),
@@ -86,6 +90,8 @@ B_CORE_EXPORT bool renameDir(const QString &oldName, const QString &newName);
 B_CORE_EXPORT bool rmdir(const QString &dirName);
 B_CORE_EXPORT bool touch(const QString &filePath);
 B_CORE_EXPORT bool writeFile(const QString &fileName, const QByteArray &data);
+B_CORE_EXPORT bool writePropertiesFile(const QString &fileName, const BProperties &p, QTextCodec *codec = 0);
+B_CORE_EXPORT bool writePropertiesFile(const QString &fileName, const BProperties &p, const QString &codecName);
 B_CORE_EXPORT bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *codec = 0);
 B_CORE_EXPORT bool writeTextFile(const QString &fileName, const QString &text, const QString &codecName);
 
