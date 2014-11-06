@@ -646,9 +646,12 @@ QString BTerminal::readLineSecure(const QString &text)
     Mode m = mode();
     if (NoMode != m && StandardMode != m)
         return QString();
-    setStdinEchoEnabled(false);
+    bool prevEcho = stdinEchoEnabled();
+    if (prevEcho)
+        setStdinEchoEnabled(false);
     QString line = readLine(text);
-    setStdinEchoEnabled(true);
+    if (prevEcho)
+        setStdinEchoEnabled(true);
     writeLine();
     return line;
 }
@@ -819,6 +822,21 @@ QSize BTerminal::size()
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &csbi);
     return QSize(csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
+#endif
+}
+
+bool BTerminal::stdinEchoEnabled()
+{
+    QMutexLocker locker(&BTerminalPrivate::mutex);
+#if defined(Q_OS_MAC) || defined(Q_OS_LINUX)
+    struct termios tty;
+    tcgetattr(STDIN_FILENO, &tty);
+    return (tty.c_lflag & ECHO);
+#elif defined(Q_OS_WIN)
+    HANDLE hStdin = GetStdHandle(STD_INPUT_HANDLE);
+    DWORD mode;
+    GetConsoleMode(hStdin, &mode);
+    return (mode & ENABLE_ECHO_INPUT);
 #endif
 }
 

@@ -129,6 +129,7 @@ public:
     static void setTitle(const QString &title);
     static void setTranslationsEnabled(bool enabled);
     static QSize size();
+    static bool stdinEchoEnabled();
     static Color textColor();
     static bool translationsEnabled();
     static void write(const QString &text);
