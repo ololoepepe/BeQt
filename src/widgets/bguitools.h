@@ -27,6 +27,7 @@ class BTranslation;
 class QAction;
 class QComboBox;
 class QFont;
+class QMainWindow;
 class QObject;
 class QRect;
 class QSize;
@@ -128,13 +129,16 @@ B_WIDGETS_EXPORT QFrame *createFrame(QFrame::Shape shape, QFrame::Shadow shadow,
 B_WIDGETS_EXPORT QFont createMonospaceFont(int pointSize = 0);
 B_WIDGETS_EXPORT QAction *createSeparator(QObject *parent = 0);
 B_WIDGETS_EXPORT QAction *createStandardAction(StandardAction type, QObject *parent = 0);
+B_WIDGETS_EXPORT bool dockWidgetsAutoTabificationEnabled(QMainWindow *mw);
 B_WIDGETS_EXPORT void removeRow(QVBoxLayout *vlt, QWidget *field);
 B_WIDGETS_EXPORT void removeRow(QVBoxLayout *vlt, QLayout *field);
+B_WIDGETS_EXPORT void setDockWidgetsAutoTabificationEnabled(QMainWindow *mw, bool enabled);
 B_WIDGETS_EXPORT void setItemEnabled(QComboBox *cmbox, int index, bool enabled);
 B_WIDGETS_EXPORT void setRowEnabled(QWidget *field, bool enabled);
 B_WIDGETS_EXPORT void setRowEnabled(QLayout *field, bool enabled);
 B_WIDGETS_EXPORT void setRowVisible(QWidget *field, bool visible);
 B_WIDGETS_EXPORT void setRowVisible(QLayout *field, bool visible);
+B_WIDGETS_EXPORT void tabifyDockWidgets(QMainWindow *mw);
 B_WIDGETS_EXPORT QToolButton *toolButtonForAction(QToolBar *toolBar, QAction *action);
 
 }

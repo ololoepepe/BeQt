@@ -29,15 +29,20 @@ class QObject;
 
 #include <QAction>
 #include <QApplication>
+#include <QChildEvent>
 #include <QColor>
 #include <QComboBox>
 #include <QDebug>
 #include <QDesktopWidget>
+#include <QDockWidget>
+#include <QEvent>
 #include <QFont>
 #include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QLayout>
+#include <QList>
+#include <QMainWindow>
 #include <QPalette>
 #include <QRect>
 #include <QSize>
@@ -49,6 +54,48 @@ class QObject;
 #include <QVariant>
 #include <QVBoxLayout>
 #include <QWidget>
+
+/*============================================================================
+================================ BDockWidgetTabifyHelper =====================
+============================================================================*/
+
+class BDockWidgetTabifyHelper : public QObject
+{
+public:
+    explicit BDockWidgetTabifyHelper(QObject *parent = 0);
+public:
+    bool eventFilter(QObject *o, QEvent *e);
+};
+
+/*============================================================================
+================================ BDockWidgetTabifyHelper =====================
+============================================================================*/
+
+/*============================== Public constructors =======================*/
+
+BDockWidgetTabifyHelper::BDockWidgetTabifyHelper(QObject *parent) :
+    QObject(parent)
+{
+    //
+}
+
+/*============================== Public methods ============================*/
+
+bool BDockWidgetTabifyHelper::eventFilter(QObject *o, QEvent *e)
+{
+    if (e->type() != QEvent::ChildPolished)
+        return false;
+    QChildEvent *ce = static_cast<QChildEvent *>(e);
+    QDockWidget *dwgt = qobject_cast<QDockWidget *>(ce->child());
+    if (!dwgt)
+        return false;
+    BGuiTools::tabifyDockWidgets(qobject_cast<QMainWindow *>(o));
+    return false;
+}
+
+/*============================================================================
+================================ BGuiTools ===================================
+============================================================================*/
 
 namespace BGuiTools
 {
@@ -137,6 +184,13 @@ QAction *createStandardAction(StandardAction type, QObject *parent)
     return BApplicationPrivate::createStandardAction(type, parent);
 }
 
+bool dockWidgetsAutoTabificationEnabled(QMainWindow *mw)
+{
+    if (!mw)
+        return false;
+    return mw->findChild<QObject *>("beqt/dock_widget_tabify_helper");
+}
+
 void removeRow(QVBoxLayout *vlt, QWidget *field)
 {
     if (!vlt || !field)
@@ -155,6 +209,22 @@ void removeRow(QVBoxLayout *vlt, QLayout *field)
     field->deleteLater();
     if (label)
         label->deleteLater();
+}
+
+void setDockWidgetsAutoTabificationEnabled(QMainWindow *mw, bool enabled)
+{
+    if (!mw)
+        return;
+    QObject *o = mw->findChild<QObject *>("beqt/dock_widget_tabify_helper");
+    if ((enabled && o) || (!enabled && !o))
+        return;
+    if (enabled) {
+        BDockWidgetTabifyHelper *helper = new BDockWidgetTabifyHelper(mw);
+        helper->setObjectName("beqt/dock_widget_tabify_helper");
+        mw->installEventFilter(helper);
+    } else {
+        delete o;
+    }
 }
 
 void setItemEnabled(QComboBox *cmbox, int index, bool enabled)
@@ -236,6 +306,31 @@ void setRowVisible(QLayout *field, bool visible)
             if (w)
                 w->setVisible(visible);
         }
+    }
+}
+
+void tabifyDockWidgets(QMainWindow *mw)
+{
+    typedef QMap<int, Qt::DockWidgetArea> DWAMap;
+    init_once(DWAMap, dwaMap, DWAMap()) {
+        dwaMap.insert(1, Qt::LeftDockWidgetArea);
+        dwaMap.insert(2, Qt::RightDockWidgetArea);
+        dwaMap.insert(3, Qt::TopDockWidgetArea);
+        dwaMap.insert(4, Qt::BottomDockWidgetArea);
+    }
+    if (!mw)
+        return;
+    QMap< int, QList<QDockWidget *> > map;
+    foreach (QDockWidget *dwgt, mw->findChildren<QDockWidget *>()) {
+        Qt::DockWidgetArea dwa = mw->dockWidgetArea(dwgt);
+        map[dwaMap.key(dwa)] << dwgt;
+    }
+    foreach (int i, bRangeD(1, 4)) {
+        if (!map.contains(i))
+            continue;
+        const QList<QDockWidget *> &list = map.value(i);
+        foreach (int j, bRangeD(0, list.size() - 2))
+            mw->tabifyDockWidget(list.at(j), list.at(j + 1));
     }
 }
 
