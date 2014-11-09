@@ -1,3 +1,30 @@
+=== BeQt 4.1.0 (09 ноября 2014) ===
+==== BeQtCore ====
+    * Добавлен макрос do_once
+    * После вызова метода BTerminal::readLineSecure режим эха стандартного ввода теперь возвращается в предыдущее состояние
+    * Добавлен метод BTerminal::stdinEchoEnabled
+    * Добавлены методы setDefaultValue и defaultValue в класс BSettingsNode
+    * Добавлены методы setUserGetFunction и userGetUnction в класс BSettingsNode
+    * Добавлены методы BApplicationBase::pluginWrapper и BPluginWrapper::pluginWrapper
+    * Добавлены функции readPropertiesFile и writePropertiesFile в пространство имен BDirTools
+    * Добавлены функции propertiesFromString и propertiesToString в пространство имен BeQt
+
+==== BeQtNetwork ====
+    * Добавлен новый член перечисления BGenericServer::ServerType - SslServer
+    * Улучшена обработка SSL-соединения классом BGenericServer
+    * Добавлено перечисление SslHandlingMode в класс BNetworkServer
+    * Добавлены методы setSslEncriptionWaitTimeout и sslEncriptionWaitTimeout в класс BNetworkServer
+    * Добавлены методы setSslHandlingMode и sslHandlingMode в класс BNetworkServer
+    * SSL-соединения в классе BNetworkServer теперь обрабатываются корректно
+
+==== BeQtWidgets ====
+    * Добавлены функции setDockWidgetsAutoTabificationEnabled и tabifyDockWidgets в пространство имен BGuiTools
+    * Добавлена возможность обрабатывать ссылки в классе BHelpBrowser
+    * Добавлены методы setUserUrlHandlerFunction и userUrlHandlerFunction в класс BHelpBrowser
+
+==== Прочее ====
+    * Экспортированы дружественные операторы
+
 === BeQt 4.0.1 (02 ноября 2014) ===
     * Исправлена функция BDirTools::mayBeExecutable
     * Исправлен выбор локали в классе BLocaleComboBox
@@ -101,7 +128,7 @@
     * Реализовано автодополнение
     * Добавлена возможность показывать пользовательские подсказки
 
-==== Misc ====
+==== Прочее ====
     * Добавлены файлы .pri для сторонних библиотек (Hunspell и Enca)
     * Исправлены преупреждения в Qt4 при добавлении модулей "concurrent" и "widgets"
     * Формат библиотек Mac OS (Frameworks) больше не поддерживается - использубтся библиотеки в UNIX-стиле

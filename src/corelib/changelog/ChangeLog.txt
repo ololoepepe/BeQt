@@ -1,3 +1,30 @@
+=== BeQt 4.1.0 (09 November 2014) ===
+==== BeQtCore ====
+    * Add do_once macro
+    * Revert to previously used stdin echo mode after calling BTerminal::readLineSecure method
+    * Add BTerminal::stdinEchoEnabled method
+    * Add BSettingsNode setDefaultValue and defaultValue methods
+    * Add BSettingsNode setUserGetFunction and userGetUnction methods
+    * Add BApplicationBase::pluginWrapper and BPluginWrapper::pluginWrapper methods
+    * Add readPropertiesFile and writePropertiesFile functions to BDirTools
+    * Add propertiesFromString and propertiesToString functions to BeQt
+
+==== BeQtNetwork ====
+    * Add SslServer member to BGenericServer::ServerType enum
+    * Improve BGenericServer SSL connection handling
+    * Add SslHandlingMode enum to BNetworkServer
+    * Add setSslEncriptionWaitTimeout and sslEncriptionWaitTimeout methods to BNetworkServer
+    * Add setSslHandlingMode and sslHandlingMode methods to BNetworkServer
+    * Handle SSL connections properly in BNetworkServer
+
+==== BeQtWidgets ====
+    * Add setDockWidgetsAutoTabificationEnabled and tabifyDockWidgets functions to BGuiTools
+    * Add ability to handle BHelpBrowser links
+    * Add setUserUrlHandlerFunction and userUrlHandlerFunction methods to BHelpBrowser
+
+==== Misc ====
+    * Export friend operators
+
 === BeQt 4.0.1 (02 November 2014) ===
     * Fix BDirTools::mayBeExecutable function
     * Fix BLocaleComboBox locale selection

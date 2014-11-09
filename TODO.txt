@@ -17,24 +17,6 @@
 
 * Add PDCurses binding
 * Implement Katepart-compatible file type definition using XML files
-[done] Add BSettingsNode setDefaultValue and defaultValue methods
-[done] Add BSettingsNode setUserGetFunction and userGetUnction methods
-[done] Export friend operators
-[done] Track stdin echo mode
-[done] Add BTerminal::stdinEchoEnabled method
-[done] Add BApplicationBase::pluginWrapper and BPluginWrapper::pluginWrapper methods
-[done] Add setDockWidgetsAutoTabificationEnabled and tabifyDockWidgets functions to BGuiTools
-[done] Add SslServer enum to BGenericServer
-[done] Improve BGenericServer SSL connection handling
-[done] Add SslHandlingMode enum to BNetworkServer
-[done] Add setSslEncriptionWaitTimeout and sslEncriptionWaitTimeout methods to BNetworkServer
-[done] Add setSslHandlingMode ande sslHandlingMode methods to BNetworkServer
-[done] Handle SSL connections properly in BNetworkServer
-[done] Add ability to handle BHelpBrowser links
-[done] Add setUserUrlHandlerFunction and userUrlHandlerFunction methods to BHelpBrowser
-[done] Add do_once macro
-[done] Add readPropertiesFile and writePropertiesFile functions to BDirTools
-[done] Add propertiesFromString and propertiesToString functions to BeQt
 
 === MAJOR ===
 
