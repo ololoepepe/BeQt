@@ -44,7 +44,9 @@ class BSettingsNodePrivate : public BBasePrivate
     B_DECLARE_PUBLIC(BSettingsNode)
 public:
     QList<BSettingsNode *> childNodes;
+    QVariant defaultValue;
     BTranslation description;
+    BSettingsNode::GetFunction getFunction;
     QString key;
     BSettingsNode *parentNode;
     bool secure;
@@ -85,7 +87,9 @@ void BSettingsNodePrivate::init()
 {
     parentNode = 0;
     type = QVariant::String;
+    defaultValue = QVariant(type);
     secure = false;
+    getFunction = 0;
     setFunction = 0;
     showFunction = 0;
 }
@@ -202,6 +206,11 @@ BSettingsNode *BSettingsNode::clone(BSettingsNode *parent) const
     return root;
 }
 
+QVariant BSettingsNode::defaultValue() const
+{
+    return d_func()->defaultValue;
+}
+
 BTranslation BSettingsNode::description() const
 {
     return d_func()->description;
@@ -309,6 +318,15 @@ bool BSettingsNode::set(QString path, QVariant value, QChar separator) const
     return true;
 }
 
+void BSettingsNode::setDefaultValue(const QVariant &value)
+{
+    if (value.type() != d_func()->type) {
+        d_func()->defaultValue = QVariant(d_func()->type);
+        return;
+    }
+    d_func()->defaultValue = value;
+}
+
 void BSettingsNode::setDescription(const BTranslation &t)
 {
     d_func()->description = t;
@@ -338,6 +356,12 @@ void BSettingsNode::setSecureInput(bool b)
 void BSettingsNode::setType(QVariant::Type type)
 {
     d_func()->type = type;
+    d_func()->defaultValue = QVariant(type);
+}
+
+void BSettingsNode::setUserGetFunction(GetFunction f)
+{
+    d_func()->getFunction = f;
 }
 
 void BSettingsNode::setUserSetFunction(SetFunction f)
@@ -363,7 +387,7 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     if (separator.isNull())
         separator = '.';
     path.replace(separator, '/');
-    QVariant v = bSettings->value(path, QVariant(n->type()));
+    QVariant v = n->userGetFunction() ? n->userGetFunction()(n) : bSettings->value(path, n->defaultValue());
     if (n->userShowFunction())
         return n->userShowFunction()(n, v);
     bool ok = false;
@@ -389,6 +413,11 @@ void BSettingsNode::showTree(int indentStep, int initialIndent) const
 QVariant::Type BSettingsNode::type() const
 {
     return d_func()->type;
+}
+
+BSettingsNode::GetFunction BSettingsNode::userGetFunction() const
+{
+    return d_func()->getFunction;
 }
 
 BSettingsNode::SetFunction BSettingsNode::userSetFunction() const

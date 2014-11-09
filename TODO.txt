@@ -5,6 +5,8 @@
 * Implement native settings dialogs
 * Add function for unzipping Hunspell dictionaries
 * Implement code folding in code editor
+* Add a widget for installing plugins
+* Add method for setting terminal window size to BTerminal
 
 === PATCH ===
 
@@ -15,14 +17,8 @@
 
 * Add PDCurses binding
 * Implement Katepart-compatible file type definition using XML files
-* Add method for setting terminal window size to BTerminal
-* Add BSettingsNode setDefaultValue and defaultValue methods
-* Add BSettingsNode setUserGetFunction and userGetUnction methods
-* Export friend operators
-* Add function for scaling images
-* Track stdin echo mode
-* Add BGuiTools::tabifyDockWidgets function
 
 === MAJOR ===
 
 * Fix BNetworkOperationMetaData::operation signature
+* Remove BPersonInfoList friend QDataStream operators

@@ -176,9 +176,9 @@
 <context>
     <name>BApplicationBase</name>
     <message>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="599"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="607"/>
-        <location filename="../src/corelib/bapplicationbase.cpp" line="778"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="593"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="601"/>
+        <location filename="../src/corelib/bapplicationbase.cpp" line="772"/>
         <source>Copyright</source>
         <translation>Авторские права</translation>
     </message>
@@ -647,55 +647,55 @@
 <context>
     <name>BHelpBrowserPrivate</name>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="123"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="138"/>
         <source>Back</source>
         <comment>tbtn toolTip</comment>
         <translation>Назад</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="124"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="139"/>
         <source>Forward</source>
         <comment>tbtn toolTip</comment>
         <translation>Вперёд</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="125"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="140"/>
         <source>Home</source>
         <comment>tbtn toolTip</comment>
         <translation>Домой</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="126"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="141"/>
         <source>Search:</source>
         <comment>lbl text</comment>
         <translation>Поиск:</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="127"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="142"/>
         <source>Find</source>
         <comment>btn text</comment>
         <translation>Найти</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="179"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="194"/>
         <source>Help</source>
         <comment>windowTitle</comment>
         <translation>Справка</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="159"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="174"/>
         <source>Search results</source>
         <comment>tbrsr text</comment>
         <translation>Результаты поиска</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="171"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="186"/>
         <source>Sorry, nothing found.</source>
         <comment>tbrsr text</comment>
         <translation>Извините, ничего не найдено.</translation>
     </message>
     <message>
-        <location filename="../src/widgets/bhelpbrowser.cpp" line="173"/>
+        <location filename="../src/widgets/bhelpbrowser.cpp" line="188"/>
         <source>Back</source>
         <comment>tbrsr text</comment>
         <translation>Назад</translation>
@@ -1397,17 +1397,17 @@
 <context>
     <name>BSettingsNode</name>
     <message>
-        <location filename="../src/corelib/bsettingsnode.cpp" line="267"/>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="276"/>
         <source>Enter value for</source>
         <translation>Введите значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bsettingsnode.cpp" line="355"/>
+        <location filename="../src/corelib/bsettingsnode.cpp" line="379"/>
         <source>The value for</source>
         <translation>Значение для</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="492"/>
+        <location filename="../src/corelib/bterminal.cpp" line="490"/>
         <source>Locale for the whole application. Format: ??_**, where ?? stands for mandatory language name, and ** stands for optional country name. Examples: en, en_GB, ru, ru_RU</source>
         <translation>Локаль для всего приложения. Формат: ??_**, где ?? означает обязательное название языка, а ** означает необязательное название страны. Примеры: en, en_GB, ru, ru_RU</translation>
     </message>
@@ -1506,32 +1506,32 @@
         <translation>Введите локаль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="396"/>
+        <location filename="../src/corelib/bterminal.cpp" line="394"/>
         <source>Quit the application</source>
         <translation>Выйти из приложения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="401"/>
+        <location filename="../src/corelib/bterminal.cpp" line="399"/>
         <source>Show list of all available settings</source>
         <translation>Показать список всех доступных настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="404"/>
+        <location filename="../src/corelib/bterminal.cpp" line="402"/>
         <source>Show the value for &lt;key&gt; or it&apos;s description</source>
         <translation>Показать значение для ключа &lt;key&gt; или его описание</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="407"/>
+        <location filename="../src/corelib/bterminal.cpp" line="405"/>
         <source>Set the value for &lt;key&gt; to [value] (if specified) or request value input</source>
         <translation>Задать значение [value] для ключа &lt;key&gt; (если оно указано) или запросить ввод этого значения</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="413"/>
+        <location filename="../src/corelib/bterminal.cpp" line="411"/>
         <source>Show description of &lt;command&gt;</source>
         <translation>Показать описание команды &lt;command&gt;</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="416"/>
+        <location filename="../src/corelib/bterminal.cpp" line="414"/>
         <source>Show basic help, or:
   --commands - list of all available commands
   --settings - list of all available settings
@@ -1542,104 +1542,104 @@
   --all - всё вышеперечисленное (включая основную справку)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="422"/>
+        <location filename="../src/corelib/bterminal.cpp" line="420"/>
         <source>Show information about this application</source>
         <translation>Показать информацию об это приложении</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="425"/>
+        <location filename="../src/corelib/bterminal.cpp" line="423"/>
         <source>Show information about BeQt libraries</source>
         <translation>Показать информацию о библиотеках BeQt</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="430"/>
+        <location filename="../src/corelib/bterminal.cpp" line="428"/>
         <source>Reenter last n-th command (the very last by default)</source>
         <translation>Ввести заново последнюю n-ную команду (самую последнюю по умолчанию)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="433"/>
+        <location filename="../src/corelib/bterminal.cpp" line="431"/>
         <source>Show n last commands (10 by default)</source>
         <translation>Показать n последних команд (10 по умолчанию)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="964"/>
-        <location filename="../src/corelib/bterminal.cpp" line="969"/>
-        <location filename="../src/corelib/bterminal.cpp" line="992"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1004"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1019"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1047"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1069"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1083"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1110"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1121"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1130"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1171"/>
+        <location filename="../src/corelib/bterminal.cpp" line="980"/>
+        <location filename="../src/corelib/bterminal.cpp" line="985"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1008"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1020"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1035"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1063"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1085"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1099"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1126"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1137"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1146"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1187"/>
         <source>Invalid parameters</source>
         <translation>Некорректные параметры</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="951"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1114"/>
+        <location filename="../src/corelib/bterminal.cpp" line="967"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1130"/>
         <source>Settings structure not set</source>
         <translation>Не задана структура настроек</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1125"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1141"/>
         <source>Failed to show value</source>
         <translation>Не удалось показать значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1135"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1147"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1151"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1163"/>
         <source>No such option</source>
         <translation>Нет такой опции</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1140"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1156"/>
         <source>No description</source>
         <translation>Описание отсутствует</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1154"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1170"/>
         <source>Invalid value</source>
         <translation>Недейтсивтельное значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1158"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1165"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1174"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1181"/>
         <source>Failed to set value</source>
         <translation>Не удалось установить значение</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1161"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1168"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1177"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1184"/>
         <source>OK</source>
         <translation>ОК</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="917"/>
-        <location filename="../src/corelib/bterminal.cpp" line="924"/>
-        <location filename="../src/corelib/bterminal.cpp" line="941"/>
-        <location filename="../src/corelib/bterminal.cpp" line="998"/>
+        <location filename="../src/corelib/bterminal.cpp" line="933"/>
+        <location filename="../src/corelib/bterminal.cpp" line="940"/>
+        <location filename="../src/corelib/bterminal.cpp" line="957"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1014"/>
         <source>Nothing to display</source>
         <translation>Нечего отобразить</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="933"/>
-        <location filename="../src/corelib/bterminal.cpp" line="944"/>
+        <location filename="../src/corelib/bterminal.cpp" line="949"/>
+        <location filename="../src/corelib/bterminal.cpp" line="960"/>
         <source>The following commands are available:</source>
         <translation>Доступны следующие команды:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1024"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1035"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1040"/>
         <location filename="../src/corelib/bterminal.cpp" line="1051"/>
-        <location filename="../src/corelib/bterminal.cpp" line="1073"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1067"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1089"/>
         <source>History is empty</source>
         <translation>История пуста</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="1055"/>
+        <location filename="../src/corelib/bterminal.cpp" line="1071"/>
         <source>Invalid index</source>
         <translation>Некорректный индекс</translation>
     </message>
@@ -1647,7 +1647,7 @@
 <context>
     <name>BTerminalPrivate</name>
     <message>
-        <location filename="../src/corelib/bterminal.cpp" line="293"/>
+        <location filename="../src/corelib/bterminal.cpp" line="291"/>
         <source>Unknown command</source>
         <comment>message</comment>
         <translation>Неизвестная команда</translation>
@@ -1683,179 +1683,179 @@
 <context>
     <name>BeQt</name>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="177"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="179"/>
         <source>Unicode</source>
         <comment>codec descriptiveName</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="181"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="183"/>
         <source>Baltic</source>
         <comment>codec descriptiveName</comment>
         <translation>Балтийская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="184"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="186"/>
         <source>Cyrillic</source>
         <comment>codec descriptiveName</comment>
         <translation>Кириллица</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="186"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="188"/>
         <source>Cyrillic (Ukrainian)</source>
         <comment>codec descriptiveName</comment>
         <translation>Кириллица (украинская)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="188"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="190"/>
         <source>Romanic</source>
         <comment>codec descriptiveName</comment>
         <translation>Романская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="190"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="192"/>
         <source>Central European</source>
         <comment>codec descriptiveName</comment>
         <translation>Центральноевропейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="193"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="195"/>
         <source>Greek</source>
         <comment>codec descriptiveName</comment>
         <translation>Греческая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="196"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="198"/>
         <source>Western</source>
         <comment>codec descriptiveName</comment>
         <translation>Западная</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="198"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="200"/>
         <source>Celtic</source>
         <comment>codec descriptiveName</comment>
         <translation>Кельтская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="200"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="202"/>
         <source>Nordic</source>
         <comment>codec descriptiveName</comment>
         <translation>Северная</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="202"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="204"/>
         <source>South European</source>
         <comment>codec descriptiveName</comment>
         <translation>Восточноевропейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="205"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="207"/>
         <source>Vietnamese</source>
         <comment>codec descriptiveName</comment>
         <translation>Вьетнамская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="207"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="209"/>
         <source>Traditional Chinese</source>
         <comment>codec descriptiveName</comment>
         <translation>Китайская традиционная</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="209"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="211"/>
         <source>Simplified Chinese</source>
         <comment>codec descriptiveName</comment>
         <translation>Китайская упрощённая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="211"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="213"/>
         <source>Korean</source>
         <comment>codec descriptiveName</comment>
         <translation>Корейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="213"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="215"/>
         <source>Japanese</source>
         <comment>codec descriptiveName</comment>
         <translation>Японская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="216"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="218"/>
         <source>Thai</source>
         <comment>codec descriptiveName</comment>
         <translation>Тайская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="218"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="220"/>
         <source>Turkish</source>
         <comment>codec descriptiveName</comment>
         <translation>Турецкая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="221"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="223"/>
         <source>Arabic</source>
         <comment>codec descriptiveName</comment>
         <translation>Арабская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="223"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="225"/>
         <source>Hebrew</source>
         <comment>codec descriptiveName</comment>
         <translation>Еврейская</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="225"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="227"/>
         <source>Hebrew (visual)</source>
         <comment>codec descriptiveName</comment>
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="354"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="356"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="356"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="358"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="358"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="360"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="360"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="362"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="362"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="364"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="364"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="366"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="439"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="441"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="442"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="444"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="446"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="448"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>

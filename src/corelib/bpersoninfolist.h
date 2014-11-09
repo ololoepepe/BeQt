@@ -41,8 +41,8 @@ class B_CORE_EXPORT BPersonInfoList : public QList<BPersonInfo>
 public:
     operator QVariant() const;
 public:
-    friend QDataStream &operator <<(QDataStream &stream, const BPersonInfoList &list);
-    friend QDataStream &operator >>(QDataStream &stream, BPersonInfoList &list);
+    B_CORE_EXPORT friend QDataStream &operator <<(QDataStream &stream, const BPersonInfoList &list);
+    B_CORE_EXPORT friend QDataStream &operator >>(QDataStream &stream, BPersonInfoList &list);
 };
 
 Q_DECLARE_METATYPE(BPersonInfoList)

@@ -63,6 +63,7 @@ public:
     static QStringList acceptableTypes();
     static InterfaceTestFunction interfaceTestFunction();
     static BPluginWrapper *parentWrapper(const BPluginInterface *i);
+    static BPluginWrapper *pluginWrapper(const QString &pluginId);
     static bool removeSettings(const QString &pluginName);
     static void setAcceptableTypes(const QStringList &list);
     static void setInterfaceTestFunction(InterfaceTestFunction function);

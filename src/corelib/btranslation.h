@@ -72,9 +72,9 @@ public:
     operator QString() const;
     operator QVariant() const;
 public:
-    friend QDataStream &operator <<(QDataStream &stream, const BTranslation &t);
-    friend QDataStream &operator >>(QDataStream &stream, BTranslation &t);
-    friend QDebug operator <<(QDebug dbg, const BTranslation &t);
+    B_CORE_EXPORT friend QDataStream &operator <<(QDataStream &stream, const BTranslation &t);
+    B_CORE_EXPORT friend QDataStream &operator >>(QDataStream &stream, BTranslation &t);
+    B_CORE_EXPORT friend QDebug operator <<(QDebug dbg, const BTranslation &t);
 };
 
 typedef BTranslation BTr;

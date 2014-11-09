@@ -30,6 +30,7 @@ class QPushButton;
 class QTextBrowser;
 class QTextCodec;
 class QToolButton;
+class QUrl;
 
 #include "bhelpbrowser.h"
 
@@ -51,6 +52,7 @@ class B_WIDGETS_EXPORT BHelpBrowserPrivate : public BBaseObjectPrivate
     B_DECLARE_PUBLIC(BHelpBrowser)
 public:
     static QMap< QString, QPair<QStringList, QStringList> > searchCache;
+    static BHelpBrowser::UrlHandlerFunction urlHandlerFunction;
 public:
     QPushButton *btnFind;
     QTextCodec *codec;
@@ -66,6 +68,7 @@ public:
 public:
     void init();
 public Q_SLOTS:
+    void anchorClicked(const QUrl &url);
     void retranslateUi();
     void search();
     void updateCaption();

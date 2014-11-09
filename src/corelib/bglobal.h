@@ -121,6 +121,10 @@ static Class *qs_func() \
 
 #define B_QS(Class) Class *const qs = qs_func()
 
+#define do_once(identifier) \
+static bool _b_##identifier##Do = false; \
+if (!_b_##identifier##Do && (_b_##identifier##Do = true))
+
 #define init_once(type, name, value) \
 static type name = value; \
 static bool _b_##name##Init = false; \

@@ -166,6 +166,7 @@ public:
     static QStringList locations(const QString &subdir);
     static void log(const QString &text, BLogger::Level lvl = BLogger::NoLevel);
     static BLogger *logger();
+    static BPluginWrapper *pluginWrapper(const QString &pluginId);
     static QList<BPluginWrapper *> pluginWrappers(const QString &type = QString());
     static void removeBeqtTranslator(BTranslator *translator);
     static void removeBeqtTranslator(const QString &id);

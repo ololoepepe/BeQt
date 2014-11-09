@@ -79,9 +79,9 @@ public:
     bool operator !=(const BPassword &other) const;
     operator QVariant() const;
 public:
-    friend QDataStream &operator <<(QDataStream &stream, const BPassword &pwd);
-    friend QDataStream &operator >>(QDataStream &stream, BPassword &pwd);
-    friend QDebug operator <<(QDebug dbg, const BPassword &pwd);
+    B_CORE_EXPORT friend QDataStream &operator <<(QDataStream &stream, const BPassword &pwd);
+    B_CORE_EXPORT friend QDataStream &operator >>(QDataStream &stream, BPassword &pwd);
+    B_CORE_EXPORT friend QDebug operator <<(QDebug dbg, const BPassword &pwd);
 };
 
 Q_DECLARE_METATYPE(BPassword)

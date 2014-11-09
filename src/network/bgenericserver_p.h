@@ -77,6 +77,7 @@ class B_NETWORK_EXPORT BGenericServerPrivate : public BBaseObjectPrivate
 public:
     QPointer<QLocalServer> lserver;
     int maxPending;
+    BGenericServer::ServerType type;
     QQueue<BGenericSocket *> socketQueue;
     QPointer<QTcpServer> tserver;
 public:

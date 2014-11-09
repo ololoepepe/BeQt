@@ -90,7 +90,7 @@ SOURCES += \
     btextmatchlist.cpp \
     buuid.cpp
 
-include(../3rdparty/3rdparty.pri)
+include(../3rdparty/3rdparty-corelib.pri)
 
 contains(BEQT_CONFIG, builtin_resources) {
     DEFINES += BEQT_BUILTIN_RESOURCES

@@ -37,6 +37,7 @@
 #include <QMutex>
 #include <QMutexLocker>
 #include <QObject>
+#include <QSslSocket>
 #include <QString>
 #include <QStringList>
 #include <QTcpServer>
@@ -66,7 +67,7 @@ void BNetworkServerWorker::addConnection(int socketDescriptor, const QString &se
     BGenericSocket *s = ServerPrivate->createSocket();
     if (!s)
         return;
-    if (!s->setSocketDescriptor(socketDescriptor) || !s->isValid()) {
+    if (!s->setSocketDescriptor(socketDescriptor) || !s->isValid() || !(s->socketType() & ServerPrivate->Type)) {
         delete s;
         return;
     }
@@ -77,6 +78,20 @@ void BNetworkServerWorker::addConnection(int socketDescriptor, const QString &se
     if (ServerPrivate->isBanned(addr) && ServerPrivate->handleBanned(s)) {
         ServerPrivate->emitBannedUserConnectionDenied(addr);
         return;
+    }
+    if (BGenericServer::SslServer == ServerPrivate->Type) {
+        switch (ServerPrivate->sslHandlingMode) {
+        case BNetworkServer::EncriptBlocking:
+            s->sslSocket()->startServerEncryption();
+            s->sslSocket()->waitForEncrypted(ServerPrivate->sslEncriptionWaitTimeout);
+            break;
+        case BNetworkServer::EncriptNonBlocking:
+            s->sslSocket()->startServerEncryption();
+            break;
+        case BNetworkServer::DoNotEncript:
+        default:
+            break;
+        }
     }
     BNetworkConnection *c = ServerPrivate->createConnection(s, serverAddress, serverPort);
     if (!c)
@@ -258,6 +273,8 @@ void BNetworkServerPrivate::init()
     maxConnectionCount = 0;
     maxThreadCount = 0;
     maxPendingConnections = 0;
+    sslEncriptionWaitTimeout = 30 * BeQt::Second;
+    sslHandlingMode = BNetworkServer::EncriptBlocking;
 }
 
 bool BNetworkServerPrivate::isBanned(const QString &address) const
@@ -440,6 +457,30 @@ void BNetworkServer::setMaxConnectionCount(int count)
 void BNetworkServer::setMaxThreadCount(int count)
 {
     d_func()->maxThreadCount = count > 0 ? count : 0;
+}
+
+void BNetworkServer::setSslEncriptionWaitTimeout(int msecs)
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    d_func()->sslEncriptionWaitTimeout = (msecs < 0) ? -1 : msecs;
+}
+
+void BNetworkServer::setSslHandlingMode(SslHandlingMode mode)
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    d_func()->sslHandlingMode = enum_cast<SslHandlingMode>(mode, DoNotEncript, EncriptNonBlocking);
+}
+
+int BNetworkServer::sslEncriptionWaitTimeout() const
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    return d_func()->sslEncriptionWaitTimeout;
+}
+
+BNetworkServer::SslHandlingMode BNetworkServer::sslHandlingMode() const
+{
+    QMutexLocker locker(d_func()->connectionMutex);
+    return d_func()->sslHandlingMode;
 }
 
 bool BNetworkServer::tryLock()
