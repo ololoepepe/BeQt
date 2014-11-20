@@ -1274,61 +1274,73 @@
 <context>
     <name>BSearchEditorModulePrivate</name>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="530"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="533"/>
         <source>Text</source>
         <comment>msg text</comment>
         <translation>Текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="530"/>
-        <source>not found</source>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="533"/>
+        <source>Expression</source>
         <comment>msg text</comment>
+        <translation>Выражение</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="534"/>
+        <source>not found</source>
+        <comment>msg text (regexp)</comment>
+        <translation>не найдено</translation>
+    </message>
+    <message>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="534"/>
+        <source>not found</source>
+        <comment>msg text (text)</comment>
         <translation>не найден</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="568"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="573"/>
         <source>Find and replace...</source>
         <comment>act text</comment>
         <translation>Найти и заменить...</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="569"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="574"/>
         <source>Find and replace text</source>
         <comment>act toolTip</comment>
         <translation>Найти и заменить текст</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="570"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="575"/>
         <source>Use this action to open a find and replace dialog</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы открыть диалог поиска и замены</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="573"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="578"/>
         <source>Find next</source>
         <comment>act text</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="574"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="579"/>
         <source>Find next</source>
         <comment>act toolTip</comment>
         <translation>Найти далее</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="575"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="580"/>
         <source>Use this action to find next occurrence of the text</source>
         <comment>act whatsThis</comment>
         <translation>Используйте это действие чтобы найти следующее вхождение текста</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="597"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="602"/>
         <source>Found and replaced</source>
         <comment>msg text</comment>
         <translation>Найдено и заменено</translation>
     </message>
     <message>
-        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="598"/>
+        <location filename="../src/codeeditor/bsearcheditormodule.cpp" line="603"/>
         <source>entries</source>
         <comment>msg text</comment>
         <translation>вхождений</translation>
