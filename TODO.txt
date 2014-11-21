@@ -18,7 +18,7 @@
 [done] Fix Hunspell warnings
 [done] Fix declaration order in bglobal.h
 [done] Fix examples
-* Fix README (Using section)
+[done] Fix README (Using section)
 
 === MINOR ===
 

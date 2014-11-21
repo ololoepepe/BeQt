@@ -216,15 +216,13 @@ path to Enca again when linking BeQt:
 Common .pro file example:
 
  "...
- CONFIG+=ordered
  TEMPLATE=subdirs
  SUBDIRS=beqt yourproject
+ yourproject.depends = beqt
  ..."
 
-Important: Note, that the BeQt submodule must be included before any other
-submodule that uses it, and the "ordered" parameter must be passed to
-the "CONFIG" variable. It's done to guarantee that BeQt is built
-before any other submodule uses it.
+Important: Note, that the yourproject submodule depends on the beqt submodule,
+so BeQt is guaranteed to be built before yourproject submodule uses it.
 
 Note: Due to qmake features you may have to execute "qmake" and "make"
 commands again after building the project (it's required for proper library
