@@ -17,6 +17,8 @@
 * Split resources into smaller parts
 [done] Fix Hunspell warnings
 [done] Fix declaration order in bglobal.h
+[done] Fix examples
+* Fix README (Using section)
 
 === MINOR ===
 
@@ -31,3 +33,4 @@
 
 * Fix BNetworkOperationMetaData::operation signature
 * Remove BPersonInfoList friend QDataStream operators
+* Add build information parameter to BVersion constructor
