@@ -88,7 +88,11 @@ SOURCES += \
     bguitools.cpp
 
 contains(BEQT_CONFIG, builtin_resources) {
-    RESOURCES += beqtwidgets.qrc
+    RESOURCES += beqtwidgets_1.qrc
+    RESOURCES += beqtwidgets_2.qrc
+    RESOURCES += beqtwidgets_3.qrc
+    RESOURCES += beqtwidgets_4.qrc
+    RESOURCES += beqtwidgets_5.qrc
     DEFINES += BEQT_BUILTIN_RESOURCES
 }
 

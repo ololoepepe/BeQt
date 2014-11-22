@@ -1,0 +1,18 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>icons/filesave.png</file>
+        <file>icons/filesave.svgz</file>
+        <file>icons/filesaveas.png</file>
+        <file>icons/filesaveas.svgz</file>
+        <file>icons/find.png</file>
+        <file>icons/find.svgz</file>
+        <file>icons/forward.png</file>
+        <file>icons/forward.svgz</file>
+        <file>icons/gohome.png</file>
+        <file>icons/gohome.svgz</file>
+        <file>icons/help_about.png</file>
+        <file>icons/help_about.svgz</file>
+        <file>icons/help_contents.png</file>
+        <file>icons/help_contents.svgz</file>
+    </qresource>
+</RCC>

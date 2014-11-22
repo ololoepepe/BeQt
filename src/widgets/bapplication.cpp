@@ -77,7 +77,11 @@ BApplicationPrivate::~BApplicationPrivate()
         delete aboutDlg;
     }
 #if defined(BEQT_BUILTIN_RESOURCES)
-    Q_CLEANUP_RESOURCE(beqtwidgets);
+    Q_CLEANUP_RESOURCE(beqtwidgets_1);
+    Q_CLEANUP_RESOURCE(beqtwidgets_2);
+    Q_CLEANUP_RESOURCE(beqtwidgets_3);
+    Q_CLEANUP_RESOURCE(beqtwidgets_4);
+    Q_CLEANUP_RESOURCE(beqtwidgets_5);
 #endif
 }
 
@@ -277,7 +281,11 @@ QStringList BApplicationPrivate::helpSearchPaths() const
 void BApplicationPrivate::init()
 {
 #if defined(BEQT_BUILTIN_RESOURCES)
-    Q_INIT_RESOURCE(beqtwidgets);
+    Q_INIT_RESOURCE(beqtwidgets_1);
+    Q_INIT_RESOURCE(beqtwidgets_2);
+    Q_INIT_RESOURCE(beqtwidgets_3);
+    Q_INIT_RESOURCE(beqtwidgets_4);
+    Q_INIT_RESOURCE(beqtwidgets_5);
 #endif
     iconCaching = false;
     navigation = BSettingsDialog::ListNavigation;

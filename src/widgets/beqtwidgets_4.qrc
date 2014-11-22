@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>icons/history.png</file>
+        <file>icons/history.svgz</file>
+        <file>icons/messagebox_warning.png</file>
+        <file>icons/messagebox_warning.svgz</file>
+        <file>icons/ok.png</file>
+        <file>icons/ok.svgz</file>
+        <file>icons/redo.png</file>
+        <file>icons/redo.svgz</file>
+        <file>icons/reload.png</file>
+        <file>icons/reload.svgz</file>
+        <file>icons/save_all.png</file>
+        <file>icons/save_all.svgz</file>
+        <file>icons/stop.png</file>
+        <file>icons/stop.svgz</file>
+        <file>icons/undo.png</file>
+        <file>icons/undo.svgz</file>
+        <file>pixmaps/author_photo.png</file>
+        <file>pixmaps/beqt_logo.png</file>
+        <file>pixmaps/no_image.png</file>
+        <file>pixmaps/qt_logo.png</file>
+        <file>pixmaps/oxygen_logo.png</file>
+        <file>pixmaps/sadpanda.jpg</file>
+    </qresource>
+</RCC>

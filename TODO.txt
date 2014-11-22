@@ -14,7 +14,7 @@
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 [done] Fix searching after replacing when using regular expression mode in code editor
 [done] Fix "text not found" message in regular expression mode in code editor
-* Split resources into smaller parts
+[done] Split resources into smaller parts
 [done] Fix Hunspell warnings
 [done] Fix declaration order in bglobal.h
 [done] Fix examples

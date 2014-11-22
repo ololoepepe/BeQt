@@ -1,0 +1,10 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>pixmaps/author_photo.png</file>
+        <file>pixmaps/beqt_logo.png</file>
+        <file>pixmaps/no_image.png</file>
+        <file>pixmaps/qt_logo.png</file>
+        <file>pixmaps/oxygen_logo.png</file>
+        <file>pixmaps/sadpanda.jpg</file>
+    </qresource>
+</RCC>
