@@ -97,8 +97,8 @@ public:
 #endif
 #if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     operator QString() const;
-    operator QVariant() const;
 #endif
+    operator QVariant() const;
     bool operator!= (const BUuid &other) const;
     BUuid &operator= (const BUuid &other);
     bool operator< (const BUuid &other) const;

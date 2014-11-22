@@ -19,6 +19,7 @@
 [done] Fix declaration order in bglobal.h
 [done] Fix examples
 [done] Fix README (Using section)
+[done] Declare BUuid::operator QVariant for Qt5
 
 === MINOR ===
 
@@ -34,3 +35,4 @@
 * Fix BNetworkOperationMetaData::operation signature
 * Remove BPersonInfoList friend QDataStream operators
 * Add build information parameter to BVersion constructor
+* Implement proper icons system
