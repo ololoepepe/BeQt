@@ -1,3 +1,13 @@
+=== BeQt 4.1.1 (22 November 2014) ===
+    * Fix searching after replacing when using regular expression mode in code editor
+    * Fix "text not found" message in regular expression mode in code editor
+    * Split resources into smaller parts
+    * Fix Hunspell library compiler warnings
+    * Fix declaration order in bglobal.h
+    * Fix examples
+    * Fix README (Using section)
+    * Declare BUuid::operator QVariant for Qt5
+
 === BeQt 4.1.0 (09 November 2014) ===
 ==== BeQtCore ====
     * Add do_once macro

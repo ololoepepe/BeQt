@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/beqt">
+        <file>icons/help_contextual.png</file>
+        <file>icons/help_contextual.svgz</file>
+        <file>icons/help_hint.png</file>
+        <file>icons/help_hint.svgz</file>
+    </qresource>
+</RCC>

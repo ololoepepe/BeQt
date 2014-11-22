@@ -115,5 +115,5 @@ bool bTest(bool condition, const char *where, const char *what)
 
 const char *bVersion()
 {
-    return "4.1.0";
+    return "4.1.1";
 }

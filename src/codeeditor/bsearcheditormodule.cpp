@@ -502,7 +502,10 @@ void BSearchDialog::replaceNext()
     if (b)
         d->appendHistory(d->cmboxReplace);
     Q_EMIT textReplaced(b, text, ntext);
-    d->document->findNext(d->cmboxSearch->lineEdit()->text(), d->createFindFlags(), cyclicSearch());
+    if (d->cboxRegexp->isChecked())
+        d->document->findNextRegexp(QRegExp(text, caseSensitivity()), d->createFindFlags(), cyclicSearch());
+    else
+        d->document->findNext(text, d->createFindFlags(), cyclicSearch());
 }
 
 /*============================================================================
@@ -527,7 +530,9 @@ BSearchEditorModulePrivate::~BSearchEditorModulePrivate()
 QString BSearchEditorModulePrivate::createNotFoundMessage(const QString &text)
 {
     QString t = (text.length() > 50) ? (text.left(47) + "...") : text;
-    return tr("Text", "msg text") + " \"" + t + "\" " + tr("not found", "msg text");
+    QString m1 = sdlg->regexp() ? tr("Expression", "msg text") : tr("Text", "msg text");
+    QString m2 = sdlg->regexp() ? tr("not found", "msg text (regexp)") : tr("not found", "msg text (text)");
+    return m1 + " \"" + t + "\" " + m2;
 }
 
 void BSearchEditorModulePrivate::init()

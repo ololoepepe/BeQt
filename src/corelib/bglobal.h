@@ -491,6 +491,14 @@ template<typename T> QList<T> bWithoutDuplicates(const QList<T> &list, bool (*ar
     return nlist;
 }
 
+B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
+B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT QList<int> bRangeM(int lb, int ub, unsigned multiplier = 10);
+B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
+B_CORE_EXPORT void bRegister();
+B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
+B_CORE_EXPORT const char *bVersion();
+
 template <typename T> T enum_cast(int i, const QList<T> &enumMembers, T defaultEnumMember)
 {
     T t = static_cast<T>(i);
@@ -515,13 +523,5 @@ template <typename T> T enum_cast(const QVariant &v, T firstEnumMember, T lastEn
     int i = v.toInt(&ok);
     return (ok && bRangeD(firstEnumMember, lastEnumMember).contains(i)) ? static_cast<T>(i) : firstEnumMember;
 }
-
-B_CORE_EXPORT QList<int> bRange(int lb, int ub, int step = 0);
-B_CORE_EXPORT QList<int> bRangeD(int lb, int ub, unsigned step = 0);
-B_CORE_EXPORT QList<int> bRangeM(int lb, int ub, unsigned multiplier = 10);
-B_CORE_EXPORT QList<int> bRangeR(int lb, int ub, unsigned step = 0);
-B_CORE_EXPORT void bRegister();
-B_CORE_EXPORT bool bTest(bool condition, const char *where, const char *what);
-B_CORE_EXPORT const char *bVersion();
 
 #endif // BGLOBAL_H

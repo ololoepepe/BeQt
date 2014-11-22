@@ -42,7 +42,7 @@ int main(int argc, char **argv)
     BTerminal::setMode(BTerminal::StandardMode);
     bLog("Application started", BLogger::InfoLevel);
     BCoreApplication::installBeqtTranslator("beqt");
-    //Communicating with user through BTerminalIOHandler
+    //Communicating with user through BTerminal
     QString s = BTerminal::readLine("Enter something: ");
     BTerminal::writeLine("You entered: \"" + s + "\"");
     s = BTerminal::readLineSecure("Enter something again: ");

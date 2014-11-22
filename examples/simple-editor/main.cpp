@@ -29,7 +29,6 @@
 #include <BIndicatorsEditorModule>
 #include <BOpenSaveEditorModule>
 #include <BSearchEditorModule>
-#include <BTerminal>
 
 #include <QAction>
 #include <QByteArray>
@@ -54,7 +53,6 @@ int main(int argc, char **argv)
     BApplication app(argc, argv, settings);
     BApplication::setOrganizationDomain("https://github.com/the-dark-angel");
     BApplication::setApplicationVersion("0.1.0");
-    BTerminal::setMode(BTerminal::StandardMode);
     bLogger->setIncludeDateTime(false);
     bLog("Application started", BLogger::InfoLevel);
     //BApplication::setThemedIconsEnabled(false);
@@ -76,7 +74,7 @@ int main(int argc, char **argv)
     BSearchEditorModule *smdl = static_cast<BSearchEditorModule *>(cedtr->module(BCodeEditor::SearchModule));
     smdl->restoreState(s ? s->value("editor/search_dialog_state").toByteArray() : QByteArray());
     BAbstractEditorModule *imdl = cedtr->module(BCodeEditor::IndicatorsModule);
-    //Creating Main window
+    //Creating main window
     QMainWindow *mw = new QMainWindow;
     mw->resize(1200, 800);
     mw->move(400, 200);
@@ -149,6 +147,5 @@ int main(int argc, char **argv)
     //Deleting objects
     delete mw;
     //Returning from main
-    BTerminal::destroy();
     return ret;
 }
