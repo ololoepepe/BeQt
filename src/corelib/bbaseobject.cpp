@@ -97,8 +97,6 @@ BBaseObject::~BBaseObject()
 /*============================== Protected constructors ====================*/
 
 /*!
-    \overload BBaseObject()
-
     Constructs an object and associates the given data object \a d with it.
  */
 
