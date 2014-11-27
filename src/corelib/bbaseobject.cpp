@@ -56,6 +56,21 @@ void BBaseObjectPrivate::init()
     \class BBaseObject
     \brief The BBaseObject class is the base class of all BeQt classes
     implementing D-pointer approach.
+
+    The corresponding BBaseObjectPrivate class is inherited from the QObject
+    class, so you may make use of Qt signals and slots in it's successor. If
+    you do not need Qt signals and slots, use BBase class instead.
+
+    \note BBaseObject itself is \e not inherited from QObject. Only
+    BBaseObjectPrivate is. You have to use multiple inheritance if you wish
+    BBaseObject successor to inherit from QObject. You must declare QObject
+    before any other ancestors in that case.
+
+    You will need BeQt private headers to use BBaseObjectPrivate class:
+
+    \snippet src/corelib/bbaseobject.cpp 0
+
+    \sa BBase
 */
 
 /*============================== Public constructors =======================*/

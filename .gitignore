@@ -45,6 +45,10 @@ ehthumbs.db
 Thumbs.db
 *~
 
+# Doxygen #
+###########
+doc/doxygen
+
 # Qt #
 ######
 *.qm

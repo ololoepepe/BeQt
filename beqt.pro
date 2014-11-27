@@ -7,6 +7,7 @@ contains(BEQT_CONFIG, examples):SUBDIRS += examples
 
 include(translations/translations.pri)
 include(include/include.pri)
+include(doc/doc.pri)
 
 !contains(BEQT_CONFIG, no_install) {
 
