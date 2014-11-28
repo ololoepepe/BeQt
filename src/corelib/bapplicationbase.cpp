@@ -469,11 +469,191 @@ void BApplicationBasePrivate::sendLanguageChangeEvent()
 ================================ BApplicationBase ============================
 ============================================================================*/
 
+/*!
+\class BApplicationBase
+\brief The BApplicationBase class provides application-wide resources, settings, translations and plugins system.
+
+This class is not instantiated directly, but is inherited by BCoreApplication and BApplication classes, which also
+inherit from QCoreApplication and QApplication, respectively.
+
+\section sectionResources Resources system
+
+BApplicationBase uses UNIX-style resource structure. Let's say the main executable file of your application is located
+in "/home/user/yourapp/bin", where "yourapp" is your application name. Then, BApplicationBase will search for resources
+in "/home/user/yourapp/share/yourapp". Plugins will be searched for in "/home/user/yourapp/lib/yourapp/plugins".
+
+Functions location() and locations() are used to get resources paths. In order to provide custom resources paths, use
+installLocationProvider() or installLocationProviders().
+
+\sa BAbstractLocationProvider, BLocationProvider
+
+There are two modes of the application: portable and non-portable. An application is considered portable if
+(considering the example above) a settings file "/home/user/yourapp/settings/yourapp.conf" is present. You may also
+force an application to be portable by passing an InitialSettings object with InitialSettings::portability member set
+to Portable to the BApplicationBase constructor.
+
+When application is portable, the resources are searched for in "/home/user/yourapp/share/yourapp" directory and in the
+":/" directory (Qt resources built into the executable). When appliction is non-portable, the resources are also
+searched in OS-specific location ("/home/user/.yourapplication" on UNIX-like systems,
+"/Library/Application Support/orgname/yourapp" on Mac OS X, "C:/Users/user/Application Data/orgname/yourapp" on Windows
+XP and Windows Server 2003, and "C:/Users/User/AppData/Roaming/orgname/yourapp" on later versions of Windows). Here
+"orgname" is your organization name.
+
+\note On UNIX-like systems application name is lowercased, and spaces are replaced by hyphens.
+
+\sa isPortable()
+
+The following standard resource locations are available:
+
+Location        | Enum member                           | Example path
+----------------|---------------------------------------|-------------------------
+BeQt icons      | BApplicationBase::BeqtIconsPath       | share/yourapp/beqt/icons
+BeQt resources  | BApplicationBase::BeqtPath            | share/yourapp/beqt
+All resources   | BApplicationBase::DataPath            | share/yourapp
+Documentation   | BApplicationBase::DocumentationPath   | share/yourapp/doc
+Icons           | BApplicationBase::IconsPath           | share/yourapp/icons
+Plugins         | BApplicationBase::PluginsPath         | lib/yourapp/plugins
+Settings        | BApplicationBase::SettingsPath        | share/yourapp/settings
+Translations    | BApplicationBase::TranslationsPath    | share/yourapp/translations
+
+The resources types are:
+
+Type    | Enum member
+--------|----------------------------------
+Builtin | BApplicationBase::BuiltinResource
+Shared  | BApplicationBase::SharedResource
+User    | BApplicationBase::UserResource
+
+The prefix for builtin resources paths is ":/".
+
+The prefix for shared resources paths is "../share/yourapp" (relative
+to the main application executable file).
+
+The prexixes for user resources paths are:
+
+Operating system                    | Prefix
+------------------------------------|-----------------------------------------------
+UNIX-like                           | /home/user/.yourapp
+Mac OS X                            | /Library/Application Support/orgname/yourapp
+Windows XP / Windows Server 2003    | C:/Users/user/Application Data/orgname/yourapp
+Later Windows                       | C:/Users/User/AppData/Roaming/orgname/yourapp
+
+\section sectionPlugins Plugins system
+
+BApplicationBase uses BPluginWrapper class to load and manage plugins. Plugins are loaded from standard locations (for
+example, "/usr/share/yourapp/plugins" on UNIX-like systems) and registered in the BApplicationBase instance. Plugins
+marked as deactivated on previous application launch are not activated on later launches.
+
+Plugins loaded by loadPlugins() call are automatically unloaded when the application instance is destroyed.
+
+Example:
+
+\snippet src/corelib/bapplicationbase.cpp 0
+
+\sa loadPlugins(), setPluginActivated(), unloadPlugins(), pluginWrapper(), pluginWrappers(), removePlugin(),
+setDisabledPlugins(), BPluginsSettingsTab
+
+For more information about plugins see BPluginWrapper.
+
+\section sectionSettings Settings system
+
+BApplicationBase instance automatically creates application settings object (QSettings), accessible with
+settingsInstance() call or bSettings() macro.
+
+The settings are loaded from a .conf file in the corresponding user directory. If this file does not exist, it is
+created. The settings object instance is deleted automatically when the BApplicationBase instance is destroyed.
+
+\note When accessing global settings instance from different threads, a locking mechanism (for example, QMutex) should
+be used.
+
+Plugins settings files are stored in the same directory as the application settings file.
+
+\section sectionTranslations Translations system
+
+BeQt extends Qt's translations system by wrapping several QTranslator instances, grouped by common prefix (identifier),
+and loaded from several locations (builtin, shared and user resources).
+
+When BTranslator classes are installed on BApplicationBase instance, several QTranslators are implicitly installed on
+the QCoreApplication instance. QCoreApplication QEvent::LanguageChange event is blocked to prevent multiple consequent
+events for each QTranslator. Instead, BCoreApplication::languageChanged() or BApplication::languageChanged() signal is
+emitted. You may connect to this signal to retranslate user interface when application locale is changed.
+
+The application locale is set by calling setLocale(). Calling this method makes all installed BTranslator objects
+uninstall all QTranslator objects they own and install new ones, with the new locale suffix.
+
+\snippet src/corelib/bapplicationbase.cpp 1
+
+\sa installBeqtTranslator(), removeBeqtTranslator(), beqtTranslator(), beqtTranslators(), BTranslator
+
+\section sectionLogging Logging
+
+BApplicationBase holds an instance of BLogger, a class used for logging. Some BeQt classes use an instance of BLogger
+owned by BApplicationBase by default.
+
+To set custom BLogger instance, use setLogger(). To access global logger instance, use either logger() method or
+bLogger() macro.
+
+Convenience method log() and macro bLog() are available. They call global logger's method BLogger::log().
+
+\sa BLogger, BRemoteLogger.
+
+\section sectionApplicationInformation Application information
+
+BApplicationBase contains information about application, such as application name, organization name and domain,
+application version, authors, translators, etc.
+
+Application and organization names should be set when creating BCoreApplication or BApplication instance. They can not
+be changed later. These names are used to get resources paths.
+
+Available information methods are:
+
+Setters                                 | Getters
+----------------------------------------|-----------------------------------
+setApplicationAuthors()                 | applicationAuthors()
+setApplicationAuthorsFile()             | applicationAuthorsFile()
+-                                       | applicationAuthorsProvider()
+setApplicationChangeLog()               | applicationChangeLog()
+setApplicationChangeLogFile()           | applicationChangeLogFile()
+setApplicationCopyrightPeriod()         | applicationCopyrightPeriod()
+setApplicationDescription()             | applicationDescription()
+setApplicationDescriptionFile()         | applicationDescriptionFile()
+setApplicationExtendedCopyrightInfo()   | applicationExtendedCopyrightInfo()
+setApplicationLicense()                 | applicationLicense()
+setApplicationLicenseFile()             | applicationLicenseFile()
+setApplicationThanksTo()                | applicationThanksTo()
+setApplicationThanksToFile()            | applicationThanksToFile()
+-                                       | applicationThanksToProvider()
+setApplicationTranslations()            | applicationTranslations()
+setApplicationTranslationsFile()        | applicationTranslationsFile()
+-                                       | applicationTranslationsProvider()
+
+There are also method applicationInfo() and beqtInfo(), used to get formatted application information of the specified
+type. A locale may also be specified. In that case list of authors, translators, etc. forthat locale will be output.
+
+Example:
+
+\snippet src/corelib/bapplicationbase.cpp 2
+
+\sa BPersonInfoProvider, BPersonInfo, BPersonInfoList
+*/
+
 /*============================== Static protected variables ================*/
+
+/*!
+This static variable is used to access BApplicationBase instance. You should not use it directly.
+*/
 
 BApplicationBase *BApplicationBase::_m_self = 0;
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs a BApplicationBase object and associates the given data object \a d with it. Application and organization
+names are set to \a applicationName and \a organizationName, respectively.
+
+\note BApplicationBase itself can not be instantiated because of the pure virtual destructor. Use BCoreApplication or
+BApplication instead.
+ */
 
 BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName,
                                    const QString &organizationName) :
@@ -487,6 +667,15 @@ BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const QString &ap
     BApplicationBasePrivate::testUnique();
     _m_self = this;
 }
+
+/*!
+Constructs a BApplicationBase object and associates the given data object \a d with it. Application and organization
+names are set according to the corresponding InitialSettings \a s members. You may also specify application portability
+mode.
+
+\note BApplicationBase itself can not be instantiated because of the pure virtual destructor. Use BCoreApplication or
+BApplication instead.
+ */
 
 BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const InitialSettings &s) :
     BBaseObject(d)
@@ -502,6 +691,10 @@ BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const InitialSett
 
 /*============================== Public constructors =======================*/
 
+/*!
+Destroys the object. Plugins, translators, settings and logger instances owned by the object are unloaded/deleted.
+*/
+
 BApplicationBase::~BApplicationBase()
 {
     d_func()->destructorCalled = true;
@@ -516,12 +709,25 @@ BApplicationBase::~BApplicationBase()
 
 /*============================== Static public methods =====================*/
 
+/*!
+Returns the list of application authors.
+
+\sa applicationAuthorsFile(), setApplicationAuthors(), setApplicationAuthorsFile(), BPersonInfoList
+*/
+
 BPersonInfoList BApplicationBase::applicationAuthors()
 {
     if (!BApplicationBasePrivate::testInit())
         return BPersonInfoList();
     return ds_func()->appAuthorsList;
 }
+
+/*!
+Returns the path to a file which provides application authors information. If no file path is set, returns an empty
+QString.
+
+\sa applicationAuthors(), applicationAuthorsProvider(), setApplicationAuthors(), setApplicationAuthorsFile()
+*/
 
 QString BApplicationBase::applicationAuthorsFile()
 {
@@ -530,12 +736,24 @@ QString BApplicationBase::applicationAuthorsFile()
     return ds_func()->appAuthors ? ds_func()->appAuthors->fileName() : QString();;
 }
 
+/*!
+Returns the BLocationProvider used by BApplicationBase internally to retrieve authors information from the
+corresponding file.
+
+\sa applicationAuthors(), applicationAuthorsFile(), setApplicationAuthors(), setApplicationAuthorsFile(),
+BPersonInfoProvider
+ */
+
 BPersonInfoProvider *BApplicationBase::applicationAuthorsProvider()
 {
     if (!BApplicationBasePrivate::testInit())
         return 0;
     return ds_func()->appAuthors;
 }
+
+/*!
+Returns the application ChangeLog text. If no ChangeLog is specified, an empty QString is returned.
+ */
 
 QString BApplicationBase::applicationChangeLog()
 {
@@ -544,12 +762,24 @@ QString BApplicationBase::applicationChangeLog()
     return ds_func()->appChangeLog;
 }
 
+/*!
+Returns the path to a file which provides application ChangeLog. If no file path is set, returns an empty QString.
+
+\sa applicationChangeLog() setApplicationChangeLog(), setApplicationChangeLogFile(), BDirTools::localeBasedFileName()
+ */
+
 QString BApplicationBase::applicationChangeLogFile()
 {
     if (!BApplicationBasePrivate::testInit())
         return QString();
     return ds_func()->appChangeLogFileName;
 }
+
+/*!
+Returns the application copyright period.
+
+For example: "2012-2014"
+ */
 
 QString BApplicationBase::applicationCopyrightPeriod()
 {
@@ -558,12 +788,25 @@ QString BApplicationBase::applicationCopyrightPeriod()
     return ds_func()->appCopyrightYears;
 }
 
+/*!
+Returns the application description text. If no description is specified, an empty QString is returned.
+
+\sa applicationDescriptionFile(), setApplicationDescription(), setApplicationDescriptionFile()
+ */
+
 QString BApplicationBase::applicationDescription()
 {
     if (!BApplicationBasePrivate::testInit())
         return QString();
     return ds_func()->appDescription;
 }
+
+/*!
+Returns the path to a file which provides application description. If no file path is set, returns an empty QString.
+
+\sa applicationDescription() setApplicationDescription(), setApplicationDescriptionFile(),
+BDirTools::localeBasedFileName()
+ */
 
 QString BApplicationBase::applicationDescriptionFile()
 {
@@ -572,12 +815,25 @@ QString BApplicationBase::applicationDescriptionFile()
     return ds_func()->appDescriptionFileName;
 }
 
+/*!
+Returns the list of BApplicationBase::CopyrightInfo.
+
+\sa setApplicationExtendedCopyrightInfo(), BApplicationBase::CopyrightInfo
+ */
+
 QList<BApplicationBase::CopyrightInfo> BApplicationBase::applicationExtendedCopyrightInfo()
 {
     if (!BApplicationBasePrivate::testInit())
-        return QList<BApplicationBase::CopyrightInfo>();
+        return QList<CopyrightInfo>();
     return ds_func()->copyrightInfos;
 }
+
+/*!
+Returns formatted application information of the specified \a type. For Authors, ThanksTo and Translators \a loc
+determines for which locale the list must be returned.
+
+\sa BPersonInfoProvider
+ */
 
 QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
 {
@@ -659,12 +915,24 @@ QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
     return BDirTools::readTextFile(BDirTools::localeBasedFileName(fn), "UTF-8");
 }
 
+/*!
+Returns the application license text. If no description is specified, an empty QString is returned.
+
+\sa applicationLicenseFile(), setApplicationLicense(), setApplicationLicenseFile()
+ */
+
 QString BApplicationBase::applicationLicense()
 {
     if (!BApplicationBasePrivate::testInit())
         return QString();
     return ds_func()->appLicense;
 }
+
+/*!
+Returns the path to a file which provides application license. If no file path is set, returns an empty QString.
+
+\sa applicationLicense() setApplicationLicense(), setApplicationLicenseFile(), BDirTools::localeBasedFileName()
+ */
 
 QString BApplicationBase::applicationLicenseFile()
 {
@@ -673,12 +941,25 @@ QString BApplicationBase::applicationLicenseFile()
     return ds_func()->appLicenseFileName;
 }
 
+/*!
+Returns the list of application "thanks to".
+
+\sa applicationThanksToFile(), setApplicationThanksTo(), setApplicationThanksToFile(), BPersonInfoList
+ */
+
 BPersonInfoList BApplicationBase::applicationThanksTo()
 {
     if (!BApplicationBasePrivate::testInit())
         return BPersonInfoList();
     return ds_func()->appThanksToList;
 }
+
+/*!
+Returns the path to a file which provides application "thanks to" information. If no file path is set, returns an empty
+QString.
+
+\sa applicationThanksTo(), applicationThanksToProvider(), setApplicationThanksTo(), setApplicationThanksToFile()
+ */
 
 QString BApplicationBase::applicationThanksToFile()
 {
@@ -687,12 +968,26 @@ QString BApplicationBase::applicationThanksToFile()
     return ds_func()->appThanksTo ? ds_func()->appThanksTo->fileName() : QString();
 }
 
+/*!
+Returns the BLocationProvider used by BApplicationBase internally to retrieve "thanks to" information from the
+corresponding file.
+
+\sa applicationThanksTo(), applicationThanksToFile(), setApplicationThanksTo(), setApplicationThanksToFile(),
+BPersonInfoProvider
+ */
+
 BPersonInfoProvider *BApplicationBase::applicationThanksToProvider()
 {
     if (!BApplicationBasePrivate::testInit())
         return 0;
     return ds_func()->appThanksTo;
 }
+
+/*!
+Returns the list of application translators (people, not QTranslator or BTranslator classes).
+
+\sa applicationTranslationsFile(), setApplicationTranslations(), setApplicationTranslationsFile(), BPersonInfoList
+ */
 
 BPersonInfoList BApplicationBase::applicationTranslations()
 {
@@ -701,12 +996,28 @@ BPersonInfoList BApplicationBase::applicationTranslations()
     return ds_func()->appTranslationsList;
 }
 
+/*!
+Returns the path to a file which provides application translators (people, not QTranslator or BTranslator classes)
+information. If no file path is set, returns an empty QString.
+
+\sa applicationTranslations(), applicationTranslationsProvider(), setApplicationTranslations(),
+setApplicationTranslationsFile()
+ */
+
 QString BApplicationBase::applicationTranslationsFile()
 {
     if (!BApplicationBasePrivate::testInit())
         return QString();
     return ds_func()->appTranslations ? ds_func()->appTranslations->fileName() : QString();
 }
+
+/*!
+Returns the BLocationProvider used by BApplicationBase internally to retrieve translators (people, not QTranslator or
+BTranslator classes) information from the corresponding file.
+
+\sa applicationTranslations(), applicationTranslationsFile(), setApplicationTranslations(),
+setApplicationTranslationsFile(), BPersonInfoProvider
+ */
 
 BPersonInfoProvider *BApplicationBase::applicationTranslationsProvider()
 {

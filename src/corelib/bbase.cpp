@@ -51,29 +51,27 @@ void BBasePrivate::init()
 ============================================================================*/
 
 /*!
-    \class BBase
-    \brief The BBase class is the base class of all BeQt classes implementing
-    D-pointer approach.
+\class BBase
+\brief The BBase class is the base class of all BeQt classes implementing D-pointer approach.
 
-    The corresponding BBasePrivate class is \e not inherited from the QObject
-    class. Multiple inheritance is possible for the BBase class, but not for
-    the BBasePrivate class. If you need to make use of Qt signals and slots in
-    BBasePrivate successor, use BBaseObject class instead.
+The corresponding BBasePrivate class is \e not inherited from the QObject class. Multiple inheritance is possible for
+the BBase class, but not for the BBasePrivate class. If you need to make use of Qt signals and slots in BBasePrivate
+successor, use BBaseObject class instead.
 
-    \note If using multiple inheritance of BBase class, and one of the
-    ancestors is QObject, declare it before any other ancestors.
+\note If using multiple inheritance of BBase class, and one of the ancestors is QObject, declare it before any other
+ancestors.
 
-    You will need BeQt private headers to use BBasePrivate class:
+You will need BeQt private headers to use BBasePrivate class:
 
-    \snippet src/corelib/bbase.cpp 0
+\snippet src/corelib/bbase.cpp 0
 
-    \sa BBaseObject
+\sa BBaseObject
 */
 
 /*============================== Public constructors =======================*/
 
 /*!
-    Constructs an object and the associated data object.
+Constructs an object and the associated data object.
 */
 
 BBase::BBase() :
@@ -83,7 +81,7 @@ BBase::BBase() :
 }
 
 /*!
-    Destroys the object, deleting the associated data object.
+Destroys the object, deleting the associated data object.
 */
 
 BBase::~BBase()
@@ -94,7 +92,7 @@ BBase::~BBase()
 /*============================== Protected constructors ====================*/
 
 /*!
-    Constructs an object and associates the given data object \a d with it.
+Constructs an object and associates the given data object \a d with it.
  */
 
 BBase::BBase(BBasePrivate &d) :
