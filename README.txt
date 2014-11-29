@@ -98,9 +98,9 @@ When building BeQt, you may pass some parameters to qmake:
  * "ENCA_PREFIX=<path>"
    Set external Enca library location. By default the internal one is used
 
- * "DOXYGEN_COMMAND=<command>"
-   Set command used to generate documentation. By default, "doxygen" command
-   is used
+ * "QDOC_COMMAND=<command>"
+   Set command used to generate documentation. By default, "qdoc" or "qdoc3"
+   commands are used
 
  * "BEQT_CONFIG+=no_network"
    Don't build the BeQtNetwork module

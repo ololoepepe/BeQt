@@ -12,7 +12,8 @@
 
 * Improve SQL schema parsing
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
-[done] Implement Doxygen documentation generation
+[done] Implement QDoc documentation generation
+[done] Add BEQT_VERSION_STR define
 
 === MINOR ===
 

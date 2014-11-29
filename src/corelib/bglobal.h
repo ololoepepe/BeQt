@@ -29,6 +29,8 @@
 #include <QString>
 #include <QVariant>
 
+#define BEQT_VERSION_STR "4.1.1"
+
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
 #else

@@ -1,26 +1,27 @@
 !contains(BEQT_CONFIG, no_docs) {
 
-isEmpty(DOXYGEN_COMMAND):DOXYGEN_COMMAND=doxygen
-
-beqtDoxygenExists=
+beqtWhichCommand=
 mac|unix {
-    beqtDoxygenExists=system(which $${DOXYGEN_COMMAND})
+    beqtWhichCommand=which
 } else:win32 {
-    beqtDoxygenExists=system(WHERE $${DOXYGEN_COMMAND})
+    beqtWhichCommand=WHERE
 }
 
-!isEmpty(beqtDoxygenExists) {
+isEmpty(QDOC_COMMAND):QDOC_COMMAND=$$system($${beqtWhichCommand} qdoc)
+isEmpty(QDOC_COMMAND):QDOC_COMMAND=$$system($${beqtWhichCommand} qdoc3)
 
-system($${DOXYGEN_COMMAND})
+!isEmpty(QDOC_COMMAND) {
+
+system($${QDOC_COMMAND} beqtcore.qdocconf)
 
 include(../prefix.pri)
 
 !contains(BEQT_CONFIG, no_install) {
-    beqtInstallsDocs.files=$$files($${PWD}/doxygen/*)
+    beqtInstallsDocs.files=$$files($${PWD}/generated/*)
     beqtInstallsDocs.path=$${BEQT_DOCS_INSTALLS_PATH}
     INSTALLS += beqtInstallsDocs
 }
 
-} #end !isEmpty(beqtDoxygenExists)
+} #end !isEmpty(QDOC_COMMAND)
 
 } #end !contains(BEQT_CONFIG, no_docs)

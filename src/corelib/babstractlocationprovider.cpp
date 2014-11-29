@@ -68,7 +68,7 @@ BAbstractLocationProvider::~BAbstractLocationProvider()
 /*============================== Public methods ============================*/
 
 /*!
-\fn QStringList BAbstractLocationProvider::locationNames()
+\fn QStringList BAbstractLocationProvider::locationNames() const
 
 Returns a list of location names (identifiers) supported by this location provider.
 
@@ -78,7 +78,8 @@ Reimplement this function when creating a subclass of BAbstractLocationProvider.
 */
 
 /*!
-\fn QString BAbstractLocationProvider::locationPath(const QString &locationName, BApplicationBase::ResourceType type)
+\fn QString BAbstractLocationProvider::locationPath(const QString &locationName,
+                                                    BApplicationBase::ResourceType type) const
 
 Returns the path associated with \a locationName for the resource type \a type.
 

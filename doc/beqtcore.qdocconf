@@ -1,0 +1,9 @@
+include(./beqt-module-defaults.qdocconf)
+
+project = "BeQtCore"
+description = "BeQt Core Reference Documentation"
+
+headerdirs += "../src/corelib"
+sourcedirs += "../src/corelib"
+
+outputdir  = "./generated/html/core"
