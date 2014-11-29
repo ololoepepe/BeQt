@@ -1,0 +1,11 @@
+naturallanguage = en_US
+
+codeindent = 0
+
+outputencoding = UTF-8
+
+outputformats = HTML
+
+include(html.qdocinc)
+
+outputdir  = "./generated/html"

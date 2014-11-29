@@ -1,0 +1,73 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the documentation of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
+/*!
+\group classlists
+\title Class and Function Documentation
+\brief Lists and Indexes of classes, functions, and types.
+
+Links to indexes and lists for finding class and function reference documentation.
+
+\section2 Class Lists
+
+\annotatedlist classlists
+
+\section2 Function Lists
+
+\annotatedlist funclists
+*/
+
+/*!
+\page classes.html
+\title All Classes
+\ingroup classlists
+
+\brief If you know the name of the class you want, find it here.
+
+This is a list of all BeQt classes.
+
+\generatelist classes
+*/
+
+/*!
+\page functions.html
+\title All Functions
+\ingroup funclists
+
+\brief All documented BeQt functions listed alphabetically with a link to where each one is declared.
+
+This is the list of all documented member functions and global functions in the BeQt API. Each function has a link to
+the class or header file where it is declared and documented.
+
+\generatelist functionindex
+*/
+
+/*!
+\page namespaces.html
+\title All Namespaces
+\ingroup classlists
+
+\brief A BeQt namespace contains enum types, functions, and sometimes classes.
+
+This is a list of the main namespaces in BeQt.
+
+\generatelist{namespaces}
+*/

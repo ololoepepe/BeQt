@@ -1,7 +1,3 @@
-include(compat.qdocconf)
-
-codeindent = 0
-
 Cpp.ignoretokens = \
                    B_CODEEDITOR_EXPORT \
                    B_CORE_EXPORT \
@@ -33,42 +29,3 @@ Cpp.ignoredirectives = \
                        Q_FLAGS \
                        Q_INTERFACES \
                        Q_PRIVATE_PROPERTY
-
-defines = \
-          BEQT_ARCH_.* \
-          Q_QDOC \
-          QT_.*_SUPPORT \
-          QT_.*_LIB \
-          QT_COMPAT \
-          QT_KEYPAD_NAVIGATION \
-          QT_NO_EGL \
-          Q_OS_.* \
-          Q_BYTE_ORDER \
-          QT_DEPRECATED \
-          QT_DEPRECATED_* \
-          Q_NO_USING_KEYWORD \
-          __cplusplus \
-          Q_COMPILER_INITIALIZER_LISTS
-
-naturallanguage = en_US
-outputencoding = UTF-8
-sourceencoding = UTF-8
-
-exampledirs = "./snippets"
-
-examples.fileextensions = "*.cpp *.h"
-examples.imageextensions = "*.png *.jpg *.gif"
-
-headers.fileextensions = "*.h"
-sources.fileextensions = "*.cpp"
-
-outputformats = HTML
-
-HTML.templatedir = .
-
-HTML.stylesheets = style/style.css
-
-HTML.headerstyles = \
-    "  <link rel=\"stylesheet\" type=\"text/css\" href=\"style/style.css\" />\n"
-
-version = "4.1.1"
