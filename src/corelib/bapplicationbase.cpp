@@ -1773,7 +1773,7 @@ void BApplicationBase::log(const QString &text, BLogger::Level lvl)
 /*!
 Returns BLogger instance installed on the BApplicationBase.
 
-For details, see \l {Logging system}.
+For details, see \l {Logging}.
 
 \sa BLogger
 */
@@ -2123,7 +2123,7 @@ Plugins with that identifiers will not be activated automatically on next loadPl
 
 For details, see \l {Plugins system}.
 
-\sa loadPlugins(), installPlugin(), removePlugins(), setPluginActivated(), unloadPlugins(), BPluginWrapper
+\sa loadPlugins(), installPlugin(), removePlugin(), setPluginActivated(), unloadPlugins(), BPluginWrapper
 */
 
 void BApplicationBase::setDisabledPlugins(const QStringList &list)
@@ -2158,7 +2158,7 @@ void BApplicationBase::setLocale(const QLocale &l)
 /*!
 Sets \a l to be the BLogger instance installed on the BApplicationBase.
 
-For details, see \l {Logging system}.
+For details, see \l {Logging}.
 
 \sa BLogger
 */
@@ -2185,7 +2185,7 @@ deactivated on previous application launch will not be activated automatically o
 
 For details, see \l {Plugins system}.
 
-\sa loadPlugins(), installPlugin(), removePlugins(), unloadPlugins(), BPluginWrapper
+\sa loadPlugins(), installPlugin(), removePlugin(), unloadPlugins(), BPluginWrapper
 */
 
 void BApplicationBase::setPluginActivated(const QString &pluginId, bool activated)

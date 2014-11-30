@@ -95,9 +95,10 @@
     }
     body
     {
-        background: #e6e7e8 url(../images/page_bg.png) repeat-x 0 0;
+        /*background: #e6e7e8 url(../images/page_bg.png) repeat-x 0 0;*/
         font: normal 13px/1.2 Verdana;
         color: #363534;
+        padding: 20px; 20px; 20px; 20px;
     }
     a
     {

@@ -2,4 +2,6 @@ HTML.templatedir = "./template"
 
 HTML.stylesheets = "style/style.css"
 
-HTML.headerstyles = "  <link rel=\"stylesheet\" type=\"text/css\" href=\"style/style.css\" />\n"
+HTML.headerstyles = "  <link rel=\"stylesheet\" type=\"text/css\" href=\"style/style.css\" />\n" \
+                    "</head>\n" \
+                    "<body>\n"

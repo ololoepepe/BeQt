@@ -73,7 +73,102 @@ void BDynamicTranslatorPrivate::translate()
 ================================ BDynamicTranslator ==========================
 ============================================================================*/
 
+/*!
+\class BDynamicTranslator
+\brief The BDynamicTranslator class provides means of dynamic translation.
+
+This class is used to change some QObject's QString property or to invoke that QObject's slot with a QString argument
+when some signal (usually BCoreApplication::languageChanged() or BApplication::languageChanged()) is emitted. Usually
+some user-readable property that requires dynamic translation is changed with the help of this class. The QString is
+retrieved dynamically form an associated BTranslator object.
+
+Example:
+
+\snippet src/corelib/bdynamictranslator.cpp 0
+
+\note Since BDynamicTranslator is constructed with a parent parameter passed to it, it will be automatically deleted
+when the parent objec tis destroyed.
+
+\sa {Translations system}
+*/
+
+/*!
+\property BDynamicTranslator::targetPropertyName
+
+This property gets and sets the BDynamicTranslator's target property name.
+
+By default, this property contains the property name passed to the object's constructor, or empty QByteArray, if the
+other constructor was used.
+*/
+
+/*!
+\property BDynamicTranslator::targetSlotName
+
+This property gets and sets the BDynamicTranslator's target slot name.
+
+By default, this property contains the slot name passed to the object's constructor, or empty QByteArray, if the other
+constructor was used.
+*/
+
+/*!
+\property BDynamicTranslator::targetType
+
+This property gets the BDynamicTranslator's target type.
+
+By default, this property contains either PropertyTarget or SlotTarget, depending on which constructor was used when
+creating the object. The value of the property may also contain NoTarget, if an invalid QObject or it's property/slot
+names were specified.
+*/
+
+/*!
+\property BDynamicTranslator::translation
+
+This property gets and sets the BTranslation object associated with the BDynamicTranslator.
+
+By default, this property contains the translation passed to the object's constructor.
+*/
+
+/*!
+\property BDynamicTranslator::triggerSender
+
+This property gets a pointer to the QObject whose signal triggers translation.
+
+By default, this property contains a pointer to the BCoreApplication instance (or 0, if there is no BCoreApplication).
+*/
+
+/*!
+\property BDynamicTranslator::triggerSignal
+
+This property gets the name of a signal which triggers translation.
+
+By default, this property contains "languageChanged".
+*/
+
+/*!
+\enum BDynamicTranslator::TargetType
+
+This enum type is used to describe the target type of BDynamicTranslator.
+
+\value NoTarget
+No target. No slot will be invoked and no property will be changed.
+
+\value PropertyTarget
+QObject's property will be changed.
+
+\value SlotTarget
+QObject's slot will be invoked.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs an object and sets it's parent to \a parent, target property name to \a targetPropertyName, and translation
+to \a t.
+
+Trigger sender is set to a pointer to the BCoreApplication instance, and trigger signal is set to "languageChanged";
+
+\sa setTargetPropertyName(), setTranslation(), setTrigger()
+*/
 
 BDynamicTranslator::BDynamicTranslator(QObject *parent, const QByteArray &targetPropertyName, const BTranslation &t) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
@@ -84,6 +179,15 @@ BDynamicTranslator::BDynamicTranslator(QObject *parent, const QByteArray &target
     setTranslation(t);
 }
 
+/*!
+Constructs an object and sets it's parent to \a parent, target slot name to \a targetSlotName, and translation
+to \a t.
+
+Trigger sender is set to a pointer to the BCoreApplication instance, and trigger signal is set to "languageChanged";
+
+\sa setTargetSlotName(), setTranslation(), setTrigger()
+*/
+
 BDynamicTranslator::BDynamicTranslator(QObject *parent, const BTranslation &t, const QByteArray &targetSlotName) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
 {
@@ -92,6 +196,13 @@ BDynamicTranslator::BDynamicTranslator(QObject *parent, const BTranslation &t, c
     setTargetSlotName(targetSlotName);
     setTranslation(t);
 }
+
+/*!
+Constructs an object and sets it's parent to \a parent, target property name to \a targetPropertyName, translation to
+\a t, and calls setTrigger() with parameters \a triggerSender, and \a triggerSignal.
+
+\sa setTargetPropertyName(), setTranslation(), setTrigger()
+*/
 
 BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, const QByteArray &triggerSignal,
                                        const QByteArray &targetPropertyName, const BTranslation &t) :
@@ -103,6 +214,13 @@ BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, 
     setTranslation(t);
 }
 
+/*!
+Constructs an object and sets it's parent to \a parent, target slot name to \a targetSlotName, translation to \a t, and
+calls setTrigger() with parameters \a triggerSender, and \a triggerSignal.
+
+\sa setTargetPropertyName(), setTranslation(), setTrigger()
+*/
+
 BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, const QByteArray &triggerSignal,
                                        const BTranslation &t, const QByteArray &targetSlotName) :
     QObject(parent), BBaseObject(*new BDynamicTranslatorPrivate(this))
@@ -113,12 +231,20 @@ BDynamicTranslator::BDynamicTranslator(QObject *parent, QObject *triggerSender, 
     setTranslation(t);
 }
 
+/*!
+Destroys the object.
+*/
+
 BDynamicTranslator::~BDynamicTranslator()
 {
     //
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs an object and associates the given data object \a d with it. Object's parent is set to \a parent.
+ */
 
 BDynamicTranslator::BDynamicTranslator(BDynamicTranslatorPrivate &d, QObject *parent) :
     QObject(parent), BBaseObject(d)
@@ -146,6 +272,15 @@ void BDynamicTranslator::setTranslation(const BTranslation &translation)
 {
     d_func()->translation = translation;
 }
+
+/*!
+Connects \a {triggerSender}'s signal \a triggerSignal to the internal slot, which will in turn invoke target's slot or
+change it's property.
+
+Previously connected trigger object (if present) is disconnected from the slot.
+
+\sa targetPropertyName, targetSlotName, targetType
+*/
 
 void BDynamicTranslator::setTrigger(QObject *triggerSender, const QByteArray &triggerSignal)
 {
