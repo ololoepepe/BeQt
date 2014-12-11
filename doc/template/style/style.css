@@ -1937,3 +1937,17 @@
     }
 }
 /* end of print media */
+
+body > li {
+    display: none;
+}
+
+p {
+    margin-bottom: 10px;
+}
+
+h3 {
+    margin-top: 20px;
+    margin-bottom: 5px;
+    font-size: 16px;
+}

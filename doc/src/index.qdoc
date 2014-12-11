@@ -35,6 +35,7 @@
             \list
             \o \l{All Classes}{All Classes}
             \o \l{All Namespaces}{All Namespaces}
+            \o \l{<BeQtGlobal>}{Global Declarations}
             \endlist
         \enddiv
     \enddiv

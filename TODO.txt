@@ -30,3 +30,5 @@
 * Remove BPersonInfoList friend QDataStream operators
 * Add build information parameter to BVersion constructor
 * Implement proper icons system
+* Use references in bRet functions
+* Get rid of identifier in do_once macro (use compile-time random identifier generation)
