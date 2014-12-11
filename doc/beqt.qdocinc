@@ -1,4 +1,3 @@
-include(compat.qdocinc)
 include(cpp.qdocinc)
 include(defines.qdocinc)
 include(source.qdocinc)

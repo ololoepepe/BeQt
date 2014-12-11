@@ -33,9 +33,9 @@
                 BeQt API
             \enddiv
             \list
-            \o \l{All Classes}{All Classes}
-            \o \l{All Namespaces}{All Namespaces}
-            \o \l{<BeQtGlobal>}{Global Declarations}
+            \li \l{All Classes}{All Classes}
+            \li \l{All Namespaces}{All Namespaces}
+            \li \l{<BeQtGlobal>}{Global Declarations}
             \endlist
         \enddiv
     \enddiv

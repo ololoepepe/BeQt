@@ -12,7 +12,10 @@ isEmpty(QDOC_COMMAND):QDOC_COMMAND=$$system($${beqtWhichCommand} qdoc3)
 
 !isEmpty(QDOC_COMMAND) {
 
-system($${QDOC_COMMAND} beqt.qdocconf)
+DOCCONF_FILE=beqt-qt4.qdocconf
+greaterThan(QT_MAJOR_VERSION, 4):DOCCONF_FILE=beqt-qt5.qdocconf
+
+system($${QDOC_COMMAND} $${DOCCONF_FILE})
 
 include(../prefix.pri)
 
