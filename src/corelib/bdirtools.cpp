@@ -42,6 +42,14 @@
 ============================================================================*/
 
 /*!
+\namespace BDirTools
+\inmodule BeQtCore
+
+\brief The BDirTools namespace contains miscellaneous directory- and file-related functions used throughout the BeQt
+library.
+*/
+
+/*!
 \enum BDirTools::ResourceLookupMode
 
 This type is used to specify where to search for a file or a directory.
@@ -49,14 +57,6 @@ This type is used to specify where to search for a file or a directory.
 \value GlobalOnly
 \value UserOnly
 \value AllResources
-*/
-
-/*!
-\namespace BDirTools
-\inmodule BeQtCore
-
-\brief The BDirTools namespace contains miscellaneous directory- and file-related functions used throughout the BeQt
-library.
 */
 
 namespace BDirTools

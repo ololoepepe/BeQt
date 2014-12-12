@@ -95,7 +95,7 @@ BBaseObject::~BBaseObject()
 
 /*!
 Constructs an object and associates the given data object \a d with it.
- */
+*/
 
 BBaseObject::BBaseObject(BBaseObjectPrivate &d) :
     _m_d(&d)

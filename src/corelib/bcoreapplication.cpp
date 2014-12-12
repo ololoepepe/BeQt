@@ -109,7 +109,7 @@ Constructs a BCoreApplication object. Application and organization names are set
 InitialSettings \a s members. You may also specify application portability mode.
 
 \a argc and \a argv are passed to QCoreApplication superclass.
- */
+*/
 
 BCoreApplication::BCoreApplication(int &argc, char **argv, const InitialSettings &s) :
     QCoreApplication(argc, argv), BApplicationBase(*new BCoreApplicationPrivate(this), s)
@@ -148,7 +148,7 @@ names are set according to the corresponding InitialSettings \a s members. You m
 mode.
 
 \a argc and \a argv are passed to QCoreApplication superclass.
- */
+*/
 
 BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s) :
     QCoreApplication(argc, argv), BApplicationBase(d, s)

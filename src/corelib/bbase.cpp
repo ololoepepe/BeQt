@@ -93,7 +93,7 @@ BBase::~BBase()
 
 /*!
 Constructs an object and associates the given data object \a d with it.
- */
+*/
 
 BBase::BBase(BBasePrivate &d) :
     _m_d(&d)

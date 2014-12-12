@@ -488,161 +488,6 @@ Equivalent of BApplicationBase::log().
 */
 
 /*!
-\enum BApplicationBase::About
-
-This enum type is used to describe types of information about application.
-
-\value Authors
-Information about application authors.
-
-\value ChangeLog
-Application ChangeLog.
-
-\value Copyringt
-Brief application copyright information.
-
-\value Description
-Application description.
-
-\value ExtendedCopyright
-Detailed application copyright information.
-
-\value License
-Application license.
-
-\value ThanksTo
-Information about those who contributd to application code or about external libraries/resources used in the
-application.
-
-\value Translators
-Information about those who translated the application into different languages.
-*/
-
-/*!
-\enum BApplicationBase::Location
-
-This enum type is used to describe standard location paths.
-
-\value BeqtIconsPath
-Path to standard icons shipped with BeQt: "share/appname/beqt/icons".
-
-\value BeqtPath
-Basic path to resources shipped with BeQt: "share/appname/beqt".
-
-\value DataPath
-Basic path to application resources "share/appname".
-
-\value DocumentationPath
-Path to application documentation: "share/appname/doc".
-
-\value IconsPath
-Path to application icons: "share/appname/icons".
-
-\value PluginsPath
-Path to application plugins: "lib/appname/plguins".
-
-\value SettingsPath
-Path to application settings: "share/appname/settings".
-
-\value TranslationsPath
-Path to application translations: "share/appname/translations".
-*/
-
-/*!
-\enum BApplicationBase::Portability
-
-This enum type is used to describe application portability.
-
-\value AutoDetect
-BApplicationBase automaticaly determines if application is portable if settings file
-"share/appname/settings/appname.conf" exists.
-
-\value NotPortable
-The application is not portable.
-
-\value Portable
-The application is portable.
-*/
-
-/*!
-\enum BApplicationBase::ResourceType
-
-This enum type is used to describe application resource type.
-
-\value BuiltinResource
-Builtin resource (Qt's resource system). Path starts with ":/".
-
-\value SharedResource
-Shared resource. Something like "/usr/share/appname" or "C:/Program Files/appname".
-
-\value UserResource
-User resource. Something like "/home/user/.appname" or "C:/Users/user/AppData/Roaming/orgname/appname". In
-BApplicationBase::Portable mode the path is the same as for BApplicationBase::SharedResource.
-*/
-
-/*!
-\class BApplicationBase::CopyrightInfo
-\brief The CopyrightInfo struct represents information about copyright.
-*/
-
-/*!
-\variable BApplicationBase::CopyrightInfo::email
-E-mail of the copyright owner.
-*/
-
-/*!
-\variable BApplicationBase::CopyrightInfo::owner
-Name of the copyright owner.
-*/
-
-/*!
-\variable BApplicationBase::CopyrightInfo::period
-Copyright period.
-
-For example: "2012-2014".
-*/
-
-/*!
-\class BApplicationBase::InitialSettings
-\brief The InitialSettings struct represents initial application parameters.
-*/
-
-/*!
-\variable BApplicationBase::InitialSettings::applicationName
-Name of the application.
-*/
-
-/*!
-\variable BApplicationBase::InitialSettings::organizationName
-Name of the application developer/owner.
-*/
-
-/*!
-\variable BApplicationBase::InitialSettings::portability
-Portability mode of the application.
-*/
-
-/*!
-\class BApplicationBase::LocaleSupportInfo
-\brief The LocaleSupportInfo struct represents information about certain locale support.
-*/
-
-/*!
-\variable BApplicationBase::LocaleSupportInfo::locale
-The locale which support is described.
-*/
-
-/*!
-\variable BApplicationBase::LocaleSupportInfo::supports
-Number of translators which support the locale.
-*/
-
-/*!
-\variable BApplicationBase::LocaleSupportInfo::total
-Total number of translators registered in the BApplicationBase instance.
-*/
-
-/*!
 \class BApplicationBase
 \brief The BApplicationBase class provides application-wide resources, settings, translations and plugins system.
 
@@ -886,6 +731,161 @@ Example:
 \sa BPersonInfoProvider, BPersonInfo, BPersonInfoList
 */
 
+/*!
+\enum BApplicationBase::About
+
+This enum type is used to describe types of information about application.
+
+\value Authors
+Information about application authors.
+
+\value ChangeLog
+Application ChangeLog.
+
+\value Copyringt
+Brief application copyright information.
+
+\value Description
+Application description.
+
+\value ExtendedCopyright
+Detailed application copyright information.
+
+\value License
+Application license.
+
+\value ThanksTo
+Information about those who contributd to application code or about external libraries/resources used in the
+application.
+
+\value Translators
+Information about those who translated the application into different languages.
+*/
+
+/*!
+\enum BApplicationBase::Location
+
+This enum type is used to describe standard location paths.
+
+\value BeqtIconsPath
+Path to standard icons shipped with BeQt: "share/appname/beqt/icons".
+
+\value BeqtPath
+Basic path to resources shipped with BeQt: "share/appname/beqt".
+
+\value DataPath
+Basic path to application resources "share/appname".
+
+\value DocumentationPath
+Path to application documentation: "share/appname/doc".
+
+\value IconsPath
+Path to application icons: "share/appname/icons".
+
+\value PluginsPath
+Path to application plugins: "lib/appname/plguins".
+
+\value SettingsPath
+Path to application settings: "share/appname/settings".
+
+\value TranslationsPath
+Path to application translations: "share/appname/translations".
+*/
+
+/*!
+\enum BApplicationBase::Portability
+
+This enum type is used to describe application portability.
+
+\value AutoDetect
+BApplicationBase automaticaly determines if application is portable if settings file
+"share/appname/settings/appname.conf" exists.
+
+\value NotPortable
+The application is not portable.
+
+\value Portable
+The application is portable.
+*/
+
+/*!
+\enum BApplicationBase::ResourceType
+
+This enum type is used to describe application resource type.
+
+\value BuiltinResource
+Builtin resource (Qt's resource system). Path starts with ":/".
+
+\value SharedResource
+Shared resource. Something like "/usr/share/appname" or "C:/Program Files/appname".
+
+\value UserResource
+User resource. Something like "/home/user/.appname" or "C:/Users/user/AppData/Roaming/orgname/appname". In
+BApplicationBase::Portable mode the path is the same as for BApplicationBase::SharedResource.
+*/
+
+/*!
+\class BApplicationBase::CopyrightInfo
+\brief The CopyrightInfo struct represents information about copyright.
+*/
+
+/*!
+\variable BApplicationBase::CopyrightInfo::email
+E-mail of the copyright owner.
+*/
+
+/*!
+\variable BApplicationBase::CopyrightInfo::owner
+Name of the copyright owner.
+*/
+
+/*!
+\variable BApplicationBase::CopyrightInfo::period
+Copyright period.
+
+For example: "2012-2014".
+*/
+
+/*!
+\class BApplicationBase::InitialSettings
+\brief The InitialSettings struct represents initial application parameters.
+*/
+
+/*!
+\variable BApplicationBase::InitialSettings::applicationName
+Name of the application.
+*/
+
+/*!
+\variable BApplicationBase::InitialSettings::organizationName
+Name of the application developer/owner.
+*/
+
+/*!
+\variable BApplicationBase::InitialSettings::portability
+Portability mode of the application.
+*/
+
+/*!
+\class BApplicationBase::LocaleSupportInfo
+\brief The LocaleSupportInfo struct represents information about certain locale support.
+*/
+
+/*!
+\variable BApplicationBase::LocaleSupportInfo::locale
+The locale which support is described.
+*/
+
+/*!
+\variable BApplicationBase::LocaleSupportInfo::supports
+Number of translators which support the locale.
+*/
+
+/*!
+\variable BApplicationBase::LocaleSupportInfo::total
+Total number of translators registered in the BApplicationBase instance.
+*/
+
 /*============================== Static protected variables ================*/
 
 /*!
@@ -903,7 +903,7 @@ names are set to \a applicationName and \a organizationName, respectively.
 
 \note BApplicationBase itself can not be instantiated because of the pure virtual destructor. Use BCoreApplication or
 BApplication instead.
- */
+*/
 
 BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const QString &applicationName,
                                    const QString &organizationName) :
@@ -925,7 +925,7 @@ mode.
 
 \note BApplicationBase itself can not be instantiated because of the pure virtual destructor. Use BCoreApplication or
 BApplication instead.
- */
+*/
 
 BApplicationBase::BApplicationBase(BApplicationBasePrivate &d, const InitialSettings &s) :
     BBaseObject(d)
@@ -992,7 +992,7 @@ corresponding file.
 
 \sa applicationAuthors(), applicationAuthorsFile(), setApplicationAuthors(), setApplicationAuthorsFile(),
 BPersonInfoProvider
- */
+*/
 
 BPersonInfoProvider *BApplicationBase::applicationAuthorsProvider()
 {
@@ -1005,7 +1005,7 @@ BPersonInfoProvider *BApplicationBase::applicationAuthorsProvider()
 Returns the application ChangeLog text. If no ChangeLog is specified, an empty QString is returned.
 
 \sa applicationChangeLogFile(), setApplicationChangeLog()
- */
+*/
 
 QString BApplicationBase::applicationChangeLog()
 {
@@ -1018,7 +1018,7 @@ QString BApplicationBase::applicationChangeLog()
 Returns the path to a file which provides application ChangeLog. If no file path is set, returns an empty QString.
 
 \sa applicationChangeLog(), setApplicationChangeLog(), setApplicationChangeLogFile(), BDirTools::localeBasedFileName()
- */
+*/
 
 QString BApplicationBase::applicationChangeLogFile()
 {
@@ -1033,7 +1033,7 @@ Returns the application copyright period.
 For example: "2012-2014"
 
 \sa setApplicationCopyrightPeriod()
- */
+*/
 
 QString BApplicationBase::applicationCopyrightPeriod()
 {
@@ -1046,7 +1046,7 @@ QString BApplicationBase::applicationCopyrightPeriod()
 Returns the application description text. If no description is specified, an empty QString is returned.
 
 \sa applicationDescriptionFile(), setApplicationDescription(), setApplicationDescriptionFile()
- */
+*/
 
 QString BApplicationBase::applicationDescription()
 {
@@ -1060,7 +1060,7 @@ Returns the path to a file which provides application description. If no file pa
 
 \sa applicationDescription(), setApplicationDescription(), setApplicationDescriptionFile(),
 BDirTools::localeBasedFileName()
- */
+*/
 
 QString BApplicationBase::applicationDescriptionFile()
 {
@@ -1073,7 +1073,7 @@ QString BApplicationBase::applicationDescriptionFile()
 Returns the list of CopyrightInfo.
 
 \sa setApplicationExtendedCopyrightInfo(), CopyrightInfo
- */
+*/
 
 QList<BApplicationBase::CopyrightInfo> BApplicationBase::applicationExtendedCopyrightInfo()
 {
@@ -1087,7 +1087,7 @@ Returns formatted application information of the specified \a type. For Authors,
 determines for which locale the list must be returned.
 
 \sa BPersonInfoProvider
- */
+*/
 
 QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
 {
@@ -1173,7 +1173,7 @@ QString BApplicationBase::applicationInfo(About type, const QLocale &loc)
 Returns the application license text. If no description is specified, an empty QString is returned.
 
 \sa applicationLicenseFile(), setApplicationLicense(), setApplicationLicenseFile()
- */
+*/
 
 QString BApplicationBase::applicationLicense()
 {
@@ -1186,7 +1186,7 @@ QString BApplicationBase::applicationLicense()
 Returns the path to a file which provides application license. If no file path is set, returns an empty QString.
 
 \sa applicationLicense(), setApplicationLicense(), setApplicationLicenseFile(), BDirTools::localeBasedFileName()
- */
+*/
 
 QString BApplicationBase::applicationLicenseFile()
 {
@@ -1199,7 +1199,7 @@ QString BApplicationBase::applicationLicenseFile()
 Returns the list of application "thanks to".
 
 \sa applicationThanksToFile(), setApplicationThanksTo(), setApplicationThanksToFile(), BPersonInfoList
- */
+*/
 
 BPersonInfoList BApplicationBase::applicationThanksTo()
 {
@@ -1213,7 +1213,7 @@ Returns the path to a file which provides application "thanks to" information. I
 QString.
 
 \sa applicationThanksTo(), applicationThanksToProvider(), setApplicationThanksTo(), setApplicationThanksToFile()
- */
+*/
 
 QString BApplicationBase::applicationThanksToFile()
 {
@@ -1228,7 +1228,7 @@ corresponding file.
 
 \sa applicationThanksTo(), applicationThanksToFile(), setApplicationThanksTo(), setApplicationThanksToFile(),
 BPersonInfoProvider
- */
+*/
 
 BPersonInfoProvider *BApplicationBase::applicationThanksToProvider()
 {
@@ -1241,7 +1241,7 @@ BPersonInfoProvider *BApplicationBase::applicationThanksToProvider()
 Returns the list of application translators (people, not QTranslator or BTranslator classes).
 
 \sa applicationTranslationsFile(), setApplicationTranslations(), setApplicationTranslationsFile(), BPersonInfoList
- */
+*/
 
 BPersonInfoList BApplicationBase::applicationTranslations()
 {
@@ -1256,7 +1256,7 @@ information. If no file path is set, returns an empty QString.
 
 \sa applicationTranslations(), applicationTranslationsProvider(), setApplicationTranslations(),
 setApplicationTranslationsFile()
- */
+*/
 
 QString BApplicationBase::applicationTranslationsFile()
 {
@@ -1271,7 +1271,7 @@ BTranslator classes) information from the corresponding file.
 
 \sa applicationTranslations(), applicationTranslationsFile(), setApplicationTranslations(),
 setApplicationTranslationsFile(), BPersonInfoProvider
- */
+*/
 
 BPersonInfoProvider *BApplicationBase::applicationTranslationsProvider()
 {
@@ -1339,7 +1339,7 @@ QList<BApplicationBase::LocaleSupportInfo> BApplicationBase::availableLocales(bo
 Returns the BLocationProvider used by BApplicationBase internally to retrieve BeQt authors information.
 
 \sa BPersonInfoProvider
- */
+*/
 
 BPersonInfoProvider *BApplicationBase::beqtAuthorsProvider()
 {
@@ -1353,7 +1353,7 @@ Returns formatted BeQt library information of the specified \a type. For Authors
 determines for which locale the list must be returned.
 
 \sa BPersonInfoProvider
- */
+*/
 
 QString BApplicationBase::beqtInfo(About type, const QLocale &loc)
 {
@@ -1394,7 +1394,7 @@ QString BApplicationBase::beqtInfo(About type, const QLocale &loc)
 Returns the BLocationProvider used by BApplicationBase internally to retrieve BeQt "thanks to" information.
 
 \sa BPersonInfoProvider
- */
+*/
 
 BPersonInfoProvider *BApplicationBase::beqtThanksToProvider()
 {
@@ -1408,7 +1408,7 @@ Returns the BLocationProvider used by BApplicationBase internally to retrieve Be
 or BTranslator classes) information.
 
 \sa BPersonInfoProvider
- */
+*/
 
 BPersonInfoProvider *BApplicationBase::beqtTranslationsProvider()
 {
@@ -1940,7 +1940,7 @@ void BApplicationBase::setApplicationAuthorsFile(const QString &fileName)
 Sets the application ChangeLog text to \a s.
 
 \sa applicationChangeLog(), setApplicationChangeLogFile()
- */
+*/
 
 void BApplicationBase::setApplicationChangeLog(const QString &s)
 {
@@ -1956,7 +1956,7 @@ Sets the path to a file which provides application ChangeLog to \a fileName.
 Actual file name is retrieved using BDirTools::localeBasedFileName() based on current application locale.
 
 \sa applicationChangeLog(), setApplicationChangeLog()
- */
+*/
 
 void BApplicationBase::setApplicationChangeLogFile(const QString &fileName)
 {
@@ -1972,7 +1972,7 @@ Sets the application copyright period to \a s.
 For example: "2012-2014"
 
 \sa applicationCopyrightPeriod()
- */
+*/
 
 void BApplicationBase::setApplicationCopyrightPeriod(const QString &s)
 {
@@ -1985,7 +1985,7 @@ void BApplicationBase::setApplicationCopyrightPeriod(const QString &s)
 Sets the application description text to \a s.
 
 \sa applicationDescription(), setApplicationDescriptionFile()
- */
+*/
 
 void BApplicationBase::setApplicationDescription(const QString &s)
 {
@@ -2001,7 +2001,7 @@ Sets the path to a file which provides application description \a fileName.
 Actual file name is retrieved using BDirTools::localeBasedFileName() based on current application locale.
 
 \sa applicationDescription(), setApplicationDescription()
- */
+*/
 
 void BApplicationBase::setApplicationDescriptionFile(const QString &fileName)
 {
@@ -2015,7 +2015,7 @@ void BApplicationBase::setApplicationDescriptionFile(const QString &fileName)
 Sets the list of application CopyrightInfo to \a list.
 
 \sa applicationExtendedCopyrightInfo(), CopyrightInfo
- */
+*/
 
 void BApplicationBase::setApplicationExtendedCopyrightInfo(const QList<CopyrightInfo> &list)
 {
@@ -2033,7 +2033,7 @@ void BApplicationBase::setApplicationExtendedCopyrightInfo(const QList<Copyright
 Sets the application license text to \a s.
 
 \sa applicationLicense(), setApplicationLicenseFile()
- */
+*/
 
 void BApplicationBase::setApplicationLicense(const QString &s)
 {
@@ -2049,7 +2049,7 @@ Sets the path to a file which provides application license to \a fileName.
 Actual file name is retrieved using BDirTools::localeBasedFileName() based on current application locale.
 
 \sa applicationLicense(), setApplicationLicense()
- */
+*/
 
 void BApplicationBase::setApplicationLicenseFile(const QString &fileName)
 {
@@ -2063,7 +2063,7 @@ void BApplicationBase::setApplicationLicenseFile(const QString &fileName)
 Sets the list of application "thanks to" to \a list.
 
 \sa applicationThanksTo(), setApplicationThanksToFile(), BPersonInfoList
- */
+*/
 
 void BApplicationBase::setApplicationThanksTo(const BPersonInfoList &list)
 {
@@ -2077,7 +2077,7 @@ void BApplicationBase::setApplicationThanksTo(const BPersonInfoList &list)
 Sets the path to a file which provides application "thanks to" information to \a fileName.
 
 \sa applicationThanksToFile(), setApplicationThanksTo()
- */
+*/
 
 void BApplicationBase::setApplicationThanksToFile(const QString &fileName)
 {
@@ -2091,7 +2091,7 @@ void BApplicationBase::setApplicationThanksToFile(const QString &fileName)
 Sets the list of application translators (people, not QTranslator or BTranslator classes) to \a list.
 
 \sa applicationTranslations(), setApplicationTranslationsFile(), BPersonInfoList
- */
+*/
 
 void BApplicationBase::setApplicationTranslations(const BPersonInfoList &list)
 {
@@ -2106,7 +2106,7 @@ Sets the path to a file which provides application translators (people, not QTra
 information to \a fileName.
 
 \sa applicationTranslationsFile(), setApplicationTranslations()
- */
+*/
 
 void BApplicationBase::setApplicationTranslationsFile(const QString &fileName)
 {

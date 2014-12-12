@@ -244,7 +244,7 @@ BDynamicTranslator::~BDynamicTranslator()
 
 /*!
 Constructs an object and associates the given data object \a d with it. Object's parent is set to \a parent.
- */
+*/
 
 BDynamicTranslator::BDynamicTranslator(BDynamicTranslatorPrivate &d, QObject *parent) :
     QObject(parent), BBaseObject(d)

@@ -79,20 +79,6 @@ void BLocationProviderPrivate::init()
 ============================================================================*/
 
 /*!
-\typedef BLocationProvider::PathMap
-
-The BLocationProvider::PathMap typedef provides QString map with BApplicationBase::ResourceType keys for
-BLocationProvider.
-*/
-
-/*!
-\typedef BLocationProvider::LocationMap
-
-The BLocationProvider::LocationMap typedef provides BLocationProvider::PathMap map with QString keys for
-BLocationProvider.
-*/
-
-/*!
 \class BLocationProvider
 \brief The BLocationProvider class provides a simple location provider, which is used to provide information about
 application resources.
@@ -105,6 +91,20 @@ Example:
 \snippet src/corelib/blocationprovider.cpp 0
 
 \sa BAbstractLocationProvider
+*/
+
+/*!
+\typedef BLocationProvider::PathMap
+
+The BLocationProvider::PathMap typedef provides QString map with BApplicationBase::ResourceType keys for
+BLocationProvider.
+*/
+
+/*!
+\typedef BLocationProvider::LocationMap
+
+The BLocationProvider::LocationMap typedef provides BLocationProvider::PathMap map with QString keys for
+BLocationProvider.
 */
 
 /*============================== Public constructors =======================*/
@@ -143,7 +143,7 @@ BLocationProvider::~BLocationProvider()
 
 /*!
 Constructs a location provider and associates the given data object \a d with it.
- */
+*/
 
 BLocationProvider::BLocationProvider(BLocationProviderPrivate &d) :
     BBase(d)
