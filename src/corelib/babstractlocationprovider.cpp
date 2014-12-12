@@ -40,7 +40,7 @@ BApplicationBase::location or BApplicationBase::locations call.
 
 Example:
 
-\snippet src/corelib/babstractapplicationprovider.cpp 0
+\snippet src/corelib/babstractlocationprovider.cpp 0
 
 \sa BLocationProvider
 */
