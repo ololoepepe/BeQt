@@ -33,3 +33,5 @@
 * Implement proper icons system
 * Use references in bRet functions
 * Get rid of identifier in do_once macro (use compile-time random identifier generation)
+* Add "includeInvalid" parameter to BeQt::codecsGroups
+* Rename BeQt::codecsGroups into BeQt::allCodecGroups

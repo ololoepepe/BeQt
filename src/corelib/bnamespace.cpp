@@ -254,8 +254,191 @@ void ThreadHack::usleepHack(unsigned long usecs)
 ================================ BeQt ========================================
 ============================================================================*/
 
+/*!
+\namespace BeQt
+\inmodule BeQtCore
+
+\brief The BeQt namespace contains miscellaneous identifiers and functions used throughout the BeQt library.
+*/
+
+/*!
+\enum BeQt::CodecsGroup
+
+This type is used to specify groups of codecs used to encode/decode text.
+
+\value InvalidGroup
+\value UnicodeGroup
+\value EastEuropeanGroup
+\value WestEuropeanGroup
+\value EastAsianGroup
+\value SouthEastSouthWestAsianGroup
+\value MiddleEastGroup
+*/
+
+/*!
+\enum BeQt::FileSizeFormat
+
+This type is used to specify user-readable file size representation format.
+
+\value BytesFormat
+\value KilobytesFormat
+\value MegabytesFormat
+\value GigabytesFormat
+*/
+
+/*!
+\enum BeQt::LineFeed
+
+This type is used to specify line feed.
+
+\value DefaultLineFeed
+\value ClassicMacLineFeed
+\value UnixLineFeed
+\value WindowsLineFeed
+*/
+
+/*!
+\enum BeQt::OSType
+
+This type is used to specify an operating system.
+
+\value UnknownOS
+\value UnixOS
+\value WindowsOS
+\value LinuxOS
+\value MacOS
+*/
+
+/*!
+\enum BeQt::ProcessorArchitecture
+
+This type is used to specify a processor architecture.
+
+\value UnknownArchitecture
+\value AlphaArchitecture
+\value Amd64Architecture
+\value ArmArchitecture
+\value Arm64Architecture
+\value BlackfinArchitecture
+\value ConvexArchitecture
+\value EpiphanyArchitecture
+\value HpPaRiscArchitecture
+\value IntelX86Architecture
+\value IntelItaniumArchitecture
+\value Motorola68kAArchitecture
+\value MipsArchitecture
+\value PowerPcArchitecture
+\value Pyramid9810Architecture
+\value Rs6000Architecture
+\value SparcArchitecture
+\value SuperHArchitecture
+\value SystemZArchitecture
+\value Tms320Architecture
+\value Tms470Architecture
+*/
+
+/*!
+\enum BeQt::TabWidth
+
+This type is used to specify tabulation equivalent in spaces.
+
+\value TabWidth2
+\value TabWidth4
+\value TabWidth8
+*/
+
+/*!
+\typedef BeQt::Target
+
+The BeQt::Target typedef provides a pair of a const QObject pointer and a const char pointer for BeQt.
+*/
+
+/*!
+\typedef BeQt::Until
+
+The BeQt::Target typedef provides a pair of a const QObject pointer and a const char pointer for BeQt.
+
+\sa BeQt::Target
+*/
+
+/*!
+\variable BeQt::DataStreamVersion
+\brief The data stream version that is used to encode/decode QVariant variables to/from QByteArray data.
+*/
+
+/*!
+\variable BeQt::Second
+\brief Equivalent of 1000 (milliseconds).
+*/
+
+/*!
+\variable BeQt::Minute
+\brief Equivalent of 60000 (milliseconds).
+*/
+
+/*!
+\variable BeQt::Hour
+\brief Equivalent of 3600000 (milliseconds).
+*/
+
+/*!
+\variable BeQt::Kilobyte
+\brief Equivalent of 1024 (bytes).
+*/
+
+/*!
+\variable BeQt::Megabyte
+\brief Equivalent of 1048576 (bytes).
+*/
+
+/*!
+\variable BeQt::Gigabyte
+\brief Equivalent of 1073741824 (bytes).
+*/
+
+/*!
+\variable BeQt::ContorlShiftModifier
+\brief A Control and a Shift keys on the keyboard are pressed.
+*/
+
+/*!
+\variable BeQt::KeypadAltModifier
+\brief A keypad button and an Alt key on the keyboard are pressed.
+*/
+
+/*!
+\variable BeQt::KeypadControlModifier
+\brief A keypad button and a Control key on the keyboard are pressed.
+*/
+
+/*!
+\variable BeQt::KeypadShiftModifier
+\brief A keypad button and a Shift key on the keyboard are pressed.
+*/
+
+/*!
+\variable BeQt::KeypadControlAltModifier
+\brief A keypad button, a Control and an Alt keys on the keyboard are pressed.
+*/
+
+/*!
+\variable BeQt::KeypadControlShiftModifier
+\brief A keypad button, a Control and a Shift keys on the keyboard are pressed.
+*/
+
 namespace BeQt
 {
+
+/*!
+\fn QList<OSType> BeQt::allOSTypes(bool includeUnknown, bool includeMeta)
+Returns a list of all possible OS types.
+
+If \a includeUnknown is true, UnknownOS is included, otherwise it is not included.
+
+If \a includeMeta is true, UnixOS is included, otherwise it is not included.
+
+\sa osType()
+*/
 
 QList<OSType> allOSTypes(bool includeUnknown, bool includeMeta)
 {
@@ -266,6 +449,15 @@ QList<OSType> allOSTypes(bool includeUnknown, bool includeMeta)
         list.prepend(UnknownOS);
     return list;
 }
+
+/*!
+\fn QList<ProcessorArchitecture> BeQt::allProcessorArchitectures(bool includeUnknown)
+Returns a list of all possible processor architectures.
+
+If \a includeUnknown is true, UnknownArchitecture is included, otherwise it is not included.
+
+\sa processorArchitecture()
+*/
 
 QList<ProcessorArchitecture> allProcessorArchitectures(bool includeUnknown)
 {
@@ -279,25 +471,58 @@ QList<ProcessorArchitecture> allProcessorArchitectures(bool includeUnknown)
     return list;
 }
 
+/*!
+\fn QList<BeQt::TabWidth> BeQt::allTabWidths()
+Returns a list of all possible tab widths.
+*/
+
 QList<BeQt::TabWidth> allTabWidths()
 {
     return QList<BeQt::TabWidth>() << TabWidth2 << TabWidth4 << TabWidth8;
 }
+
+/*!
+\fn int BeQt::area(const QRect &r)
+Calculates the area of a given QRect \a r. Returns the area.
+*/
 
 int area(const QRect &r)
 {
     return r.size().width() * r.size().height();
 }
 
+/*!
+\fn qreal BeQt::area(const QRectF &r)
+\overload
+Calculates the area of a given QRect \a r. Returns the area.
+
+\sa area()
+*/
+
 qreal area(const QRectF &r)
 {
     return r.size().width() * r.size().height();
 }
 
+/*!
+\fn QTextCodec *BeQt::codec(const QString &cn)
+Raturns a pointer to a QTextCodec with the name \a cn. If there is no appropriate codec, 0 is returned.
+
+\sa codecName()
+*/
+
 QTextCodec *codec(const QString &cn)
 {
     return codec(cn.toLatin1());
 }
+
+/*!
+\fn QTextCodec *BeQt::codec(const QByteArray &cn)
+\overload
+Raturns a pointer to a QTextCodec with the name \a cn. If there is no appropriate codec, 0 is returned.
+
+\sa codec(), codecName()
+*/
 
 QTextCodec *codec(const QByteArray &cn)
 {
@@ -305,15 +530,37 @@ QTextCodec *codec(const QByteArray &cn)
     return (c && supportedCodecsMap().contains(c)) ? c : 0;
 }
 
+/*!
+\fn QString BeQt::codecName(QTextCodec *codec)
+Raturns the name of a given \a codec. If \a codec is 0, an empty QString is returned.
+
+\sa codec()
+*/
+
 QString codecName(QTextCodec *codec)
 {
     return supportedCodecsMap().value(codec);
 }
 
+/*!
+\fn QString BeQt::codecName(const QByteArray &cn)
+\overload
+Returns the name of a codec \a cn as a QString. If \a cn is not a valid codec name, an empty QString is returned.
+
+\sa codec(), codecName()
+*/
+
 QString codecName(const QByteArray &cn)
 {
     return codecName(codec(cn));
 }
+
+/*!
+\fn QStringList BeQt::codecNamesForGroup(CodecsGroup group)
+Returns a list of all supported codec names in a given \a group.
+
+\sa codecsForGroup()
+*/
 
 QStringList codecNamesForGroup(CodecsGroup group)
 {
@@ -335,6 +582,13 @@ QStringList codecNamesForGroup(CodecsGroup group)
     }
 }
 
+/*!
+\fn QList<QTextCodec *> BeQt::codecsForGroup(CodecsGroup group)
+Returns a list of pointers to all supported codecs in a given \a group.
+
+\sa codecNamesForGroup()
+*/
+
 QList<QTextCodec *> codecsForGroup(CodecsGroup group)
 {
     QList<QTextCodec *> list;
@@ -343,11 +597,23 @@ QList<QTextCodec *> codecsForGroup(CodecsGroup group)
     return list;
 }
 
+/*!
+\fn CodecsGroup BeQt::codecsGroupFromInt(int cg)
+Casts \a cg to a CodecsGroup. Returns the resulting CodecsGroup. If the value of \a cg does not match any CodecsGroup
+member, InvalidGroup is returned.
+*/
+
 CodecsGroup codecsGroupFromInt(int cg)
 {
     static const QList<int> groups = bRangeD(InvalidGroup, MiddleEastGroup);
     return groups.contains(cg) ? static_cast<CodecsGroup>(cg) : InvalidGroup;
 }
+
+/*!
+\fn QString BeQt::codecsGroupName(CodecsGroup group)
+Returns a localised (translated) name of a given \a group as a QString. If an invalid group is specified, an empty
+string is returned.
+*/
 
 QString codecsGroupName(CodecsGroup group)
 {
@@ -369,12 +635,25 @@ QString codecsGroupName(CodecsGroup group)
     }
 }
 
+/*!
+\fn QList<CodecsGroup> BeQt::codecsGroups()
+Returns a list of all codecs groups.
+*/
+
 QList<CodecsGroup> codecsGroups()
 {
     static QList<CodecsGroup> list = QList<CodecsGroup>() << UnicodeGroup << EastEuropeanGroup << WestEuropeanGroup
         << EastAsianGroup << SouthEastSouthWestAsianGroup << MiddleEastGroup;
     return list;
 }
+
+/*!
+\fn void BeQt::deleteLaterUnowned(QObject *object, QObject *possibleOwner)
+Calls deleteLater method of an \a object if it has no parent, or if it's parent equals \a possibleOwner. Otherwise does
+nothing.
+
+If \a object is 0, nothing is done.
+*/
 
 void deleteLaterUnowned(QObject *object, QObject *possibleOwner)
 {
@@ -383,6 +662,13 @@ void deleteLaterUnowned(QObject *object, QObject *possibleOwner)
     if (!object->parent() || (object->parent() == possibleOwner))
         object->deleteLater();
 }
+
+/*!
+\fn QVariant BeQt::deserialize(const QByteArray &data, QDataStream::Version version)
+Deserializes \a data to a QVariant using QDataStream. \a version is used as a QDataStream version.
+
+Returns the resulting QVariant.
+*/
 
 QVariant deserialize(const QByteArray &data, QDataStream::Version version)
 {
@@ -393,6 +679,15 @@ QVariant deserialize(const QByteArray &data, QDataStream::Version version)
     return v;
 }
 
+/*!
+\fn void BeQt::deleteUnowned(QObject *object, QObject *possibleOwner)
+Deletes an \a object if it has no parent, or if it's parent equals \a possibleOwner. Otherwise does nothing.
+
+If \a object is 0, nothing is done.
+
+\note Deleting is performed using the delete operator.
+*/
+
 void deleteUnowned(QObject *object, QObject *possibleOwner)
 {
     if (!object)
@@ -401,6 +696,22 @@ void deleteUnowned(QObject *object, QObject *possibleOwner)
         delete object;
 }
 
+/*!
+\fn int BeQt::execProcess(const QString &command, const QStringList &arguments, int startTimeout, int finishTimeout,
+                          QString *output, QTextCodec *codec)
+Executes \a command with \a arguments. If \a command is an absolute path to an executable, the working directory is set
+to the directory where the file is located.
+
+This function waits \a startTimeout milliseconds for the process to start, and \a finishTimeout milliseconds for it to
+finish. The operation is synchronous, so it may block the GUI.
+
+If \a output is a non-null pointer, the processes' output is written to it. \a codec is used to read the output.
+
+This function uses QProcess and QTextStream internally.
+
+\sa startProcess()
+*/
+
 int execProcess(const QString &command, const QStringList &arguments,
                 int startTimeout, int finishTimeout, QString *output, QTextCodec *codec)
 {
@@ -408,6 +719,22 @@ int execProcess(const QString &command, const QStringList &arguments,
     return execProcess(fi.isAbsolute() ? fi.path() : QString(), command, arguments, startTimeout, finishTimeout,
                        output, codec);
 }
+
+/*!
+\fn int BeQt::execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,
+                          int startTimeout, int finishTimeout, QString *output, QTextCodec *codec)
+\overload
+Executes \a command with \a arguments. The working directory is set to \a workingDir if it is not empty.
+
+This function waits \a startTimeout milliseconds for the process to start, and \a finishTimeout milliseconds for it to
+finish. The operation is synchronous, so it may block the GUI.
+
+If \a output is a non-null pointer, the processes' output is written to it. \a codec is used to read the output.
+
+This function uses QProcess and QTextStream internally.
+
+\sa startProcess()
+*/
 
 int execProcess(const QString &workingDir, const QString &command, const QStringList &arguments,
                 int startTimeout, int finishTimeout, QString *output, QTextCodec *codec)
@@ -433,6 +760,11 @@ int execProcess(const QString &workingDir, const QString &command, const QString
     return proc.exitCode();
 }
 
+/*!
+\fn QString BeQt::fileSizeToString(qint64 size, FileSizeFormat format, quint8 precision)
+Converts file size \a size to a human-readable localized string using \a format with \a precision.
+*/
+
 QString fileSizeToString(qint64 size, FileSizeFormat format, quint8 precision)
 {
     QString s;
@@ -450,6 +782,12 @@ QString fileSizeToString(qint64 size, FileSizeFormat format, quint8 precision)
     }
     return fileSizeToStringInternal(size, format, precision) + " " + s;
 }
+
+/*!
+\fn QString BeQt::fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precision)
+\overload
+Converts file size \a size to a human-readable bot not localized string using \a format with \a precision.
+*/
 
 QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precision)
 {
@@ -469,6 +807,16 @@ QString fileSizeToStringNoTr(qint64 size, FileSizeFormat format, quint8 precisio
     return fileSizeToStringInternal(size, format, precision) + " " + s;
 }
 
+/*!
+\fn QString BeQt::fullCodecName(QTextCodec *codec)
+Returns the full codec name of a \a codec. The full name contains of the codec description (localized string) and the
+identifier.
+
+Example: Cyrillic (UTF-8).
+
+If \a codec is 0, an empty QString is returned.
+*/
+
 QString fullCodecName(QTextCodec *codec)
 {
     if (!codec || !supportedCodecsMap().contains(codec))
@@ -477,15 +825,44 @@ QString fullCodecName(QTextCodec *codec)
     return codecDescriptiveName(cn) + " (" + cn + ")";
 }
 
+/*!
+\fn QString BeQt::fullCodecName(const QString &codecName)
+\overload
+Returns the full codec name of a codec with identifier \a codecName. The full name contains of the codec description
+(localized string) and the identifier.
+
+Example: Cyrillic (UTF-8).
+
+If \a codecName is not a valid codec name (identifier), an empty QString is returned.
+*/
+
 QString fullCodecName(const QString &codecName)
 {
     return fullCodecName(codec(codecName));
 }
 
+/*!
+\fn bool BeQt::isCodecSupported(QTextCodec *codec)
+Returns true if \a codec is supported by Qt's codec system (QTextCodec) and by BeQt. Otherwise returns false.
+
+If \a codec is 0, false is returned.
+
+\sa supportedCodecs()
+*/
+
 bool isCodecSupported(QTextCodec *codec)
 {
     return codec && supportedCodecsMap().contains(codec);
 }
+
+/*!
+\fn bool BeQt::isCodecSupported(const QString &codecName)
+\overload
+Returns true if a codec with name \a codecName is supported by Qt's codec system (QTextCodec) and by BeQt.
+Otherwise returns false.
+
+\sa supportedCodecs()
+*/
 
 bool isCodecSupported(const QString &codecName)
 {
@@ -493,6 +870,17 @@ bool isCodecSupported(const QString &codecName)
 }
 
 #if defined(Q_OS_LINUX)
+
+/*!
+\fn QString BeQt::linuxVersion()
+Returns a string containing the version of the Linux distribution (OS), on which the application is running.
+
+Information is retrieved from the /etc/lsb-release file. If no such file is found or it can not be read, "Unknown" is
+returned.
+
+\note This function is only avaliable on Linux (more exactly, if Q_OS_LINUX is defined).
+*/
+
 QString linuxVersion()
 {
     bool ok = false;
@@ -502,13 +890,31 @@ QString linuxVersion()
     sl = sl.last().split('=', QString::SkipEmptyParts);
     return (sl.size() == 2) ? ("Linux " + BTextTools::unwrapped(sl.last(), "\"")) : QString("Unknown");
 }
+
 #endif
 
 #if defined(Q_OS_MAC)
+
+/*!
+\fn QString BeQt::macVersion()
+Returns a string containing the version of the Mac OS X, on which the application is running.
+
+Information is retrieved from the QSysInfo class.
+
+\note This function is only avaliable on Mac OS X (more exactly, if Q_OS_MAC is defined).
+*/
+
 QString macVersion()
 {
     return macVersionToString(QSysInfo::macVersion());
 }
+
+/*!
+\fn QString BeQt::macVersionToString(QSysInfo::MacVersion version)
+Returns human-readable string representation of \a version of QSysInfo::MacVersion member.
+
+\note This function is only avaliable on Mac OS X (more exactly, if Q_OS_MAC is defined).
+*/
 
 QString macVersionToString(QSysInfo::MacVersion version)
 {
@@ -537,12 +943,26 @@ QString macVersionToString(QSysInfo::MacVersion version)
         return "Unknown";
     }
 }
+
 #endif
+
+/*!
+\fn void BeQt::msleep(unsigned long msecs)
+Causes the current thread to sleep for \a msecs milliseconds.
+*/
 
 void msleep(unsigned long msecs)
 {
     ThreadHack::msleepHack(msecs);
 }
+
+/*!
+\fn OSType BeQt::osType()
+Returns the type of operation system on which the application is running. If neither Q_OS_MAC, Q_OS_LINUX, nor Q_OS_WIN
+macro is defined, UnknownOS is returned.
+
+\sa OSType
+*/
 
 OSType osType()
 {
@@ -556,6 +976,11 @@ OSType osType()
     return UnknownOS;
 #endif
 }
+
+/*!
+\fn QString BeQt::osTypeToString(OSType t)
+Returns human-readable string representation of an operating system type \a t.
+*/
 
 QString osTypeToString(OSType t)
 {
@@ -572,6 +997,15 @@ QString osTypeToString(OSType t)
     }
 }
 
+/*!
+\fn QString BeQt::osVersion()
+Returns a string containing the version of the operating system, on which the application is running.
+
+Information is retrieved using either macVersion(), linuxVersion(), or windowsVersion(), depending on the platform.
+
+On an unsupported platform, an empty QString is returned.
+*/
+
 QString osVersion()
 {
 #if defined(Q_OS_MAC)
@@ -585,6 +1019,12 @@ QString osVersion()
 #endif
 }
 
+/*!
+\fn LineFeed BeQt::platformLineFeed()
+Returns s line feed, which is used by default on the platform where the application is running. If the platform is not
+supported, DefaultLineFeed is returned.
+*/
+
 LineFeed platformLineFeed()
 {
 #if defined(Q_OS_MAC)
@@ -597,6 +1037,15 @@ LineFeed platformLineFeed()
     return DefaultLineFeed;
 #endif
 }
+
+/*!
+\fn ProcessorArchitecture BeQt::processorArchitecture()
+Returns a processor architecture type for which the application was compiled.
+
+{BEQT_ARCH_*} macros are used to determine the architecture.
+
+On an unsupported platform, UnknownArchitecture is returned.
+*/
 
 ProcessorArchitecture processorArchitecture()
 {
@@ -640,8 +1089,15 @@ ProcessorArchitecture processorArchitecture()
     return Tms320Architecture;
 #elif defined(BEQT_ARCH_TMS470)
     return Tms470Architecture;
+#else
+    return UnknownArchitecture;
 #endif
 }
+
+/*!
+\fn QString BeQt::processorArchitectureToString(ProcessorArchitecture arch)
+Returns human-readable string representation of a processro architecture \a arch.
+*/
 
 QString processorArchitectureToString(ProcessorArchitecture arch)
 {
@@ -691,6 +1147,19 @@ QString processorArchitectureToString(ProcessorArchitecture arch)
         return "Unknown";
     }
 }
+
+/*!
+\fn BProperties BeQt::propertiesFromString(const QString &s, bool resolveVariables, bool *ok)
+Parses a string \a s and creates a BProperties file from it. See \l https://en.wikipedia.org/wiki/.properties for the
+description of the .properties format.
+
+If \a resolveVariables is true, the values of the variables enclosed in braces are resolved when parsing; otherwise
+they are treated as raw values.
+
+If \a ok is a non-zero pointer, it's value is set to true on success, and to false on any error.
+
+\sa propertiesToString()
+*/
 
 BProperties propertiesFromString(const QString &s, bool resolveVariables, bool *ok)
 {
@@ -776,10 +1245,31 @@ BProperties propertiesFromString(const QString &s, bool resolveVariables, bool *
     return bRet(ok, true, p);
 }
 
+/*!
+\fn BProperties BeQt::propertiesFromString(const QString &s, bool *ok)
+\overload
+Parses a string \a s and creates a BProperties file from it. See \l https://en.wikipedia.org/wiki/.properties for the
+description of the .properties format.
+
+The values of the variables enclosed in braces are resolved when parsing.
+
+If \a ok is a non-zero pointer, it's value is set to true on success, and to false on any error.
+
+\sa propertiesFromString(), propertiesToString()
+*/
+
 BProperties propertiesFromString(const QString &s, bool *ok)
 {
     return propertiesFromString(s, true, ok);
 }
+
+/*!
+\fn QString BeQt::propertiesToString(const BProperties &p)
+Converts \a p to a string in the .properties file format. See \l https://en.wikipedia.org/wiki/.properties for the
+description of the .properties format.
+
+\sa propertiesFromString()
+*/
 
 QString propertiesToString(const BProperties &p)
 {
@@ -796,6 +1286,13 @@ QString propertiesToString(const BProperties &p)
     return s;
 }
 
+/*!
+\fn QByteArray BeQt::serialize(const QVariant &variant, QDataStream::Version version)
+Serializes \a variant to a QByteArray data using QDataStream. \a version is used as a QDataStream version.
+
+Returns the resulting QByteArray.
+*/
+
 QByteArray serialize(const QVariant &variant, QDataStream::Version version)
 {
     QByteArray data;
@@ -805,10 +1302,24 @@ QByteArray serialize(const QVariant &variant, QDataStream::Version version)
     return data;
 }
 
+/*!
+\fn void BeQt::sleep(unsigned long secs)
+Causes the current thread to sleep for \a secs seconds.
+*/
+
 void sleep(unsigned long secs)
 {
     ThreadHack::sleepHack(secs);
 }
+
+/*!
+\fn void BeQt::startProcess(QProcess *proc, const QString &command, const QStringList &arguments)
+Starts a process \a proc. The \a command argument is used as a command, and \a arguments are the arguments.
+
+On Windows, this function merges the command and the arguments to avoid a bug with long arguments.
+
+\sa execProcess()
+*/
 
 void startProcess(QProcess *proc, const QString &command, const QStringList &arguments)
 {
@@ -824,10 +1335,29 @@ void startProcess(QProcess *proc, const QString &command, const QStringList &arg
     //End of the workaround
 }
 
+/*!
+\fn bool BeQt::startProcessDetached(const QString &command, const QStringList &arguments)
+Starts a process detached. The \a command argument is used as a command, and \a arguments are the arguments.
+
+Returns true on success; otherwise returns false.
+
+\sa startProcess()
+*/
+
 bool startProcessDetached(const QString &command, const QStringList &arguments)
 {
     return startProcessDetached(command, QString(), arguments);
 }
+
+/*!
+\fn bool BeQt::startProcessDetached(const QString &command, const QString &workingDir, const QStringList &arguments)
+Starts a process detached. The \a command argument is used as a command, and \a arguments are the arguments. The
+working directory is set to \a workingDir.
+
+Returns true on success; otherwise returns false.
+
+\sa startProcess()
+*/
 
 bool startProcessDetached(const QString &command, const QString &workingDir, const QStringList &arguments)
 {
@@ -836,10 +1366,24 @@ bool startProcessDetached(const QString &command, const QString &workingDir, con
     return QProcess::startDetached(command, arguments, workingDir);
 }
 
+/*!
+\fn QList<QTextCodec *> BeQt::supportedCodecs()
+Returns a list of pointers to all codecs supported by Qt's codec system (QTextCodec) and by BeQt.
+
+\sa isCodecSupported()
+*/
+
 QList<QTextCodec *> supportedCodecs()
 {
     return supportedCodecsMap().keys();
 }
+
+/*!
+\fn QStringList BeQt::supportedCodecsNames()
+Returns a list of names (identifiers) of all codecs supported by Qt's codec system (QTextCodec) and by BeQt.
+
+\sa supportedCodecs()
+*/
 
 QStringList supportedCodecsNames()
 {
@@ -849,11 +1393,24 @@ QStringList supportedCodecsNames()
     return list;
 }
 
+/*!
+\fn TabWidth BeQt::tabWidthFromInt(int tw)
+Casts \a tw to a TabWidth. Returns the resulting TabWidth. If the value of \a tw does not match any TabWidth member,
+TabWidth4 is returned.
+*/
+
 TabWidth tabWidthFromInt(int tw)
 {
-    static const QList<int> values = bRangeD(TabWidth2, TabWidth8);
+    static const QList<int> values = QList<int>() << TabWidth2 << TabWidth4 << TabWidth8;
     return values.contains(tw) ? static_cast<TabWidth>(tw) : TabWidth4;
 }
+
+/*!
+\fn void BeQt::takeOwnership(QObject *object, QObject *newOwner)
+Makes a \a newOwner become a parent of an \a object, if \a object does not have any parent. Otherwise does nothing.
+
+If \a object is 0 or \a newOwner is 0, nothing is done.
+*/
 
 void takeOwnership(QObject *object, QObject *newOwner)
 {
@@ -863,13 +1420,33 @@ void takeOwnership(QObject *object, QObject *newOwner)
         object->setParent(newOwner);
 }
 
+/*!
+\fn Target BeQt::target(const QObject *object, const char *method)
+
+Returns a Target pair, constructed from the given \a object and \a method.
+*/
+
 Target target(const QObject *object, const char *method)
 {
-    Target p;
-    p.first = object;
-    p.second = method;
-    return p;
+    return qMakePair(object, method);
 }
+
+/*!
+\fn QString BeQt::translate(const char *context, const char *sourceText, const char *disambiguation, int n)
+
+A wrapper function for QCoreApplication::translate(). Provides the same interface for Qt4 and Qt5.
+
+Returns the translation text for \a sourceText, by querying the installed translation files. The translation files are
+searched from the most recently installed file back to the first installed file.
+
+\a context is typically a class name (e.g., "MyDialog") and sourceText is either English text or a short identifying
+text.
+
+\a disambiguation is an identifying string, for when the same sourceText is used in different roles within the same
+context. By default, it is null.
+
+\a n is used in conjunction with %n to support plural forms.
+*/
 
 QString translate(const char *context, const char *sourceText, const char *disambiguation, int n)
 {
@@ -880,34 +1457,90 @@ QString translate(const char *context, const char *sourceText, const char *disam
 #endif
 }
 
+/*!
+\fn Until BeQt::until(const QObject *object, const char *signal)
+
+Returns an Until pair, constructed from the given \a object and \a signal.
+*/
+
 Until until(const QObject *object, const char *signal)
 {
-    Until p;
-    p.first = object;
-    p.second = signal;
-    return p;
+    return qMakePair(object, signal);
 }
+
+/*!
+\fn void BeQt::usleep(unsigned long usecs)
+Causes the current thread to sleep for \a usecs microseconds.
+*/
 
 void usleep(unsigned long usecs)
 {
     ThreadHack::usleepHack(usecs);
 }
 
+/*!
+\fn void BeQt::waitNonBlocking(int msecs)
+Starts a local QEventLoop which is finished after \a msecs milliseconds pass.
+
+If \a msecs is less or equal to zero, the loop will be executed forever.
+
+This function blocks execution of the current function, but does not block the Qt's signal and slot system. The GUI is
+not block either.
+*/
+
 void waitNonBlocking(int msecs)
 {
     waitNonBlocking(QList<Until>(), msecs);
 }
+
+/*!
+\fn void BeQt::waitNonBlocking(const QObject *sender, const char *signal, int msecs)
+\overload
+Starts a local QEventLoop which is finished after \a msecs milliseconds pass or when \a sender emits \a signal.
+
+If \a msecs is less or equal to zero, the loop can be only terminated by emitting the \a {sender}'s \a signal.
+
+This function blocks execution of the current function, but does not block the Qt's signal and slot system. The GUI is
+not block either.
+*/
 
 void waitNonBlocking(const QObject *sender, const char *signal, int msecs)
 {
     waitNonBlocking(QList<Until>() << until(sender, signal), msecs);
 }
 
+/*!
+\fn void BeQt::waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2,
+                               const char *signal2, int msecs)
+\overload
+Starts a local QEventLoop which is finished after \a msecs milliseconds pass or when \a sender1 emits \a signal1, or
+when \a sender2 emits \a signal2.
+
+If \a msecs is less or equal to zero, the loop can be only terminated by emitting the corresponding signal of one of
+the senders.
+
+This function blocks execution of the current function, but does not block the Qt's signal and slot system. The GUI is
+not block either.
+*/
+
 void waitNonBlocking(const QObject *sender1, const char *signal1, const QObject *sender2, const char *signal2,
                      int msecs)
 {
     waitNonBlocking(QList<Until>() << until(sender1, signal1) << until(sender2, signal2), msecs);
 }
+
+/*!
+\fn void BeQt::waitNonBlocking(const QList<Until> &list, int msecs)
+\overload
+Starts a local QEventLoop which is finished after \a msecs milliseconds pass or when one of the senders form the
+\a list emits the corresponding signal.
+
+If \a msecs is less or equal to zero, the loop can be only terminated by emitting the corresponding signal of one of
+the senders.
+
+This function blocks execution of the current function, but does not block the Qt's signal and slot system. The GUI is
+not block either.
+*/
 
 void waitNonBlocking(const QList<Until> &list, int msecs)
 {
@@ -927,10 +1560,27 @@ void waitNonBlocking(const QList<Until> &list, int msecs)
 }
 
 #if defined(Q_OS_WIN)
+
+/*!
+\fn QString BeQt::windowsVersion()
+Returns a string containing the version of the Windows operationg system, on which the application is running.
+
+Information is retrieved from the QSysInfo class.
+
+\note This function is only avaliable on Windows (more exactly, if Q_OS_WIN is defined).
+*/
+
 QString windowsVersion()
 {
     return windowsVersionToString(QSysInfo::windowsVersion());
 }
+
+/*!
+\fn QString BeQt::windowsVersionToString(QSysInfo::WinVersion version)
+Returns human-readable string representation of \a version of QSysInfo::WinVersion member.
+
+\note This function is only avaliable on Windows (more exactly, if Q_OS_WIN is defined).
+*/
 
 QString windowsVersionToString(QSysInfo::WinVersion version)
 {
@@ -962,6 +1612,7 @@ QString windowsVersionToString(QSysInfo::WinVersion version)
         return "Unknown";
     }
 }
+
 #endif
 
 }

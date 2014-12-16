@@ -1821,53 +1821,53 @@
         <translation>Еврейская видимая</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="356"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="622"/>
         <source>Unicode</source>
         <comment>codecs group name</comment>
         <translation>Юникод</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="358"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="624"/>
         <source>Eastern Europe</source>
         <comment>codecs group name</comment>
         <translation>Восточная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="360"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="626"/>
         <source>Western Europe</source>
         <comment>codecs group name</comment>
         <translation>Западная Европа</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="362"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="628"/>
         <source>East Asia</source>
         <comment>codecs group name</comment>
         <translation>Восточная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="364"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="630"/>
         <source>South-East and South-West Asia</source>
         <comment>codecs group name</comment>
         <translation>Юго-Восточная и Юго-Западная Азия</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="366"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="632"/>
         <source>Middle East</source>
         <comment>codecs group name</comment>
         <translation>Центральный Восток</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="441"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="773"/>
         <source>Megabyte(s)</source>
         <translation>Мегабайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="444"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="776"/>
         <source>Kilobyte(s)</source>
         <translation>Килобайт(а)</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bnamespace.cpp" line="448"/>
+        <location filename="../src/corelib/bnamespace.cpp" line="780"/>
         <source>Byte(s)</source>
         <translation>Байт(а)</translation>
     </message>
