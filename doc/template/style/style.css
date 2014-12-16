@@ -1951,3 +1951,8 @@ h3 {
     margin-bottom: 5px;
     font-size: 16px;
 }
+
+li {
+    margin-top: 5px;
+    margin-bottom: 10px;
+}

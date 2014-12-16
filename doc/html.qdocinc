@@ -1,7 +1,5 @@
 HTML.templatedir = "./template"
 
-HTML.stylesheets = "./template/style/style.css"
-
 HTML.headerstyles = "  <link rel=\"stylesheet\" type=\"text/css\" href=\"style/style.css\" />\n" \
                     "</head>\n" \
                     "<body>\n"
