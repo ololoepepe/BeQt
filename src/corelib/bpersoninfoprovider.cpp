@@ -185,13 +185,57 @@ void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
 ================================ BPersonInfoProvider =========================
 ============================================================================*/
 
+/*!
+\class BPersonInfoProvider
+\inmodule BeQtCore
+\brief The BPersonInfoProvider class is used to provide information about persons/organizations, typically application
+authors, translators, etc.
+
+Information about persons is read from a file and is represented as a BPersonInfoList.
+
+Example (authors.beqt-info):
+
+\snippet src/corelib/bpersoninfoprovider.beqt-info 0
+
+Example (main.cpp):
+
+\snippet src/corelib/bpersoninfoprovider.cpp 0
+*/
+
+/*!
+\property BPersonInfoProvider::fileName
+
+This property gets and sets the BPersonInfoProvider's information source file name.
+
+The information is automatically reloaded when this property is changed.
+
+By default, this property contains an empty QString.
+*/
+
+/*!
+\fn BPersonInfoProvider::reloaded()
+
+This signal is emitted immediately after the information is loaded from the source file assigned to the person info
+provider.
+
+\sa reload(), setFileName()
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a person info provider and sets it's parent to \a parent.
+*/
 
 BPersonInfoProvider::BPersonInfoProvider(QObject *parent) :
     QObject(parent), BBase(*new BPersonInfoProviderPrivate(this))
 {
     d_func()->init();
 }
+
+/*!
+Constructs a person info provider and sets it's information source file name to \a fileName, and parent to \a parent.
+*/
 
 BPersonInfoProvider::BPersonInfoProvider(const QString &fileName, QObject *parent) :
     QObject(parent), BBase(*new BPersonInfoProviderPrivate(this))
@@ -200,12 +244,20 @@ BPersonInfoProvider::BPersonInfoProvider(const QString &fileName, QObject *paren
     setFileName(fileName);
 }
 
+/*!
+Destroys the object, deleting the associated data object.
+*/
+
 BPersonInfoProvider::~BPersonInfoProvider()
 {
     //
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs an object and associates the given data object \a d with it. Parent is set to \a parent.
+*/
 
 BPersonInfoProvider::BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
@@ -214,6 +266,12 @@ BPersonInfoProvider::BPersonInfoProvider(BPersonInfoProviderPrivate &d, QObject 
 }
 
 /*============================== Static public methods =====================*/
+
+/*!
+Returns the string representation of person info list \a list.
+
+\sa infosString()
+*/
 
 QString BPersonInfoProvider::infoListToString(const BPersonInfoList &list)
 {
@@ -234,12 +292,30 @@ QString BPersonInfoProvider::infoListToString(const BPersonInfoList &list)
     return s;
 }
 
+/*!
+\overload
+Returns the string representation of person info list provided by \a prov. \a locale is used as a target locale.
+
+If \a noDefault is true and there is no info for the \a locale for some person, the person will not be listed.
+
+\sa infoListToString(), infos()
+*/
+
 QString BPersonInfoProvider::infosString(const BPersonInfoProvider *prov, bool noDefault, const QLocale &locale)
 {
     if (!prov)
         return "";
     return prov->infosString(noDefault, locale);
 }
+
+/*!
+\overload
+Returns the string representation of person info list provided by \a prov. \a locale is used as a target locale.
+
+If \a noDefault is true and there is no info for the \a locale for some person, the person will not be listed.
+
+\sa infoListToString(), infos()
+*/
 
 QString BPersonInfoProvider::infosString(const BPersonInfoProvider *prov, const QLocale &locale, bool noDefault)
 {
@@ -255,10 +331,27 @@ QString BPersonInfoProvider::fileName() const
     return d_func()->fileName;
 }
 
+/*!
+Returns the person info list provided by this object. \a locale is used as a target locale.
+
+If \a noDefault is true and there is no info for the \a locale for some person, the person will not be listed.
+
+\sa infosString()
+*/
+
 BPersonInfoList BPersonInfoProvider::infos(bool noDefault, const QLocale &locale) const
 {
     return infos(locale.name(), noDefault);
 }
+
+/*!
+\overload
+Returns the person info list provided by this object. \a locale is used as a target locale.
+
+If \a noDefault is true and there is no info for the \a locale for some person, the person will not be listed.
+
+\sa infosString()
+*/
 
 BPersonInfoList BPersonInfoProvider::infos(const QLocale &locale, bool noDefault) const
 {
@@ -271,10 +364,28 @@ BPersonInfoList BPersonInfoProvider::infos(const QLocale &locale, bool noDefault
     return list;
 }
 
+/*!
+\overload
+Returns the string representation of person info list provided by this object. \a locale is used as a target locale.
+
+If \a noDefault is true and there is no info for the \a locale for some person, the person will not be listed.
+
+\sa infoListToString(), infos()
+*/
+
 QString BPersonInfoProvider::infosString(bool noDefault, const QLocale &locale) const
 {
     return infoListToString(infos(noDefault, locale));
 }
+
+/*!
+\overload
+Returns the string representation of person info list provided by this object. \a locale is used as a target locale.
+
+If \a noDefault is true and there is no info for the \a locale for some person, the person will not be listed.
+
+\sa infoListToString(), infos()
+*/
 
 QString BPersonInfoProvider::infosString(const QLocale &locale, bool noDefault) const
 {
@@ -284,12 +395,23 @@ QString BPersonInfoProvider::infosString(const QLocale &locale, bool noDefault) 
 void BPersonInfoProvider::setFileName(const QString &fileName)
 {
     B_D(BPersonInfoProvider);
-    if (fileName.isEmpty() || fileName == d->fileName)
-        return;
+#if defined(Q_OS_WIN)
+    static const Qt::CaseSensitivity Cs = Qt::CaseInsensitive;
+#else
+    static const Qt::CaseSensitivity Cs = Qt::CaseSensitive;
+#endif
+    if (fileName.isEmpty() || !fileName.compare(d->fileName, Cs))
+        return
     d->setFileName(fileName);
 }
 
 /*============================== Public slots ==============================*/
+
+/*!
+This slot forces the person info provider to read information from the source file associated with it.
+
+May be useful if the associated source file's content is changed and the information must be reloaded.
+*/
 
 void BPersonInfoProvider::reload()
 {

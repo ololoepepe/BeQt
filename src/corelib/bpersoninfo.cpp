@@ -147,6 +147,10 @@ BPersonInfo::BPersonInfo(BPersonInfoPrivate &d) :
 /*!
 Returns the path to the image (avatar) for this person info.
 
+The path may be absolute (and generally anything), but BeQt expects a path relative to the shared resources directory
+(or builtin resources directory - ":/"). You must use a relative subpath if you want the BeQt library to handle your
+person info object avatar correctly.
+
 \sa setImage()
 */
 
