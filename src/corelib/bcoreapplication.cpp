@@ -80,6 +80,7 @@ Calls BApplicationBase::binstance() and casts it to pointer to BCoreApplication.
 
 /*!
 \class BCoreApplication
+\inmodule BeQtCore
 \brief The BCoreApplication class provides both QCoreApplication and BApplicationBase functionality.
 
 This class is used by non-GUI applications to provide their event loop, resources, plugins and translations systems.

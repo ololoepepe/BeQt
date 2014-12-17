@@ -27,6 +27,7 @@
 
 /*!
 \class BAbstractLocationProvider
+\inmodule BeQtCore
 \brief The BAbstractLocationProvider class is the abstract base class of location providers, which are used to provide
 information about application resources.
 

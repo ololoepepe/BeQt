@@ -80,6 +80,7 @@ void BLocationProviderPrivate::init()
 
 /*!
 \class BLocationProvider
+\inmodule BeQtCore
 \brief The BLocationProvider class provides a simple location provider, which is used to provide information about
 application resources.
 

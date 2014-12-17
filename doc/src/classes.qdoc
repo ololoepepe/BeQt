@@ -42,7 +42,9 @@ Links to indexes and lists for finding class and function reference documentatio
 
 \brief If you know the name of the class you want, find it here.
 
-This is a list of all BeQt classes.
+\raw HTML
+<p>This is a list of all BeQt classes.</p>
+\endraw
 
 \generatelist classes
 */
@@ -54,8 +56,10 @@ This is a list of all BeQt classes.
 
 \brief All documented BeQt functions listed alphabetically with a link to where each one is declared.
 
-This is the list of all documented member functions and global functions in the BeQt API. Each function has a link to
-the class or header file where it is declared and documented.
+\raw HTML
+<p>This is the list of all documented member functions and global functions in the BeQt API. Each function has a link
+to the class or header file where it is declared and documented.</p>
+\endraw
 
 \generatelist functionindex
 */
@@ -67,7 +71,9 @@ the class or header file where it is declared and documented.
 
 \brief A BeQt namespace contains enum types, functions, and sometimes classes.
 
-This is a list of the main namespaces in BeQt.
+\raw HTML
+<p>This is a list of the main namespaces in BeQt.</p>
+\endraw
 
 \generatelist{namespaces}
 */

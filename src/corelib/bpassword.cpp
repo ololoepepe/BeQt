@@ -88,6 +88,7 @@ void BPasswordPrivate::init()
 
 /*!
 \class BPassword
+\inmodule BeQtCore
 \brief The BPassword class provides means of storing a password in an open or encrypted form.
 */
 

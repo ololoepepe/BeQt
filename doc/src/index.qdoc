@@ -30,7 +30,9 @@
     \div {class="indexboxcont indexboxbar"}
         \div {class="sectionlist normallist"}
             \div {class="heading"}
-                BeQt API
+                \raw HTML
+                <p>BeQt API</p>
+                \endraw
             \enddiv
             \list
             \li \l{All Classes}{All Classes}

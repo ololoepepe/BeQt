@@ -127,6 +127,7 @@ void BLoggerPrivate::timeout()
 
 /*!
 \class BLogger
+\inmodule BeQtCore
 \brief The BLogger class provides means of logging for BeQt classes.
 
 This class is used by some BeQt classes for logging to a file or standard output (stdout/stderr). It may also be used

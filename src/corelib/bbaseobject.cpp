@@ -54,6 +54,7 @@ void BBaseObjectPrivate::init()
 
 /*!
 \class BBaseObject
+\inmodule BeQtCore
 \brief The BBaseObject class is the base class of all BeQt classes implementing D-pointer approach.
 
 The corresponding BBaseObjectPrivate class is inherited from the QObject class, so you may make use of Qt signals and

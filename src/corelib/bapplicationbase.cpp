@@ -489,6 +489,7 @@ Equivalent of BApplicationBase::log().
 
 /*!
 \class BApplicationBase
+\inmodule BeQtCore
 \brief The BApplicationBase class provides application-wide resources, settings, translations and plugins system.
 
 This class is not instantiated directly, but is inherited by BCoreApplication and BApplication classes, which also

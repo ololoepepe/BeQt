@@ -37,6 +37,7 @@
 /*!
 \headerfile <BeQtGlobal>
 \title Global BeQt Declarations
+\inmodule BeQtCore
 \ingroup funclists
 
 \brief The <BeQtGlobal> header file includes the fundamental global declarations. It is included by most other BeQt

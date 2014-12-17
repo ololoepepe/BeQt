@@ -75,6 +75,7 @@ void BDynamicTranslatorPrivate::translate()
 
 /*!
 \class BDynamicTranslator
+\inmodule BeQtCore
 \brief The BDynamicTranslator class provides means of dynamic translation.
 
 This class is used to change some QObject's QString property or to invoke that QObject's slot with a QString argument

@@ -80,7 +80,23 @@ void BPersonInfoPrivate::init()
 ================================ BPersonInfo =================================
 ============================================================================*/
 
+/*!
+\class BPersonInfo
+\inmodule BeQtCore
+\brief The BPersonInfo class stores information about a person (or organization).
+
+The BPersonInfo class represents a person or an organization. It is used by BeQt to provide information about
+application authors, translators, etc.
+
+\sa BPersonInfoList, BPersonInfoProvider
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a person info object and sets the person's name to \a name, role to \a role, website to \a site, e-mail to
+\a mail, and path to image (avatar) to \a image.
+*/
 
 BPersonInfo::BPersonInfo(const QString &name, const QString &role, const QString &site, const QString &mail,
                          const QString &image) :
@@ -95,11 +111,19 @@ BPersonInfo::BPersonInfo(const QString &name, const QString &role, const QString
     d->image = image;
 }
 
+/*!
+Constructs a copy of \a other.
+*/
+
 BPersonInfo::BPersonInfo(const BPersonInfo &other) :
     BBase(*new BPersonInfoPrivate(this))
 {
     *this = other;
 }
+
+/*!
+Destroys the object, deleting the associated data object.
+*/
 
 BPersonInfo::~BPersonInfo()
 {
@@ -107,6 +131,10 @@ BPersonInfo::~BPersonInfo()
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs an object and associates the given data object \a d with it.
+*/
 
 BPersonInfo::BPersonInfo(BPersonInfoPrivate &d) :
     BBase(d)
@@ -116,55 +144,125 @@ BPersonInfo::BPersonInfo(BPersonInfoPrivate &d) :
 
 /*============================== Public methods ============================*/
 
+/*!
+Returns the path to the image (avatar) for this person info.
+
+\sa setImage()
+*/
+
 QString BPersonInfo::image() const
 {
     return d_func()->image;
 }
+
+/*!
+Returns true if this person info is valid.
+
+The person info is considered valid if it's name is not empty.
+
+\sa name()
+*/
 
 bool BPersonInfo::isValid() const
 {
     return !d_func()->name.isEmpty();
 }
 
+/*!
+Returns the e-mail address of the person/organization represented by this person info.
+
+\sa setMail()
+*/
+
 QString BPersonInfo::mail() const
 {
     return d_func()->mail;
 }
+
+/*!
+Returns the name of the person/organization represented by this person info.
+
+\sa setName()
+*/
 
 QString BPersonInfo::name() const
 {
     return d_func()->name;
 }
 
+/*!
+Returns the role of the person/organization represented by this person info.
+
+A role is the contribution a person/organization made for the application.
+
+\sa setRole()
+*/
+
 QString BPersonInfo::role() const
 {
     return d_func()->role;
 }
+
+/*!
+Sets the path to the image (avatar) for the person/organization represented by this person info to \a image.
+
+\sa image()
+*/
 
 void BPersonInfo::setImage(const QString &image)
 {
     d_func()->image = image;
 }
 
+/*!
+Sets the e-mail of the person/organization represented by this person info to \a mail.
+
+\sa mail()
+*/
+
 void BPersonInfo::setMail(const QString &mail)
 {
     d_func()->mail = mail;
 }
+
+/*!
+Sets the name of the person/organization represented by this person info to \a name.
+
+\sa name()
+*/
 
 void BPersonInfo::setName(const QString &name)
 {
     d_func()->name = name;
 }
 
+/*!
+Sets the role of the person/organization represented by this person info to \a role.
+
+\sa role()
+*/
+
 void BPersonInfo::setRole(const QString &role)
 {
     d_func()->role = role;
 }
 
+/*!
+Sets the website of the person/organization represented by this person info to \a site.
+
+\sa site()
+*/
+
 void BPersonInfo::setSite(const QString &site)
 {
     d_func()->site = site;
 }
+
+/*!
+Returns the website of the person/organization represented by this person info.
+
+\sa setSite()
+*/
 
 QString BPersonInfo::site() const
 {
@@ -172,6 +270,10 @@ QString BPersonInfo::site() const
 }
 
 /*============================== Public operators ==========================*/
+
+/*!
+Assigns \a other to this person info and returns a reference to this person info.
+*/
 
 BPersonInfo &BPersonInfo::operator =(const BPersonInfo &other)
 {
@@ -185,6 +287,12 @@ BPersonInfo &BPersonInfo::operator =(const BPersonInfo &other)
     return *this;
 }
 
+/*!
+Returns true if this person info is equal to password \a other; otherwise returns false.
+
+The person infos are equal if their names, roles, websites, e-mails and paths to avatar images are equal.
+*/
+
 bool BPersonInfo::operator ==(const BPersonInfo &other) const
 {
     const B_D(BPersonInfo);
@@ -193,10 +301,20 @@ bool BPersonInfo::operator ==(const BPersonInfo &other) const
             && d->image == dd->image;
 }
 
+/*!
+Returns true if this person info is not equal to person info \a other; otherwise returns false.
+
+The person infos are equal if their names, roles, websites, e-mails and paths to avatar images are equal.
+*/
+
 bool BPersonInfo::operator !=(const BPersonInfo &other) const
 {
     return !(other == *this);
 }
+
+/*!
+Stores the person info in a QVariant. Returns that QVariant.
+*/
 
 BPersonInfo::operator QVariant() const
 {
@@ -204,6 +322,13 @@ BPersonInfo::operator QVariant() const
 }
 
 /*============================== Public friend operators ===================*/
+
+/*!
+\relates BPersonInfo
+Writes the person info \a info to the data stream \a stream.
+
+Returns a reference to the stream.
+*/
 
 QDataStream &operator <<(QDataStream &stream, const BPersonInfo &info)
 {
@@ -218,6 +343,13 @@ QDataStream &operator <<(QDataStream &stream, const BPersonInfo &info)
     return stream;
 }
 
+/*!
+\relates BPersonInfo
+Reads a person info from the data stream \a stream into \a info.
+
+Returns a reference to the stream.
+*/
+
 QDataStream &operator >>(QDataStream &stream, BPersonInfo &info)
 {
     BPersonInfoPrivate *d = info.d_func();
@@ -230,6 +362,12 @@ QDataStream &operator >>(QDataStream &stream, BPersonInfo &info)
     d->image =m.value("image").toString();
     return stream;
 }
+
+/*!
+\relates BPersonInfo
+Writes the person info \a info to the output stream for debugging information \a dbg and returns a reference to the
+stream.
+*/
 
 QDebug operator <<(QDebug dbg, const BPersonInfo &info)
 {
