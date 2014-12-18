@@ -77,3 +77,10 @@ to the class or header file where it is declared and documented.</p>
 
 \generatelist{namespaces}
 */
+
+/*!
+\page modules.html
+\title All Modules
+
+\brief All modules.
+*/

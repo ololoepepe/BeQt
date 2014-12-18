@@ -104,8 +104,7 @@ BLocationProvider.
 /*!
 \typedef BLocationProvider::LocationMap
 
-The BLocationProvider::LocationMap typedef provides BLocationProvider::PathMap map with QString keys for
-BLocationProvider.
+The BLocationProvider::LocationMap typedef provides PathMap map with QString keys for BLocationProvider.
 */
 
 /*============================== Public constructors =======================*/

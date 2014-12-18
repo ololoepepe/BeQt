@@ -273,6 +273,15 @@ By default, this property contains an invalid BVersion.
 */
 
 /*!
+\typedef BPluginWrapper::InterfaceTestFunction
+
+The BPluginWrapper::InterfaceTestFunction typedef provides a pointer to a function taking a pointer to const QObject
+and returning bool.
+
+\sa interfaceTestFunction()
+*/
+
+/*!
 \fn BPluginWrapper::aboutToBeDeactivated()
 
 This signal is emitted immediately before the plugin owned by this BPluginWrapper is deactivated.
@@ -286,15 +295,6 @@ This signal is emitted immediately before the plugin owned by this BPluginWrappe
 This signal is emitted immediately after the plugin owned by this BPluginWrapper is activated.
 
 \sa BPluginInterface::activate()
-*/
-
-/*!
-\typedef BPluginWrapper::InterfaceTestFunction
-
-The BPluginWrapper::InterfaceTestFunction typedef provides a pointer to a function taking a pointer to const QObject
-and returning bool.
-
-\sa interfaceTestFunction()
 */
 
 /*============================== Public constructors =======================*/
