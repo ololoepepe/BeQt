@@ -98,7 +98,47 @@ void BSettingsNodePrivate::init()
 ================================ BSettingsNode ===============================
 ============================================================================*/
 
+/*!
+\class BSettingsNode
+\inmodule BeQtCore
+\brief The BSettingsNode class is used to provide information about application settings hierarchy for BTerminal.
+
+Application settings hierarchy is represented by several BSettingsNode objects organized in a tree structure. There is
+one root node, and it's child nodes, which in turn may have their own child nodes.
+
+Each BSettingsNode represents either a section, a subsection, or a key. The exception is the root node. Every key node
+has it's type (one of the QVariant::Type). A node may also provide custom setter/getter functions, and a function for
+showing the corresponding value in a terminal.
+
+\sa {Settings handling}
+*/
+
+/*!
+\typedef BSettingsNode::GetFunction
+
+The BSettingsNode::GetFunction typedef provides a pointer to a function taking const pointer to BSettingsNode and
+returning QVariant.
+*/
+
+/*!
+\typedef BSettingsNode::SetFunction
+
+The BSettingsNode::SetFunction typedef provides a pointer to a function taking const pointer to BSettingsNode and const
+QVariant, and returning bool.
+*/
+
+/*!
+\typedef BSettingsNode::ShowFunction
+
+The BSettingsNode::ShowFunction typedef provides a pointer to a function taking const pointer to BSettingsNode and const
+QVariant, and returning bool.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a settings node and sets it's parent to \a parent.
+*/
 
 BSettingsNode::BSettingsNode(BSettingsNode *parent) :
     BBase(*new BSettingsNodePrivate(this))
@@ -107,6 +147,10 @@ BSettingsNode::BSettingsNode(BSettingsNode *parent) :
     setParent(parent);
 }
 
+/*!
+Constructs a settings node and sets it's parent to \a parent. The node's key is set to \a key.
+*/
+
 BSettingsNode::BSettingsNode(const QString &key, BSettingsNode *parent) :
     BBase(*new BSettingsNodePrivate(this))
 {
@@ -114,6 +158,11 @@ BSettingsNode::BSettingsNode(const QString &key, BSettingsNode *parent) :
     setParent(parent);
     setKey(key);
 }
+
+/*!
+Constructs a settings node and sets it's parent to \a parent. The node's key is set to \a key, and the value type is
+set to \a type.
+*/
 
 BSettingsNode::BSettingsNode(QVariant::Type type, const QString &key, BSettingsNode *parent) :
     BBase(*new BSettingsNodePrivate(this))
@@ -124,12 +173,25 @@ BSettingsNode::BSettingsNode(QVariant::Type type, const QString &key, BSettingsN
     setKey(key);
 }
 
+/*!
+Destroys the object, deleting the associated data object. All child objects are deleted recursively.
+*/
+
 BSettingsNode::~BSettingsNode()
 {
     //
 }
 
 /*============================== Static public methods =====================*/
+
+/*!
+Converts the string \a s to a QVariant of type \a t. Returns that QVariant.
+
+If \a ok if a non-null pointer, it's value is set to true if the conversion is successful, otherwise it's value is set
+to false.
+
+\sa variantToString()
+*/
 
 QVariant BSettingsNode::stringToVariant(const QString &s, QVariant::Type t, bool *ok)
 {
@@ -148,6 +210,15 @@ QVariant BSettingsNode::stringToVariant(const QString &s, QVariant::Type t, bool
     }
     return v;
 }
+
+/*!
+Returns the string representation of the QVariant \a v.
+
+If \a ok is a non-null pointer and \a v can be represented as a string, the value of \a ok is set to true, otherwise
+it's value is set to false.
+
+\sa stringToVariant()
+*/
 
 QString BSettingsNode::variantToString(QVariant v, bool *ok)
 {
@@ -170,6 +241,12 @@ QString BSettingsNode::variantToString(QVariant v, bool *ok)
 
 /*============================== Public methods ============================*/
 
+/*!
+Appends \a node to the list of this node's child nodes.
+
+\sa childNodes(), removeChild()
+*/
+
 void BSettingsNode::addChild(BSettingsNode *node)
 {
     if (!node || d_func()->childNodes.contains(node))
@@ -177,20 +254,48 @@ void BSettingsNode::addChild(BSettingsNode *node)
     node->setParent(this);
 }
 
+/*!
+\overload
+Creates a new BSettingsNode with the type \a type and key \a key, and appends it to the list of this node's child
+nodes.
+
+\sa childNodes(), removeChild()
+*/
+
 void BSettingsNode::addChild(const QString &key, QVariant::Type type)
 {
     addChild(new BSettingsNode(type, key));
 }
+
+/*!
+Returns the number of child nodes of this node.
+
+\sa childNodes()
+*/
 
 int BSettingsNode::childCount() const
 {
     return d_func()->childNodes.size();
 }
 
+/*!
+Returns the list of child nodes of this node.
+
+\sa childCount()
+*/
+
 QList<BSettingsNode *> BSettingsNode::childNodes() const
 {
     return d_func()->childNodes;
 }
+
+/*!
+Creates a copy of this node. Returns a pointer to the new node.
+
+All child nodes are copied recursively.
+
+The parent of the new node is set to \a parent.
+*/
 
 BSettingsNode *BSettingsNode::clone(BSettingsNode *parent) const
 {
@@ -206,15 +311,37 @@ BSettingsNode *BSettingsNode::clone(BSettingsNode *parent) const
     return root;
 }
 
+/*!
+Returns the default value for this node.
+
+\sa setDefaultValue()
+*/
+
 QVariant BSettingsNode::defaultValue() const
 {
     return d_func()->defaultValue;
 }
 
+/*!
+Returns the description of this node.
+
+The description is used by BTerminal when showing help.
+
+\sa setDescription(), BTerminal
+*/
+
 BTranslation BSettingsNode::description() const
 {
     return d_func()->description;
 }
+
+/*!
+Searches for the settings node with path \a path recursively.
+
+\a separator is used as a (sub)section separator.
+
+Returns a pointer to the node if it is found, otherwise returns 0.
+*/
 
 BSettingsNode *BSettingsNode::find(const QString &path, QChar separator)
 {
@@ -244,20 +371,43 @@ BSettingsNode *BSettingsNode::find(const QString &path, QChar separator)
     return 0;
 }
 
+/*!
+\overload
+Does the same as find(), but returns a const pointer.
+*/
+
 const BSettingsNode *BSettingsNode::find(const QString &path, QChar separator) const
 {
     return const_cast<BSettingsNode *>(this)->find(path, separator);
 }
+
+/*!
+Returns the key of this node.
+
+\sa setKey()
+*/
 
 QString BSettingsNode::key() const
 {
     return d_func()->key;
 }
 
+/*!
+Returns the parent of this node.
+
+\sa setParent()
+*/
+
 BSettingsNode *BSettingsNode::parent() const
 {
     return d_func()->parentNode;
 }
+
+/*!
+Removes \a node form the list of this node's child nodes.
+
+\sa addChild()
+*/
 
 void BSettingsNode::removeChild(BSettingsNode *node)
 {
@@ -266,15 +416,46 @@ void BSettingsNode::removeChild(BSettingsNode *node)
     node->setParent(0);
 }
 
+/*!
+Returns true if the setting represented by this node must be set securely (i.e. with the terminal echo being enabled).
+
+\sa setSecureInput()
+*/
+
 bool BSettingsNode::secureInput() const
 {
     return d_func()->secure;
 }
 
+/*!
+Requests user input of the value for settings node with path \a path.
+
+\a separator is used as a (sub)section separator.
+
+Returns true if a node with the path specified exists and if it's setting value is retrieved successfully; otherwise
+returns false.
+*/
+
 bool BSettingsNode::set(QString path, QChar separator) const
 {
     return set(path, tr("Enter value for") + " \"%k\": ", separator);
 }
+
+/*!
+\overload
+Requests user input of the value for settings node with path \a path.
+
+\a separator is used as a (sub)section separator.
+
+Returns true if a node with the path specified exists and if it's setting value is retrieved successfully; otherwise
+returns false.
+
+\a text is used as a prompt template. "%k" is replaced with the node key.
+
+Example template:
+
+"Value for %k: "
+*/
 
 bool BSettingsNode::set(QString path, QString text, QChar separator) const
 {
@@ -300,6 +481,16 @@ bool BSettingsNode::set(QString path, QString text, QChar separator) const
     return true;
 }
 
+/*!
+\overload
+Sets the value for settings node with path \a path to \a value.
+
+\a separator is used as a (sub)section separator.
+
+Returns true if a node with the path specified exists and if it's setting value is set successfully; otherwise returns
+false.
+*/
+
 bool BSettingsNode::set(QString path, QVariant value, QChar separator) const
 {
     const BSettingsNode *n = find(path, separator);
@@ -318,6 +509,12 @@ bool BSettingsNode::set(QString path, QVariant value, QChar separator) const
     return true;
 }
 
+/*!
+Sets the default value for the setting represented by this node to \a value.
+
+\sa defaultValue()
+*/
+
 void BSettingsNode::setDefaultValue(const QVariant &value)
 {
     if (value.type() != d_func()->type) {
@@ -327,15 +524,33 @@ void BSettingsNode::setDefaultValue(const QVariant &value)
     d_func()->defaultValue = value;
 }
 
+/*!
+Sets the description of this node to \a t.
+
+\sa description()
+*/
+
 void BSettingsNode::setDescription(const BTranslation &t)
 {
     d_func()->description = t;
 }
 
+/*!
+Sets the key of this node to \a key.
+
+\sa key()
+*/
+
 void BSettingsNode::setKey(const QString &key)
 {
     d_func()->key = key;
 }
+
+/*!
+Sets the parent of this node to \a parent.
+
+\sa parent()
+*/
 
 void BSettingsNode::setParent(BSettingsNode *parent)
 {
@@ -348,10 +563,24 @@ void BSettingsNode::setParent(BSettingsNode *parent)
         parent->d_func()->childNodes << this;
 }
 
+/*!
+Sets wether the setting represented by this node must be set securely (i.e. with the terminal echo being enabled).
+
+If \a b is true, the setting must be set securely; otherwise it must be set with terminal echo enabled.
+
+\sa secureInput()
+*/
+
 void BSettingsNode::setSecureInput(bool b)
 {
     d_func()->secure = b;
 }
+
+/*!
+Sets the type of the setting represented by this node to \a type.
+
+\sa type()
+*/
 
 void BSettingsNode::setType(QVariant::Type type)
 {
@@ -359,25 +588,68 @@ void BSettingsNode::setType(QVariant::Type type)
     d_func()->defaultValue = QVariant(type);
 }
 
+/*!
+Sets a pointer to the custom function used to get the value of the setting represented by this node to \a f.
+
+\sa userGetFunction(), setUserSetFunction(), setUserShowFunction()
+*/
+
 void BSettingsNode::setUserGetFunction(GetFunction f)
 {
     d_func()->getFunction = f;
 }
+
+/*!
+Sets a pointer to the custom function used to set the value of the setting represented by this node to \a f.
+
+\sa userSetFunction(), setUserGetFunction(), setUserShowFunction()
+*/
 
 void BSettingsNode::setUserSetFunction(SetFunction f)
 {
     d_func()->setFunction = f;
 }
 
+/*!
+Sets a pointer to the custom function used to show the value of the setting represented by this node to \a f.
+
+\sa userShowFunction(), setUserGetFunction(), setUserSetFunction()
+*/
+
 void BSettingsNode::setUserShowFunction(ShowFunction f)
 {
     d_func()->showFunction = f;
 }
 
+/*!
+Prints to standard output (stdin) the value of settings node with path \a path.
+
+\a separator is used as a (sub)section separator.
+
+Returns true if a node with the path specified exists and if it's setting value is printed successfully; otherwise
+returns false.
+*/
+
 bool BSettingsNode::show(QString path, QChar separator) const
 {
     return show(path, tr("The value for") + " \"%k\": %v", separator);
 }
+
+/*!
+\overload
+Prints to standard output (stdin) the value of settings node with path \a path.
+
+\a separator is used as a (sub)section separator.
+
+Returns true if a node with the path specified exists and if it's setting value is printed successfully; otherwise
+returns false.
+
+\a text is used as a template. "%k" is replaced with the node key, and "%v" is replaced with the setting value.
+
+Example template:
+
+"%k = %v"
+*/
 
 bool BSettingsNode::show(QString path, QString text, QChar separator) const
 {
@@ -398,6 +670,14 @@ bool BSettingsNode::show(QString path, QString text, QChar separator) const
     return true;
 }
 
+/*!
+Prints to standard output (stdin) the settings hierarchy in a tree-like form.
+
+\a indentStep is the number of spaces prepended to every new hierarchy level.
+
+\a initialIndent is the number of spaces prepended to every printed line.
+*/
+
 void BSettingsNode::showTree(int indentStep, int initialIndent) const
 {
     if (indentStep < 0)
@@ -410,15 +690,33 @@ void BSettingsNode::showTree(int indentStep, int initialIndent) const
         n->showTree(indentStep, initialIndent + (!key().isEmpty() ? indentStep : 0));
 }
 
+/*!
+Returns the typ of the value of the setting represented by this node.
+
+\sa setType()
+*/
+
 QVariant::Type BSettingsNode::type() const
 {
     return d_func()->type;
 }
 
+/*!
+Returns a pointer to the custom function used to get the value of the setting represented by this node.
+
+\sa setUserGetFunction(), userSetFunction(), userShowFunction()
+*/
+
 BSettingsNode::GetFunction BSettingsNode::userGetFunction() const
 {
     return d_func()->getFunction;
 }
+
+/*!
+Returns a pointer to the custom function used to set the value of the setting represented by this node.
+
+\sa setUserSetFunction(), userGetFunction(), userShowFunction()
+*/
 
 BSettingsNode::SetFunction BSettingsNode::userSetFunction() const
 {
@@ -427,6 +725,12 @@ BSettingsNode::SetFunction BSettingsNode::userSetFunction() const
     BSettingsNode *pn = d_func()->parentNode;
     return pn ? pn->userSetFunction() : 0;
 }
+
+/*!
+Returns a pointer to the custom function used to show the value of the setting represented by this node.
+
+\sa setUserShowFunction(), userGetFunction(), userSetFunction()
+*/
 
 BSettingsNode::ShowFunction BSettingsNode::userShowFunction() const
 {
