@@ -85,7 +85,67 @@ void BTranslatorPrivate::remove()
 ================================ BTranslator =================================
 ============================================================================*/
 
+/*!
+\class BTranslator
+\inmodule BeQtCore
+\brief The BTranslator class is used to incapsulate several QTranslators loaded from different locations.
+
+The BTranslator class incapsulates several QTranslators loaded from different locations, which are related to the same
+identifier and language (for example, "qt_ru.qm" from the application shared and user resources directories).
+
+The BTranslator serves two purposes: to load translations from common locations implicitly by only specifying their
+identifiers, and to make it easier to handle several translation files located in different directories.
+
+\sa {Translations system}
+*/
+
+/*!
+\property BTranslator::fileName
+
+This property gets and sets the BTranslator's identifier. This is \e not the absolute (or even relative) name of a
+file, but a part of the file name (before the locale name and a suffix).
+
+By default, this property is an empty QString.
+*/
+
+/*!
+\property BTranslator::installed
+
+This property gets the BTranslator's state. This property is true if the translator is registered in BApplicaitonBase
+translations system.
+
+By default, this property is false.
+*/
+
+/*!
+\property BTranslator::loaded
+
+This property gets the BTranslator's state. This property is true if the associated QTranslators are loaded.
+
+By default, this property is false.
+*/
+
+/*!
+\property BTranslator::locale
+
+This property gets and sets the BTranslator's locale.
+
+By default, this property is BApplicationBase::locale().
+*/
+
+/*!
+\property BTranslator::valid
+
+This property gets the BTranslator's validity. The BTranslator is valid if it's fileName is not empty.
+
+By default, this property is false.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a translator and sets it's parent to \a parent.
+*/
 
 BTranslator::BTranslator(QObject *parent) :
     QObject(parent), BBase(*new BTranslatorPrivate(this))
@@ -93,12 +153,20 @@ BTranslator::BTranslator(QObject *parent) :
     d_func()->init();
 }
 
+/*!
+Constructs a translator and sets it's file name to \a fileName, and parent to \a parent.
+*/
+
 BTranslator::BTranslator(const QString &fileName, QObject *parent) :
     QObject(parent), BBase(*new BTranslatorPrivate(this))
 {
     d_func()->init();
     d_func()->fileName = fileName;
 }
+
+/*!
+Constructs a translator. Sets it's locale to \a locale, file name to \a fileName, and parent to \a parent.
+*/
 
 BTranslator::BTranslator(const QLocale &locale, const QString &fileName, QObject *parent) :
     QObject(parent), BBase(*new BTranslatorPrivate(this))
@@ -108,12 +176,22 @@ BTranslator::BTranslator(const QLocale &locale, const QString &fileName, QObject
     d_func()->locale = locale;
 }
 
+/*!
+Destroys the object, deleting the associated data object.
+
+The associated QTranslators are also deleted.
+*/
+
 BTranslator::~BTranslator()
 {
     //
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs an object and associates the given data object \a d with it. Parent is set to \a parent.
+*/
 
 BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
     QObject(parent), BBase(d)
@@ -122,6 +200,14 @@ BTranslator::BTranslator(BTranslatorPrivate &d, QObject *parent) :
 }
 
 /*============================== Public methods ============================*/
+
+/*!
+Returns the list of locales available for this translator's identifier.
+
+A locale is considered available if the corresponding file exists in one of common locations (builtin, user, or shared
+resources directory). The name of a file is "identifier_locale.qm", where identifier is the translator's fileName, and
+locale is the locale name (e.g. "ru_RU").
+*/
 
 QList<QLocale> BTranslator::availableLocales() const
 {
@@ -155,6 +241,12 @@ QString BTranslator::fileName() const
     return d_func()->fileName;
 }
 
+/*!
+Registers the translator in the BApplicationBase translations system.
+
+\sa BApplicationBase::installBeqtTranslator()
+*/
+
 void BTranslator::install()
 {
     if (d_func()->installed)
@@ -178,6 +270,15 @@ bool BTranslator::isValid() const
     return !fileName().isEmpty();
 }
 
+/*!
+Loads this translator. The underlying QTranslators are installed on the QCoreApplication instance.
+
+If \a fileName is empty, this translator's identifier fileName is used. Otherwies, the translator's identifier is set
+to \a fileName.
+
+Returns true if the operation is successful; otherwise returns false.
+*/
+
 bool BTranslator::load(const QString &fileName)
 {
     B_D(BTranslator);
@@ -199,6 +300,18 @@ bool BTranslator::load(const QString &fileName)
     return true;
 }
 
+/*!
+\overload
+Loads this translator. The underlying QTranslators are installed on the QCoreApplication instance.
+
+The translator's locale is set to \a locale.
+
+If \a fileName is empty, this translator's identifier fileName is used. Otherwies, the translator's identifier is set
+to \a fileName.
+
+Returns true if the operation is successful; otherwise returns false.
+*/
+
 bool BTranslator::load(const QLocale &locale, const QString &fileName)
 {
     if (isLoaded())
@@ -211,6 +324,12 @@ QLocale BTranslator::locale() const
 {
     return d_func()->locale;
 }
+
+/*!
+Removes the translator from the BApplicationBase translations system.
+
+\sa BApplicationBase::removeBeqtTranslator()
+*/
 
 void BTranslator::remove()
 {
@@ -254,6 +373,14 @@ void BTranslator::setLocale(const QLocale &locale)
       d->install();
 }
 
+/*!
+Returns the translation for the key (\a context, \a sourceText, \a disambiguation). If none is found, also tries
+(\a context, \a sourceText, ""). If that still fails, returns an empty string.
+
+If \a n is not -1, it is used to choose an appropriate form for the translation (e.g. "%n file found" vs. "%n files
+found").
+*/
+
 QString BTranslator::translate(const char *context, const char *sourceText, const char *disambiguation, int n) const
 {
     foreach (QTranslator *t, d_func()->translators) {
@@ -264,10 +391,18 @@ QString BTranslator::translate(const char *context, const char *sourceText, cons
     return sourceText;
 }
 
+/*!
+Returns the list of pointers to the underlying QTranslators.
+*/
+
 QList<QTranslator *> BTranslator::translators() const
 {
     return d_func()->translators;
 }
+
+/*!
+Unloads this translator. The underlying QTranslators are removed from the QCoreApplication instance.
+*/
 
 void BTranslator::unload()
 {
