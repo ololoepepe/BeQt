@@ -130,7 +130,61 @@ void BVersionPrivate::init()
 ================================ BVersion ====================================
 ============================================================================*/
 
+/*!
+\class BVersion
+\inmodule BeQtCore
+\brief The BVersion class represents a version number of an application, library, etc.
+
+The BVersion is a combination of a major version number, minor version number, patch number, application/library
+development status and an extra version number.
+
+Example: "4.1.2-beta3". Here, 4 is the major version number, 1 is the minor one, 2 is the patch number, "beta" is the
+development state, and 3 is the extra number (the least significant).
+*/
+
+/*!
+\enum BVersion::Status
+
+This enum type is used to describe the development status of a library/application.
+
+\value NoStatus
+No development status (usually that means that the application status is Release).
+
+\value PreAlpha
+Pre-alpha status. The application is in active development.
+
+\value Alpha
+Alpha status. The application is still developed, but is already being tested internally.
+
+\value Beta
+Beta status. The application on the beta stage is often tested by users, but it's features may still be changed.
+
+\value ReleaseCandidate
+The application on the release candidate stage is tested by users, and it's this version is a candidate for release if
+there are no bugs found.
+*/
+
+/*!
+\enum BVersion::StatusRepresentation
+
+This enum type is used to describe the Status text representation.
+
+\value Full
+Verbose representation. E.g. "ReleaseCandidate".
+
+\value ShortLowercase
+Short representation. E.g. "pa" (pre-alpha).
+
+\value ShortUppercase
+Short representation. E.g. "A" (alpha).
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a version and sets it's major version number to \a vmajor, minor version number to \a vminor, patch number
+to \a vpatch, version status to \a vs, and extra version nubmer to \a vextra.
+*/
 
 BVersion::BVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 vextra) :
     BBase(*new BVersionPrivate(this))
@@ -139,12 +193,27 @@ BVersion::BVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 ve
     setVersion(vmajor, vminor, vpatch, vs, vextra);
 }
 
+/*!
+Constructs a version object. The major version nubmer, the minor version number, etc. are retrieved by parsing \a s.
+
+\a versionSeparator is used as a character that separates major version, minir version and patch number.
+
+\a statusSeparator is used as a character that separates the main part (major.minor.patch) form the version status and
+extra version number.
+
+\sa fromString()
+*/
+
 BVersion::BVersion(const QString &s, QChar versionSeparator, QChar statusSeparator) :
     BBase(*new BVersionPrivate(this))
 {
     d_func()->init();
     setVersion(s, versionSeparator, statusSeparator);
 }
+
+/*!
+Constructs a copy of \a other.
+*/
 
 BVersion::BVersion(const BVersion &other) :
     BBase(*new BVersionPrivate(this))
@@ -153,12 +222,20 @@ BVersion::BVersion(const BVersion &other) :
     *this = other;
 }
 
+/*!
+Destroys the object, deleting the associated data object.
+*/
+
 BVersion::~BVersion()
 {
     //
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs an object and associates the given data object \a d with it.
+*/
 
 BVersion::BVersion(BVersionPrivate &d) :
     BBase(d)
@@ -167,6 +244,11 @@ BVersion::BVersion(BVersionPrivate &d) :
 }
 
 /*============================== Static public methods =====================*/
+
+/*!
+Compares the versions \a v1 and \a v2. Returns -1 if \a v1 is less than \a v2, 1 if \a v1 is greater than \a v2, and 0
+if the versions are equal.
+*/
 
 int BVersion::compare(const BVersion &v1, const BVersion &v2)
 {
@@ -205,10 +287,27 @@ int BVersion::compare(const BVersion &v1, const BVersion &v2)
     return 0;
 }
 
+/*!
+Creates a version object. The major version nubmer, the minor version number, etc. are retrieved by parsing \a s.
+
+\a versionSeparator is used as a character that separates major version, minir version and patch number.
+
+\a statusSeparator is used as a character that separates the main part (major.minor.patch) form the version status and
+extra version number.
+
+Returns the created object.
+*/
+
 BVersion BVersion::fromString(const QString &s, QChar versionSeparator, QChar statusSeparator)
 {
     return BVersion(s, versionSeparator, statusSeparator);
 }
+
+/*!
+Returns the string representation of vsersion status \a vs. Status representation depends on \a r.
+
+\sa Status, StatusRepresentation
+*/
 
 QString BVersion::statusToString(Status vs, StatusRepresentation r)
 {
@@ -249,20 +348,38 @@ QString BVersion::statusToString(Status vs, StatusRepresentation r)
 
 /*============================== Public methods ============================*/
 
+/*!
+Sets the major version number to 0, and other version numbers to -1. Sets the version status to NoStatus.
+*/
+
 void BVersion::clear()
 {
     setVersion(0);
 }
+
+/*!
+Compares this version to \a other. Returns -1 if this version is less than \a other, 1 if this version is greater than
+\a other, and 0 if the versions are equal.
+*/
 
 int BVersion::compare(const BVersion &other) const
 {
     return compare(*this, other);
 }
 
+/*!
+Returns true if this version's major version number is greater or equal to 0.
+*/
+
 bool BVersion::isValid() const
 {
     return d_func()->vmajor >= 0;
 }
+
+/*!
+Sets major version number to \a vmajor, minor version number to \a vminor, patch number to \a vpatch, version status to
+\a vs, and extra version nubmer to \a vextra.
+*/
 
 void BVersion::setVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, qint8 vextra)
 {
@@ -273,6 +390,17 @@ void BVersion::setVersion(qint8 vmajor, qint8 vminor, qint8 vpatch, Status vs, q
     d->vstatus = enum_cast(vs, NoStatus, ReleaseCandidate);
     d->vextra = vextra >= 0 ? vextra : -1;
 }
+
+/*!
+Sets the major version nubmer, the minor version number, etc. to the values retrieved by parsing \a s.
+
+\a versionSeparator is used as a character that separates major version, minir version and patch number.
+
+\a statusSeparator is used as a character that separates the main part (major.minor.patch) form the version status and
+extra version number.
+
+\sa fromString()
+*/
 
 void BVersion::setVersion(const QString &s, QChar versionSeparator, QChar statusSeparator)
 {
@@ -317,6 +445,16 @@ void BVersion::setVersion(const QString &s, QChar versionSeparator, QChar status
     }
 }
 
+/*!
+Returns the string representation of this version.
+
+Version status is converted to string using the status representatoon mode \a r.
+
+The major version, minor version and patch number are separated with \a versionSeparator.
+
+The main version part (major.minor.path) is separated form the version status with \a statusSeparator.
+*/
+
 QString BVersion::toString(StatusRepresentation r, QChar versionSeparator, QChar statusSeparator) const
 {
     if (!isValid())
@@ -338,25 +476,45 @@ QString BVersion::toString(StatusRepresentation r, QChar versionSeparator, QChar
     return s;
 }
 
+/*!
+Returns the extra version number.
+*/
+
 qint8 BVersion::vextra() const
 {
     return d_func()->vextra;
 }
+
+/*!
+Returns the major version number.
+*/
 
 qint8 BVersion::vmajor() const
 {
     return d_func()->vmajor;
 }
 
+/*!
+Returns the minor version number.
+*/
+
 qint8 BVersion::vminor() const
 {
     return d_func()->vminor;
 }
 
+/*!
+Returns the patch number.
+*/
+
 qint8 BVersion::vpatch() const
 {
     return d_func()->vpatch;
 }
+
+/*!
+Returns the version status.
+*/
 
 BVersion::Status BVersion::vstatus() const
 {
@@ -364,6 +522,10 @@ BVersion::Status BVersion::vstatus() const
 }
 
 /*============================== Public operators ==========================*/
+
+/*!
+Assigns \a other to this version and returns a reference to this version.
+*/
 
 BVersion &BVersion::operator =(const BVersion &other)
 {
@@ -377,40 +539,78 @@ BVersion &BVersion::operator =(const BVersion &other)
     return *this;
 }
 
+/*!
+Returns true if this version is equal to version \a other; otherwise returns false.
+
+The versions are equal if their version numbers and version status are identical.
+*/
+
 bool BVersion::operator ==(const BVersion &other) const
 {
     return compare(other) == 0;
 }
+
+/*!
+Returns true if this version is not equal to version \a other; otherwise returns false.
+
+The versions are equal if their version numbers and version status are identical.
+*/
 
 bool BVersion::operator !=(const BVersion &other) const
 {
     return compare(other) != 0;
 }
 
+/*!
+Returns true if this version is less than version \a other; otherwise returns false.
+*/
+
 bool BVersion::operator <(const BVersion &other) const
 {
     return compare(other) < 0;
 }
+
+/*!
+Returns true if this version is greater than version \a other; otherwise returns false.
+*/
 
 bool BVersion::operator >(const BVersion &other) const
 {
     return compare(other) > 0;
 }
 
+/*!
+Returns true if this version is less or equal than version \a other; otherwise returns false.
+*/
+
 bool BVersion::operator <=(const BVersion &other) const
 {
     return compare(other) <= 0;
 }
+
+/*!
+Returns true if this version is greater or equal than version \a other; otherwise returns false.
+*/
 
 bool BVersion::operator >=(const BVersion &other) const
 {
     return compare(other) >= 0;
 }
 
+/*!
+Converts the version to string. Returns that string.
+
+\sa toString()
+*/
+
 BVersion::operator QString() const
 {
     return toString();
 }
+
+/*!
+Stores the version in a QVariant. Returns that QVariant.
+*/
 
 BVersion::operator QVariant() const
 {
@@ -418,6 +618,13 @@ BVersion::operator QVariant() const
 }
 
 /*============================== Public friend operators ===================*/
+
+/*!
+\relates BVersion
+Writes the version \a v to the data stream \a stream.
+
+Returns a reference to the stream.
+*/
 
 QDataStream &operator <<(QDataStream &stream, const BVersion &v)
 {
@@ -432,6 +639,13 @@ QDataStream &operator <<(QDataStream &stream, const BVersion &v)
     return stream;
 }
 
+/*!
+\relates BVersion
+Reads a version from the data stream \a stream into \a v.
+
+Returns a reference to the stream.
+*/
+
 QDataStream &operator >>(QDataStream &stream, BVersion &v)
 {
     BVersionPrivate *d = v.d_func();
@@ -445,6 +659,11 @@ QDataStream &operator >>(QDataStream &stream, BVersion &v)
     d->vextra = m.value("extra", -1).toInt();
     return stream;
 }
+
+/*!
+\relates BVersion
+Writes theversion \a v to the output stream for debugging information \a dbg and returns a reference to the stream.
+*/
 
 QDebug operator <<(QDebug dbg, const BVersion &v)
 {
