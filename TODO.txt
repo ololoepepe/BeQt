@@ -37,3 +37,4 @@
 * Get rid of identifier in do_once macro (use compile-time random identifier generation)
 * Add "includeInvalid" parameter to BeQt::codecsGroups
 * Rename BeQt::codecsGroups into BeQt::allCodecGroups
+* Add ability to return pure BUuid text in BUuid::toByteArray
