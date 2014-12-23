@@ -84,7 +84,29 @@ void BTranslationPrivate::init()
 ================================ BTranslation ================================
 ============================================================================*/
 
+/*!
+\typedef BTr
+\relates BTranslation
+
+The BTr typedef provides a synonym for BTranslation.
+*/
+
+/*!
+\class BTranslation
+\inmodule BeQtCore
+\brief The BTranslation class provides an easy to store and (de)serialize translation.
+
+Qt does not provide convenient means of storing and (de)serializing translations. The QT_TRANSLATE_NOOP3 macro is not
+powerful enough. BTranslation solves this issue.
+
+For an example, see BDynamicTranslator.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs an empty translation.
+*/
 
 BTranslation::BTranslation() :
     BBase(*new BTranslationPrivate(this))
@@ -92,11 +114,19 @@ BTranslation::BTranslation() :
     d_func()->init();
 }
 
+/*!
+Constructs a copy of \a other.
+*/
+
 BTranslation::BTranslation(const BTranslation &other) :
     BBase(*new BTranslationPrivate(this))
 {
     *this = other;
 }
+
+/*!
+Destroys the object, deleting the associated data object.
+*/
 
 BTranslation::~BTranslation()
 {
@@ -104,6 +134,10 @@ BTranslation::~BTranslation()
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs an object and associates the given data object \a d with it.
+*/
 
 BTranslation::BTranslation(BTranslationPrivate &d) :
     BBase(d)
@@ -113,15 +147,43 @@ BTranslation::BTranslation(BTranslationPrivate &d) :
 
 /*============================== Static public methods =====================*/
 
+/*!
+Creates a translation for \a sourceText and (optional) \a disambiguation. Returns that translation.
+
+If \a n is not -1, it is used to choose an appropriate form for the translation (e.g. "%n file found" vs. "%n files
+found").
+
+The context is "BTranslation".
+
+\sa translate()
+*/
+
 BTranslation BTranslation::tr(const char *sourceText, const char *disambiguation, int n)
 {
     return translate("BTranslation", sourceText, disambiguation, n);
 }
 
+/*!
+\overload
+Returns the translated source text of the translation \a t.
+
+\sa translate()
+*/
+
 QString BTranslation::tr(const BTranslation &t)
 {
     return t.translate();
 }
+
+/*!
+Creates a translation for \a sourceText and (optional) \a disambiguation in the context \a context. Returns that
+translation.
+
+If \a n is not -1, it is used to choose an appropriate form for the translation (e.g. "%n file found" vs. "%n files
+found").
+
+\sa tr()
+*/
 
 BTranslation BTranslation::translate(const char *context, const char *sourceText, const char *disambiguation, int n)
 {
@@ -136,6 +198,13 @@ BTranslation BTranslation::translate(const char *context, const char *sourceText
     return t;
 }
 
+/*!
+\overload
+Returns the translated source text of the translation \a t.
+
+\sa tr()
+*/
+
 QString BTranslation::translate(const BTranslation &t)
 {
     return t.translate();
@@ -143,55 +212,116 @@ QString BTranslation::translate(const BTranslation &t)
 
 /*============================== Public methods ============================*/
 
+/*!
+Returns the argument at the position \a index of this translation.
+
+\sa arguments(), setArgument(), setArguments()
+*/
+
 QString BTranslation::argument(int index) const
 {
     return (index >= 0 && index < d_func()->arguments.size()) ? d_func()->arguments.at(index) : QString();
 }
+
+/*!
+Returns the arguments of this translation.
+
+When translating, the positional arguments contained in the source text ("%1", "%2", and so on) are replaced with the
+these arguments successively.
+
+\sa argument(), setArgument(), setArguments()
+*/
 
 QStringList BTranslation::arguments() const
 {
     return d_func()->arguments;
 }
 
+/*!
+Returns the context of this translation.
+*/
+
 QString BTranslation::context() const
 {
     return d_func()->context;
 }
+
+/*!
+Returns the disambiguation of this translation.
+*/
 
 QString BTranslation::disambiguation() const
 {
     return d_func()->disambiguation;
 }
 
+/*!
+Returns true if this translation's context and source text are not empty; otherwise returns false.
+*/
+
 bool BTranslation::isValid() const
 {
     return !d_func()->context.isEmpty() && !d_func()->sourceText.isEmpty();
 }
+
+/*!
+Returns the \e n of this translation.
+*/
 
 int BTranslation::n() const
 {
     return d_func()->n;
 }
 
+/*!
+Sets the argument of this translation to \a argument.
+
+\sa argument(), arguments(), setArguments()
+*/
+
 void BTranslation::setArgument(const QString &argument)
 {
     d_func()->arguments = (QStringList() << argument);
 }
+
+/*!
+Sets the arguments of this translation to \a arguments.
+
+\sa argument(), arguments(), setArgument()
+*/
 
 void BTranslation::setArguments(const QStringList &arguments)
 {
     d_func()->arguments = arguments;
 }
 
+/*!
+Returns the source text of this translation.
+*/
+
 QString BTranslation::sourceText() const
 {
     return d_func()->sourceText;
 }
 
+/*!
+\overload
+Returns the translated source text of this translation.
+
+\sa translate()
+*/
+
 QString BTranslation::tr() const
 {
     return translate();
 }
+
+/*!
+\overload
+Returns the translated source text of this translation.
+
+\sa tr()
+*/
 
 QString BTranslation::translate() const
 {
@@ -205,6 +335,10 @@ QString BTranslation::translate() const
 
 /*============================== Public operators ==========================*/
 
+/*!
+Assigns \a other to this translation and returns a reference to this translation.
+*/
+
 BTranslation &BTranslation::operator =(const BTranslation &other)
 {
     B_D(BTranslation);
@@ -217,6 +351,12 @@ BTranslation &BTranslation::operator =(const BTranslation &other)
     return *this;
 }
 
+/*!
+Returns true if this translation is equal to translation \a other; otherwise returns false.
+
+The translations are equal if their arguments, contexts, source texts, disambiguations and \e {n}'s are equal.
+*/
+
 bool BTranslation::operator ==(const BTranslation &other) const
 {
     const B_D(BTranslation);
@@ -225,15 +365,31 @@ bool BTranslation::operator ==(const BTranslation &other) const
             && d->disambiguation == dd->disambiguation && d->n == dd->n;
 }
 
+/*!
+Returns true if this translation is not equal to translation \a other; otherwise returns false.
+
+The translations are equal if their arguments, contexts, source texts, disambiguations and \e {n}'s are equal.
+*/
+
 bool BTranslation::operator !=(const BTranslation &other) const
 {
     return !(*this == other);
 }
 
+/*!
+Returns the translated source text of this translation.
+
+\sa tr(), translate()
+*/
+
 BTranslation::operator QString() const
 {
     return translate();
 }
+
+/*!
+Stores the translation in a QVariant. Returns that QVariant.
+*/
 
 BTranslation::operator QVariant() const
 {
@@ -241,6 +397,13 @@ BTranslation::operator QVariant() const
 }
 
 /*============================== Public friend operators ===================*/
+
+/*!
+\relates BTranslation
+Writes the translation \a t to the data stream \a stream.
+
+Returns a reference to the stream.
+*/
 
 QDataStream &operator <<(QDataStream &stream, const BTranslation &t)
 {
@@ -254,6 +417,13 @@ QDataStream &operator <<(QDataStream &stream, const BTranslation &t)
     stream << m;
     return stream;
 }
+
+/*!
+\relates BTranslation
+Reads a translation from the data stream \a stream into \a t.
+
+Returns a reference to the stream.
+*/
 
 QDataStream &operator >>(QDataStream &stream, BTranslation &t)
 {
@@ -269,6 +439,12 @@ QDataStream &operator >>(QDataStream &stream, BTranslation &t)
         d->n = -1;
     return stream;
 }
+
+/*!
+\relates BTranslation
+Writes the translation \a t to the output stream for debugging information \a dbg and returns a reference to the
+stream.
+*/
 
 QDebug operator <<(QDebug dbg, const BTranslation &t)
 {
