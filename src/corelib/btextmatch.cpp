@@ -78,13 +78,35 @@ void BTextMatchPrivate::init()
 ================================ BTextMatch ==================================
 ============================================================================*/
 
+/*!
+\class BTextMatch
+\inmodule BeQtCore
+\brief The BTextMatch class provides the results of a matching a QRegExp against a QString.
+
+A BTextMatch object can be obtained by calling the BTextTools::match() function.
+
+\warning A BTextMatch object is only valid while the QString against which it is matched exists. Therefore, if the
+string is deleted, the corresponding BTextMatch object becomes invalid and must not be used anymore. The validity
+described here has nothing to do with the isValid() method.
+
+See BTextTools for details.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs an invalid BTextMatch object, which does not reference any string.
+*/
 
 BTextMatch::BTextMatch() :
     BBase(*new BTextMatchPrivate(this))
 {
     d_func()->init();
 }
+
+/*!
+Constructs a copy of \a other.
+*/
 
 BTextMatch::BTextMatch(const BTextMatch &other) :
     BBase(*new BTextMatchPrivate(this))
@@ -93,12 +115,20 @@ BTextMatch::BTextMatch(const BTextMatch &other) :
     *this = other;
 }
 
+/*!
+Destroys the object, deleting the associated data object. The referenced QString (if any) is not affected.
+*/
+
 BTextMatch::~BTextMatch()
 {
     //
 }
 
 /*============================== Private constructors ======================*/
+
+/*!
+Constructs a BTextMatch object referencing a string \a text with the specified \a position and \a length.
+*/
 
 BTextMatch::BTextMatch(const QString *const text, int position, int length) :
     BBase(*new BTextMatchPrivate(this))
@@ -112,21 +142,38 @@ BTextMatch::BTextMatch(const QString *const text, int position, int length) :
 
 /*============================== Public methods ============================*/
 
+/*!
+Returns true if the object references a QString and the referenced position is greater or equal to 0, and the length is
+greater than 0. Ohterwise returns false.
+*/
+
 bool BTextMatch::isValid() const
 {
     const B_D(BTextMatch);
     return d->txt && d->pos >= 0 && d->len >= 0;
 }
 
+/*!
+Returns the length of the matching substring of the referenced string.
+*/
+
 int BTextMatch::length() const
 {
     return d_func()->len;
 }
 
+/*!
+Returns the position in the matching substring of the referenced string.
+*/
+
 int BTextMatch::position() const
 {
     return d_func()->pos;
 }
+
+/*!
+Returns the matched substring.
+*/
 
 QString BTextMatch::text() const
 {
@@ -135,6 +182,10 @@ QString BTextMatch::text() const
 }
 
 /*============================== Public operators ==========================*/
+
+/*!
+Assigns \a other to this BTextMatch object and returns a reference to this BTextMatch object.
+*/
 
 BTextMatch &BTextMatch::operator =(const BTextMatch &other)
 {
@@ -146,6 +197,13 @@ BTextMatch &BTextMatch::operator =(const BTextMatch &other)
     return *this;
 }
 
+/*!
+Returns true if this BTextMatch object is equal to BTextMatch object \a other; otherwise returns false.
+
+The BTextMatch objects are considered equal if they reference the same string and their positions and lengths are also
+equal.
+*/
+
 bool BTextMatch::operator ==(const BTextMatch &other) const
 {
     const B_D(BTextMatch);
@@ -153,12 +211,24 @@ bool BTextMatch::operator ==(const BTextMatch &other) const
     return d->txt == dd->txt && d->pos == dd->pos && d->len == dd->len;
 }
 
+/*!
+Returns the matched substring.
+
+\sa text()
+*/
+
 BTextMatch::operator QString() const
 {
     return text();
 }
 
 /*============================== Public friend operators ===================*/
+
+/*!
+\relates BTextMatch
+Writes the BTextMatch object \a tm to the output stream for debugging information \a dbg and returns a reference to the
+stream.
+*/
 
 QDebug operator <<(QDebug dbg, const BTextMatch &tm)
 {
