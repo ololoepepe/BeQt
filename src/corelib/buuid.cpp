@@ -164,7 +164,7 @@ BUuid::BUuid(const QByteArray &text) :
 }
 
 /*!
-Casts a Windows guid to a Qt BUuid.
+Casts a Windows \a guid to a Qt BUuid.
 
 \note This function is only available on Windows.
 */
