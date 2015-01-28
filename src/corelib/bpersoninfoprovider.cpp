@@ -131,11 +131,12 @@ void BPersonInfoProviderPrivate::init()
     //
 }
 
-void BPersonInfoProviderPrivate::setFileName(const QString &fileName)
+void BPersonInfoProviderPrivate::setFileName(const QString &fn)
 {
-    QFile f(fileName);
+    QFile f(fn);
     if (!f.open(QFile::ReadOnly))
         return;
+    fileName = fn;
     QTextStream in(&f);
     in.setCodec("UTF-8");
     infos.clear();
@@ -401,7 +402,7 @@ void BPersonInfoProvider::setFileName(const QString &fileName)
     static const Qt::CaseSensitivity Cs = Qt::CaseSensitive;
 #endif
     if (fileName.isEmpty() || !fileName.compare(d->fileName, Cs))
-        return
+        return;
     d->setFileName(fileName);
 }
 

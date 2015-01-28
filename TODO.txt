@@ -17,6 +17,7 @@
 [done] Add BEQT_VERSION_STR define
 [done] Return UnknownArchitecture in BeQt::processorArchitecture function if no architecture is defined
 [done] Compare file names case-insensetive on Windows in BPersonInfoProvider.
+[done] Fix BPersonInfoProvider::setFileName method
 
 === MINOR ===
 

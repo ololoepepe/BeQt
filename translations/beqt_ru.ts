@@ -1112,25 +1112,25 @@
 <context>
     <name>BPersonInfoProvider</name>
     <message>
-        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="282"/>
+        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="283"/>
         <source>Name:</source>
         <comment>info</comment>
         <translation>Имя:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="284"/>
+        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="285"/>
         <source>Role:</source>
         <comment>info</comment>
         <translation>Роль:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="286"/>
+        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="287"/>
         <source>Website:</source>
         <comment>info</comment>
         <translation>Веб-сайт:</translation>
     </message>
     <message>
-        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="288"/>
+        <location filename="../src/corelib/bpersoninfoprovider.cpp" line="289"/>
         <source>E-mail:</source>
         <comment>info</comment>
         <translation>Электронная почта:</translation>
