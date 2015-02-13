@@ -1556,7 +1556,7 @@
     <message>
         <location filename="../src/corelib/bterminal.cpp" line="637"/>
         <source>Show information about this application</source>
-        <translation>Показать информацию об это приложении</translation>
+        <translation>Показать информацию об этом приложении</translation>
     </message>
     <message>
         <location filename="../src/corelib/bterminal.cpp" line="640"/>

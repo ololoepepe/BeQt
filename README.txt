@@ -6,6 +6,8 @@ Check for your language README in the "readme" directory.
 
 Homepage: https://github.com/ololoepepe/BeQt
 
+Docs: http://ololoepepe.me/beqt
+
 Author: Andrey Bogdanov (ololoepepe@gmail.com)
 
 License: GNU LGPL (see COPYING.txt)

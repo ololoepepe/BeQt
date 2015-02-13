@@ -4,6 +4,8 @@
 
 Домашняя страница: https://github.com/ololoepepe/BeQt
 
+Документация: http://ololoepepe.me/beqt
+
 Автор: Андрей Богданов (ololoepepe@gmail.com)
 
 Лицензия: GNU LGPL (см. COPYING.txt)

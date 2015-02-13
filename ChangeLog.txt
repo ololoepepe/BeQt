@@ -1,3 +1,12 @@
+=== BeQt 4.1.2 (13 February 2015) ===
+    * Implement QDoc documentation generation
+    * Add BEQT_VERSION_STR define
+    * Return UnknownArchitecture in BeQt::processorArchitecture function if no architecture is defined
+    * Compare file names case-insensetive on Windows in BPersonInfoProvider
+    * Fix BPersonInfoProvider::setFileName method
+    * Replace (CR)LF in BTextTools::toHtml
+    * First search for user resources in BDirTools::findResource
+
 === BeQt 4.1.1 (22 November 2014) ===
     * Fix searching after replacing when using regular expression mode in code editor
     * Fix "text not found" message in regular expression mode in code editor

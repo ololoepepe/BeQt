@@ -1245,10 +1245,12 @@ QString toHtml(const QString &text, bool replaceSpaces)
         keywords.insert('>', "&gt;");
         keywords.insert(' ', "&nbsp;");
         keywords.insert('\"', "&quot;");
+        keywords.insert('\n', "<br />");
     }
     if (text.isEmpty())
         return text;
     QString html = text;
+    html.remove('\r');
     foreach (int i, bRangeR(html.length() - 1, 0)) {
         const QChar &c = html.at(i);
         if (!replaceSpaces && ' ' == c)

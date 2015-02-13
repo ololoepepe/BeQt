@@ -381,9 +381,9 @@ QString findResource(const QString &subpath, ResourceLookupMode mode)
         break;
     case AllResources:
     default:
+        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResource);
         sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::SharedResource);
         sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::BuiltinResource);
-        sl << BCoreApplication::location(BCoreApplication::DataPath, BCoreApplication::UserResource);
         break;
     }
     return findResource(subpath, sl);
@@ -432,7 +432,7 @@ QString localeBasedFileName(const QString &fileName, const QLocale &loc)
     QFileInfo fi(fileName);
     QString bfn = fi.path() + "/" + fi.baseName();
     QString suff = fi.suffix();
-    if ( !suff.isEmpty() )
+    if (!suff.isEmpty())
         suff.prepend('.');
     QStringList sl;
     sl << bfn + "_" + lname + suff;
