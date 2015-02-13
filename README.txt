@@ -6,6 +6,8 @@ Check for your language README in the "readme" directory.
 
 Homepage: https://github.com/ololoepepe/BeQt
 
+Docs: http://ololoepepe.me/beqt
+
 Author: Andrey Bogdanov (ololoepepe@gmail.com)
 
 License: GNU LGPL (see COPYING.txt)
@@ -98,6 +100,10 @@ When building BeQt, you may pass some parameters to qmake:
  * "ENCA_PREFIX=<path>"
    Set external Enca library location. By default the internal one is used
 
+ * "QDOC_COMMAND=<command>"
+   Set command used to generate documentation. By default, "qdoc" or "qdoc3"
+   commands are used
+
  * "BEQT_CONFIG+=no_network"
    Don't build the BeQtNetwork module
 
@@ -129,6 +135,10 @@ When building BeQt, you may pass some parameters to qmake:
 
  * "BEQT_CONFIG+=private_headers"
    Install private headers along with the public ones
+
+ * "BEQT_CONFIG=no_docs"
+   Do not generate documentation. By default documentation is generated using
+   Doxygen. Generated files are located in "doc/doxygen" directory
 
  * "BEQT_PREFIX=<path>"
    Set install path. See the note below

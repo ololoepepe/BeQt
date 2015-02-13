@@ -126,8 +126,63 @@ static QList<BParsingOption> createOptions(const QString &options, BTextTools::O
 ================================ BTextTools ==================================
 ============================================================================*/
 
+/*!
+\namespace BTextTools
+\inmodule BeQtCore
+
+\brief The BTextTools namespace contains miscellaneous functions for string processing used throughout the BeQt
+library.
+*/
+
+/*!
+\enum BTextTools::OptionsParsingError
+
+This type is used to specify which error occured during options parsing.
+
+\value NoError
+No error occured, everything is OK.
+
+\value InvalidParametersError
+The syntax of a parsing rule is invalid.
+
+\value MalformedOptionError
+The option syntax of a string parsed is invalid.
+
+\value MissingOptionError
+The required option is missing.
+
+\value RepeatingOptionError
+There is a duplicate option which must not be duplicated.
+
+\value UnknownOptionError
+There is an unknown option.
+
+\value UnknownOptionValueError
+The value of an option is unknown.
+*/
+
+/*!
+\enum BTextTools::RegExpPattern
+
+This type is used to specify the standard regular expression pattern for common cases.
+
+\value EmailPattern
+A pattern used to match an e-mail address.
+*/
+
 namespace BTextTools
 {
+
+/*!
+\fn QString BTextTools::appendTrailingSpaces(const QString &s, int lineLength)
+Appends spaces to the string \a s, so that it's length becomes equal to \a lineLength.
+
+Returns the new string.
+
+If \a s is already \a lineLength symbols long or longer, no spaces are appended, and the string is returned as is.
+
+\sa removeTrailingSpaces()
+*/
 
 QString appendTrailingSpaces(const QString &s, int lineLength)
 {
@@ -135,6 +190,18 @@ QString appendTrailingSpaces(const QString &s, int lineLength)
     appendTrailingSpaces(&ns, lineLength);
     return ns;
 }
+
+/*!
+\fn void BTextTools::appendTrailingSpaces(QString *s, int lineLength)
+\overload
+Appends spaces to the string \a s, so that it's length becomes equal to \a lineLength.
+
+If \a s is already \a lineLength symbols long or longer, no spaces are appended, and the string is returned as is.
+
+If \a s is a null pointer, nothing is done.
+
+\sa removeTrailingSpaces()
+*/
 
 void appendTrailingSpaces(QString *s, int lineLength)
 {
@@ -145,20 +212,70 @@ void appendTrailingSpaces(QString *s, int lineLength)
         s->append(QString().fill(' ', lineLength - len));
 }
 
+/*!
+\fn QTextCodec *BTextTools::guessFileCodec(const QString &fileName, const QLocale locale)
+Tries to guess the encoding of the file with name \a fileName.
+
+The \a locale is used as a supposed locale (typically the system locale).
+
+The entire file is read and all it's data is used.
+
+Returns a pointer to the corresponding QTextCodec. If it is not possible to determine the codec, 0 is retuned.
+*/
+
 QTextCodec *guessFileCodec(const QString &fileName, const QLocale locale)
 {
     return BeQt::codec(guessFileCodecName(fileName, locale));
 }
+
+/*!
+\fn QTextCodec *BTextTools::guessFileCodec(const QString &fileName, qint64 bytes, const QLocale locale)
+\overload
+Tries to guess the encoding of the file with name \a fileName.
+
+The \a locale is used as a supposed locale (typically the system locale).
+
+Only the first \a bytes bytes of the file are read and used for guessing. If \a bytes is -1 of less, the entire file is
+read.
+
+Returns a pointer to the corresponding QTextCodec. If it is not possible to determine the codec, 0 is retuned.
+*/
 
 QTextCodec *guessFileCodec(const QString &fileName, qint64 bytes, const QLocale locale)
 {
     return BeQt::codec(guessFileCodecName(fileName, bytes, locale));
 }
 
+/*!
+\fn QString BTextTools::guessFileCodecName(const QString &fileName, const QLocale locale)
+Tries to guess the encoding of the file with name \a fileName.
+
+The \a locale is used as a supposed locale (typically the system locale).
+
+The entire file is read and all it's data is used.
+
+Returns the name of the corresponding QTextCodec. If it is not possible to determine the codec, an empty QString is
+retuned.
+*/
+
 QString guessFileCodecName(const QString &fileName, const QLocale locale)
 {
     return guessFileCodecName(fileName, -1, locale);
 }
+
+/*!
+\fn QString BTextTools::guessFileCodecName(const QString &fileName, qint64 bytes, const QLocale locale)
+\overload
+Tries to guess the encoding of the file with name \a fileName.
+
+The \a locale is used as a supposed locale (typically the system locale).
+
+Only the first \a bytes bytes of the file are read and used for guessing. If \a bytes is -1 of less, the entire file is
+read.
+
+Returns the name of the corresponding QTextCodec. If it is not possible to determine the codec, an empty QString is
+retuned.
+*/
 
 QString guessFileCodecName(const QString &fileName, qint64 bytes, const QLocale locale)
 {
@@ -169,10 +286,29 @@ QString guessFileCodecName(const QString &fileName, qint64 bytes, const QLocale 
     return ok ? guessTextCodecName(data, locale) : QString();
 }
 
+/*!
+\fn QTextCodec *BTextTools::guessTextCodec(const QByteArray &data, const QLocale locale)
+Tries to guess the encoding of the text \a data.
+
+The \a locale is used as a supposed locale (typically the system locale).
+
+Returns a pointer to the corresponding QTextCodec. If it is not possible to determine the codec, 0 is retuned.
+*/
+
 QTextCodec *guessTextCodec(const QByteArray &data, const QLocale locale)
 {
     return BeQt::codec(guessTextCodecName(data, locale));
 }
+
+/*!
+\fn QString BTextTools::guessTextCodecName(const QByteArray &data, const QLocale locale)
+Tries to guess the encoding of the text \a data.
+
+The \a locale is used as a supposed locale (typically the system locale).
+
+Returns the name of the corresponding QTextCodec. If it is not possible to determine the codec, an empty QString is
+retuned.
+*/
 
 QString guessTextCodecName(const QByteArray &data, const QLocale locale)
 {
@@ -191,6 +327,27 @@ QString guessTextCodecName(const QByteArray &data, const QLocale locale)
         return "";
     return QString(enca_charset_name(result.charset, ENCA_NAME_STYLE_MIME));
 }
+
+/*!
+\fn int BTextTools::indexOf(const QString &where, const QString &what, int from, Qt::CaseSensitivity cs,
+                            bool wholeWords)
+Returns the index position of the first occurrence of the string \a what in the string \a where, searching forward from
+index position \a from. Returns -1 if \a what is not found.
+
+If \a cs is Qt::CaseSensitive, the search is case sensitive; otherwise the search is case insensitive.
+
+If \a from is -1, the search starts at the last character; if it is -2, at the next to last character and so on.
+
+See QString::indexOf() documentation for details.
+
+Unlike QString::indexOf(), this function may also search for whole words only if the \a wholeWords parameter is true.
+
+Example:
+
+\snippet src/corelib/btexttools.cpp 0
+
+\sa lastIndexOf()
+*/
 
 int indexOf(const QString &where, const QString &what, int from, Qt::CaseSensitivity cs, bool wholeWords)
 {
@@ -214,6 +371,13 @@ int indexOf(const QString &where, const QString &what, int from, Qt::CaseSensiti
     return -1;
 }
 
+/*!
+\fn bool BTextTools::intersects(const QStringList &list1, const QStringList &list2, Qt::CaseSensitivity cs)
+Returns true if at least one element in \a list1 is equal to at least one element if \a list2. Otherwise returns false.
+
+If \a cs is Qt::CaseSensitive, the copmarison is case sensitive; otherwise the comparison is case insensitive.
+*/
+
 bool intersects(const QStringList &list1, const QStringList &list2, Qt::CaseSensitivity cs)
 {
     foreach (const QString &s1, list1) {
@@ -222,6 +386,17 @@ bool intersects(const QStringList &list1, const QStringList &list2, Qt::CaseSens
     }
     return false;
 }
+
+/*!
+\fn double BTextTools::inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs)
+Returns the frequency of occurance  of the string \a term in \a documents.
+
+If \a tfs is a non-null pointer, it's populated with the term frequancy values for each document.
+
+For details, see \l https://en.wikipedia.org/wiki/Tf–idf
+
+\sa termFrequency(), tfidf(), tfidfSortedIndexes()
+*/
 
 double inverseDocumentFrequency(const QString &term, const QStringList &documents, QList<int> *tfs)
 {
@@ -249,6 +424,27 @@ double inverseDocumentFrequency(const QString &term, const QStringList &document
     return log(double(documents.size()) / double(count));
 }
 
+/*!
+\fn int BTextTools::lastIndexOf(const QString &where, const QString &what, int from, Qt::CaseSensitivity cs,
+                                bool wholeWords)
+Returns the index position of the last occurrence of the string \a what in the string \a where, searching backward from
+index position \a from. If from is -1, the search starts at the last character; if from is -2, at the next to last
+character and so on. Returns -1 if \a what is not found.
+
+If \a cs is Qt::CaseSensitive, the search is case sensitive; otherwise the search is case insensitive.
+
+See QString::lastIndexOf() documentation for details.
+
+Unlike QString::lastIndexOf(), this function may also search for whole words only if the \a wholeWords parameter is
+true.
+
+Example:
+
+\snippet src/corelib/btexttools.cpp 1
+
+\sa indexOf()
+*/
+
 int lastIndexOf(const QString &where, const QString &what, int from, Qt::CaseSensitivity cs, bool wholeWords)
 {
     if (where.isEmpty() || what.isEmpty() || where.length() < what.length() || from > 0)
@@ -270,6 +466,24 @@ int lastIndexOf(const QString &where, const QString &what, int from, Qt::CaseSen
     }
     return -1;
 }
+
+/*!
+\fn BTextMatchList BTextTools::match(const QString &text, const QRegExp &what, const QRegExp &prefixedBy,
+                                     const QRegExp &postfixedBy)
+Matches the regular expression \a what against the string \a text.
+
+If \a prefixedBy is a valid QRegExp, only the substrings prefixed by that regular expression are matched.
+
+If \a postfixedBy is a valid QRegExp, only the substrings prefixed by that regular expression are matched.
+
+Returns the list of BTextMatch objects.
+
+Example
+
+\snippet src/corelib/btexttools.cpp 2
+
+\sa BTextMatch, BTextMatchList
+*/
 
 BTextMatchList match(const QString &text, const QRegExp &what, const QRegExp &prefixedBy, const QRegExp &postfixedBy)
 {
@@ -316,6 +530,17 @@ BTextMatchList match(const QString &text, const QRegExp &what, const QRegExp &pr
     return list;
 }
 
+/*!
+\fn QString BTextTools::mergeArguments(const QStringList &list)
+Merges the arguments \a list into a single string. The arguments are separated by spaces.
+
+The arguments containing spaces are wrapped into double quotes.
+
+Returns the resulting string.
+
+\sa splitCommand()
+*/
+
 QString mergeArguments(const QStringList &list)
 {
     QString args;
@@ -326,10 +551,43 @@ QString mergeArguments(const QStringList &list)
     return args;
 }
 
+/*!
+\fn QString BTextTools::mergeArguments(const QString &command, const QStringList &arguments)
+\overload
+Merges the \a command and \a arguments into a single string. The arguments are separated by spaces.
+
+The arguments containing spaces are wrapped into double quotes.
+
+Returns the resulting string.
+
+\sa splitCommand()
+*/
+
 QString mergeArguments(const QString &command, const QStringList &arguments)
 {
     return mergeArguments(QStringList() << command << arguments);
 }
+
+/*!
+\fn OptionsParsingError BTextTools::parseOptions(const QStringList &arguments, const QString &options,
+                                                 QMap<QString, QString> &result, bool allowOverride)
+Parses the options list \a arguments. The available options are listed in the \a options string. The results are
+inserted into \a result map.
+
+The options listed in the \a options parameter must be separated by commas. A single option must consist of an
+identifier, a colon, and list of keys separated by vertical bars. The list of keys may be followed by an equality sign
+and (optionally) by a list of possible values separated by vertical bars. Options, which are not required, must be
+enclosed in brackets.
+
+Example:
+
+\snippet src/corelib/btexttools.cpp 3
+
+If \a allowOverride is true and an option is mentioned several times, it's previous value is overvritten with the new
+one. If \a allowOverride is false and an option is mentioned several times, a RepeatingOptionError is returned.
+
+If there are no errors, NoError is returned. See OptionsParsingError for details.
+*/
 
 OptionsParsingError parseOptions(const QStringList &arguments, const QString &options, QMap<QString, QString> &result,
                                  bool allowOverride)
@@ -337,6 +595,22 @@ OptionsParsingError parseOptions(const QStringList &arguments, const QString &op
     QString s;
     return parseOptions(arguments, options, result, s, allowOverride);
 }
+
+/*!
+\fn OptionsParsingError BTextTools::parseOptions(const QStringList &arguments, const QString &options,
+                                                 QMap<QString, QString> &result, QString &errorData,
+                                                 bool allowOverride)
+\overload
+Parses the options list \a arguments. The available options are listed in the \a options string. The results are
+inserted into \a result map.
+
+If \a allowOverride is true and an option is mentioned several times, it's previous value is overvritten with the new
+one. If \a allowOverride is false and an option is mentioned several times, a RepeatingOptionError is returned.
+
+If an error occurs, \a errorData is set to error-specific information.
+
+If there are no errors, NoError is returned. See OptionsParsingError for details.
+*/
 
 OptionsParsingError parseOptions(const QStringList &arguments, const QString &options, QMap<QString, QString> &result,
                                  QString &errorData, bool allowOverride)
@@ -393,12 +667,33 @@ OptionsParsingError parseOptions(const QStringList &arguments, const QString &op
     return NoError;
 }
 
+/*!
+\fn QStringList BTextTools::removeAll(const QStringList &list, const QString &what, Qt::CaseSensitivity cs, int *count)
+Removes all strings which are equal to \a what from the QStringList \a list. The list itself is not modified.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+If \a count is a non-null pointer, it's value is set to the nubmer of removed elements.
+
+Returns the new string list.
+*/
+
 QStringList removeAll(const QStringList &list, const QString &what, Qt::CaseSensitivity cs, int *count)
 {
     QStringList nlist = list;
     int c = removeAll(&nlist, what, cs);
     return bRet(count, c, nlist);
 }
+
+/*!
+\fn int BTextTools::removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs)
+\overload
+Removes all strings which are equal to \a what from the QStringList \a list.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+Returns the number of removed elements.
+*/
 
 int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs)
 {
@@ -414,12 +709,33 @@ int removeAll(QStringList *list, const QString &what, Qt::CaseSensitivity cs)
     return count;
 }
 
+/*!
+\fn QStringList BTextTools::removeDuplicates(const QStringList &list, Qt::CaseSensitivity cs, int *count)
+Removes all duplicate strings from the QStringList \a list. The list itself is not modified.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+If \a count is a non-null pointer, it's value is set to the nubmer of removed elements.
+
+Returns the new string list.
+*/
+
 QStringList removeDuplicates(const QStringList &list, Qt::CaseSensitivity cs, int *count)
 {
     QStringList nlist = list;
     int c = removeDuplicates(&nlist, cs);
     return bRet(count, c, nlist);
 }
+
+/*!
+\fn int BTextTools::removeDuplicates(QStringList *list, Qt::CaseSensitivity cs)
+\overload
+Removes all duplicate strings from the QStringList \a list.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+Returns the number of removed elements.
+*/
 
 int removeDuplicates(QStringList *list, Qt::CaseSensitivity cs)
 {
@@ -438,12 +754,32 @@ int removeDuplicates(QStringList *list, Qt::CaseSensitivity cs)
     return count;
 }
 
+/*!
+\fn QString BTextTools::removeTrailingSpaces(const QString &s)
+Removes all trailing spaces (the ones at the end of the string) from the string \a s. The string itself is not
+modified.
+
+Returns the new string.
+
+\sa appendTrailingSpaces()
+*/
+
 QString removeTrailingSpaces(const QString &s)
 {
     QString ns = s;
     removeTrailingSpaces(&ns);
     return ns;
 }
+
+/*!
+\fn void BTextTools::removeTrailingSpaces(QString *s)
+\overload
+Removes all trailing spaces (the ones at the end of the string) from the string \a s.
+
+If \a s is a null pointer, nothing is done.
+
+\sa appendTrailingSpaces()
+*/
 
 void removeTrailingSpaces(QString *s)
 {
@@ -454,6 +790,19 @@ void removeTrailingSpaces(QString *s)
         sl[i].remove(QRegExp("\\s+$"));
     *s = sl.join("\n");
 }
+
+/*!
+\fn void BTextTools::removeUnsuppottedSymbols(QString &s)
+Removes unsupported symbols form the string \a s.
+
+The unsupported are some special symbols, sucha as the invisible space of some control symbols.
+
+The CRLF is also replaced by LF.
+
+See \l https://en.wikipedia.org/wiki/ASCII for details.
+
+\sa withoutUnsuppottedSymbols()
+*/
 
 void removeUnsuppottedSymbols(QString &s)
 {
@@ -472,6 +821,18 @@ void removeUnsuppottedSymbols(QString &s)
     s.replace('\r', '\n');
 }
 
+/*!
+\fn QString &BTextTools::replace(QString &where, const QString &oldText, const QString &newText,
+                                 Qt::CaseSensitivity cs, bool wholeWords)
+Replaces all occurance of string \a oldText in the string \a where with the string \a newText.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+This function may also search for whole words only if the \a wholeWords parameter is true.
+
+Returns a reference to the string \a where.
+*/
+
 QString &replace(QString &where, const QString &oldText, const QString &newText, Qt::CaseSensitivity cs,
                  bool wholeWords)
 {
@@ -485,12 +846,26 @@ QString &replace(QString &where, const QString &oldText, const QString &newText,
     return where;
 }
 
+/*!
+\fn QString BTextTools::replaceTabs(const QString &s, BeQt::TabWidth tw)
+Replaces all tabulation symbols in the string \a s with spaces. \a tw is used to specify the tabulation equivalent in
+spaces. The string itself is not modified.
+
+Returns the new string.
+*/
+
 QString replaceTabs(const QString &s, BeQt::TabWidth tw)
 {
     QString ns = s;
     replaceTabs(&ns, tw);
     return ns;
 }
+
+/*!
+\fn void BTextTools::replaceTabs(QString *s, BeQt::TabWidth tw)
+Replaces all tabulation symbols in the string \a s with spaces. \a tw is used to specify the tabulation equivalent in
+spaces.
+*/
 
 void replaceTabs(QString *s, BeQt::TabWidth tw)
 {
@@ -508,12 +883,36 @@ void replaceTabs(QString *s, BeQt::TabWidth tw)
     }
 }
 
+/*!
+\fn QStringList BTextTools::sortComprising(const QStringList &list, Qt::CaseSensitivity cs)
+Sorts the \a list in such a way that the strings which contains other string(s) as their part are placed before the
+strings that they contain. The order of substrings is undefined.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+Returns the new string list.
+
+Example:
+
+\snippet src/corelib/btexttools.cpp 4
+*/
+
 QStringList sortComprising(const QStringList &list, Qt::CaseSensitivity cs)
 {
     QStringList nlist = list;
     sortComprising(&nlist, cs);
     return nlist;
 }
+
+/*!
+\fn void BTextTools::sortComprising(QStringList *list, Qt::CaseSensitivity cs)
+Sorts the \a list in such a way that the strings which contains other string(s) as their part are placed before the
+strings that they contain. The order of substrings is undefined.
+
+If \a cs is Qt::CaseSensitive, the comparison is case sensitive; otherwise the comparison is case insensitive.
+
+If \a list is a null pointer, nothing is done.
+*/
 
 void sortComprising(QStringList *list, Qt::CaseSensitivity cs)
 {
@@ -544,6 +943,19 @@ void sortComprising(QStringList *list, Qt::CaseSensitivity cs)
     *list += nlist;
 }
 
+/*!
+\fn QStringList BTextTools::splitCommand(const QString &cmd, bool *ok)
+Splist the command \a cmd into a list of arguments.
+
+The arguments wrapped into double quotes are unwrapped.
+
+If \a ok is a non-null pointer, it's value is set to false if an error occurs, or to true if there is no error.
+
+Returns the resulting string list.
+
+\sa mergeArguments()
+*/
+
 QStringList splitCommand(const QString &cmd, bool *ok)
 {
     bool b = false;
@@ -554,6 +966,20 @@ QStringList splitCommand(const QString &cmd, bool *ok)
     args.prepend(command);
     return bRet(ok, true, args);
 }
+
+/*!
+\fn QStringList BTextTools::splitCommand(const QString &cmd, QString &command, bool *ok)
+\overload
+Splist the command \a cmd into a command name \a command and a list of arguments.
+
+The arguments wrapped into double quotes are unwrapped.
+
+If \a ok is a non-null pointer, it's value is set to false if an error occurs, or to true if there is no error.
+
+Returns the resulting string list of arguments.
+
+\sa mergeArguments()
+*/
 
 QStringList splitCommand(const QString &cmd, QString &command, bool *ok)
 {
@@ -567,6 +993,20 @@ QStringList splitCommand(const QString &cmd, QString &command, bool *ok)
     command = c;
     return bRet(ok, true, args);
 }
+
+/*!
+\fn QString BTextTools::splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
+\overload
+Splist the command \a cmd into a command name and a list of arguments \a arguments.
+
+The arguments wrapped into double quotes are unwrapped.
+
+If \a ok is a non-null pointer, it's value is set to false if an error occurs, or to true if there is no error.
+
+Returns the resulting command name.
+
+\sa mergeArguments()
+*/
 
 QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
 {
@@ -630,6 +1070,13 @@ QString splitCommand(const QString &cmd, QStringList &arguments, bool *ok)
     return bRet(ok, true, command);
 }
 
+/*!
+\fn QRegExp BTextTools::standardRegExp(RegExpPattern type)
+Returns a QRegExp object for a standard regular expression type \a type.
+
+\sa standardRegExpPattern()
+*/
+
 QRegExp standardRegExp(RegExpPattern type)
 {
     switch (type) {
@@ -639,6 +1086,13 @@ QRegExp standardRegExp(RegExpPattern type)
         return QRegExp();
     }
 }
+
+/*!
+\fn QString BTextTools::standardRegExpPattern(RegExpPattern type)
+Returns a QRegExp object for a standard regular expression type \a type.
+
+\sa standardRegExp()
+*/
 
 QString standardRegExpPattern(RegExpPattern type)
 {
@@ -654,12 +1108,30 @@ QString standardRegExpPattern(RegExpPattern type)
     }
 }
 
+/*!
+\fn int BTextTools::termFrequency(const QString &term, const QString &document)
+Returns the frequency of occurance of the string \a term in \a document.
+
+For details, see \l https://en.wikipedia.org/wiki/Tf–idf
+
+\sa inverseDocumentFrequency(), tfidf(), tfidfSortedIndexes()
+*/
+
 int termFrequency(const QString &term, const QString &document)
 {
     if (term.isEmpty() || document.isEmpty())
         return 0;
     return document.toLower().count(QRegExp("\\b" + term.toLower() + "\\b"));
 }
+
+/*!
+\fn QList<double> BTextTools::tfidf(const QString &term, const QStringList &documents)
+Returns the Tf-idf of the string \a term in \a documents.
+
+For details, see \l https://en.wikipedia.org/wiki/Tf–idf
+
+\sa inverseDocumentFrequency(), termFrequency(), tfidfSortedIndexes()
+*/
 
 QList<double> tfidf(const QString &term, const QStringList &documents)
 {
@@ -672,6 +1144,16 @@ QList<double> tfidf(const QString &term, const QStringList &documents)
         list << double(tfs.at(i)) * idf;
     return list;
 }
+
+/*!
+\fn QList<double> BTextTools::tfidf(const QStringList &terms, const QStringList &documents)
+\overload
+Returns the Tf-idf of the string list \a terms in \a documents.
+
+For details, see \l https://en.wikipedia.org/wiki/Tf–idf
+
+\sa inverseDocumentFrequency(), termFrequency(), tfidfSortedIndexes()
+*/
 
 QList<double> tfidf(const QStringList &terms, const QStringList &documents)
 {
@@ -693,6 +1175,15 @@ QList<double> tfidf(const QStringList &terms, const QStringList &documents)
     return list;
 }
 
+/*!
+\fn QList<int> BTextTools::tfidfSortedIndexes(const QString &term, const QStringList &documents)
+Returns the Tf-idf indexes of the string \a term in \a documents.
+
+For details, see \l https://en.wikipedia.org/wiki/Tf–idf
+
+\sa inverseDocumentFrequency(), termFrequency(), tfidf()
+*/
+
 QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents)
 {
     QList<double> list = tfidf(term, documents);
@@ -709,6 +1200,15 @@ QList<int> tfidfSortedIndexes(const QString &term, const QStringList &documents)
     }
     return ret;
 }
+
+/*!
+\fn QList<int> BTextTools::tfidfSortedIndexes(const QStringList &terms, const QStringList &documents)
+Returns the Tf-idf indexes of the string list \a terms in \a documents.
+
+For details, see \l https://en.wikipedia.org/wiki/Tf–idf
+
+\sa inverseDocumentFrequency(), termFrequency(), tfidf()
+*/
 
 QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &documents)
 {
@@ -727,6 +1227,15 @@ QList<int> tfidfSortedIndexes(const QStringList &terms, const QStringList &docum
     return ret;
 }
 
+/*!
+\fn QString BTextTools::toHtml(const QString &text, bool replaceSpaces)
+Replaces special symbols in \a text into their HTML equivalents. The string itself is not modified.
+
+If \a replaceSpaces is true, the spaces are also replaced.
+
+Returns the resulting string.
+*/
+
 QString toHtml(const QString &text, bool replaceSpaces)
 {
     typedef QMap<QChar, QString> KeywordMap;
@@ -736,10 +1245,12 @@ QString toHtml(const QString &text, bool replaceSpaces)
         keywords.insert('>', "&gt;");
         keywords.insert(' ', "&nbsp;");
         keywords.insert('\"', "&quot;");
+        keywords.insert('\n', "<br />");
     }
     if (text.isEmpty())
         return text;
     QString html = text;
+    html.remove('\r');
     foreach (int i, bRangeR(html.length() - 1, 0)) {
         const QChar &c = html.at(i);
         if (!replaceSpaces && ' ' == c)
@@ -749,6 +1260,13 @@ QString toHtml(const QString &text, bool replaceSpaces)
     }
     return html;
 }
+
+/*!
+\fn void BTextTools::unwrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+Removes the \a leftWrappingText from the left and \a rightWrappingText from the right of the string \a text.
+
+\sa wrap(), unwrapped()
+*/
 
 void unwrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
 {
@@ -760,10 +1278,29 @@ void unwrap(QString &text, const QString &leftWrappingText, const QString &right
         text.remove(text.length() - rightWrappingText.length(), rightWrappingText.length());
 }
 
+/*!
+\fn void BTextTools::unwrap(QString &text, const QString &wrappingText)
+\overload
+Removes the \a wrappingText from the left and from the right of the string \a text.
+
+\sa wrap(), unwrapped()
+*/
+
 void unwrap(QString &text, const QString &wrappingText)
 {
     unwrap(text, wrappingText, wrappingText);
 }
+
+/*!
+\fn QString BTextTools::unwrapped(const QString &text, const QString &leftWrappingText,
+                                  const QString &rightWrappingText)
+Removes the \a leftWrappingText from the left and \a rightWrappingText from the right of the string \a text. The string
+itself is not modified.
+
+Returns the resultin string.
+
+\sa wrapped(), unwrap()
+*/
 
 QString unwrapped(const QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
 {
@@ -772,10 +1309,35 @@ QString unwrapped(const QString &text, const QString &leftWrappingText, const QS
     return ntext;
 }
 
+/*!
+\fn QString BTextTools::unwrapped(const QString &text, const QString &wrappingText)
+\overload
+Removes the \a wrappingText from the left and from the right of the string \a text. The string itself is not modified.
+
+Returns the resultin string.
+
+\sa wrapped(), unwrap()
+*/
+
 QString unwrapped(const QString &text, const QString &wrappingText)
 {
     return unwrapped(text, wrappingText, wrappingText);
 }
+
+/*!
+\fn QString BTextTools::withoutUnsuppottedSymbols(const QString &s)
+Removes unsupported symbols form the string \a s. The string itself is not modified.
+
+Returns the resulting string.
+
+The unsupported are some special symbols, sucha as the invisible space of some control symbols.
+
+The CRLF is also replaced by LF.
+
+See \l https://en.wikipedia.org/wiki/ASCII for details.
+
+\sa removeUnsuppottedSymbols()
+*/
 
 QString withoutUnsuppottedSymbols(const QString &s)
 {
@@ -785,6 +1347,17 @@ QString withoutUnsuppottedSymbols(const QString &s)
     removeUnsuppottedSymbols(ns);
     return ns;
 }
+
+/*!
+\fn void BTextTools::wrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+Wraps the string \a text with \a leftWrappingText on the left and \a rightWrappingText on the right.
+
+If the string already has \a leftWrappingText on the left, that text is \e not added again.
+
+If the string already has \a rightWrappingText on the right, that text is \e not added again.
+
+\sa unwrap(), wrapped()
+*/
 
 void wrap(QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
 {
@@ -796,10 +1369,36 @@ void wrap(QString &text, const QString &leftWrappingText, const QString &rightWr
         text.append(rightWrappingText);
 }
 
+/*!
+\fn void BTextTools::wrap(QString &text, const QString &wrappingText)
+\overload
+Wraps the string \a text with \a wrappingText on the left and on the right.
+
+If the string already has \a wrappingText on the left, that text is \e not added again.
+
+If the string already has \a wrappingText on the right, that text is \e not added again.
+
+\sa unwrap(), wrapped()
+*/
+
 void wrap(QString &text, const QString &wrappingText)
 {
     wrap(text, wrappingText, wrappingText);
 }
+
+/*!
+\fn QString BTextTools::wrapped(const QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
+Wraps the string \a text with \a leftWrappingText on the left and \a rightWrappingText on the right. The string itself
+is not modified.
+
+If the string already has \a leftWrappingText on the left, that text is \e not added again.
+
+If the string already has \a rightWrappingText on the right, that text is \e not added again.
+
+Returns the resultin string.
+
+\sa unwrapped(), wrap()
+*/
 
 QString wrapped(const QString &text, const QString &leftWrappingText, const QString &rightWrappingText)
 {
@@ -807,6 +1406,20 @@ QString wrapped(const QString &text, const QString &leftWrappingText, const QStr
     wrap(ntext, leftWrappingText, rightWrappingText);
     return ntext;
 }
+
+/*!
+\fn QString BTextTools::wrapped(const QString &text, const QString &wrappingText)
+\overload
+Wraps the string \a text with \a wrappingText on the left and on the right. The string itself is not modified.
+
+If the string already has \a wrappingText on the left, that text is \e not added again.
+
+If the string already has \a wrappingText on the right, that text is \e not added again.
+
+Returns the resultin string.
+
+\sa unwrapped(), wrap()
+*/
 
 QString wrapped(const QString &text, const QString &wrappingText)
 {

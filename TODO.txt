@@ -1,4 +1,5 @@
-* Add comments to the code and make docs; write detailed user manual
+* Add comments to the code and make docs
+* Write detailed user manual
 * Add tests
 * Use enum_cast wherever it makes sense
 
@@ -21,6 +22,8 @@
 * Add build information to BVersion
 * Add BeQtWebApp module
 * Add FastCGI binding
+* Add init_once_mutex and do_once_mutex macros
+* Add BSettingsLocker for multithreaded access to global settings instance
 
 === MAJOR ===
 
@@ -28,3 +31,8 @@
 * Remove BPersonInfoList friend QDataStream operators
 * Add build information parameter to BVersion constructor
 * Implement proper icons system
+* Use references in bRet functions
+* Get rid of identifier in do_once macro (use compile-time random identifier generation)
+* Add "includeInvalid" parameter to BeQt::codecsGroups
+* Rename BeQt::codecsGroups into BeQt::allCodecGroups
+* Add ability to return pure BUuid text in BUuid::toByteArray

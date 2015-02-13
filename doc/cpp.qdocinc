@@ -1,0 +1,31 @@
+Cpp.ignoretokens = \
+                   B_CODEEDITOR_EXPORT \
+                   B_CORE_EXPORT \
+                   B_NETWORK_EXPORT \
+                   B_NETWORKWIDGETS_EXPORT \
+                   B_SQL_EXPORT \
+                   B_WIDGETS_EXPORT
+
+Cpp.ignoredirectives = \
+                       __attribute__ \
+                       B_DECLARE_PRIVATE \
+                       B_DECLARE_PRIVATE_S \
+                       B_DECLARE_PUBLIC \
+                       B_DECLARE_PUBLIC_S \
+                       QT_FORWARD_DECLARE_CLASS \
+                       Q_CLASSINFO \
+                       Q_DECLARE_INTERFACE \
+                       Q_DECLARE_METATYPE \
+                       Q_DECLARE_OPERATORS_FOR_FLAGS \
+                       Q_DECLARE_PRIVATE \
+                       Q_DECLARE_PUBLIC \
+                       Q_DECLARE_PRIVATE_D \
+                       Q_DECLARE_SHARED \
+                       Q_DECLARE_TR_FUNCTIONS \
+                       Q_DECLARE_TYPEINFO \
+                       Q_DISABLE_COPY \
+                       Q_DUMMY_COMPARISON_OPERATOR \
+                       Q_ENUMS \
+                       Q_FLAGS \
+                       Q_INTERFACES \
+                       Q_PRIVATE_PROPERTY

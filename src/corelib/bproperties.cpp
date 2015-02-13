@@ -29,7 +29,28 @@
 ================================ BProperties =================================
 ============================================================================*/
 
+/*!
+\class BProperties
+\inmodule BeQtCore
+\brief The BProperties class provides a properties map.
+
+BProperties inherits from QMap<QString, QString>. In addition, BProperties provides an operator for storing it in a
+QVariant.
+
+Example of a .properties file:
+
+\snippet src/corelib/bproperties.properties 0
+
+For details about the .properties format, see \l https://en.wikipedia.org/wiki/.properties
+
+\sa BeQt::propertiesFromString(), BeQt::propertiesToString()
+*/
+
 /*============================== Public operators ==========================*/
+
+/*!
+Stores the properties object in a QVariant. Returns that QVariant.
+*/
 
 BProperties::operator QVariant() const
 {

@@ -1,0 +1,3 @@
+HTML.stylesheets = "./template/style/style.css"
+
+include(beqt.qdocinc)

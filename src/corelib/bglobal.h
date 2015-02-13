@@ -29,6 +29,8 @@
 #include <QString>
 #include <QVariant>
 
+#define BEQT_VERSION_STR "4.1.2"
+
 #if defined(BEQT_BUILD_CORE_LIB)
 #   define B_CORE_EXPORT Q_DECL_EXPORT
 #else
@@ -313,7 +315,7 @@ template<typename T> void bRemoveDuplicates(QList<T> &list, bool (*areEqual)(con
 
 template<typename T> void bRet(const T &)
 {
-    //Calling "return bRet(...)" is the same as calling "return (void) ..."
+    //
 }
 
 template<typename T> T bRet(T *t, const T &tt)

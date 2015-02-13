@@ -327,11 +327,192 @@ void BTerminalPrivate::lineRead(const QString &text)
 ================================ BTerminal ===================================
 ============================================================================*/
 
+/*!
+\class BTerminal
+\inmodule BeQtCore
+\brief The BTerminal class provides means of interaction with a terminal for applications.
+
+The BTerminal class is used to read from the standard input (stdin) and write to the standard output (stdout/stderr).
+It is also used to automatically handle commands entered by users. There are some additional functions for interacting
+with a terminal, such as setTitle() or setBackgroundColor().
+
+\warning BTerminal must not be instantiated or deleted explicitly. It is done automatically under the scenes. You also
+must not inherit BTerminal.
+
+\section1 Interacting with a terminal
+
+Basic interaction with BTerminal consists of reading and writing to/from standard streams (stdin, stdout, stderr). You
+may enable/disable echo to make the text entered into terminal (in)visible by calling setStdinEchoMode(). This is
+useful when entering passwords.
+
+You may also change the text color and background color of a terminal, get terminal size (number of rows and columns),
+get and set terminal window title.
+
+Eample:
+
+\snippet src/corelib/bterminal.cpp 0
+
+\section1 User command handling
+
+By default, BTerminal does not provide capability to handle user commands. You have to set it's mode to StandardMode to
+enable automatic command handling.
+
+\note BTerminal instance is created and destroyed implicitly. You don't have to manually delete the instance, but you
+may do so by calling destroy() or setting the mode to NoMode.
+
+To make BTerminal handle a command, you have to install your own command handling function (see HandlerFunction) or use
+one of those provided by BeQt:
+
+\table
+\header
+    \li Standard command
+    \li Command (what user enters)
+    \li Corresponding function
+    \li Description
+\row
+    \li HelpCommand
+    \li help
+    \li handleHelp()
+    \li Prints information about the application, available commands, etc.
+\row
+    \li LastCommand
+    \li last
+    \li handleLast()
+    \li Re-enters the last entered command, or shows the list of the commands entered (command history).
+\row
+    \li QuitCommand
+    \li quit
+    \li handleQuit()
+    \li Calls QCoreApplication::quit() slot.
+\row
+    \li SetCommand
+    \li set
+    \li handleSet()
+    \li Sets or shows an application setting, or shows the settings structure.
+\endtable
+
+You may also provide description of your command using setCommandHelp() method.
+
+Example:
+
+\snippet src/corelib/bterminal.cpp 1
+
+BTerminal runs a separate thread which reads form the standard input. This operation is blocking, that's why a separate
+thread is used. When another thread calls readLine(), that thread is terminated, and then started again, when the
+readLine() method finishes.
+
+All commands entered by user are stored in history and may be shown or called later with the help of the LastCommand
+command.
+
+\section1 Settings handling
+
+BTerminal provides a builtin command for changing application settings by simply typing the setting name and it's
+value. The value may also be shown with the help of that command.
+
+To make BTerminal know about your settings hierarchy, you have to create the corresponding BSettingsNode hierarchy,
+where each node corresponds to the part of a setting path.
+
+To add builtin BeQt settings, use createBeQtSettingsNode() method (parent node must be set to the root node to make it
+work correctly).
+
+Example:
+
+\snippet src/corelib/bterminal.cpp 2
+
+For more datailed description of settings handling, see BSettingsNode class documentation.
+*/
+
+/*!
+\enum BTerminal::Color
+
+This enum type is used to describe terminal text or background color.
+
+\value DefaultColor
+\value Black
+\value Red
+\value Green
+\value Brown
+\value Blue
+\value Magenta
+\value Cyan
+\value Lightgray
+*/
+
+/*!
+\enum BTerminal::Mode
+
+This enum type is used to describe terminal mode.
+
+\value NoMode
+BTerminal can perform only basic terminal interaction.
+
+\value StandardMode
+BTerminal can perform basic terminal interaction and automatically handle commands entered by user.
+*/
+
+/*!
+\enum BTerminal::StandardCommand
+
+This enum type is used to describe standard commands provided by BTerminal.
+
+\value HelpCommand
+\value LastCommand
+\value QuitCommand
+\value SetCommand
+*/
+
+/*!
+\class BTerminal::CommandHelp
+\brief The CommandHelp struct represents a command help (it's usage and description).
+*/
+
+/*!
+\variable BTerminal::CommandHelp::description
+Description of the command. As it is a BTranslation, this variable is translated to an appropriate language depending
+on the current application locale.
+*/
+
+/*!
+\variable BTerminal::CommandHelp::usage
+Usage of a command. For example: "sum <summand1> <summand2> [summandN...]"
+*/
+
+/*!
+\typedef BTerminal::CommandHelpList
+
+The BTerminal::CommandHelpList typedef provides CommandHelp list for BTerminal.
+*/
+
+/*!
+\typedef BTerminal::HandlerFunction
+
+The BTerminal::HandlerFunction typedef provides a pointer to a function taking a const referance to a QString, and a
+const reference to a QStringList, and returning bool.
+*/
+
+/*!
+\fn void BTerminal::commandEntered(const QString &command, const QStringList &arguments)
+
+This signal is emitted immediately after a user enters some command. The signal is emitted only when the mode of the
+BTerminal is StandardMode.
+
+\a command is the comman entered, and the \a arguments are it's arguments.
+*/
+
 /*============================== Static protected variables ================*/
+
+/*!
+\variable BTerminal::_m_self
+This static variable is used to access BTerminal instance. You should not use it directly.
+*/
 
 BTerminal *BTerminal::_m_self = 0;
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs a terminal and sets it's mode to \a mode. Must not be used directly.
+*/
 
 BTerminal::BTerminal(Mode mode) :
     QObject(0), BBaseObject(*new BTerminalPrivate(this, mode))
@@ -339,11 +520,19 @@ BTerminal::BTerminal(Mode mode) :
     d_func()->init();
 }
 
+/*!
+Constructs an object and associates the given data object \a d with it. Must not be used directly.
+*/
+
 BTerminal::BTerminal(BTerminalPrivate &d) :
     QObject(0), BBaseObject(d)
 {
     d_func()->init();
 }
+
+/*!
+Destroys the object, deleting the associated data object. Must not be used directly.
+*/
 
 BTerminal::~BTerminal()
 {
@@ -352,11 +541,21 @@ BTerminal::~BTerminal()
 
 /*============================== Static public methods =====================*/
 
+/*!
+Returns the current background color of the terminal.
+
+\sa setBackgroundColor()
+*/
+
 BTerminal::Color BTerminal::backgroundColor()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     return BTerminalPrivate::backgroundColor;
 }
+
+/*!
+Returns the number of columns in the terminal (the terminal width in symbols).
+*/
 
 int BTerminal::columnCount()
 {
@@ -372,17 +571,35 @@ int BTerminal::columnCount()
 #endif
 }
 
+/*!
+Returns the name of the standard command \a cmd.
+
+\sa StandardCommand
+*/
+
 QString BTerminal::command(StandardCommand cmd)
 {
     QStringList sl = commands(cmd);
     return !sl.isEmpty() ? sl.first() : QString();
 }
 
+/*!
+Returns the default CommandHelp for the standard command \a cmd.
+
+\sa CommandHelp, commandHelpList()
+*/
+
 BTerminal::CommandHelp BTerminal::commandHelp(StandardCommand cmd)
 {
     CommandHelpList l = commandHelpList(cmd);
     return !l.isEmpty() ? l.first() : CommandHelp();
 }
+
+/*!
+Returns the CommandHelpList for the standard command \a cmd.
+
+\sa CommandHelp, CommandHelpList, commandHelp()
+*/
 
 BTerminal::CommandHelpList BTerminal::commandHelpList(StandardCommand cmd)
 {
@@ -437,6 +654,12 @@ BTerminal::CommandHelpList BTerminal::commandHelpList(StandardCommand cmd)
     return l;
 }
 
+/*!
+Retunrs the history of entered commands.
+
+\sa setCommandHistory()
+*/
+
 QStringList BTerminal::commandHistory()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -446,6 +669,10 @@ QStringList BTerminal::commandHistory()
         return QStringList();
     return ds_func()->commandHistory;
 }
+
+/*!
+Retunrs the list of names (including aliases) of the standard command \a cmd.
+*/
 
 QStringList BTerminal::commands(StandardCommand cmd)
 {
@@ -469,6 +696,10 @@ QStringList BTerminal::commands(StandardCommand cmd)
     return sl;
 }
 
+/*!
+Connects BTerminal's signal commandEntered() to the \a {receiver}'s slot or signal \a method.
+*/
+
 void BTerminal::connectToCommandEntered(QObject *receiver, const char *method)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -480,6 +711,21 @@ void BTerminal::connectToCommandEntered(QObject *receiver, const char *method)
         return;
     connect(_m_self, SIGNAL(commandEntered(QString, QStringList)), receiver, method);
 }
+
+/*!
+Returns a pointer to a BSettingsNode object describing the BeQt settings structure. The node's parnt is set to
+\a parent.
+
+BTerminal does \e not take ownership of the object. You have to delete it manually, unless you install it on BTerminal.
+
+The following BeQt settings are available:
+
+\list
+    \li BeQt.Core.locale
+\endlist
+
+\sa {Settings handling}, BSettingsNode
+*/
 
 BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
 {
@@ -494,6 +740,10 @@ BSettingsNode *BTerminal::createBeQtSettingsNode(BSettingsNode *parent)
     return n;
 }
 
+/*!
+Destroys the terminal instance. If there is no BTerminal instance, nothing is done.
+*/
+
 void BTerminal::destroy()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -502,6 +752,10 @@ void BTerminal::destroy()
     delete _m_self;
     _m_self = 0;
 }
+
+/*!
+Disconnects BTerminal's signal commandEntered() from the \a {receiver}'s slot or signal \a method.
+*/
 
 void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *method)
 {
@@ -515,6 +769,12 @@ void BTerminal::disconnectFromCommandEntered(QObject *receiver, const char *meth
     disconnect(_m_self, SIGNAL(commandEntered(QString, QStringList)), receiver, method);
 }
 
+/*!
+Emulates user input of a \a command with \a arguments.
+
+The command and it's arguments are printed to a terminal, and then the command is handled as if it was entered by user.
+*/
+
 void BTerminal::emulateCommand(const QString &command, const QStringList &arguments)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -525,6 +785,10 @@ void BTerminal::emulateCommand(const QString &command, const QStringList &argume
     QMetaObject::invokeMethod(ds_func(), "commandEntered", Qt::QueuedConnection, Q_ARG(QString, command),
                               Q_ARG(QStringList, arguments));
 }
+
+/*!
+Retunrs the pointer to a handler function for standard command \a cmd.
+*/
 
 BTerminal::HandlerFunction BTerminal::handler(StandardCommand cmd)
 {
@@ -542,6 +806,15 @@ BTerminal::HandlerFunction BTerminal::handler(StandardCommand cmd)
     }
 }
 
+/*!
+Installs a default handler function \a handler.
+
+The default handler is called when no other handler matches a command. It may be used to print custom message notifying
+the user about that.
+
+\sa {User command handling}, installedDefaultHandler(), installHandler()
+*/
+
 void BTerminal::installDefaultHandler(HandlerFunction handler)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -551,6 +824,12 @@ void BTerminal::installDefaultHandler(HandlerFunction handler)
         return;
     ds_func()->defaultHandler = handler;
 }
+
+/*!
+Returns a pointer to the default handler function.
+
+\sa {User command handling}, installDefaultHandler(), installedHandler()
+*/
 
 BTerminal::HandlerFunction BTerminal::installedDefaultHandler()
 {
@@ -562,6 +841,12 @@ BTerminal::HandlerFunction BTerminal::installedDefaultHandler()
     return ds_func()->defaultHandler;
 }
 
+/*!
+Returns the handler function installed for the command \a command.
+
+\sa {User command handling}, installHandler()
+*/
+
 BTerminal::HandlerFunction BTerminal::installedHandler(const QString &command)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -571,6 +856,12 @@ BTerminal::HandlerFunction BTerminal::installedHandler(const QString &command)
         return 0;
     return !command.isEmpty() ? ds_func()->handlers.value(command) : 0;
 }
+
+/*!
+Installs the \a handler function for the command \a command.
+
+\sa {User command handling}, installedHandler()
+*/
 
 void BTerminal::installHandler(const QString &command, HandlerFunction handler)
 {
@@ -587,6 +878,13 @@ void BTerminal::installHandler(const QString &command, HandlerFunction handler)
     ds->handlers.insert(command, handler);
 }
 
+/*!
+\overload
+Installs the standard handler function for the standard command \a cmd.
+
+\sa {User command handling}
+*/
+
 void BTerminal::installHandler(StandardCommand cmd)
 {
     if (!BTerminalPrivate::testInit("BTerminal"))
@@ -601,11 +899,24 @@ void BTerminal::installHandler(StandardCommand cmd)
     }
 }
 
+/*!
+\overload
+Installs the handler function \a handler for the standard command \a cmd.
+
+\sa {User command handling}
+*/
+
 void BTerminal::installHandler(StandardCommand cmd, HandlerFunction handler)
 {
     foreach (const QString &s, commands(cmd))
         installHandler(s, handler);
 }
+
+/*!
+Returns the last command entered by user.
+
+If \a args is a non-null pointer, it's value is set to the last command's arguments.
+*/
 
 QString BTerminal::lastCommand(QStringList *args)
 {
@@ -617,11 +928,25 @@ QString BTerminal::lastCommand(QStringList *args)
     return bRet(args, ds_func()->lastArgs, ds_func()->lastCommand);
 }
 
+/*!
+Retunrs the curretn mode of the terminal.
+
+\sa Mode
+*/
+
 BTerminal::Mode BTerminal::mode()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     return BTerminalPrivate::mode;
 }
+
+/*!
+Reads a line of text that user enters into the terminal.
+
+If \a text is not empty, it is written to standard output before reading the user input.
+
+\sa {Interacting with a terminal}, readLineSecure()
+*/
 
 QString BTerminal::readLine(const QString &text)
 {
@@ -637,6 +962,17 @@ QString BTerminal::readLine(const QString &text)
     QTimer::singleShot(0, ds_func(), SLOT(createThread()));
     return line;
 }
+
+/*!
+Reads a line of text that user enters into the terminal.
+
+If \a text is not empty, it is written to standard output before reading the user input.
+
+Unlike readLine(), this functions always disables the echo mode first to prevent showing the text that a user will
+enter. After reading a line, the echo mode is set to it's previous state.
+
+\sa {Interacting with a terminal}, readLine(), setStdinEchoEnabled()
+*/
 
 QString BTerminal::readLineSecure(const QString &text)
 {
@@ -654,6 +990,12 @@ QString BTerminal::readLineSecure(const QString &text)
     return line;
 }
 
+/*!
+Returns a pointer to the root settings node.
+
+\sa {Settings handling}, BSettingsNode
+*/
+
 BSettingsNode *BTerminal::rootSettingsNode()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -663,6 +1005,10 @@ BSettingsNode *BTerminal::rootSettingsNode()
         return 0;
     return ds_func()->root;
 }
+
+/*!
+Returns the number of rows in the terminal (the terminal height in lines).
+*/
 
 int BTerminal::rowCount()
 {
@@ -678,6 +1024,12 @@ int BTerminal::rowCount()
 #endif
 }
 
+/*!
+Sets the terminal background color to \a color.
+
+\sa backgroundColor()
+*/
+
 void BTerminal::setBackgroundColor(Color color)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -685,10 +1037,18 @@ void BTerminal::setBackgroundColor(Color color)
     BTerminalPrivate::resetColor();
 }
 
+/*!
+Sets the command help for \a command to \a help.
+*/
+
 void BTerminal::setCommandHelp(const QString &command, const CommandHelp &help)
 {
     setCommandHelp(command, CommandHelpList() << help);
 }
+
+/*!
+Sets the list of command help for \a command to \a list.
+*/
 
 void BTerminal::setCommandHelp(const QString &command, const CommandHelpList &list)
 {
@@ -702,6 +1062,12 @@ void BTerminal::setCommandHelp(const QString &command, const CommandHelpList &li
     ds_func()->commandHelp.insert(command, list);
 }
 
+/*!
+Sets the history of entered commands to \a list.
+
+\sa commandHistory()
+*/
+
 void BTerminal::setCommandHistory(const QStringList &list)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -712,6 +1078,10 @@ void BTerminal::setCommandHistory(const QStringList &list)
     ds_func()->commandHistory = list;
 }
 
+/*!
+Sets the basic message for HelpCommand to \a t.
+*/
+
 void BTerminal::setHelpDescription(const BTranslation &t)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -721,6 +1091,14 @@ void BTerminal::setHelpDescription(const BTranslation &t)
         return;
     ds_func()->help = t;
 }
+
+/*!
+Sets the terminal mode to \a mode.
+
+If the \a mode is equal to current mode, nothing is done.
+
+A BTerminal instance is created or deleted depending on the new mode.
+*/
 
 void BTerminal::setMode(Mode mode)
 {
@@ -735,6 +1113,12 @@ void BTerminal::setMode(Mode mode)
     _m_self = new BTerminal(mode);
 }
 
+/*!
+Sets a pointer to the root settings node to \a root.
+
+\sa {Settings handling}, BSettingsNode
+*/
+
 void BTerminal::setRootSettingsNode(BSettingsNode *root)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -747,6 +1131,15 @@ void BTerminal::setRootSettingsNode(BSettingsNode *root)
         delete ds->root;
     ds->root = root;
 }
+
+/*!
+If \a enabled is true, sets the echo mode of a terminal enabled. The text entered by a user to the terminal will be
+visible.
+
+If \a enabled is false, the text entered by a user to the terminal will not be displayed in the terminal.
+
+\sa stdinEchoEnabled()
+*/
 
 void BTerminal::setStdinEchoEnabled(bool enabled)
 {
@@ -771,12 +1164,24 @@ void BTerminal::setStdinEchoEnabled(bool enabled)
 #endif
 }
 
+/*!
+Sets the color of the terminal text to \a color.
+
+\sa textColor()
+*/
+
 void BTerminal::setTextColor(Color color)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     BTerminalPrivate::textColor = color;
     BTerminalPrivate::resetColor();
 }
+
+/*!
+Sets the title of the terminal to \a title.
+
+The title is usually diaplayed in the window header.
+*/
 
 void BTerminal::setTitle(const QString &title)
 {
@@ -801,6 +1206,13 @@ void BTerminal::setTitle(const QString &title)
 #endif
 }
 
+/*!
+If \a enabled is true, all potentially localizable text printed by BTerminal will be translated. Otherwise, the printed
+text will not be translated.
+
+\sa translationsEnabled()
+*/
+
 void BTerminal::setTranslationsEnabled(bool enabled)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -808,6 +1220,10 @@ void BTerminal::setTranslationsEnabled(bool enabled)
         return;
     ds_func()->translations = enabled;
 }
+
+/*!
+Returns the size of the terminal in columns (number of symbols in a line) and rows (number of lines).
+*/
 
 QSize BTerminal::size()
 {
@@ -822,6 +1238,13 @@ QSize BTerminal::size()
     return QSize(csbi.srWindow.Right - csbi.srWindow.Left + 1, csbi.srWindow.Bottom - csbi.srWindow.Top + 1);
 #endif
 }
+
+
+/*!
+Returns the terminal echo mode.
+
+\sa setStdinEchoEnabled()
+*/
 
 bool BTerminal::stdinEchoEnabled()
 {
@@ -838,11 +1261,23 @@ bool BTerminal::stdinEchoEnabled()
 #endif
 }
 
+/*!
+Returns the color of the terminal text.
+
+\sa setTextColor()
+*/
+
 BTerminal::Color BTerminal::textColor()
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
     return BTerminalPrivate::textColor;
 }
+
+/*!
+Returns true if translation of the printed text is enabled; otherwise returns false.
+
+\sa setTranslationsEnabled()
+*/
 
 bool BTerminal::translationsEnabled()
 {
@@ -851,6 +1286,10 @@ bool BTerminal::translationsEnabled()
         return false;
     return ds_func()->translations;
 }
+
+/*!
+Writes \a text to the standard output (stdout).
+*/
 
 void BTerminal::write(const QString &text)
 {
@@ -864,6 +1303,10 @@ void BTerminal::write(const QString &text)
     BTerminalPrivate::writeStream.flush();
 }
 
+/*!
+Writes \a text to the standard error stream (stderr).
+*/
+
 void BTerminal::writeErr(const QString &text)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -873,6 +1316,10 @@ void BTerminal::writeErr(const QString &text)
     BTerminalPrivate::writeErrStream << text;
     BTerminalPrivate::writeErrStream.flush();
 }
+
+/*!
+Prints the formatted help for the command with \a usage and \a description.
+*/
 
 void BTerminal::writeHelpLine(const QString &usage, const QString &description)
 {
@@ -896,10 +1343,25 @@ void BTerminal::writeHelpLine(const QString &usage, const QString &description)
     writeLine(s);
 }
 
+/*!
+\overload
+Prints the formatted help for the command with \a usage and \a description.
+
+If \a translate is true, \a description is translated (the current application locale is used); otherwise it is not
+translated.
+*/
+
 void BTerminal::writeHelpLine(const QString &usage, const BTranslation &description, bool translate)
 {
     writeHelpLine(usage, translate ? description.translate() : description.sourceText());
 }
+
+/*!
+Prints the formatted help for each of the CommandHelo from \a list.
+
+If \a translate is true, description is translated (the current application locale is used); otherwise it is not
+translated.
+*/
 
 void BTerminal::writeHelpLines(const CommandHelpList &list, bool translate)
 {
@@ -907,10 +1369,18 @@ void BTerminal::writeHelpLines(const CommandHelpList &list, bool translate)
         writeHelpLine(h.usage, h.description, translate);
 }
 
+/*!
+Writes \a text to the standard output (stdout). The end of line ('\n') is appended to the text.
+*/
+
 void BTerminal::writeLine(const QString &text)
 {
     write(text + "\n");
 }
+
+/*!
+Writes \a text to the standard error stream (stderr). The end of line ('\n') is appended to the text.
+*/
 
 void BTerminal::writeLineErr(const QString &text)
 {
@@ -918,6 +1388,38 @@ void BTerminal::writeLineErr(const QString &text)
 }
 
 /*============================== Static protected methods ==================*/
+
+/*!
+Handles command \a command with arguments \a args.
+
+Usage:
+
+\table
+\header
+    \li Usage
+    \li Description
+\row
+    \li help <command>
+    \li Shows description of <command>.
+\row
+    \li help [--commands|--settings|--all]
+    \li Shows basic help, or:
+
+        --commands - list of all available commands
+
+        --settings - list of all available settings
+
+        --all - all of the above (including basic help).
+\row
+    \li help --about [description|changelog|license|authors|translations|thanksto]
+    \li Shows information about this application.
+\row
+    \li help --about-beqt [description|changelog|license|authors|translations|thanksto]
+    \li Shows information about BeQt libraries.
+\endtable
+
+Returns true if there is a BTerminal instance and if the terminal mode is StandardMode. Otherwise returns false.
+*/
 
 bool BTerminal::handleHelp(const QString &, const QStringList &args)
 {
@@ -1023,6 +1525,26 @@ bool BTerminal::handleHelp(const QString &, const QStringList &args)
     return true;
 }
 
+/*!
+Handles command \a cmd with arguments \a args.
+
+Usage:
+
+\table
+\header
+    \li Usage
+    \li Description
+\row
+    \li last [n]
+    \li Reenters last n-th command (the very last by default).
+\row
+    \li last --show [n]
+    \li Shows n last commands (10 by default).
+\endtable
+
+Returns true if there is a BTerminal instance and if the terminal mode is StandardMode. Otherwise returns false.
+*/
+
 bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -1103,6 +1625,23 @@ bool BTerminal::handleLast(const QString &cmd, const QStringList &args)
     return true;
 }
 
+/*!
+Handles command \a command with arguments \a arguments.
+
+Usage:
+
+\table
+\header
+    \li Usage
+    \li Description
+\row
+    \li quit [whatever...]
+    \li Calls QCoreApplication::quit() slot. Arguments are ignored.
+\endtable
+
+Returns true if there is a BTerminal instance and if the terminal mode is StandardMode. Otherwise returns false.
+*/
+
 bool BTerminal::handleQuit(const QString &, const QStringList &)
 {
     QMutexLocker locker(&BTerminalPrivate::mutex);
@@ -1113,6 +1652,29 @@ bool BTerminal::handleQuit(const QString &, const QStringList &)
     QCoreApplication::quit();
     return true;
 }
+
+/*!
+Handles command \a command with arguments \a args.
+
+Usage:
+
+\table
+\header
+    \li Usage
+    \li Description
+\row
+    \li set --tree
+    \li Shows list of all available settings.
+\row
+    \li set --show|--description <key>
+    \li Shows the value for <key> or it's description.
+\row
+    \li set <key> [vlue]
+    \li Sets the value for <key> to [value] (if specified) or requests value input.
+\endtable
+
+Returns true if there is a BTerminal instance and if the terminal mode is StandardMode. Otherwise returns false.
+*/
 
 bool BTerminal::handleSet(const QString &, const QStringList &args)
 {

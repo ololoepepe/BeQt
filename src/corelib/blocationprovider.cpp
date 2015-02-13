@@ -78,7 +78,40 @@ void BLocationProviderPrivate::init()
 ================================ BLocationProvider ===========================
 ============================================================================*/
 
+/*!
+\class BLocationProvider
+\inmodule BeQtCore
+\brief The BLocationProvider class provides a simple location provider, which is used to provide information about
+application resources.
+
+This class is an implementation of BAbstractLocationProvider. It adds methods which are used to set mepping between
+resources identifiers and paths to that resources.
+
+Example:
+
+\snippet src/corelib/blocationprovider.cpp 0
+
+\sa BAbstractLocationProvider
+*/
+
+/*!
+\typedef BLocationProvider::PathMap
+
+The BLocationProvider::PathMap typedef provides QString map with BApplicationBase::ResourceType keys for
+BLocationProvider.
+*/
+
+/*!
+\typedef BLocationProvider::LocationMap
+
+The BLocationProvider::LocationMap typedef provides PathMap map with QString keys for BLocationProvider.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a location provider and sets it's location mapping to \a locations.
+*/
 
 BLocationProvider::BLocationProvider(const LocationMap &locations) :
     BAbstractLocationProvider(), BBase(*new BLocationProviderPrivate(this))
@@ -87,11 +120,19 @@ BLocationProvider::BLocationProvider(const LocationMap &locations) :
     d_func()->locations = locations;
 }
 
+/*!
+Constructs a copy of \a other.
+*/
+
 BLocationProvider::BLocationProvider(const BLocationProvider &other) :
     BAbstractLocationProvider(), BBase(*new BLocationProviderPrivate(this))
 {
     *this = other;
 }
+
+/*!
+Destroys the location provider.
+*/
 
 BLocationProvider::~BLocationProvider()
 {
@@ -99,6 +140,10 @@ BLocationProvider::~BLocationProvider()
 }
 
 /*============================== Protected constructors ====================*/
+
+/*!
+Constructs a location provider and associates the given data object \a d with it.
+*/
 
 BLocationProvider::BLocationProvider(BLocationProviderPrivate &d) :
     BBase(d)
@@ -108,6 +153,14 @@ BLocationProvider::BLocationProvider(BLocationProviderPrivate &d) :
 
 /*============================== Public methods ============================*/
 
+/*!
+Adds \a paths to the location provider map for the resource identifier \a name.
+
+If the mapping already exists, it is replaced by the new one.
+
+\sa addLocationPath()
+*/
+
 void BLocationProvider::addLocation(const QString &name, const PathMap &paths)
 {
     if (name.isEmpty())
@@ -116,6 +169,19 @@ void BLocationProvider::addLocation(const QString &name, const PathMap &paths)
         return;
     d_func()->locations.insert(name, paths);
 }
+
+/*!
+\overload
+Adds paths deducted form the \a subdirName to the location provider map for the resource identifier \a name.
+
+Paths are deducting by appending \a subdirName to all basic resources paths. See \l {Resources system} for details.
+
+If \a subdirName is empty, \a name is used as a subdirectory name.
+
+If the mapping already exists, it is replaced by the new one.
+
+\sa addLocationPath()
+*/
 
 void BLocationProvider::addLocation(const QString &name, const QString &subdirName)
 {
@@ -140,6 +206,15 @@ void BLocationProvider::addLocation(const QString &name, const QString &subdirNa
     d_func()->locations.insert(name, m);
 }
 
+/*!
+\overload
+Adds \a path for the resource type \a type to the location provider map for the resource identifier \a locationName.
+
+If the mapping already exists, it is replaced by the new one.
+
+\sa addLocation()
+*/
+
 void BLocationProvider::addLocationPath(const QString &locationName, BApplicationBase::ResourceType type,
                                         const QString &path)
 {
@@ -153,21 +228,41 @@ void BLocationProvider::addLocationPath(const QString &locationName, BApplicatio
     m.insert(type, path);
 }
 
+/*!
+This function simply calls addLocation() for each name in \a names.
+
+\sa addLocation()
+*/
+
 void BLocationProvider::addLocations(const QStringList &names)
 {
     foreach (const QString &name, names)
         addLocation(name);
 }
 
+/*!
+Returns true if automatic path creation is enabled, otherwise returns false.
+
+\sa setAutoCreatePaths()
+*/
+
 bool BLocationProvider::autoCreatePaths() const
 {
     return d_func()->autoCreate;
 }
 
+/*!
+\reimp
+*/
+
 bool BLocationProvider::canCreateLocationPath(const QString &, BApplicationBase::ResourceType) const
 {
     return d_func()->autoCreate;
 }
+
+/*!
+\reimp
+*/
 
 bool BLocationProvider::createLocationPath(const QString &locationName, BApplicationBase::ResourceType type)
 {
@@ -184,15 +279,27 @@ bool BLocationProvider::createLocationPath(const QString &locationName, BApplica
     return !s.isEmpty() && BDirTools::mkpath(s);
 }
 
+/*!
+Returns true if this location provider has no resource path mappings. Otherwise returns false.
+*/
+
 bool BLocationProvider::isEmpty() const
 {
     return d_func()->locations.isEmpty();
 }
 
+/*!
+\reimp
+*/
+
 QStringList BLocationProvider::locationNames() const
 {
     return d_func()->locations.keys();
 }
+
+/*!
+\reimp
+*/
 
 QString BLocationProvider::locationPath(const QString &locationName, BApplicationBase::ResourceType type) const
 {
@@ -206,12 +313,20 @@ QString BLocationProvider::locationPath(const QString &locationName, BApplicatio
     return m.value(type);
 }
 
+/*!
+Removes resource path mapping with identifier \a name form the internal map.
+*/
+
 void BLocationProvider::removeLocation(const QString &name)
 {
     if (name.isEmpty())
         return;
     d_func()->locations.remove(name);
 }
+
+/*!
+Removes resource path mapping with identifier \a locationName for resource type \a type form the internal map.
+*/
 
 void BLocationProvider::removeLocationPath(const QString &locationName, BApplicationBase::ResourceType type)
 {
@@ -222,10 +337,25 @@ void BLocationProvider::removeLocationPath(const QString &locationName, BApplica
     d_func()->locations[locationName].remove(type);
 }
 
+/*!
+Enables automatic path creation if \a enabled is true, otherwise disables it.
+
+\sa autoCreatePaths()
+*/
+
 void BLocationProvider::setAutoCreatePaths(bool enabled)
 {
     d_func()->autoCreate = enabled;
 }
+
+/*!
+Sets \a path for the resource type \a type of the location provider map for the existing resource identifier
+\a locationName.
+
+If the mapping does not exist, nothing is done.
+
+\sa addLocationPath(), setLocationPaths(), setLocations()
+*/
 
 void BLocationProvider::setLocationPath(const QString &locationName, BApplicationBase::ResourceType type,
                                         const QString &path)
@@ -237,12 +367,24 @@ void BLocationProvider::setLocationPath(const QString &locationName, BApplicatio
     d_func()->locations[locationName][type] = path;
 }
 
+/*!
+Sets mapping of the location provider map for the existing resource identifier \a locationName to \a paths.
+
+If the mapping does not exist, nothing is done.
+
+\sa addLocation(), setLocationPath(), setLocations()
+*/
+
 void BLocationProvider::setLocationPaths(const QString &locationName, const PathMap &paths)
 {
     if (locationName.isEmpty())
         return;
     d_func()->locations[locationName] = paths;
 }
+
+/*!
+Sets the location provider's mapping to \a locations.
+*/
 
 void BLocationProvider::setLocations(const LocationMap &locations)
 {
@@ -251,6 +393,10 @@ void BLocationProvider::setLocations(const LocationMap &locations)
 
 /*============================== Public operators ==========================*/
 
+/*!
+Assigns \a other to this location provider and returns a reference to this location provider.
+*/
+
 BLocationProvider &BLocationProvider::operator =(const BLocationProvider &other)
 {
     d_func()->locations = other.d_func()->locations;
@@ -258,10 +404,22 @@ BLocationProvider &BLocationProvider::operator =(const BLocationProvider &other)
     return *this;
 }
 
+/*!
+Returns true if this location provider is equal to location provider \a other; otherwise returns false.
+
+The location providers are equal if they have exactly the same mappings.
+*/
+
 bool BLocationProvider::operator ==(const BLocationProvider &other) const
 {
     return d_func()->autoCreate == other.d_func()->autoCreate && d_func()->locations == other.d_func()->locations;
 }
+
+/*!
+Returns true if this location provider is not equal to location provider \a other; otherwise returns false.
+
+The location providers are equal if they have exactly the same mappings; otherwise they are not equal.
+*/
 
 bool BLocationProvider::operator !=(const BLocationProvider &other) const
 {

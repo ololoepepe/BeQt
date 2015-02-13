@@ -72,7 +72,30 @@ void BCoreApplicationPrivate::init()
 ================================ BCoreApplication ============================
 ============================================================================*/
 
+/*!
+\macro bApp()
+\relates BCoreApplication
+Calls BApplicationBase::binstance() and casts it to pointer to BCoreApplication. Returns the pointer casted.
+*/
+
+/*!
+\class BCoreApplication
+\inmodule BeQtCore
+\brief The BCoreApplication class provides both QCoreApplication and BApplicationBase functionality.
+
+This class is used by non-GUI applications to provide their event loop, resources, plugins and translations systems.
+For non-GUI application that uses Qt (and BeQt), there should be exactly one BCoreApplication object. For GUI
+applications, see BApplication.
+*/
+
 /*============================== Public constructors =======================*/
+
+/*!
+Constructs a BCoreApplication object. Application and organization names are set to \a applicationName and
+\a organizationName, respectively.
+
+\a argc and \a argv are passed to QCoreApplication superclass.
+*/
 
 BCoreApplication::BCoreApplication(int &argc, char **argv, const QString &applicationName,
                                    const QString &organizationName) :
@@ -82,11 +105,22 @@ BCoreApplication::BCoreApplication(int &argc, char **argv, const QString &applic
     d_func()->init();
 }
 
+/*!
+Constructs a BCoreApplication object. Application and organization names are set according to the corresponding
+InitialSettings \a s members. You may also specify application portability mode.
+
+\a argc and \a argv are passed to QCoreApplication superclass.
+*/
+
 BCoreApplication::BCoreApplication(int &argc, char **argv, const InitialSettings &s) :
     QCoreApplication(argc, argv), BApplicationBase(*new BCoreApplicationPrivate(this), s)
 {
     d_func()->init();
 }
+
+/*!
+Destroys the object. Plugins, translators, settings and logger instances owned by the object are unloaded/deleted.
+*/
 
 BCoreApplication::~BCoreApplication()
 {
@@ -95,6 +129,13 @@ BCoreApplication::~BCoreApplication()
 
 /*============================== Protected constructors ====================*/
 
+/*!
+Constructs a BCoreApplication object and associates the given data object \a d with it. Application and organization
+names are set to \a applicationName and \a organizationName, respectively.
+
+\a argc and \a argv are passed to QCoreApplication superclass.
+*/
+
 BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const QString &applicationName,
                                    const QString &organizationName) :
     QCoreApplication(argc, argv), BApplicationBase(d, applicationName, organizationName)
@@ -102,8 +143,45 @@ BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d, int &argc, char *
     d_func()->init();
 }
 
+/*!
+Constructs a BCoreApplication object and associates the given data object \a d with it. Application and organization
+names are set according to the corresponding InitialSettings \a s members. You may also specify application portability
+mode.
+
+\a argc and \a argv are passed to QCoreApplication superclass.
+*/
+
 BCoreApplication::BCoreApplication(BCoreApplicationPrivate &d, int &argc, char **argv, const InitialSettings &s) :
     QCoreApplication(argc, argv), BApplicationBase(d, s)
 {
     d_func()->init();
 }
+
+/*!
+\fn void BCoreApplication::languageChanged()
+
+This signal is emitted when the application locale has been changed, for example by calling
+BApplicationBase::setLocale().
+*/
+
+/*!
+\fn void BCoreApplication::pluginAboutToBeDeactivated(BPluginWrapper *pluginWrapper)
+
+This signal is emitted when a plugin owned by \a pluginWrapper registered in BApplicationBase instance is about to be
+activated.
+
+For details, see \l {Plugins system}
+
+\sa BApplicationBase::loadPlugins(), BApplicationBase::setPluginActivated(), BPluginWrapper
+*/
+
+/*!
+\fn void BCoreApplication::pluginActivated(BPluginWrapper *pluginWrapper)
+
+This signal is emitted when a plugin owned by \a pluginWrapper registered in BApplicationBase instance is about to be
+deactivated.
+
+For details, see \l {Plugins system}
+
+\sa BApplicationBase::unloadPlugins(), BApplicationBase::setPluginActivated(), BPluginWrapper
+*/

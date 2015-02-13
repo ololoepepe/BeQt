@@ -1,0 +1,245 @@
+/****************************************************************************
+**
+** Copyright (C) 2012-2014 Andrey Bogdanov
+**
+** This file is part of the documentation of the BeQt library.
+**
+** BeQt is free software: you can redistribute it and/or modify it under
+** the terms of the GNU Lesser General Public License as published by
+** the Free Software Foundation, either version 3 of the License, or
+** (at your option) any later version.
+**
+** BeQt is distributed in the hope that it will be useful,
+** but WITHOUT ANY WARRANTY; without even the implied warranty of
+** MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+** GNU Lesser General Public License for more details.
+**
+** You should have received a copy of the GNU Lesser General Public License
+** along with BeQt.  If not, see <http://www.gnu.org/licenses/>.
+**
+****************************************************************************/
+
+/*!
+\class BPluginInterface
+\inmodule BeQtCore
+\brief The BPluginInterface class provides a basic abstract plugin interface.
+
+The BPluginInterface class is used by BeQt's \l {Plugins system} as a basic plugin interface. It is used to provide
+information about the plugin (identifier, type, title, version, etc.) and activate/deactivate it.
+
+Example (the plugin which adds a custom BTerminal handler function):
+
+\snippet src/corelib/bplugininterface.cpp 0
+
+The .pro file:
+
+\snippet src/corelib/bplugininterface.pro 0
+
+\sa {Plugins system}
+*/
+
+/*!
+\class BPluginInterface::PluginInfo
+\brief The PluginInfo struct represents dynamic information about a plugin.
+
+The PluginInfo struct is used to provide dynamic (i.e. real-time) information about a plugin. The information
+references .beqt-info (see BPersonInfoProvider) files and some other files from which the information is retrieved. The
+final file names are deducted based on current locale.
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::authorsFileName
+Path to the .beqt-info file containing information about plugin authors.
+
+\sa BPersonInfoProvider, BApplicationBase::applicationAuthorsFile()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::changeLogFileName
+Path to the ChangeLog file.
+
+\sa BApplicationBase::applicationChangeLogFile()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::copyrightYears
+Copyright period.
+
+\sa BApplicationBase::applicationCopyrightPeriod()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::descriptionFileName
+Path to the description file.
+
+\sa BApplicationBase::applicationDescriptionFile()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::licenseFileName
+Path to the license file.
+
+\sa BApplicationBase::applicationLicenseFile()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::organization
+The name of the organization (or a person) who created the plugin.
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::thanksToFileName
+Path to the .beqt-info file containing plugin "thanks to" information.
+
+\sa BPersonInfoProvider, BApplicationBase::applicationThanksToFile()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::translatorsFileName
+Path to the .beqt-info file containing information about plugin translators (people, not the QTranslator or BTranslator
+classes).
+
+\sa BPersonInfoProvider, BApplicationBase::applicationTranslationsFile()
+*/
+
+/*!
+\variable BPluginInterface::PluginInfo::website
+The official website of the plugin.
+*/
+
+/*!
+\class BPluginInterface::StaticPluginInfo
+\brief The PluginInfo struct represents static information about a plugin.
+
+Unlike PluginInfo, this struct provides static information about a plugin. That means that the information is provided
+in a plain form of \l {BPersonInfoList}s and QStrings.
+Once retrieved, the information will be the same until the plugin is unloaded and loaded again.
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::authors
+List of plugin authors.
+
+\sa BApplicationBase::applicationAuthors()
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::changeLog
+ChangeLog of the plugin.
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::copyrightYears
+Copyright period.
+
+\sa BApplicationBase::applicationCopyrightPeriod()
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::description
+Description of the plugin.
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::license
+Licencs under which the plugin is distributed.
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::organization
+The name of the organization (or a person) who created the plugin.
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::thanksTo
+List of plugin "thanks to".
+
+\sa BApplicationBase::applicationThanksTo()
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::translators
+List of plugin translators (people, not the QTranslator or BTranslator classes).
+
+\sa BApplicationBase::applicationTranslations()
+*/
+
+/*!
+\variable BPluginInterface::StaticPluginInfo::website
+The official website of the plugin.
+*/
+
+/*!
+\fn BPluginInterface::~BPluginInterface()
+
+Virtual destructor that does nothing.
+*/
+
+/*!
+\fn void BPluginInterface::activate()
+
+This virtual function is called when the plugin is activated by a BPluginWrapper.
+
+See {Plugins system} for details.
+*/
+
+/*!
+\fn void BPluginInterface::deactivate()
+
+This virtual function is called when the plugin is deactivated by a BPluginWrapper.
+
+See {Plugins system} for details.
+*/
+
+/*!
+\fn QString BPluginInterface::id() const
+
+Returns the identifier of the plugin. The identifier must be unique for every plugin used in an application.
+*/
+
+/*!
+\fn PluginInfo BPluginInterface::info() const
+
+Returns the dynamic information about the plugin. This function is only used by BeQt if prefereStaticInfo() returns
+false.
+
+\sa PluginInfo
+*/
+
+/*!
+\fn bool BPluginInterface::prefereStaticInfo() const
+
+Returns true if static information about the plugin must be used; otherwise returns false (then, the dynamic
+information is used).
+
+\sa info(), staticInfo()
+*/
+
+/*!
+\fn StaticPluginInfo BPluginInterface::staticInfo() const
+
+Returns the static information about the plugin. This function is only used by BeQt if prefereStaticInfo() returns
+true.
+
+\sa StaticPluginInfo
+*/
+
+/*!
+\fn QString BPluginInterface::title() const
+
+Returns the human-readable (typically localized) plugin title.
+*/
+
+/*!
+\fn QString BPluginInterface::type() const
+
+Returns the plugin type. The type may be used when loading plugins to load only plugins of certain type(s).
+
+Example: "editor-module", "terminal-handler"
+*/
+
+/*!
+\fn BVersion BPluginInterface::version() const
+
+Returns the version of the plugin.
+*/

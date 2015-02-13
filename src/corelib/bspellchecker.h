@@ -37,7 +37,7 @@ class QStringList;
 #include <QString>
 
 #if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
-class QRegularExpression; //It is here because Qt headers containing the wrapping macros must be included first
+class QRegularExpression;
 #endif
 
 /*============================================================================

@@ -1,0 +1,14 @@
+sourceencoding = UTF-8
+
+exampledirs += "./src/snippets"
+exampledirs += "./src/corelib"
+
+examples.fileextensions = "*.cpp *.h"
+examples.imageextensions = "*.png *.jpg *.gif"
+
+headers.fileextensions = "*.h"
+sources.fileextensions = "*.cpp *.qdoc"
+
+headerdirs = "../src/corelib"
+sourcedirs = "./src"
+sourcedirs += "../src/corelib"

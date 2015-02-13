@@ -1,0 +1,8 @@
+include(cpp.qdocinc)
+include(defines.qdocinc)
+include(source.qdocinc)
+include(output.qdocinc)
+
+project = "BeQt"
+description = "BeQt Reference Documentation"
+version = "4.1.1"
