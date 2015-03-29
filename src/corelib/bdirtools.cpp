@@ -564,17 +564,17 @@ If \a ok if non-zero pointer, it's value is set to true on success and to false 
 
 QByteArray readFile(const QString &fileName, qint64 maxlen, bool *ok)
 {
-    if (ok)
-        *ok = false;
-    if ( fileName.isEmpty() )
+    bSet(ok, false);
+    if (fileName.isEmpty())
         return QByteArray();
     QFile f(fileName);
-    if ( !f.open(QFile::ReadOnly) )
+    if (!f.open(QFile::ReadOnly))
         return QByteArray();
     QByteArray ba = (maxlen < 0) ? f.readAll() : f.read(maxlen);
     f.close();
-    if (ok)
-        *ok = true;
+    if (f.error() != QFile::NoError)
+        return QByteArray();
+    bSet(ok, true);
     return ba;
 }
 
@@ -630,20 +630,20 @@ If \a ok if non-zero pointer, it's value is set to true on success and to false 
 
 QString readTextFile(const QString &fileName, QTextCodec *codec, bool *ok)
 {
-    if (ok)
-        *ok = false;
+    bSet(ok, false);
     if (fileName.isEmpty())
-        return "";
+        return QString();
     QFile f(fileName);
     if (!f.open(QFile::ReadOnly))
-        return "";
+        return QString();
     QTextStream in(&f);
     if (codec)
         in.setCodec(codec);
     QString text = in.readAll();
     f.close();
-    if (ok)
-        *ok = true;
+    if (f.error() != QFile::NoError)
+        return QString();
+    bSet(ok, true);
     return text;
 }
 
@@ -828,7 +828,7 @@ bool writeFile(const QString &fileName, const QByteArray &data)
         return false;
     bool b = (f.write(data) == data.size());
     f.close();
-    return b;
+    return b && f.error() == QFile::NoError;
 }
 
 /*!
@@ -890,7 +890,7 @@ bool writeTextFile(const QString &fileName, const QString &text, QTextCodec *cod
     out << text;
     bool b = (out.status() != QTextStream::WriteFailed);
     f.close();
-    return b;
+    return b && f.error() == QFile::NoError;
 }
 
 /*!

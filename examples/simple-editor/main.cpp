@@ -132,7 +132,7 @@ int main(int argc, char **argv)
     tbar->addActions(smdl->actions());
     //Restoring main window settings and showing it
     mw->restoreGeometry(s ? s->value("main_window/geometry").toByteArray() : mw->saveGeometry());
-    mw->restoreState(s ? s->value("main_window/state").toByteArray() : mw->saveState()) ;
+    mw->restoreState(s ? s->value("main_window/state").toByteArray() : mw->saveState());
     mw->show();
     //Running main event loop
     int ret = app.exec();
