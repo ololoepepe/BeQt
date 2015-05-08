@@ -115,11 +115,8 @@ BTerminalThread::~BTerminalThread()
 void BTerminalThread::run()
 {
     forever {
-        qDebug() << "000";
         QString line = BTerminalPrivate::readStream.readLine();
-        qDebug() << "bbb";
         QMutexLocker readLineLocker(&BTerminalPrivate::readLineMutex);
-        qDebug() << "ccc";
         if (BTerminalPrivate::readLine) {
             QMutexLocker lineLocker(&BTerminalPrivate::lineMutex);
             BTerminalPrivate::line = line;
