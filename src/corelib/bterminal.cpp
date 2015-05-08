@@ -115,8 +115,18 @@ BTerminalThread::~BTerminalThread()
 void BTerminalThread::run()
 {
     forever {
+        qDebug() << "000";
         QString line = BTerminalPrivate::readStream.readLine();
-        QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, line));
+        qDebug() << "bbb";
+        QMutexLocker readLineLocker(&BTerminalPrivate::readLineMutex);
+        qDebug() << "ccc";
+        if (BTerminalPrivate::readLine) {
+            QMutexLocker lineLocker(&BTerminalPrivate::lineMutex);
+            BTerminalPrivate::line = line;
+            BTerminalPrivate::lineWasRead = true;
+        } else {
+            QMetaObject::invokeMethod(TerminalPrivate, "lineRead", Qt::QueuedConnection, Q_ARG(QString, line));
+        }
     }
 }
 
@@ -134,8 +144,13 @@ QMap<QString, BTerminal::HandlerFunction> BTerminalPrivate::handlers;
 BTranslation BTerminalPrivate::help;
 QStringList BTerminalPrivate::lastArgs;
 QString BTerminalPrivate::lastCommand;
+QString BTerminalPrivate::line;
+QMutex BTerminalPrivate::lineMutex(QMutex::Recursive);
+bool BTerminalPrivate::lineWasRead = false;
 BTerminal::Mode BTerminalPrivate::mode = BTerminal::NoMode;
 QMutex BTerminalPrivate::mutex(QMutex::Recursive);
+bool BTerminalPrivate::readLine = false;
+QMutex BTerminalPrivate::readLineMutex(QMutex::Recursive);
 QTextStream BTerminalPrivate::readStream(stdin, QIODevice::ReadOnly);
 BTerminalThread *BTerminalPrivate::readThread = 0;
 BSettingsNode *BTerminalPrivate::root = 0;
@@ -956,10 +971,26 @@ QString BTerminal::readLine(const QString &text)
         return QString();
     if (!text.isEmpty())
         write(text);
-    if (StandardMode == m)
-        ds_func()->destroyThread();
+    B_DS(BTerminal);
+    if (ds && ds->readThread) {
+        BTerminalPrivate::readLineMutex.lock();
+        BTerminalPrivate::readLine = true;
+        BTerminalPrivate::readLineMutex.unlock();
+        forever {
+            QMutexLocker locker(&BTerminalPrivate::lineMutex);
+            if (BTerminalPrivate::lineWasRead) {
+                BTerminalPrivate::lineWasRead = false;
+                BTerminalPrivate::readLineMutex.lock();
+                BTerminalPrivate::readLine = false;
+                BTerminalPrivate::readLineMutex.unlock();
+                QString line = BTerminalPrivate::line;
+                BTerminalPrivate::line.clear();
+                return line;
+            }
+            BeQt::msleep(10);
+        }
+    }
     QString line = BTerminalPrivate::readStream.readLine();
-    QTimer::singleShot(0, ds_func(), SLOT(createThread()));
     return line;
 }
 

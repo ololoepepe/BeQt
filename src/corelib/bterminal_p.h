@@ -75,8 +75,13 @@ public:
     static BTranslation help;
     static QStringList lastArgs;
     static QString lastCommand;
+    static QString line;
+    static QMutex lineMutex;
+    static bool lineWasRead;
     static BTerminal::Mode mode;
     static QMutex mutex;
+    static bool readLine;
+    static QMutex readLineMutex;
     static QTextStream readStream;
     static BTerminalThread *readThread;
     static BSettingsNode *root;
