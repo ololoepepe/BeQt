@@ -968,27 +968,24 @@ QString BTerminal::readLine(const QString &text)
         return QString();
     if (!text.isEmpty())
         write(text);
-    B_DS(BTerminal);
-    if (ds && ds->readThread) {
-        BTerminalPrivate::readLineMutex.lock();
-        BTerminalPrivate::readLine = true;
-        BTerminalPrivate::readLineMutex.unlock();
-        forever {
-            QMutexLocker locker(&BTerminalPrivate::lineMutex);
-            if (BTerminalPrivate::lineWasRead) {
-                BTerminalPrivate::lineWasRead = false;
-                BTerminalPrivate::readLineMutex.lock();
-                BTerminalPrivate::readLine = false;
-                BTerminalPrivate::readLineMutex.unlock();
-                QString line = BTerminalPrivate::line;
-                BTerminalPrivate::line.clear();
-                return line;
-            }
-            BeQt::msleep(10);
+    if (NoMode == m)
+        return BTerminalPrivate::readStream.readLine();
+    BTerminalPrivate::readLineMutex.lock();
+    BTerminalPrivate::readLine = true;
+    BTerminalPrivate::readLineMutex.unlock();
+    forever {
+        QMutexLocker locker(&BTerminalPrivate::lineMutex);
+        if (BTerminalPrivate::lineWasRead) {
+            BTerminalPrivate::lineWasRead = false;
+            BTerminalPrivate::readLineMutex.lock();
+            BTerminalPrivate::readLine = false;
+            BTerminalPrivate::readLineMutex.unlock();
+            QString line = BTerminalPrivate::line;
+            BTerminalPrivate::line.clear();
+            return line;
         }
+        BeQt::msleep(10);
     }
-    QString line = BTerminalPrivate::readStream.readLine();
-    return line;
 }
 
 /*!
