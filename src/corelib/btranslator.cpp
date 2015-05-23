@@ -288,10 +288,9 @@ bool BTranslator::load(const QString &fileName)
         d->fileName = fileName;
     if (!isValid())
         return false;
-    QStringList dirs = BApplicationBase::locations(BApplicationBase::TranslationsPath);
-    for (int i = dirs.size() - 1; i >= 0; --i) { //User translators come last, having higher priority
+    foreach (const QString &dir, BApplicationBase::locations(BApplicationBase::TranslationsPath)) {
         QTranslator *t = new QTranslator;
-        if (t->load(d->locale, d->fileName, "_", dirs.at(i), ".qm"))
+        if (t->load(d->locale, d->fileName, "_", dir, ".qm"))
             d->translators << t;
         else
             delete t;

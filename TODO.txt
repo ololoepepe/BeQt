@@ -18,6 +18,7 @@
 * Fix dragging from BPlainTextEdit. Note: not sure if needed
 [done] Fix file read/write error detection
 [done] Fix BTerminal::readLine (don't kill reading thread)
+[done] Fix BTranslator loading order
 
 === MINOR ===
 
