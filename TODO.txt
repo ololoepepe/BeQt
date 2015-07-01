@@ -19,6 +19,7 @@
 [done] Fix file read/write error detection
 [done] Fix BTerminal::readLine (don't kill reading thread)
 [done] Fix BTranslator loading order
+[done] Fix BLogger locking
 
 === MINOR ===
 
