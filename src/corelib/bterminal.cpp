@@ -984,7 +984,7 @@ QString BTerminal::readLine(const QString &text)
             BTerminalPrivate::line.clear();
             return line;
         }
-        BeQt::msleep(10);
+        BeQt::msleep(1);
     }
 }
 
