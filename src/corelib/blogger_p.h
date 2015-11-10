@@ -52,19 +52,19 @@ public:
 public Q_SLOTS:
     void timeout();
 public:
-    bool useStderr;
-    bool includeLevel;
-    bool includeDateTime;
-    QString format;
-    bool logToConsole;
-    bool logToFile;
+    mutable QMutex consoleMutex;
     QFile file;
     int fileFlushInterval;
     QTimer fileFlushTimer;
-    QTextStream fileStream;
-    mutable QMutex formatMutex;
-    mutable QMutex consoleMutex;
     mutable QMutex fileMutex;
+    QTextStream fileStream;
+    QString format;
+    mutable QMutex formatMutex;
+    bool includeLevel;
+    bool includeDateTime;
+    bool logToConsole;
+    bool logToFile;
+    bool useStderr;
 private:
     Q_DISABLE_COPY(BLoggerPrivate)
 };

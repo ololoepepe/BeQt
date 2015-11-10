@@ -1,3 +1,9 @@
+=== BeQt 4.1.3 (10 November 2015) ===
+    * Fix file read/write error detection
+    * Fix BTerminal::readLine (don't kill reading thread)
+    * Fix BTranslator loading order
+    * Fix BLogger locking
+
 === BeQt 4.1.2 (13 February 2015) ===
     * Implement QDoc documentation generation
     * Add BEQT_VERSION_STR define

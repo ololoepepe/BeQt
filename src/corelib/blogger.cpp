@@ -44,7 +44,8 @@
 /*============================== Public constructors =======================*/
 
 BLoggerPrivate::BLoggerPrivate(BLogger *q) :
-    BBaseObjectPrivate(q)
+    BBaseObjectPrivate(q), consoleMutex(QMutex::Recursive), fileMutex(QMutex::Recursive),
+    formatMutex(QMutex::Recursive)
 {
     //
 }
